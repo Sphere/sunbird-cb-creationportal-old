@@ -1,0 +1,64 @@
+@import 'ws-vars';
+@import 'ws-mixins';
+
+
+
+.at-glance {
+  width: 362px;
+  min-height: 466px;
+
+  @include breakpoint-s {
+    margin-left: $size-xs;
+    margin-right: $size-xs;
+    width: auto;
+  }
+
+  .preview-div {
+    border-radius: 4px;
+
+    .preview {
+      display: flex;
+      padding: $size-s;
+
+    }
+  }
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.line {
+  flex: 1;
+}
+
+.text {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.margin-0 {
+  margin: 0;
+}
+
+// .fix-w {
+//   margin-left: auto;
+//   margin-right: auto;
+//   // max-width: $max-screen;
+//   display: flex;
+//   flex: 1;
+
+//   @include breakpoint-s {
+//     margin-left: $size-xs;
+//     margin-right: $size-xs;
+//   }
+
+//   @include breakpoint-xs {
+//     margin-left: $size-xs;
+//     margin-right: $size-xs;
+//   }
+// }

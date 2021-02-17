@@ -1,0 +1,44 @@
+<div class="nav-container" autosize name="auth-tool-detail">
+  <div class="flex">
+    <div class="flex flex-3 flex-column">
+      <div class="flex flex-1">
+        <div class="mt-10">
+          <img mat-card-image class="content-image" [src]="content?.appIcon | relativeUrl" alt="Content Image"
+            (error)="changeToDefaultImg($event)" />
+        </div>
+        <div class="flex flex-column ml-10 mt-8">
+          <span class="mat-headline">{{content?.name}}</span>
+          <span class="mat-body-1">{{content?.description}}
+          </span>
+        </div>
+      </div>
+      <div class="flex flex-1">
+        <span class="mat-body-1" [innerHTML]="content?.body">
+        </span>
+      </div>
+      <div class="flex flex-1 flex-column mt-16">
+        <span class="mat-title">Authors and curators</span>
+        <div class="flex flex-1 flex-wrap margin-top-m">
+          <ng-container *ngFor="let _author of getAuthors()">
+            <ws-widget-author-card class="flex" [widgetData]="_author"></ws-widget-author-card>
+          </ng-container>
+        </div>
+      </div>
+      <div class="flex flex-1 flex-column mt-16">
+        <span class="mat-title">Reviews</span>
+        <div class="flex flex-1 flex-wrap margin-top-m flex-column">
+          <ws-widget-user-content-rating [contentId]="contentId"></ws-widget-user-content-rating>
+          <ws-widget-user-content-detailed-rating [contentId]="contentId">
+          </ws-widget-user-content-detailed-rating>
+        </div>
+      </div>
+      <div class="flex flex-1 flex-column">
+        <ws-auth-content-discussion [content]="content" class="discussion"></ws-auth-content-discussion>
+      </div>
+    </div>
+    <div class="flex flex-1">
+      <ws-widget-at-glance *ngIf="content && tocStructure" [widgetData]="getGlanceData()"></ws-widget-at-glance>
+    </div>
+  </div>
+
+</div>
