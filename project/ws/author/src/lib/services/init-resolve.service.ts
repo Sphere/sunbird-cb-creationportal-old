@@ -55,8 +55,8 @@ export class InitResolver implements Resolve<NSContent.IContentMeta> {
           `${this.configurationsService.baseUrl}/feature/ordinals.json`,
         ),
         // this.apiService.get<IFormMeta>
-        //(`http://localhost:3003/authApi/action/meta/v2/
-        //ordinals/list${this.accessService.orgRootOrgAsQuery}`),
+        // (`http://localhost:3003/authApi/action/meta/v2/
+        // ordinals/list${this.accessService.orgRootOrgAsQuery}`),
       )
       pushedJobs.push('ordinals')
     }

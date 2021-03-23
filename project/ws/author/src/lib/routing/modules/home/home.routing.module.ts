@@ -20,7 +20,7 @@ const routes: Routes = [
     data: { load: ['ordinals', 'ckeditor', 'meta'] },
     resolve: {
       script: InitResolver,
-      departmentData: DepartmentResolver,
+      departmentData: DepartmentResolver, // comment for sunbird BE to work should be removed
     },
   },
   {

@@ -423,7 +423,9 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
       if (updatedMeta && updatedMeta.children && updatedMeta.children.length > 0) {
         for (const element of updatedMeta.children) {
           await this.editorService.sendToReview(element.identifier, element.status).subscribe(
+            // tslint:disable
             data => console.log(data)
+            // tslint:enable
           )
         }
       }

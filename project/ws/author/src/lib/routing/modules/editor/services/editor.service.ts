@@ -257,6 +257,7 @@ export class EditorService {
     return this.apiService.post<null>(STATUS_CHANGE + id, requestBody)
   }
 
+<<<<<<< HEAD
   sendToReview(id: string, status: string) {
     if (status === 'Review') {
       let requestbody = {
@@ -272,6 +273,11 @@ export class EditorService {
       let requestbody = {}
       return this.apiService.post<null>(SEND_TO_REVIEW + id, requestbody)
     }
+=======
+  sendToReview(id: string) {
+    const requestbody = {}
+    return this.apiService.post<null>(SEND_TO_REVIEW + id, requestbody)
+>>>>>>> comp-card and UI added: init commit
   }
 
   readJSON(artifactUrl: string): Observable<any> {

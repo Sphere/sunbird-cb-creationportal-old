@@ -58,7 +58,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  // height: calc(100vh - 165px);
+  height: calc(100vh - 166px);
 }
 
 // .mat-accordion {
@@ -73,6 +73,18 @@
 
 .border-0 {
   border-right: none !important;
+}
+
+.filter {
+  .filter-option {
+    margin: $size-xs $size-m;
+    /* border-bottom: darkslateblue; */
+    border-radius: 0;
+    border-bottom-width: 2px;
+    border-top-width: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+  }
 }
 
 .matExpansion {
@@ -130,3 +142,25 @@
 //     padding: 0;
 //   }
 // }
+:host ::ng-deep .search {
+  .mat-form-field-wrapper {
+    padding-bottom: 0px !important;
+  }
+
+  .mat-form-field-infix {
+    border-top-width: 2px !important;
+    margin: auto;
+  }
+}
+
+.search-border {
+  // border-radius: 0.75rem;
+  border-color: #cecece;
+}
+
+.search {
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+  max-height: 40px;
+}

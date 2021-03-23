@@ -49,6 +49,8 @@ export class AuthNavigationComponent implements OnInit, AfterViewInit {
           this.currentRout = 'Review'
         } else if (event.url.indexOf('publish') >= 0) {
           this.currentRout = 'Publish'
+        } else if (event.url.indexOf('competencies') >= 0) {
+          this.currentRout = 'All competencies'
         } else {
           // this.currentRout = 'Content'
           this.currentRout = 'New CBP'

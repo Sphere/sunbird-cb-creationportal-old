@@ -1,0 +1,83 @@
+<mat-sidenav-container class="nav-container" autosize name="auth-tool-exp">
+  <mat-sidenav [mode]="mode$ | async" [(opened)]="sideNavBarOpenedMain" class="border-0">
+    <div class="contain">
+      <ng-container [wsResolverWidget]="leftmenues"></ng-container>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div *ngIf="screenSizeIsLtMedium">
+      <button type="button" mat-icon-button (click)="sideNavBarOpenedMain = !sideNavBarOpenedMain"
+        id="ws-auth-root-home-btn-menu" name="ws-auth-root-home-btn-menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
+    <!-- <ws-auth-root-dashboard></ws-auth-root-dashboard> -->
+    <div class="container-balanced fix-ww">
+
+      <!-- <router-outlet></router-outlet> -->
+      <span class="flex mat-h1 mt-1">All competencies</span>
+      <div class="flex flex-1 flex-column margin-fix">
+        <div class="flex flex-1 filter max-height-60">
+          <a [routerLink]="[filterPath]" [queryParams]="{ typ: 'published' }" routerLinkActive="router-link-active"
+            class="filter-option" [ngClass]="{'ws-mat-accent-border-active' : status === 'published',
+      'ws-mat-accent-border font-medium':status !== 'published'}" mat-button role="button">
+            Dictionary {{this.count && this.count['published']? '('+this.count['published']+')': null }}</a>
+
+          <a [routerLink]="[filterPath]" [queryParams]="{ typ: 'publish' }" routerLinkActive="router-link-active"
+            class="filter-option" [ngClass]="{'ws-mat-accent-border-active' : status === 'publish',
+        'ws-mat-accent-border font-medium':status !== 'publish'}" mat-button role="button">
+            Competency areas {{this.count && this.count['publish']? '('+this.count['publish']+')': null }}</a>
+
+          <a [routerLink]="[filterPath]" [queryParams]="{ typ: 'inreview' }" routerLinkActive="router-link-active"
+            class="filter-option" [ngClass]="{'ws-mat-accent-border-active' : status === 'inreview',
+                          'ws-mat-accent-border font-medium':status !== 'inreview'}" mat-button role="button">
+            Requested by you {{ this.count && this.count['inreview']? '('+this.count['inreview']+')': null }}
+          </a>
+        </div>
+      </div>
+      <div class="flex flex-wrapped margin-top-xs margin-left-m">
+        <div class="flex items-center search border border-solid search-border">
+          <div class="width-3-4 pl-2">
+            <mat-form-field class="w-full" appearance="none" [floatLabel]="'never'">
+              <mat-icon matPrefix class="m-auto searchinput flex padding-top-xs">search</mat-icon>
+              <input type="text" (keyup.enter)="search()" matInput #searchInput name="searchBox" placeholder="Search" />
+            </mat-form-field>
+          </div>
+        </div>
+        <!-- <div class="flex margin-left-xs" tabindex="0">
+          <h4 *ngIf="filterMenuItems.length" class="ws-mat-primary-text font-size-m font-weight-bold">
+            <span i18n> Apply Filters</span>
+            <a href="javascript:void(0)" role="link" mat-icon-button color="primary" class="text-middle"
+              (click)="sideNavBarOpened = true">
+              <mat-icon>filter_list</mat-icon>
+            </a>
+          </h4>
+          <mat-chip-list *ngIf="filters && filters.length" #chipList aria-label="Filter">
+            <mat-chip [selectable]="true" [removable]="false">
+              <span class="ws-mat-primary-text" i18n>Clear All</span>
+              <mat-icon [color]="'primary'" (click)="clearAllFilters()" matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <mat-chip *ngFor="let item of filters; let i = index" [selectable]="true" [removable]="true"
+              (removed)="filterApplyEvent(item)">
+              <span class="ws-mat-primary-text">{{ item.displayName }}</span>
+              <mat-icon [color]="'primary'" matChipRemove>cancel</mat-icon>
+            </mat-chip>
+          </mat-chip-list>
+        </div> -->
+        <div class="flex flex-1 flex-row-reverse margin-right-xs">
+          <div class="block">
+            <button mat-button class="ws-mat-accent-border-active ws-mat-default-text"
+              (click)="createNewcompetency()">Request new
+              competency</button>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-1 flex-column margin-m">
+        <!-- {{competencies| json}} -->
+        <ws-widget-comp-card-card-content class="flex-1" [userRoles]="myRoles" [userId]="userId" [widgetData]="table"
+          [data]="getTableData" (actionsClick)="action($event)">
+        </ws-widget-comp-card-card-content>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
