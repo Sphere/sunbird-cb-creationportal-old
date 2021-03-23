@@ -16,7 +16,7 @@ const routes: Routes = [
     component: CompetenciesHomeComponent,
     resolve: {
       departmentData: DepartmentResolver,
-      competencies: CompetenciesResolverService
+      competencies: CompetenciesResolverService,
     },
   },
 ]

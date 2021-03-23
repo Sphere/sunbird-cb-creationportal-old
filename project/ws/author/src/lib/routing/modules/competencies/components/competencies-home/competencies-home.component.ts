@@ -12,7 +12,6 @@ import { AuthInitService } from '../../../../../services/init.service'
 import { NSCompetencyV2 } from '../../interface/competency'
 import { CompService } from '../../services/competencies.service'
 
-
 @Component({
   selector: 'ws-auth-root-home',
   templateUrl: './competencies-home.component.html',
@@ -22,6 +21,8 @@ export class CompetenciesHomeComponent implements OnInit, OnDestroy {
   filterPath = '/author/competencies/home'
   public sideNavBarOpenedMain = true
   isAdmin = false
+  count: any = {}
+  status = 'published'
   myRoles!: Set<string>
   userId!: string
   departmentData: any
@@ -74,12 +75,17 @@ export class CompetenciesHomeComponent implements OnInit, OnDestroy {
       this.sideNavBarOpenedMain = !isLtMedium
       this.screenSizeIsLtMedium = isLtMedium
     })
+    this.activatedRoute.queryParams.subscribe(params => {
+      this.status = params.status || 'published'
+      // this.setAction()
+      // this.fetchContent(false)
+    })
   }
   fetchInitData() {
     this.compService.fetchDictionary().subscribe((response: NSCompetencyV2.ICompetencyDictionary[]) => {
       this.tableContent = response
     }, () => {
-      //error
+      // error
     })
   }
 
@@ -97,11 +103,11 @@ export class CompetenciesHomeComponent implements OnInit, OnDestroy {
           defaultValue: 'Untitled Competency',
           // image: 'appIcon',
         },
-        { displayName: 'Type', key: 'type', isList: false, prop: '', defaultValue: 'NA', },
+        { displayName: 'Type', key: 'type', isList: false, prop: '', defaultValue: 'NA' },
         {
-          displayName: 'Number of CBPS', key: 'uniqueUsersCount', isList: false, prop: '', defaultValue: 0
+          displayName: 'Number of CBPS', key: 'uniqueUsersCount', isList: false, prop: '', defaultValue: 0,
         },
-        { displayName: 'Description', key: 'description', defaultValue: 0, },
+        { displayName: 'Description', key: 'description', defaultValue: 0 },
       ], //  :> this will load from json
       actions: [], // :> this will load from json
       needCheckBox: false,

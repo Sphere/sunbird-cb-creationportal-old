@@ -74,9 +74,9 @@
       </div>
       <div class="flex flex-1 flex-column margin-m">
         <!-- {{competencies| json}} -->
-        <ws-widget-comp-card-card-content class="flex-1" [userRoles]="myRoles" [userId]="userId" [widgetData]="table"
+        <ws-auth-comp-card-card-content class="flex-1" [userRoles]="myRoles" [userId]="userId" [widgetData]="table"
           [data]="getTableData" (actionsClick)="action($event)">
-        </ws-widget-comp-card-card-content>
+        </ws-auth-comp-card-card-content>
       </div>
     </div>
   </mat-sidenav-content>

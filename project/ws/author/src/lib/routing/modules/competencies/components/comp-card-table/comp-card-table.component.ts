@@ -21,11 +21,11 @@ import _ from 'lodash'
 import { NSContent } from '../../../../../interface/content'
 /* tslint:enable */
 @Component({
-  selector: 'ws-widget-comp-card-card-content',
+  selector: 'ws-auth-comp-card-card-content',
   templateUrl: './comp-card-table.component.html',
   styleUrls: ['./comp-card-table.component.scss'],
 })
-export class compCardTableComponent extends WidgetBaseComponent
+export class CompCardTableComponent extends WidgetBaseComponent
   implements OnInit, OnDestroy, AfterViewInit, OnChanges, NsWidgetResolver.IWidgetData<ITable> {
   @Input() widgetData!: ITable
   @HostBinding('id')

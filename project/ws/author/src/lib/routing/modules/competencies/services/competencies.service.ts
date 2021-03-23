@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core'
+// tslint:disable
 import _ from 'lodash'
+// tslint:enable
 import { Observable, of } from 'rxjs'
 import { NSCompetencyV2 } from '../interface/competency'
-import datas from './tempdata.json'
+import tempdataJson from './tempdata.json'
 
 // const PROTECTED_SLAG_V8 = '/apis/protected/v8'
 // const API_END_POINTS = {
@@ -18,7 +20,7 @@ export class CompService {
     // const dept = this.configSvc.org
     // const newURL = `${API_END_POINTS.MANDATORY_CONTENT}&department=${dept}`
     // return this.apiService.get<any>(newURL)
-    return of(JSON.parse(JSON.stringify(_.get(datas, 'responseData'))))
+    return of(JSON.parse(JSON.stringify(_.get(tempdataJson, 'responseData'))))
   }
 
 }
