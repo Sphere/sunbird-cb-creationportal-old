@@ -28,7 +28,6 @@ import { QualityJSONResolver } from './services/quality-json-resolver.service'
 import { EditorSharedModule } from './routing/modules/editor/shared/shared.module'
 import { DepartmentResolver } from './services/department-resolv.servive'
 import { EditorContentService } from './routing/modules/editor/services/editor-content.service'
-import { CompetenciesModule } from './routing/modules/competencies/competencies.module'
 
 /**
  * This function is used internal to get a string instance of the `<base href="" />` value from `index.html`.
@@ -57,7 +56,6 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
     WsAuthorRootRoutingModule,
     PipeSafeSanitizerModule,
     BtnPageBackModule,
-    CompetenciesModule,
   ],
   providers: [
     AuthInitService,

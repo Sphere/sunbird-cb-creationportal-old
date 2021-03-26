@@ -18,10 +18,11 @@ import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
 import { IColums, ITable } from './comp-card-table.model'
 /* tslint:disable */
 import _ from 'lodash'
-import { NSContent } from '../../../../../interface/content'
+import { NSContent } from '../../../../../../../interface/content'
+import { Router } from '@angular/router'
 /* tslint:enable */
 @Component({
-  selector: 'ws-auth-comp-card-card-content',
+  selector: 'ws-auth-comp-card-content',
   templateUrl: './comp-card-table.component.html',
   styleUrls: ['./comp-card-table.component.scss'],
 })
@@ -50,10 +51,7 @@ export class CompCardTableComponent extends WidgetBaseComponent
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator
   constructor(
-    // private events: EventService,
-    // private configSvc: ConfigurationsService,
-    // private utilitySvc: UtilityService,
-    // private snackBar: MatSnackBar,
+    private route: Router
   ) {
     super()
     this.actionsClick = new EventEmitter()
@@ -87,6 +85,11 @@ export class CompCardTableComponent extends WidgetBaseComponent
   }
   changeToDefaultSourceImg($event: any) {
     $event.target.src = '/assets/instances/eagle/app_logos/sourcenew.png'
+  }
+  redirect(cardData: any) {
+    if (cardData) {
+      this.route.navigate(['/author/competencies', _.get(cardData, 'id')])
+    }
   }
   getRatingIcon(content: any, ratingIndex: number): 'star' | 'star_border' | 'star_half' {
     if (content && content.averageRating) {
@@ -170,56 +173,11 @@ export class CompCardTableComponent extends WidgetBaseComponent
   }
 
   showMenuItem(menuType: string, row: any) {
-    let returnValue = false
-    if (row && row.contentType === 'Resource') {
-      returnValue = false
-    } else {
-      switch (menuType) {
-        case 'edit':
-        case 'delete':
-          if (row.status === 'Draft' || row.status === 'Live') {
-            returnValue = this.hasAccess(row)
-          }
-          if (row.authoringDisabled && menuType === 'edit') {
-            returnValue = false
-          }
-          break
-        case 'moveToDraft':
-          if (
-            row.status === 'InReview' ||
-            row.status === 'Unpublished' ||
-            row.status === 'Reviewed' ||
-            row.status === 'QualityReview'
-          ) {
-            returnValue = this.hasAccess({ ...row, status: 'Draft' })
-          }
-          break
-        case 'moveToInReview':
-          if (row.status === 'Reviewed' || row.status === 'QualityReview') {
-            returnValue = this.hasAccess({ ...row, status: 'InReview' })
-          }
-          break
-        case 'publish':
-          if (row.status === 'Reviewed') {
-            returnValue = this.hasAccess(row)
-          }
-          break
-        case 'unpublish':
-          if (row.status === 'Live') {
-            returnValue = this.hasAccess(row)
-          }
-          break
-        case 'review':
-          if (row.status === 'InReview' || row.status === 'QualityReview') {
-            returnValue = this.hasAccess(row)
-          }
-          break
-        case 'lang':
-          returnValue = this.hasAccess({ ...row, status: 'Draft' })
-          break
-      }
+    if (menuType && row) {
+      let returnValue = true
+      return returnValue
     }
-    return returnValue
+    return false
   }
   takeAction(action: string, row: any) {
     const isDisabled = _.get(_.find(this.widgetData.actions, ac => ac.name === action), 'disabled') || false

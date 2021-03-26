@@ -1,0 +1,118 @@
+<!-- <div class="example-container" *ngIf="widgetData">
+
+</div> -->
+<mat-card class="flex-1">
+  <!-- <mat-card-header>
+    <mat-card-title> -->
+  <span class="mat-title" i18n>{{'Competency details'}}</span>
+  <!-- </mat-card-title> -->
+  <!-- </mat-card-header> -->
+  <mat-card-content class="flex margin-top-l">
+    <div class="comp-container">
+      <div class="comp-box">
+        <form class="create-user-form" (submit)="onSubmit()" (keydown.enter)="$event.preventDefault()"
+          [formGroup]="competencyDetailsForm">
+          <div class="input-column px-2 flex-05">
+            <div class="input-wrapper margin-top-s">
+              <label for="label" class="margin-remove-bottom form-label required"
+                i18n="Competency label label|Label which explains the user to enter Competency label" i18n-aria-label
+                aria-label="Competency label label">
+                Competency label
+              </label>
+              <mat-form-field appearance="outline" class="margin-top-xs">
+                <input id="label" matInput #label formControlName="label" i18n-placeholder placeholder="Type here"
+                  i18n-aria-label aria-label="Competency label input" class="form-input" autocomplete="off" />
+                <mat-error [hidden]="false" i18n="Competency label Error|Explains name is required" i18n-aria-label
+                  aria-label="Competency label Error|Explains name is required "
+                  *ngIf="competencyDetailsForm?.controls['label']?.touched && competencyDetailsForm?.controls['label'].errors?.required">
+                  Competency label is mandatory
+                </mat-error>
+                <mat-error [hidden]="false" *ngIf="competencyDetailsForm?.controls['label'].errors?.pattern"
+                  i18n-aria-label
+                  aria-label="Competency label Error|Name fields cannot contain numbers and special characters except">
+                  Competency label fields cannot contain numbers and special characters except '
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="input-wrapper margin-top-s">
+              <label for="desc" class="margin-remove-bottom form-label required"
+                i18n="Competency description|description which explains the user to enter Competency description"
+                i18n-aria-label aria-label="Competency description label">
+                Competency description
+              </label>
+              <mat-form-field appearance="outline" class="margin-top-xs">
+                <textarea id="desc" matInput #desc formControlName="desc" i18n-placeholder placeholder="Type here"
+                  i18n-aria-label aria-label="Competency description input" class="form-input"
+                  autocomplete="off"></textarea>
+                <mat-error [hidden]="false" i18n="Competency description Error|Explains name is required"
+                  i18n-aria-label aria-label="Competency description Error|Explains description is required "
+                  *ngIf="competencyDetailsForm?.controls['desc']?.touched && competencyDetailsForm?.controls['desc'].errors?.required">
+                  Competency description is mandatory
+                </mat-error>
+                <mat-error [hidden]="false" *ngIf="competencyDetailsForm?.controls['desc'].errors?.pattern"
+                  i18n-aria-label
+                  aria-label="Competency description Error|Name fields cannot contain numbers and special characters except">
+                  Competency description fields cannot contain numbers and special characters except '
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="input-wrapper margin-top-s">
+              <label for="type" class="margin-remove-bottom form-label required"
+                i18n="Competency type type|type which explains the user to enter Competency type" i18n-aria-label
+                aria-label="Competency type label">
+                Competency type
+              </label>
+              <!-- <mat-form-field appearance="outline" class="margin-top-xs"> -->
+              <div class="flex">
+                <mat-radio-group form [name]="'group-' + typ" class="flex tgl-group margin-top-s"
+                  aria-label="Select an option" formControlName="typ">
+                  <mat-radio-button [name]="'radio-' + _option.name"
+                    class="flex flex-row itm-center ws-mat-accent-border margin-right-s" *ngFor="let _option of options"
+                    [value]="_option.weight">
+                    <span class="mat-body-2">{{_option.name}}</span>
+                  </mat-radio-button>
+                </mat-radio-group>
+              </div>
+              <mat-error [hidden]="false" i18n="Competency type Error|Explains name is required" i18n-aria-label
+                aria-label="Competency type Error|Explains name is required "
+                *ngIf="competencyDetailsForm?.controls['typ']?.touched && competencyDetailsForm?.controls['typ'].errors?.required">
+                Competency type is mandatory
+              </mat-error>
+              <mat-error [hidden]="false" *ngIf="competencyDetailsForm?.controls['typ'].errors?.pattern" i18n-aria-label
+                aria-label="Competency type Error|Name fields cannot contain numbers and special characters except">
+                Competency type fields cannot contain numbers and special characters except '
+              </mat-error>
+              <!-- </mat-form-field> -->
+            </div>
+            <div class="input-wrapper margin-top-s">
+              <label for="area" class="margin-remove-bottom form-label required"
+                i18n="Competency area area|area which explains the user to enter Competency area" i18n-aria-label
+                aria-label="Competency area label">
+                Competency area
+              </label>
+              <mat-form-field appearance="outline" class="margin-top-xs">
+                <input id="area" matInput #area formControlName="area" i18n-placeholder placeholder="Type here"
+                  i18n-aria-label aria-label="Competency area input" class="form-input" autocomplete="off" />
+                <mat-error [hidden]="false" i18n="Competency area Error|Explains name is required" i18n-aria-label
+                  aria-label="Competency area Error|Explains name is required "
+                  *ngIf="competencyDetailsForm?.controls['area']?.touched && competencyDetailsForm?.controls['area'].errors?.required">
+                  Competency area is mandatory
+                </mat-error>
+                <mat-error [hidden]="false" *ngIf="competencyDetailsForm?.controls['area'].errors?.pattern"
+                  i18n-aria-label
+                  aria-label="Competency area Error|Name fields cannot contain numbers and special characters except">
+                  Competency area fields cannot contain numbers and special characters except '
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div style="display: none;">
+              <button #savebtn mat-button type="submit" class="ws-mat-accent-border-active ws-mat-default-text">
+                Save
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

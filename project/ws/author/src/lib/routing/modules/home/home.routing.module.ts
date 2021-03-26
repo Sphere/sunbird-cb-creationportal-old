@@ -24,6 +24,15 @@ const routes: Routes = [
     },
   },
   {
+    path: 'competencies',
+    loadChildren: () =>
+      import('./components/competencies/competencies.module').then(u => u.CompetenciesModule),
+    data: { load: ['ordinals', 'meta'] },
+    resolve: {
+      script: InitResolver,
+    },
+  },
+  {
     path: 'content-detail',
     loadChildren: () =>
       import('./components/content-detail/content-detail.module').then(u => u.ContentDetailModule),

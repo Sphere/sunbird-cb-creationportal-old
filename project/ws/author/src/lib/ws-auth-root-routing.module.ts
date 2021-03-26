@@ -72,16 +72,6 @@ const routes: Routes = [
     },
   },
   {
-    path: 'competencies',
-    loadChildren: () =>
-      import('./routing/modules/competencies/competencies.module').then(u => u.CompetenciesModule),
-    data: { load: ['ordinals', 'meta'] },
-    resolve: {
-      script: InitResolver,
-    },
-    canActivate: [GeneralGuard],
-  },
-  {
     path: '',
     pathMatch: 'full',
     redirectTo: 'home',

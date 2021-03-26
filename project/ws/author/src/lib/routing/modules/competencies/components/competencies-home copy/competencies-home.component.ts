@@ -7,13 +7,13 @@ import { ILeftMenu, ITable } from '@ws-widget/collection'
 /* tslint:disable */
 import _ from 'lodash'
 /* tslint:enable */
-import { ActivatedRoute } from '@angular/router'
-import { AuthInitService } from '../../../../../services/init.service'
+import { ActivatedRoute, Router } from '@angular/router'
+import { AuthInitService } from '../../../../../../../services/init.service'
 import { NSCompetencyV2 } from '../../interface/competency'
 import { CompService } from '../../services/competencies.service'
 
 @Component({
-  selector: 'ws-auth-root-home',
+  selector: 'ws-auth-competencies-home',
   templateUrl: './competencies-home.component.html',
   styleUrls: ['./competencies-home.component.scss'],
 })
@@ -44,6 +44,7 @@ export class CompetenciesHomeComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private authInitService: AuthInitService,
     private compService: CompService,
+    private router: Router,
   ) {
     this.userId = this.accessService.userId
     if (this.configService.userRoles) {
@@ -141,7 +142,7 @@ export class CompetenciesHomeComponent implements OnInit, OnDestroy {
     }
   }
   createNewcompetency() {
-
+    this.router.navigate(['author', 'competencies', 'request-new'])
   }
   search() {
 

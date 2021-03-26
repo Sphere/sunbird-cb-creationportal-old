@@ -1,0 +1,120 @@
+<!-- <ws-auth-root-navigation></ws-auth-root-navigation> -->
+<div class="flex flex-1 padding-xs margin-left-l">
+  <a [routerLink]="['/author/competencies/home']" class="cursor-pointer">
+    <span class="mat-title ws-mat-black60-text">Competencies</span></a>
+  <mat-icon class="mar-top">chevron_right</mat-icon>
+  <span class="mat-title">{{compId}}</span>
+</div>
+<mat-sidenav-container class="nav-container" autosize name="auth-tool-exp">
+  <mat-sidenav [mode]="mode$ | async" [(opened)]="sideNavBarOpenedMain" class="border-0">
+    <div class="contain">
+      <ng-container [wsResolverWidget]="leftmenues"></ng-container>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content class="nav-container">
+    <div *ngIf="screenSizeIsLtMedium">
+      <button type="button" mat-icon-button (click)="sideNavBarOpenedMain = !sideNavBarOpenedMain"
+        id="ws-auth-root-home-btn-menu" name="ws-auth-root-home-btn-menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
+    <div class="container-balanced fix-ww">
+      <!-- <span class="flex mat-h1 margin-top-l margin-left-m">&nbsp;</span> -->
+      <div id="competency" class="flex flex-1 flex-column margin-m">
+        <div class="flex margin-top-xs">
+          <mat-card class="flex flex-1 flex-column">
+            <span class="mat-title">{{'Design thinking'}}</span>
+            <mat-card-content class="flex flex-1 flex-column margin-top-m">
+              <span class="mat-body-1 ws-mat-black60-text">
+                Banjo tote bag bicycle rights, High Life sartorial cray craft beer whatever street art fap. Hashtag
+                typewriter banh mi,
+                squid keffiyeh High Life Brooklyn twee craft beer tousled chillwave. PBR&B selfies chillwave, bespoke
+                tote bag blog
+                post-ironic. Single-origin coffee put a bird on it craft beer YOLO, Portland hella deep v Schlitz.
+                Tumblr Bushwick
+                post-ironic Thundercats. Vinyl 90's keytar, literally cardigan Williamsburg YOLO squid pickled Etsy
+                salvia lo-fi
+                locavore. Meh leggings retro narwhal Neutra.
+              </span>
+              <div class="flex margin-top-m">
+                <span class="flex">Competency type:</span>
+                <span class="flex mat-subheading-1 margin-left-s">Functional</span>
+              </div>
+              <div class="flex">
+                <span class="flex">Competency area:</span>
+                <span class="flex mat-subheading-1 margin-left-s">Design</span>
+              </div>
+              <div class="flex flex-1 flex-column margin-fix margin-top-m">
+                <div class="flex flex-1 filter max-height-60">
+                  <a [routerLink]="[filterPath]" [queryParams]="{ typ: 'levels' }" routerLinkActive="router-link-active"
+                    class="filter-option" [ngClass]="{'ws-mat-accent-border-active' : status === 'levels',
+                    'ws-mat-accent-border font-medium':status !== 'levels'}" mat-button role="button">
+                    {{'Levels'}}</a>
+
+                  <a [routerLink]="[filterPath]" [queryParams]="{ typ: 'roles' }" routerLinkActive="router-link-active"
+                    class="filter-option" [ngClass]="{'ws-mat-accent-border-active' : status === 'roles',
+                    'ws-mat-accent-border font-medium':status !== 'roles'}" mat-button role="button">
+                    {{ 'Associated roles' }}</a>
+
+                  <a [routerLink]="[filterPath]" [queryParams]="{ typ: 'positions' }"
+                    routerLinkActive="router-link-active" class="filter-option" [ngClass]="{'ws-mat-accent-border-active' : status === 'positions',
+                     'ws-mat-accent-border font-medium':status !== 'positions'}" mat-button role="button">
+                    {{ 'Associated positions' }}
+                  </a>
+                </div>
+              </div>
+              <div class="flex flex-wrap margin-xs flex-column">
+                <div class="card-container" *ngFor="let cardData of [1,2,3,4]">
+                  <mat-card class="no-box-shadow custom-border flex-1 no-pad ws-mat-black040-background">
+                    <mat-card-content class="pointer">
+                      <div class="flex flex-1 flex-column">
+                        <div class="flex flex-1 ">
+                          <div class="flex flex-1 flex-column custop-pad max-w padding-left-l">
+                            <span class="mat-body-2 ">{{'Level'+ cardData}}</span>
+                            <div class="flex flex-1" class="pointer" [title]="cardData" aria-label="Content"
+                              i18n-aria-label="Content | Click to view">
+                              <span class="mat-body-1 font-bold-i flex flex-wrap margin-top-xs margin-bottom-xs">
+                                {{ 'Competency level' }}
+                              </span>
+                            </div>
+                            <!-- <span class="mat-body-2 ws-mat-black60-text">{{'cardData.type'}}</span> -->
+                          </div>
+                          <mat-divider vertical style="height:auto"></mat-divider>
+                          <div class="flex flex-5 custop-pad">
+                            <span class="mat-body-1 ws-mat-black60-text">{{'Retro occupy organic, stumptown shabby chic
+                              pour-over roof party DIY normcore. Actually artisan organic occupy, Wes
+                              Anderson ugh whatever pour-over gastropub selvage. Chillwave craft beer tote bag stumptown
+                              quinoa hashtag. Dreamcatcher
+                              locavore iPhone chillwave, occupy trust fund slow-carb distillery art party narwhal. Ennui
+                              shabby chic Brooklyn, fanny
+                              pack direct trade Tumblr tattooed retro polaroid deep v chia vinyl Austin Tonx food truck.
+                              Literally ugh umami, pickled
+                              jean shorts Wes Anderson letterpress. Banjo Tonx beard biodiesel narwhal.'}}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+      <div id="taggedcbps" class="flex flex-1 flex-column margin-m">
+        <mat-card class="flex flex-1 flex-column">
+          <span class="mat-title">{{'Tagged CBPs'}}</span>
+          <mat-card-content class="flex flex-1 flex-column margin-top-m">
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div id="insights" class="flex flex-1 flex-column margin-m">
+        <mat-card class="flex flex-1 flex-column">
+          <span class="mat-title">{{'Insights'}}</span>
+          <mat-card-content class="flex flex-1 flex-column margin-top-m">
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

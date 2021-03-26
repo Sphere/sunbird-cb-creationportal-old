@@ -58,7 +58,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: calc(100vh - 166px);
+  min-height: calc(100vh - 166px);
 }
 
 // .mat-accordion {
@@ -159,7 +159,8 @@
 }
 
 .search {
-  width: 100%;
+  // width: 100%;
+  flex: 1;
   max-width: 500px;
   box-sizing: border-box;
   max-height: 40px;
