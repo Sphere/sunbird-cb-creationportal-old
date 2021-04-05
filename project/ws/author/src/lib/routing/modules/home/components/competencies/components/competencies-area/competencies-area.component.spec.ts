@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
 
-import { CompLevelComponent } from './comp-level.component'
+import { CompetenciesAreaComponent } from './competencies-area.component'
 
-describe('CompLevelComponent', () => {
-  let component: CompLevelComponent
-  let fixture: ComponentFixture<CompLevelComponent>
+describe('CompetenciesAreaComponent', () => {
+  let component: CompetenciesAreaComponent
+  let fixture: ComponentFixture<CompetenciesAreaComponent>
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [CompLevelComponent],
+      declarations: [CompetenciesAreaComponent],
     })
       .compileComponents()
   }))
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CompLevelComponent)
+    fixture = TestBed.createComponent(CompetenciesAreaComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
   })

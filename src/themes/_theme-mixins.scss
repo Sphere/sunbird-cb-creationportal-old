@@ -172,6 +172,23 @@
 
     .mat-radio-button {
       background-color: transparent !important;
+      border-radius: 4px;
+
+      .mat-radio-container {
+        .mat-radio-inner-circle {
+          background-color: $colorPrimaryLight !important;
+        }
+
+        .mat-radio-outer-circle {
+          border-color: $colorPrimaryLight !important;
+        }
+      }
+    }
+
+    .mat-radio-checked {
+      background-color: rgba(0, 116, 182, 0.05) !important;
+      border-radius: 4px;
+      border-color: #0074B6 !important;
 
       .mat-radio-container {
         .mat-radio-inner-circle {
@@ -282,6 +299,7 @@
   @else {
     .mat-radio-button {
       background-color: transparent !important;
+      border-radius: 4px;
 
       .mat-radio-container {
         .mat-radio-inner-circle {
@@ -290,6 +308,24 @@
 
         .mat-radio-outer-circle {
           border-color: $colorPrimaryDark !important;
+        }
+      }
+
+    }
+
+    .mat-radio-checked {
+      background-color: rgba(0, 116, 182, 0.05) !important;
+      border-radius: 4px;
+
+      border-color: #0074B6 !important;
+
+      .mat-radio-container {
+        .mat-radio-inner-circle {
+          background-color: $colorAccent !important;
+        }
+
+        .mat-radio-outer-circle {
+          border-color: $colorAccent !important;
         }
       }
     }

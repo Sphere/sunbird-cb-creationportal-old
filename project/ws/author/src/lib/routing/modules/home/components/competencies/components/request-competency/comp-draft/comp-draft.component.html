@@ -1,7 +1,7 @@
 <!-- <div class="example-container" *ngIf="widgetData">
 
 </div> -->
-<mat-card class="flex-1">
+<mat-card class="flex-1 ws-mat-accent-border">
   <!-- <mat-card-header>
     <mat-card-title> -->
   <span class="mat-title" i18n>{{'How to draft competencies'}}</span>
@@ -11,7 +11,10 @@
     <mat-card class="flex pad-0 card2 margin-xs">
       <div class="flex flex-1 flex-column ws-mat-accent-border">
         <div class="flex flex-1">
-          <img src="aa.jpg" class="draft-img" (error)="changeToDefaultImg($event)" />
+          <video controls="true" class="draft-img">
+            <source [src]="introVideo" type="video/mp4" />
+          </video>
+          <img *ngIf="!introVideo" src="" class="draft-img" (error)="changeToDefaultImg($event)" />
         </div>
         <div class="flex flex-1 ws-mat-black040-background padding-xs">
           <div class="flex flex-column margin-left-xs">
@@ -28,7 +31,10 @@
     <mat-card class="flex pad-0 card2 margin-xs">
       <div class="flex flex-1 flex-column ws-mat-accent-border">
         <div class="flex flex-1">
-          <img src="aa.jpg" class="draft-img" (error)="changeToDefaultImg($event)" />
+          <video controls="true" class="draft-img">
+            <source [src]="guideVideo" type="video/mp4" />
+          </video>
+          <img *ngIf="!guideVideo" src="" class="draft-img" (error)="changeToDefaultImg($event)" />
         </div>
         <div class="flex flex-1 ws-mat-black040-background padding-xs">
           <div class="flex flex-column margin-left-xs">

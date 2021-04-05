@@ -4,6 +4,11 @@ export interface IColums {
   image?: string
   isList?: boolean
   prop?: string
+  link?: {
+    path: string
+    dParams?: string
+    sParams?: string
+  }
   defaultValue: any
   pipe?: any
 }
@@ -39,6 +44,7 @@ export interface ITable {
   needCheckBox: boolean
   sortState?: string
   sortColumn?: string
+  display?: 'table' | 'card'
 }
 
 // export interface ITable {

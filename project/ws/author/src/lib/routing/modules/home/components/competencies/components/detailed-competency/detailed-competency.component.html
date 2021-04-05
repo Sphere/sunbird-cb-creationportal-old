@@ -1,9 +1,9 @@
 <!-- <ws-auth-root-navigation></ws-auth-root-navigation> -->
 <div class="flex flex-1 padding-xs margin-left-l">
-  <a [routerLink]="['/author/competencies/home']" class="cursor-pointer">
+  <a [routerLink]="['/author/competencies']" class="cursor-pointer">
     <span class="mat-title ws-mat-black60-text">Competencies</span></a>
   <mat-icon class="mar-top">chevron_right</mat-icon>
-  <span class="mat-title">{{compId}}</span>
+  <span class="mat-title">{{selectedCompData?.name || compId}}</span>
 </div>
 <mat-sidenav-container class="nav-container" autosize name="auth-tool-exp">
   <mat-sidenav [mode]="mode$ | async" [(opened)]="sideNavBarOpenedMain" class="border-0">
@@ -23,73 +23,58 @@
       <div id="competency" class="flex flex-1 flex-column margin-m">
         <div class="flex margin-top-xs">
           <mat-card class="flex flex-1 flex-column">
-            <span class="mat-title">{{'Design thinking'}}</span>
+            <span class="mat-title">{{selectedCompData?.name || "Untitled"}}</span>
             <mat-card-content class="flex flex-1 flex-column margin-top-m">
               <span class="mat-body-1 ws-mat-black60-text">
-                Banjo tote bag bicycle rights, High Life sartorial cray craft beer whatever street art fap. Hashtag
-                typewriter banh mi,
-                squid keffiyeh High Life Brooklyn twee craft beer tousled chillwave. PBR&B selfies chillwave, bespoke
-                tote bag blog
-                post-ironic. Single-origin coffee put a bird on it craft beer YOLO, Portland hella deep v Schlitz.
-                Tumblr Bushwick
-                post-ironic Thundercats. Vinyl 90's keytar, literally cardigan Williamsburg YOLO squid pickled Etsy
-                salvia lo-fi
-                locavore. Meh leggings retro narwhal Neutra.
+                {{selectedCompData?.description || "--"}}
               </span>
               <div class="flex margin-top-m">
                 <span class="flex">Competency type:</span>
-                <span class="flex mat-subheading-1 margin-left-s">Functional</span>
+                <span class="flex mat-subheading-1 margin-left-s">
+                  {{selectedCompData?.additionalProperties?.competencyType || "NA"}}
+                </span>
               </div>
               <div class="flex">
                 <span class="flex">Competency area:</span>
-                <span class="flex mat-subheading-1 margin-left-s">Design</span>
+                <span class="flex mat-subheading-1 margin-left-s">
+                  {{selectedCompData?.additionalProperties?.competencyArea || "NA"}}
+                </span>
               </div>
               <div class="flex flex-1 flex-column margin-fix margin-top-m">
                 <div class="flex flex-1 filter max-height-60">
-                  <a [routerLink]="[filterPath]" [queryParams]="{ typ: 'levels' }" routerLinkActive="router-link-active"
-                    class="filter-option" [ngClass]="{'ws-mat-accent-border-active' : status === 'levels',
-                    'ws-mat-accent-border font-medium':status !== 'levels'}" mat-button role="button">
-                    {{'Levels'}}</a>
+                  <span tabindex="0" (click)="updateStatus('levels')" class="filter-option cursor-pointer" [ngClass]="{'ws-mat-accent-border-active font-bold-i' : status === 'levels',
+                    'ws-mat-accent-border font-medium':status === 'levels'}" mat-button role="button">
+                    <span>{{'Levels'}}</span></span>
 
-                  <a [routerLink]="[filterPath]" [queryParams]="{ typ: 'roles' }" routerLinkActive="router-link-active"
-                    class="filter-option" [ngClass]="{'ws-mat-accent-border-active' : status === 'roles',
-                    'ws-mat-accent-border font-medium':status !== 'roles'}" mat-button role="button">
-                    {{ 'Associated roles' }}</a>
+                  <span tabindex="0" (click)="updateStatus('roles')" class="filter-option cursor-pointer" [ngClass]="{'ws-mat-accent-border-active font-bold-i' : status === 'roles',
+                    'ws-mat-accent-border font-medium':status === 'roles'}" mat-button role="button">
+                    <span>{{ 'Associated roles' }}</span></span>
 
-                  <a [routerLink]="[filterPath]" [queryParams]="{ typ: 'positions' }"
-                    routerLinkActive="router-link-active" class="filter-option" [ngClass]="{'ws-mat-accent-border-active' : status === 'positions',
-                     'ws-mat-accent-border font-medium':status !== 'positions'}" mat-button role="button">
-                    {{ 'Associated positions' }}
-                  </a>
+                  <span tabindex="0" (click)="updateStatus('positions')" class="filter-option cursor-pointer" [ngClass]="{'ws-mat-accent-border-active font-bold-i' : status === 'positions',
+                     'ws-mat-accent-border font-medium':status === 'positions'}" mat-button role="button">
+                    <span>{{ 'Associated positions' }}</span>
+                  </span>
                 </div>
               </div>
-              <div class="flex flex-wrap margin-xs flex-column">
-                <div class="card-container" *ngFor="let cardData of [1,2,3,4]">
+              <div *ngIf="status==='levels'" class="flex flex-wrap margin-xs flex-column">
+                <div class="card-container" *ngFor="let cardData of selectedCompData?.children">
                   <mat-card class="no-box-shadow custom-border flex-1 no-pad ws-mat-black040-background">
                     <mat-card-content class="pointer">
                       <div class="flex flex-1 flex-column">
                         <div class="flex flex-1 ">
                           <div class="flex flex-1 flex-column custop-pad max-w padding-left-l">
-                            <span class="mat-body-2 ">{{'Level'+ cardData}}</span>
-                            <div class="flex flex-1" class="pointer" [title]="cardData" aria-label="Content"
+                            <span class="mat-body-2 ">{{cardData.level}}</span>
+                            <div class="flex flex-1" class="pointer" [title]="cardData.name" aria-label="Content"
                               i18n-aria-label="Content | Click to view">
                               <span class="mat-body-1 font-bold-i flex flex-wrap margin-top-xs margin-bottom-xs">
-                                {{ 'Competency level' }}
+                                {{ cardData.name }}
                               </span>
                             </div>
-                            <!-- <span class="mat-body-2 ws-mat-black60-text">{{'cardData.type'}}</span> -->
+                            <span class="mat-body-2 ws-mat-black60-text">{{cardData.source}}</span>
                           </div>
                           <mat-divider vertical style="height:auto"></mat-divider>
                           <div class="flex flex-5 custop-pad">
-                            <span class="mat-body-1 ws-mat-black60-text">{{'Retro occupy organic, stumptown shabby chic
-                              pour-over roof party DIY normcore. Actually artisan organic occupy, Wes
-                              Anderson ugh whatever pour-over gastropub selvage. Chillwave craft beer tote bag stumptown
-                              quinoa hashtag. Dreamcatcher
-                              locavore iPhone chillwave, occupy trust fund slow-carb distillery art party narwhal. Ennui
-                              shabby chic Brooklyn, fanny
-                              pack direct trade Tumblr tattooed retro polaroid deep v chia vinyl Austin Tonx food truck.
-                              Literally ugh umami, pickled
-                              jean shorts Wes Anderson letterpress. Banjo Tonx beard biodiesel narwhal.'}}</span>
+                            <span class="mat-body-1 ws-mat-black60-text">{{cardData.description}}</span>
                           </div>
                         </div>
                       </div>
@@ -97,14 +82,34 @@
                   </mat-card>
                 </div>
               </div>
+              <div *ngIf="status==='roles'" class="flex flex-wrap margin-xs flex-column">
+                <div class="card-container">Data not available</div>
+              </div>
+              <div *ngIf="status==='positions'" class="flex flex-wrap margin-xs flex-column">
+                <div class="card-container">Data not available</div>
+              </div>
             </mat-card-content>
           </mat-card>
         </div>
       </div>
       <div id="taggedcbps" class="flex flex-1 flex-column margin-m">
         <mat-card class="flex flex-1 flex-column">
-          <span class="mat-title">{{'Tagged CBPs'}}</span>
+          <span class="mat-title" tabindex="0">{{'Tagged CBPs'}}</span>
           <mat-card-content class="flex flex-1 flex-column margin-top-m">
+            <div class="flex flex-1 flex-column margin-fix margin-top-m">
+              <div class="flex flex-1 filter max-height-60">
+                <span (click)="filterCBP('all')" tabindex="0" class="filter-option cursor-pointer" [ngClass]="{'ws-mat-accent-border-active' : filterType === 'all',
+                                'ws-mat-accent-border font-medium':filterType === 'all'}" mat-button role="button">
+                  {{'All CBPs (13)'}}
+                </span>
+
+                <span (click)="filterCBP('own')" tabindex="0" class="filter-option cursor-pointer" [ngClass]="{'ws-mat-accent-border-active' : filterType === 'own',
+                                'ws-mat-accent-border font-medium':filterType === 'own'}" mat-button role="button">
+                  {{ 'Our CBPS (3)' }}
+                </span>
+
+              </div>
+            </div>
           </mat-card-content>
         </mat-card>
       </div>

@@ -16,46 +16,27 @@
     <span class="flex mat-h1 margin-top-l margin-left-m">All competencies</span>
     <div class="flex flex-1 flex-column margin-fix">
       <div class="flex flex-1 filter max-height-60">
-        <a [routerLink]="[filterPath]" [queryParams]="{ typ: 'published' }" routerLinkActive="router-link-active"
-          class="filter-option" [ngClass]="{'ws-mat-accent-border-active' : status === 'published',
-      'ws-mat-accent-border font-medium':status !== 'published'}" mat-button role="button">
-          Dictionary {{this.count && this.count['published']? '('+this.count['published']+')': null }}</a>
+        <a [routerLink]="[filterPath + '/dictionary']" routerLinkActive="router-link-active" class="filter-option"
+          [ngClass]="{'ws-mat-accent-border-active font-bold-i' : status === 'dictionary',
+      'ws-mat-accent-border font-medium-i':status !== 'dictionary'}" mat-button role="button">
+          Dictionary {{this.count && this.count['dictionary']? '('+this.count['dictionary']+')': null }}</a>
 
-        <a [routerLink]="[filterPath]" [queryParams]="{ typ: 'publish' }" routerLinkActive="router-link-active"
-          class="filter-option" [ngClass]="{'ws-mat-accent-border-active' : status === 'publish',
-        'ws-mat-accent-border font-medium':status !== 'publish'}" mat-button role="button">
-          Competency areas {{this.count && this.count['publish']? '('+this.count['publish']+')': null }}</a>
+        <a [routerLink]="[filterPath + '/area']" routerLinkActive="router-link-active" class="filter-option" [ngClass]="{'ws-mat-accent-border-active font-bold-i' : status === 'area',
+        'ws-mat-accent-border font-medium-i':status !== 'area'}" mat-button role="button">
+          Competency areas {{this.count && this.count['area']? '('+this.count['area']+')': null }}</a>
 
-        <a [routerLink]="[filterPath]" [queryParams]="{ typ: 'inreview' }" routerLinkActive="router-link-active"
-          class="filter-option" [ngClass]="{'ws-mat-accent-border-active' : status === 'inreview',
-                          'ws-mat-accent-border font-medium':status !== 'inreview'}" mat-button role="button">
-          Requested by you {{ this.count && this.count['inreview']? '('+this.count['inreview']+')': null }}
+        <a [routerLink]="[filterPath + '/requested']" routerLinkActive="router-link-active" class="filter-option"
+          [ngClass]="{'ws-mat-accent-border-active font-bold-i' : status === 'requested',
+                          'ws-mat-accent-border font-medium-i':status !== 'requested'}" mat-button role="button">
+          Requested by you {{ this.count && this.count['requested']? '('+this.count['requested']+')': null }}
         </a>
       </div>
     </div>
-    <div class="flex flex-wrapped margin-top-xs margin-left-m">
-      <div class="flex items-center search border border-solid search-border">
-        <div class="width-3-4 pl-2">
-          <mat-form-field class="w-full" appearance="none" [floatLabel]="'never'">
-            <mat-icon matPrefix class="m-auto searchinput flex padding-top-xs">search</mat-icon>
-            <input type="text" (keyup.enter)="search()" matInput #searchInput name="searchBox" placeholder="Search" />
-          </mat-form-field>
-        </div>
-      </div>
-      <div class="flex flex-1 flex-row-reverse margin-right-xs">
-        <div class="block">
-          <button mat-button class="ws-mat-accent-border-active ws-mat-default-text"
-            (click)="createNewcompetency()">Request
-            new
-            competency
-          </button>
-        </div>
-      </div>
-    </div>
     <div class="flex flex-1 flex-column margin-m">
-      <ws-auth-comp-card-content class="flex-1" [userRoles]="myRoles" [userId]="userId" [widgetData]="table"
+      <!-- <ws-auth-comp-card-content class="flex-1" [userRoles]="myRoles" [userId]="userId" [widgetData]="initCardTable"
         [data]="getTableData" (actionsClick)="action($event)">
-      </ws-auth-comp-card-content>
+      </ws-auth-comp-card-content> -->
+      <router-outlet></router-outlet>
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

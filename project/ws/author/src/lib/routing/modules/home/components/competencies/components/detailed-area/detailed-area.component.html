@@ -1,0 +1,56 @@
+<!-- <ws-auth-root-navigation></ws-auth-root-navigation> -->
+<div class="flex flex-1 padding-xs margin-left-l">
+  <a [routerLink]="['/author/competencies']" class="cursor-pointer">
+    <span class="mat-title ws-mat-black60-text">Competencies</span></a>
+  <mat-icon class="mar-top">chevron_right</mat-icon>
+  <span class="mat-title">{{selectedCompData?.name || areaId}}</span>
+</div>
+<mat-sidenav-container class="nav-container" autosize name="auth-tool-exp">
+  <mat-sidenav [mode]="mode$ | async" [(opened)]="sideNavBarOpenedMain" class="border-0">
+    <div class="contain">
+      <ng-container [wsResolverWidget]="leftmenues"></ng-container>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content class="nav-container">
+    <div *ngIf="screenSizeIsLtMedium">
+      <button type="button" mat-icon-button (click)="sideNavBarOpenedMain = !sideNavBarOpenedMain"
+        id="ws-auth-root-home-btn-menu" name="ws-auth-root-home-btn-menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
+    <div class="container-balanced fix-ww">
+      <!-- <span class="flex mat-h1 margin-top-l margin-left-m">&nbsp;</span> -->
+      <div id="competencies" class="flex flex-1 flex-column margin-m">
+        <div class="flex margin-top-xs">
+          <mat-card class="flex flex-1 flex-column">
+            <span class="mat-title">{{'Competencies under this area'}}</span>
+            <ws-auth-comp-card-content class="flex-1" [userRoles]="myRoles" [userId]="userId" [widgetData]="table"
+              [data]="getTableData" (actionsClick)="action($event)" (clicked)="clicked($event)">
+            </ws-auth-comp-card-content>
+          </mat-card>
+        </div>
+      </div>
+      <div id="relatedcbps" class="flex flex-1 flex-column margin-m">
+        <mat-card class="flex flex-1 flex-column">
+          <span class="mat-title" tabindex="0">{{'Tagged CBPs'}}</span>
+          <mat-card-content class="flex flex-1 flex-column margin-top-m">
+            <div class="flex flex-1 flex-column margin-fix margin-top-m">
+              <div class="flex flex-1 filter max-height-60">
+                <span (click)="filterCBP('all')" tabindex="0" class="filter-option cursor-pointer" [ngClass]="{'ws-mat-accent-border-active' : filterType === 'all',
+                                'ws-mat-accent-border font-medium':filterType === 'all'}" mat-button role="button">
+                  {{'All CBPs (13)'}}
+                </span>
+
+                <span (click)="filterCBP('own')" tabindex="0" class="filter-option cursor-pointer" [ngClass]="{'ws-mat-accent-border-active' : filterType === 'own',
+                                'ws-mat-accent-border font-medium':filterType === 'own'}" mat-button role="button">
+                  {{ 'Our CBPS (3)' }}
+                </span>
+
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

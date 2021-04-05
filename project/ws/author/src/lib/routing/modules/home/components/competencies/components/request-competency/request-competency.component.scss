@@ -185,3 +185,47 @@
   box-sizing: border-box;
   min-height: calc(100vh);
 }
+
+.comp-container {
+  display: flex;
+  flex: 1;
+
+  .comp-box {
+    display: flex;
+    flex: 1;
+
+    .create-user-form {
+      display: flex;
+      flex: 1;
+
+      .input-wrapper {
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+      }
+    }
+  }
+}
+
+.tgl-group {
+  flex-direction: row;
+  border: none !important;
+  box-shadow: none !important;
+
+  @include breakpoint-lt-s {
+    flex-direction: column;
+  }
+}
+
+.itm-center {
+  align-items: center;
+  padding: $size-m;
+  margin: $size-s 0;
+  min-width: 200px !important;
+  width: fit-content;
+}
+
+.flex-05 {
+  flex: 0.5;
+}

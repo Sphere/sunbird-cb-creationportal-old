@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
 
-import { CompDetailComponent } from './comp-detail.component'
+import { DetailedAreaComponent } from './detailed-area.component'
 
-describe('CompDetailComponent', () => {
-  let component: CompDetailComponent
-  let fixture: ComponentFixture<CompDetailComponent>
+describe('DetailedAreaComponent', () => {
+  let component: DetailedAreaComponent
+  let fixture: ComponentFixture<DetailedAreaComponent>
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [CompDetailComponent],
+      declarations: [DetailedAreaComponent],
     })
       .compileComponents()
   }))
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CompDetailComponent)
+    fixture = TestBed.createComponent(DetailedAreaComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
   })

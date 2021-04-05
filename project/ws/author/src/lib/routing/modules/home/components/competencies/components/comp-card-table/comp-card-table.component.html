@@ -74,18 +74,18 @@
             </div>
           </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="ActionsMenu" *ngIf="widgetData.actionsMenu">
+        <ng-container matColumnDef="ActionsMenu" *ngIf="widgetData?.actionsMenu">
           <mat-header-cell *matHeaderCellDef class="clr-darkish-blue action-header mat-body-2 flex-row-reverse">
-            <mat-icon *ngIf="widgetData.actionsMenu.headIcon" class="cursor-pointer" (click)="updatedisplay()">
-              {{display==='table' ? widgetData.actionsMenu.headIcon: 'list'}}
+            <mat-icon *ngIf="widgetData?.actionsMenu?.headIcon" class="cursor-pointer" (click)="updatedisplay()">
+              {{display==='table' ? widgetData?.actionsMenu?.headIcon: 'list'}}
             </mat-icon>
-            <span *ngIf="!widgetData.actionsMenu.headIcon">Actions</span>
+            <span *ngIf="!widgetData?.actionsMenu?.headIcon">Actions</span>
           </mat-header-cell>
           <mat-cell *matCellDef="let row" class="action-cell flex-row-reverse">
             <div class="flex">
-              <button mat-icon-button [matMenuTriggerFor]="moreMenu" [matMenuTriggerData]="{'data':row}">
+              <!-- <button mat-icon-button [matMenuTriggerFor]="moreMenu" [matMenuTriggerData]="{'data':row}">
                 <mat-icon>{{widgetData.actionsMenu.rowIcon}}</mat-icon>
-              </button>
+              </button> -->
             </div>
           </mat-cell>
         </ng-container>
@@ -108,8 +108,8 @@
     <div class="flex flex-1 ws-mat-background-04 padding-m" mat-header-row>
       <span class="mat-body-2">Competency</span>
       <span class="flex flex-1"></span>
-      <mat-icon *ngIf="widgetData.actionsMenu.headIcon" class="cursor-pointer" (click)="updatedisplay()">
-        {{display==='table' ? widgetData.actionsMenu.headIcon: 'list'}}</mat-icon>
+      <mat-icon *ngIf="widgetData?.actionsMenu?.headIcon" class="cursor-pointer" (click)="updatedisplay()">
+        {{display==='table' ? widgetData?.actionsMenu?.headIcon: 'list'}}</mat-icon>
     </div>
     <mat-card-content>
       <div class="flex flex-wrap margin-xs flex-column">
@@ -160,9 +160,5 @@
       <mat-icon>delete</mat-icon>
       <span i18n>Delete </span>
     </a>
-    <!-- <a *ngIf="showMenuItem('comments')" mat-menu-item (click)="viewComments()">
-    <mat-icon>comment</mat-icon>
-    <span i18n>View comments</span>
-  </a> -->
   </ng-template>
 </mat-menu>

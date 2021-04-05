@@ -4,9 +4,15 @@ import { ConfigurationsService, ValueService } from '@ws-widget/utils/src/public
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 /* tslint:disable */
 import _ from 'lodash'
-import { ActivatedRoute } from '@angular/router'
-import { ILeftMenu } from '../../../../../../../../../../../../library/ws-widget/collection/src/public-api'
+import { ActivatedRoute, Router } from '@angular/router'
+import { ILeftMenu } from '@ws-widget/collection'
 import { Subject } from 'rxjs'
+import { ICompLevel } from './add-comp-level/add-comp.model'
+import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { NSCompetencyV2 } from '../../interface/competency'
+import { CompService } from '../../services/competencies.service'
+import { AddCompLevelComponent } from './add-comp-level/add-comp-level.component'
+import { MatDialog, MatSnackBar } from '@angular/material'
 /* tslint:enable */
 
 
@@ -18,8 +24,16 @@ import { Subject } from 'rxjs'
 export class RequestCompetencyComponent implements OnInit, OnDestroy {
   eventsSubject: Subject<void> = new Subject<void>();
   public sideNavBarOpenedMain = true
+  competencyDetailsForm!: FormGroup
   isAdmin = false
   leftmenues!: ILeftMenu[]
+  areaList!: any[]
+  compList: ICompLevel[] = []
+  options = [
+    { name: 'Behavioural', weight: 'Behavioural' },
+    { name: 'Domain', weight: 'Domain' },
+    { name: 'Functional', weight: 'Functional' },
+  ]
   departmentData: any
   myRoles!: Set<string>
   userId!: string
@@ -33,7 +47,10 @@ export class RequestCompetencyComponent implements OnInit, OnDestroy {
     private valueSvc: ValueService,
     private accessService: AccessControlService,
     private configService: ConfigurationsService,
-    // private authInitService: AuthInitService,
+    private compService: CompService,
+    private dialog: MatDialog,
+    private router: Router,
+    private snackBar: MatSnackBar,
   ) {
     this.userId = this.accessService.userId
     if (this.configService.userRoles) {
@@ -57,7 +74,18 @@ export class RequestCompetencyComponent implements OnInit, OnDestroy {
     })
   }
   fetchInitData() {
-
+    this.competencyDetailsForm = new FormGroup({
+      label: new FormControl('', [Validators.required]),
+      desc: new FormControl('', [Validators.required]),
+      typ: new FormControl('Behavioural', [Validators.required]),
+      area: new FormControl('', [Validators.required]),
+    })
+    this.configService.userProfile
+    if (this.activatedRoute.snapshot && this.activatedRoute.snapshot.parent
+      && this.activatedRoute.snapshot.parent.data.departmentData.data) {
+      this.departmentData = this.activatedRoute.snapshot.parent.data.departmentData.data
+    }
+    this.getList()
   }
 
   ngOnDestroy() {
@@ -66,9 +94,59 @@ export class RequestCompetencyComponent implements OnInit, OnDestroy {
     }
   }
 
-  save() {
-    this.eventsSubject.next()
-
+  onSubmit() {
+    if (this.competencyDetailsForm.valid) {
+      let data: NSCompetencyV2.ICompetencyDictionary = {
+        additionalProperties: {
+          competencyType: _.get(this.competencyDetailsForm.value, 'typ'),
+          // cod: '',
+          competencyArea: _.get(this.competencyDetailsForm.value, 'area'),
+        },
+        competencyType: '',
+        description: _.get(this.competencyDetailsForm.value, 'desc'),
+        id: undefined,
+        name: _.get(this.competencyDetailsForm.value, 'label'),
+        source: this.departmentData.deptName,
+        type: 'COMPETENCY',
+        children: _.map(this.compList, (l: ICompLevel) => {
+          return {
+            type: 'COMPETENCIESLEVEL',
+            name: l.optionalLevel || l.level,
+            level: l.level,
+            description: l.description
+          }
+        })
+      }
+      console.log(data)
+      this.compService.requestCompWithCheild(data).subscribe(resp => {
+        if (resp && _.get(resp, 'statusInfo.statusCode') === 200) {
+          this.snackBar.open('Success')
+          this.competencyDetailsForm.reset()
+          this.router.navigate(['author', 'competencies'])
+        }
+      })
+    }
   }
-
+  create(data?: ICompLevel) {
+    this.dialog.open<AddCompLevelComponent>(AddCompLevelComponent, { data: data || {} })
+      .afterClosed()
+      .subscribe((res: any) => {
+        if (res.result) {
+          if (this.compList.length === 0) {
+            this.compList = [res.result]
+          } else {
+            const idx = _.findIndex(this.compList, i => i.level === _.get(res, 'result.level'))
+            if (idx === -1) {
+              this.compList.push(res.result)
+            } else {
+              delete this.compList[idx]
+              this.compList[idx] = res.result
+            }
+          }
+        }
+      })
+  }
+  getList() {
+    this.areaList = _.get(this.activatedRoute, 'snapshot.data.areaList.data.responseData') || []
+  }
 }

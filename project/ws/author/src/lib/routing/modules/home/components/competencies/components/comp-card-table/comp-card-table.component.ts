@@ -19,7 +19,6 @@ import { IColums, ITable } from './comp-card-table.model'
 /* tslint:disable */
 import _ from 'lodash'
 import { NSContent } from '../../../../../../../interface/content'
-import { Router } from '@angular/router'
 /* tslint:enable */
 @Component({
   selector: 'ws-auth-comp-card-content',
@@ -42,7 +41,7 @@ export class CompCardTableComponent extends WidgetBaseComponent
   bodyHeight = document.body.clientHeight - 125
   displayedColumns!: IColums[]
   dataSource = new MatTableDataSource<any>()
-  display = 'card'
+  displayType = this.widgetData && this.widgetData.display || 'card'
   cardTableColumns!: IColums[]
   @ViewChild(MatSort, { static: false }) set matSort(sort: MatSort) {
     if (!this.dataSource.sort) {
@@ -50,9 +49,7 @@ export class CompCardTableComponent extends WidgetBaseComponent
     }
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator
-  constructor(
-    private route: Router
-  ) {
+  constructor() {
     super()
     this.actionsClick = new EventEmitter()
     this.clicked = new EventEmitter()
@@ -61,10 +58,14 @@ export class CompCardTableComponent extends WidgetBaseComponent
     // throw new Error('Method not implemented.')
   }
   updatedisplay() {
-    this.display = this.display === 'table' ? 'card' : 'table'
+    this.displayType = this.displayType === 'table' ? 'card' : 'table'
+  }
+  get display() {
+    return this.displayType
   }
   ngOnInit() {
     if (this.widgetData) {
+      this.displayType = this.widgetData && this.widgetData.display || 'card'
       this.displayedColumns = this.widgetData.columns || []
       if (this.data) {
         this.dataSource.data = this.data
@@ -86,9 +87,13 @@ export class CompCardTableComponent extends WidgetBaseComponent
   changeToDefaultSourceImg($event: any) {
     $event.target.src = '/assets/instances/eagle/app_logos/sourcenew.png'
   }
+  // need to bind with output
   redirect(cardData: any) {
-    if (cardData) {
-      this.route.navigate(['/author/competencies', _.get(cardData, 'id')])
+    if (this.clicked) {
+      //   const lest = this.router.url.split('?')[0].split('/').pop() || 'dictionary'
+      //   this.route.navigate(['/author/competencies/competency', lest, _.get(cardData, 'id')])
+      // }
+      this.clicked.emit(cardData)
     }
   }
   getRatingIcon(content: any, ratingIndex: number): 'star' | 'star_border' | 'star_half' {

@@ -5,21 +5,22 @@ export namespace NSCompetencyV2 {
       cod?: String | undefined
       competencyArea?: string | undefined
     }
-    createdDate: string
-    competencyArea: string
+    createdDate?: string
+    competencyArea?: string
     competencyType: string
     description: string
-    id: string
+    id: string | undefined
     name: string
-    source: string
+    source: string | undefined
     bookmark?: boolean | undefined
     reviewComments?: string | undefined
-    status: 'VERIFIED' | 'UNVERIFIED' | 'REJECTED'
+    status?: 'VERIFIED' | 'UNVERIFIED' | 'REJECTED'
     type: string
     userInfo?: {
       email: string
       name: string
       sub: string
     } | undefined
+    children?: any[]
   }
 }
