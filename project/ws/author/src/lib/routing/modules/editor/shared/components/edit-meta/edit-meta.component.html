@@ -516,54 +516,7 @@
                   </div>
                 </div>
                 <div class="flex new-mobile">
-                  <div class="flex-1 margin-top-l" *ngIf="checkCondition('difficultyLevel', 'show')"
-                    [ngClass]="{ disable: checkCondition('difficultyLevel', 'disabled') }">
-                    <label>
-                      <div class="flex flex-middle"
-                        [ngClass]="{ required: checkCondition('difficultyLevel', 'required') }">
-                        <span i18n class="mat-subheading-2 margin-0">Knowledge level</span>
-                        <!-- <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('knowledgeLevel')">info
-                                  </mat-icon> -->
-                      </div>
-                      <span i18n *ngIf="infoType === 'knowledgeLevel'">How tough do you think the content is?</span>
-                      <span i18 class="mat-body-2">Learner’s knowledge level expected</span>
-                    </label>
 
-                    <!-- <mat-form-field appearance="none" -->
-                    <div [ngClass]="{ 'mat-form-field-invalid': showError('difficultyLevel') }">
-                      <!-- <mat-button-toggle-group class="tgl-group" formControlName="complexityLevel"
-                          aria-label="Best viewed in">
-                          <mat-button-toggle *ngFor="let complexityLevels of complexityLevelList"
-                            class="toggle-btn ws-mat-accent-border" [attr.aria-label]="complexityLevel"
-                            value="complexityLevels">
-                            <span class="flex flex-row itm-center">
-                              <mat-icon>panorama_fish_eye</mat-icon>
-                              <span class="mat-body-2 margin-left-s"> {{ complexityLevels }} </span>
-                            </span>
-                          </mat-button-toggle>
-                        </mat-button-toggle-group>
-                        <input matInput #complexityLevel hidden /> -->
-                      <ng-container [formGroup]="contentForm">
-                        <mat-radio-group name="cmlvl" class="flex tgl-group margin-top-s" aria-label="Select an option"
-                          formControlName="difficultyLevel">
-                          <mat-radio-button [name]="'radio-' + _complexityLevel"
-                            class="flex flex-row itm-center ws-mat-accent-border margin-right-s"
-                            *ngFor="let _complexityLevel of complexityLevelList" [value]="_complexityLevel">
-                            <span class="mat-body-2">{{_complexityLevel}}</span>
-                          </mat-radio-button>
-                        </mat-radio-group>
-                      </ng-container>
-                      <!-- <mat-select formControlName="complexityLevel" i18n-placeholder placeholder="--Select--">
-                          <mat-option *ngIf="!checkCondition('complexityLevel', 'required')" i18n [value]="null">None
-                          </mat-option>
-                          <mat-option *ngFor="let complexityLevel of complexityLevelList" [value]="complexityLevel">
-                            {{ complexityLevel }}</mat-option>
-                        </mat-select> -->
-                      <mat-error *ngIf="showError('difficultyLevel')" i18n>Knowledge Level is mandatory
-                      </mat-error>
-                      <!-- </mat-form-field> -->
-                    </div>
-                  </div>
                 </div>
                 <div class="flex new-mobile">
                   <div class="flex-1 margin-top-l" *ngIf="checkCondition('learningMode', 'show')"
