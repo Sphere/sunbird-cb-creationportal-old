@@ -29,14 +29,14 @@ const routes: Routes = [
           {
             path: '',
             pathMatch: 'full',
-            redirectTo: 'dictionary'
+            redirectTo: 'dictionary',
           },
           /**this will be default path */
           {
             path: 'dictionary',
             component: CompetenciesDictonaryComponent,
             data: {
-              load: 'dictionary'
+              load: 'dictionary',
             },
             resolve: {
               competencies: CompetencyResolverService,
@@ -46,14 +46,14 @@ const routes: Routes = [
             path: 'area',
             component: CompetenciesAreaComponent,
             data: {
-              load: 'area'
+              load: 'area',
             },
             resolve: {
               area: CompetencyResolverService,
             },
           },
 
-        ]
+        ],
       },
       {
         /** default load need to update after API update */
@@ -62,7 +62,7 @@ const routes: Routes = [
         data: {
           pageType: 'feature',
           pageKey: 'competency-detail',
-          load: 'dictionary'
+          load: 'dictionary',
         },
         resolve: {
           pageData: PageResolve,
@@ -91,7 +91,7 @@ const routes: Routes = [
         },
         resolve: {
           pageData: PageResolve,
-          areaList: ResolveAreaService
+          areaList: ResolveAreaService,
         },
       },
       {
@@ -99,8 +99,8 @@ const routes: Routes = [
         pathMatch: 'full',
         redirectTo: 'competency',
       },
-    ]
-  }
+    ],
+  },
 ]
 @NgModule({
   imports: [RouterModule.forChild(routes)],

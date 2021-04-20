@@ -37,7 +37,7 @@ export class CompetenciesAreaComponent implements OnInit, OnDestroy {
   public count = {
     dictionary: 0,
     area: 0,
-    requested: 0
+    requested: 0,
   }
   @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<
     any
@@ -72,7 +72,7 @@ export class CompetenciesAreaComponent implements OnInit, OnDestroy {
     // })
   }
   nev(nevParam: string) {
-    this.router.navigate([this.filterPath], { queryParams: { 'typ': nevParam } })
+    this.router.navigate([this.filterPath], { queryParams: { typ: nevParam } })
   }
   isLinkActive(url?: string, index: number = 0): boolean {
     let returnVal = false
@@ -114,7 +114,7 @@ export class CompetenciesAreaComponent implements OnInit, OnDestroy {
       sortColumn: 'name',
       sortState: 'asc',
       display: 'table',
-      actionsMenu: undefined
+      actionsMenu: undefined,
     }
   }
   get getTableData(): any[] {

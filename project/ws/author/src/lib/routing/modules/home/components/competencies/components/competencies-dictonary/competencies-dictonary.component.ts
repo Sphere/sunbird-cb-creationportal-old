@@ -36,7 +36,7 @@ export class CompetenciesDictonaryComponent implements OnInit, OnDestroy {
   public count = {
     dictionary: 0,
     area: 0,
-    requested: 0
+    requested: 0,
   }
   @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<
     any
@@ -71,7 +71,7 @@ export class CompetenciesDictonaryComponent implements OnInit, OnDestroy {
     // })
   }
   nev(nevParam: string) {
-    this.router.navigate([this.filterPath], { queryParams: { 'typ': nevParam } })
+    this.router.navigate([this.filterPath], { queryParams: { typ: nevParam } })
   }
   isLinkActive(url?: string, index: number = 0): boolean {
     let returnVal = false
@@ -130,7 +130,7 @@ export class CompetenciesDictonaryComponent implements OnInit, OnDestroy {
           i.type = _.get(i, 'additionalProperties.competencyType')
           return i
         })
-      } else if (this.status === 'area') {
+      }  if (this.status === 'area') {
         return _.map(_.get(this.activatedRoute, 'snapshot.data.competencies.data.responseData'), i => {
           return i
         })

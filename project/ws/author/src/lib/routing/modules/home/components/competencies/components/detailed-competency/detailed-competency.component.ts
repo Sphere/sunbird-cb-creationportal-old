@@ -10,14 +10,13 @@ import { Subject } from 'rxjs'
 import { NSCompetencyV2 } from '../../interface/competency'
 /* tslint:enable */
 
-
 @Component({
   selector: 'ws-auth-detailed-competency',
   templateUrl: './detailed-competency.component.html',
   styleUrls: ['./detailed-competency.component.scss'],
 })
 export class DetailedCompetencyComponent implements OnInit, OnDestroy {
-  eventsSubject: Subject<void> = new Subject<void>();
+  eventsSubject: Subject<void> = new Subject<void>()
   public sideNavBarOpenedMain = true
   compId!: string
   isAdmin = false

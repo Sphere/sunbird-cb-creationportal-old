@@ -18,8 +18,8 @@ export class CompetencyResolverService
 
   resolve(route: ActivatedRouteSnapshot): Observable<IResolveResponse<NSCompetencyV2.ICompetencyDictionary[]>> {
     const typ = 'dictionary'
-    const data: string = route.data ? route.data.load || typ : typ
-    return this.mySvc.fetchByTyp(data).pipe(
+    const d: string = route.data ? route.data.load || typ : typ
+    return this.mySvc.fetchByTyp(d).pipe(
       map(data => ({ data, error: null })),
       catchError(error => of({ error, data: null })),
     )

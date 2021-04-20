@@ -14,7 +14,7 @@ const API_END_POINTS = {
   GET_REQUESTED: `${PROTECTED_SLAG_V8}/frac/getAllNodes/re`,
   GET_COMP_BY_ID: (id: string, typ: string) => `${PROTECTED_SLAG_V8}/frac/getNodeById/${id}/${typ}`,
   SAVE_COMP: `${PROTECTED_SLAG_V8}/frac/addDataNode`,
-  SAVE_COMP_BULK: `${PROTECTED_SLAG_V8}/frac/addDataNodeBulk`
+  SAVE_COMP_BULK: `${PROTECTED_SLAG_V8}/frac/addDataNodeBulk`,
 }
 @Injectable()
 export class CompService {

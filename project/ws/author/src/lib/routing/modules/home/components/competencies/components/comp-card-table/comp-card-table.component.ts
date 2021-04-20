@@ -179,7 +179,7 @@ export class CompCardTableComponent extends WidgetBaseComponent
 
   showMenuItem(menuType: string, row: any) {
     if (menuType && row) {
-      let returnValue = true
+      const returnValue = true
       return returnValue
     }
     return false

@@ -620,6 +620,7 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
           if (index === 0) {
             requestBody.request.content.reviewer = requestBody.request.content.reviewer + element.id
           } else {
+            /* tslint:disable */
             requestBody.request.content.reviewer = requestBody.request.content.reviewer + ', ' + element.id
           }
         })

@@ -15,14 +15,13 @@ import { AddCompLevelComponent } from './add-comp-level/add-comp-level.component
 import { MatDialog, MatSnackBar } from '@angular/material'
 /* tslint:enable */
 
-
 @Component({
   selector: 'ws-auth-request-competency',
   templateUrl: './request-competency.component.html',
   styleUrls: ['./request-competency.component.scss'],
 })
 export class RequestCompetencyComponent implements OnInit, OnDestroy {
-  eventsSubject: Subject<void> = new Subject<void>();
+  eventsSubject: Subject<void> = new Subject<void>()
   public sideNavBarOpenedMain = true
   competencyDetailsForm!: FormGroup
   isAdmin = false
@@ -80,7 +79,7 @@ export class RequestCompetencyComponent implements OnInit, OnDestroy {
       typ: new FormControl('Behavioural', [Validators.required]),
       area: new FormControl('', [Validators.required]),
     })
-    this.configService.userProfile
+    // this.configService.userProfile
     if (this.activatedRoute.snapshot && this.activatedRoute.snapshot.parent
       && this.activatedRoute.snapshot.parent.data.departmentData.data) {
       this.departmentData = this.activatedRoute.snapshot.parent.data.departmentData.data
@@ -96,7 +95,7 @@ export class RequestCompetencyComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     if (this.competencyDetailsForm.valid) {
-      let data: NSCompetencyV2.ICompetencyDictionary = {
+      const data: NSCompetencyV2.ICompetencyDictionary = {
         additionalProperties: {
           competencyType: _.get(this.competencyDetailsForm.value, 'typ'),
           // cod: '',
@@ -113,11 +112,10 @@ export class RequestCompetencyComponent implements OnInit, OnDestroy {
             type: 'COMPETENCIESLEVEL',
             name: l.optionalLevel || l.level,
             level: l.level,
-            description: l.description
+            description: l.description,
           }
-        })
+        }),
       }
-      console.log(data)
       this.compService.requestCompWithCheild(data).subscribe(resp => {
         if (resp && _.get(resp, 'statusInfo.statusCode') === 200) {
           this.snackBar.open('Success')

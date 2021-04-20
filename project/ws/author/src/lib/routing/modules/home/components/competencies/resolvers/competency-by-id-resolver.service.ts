@@ -20,13 +20,13 @@ export class CompetencyByIdResolverService
     const typ = 'COMPETENCY'
     const compId = route.paramMap.get('competencyId')
     if (compId) {
-      const data: string = route.data ? route.data.type || typ : typ
-      return this.mySvc.fetchById(compId, data).pipe(
+      const d: string = route.data ? route.data.type || typ : typ
+      return this.mySvc.fetchById(compId, d).pipe(
         map(data => ({ data, error: null })),
         catchError(error => of({ error, data: null })),
       )
-    } else {
-      return EMPTY
     }
+    return EMPTY
+
   }
 }

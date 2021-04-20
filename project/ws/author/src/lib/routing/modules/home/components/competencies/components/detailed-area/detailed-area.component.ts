@@ -11,14 +11,13 @@ import { NSCompetencyV2 } from '../../interface/competency'
 import { ITable } from '../comp-card-table/comp-card-table.model'
 /* tslint:enable */
 
-
 @Component({
   selector: 'ws-auth-detailed-area',
   templateUrl: './detailed-area.component.html',
   styleUrls: ['./detailed-area.component.scss'],
 })
 export class DetailedAreaComponent implements OnInit, OnDestroy {
-  eventsSubject: Subject<void> = new Subject<void>();
+  eventsSubject: Subject<void> = new Subject<void>()
   public sideNavBarOpenedMain = true
   areaId!: string
   isAdmin = false
@@ -105,8 +104,8 @@ export class DetailedAreaComponent implements OnInit, OnDestroy {
         headIcon: 'apps',
         menus: [
           { name: 'Edit', action: 'edit', disabled: false, icon: 'edit' },
-          { name: 'Delete', action: 'delete', disabled: false, icon: 'delete' },],
-        rowIcon: 'more_vert'
+          { name: 'Delete', action: 'delete', disabled: false, icon: 'delete' }],
+        rowIcon: 'more_vert',
       },
     }
   }
