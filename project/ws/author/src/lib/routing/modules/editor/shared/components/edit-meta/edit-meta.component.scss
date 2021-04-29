@@ -1,54 +1,9 @@
-@import 'ws-mixins';
-@import 'ws-vars';
-@import 'ws-common';
-
 .font-weight-300 {
   font-weight: 300;
 }
 
 .space-around {
   justify-content: space-around;
-}
-
-.sticky {
-  // position: fixed;
-  top: 56px;
-  overflow: hidden;
-  z-index: 10;
-  width: 100%;
-}
-
-.itm-center {
-  align-items: center;
-  padding: $size-m;
-}
-
-.tag {
-  display: flex;
-  width: auto;
-  min-width: max-content;
-  min-height: 56px;
-  justify-content: space-between;
-  margin: $size-l $size-m;
-  align-items: center;
-  text-transform: capitalize;
-  padding: 5px 15px;
-  // border-radius: 20px 5px 5px 20px;
-}
-
-.tgl-group {
-  flex-direction: row;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.toggle-btn {
-  margin: $size-xs;
-  margin-left: 0;
-}
-
-.margin-0 {
-  margin-bottom: 0 !important;
 }
 
 // .tabs{
@@ -59,18 +14,6 @@
 .image-border {
   border: 2px solid;
   border-radius: 5px;
-}
-
-.remove-card-box {
-  box-shadow: none !important;
-}
-
-.rotate {
-  transform: rotate(45deg);
-}
-
-.flex-05 {
-  flex: 0.49;
 }
 
 .width-90 {
@@ -96,10 +39,6 @@ input {
     color: red;
     content: ' *';
   }
-}
-
-.floatright {
-  float: right;
 }
 
 .max-width {
@@ -147,40 +86,24 @@ input {
 // forms
 
 .photo {
-  // height: 48px;
-  // width: 48px;
-  // background: #f2f2f2;
-  // border-radius: 50%;
-  // display: inline-block;
-  // position: relative;
-  // left: -30px;
-  // bottom: 13px;
-  // cursor: pointer;
-  height: 20px;
-  width: 20px;
+  height: 48px;
+  width: 48px;
   background: #f2f2f2;
   border-radius: 50%;
   display: inline-block;
   position: relative;
-  /* right: -3px !important; */
-  /* left: 90%; */
-  bottom: 12px;
+  left: -30px;
+  bottom: 13px;
   cursor: pointer;
 }
 
 .photo-icon {
-  // position: relative;
-  // top: 10px;
-  // left: 9px;
-  // width: 30px;
-  // height: 30px;
-  // font-size: 30px;
   position: relative;
-  top: 2px;
-  left: 4px;
-  width: 12px;
-  height: 12px;
-  font-size: 12px;
+  top: 10px;
+  left: 9px;
+  width: 30px;
+  height: 30px;
+  font-size: 30px;
 }
 
 .mat-form-field {
@@ -275,15 +198,7 @@ textarea {
 }
 
 .text-white {
-  color: #fff !important;
-}
-
-.set-hw {
-  .mat-form-field-wrapper {
-    .mat-form-field-infix {
-      padding: 4px 0 8px 0px !important;
-    }
-  }
+  color: #fff;
 }
 
 ul li {
@@ -310,52 +225,8 @@ ul li {
   cursor: pointer;
 }
 
-.thumb-text {
-  display: flex;
-  flex-direction: row;
-
-  @include breakpoint-xs {
-    flex-direction: column;
-  }
-}
-
-.duration-time {
-  display: flex;
-  flex: 1;
-
-  .duration-d {
-    display: flex;
-    // flex: 1;
-  }
-
-  @include breakpoint-xs {
-    flex-wrap: wrap;
-  }
-
-  @include breakpoint-s {
-    flex-wrap: wrap;
-  }
-
-  @include breakpoint-m {
-    flex-wrap: wrap;
-    flex: auto;
-  }
-}
-
 .duration-width {
-  max-width: 55px;
-
-  @include breakpoint-s {
-    max-width: 60px;
-  }
-
-  @include breakpoint-xs {
-    max-width: 50px;
-  }
-
-  @include breakpoint-m {
-    max-width: 70px;
-  }
+  width: 55px;
 }
 
 .padding-small {
@@ -379,141 +250,39 @@ ul li {
   flex-direction: row;
   justify-content: space-around;
 }
-
-.mobile-break {
+.mobile-break{
+  display: flex;
+  flex-direction: row;
+}
+.new-mobile{
   display: flex;
   flex-direction: column;
-  padding: 0;
-  margin: 0 $size-m 0 0;
-  flex: 1;
-  // background: bisque;
 }
-
-.new-mobile {
-  display: flex;
-  flex-direction: row;
-  // margin-top: $size-l;
-
-  @include breakpoint-s {
-    flex-direction: column;
-  }
-
-  @include breakpoint-xs {
-    flex-direction: column;
-  }
-}
-
-.m-auto-width {
-  margin: auto;
-  width: fit-content;
-}
-
-.flex-column-imp {
-  flex-direction: column !important;
-}
-
-.logos {
-  display: flex;
-  flex-direction: row;
-  flex: 1;
-
-  .thumbnail-logo {
-    background: rgba(217, 242, 254, 0.49);
-    border: 1px dashed rgb(0, 169, 244);
-    border-radius: 8px;
-    // opacity: 0.49;
-    width: 256px;
-    height: 150px;
-
-    @include breakpoint-s {
-      min-width: 150px;
-      min-height: 75px;
-      max-width: 256px;
-      max-height: 150px;
-      width: auto;
-      // height: auto;
-    }
-
-    @include breakpoint-xs {
-      min-width: 100px;
-      min-height: 75px;
-      max-width: 256px;
-      max-height: 150px;
-      width: auto;
-      height: auto;
-    }
-  }
-
-  .source-logo {
-    background: rgba(217, 242, 254, 0.49);
-    border: 1px dashed rgb(0, 169, 244);
-    border-radius: 8px;
-    // opacity: 0.49;
-    width: 72px;
-    height: 74px;
-    box-shadow: 0px 2px 4px #00000029;
-  }
-
-  @include breakpoint-s {
-    // flex-direction: column;
-  }
-
-  @include breakpoint-xs {
-    flex-direction: column;
-  }
-}
-
-.card-contan {
-  display: flex;
-  flex-direction: row;
-  flex: 1;
-
-  @include breakpoint-s {
-    flex-direction: column;
-  }
-
-  @include breakpoint-xs {
-    flex-direction: column;
-  }
-}
-
-.bannerSelect {
-  width: 75px;
-  height: 45px;
-  display: flex;
-  margin: 10px;
-}
-
-.example-radio-button {
-  display: flex;
-}
-
-.c-footer {
-  display: flex;
-  margin: auto;
-  width: fit-content;
-}
-
-.min-w {
-  width: 650px;
-
-  @include breakpoint-xs {
-    width: auto;
-  }
-
-  @include breakpoint-s {
-    width: auto;
-  }
-}
-
-// #cke_editor2{
-//   .cke_inner{
-//     height: 100%;
-//   }
-// }
 // 960
-// @media only screen and (max-width:960px) {
-//   .mobile-break {
-//     flex-direction: column;
-//   }
-// }
+@media only screen and (max-width:960px) {
+  .mobile-break {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 961px) {
+  .width-300 {
+    width: 300
+  }
+}
+.cross-btn {
+  margin-left: auto;
+  order: 2;
+  padding-right: 15px;
+}
+
+.inner-section {
+  display: block;
+    margin: 0 -12px;
+    max-height: 78vh;
+    overflow: auto;
+}
+.header-bg {
+  background-color: #edf1e5;
+  margin: -12px;
+}

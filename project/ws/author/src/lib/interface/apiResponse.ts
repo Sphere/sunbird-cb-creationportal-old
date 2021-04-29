@@ -36,25 +36,6 @@ export namespace NSApiResponse {
     identifier: string
   }
 
-  export interface IContentCreateResponseV2 {
-    id?: string
-    ver?: string
-    ts?: string
-    params?: {
-      resmsgid?: string
-      msgid?: string,
-      err?: string,
-      status?: string
-      errmsg?: string
-    },
-    responseCode?: string
-    result: {
-      identifier: string
-      node_id: string
-      versionKey: string
-    }
-  }
-
   export interface IContentUpdateResponse {
     node_id: string
     versionKey: string
@@ -82,6 +63,25 @@ export namespace NSApiResponse {
     }
     responseCode: string
     result: T
+  }
+
+  export interface IContentCreateResponseV2 {
+    id?: string
+    ver?: string
+    ts?: string
+    params?: {
+      resmsgid?: string
+      msgid?: string,
+      err?: string,
+      status?: string
+      errmsg?: string
+    },
+    responseCode?: string
+    result: {
+      identifier: string
+      node_id: string
+      versionKey: string
+    }
   }
 
   export interface ISearchApiResponse {

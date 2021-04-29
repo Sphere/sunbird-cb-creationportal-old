@@ -27,7 +27,7 @@ import { CONTENT_BASE_WEBHOST_ASSETS } from '../../../../../../../../constants/a
 export class GeneralDetailsComponent implements OnInit {
   @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<
     any
-  >
+    >
   @Output() data = new EventEmitter<string>()
   @Output() id = new EventEmitter<string>()
   _id!: string
@@ -401,10 +401,10 @@ export class GeneralDetailsComponent implements OnInit {
       data.loader = false
       if (res.status === 'notDone') {
         data.contestAdded = false
-        this.snackBar.open(res.message, 'X')
+        this.snackBar.open(res.message)
       } else {
         data.contestAdded = true
-        this.snackBar.open('Question added to section', 'X')
+        this.snackBar.open('Question added to section')
       }
     })
   }
@@ -421,10 +421,10 @@ export class GeneralDetailsComponent implements OnInit {
       data.loader = false
       if (res.status === 'notDone') {
         data.contestAdded = true
-        this.snackBar.open(res.message, 'X')
+        this.snackBar.open(res.message)
       } else {
         data.contestAdded = false
-        this.snackBar.open('Question removed from section', 'X')
+        this.snackBar.open('Question removed from section')
       }
     })
   }
@@ -617,10 +617,10 @@ export class GeneralDetailsComponent implements OnInit {
     this._service.adGroupQuestionsToSections(data).subscribe(res => {
       if (res.status === 'done') {
         groupData.addedToContest = true
-        this.snackBar.open(res.message, 'X')
+        this.snackBar.open(res.message)
       } else {
         groupData.addedToContest = false
-        this.snackBar.open(res.message, 'X')
+        this.snackBar.open(res.message)
       }
     })
   }
@@ -632,9 +632,9 @@ export class GeneralDetailsComponent implements OnInit {
     }
     this._service.editRandomization(data).subscribe(res => {
       if (res.status === 'done') {
-        this.snackBar.open('Randomization is edited', 'X')
+        this.snackBar.open('Randomization is edited')
       } else {
-        this.snackBar.open(res.message, 'X')
+        this.snackBar.open(res.message)
       }
     })
   }
@@ -647,10 +647,10 @@ export class GeneralDetailsComponent implements OnInit {
     this._service.removeGroupFromSection(data).subscribe(res => {
       if (res.status === 'done') {
         group.addedToContest = false
-        this.snackBar.open('Group removed from section', 'X')
+        this.snackBar.open('Group removed from section')
       } else {
         group.addedToContest = true
-        this.snackBar.open(res.message, 'X')
+        this.snackBar.open(res.message)
       }
     })
   }

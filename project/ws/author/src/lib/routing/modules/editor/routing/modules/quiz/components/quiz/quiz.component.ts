@@ -1,5 +1,5 @@
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core'
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, Input, Output, EventEmitter, OnChanges } from '@angular/core'
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
 import { map, mergeMap, tap, catchError } from 'rxjs/operators'
@@ -40,17 +40,14 @@ import { CONTENT_BASE_WEBHOST } from '@ws/author/src/lib/constants/apiEndpoints'
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
 import { FormGroup } from '@angular/forms'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
-import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper'
 
 @Component({
   selector: 'ws-auth-quiz',
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.scss'],
-  providers: [QuizResolverService, {
-    provide: STEPPER_GLOBAL_OPTIONS, useValue: { displayDefaultIndicatorType: false },
-  }],
+  providers: [QuizResolverService],
 })
-export class QuizComponent implements OnInit, OnDestroy {
+export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   selectedQuizIndex!: number
   allContents: NSContent.IContentMeta[] = []
@@ -65,7 +62,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   disableCursor = false
   resourceType = ''
   isValid = true
-  currentStep = 1
+  currentStep = 2
   snackbarRef?: MatSnackBarRef<NotificationComponent>
   previewMode = false
   mimeTypeRoute: any
@@ -73,17 +70,23 @@ export class QuizComponent implements OnInit, OnDestroy {
   activeIndexSubscription?: Subscription
   questionsArr: any[] = []
   quizConfig!: any
+  quizData!: any
   /**
    * reviwer and publisher cannot add or delete or edit quizs but can rearrange them
    */
   canEditJson = true
   mediumScreenSize = false
-  quizDuration!: string
+  quizDuration!: number
   mediumSizeBreakpoint$ = this.breakpointObserver
     .observe([Breakpoints.XSmall, Breakpoints.Small])
     .pipe(map((res: BreakpointState) => res.matches))
   mode$ = this.mediumSizeBreakpoint$.pipe(map(isMedium => (isMedium ? 'over' : 'side')))
   // @ViewChild(MatSidenavContainer) sidenavContainer: MatSidenavContainer;
+
+  @Input() isCollectionEditor = false
+  @Input() isSubmitPressed = false
+  @Output() data = new EventEmitter<string>()
+  @Input() callSave = false
 
   constructor(
     private router: Router,
@@ -108,20 +111,57 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.showSettingButtons = this.accessControl.rootOrg === 'client1'
     if (this.activateRoute.parent && this.activateRoute.parent.parent) {
       this.activateRoute.parent.parent.data.subscribe(v => {
-        if (v.contents && v.contents.length) {
-          this.allContents.push(v.contents[0].content)
-          this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier] = v.contents[0].data
-            ? v.contents[0].data.questions
-            : []
-          this.canEditJson = this.quizResolverSvc.canEdit(v.contents[0].content)
-          this.resourceType = v.contents[0].content.categoryType || 'Quiz'
-          this.quizDuration = v.contents[0].content.duration || 300
-          this.questionsArr =
-            this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier] || []
-          this.contentLoaded = true
+        let courseChildren =  v.contents[0].content.children
+        // Children
+        const firstLevelChilds = courseChildren.filter((item: any) => {
+          return item.category === 'Collection'
+        })
+        // find assements
+        let firstLevelchildArray: any = []
+
+         firstLevelChilds.map((item: any) => {
+
+          firstLevelchildArray = firstLevelchildArray.concat(item.children)
+        })
+        courseChildren = courseChildren.concat(firstLevelchildArray)
+
+        // Children
+        if (courseChildren) {
+          courseChildren.forEach((element: NSContent.IContentMeta) => {
+            if (element.mimeType === 'application/quiz') {
+              // do a get for the data
+              this.allContents.push(element)
+
+              this.editorService.getDataForContent(element.identifier).subscribe(data => {
+                v.contents = data
+
+                this.quizStoreSvc.collectiveQuiz[element.identifier] = v.contents[0].data
+                ? v.contents[0].data.questions
+                : []
+
+              this.canEditJson = this.quizResolverSvc.canEdit(v.contents[0].content)
+              this.resourceType = v.contents[0].content.categoryType || 'Quiz'
+              this.quizDuration = v.contents[0].content.duration || 300
+              this.questionsArr =
+                this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier] || []
+              this.contentLoaded = true
+              }
+              )
+
+            }
+          })
+
         }
+        // this.canEditJson = this.quizResolverSvc.canEdit(v.contents[0].content)
+        // this.resourceType = v.contents[0].content.categoryType || 'Quiz'
+        // this.quizDuration = v.contents[0].content.duration || 300
+        // this.questionsArr =
+        //   this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier] || []
+        this.contentLoaded = true
+
         if (!this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier]) {
           this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier] = []
         }
@@ -155,12 +195,17 @@ export class QuizComponent implements OnInit, OnDestroy {
     })
   }
 
-  customStepper(step: number) {
-    // if (step === 1) {
-    //   this.disableCursor = true
-    // } else {
-    this.currentStep = step
+  ngOnChanges() {
+    // if (this.callSave) {
+    //   this.save()
     // }
+  }
+  customStepper(step: number) {
+    if (step === 1) {
+      this.disableCursor = true
+    } else {
+      this.currentStep = step
+    }
   }
 
   changeContent(data: NSContent.IContentMeta) {
@@ -238,6 +283,7 @@ export class QuizComponent implements OnInit, OnDestroy {
         },
       },
     }
+
     return this.editorService
       .updateContent(requestBody)
       .pipe(tap(() => this.metaContentService.resetOriginalMeta(meta, id)))
@@ -246,6 +292,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   wrapperForTriggerSave() {
     this.loaderService.changeLoad.next(true)
     const updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+
     const hasTimeChanged =
       (this.metaContentService.upDatedContent[this.currentId] || {}).duration &&
       this.quizDuration !== this.metaContentService.upDatedContent[this.currentId].duration
@@ -273,11 +320,8 @@ export class QuizComponent implements OnInit, OnDestroy {
     )
   }
 
-  save(next?: string) {
+  save() {
     this.canValidate = true
-    if (this.questionsArr.length === 0) {
-      this.questionsArr = this.quizStoreSvc.collectiveQuiz[this.currentId]
-    }
     const hasMinLen = (this.resourceType !== ASSESSMENT && this.questionsArr.length)
       || (this.resourceType === ASSESSMENT && this.questionsArr.length >= this.quizConfig.minQues)
     const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || {}).length
@@ -293,9 +337,6 @@ export class QuizComponent implements OnInit, OnDestroy {
             this.canValidate = false
             this.loaderService.changeLoad.next(false)
             this.showNotification(Notify.SAVE_SUCCESS)
-            if (next) {
-              this.action(next)
-            }
           },
           () => {
             this.canValidate = false
@@ -388,6 +429,7 @@ export class QuizComponent implements OnInit, OnDestroy {
         }
       })
     })
+    this.resourceType = this.metaContentService.getUpdatedMeta(this.currentId).categoryType
     // console.log(dataWithAns, dataWithOutAns)
     const uploadData = this.resourceType === ASSESSMENT ? dataWithOutAns : dataWithAns
     return forkJoin([
@@ -403,9 +445,6 @@ export class QuizComponent implements OnInit, OnDestroy {
 
   action(type: string) {
     switch (type) {
-      case 'back':
-        this.currentStep = 1
-        break
       case 'next':
         this.currentStep += 1
         break
@@ -414,9 +453,6 @@ export class QuizComponent implements OnInit, OnDestroy {
         break
       case 'save':
         this.save()
-        break
-      case 'saveAndNext':
-        this.save('next')
         break
       case 'push':
         this.takeAction()
@@ -434,16 +470,13 @@ export class QuizComponent implements OnInit, OnDestroy {
             if (this.allContents.length) {
               this.metaContentService.changeActiveCont.next(this.allContents[0].identifier)
             } else {
-              this.router.navigateByUrl('/author/cbp')
+              this.router.navigateByUrl('/author/home')
             }
           }
         })
         break
       case 'close':
-        this.router.navigateByUrl('/author/cbp')
-        break
-      case 'fulls':
-        this.fullScreenToggle()
+        this.router.navigateByUrl('/author/home')
         break
     }
   }
@@ -487,7 +520,7 @@ export class QuizComponent implements OnInit, OnDestroy {
             if (this.allContents.length) {
               this.metaContentService.changeActiveCont.next(this.allContents[0].identifier)
             } else {
-              this.router.navigateByUrl('/author/cbp')
+              this.router.navigateByUrl('/author/home')
             }
           },
           () => {
@@ -672,7 +705,7 @@ export class QuizComponent implements OnInit, OnDestroy {
           if (this.allContents.length) {
             this.metaContentService.changeActiveCont.next(this.allContents[0].identifier)
           } else {
-            this.router.navigateByUrl('/author/cbp')
+            this.router.navigateByUrl('/author/home')
           }
         },
         error => {
@@ -768,24 +801,5 @@ export class QuizComponent implements OnInit, OnDestroy {
         this.metaContentService.originalContent[this.currentId].creatorContacts.find(v => v.id === this.accessControl.userId)
       )
   }
-  fullScreenToggle() {
-    const doc: any = document
-    // const elm: any = doc.getElementById('auth-quiz')
-    let elm: any = doc.getElementById('auth-quiz')
-    if (!elm) {
-      elm = doc.getElementById('edit-meta')
-    }
-    if (!elm) {
-      elm = doc.getElementById('auth-root')
-    }
-    if (elm.requestFullscreen) {
-      !doc.fullscreenElement ? elm.requestFullscreen() : doc.exitFullscreen()
-    } else if (elm.mozRequestFullScreen) {
-      !doc.mozFullScreen ? elm.mozRequestFullScreen() : doc.mozCancelFullScreen()
-    } else if (elm.msRequestFullscreen) {
-      !doc.msFullscreenElement ? elm.msRequestFullscreen() : doc.msExitFullscreen()
-    } else if (elm.webkitRequestFullscreen) {
-      !doc.webkitIsFullscreen ? elm.webkitRequestFullscreen() : doc.webkitCancelFullscreen()
-    }
-  }
+  // fullScreenToggle() { }
 }

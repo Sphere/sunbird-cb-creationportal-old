@@ -15,12 +15,10 @@ import { QuestionEditorSidenavComponent } from '@ws/author/src/lib/routing/modul
 import { QuizStoreService } from './services/store.service'
 import { OpenPlainCkEditorComponent } from './shared/components/open-plain-ck-editor/open-plain-ck-editor.component'
 import { RomanConvertPipe } from '@ws/author/src/lib/routing/modules/editor/routing/modules/quiz/shared/roman-convert.pipe'
-import { QuizQusetionsComponent } from './components/quiz/quiz-questions/quiz-questions.component'
 
 @NgModule({
   declarations: [
     QuizComponent,
-    QuizQusetionsComponent,
     QuestionEditorComponent,
     MatchTheFollowingComponent,
     MultipleChoiceQuestionComponent,
@@ -37,9 +35,10 @@ import { QuizQusetionsComponent } from './components/quiz/quiz-questions/quiz-qu
     DragDropModule,
     QuizRoutingModule,
     AuthViewerModule,
+
   ],
+  exports: [QuizComponent],
   providers: [QuizStoreService],
   entryComponents: [OpenPlainCkEditorComponent],
-  exports: [QuizComponent, QuizQusetionsComponent],
 })
 export class QuizModule { }

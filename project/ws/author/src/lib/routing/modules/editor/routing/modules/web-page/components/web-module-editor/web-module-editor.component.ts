@@ -1,5 +1,5 @@
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
-import { Component, OnInit, OnDestroy, ViewChild, EventEmitter, Output } from '@angular/core'
+import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { UploadAudioComponent } from '../upload-audio/upload-audio.component'
 import { MatSnackBar } from '@angular/material/snack-bar'
@@ -39,20 +39,15 @@ import { NOTIFICATION_TIME, WEB_MODULE_JSON_FILE_NAME } from '../../constant/web
 import { IAudioObj } from '../../interface/page-interface'
 import { PlainCKEditorComponent } from '../../../../../shared/components/plain-ckeditor/plain-ckeditor.component'
 import { NotificationService } from '@ws/author/src/lib/services/notification.service'
-import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper'
-import { WebStoreService } from '../../services/store.service'
 
 @Component({
   selector: 'ws-auth-web-module-editor',
   templateUrl: './web-module-editor.component.html',
   styleUrls: ['./web-module-editor.component.scss'],
-  providers: [{
-    provide: STEPPER_GLOBAL_OPTIONS, useValue: { displayDefaultIndicatorType: false },
-  }],
 })
 
 export class WebModuleEditorComponent implements OnInit, OnDestroy {
-  @Output() data = new EventEmitter<string>()
+
   userData: { [key: string]: WebModuleData } = {}
   currentId = ''
   selectedPage = 0
@@ -63,7 +58,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
   allLanguages: any[] = []
   activeContentSubscription?: Subscription
   changedContent = false
-  currentStep = 1
+  currentStep = 2
   previewMode = false
   mimeTypeRoute: any
   submitPressed = false
@@ -78,7 +73,8 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
   @ViewChild(PlainCKEditorComponent, { static: false }) ckEditor!: PlainCKEditorComponent
   // @ViewChild('editor', { static: false }) ckEditor!: any
   // downloadRegex = new RegExp(`(/content-store/.*?)(\\\)?\\\\?['"])`, 'gm')
-
+  @Input() isCollectionEditor = false
+  @Input() isSubmitPressed = false
   constructor(
     public dialog: MatDialog,
     public snackBar: MatSnackBar,
@@ -92,7 +88,6 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
     private authInitService: AuthInitService,
     private accessService: AccessControlService,
     private notificationSvc: NotificationService,
-    private webStoreSvc: WebStoreService,
   ) { }
 
   ngOnDestroy() {
@@ -107,105 +102,124 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.showSettingButtons = this.accessService.rootOrg === 'client1'
-    this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
-      this.sideNavBarOpened = !isLtMedium
-      this.mediumScreenSize = isLtMedium
-      if (isLtMedium) {
-        this.showContent = false
-      } else {
-        this.showContent = true
-      }
-    })
+    // this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
+    //   this.sideNavBarOpened = !isLtMedium
+    //   this.mediumScreenSize = isLtMedium
+    //   if (isLtMedium) {
+    //     this.showContent = false
+    //   } else {
+    //     this.showContent = true
+    //   }
+    // })
     if (this.activateRoute.parent && this.activateRoute.parent.parent) {
-      this.activateRoute.parent.parent.data.subscribe(v => {
-        //   if (v.contents && v.contents.length) {
-        //     this.allContents.push(v.contents[0].content)
-        //     const newData = this.webStoreSvc.getWeb()
-        //     if (v.contents[0].data || newData) {
-        //       const url = v.contents[0].content.artifactUrl.substring(0, v.contents[0].content.artifactUrl.lastIndexOf('/'))
-        //       this.imagesUrlbase = `${url}/assets/`
-        //       const formattedObj = JSON.parse(JSON.stringify(v.contents[0].data || newData))
-        if (v.contents && v.contents.length) {
-          this.allContents.push(v.contents[0].content)
-          let newData
-          if (this.currentId) {
-            newData = this.webStoreSvc.getCurrentWeb(this.currentId)
-          } else {
-            newData = this.webStoreSvc.getWeb()
-          }
-          if (v.contents[0].data || newData) {
-            const url = v.contents[0].content.artifactUrl.substring(0, v.contents[0].content.artifactUrl.lastIndexOf('/'))
-            this.imagesUrlbase = `${url}/assets/`
-            let formattedObj: any
-            if (v.contents[0].data && !!newData) {
-              if (JSON.stringify(v.contents[0].data) !== JSON.stringify(newData)) {
-                formattedObj = JSON.parse(JSON.stringify(newData))
-              } else {
-                formattedObj = JSON.parse(JSON.stringify(v.contents[0].data))
-              }
-            } else if (v.contents[0].data && !!!newData) {
-              formattedObj = JSON.parse(JSON.stringify(v.contents[0].data))
 
-            } else if (!v.contents[0].data && !!newData) {
-              formattedObj = JSON.parse(newData)
+      const id = this.router.url.split('/')[3]
 
-            } else if (!v.contents[0].data && !!!newData) {
-              formattedObj = {
-                pages: [],
-                pageJson: [],
-              }
-            }
+      // const self = this
+      // get course details
+      this.editorService.getDataForContent(id).subscribe(data => {
 
-            formattedObj.pageJson.map((obj: ModuleObj) => {
-              if (obj.audio && obj.audio.length) {
-                obj.audio.map(audioObj => {
-                  // audioObj.URL = JSON.parse(JSON.stringify(
-                  //   audioBaseURL + audioObj.URL
-                  // ).replace(this.downloadRegex, this.regexDownloadReplace))
-                  audioObj.URL = this.imagesUrlbase + audioObj.URL
-                  const splitUrl = audioObj.URL.split('/')
-                  const hostURL = `${splitUrl[0]}//${splitUrl[2]}`
-                  audioObj.URL = audioObj.URL.replace(hostURL, '')
+        const courseChildren = data[0].content.children
+        if (courseChildren) { }
+        courseChildren.forEach((child: NSContent.IContentMeta) => {
+
+          if (child.mimeType === 'application/web-module') {
+
+            this.editorService.getDataForContent(child.identifier).subscribe(data2 => {
+              this.allContents.push(data[0].content)
+
+              const url = data[0].content.artifactUrl.substring(0, data[0].content.artifactUrl.lastIndexOf('/'))
+              this.imagesUrlbase = `${url}/assets/`
+              const formattedObj = JSON.parse(JSON.stringify(data2))
+
+              if (formattedObj.pageJson) {
+                formattedObj.pageJson.map((obj: ModuleObj) => {
+                  if (obj.audio && obj.audio.length) {
+                    obj.audio.map(audioObj => {
+                      // audioObj.URL = JSON.parse(JSON.stringify(
+                      //   audioBaseURL + audioObj.URL
+                      // ).replace(this.downloadRegex, this.regexDownloadReplace))
+                      audioObj.URL = this.imagesUrlbase + audioObj.URL
+                      const splitUrl = audioObj.URL.split('/')
+                      const hostURL = `${splitUrl[0]}//${splitUrl[2]}`
+                      audioObj.URL = audioObj.URL.replace(hostURL, '')
+                    })
+                  }
                 })
               }
+
+              const getBodyReg = /\<body[^>]*\>([^]*)\<\/body/m
+              // const reg1 = RegExp(`src\=\s*['"](.*?)`, 'gm')
+              // const reg2 = RegExp(`href\=\s*['"](.*?)['"]`, 'gm')
+              formattedObj.pages = formattedObj.pages.map((p: any, index: number) => {
+                let pageBody = p
+                if (p.match(getBodyReg)) {
+                  pageBody = p.match(getBodyReg)[1]
+                    .replace('src="', ` src="${this.imagesUrlbase}`)
+                  // .replace(reg2, ` href="${this.imagesUrlbase}"`)
+                }
+                const fileInd = parseInt(formattedObj.pageJson[index].URL.replace('/assets/index', ''), 10)
+                return new Page({ body: pageBody, fileIndex: fileInd })
+              })
+              this.userData[data[0].content.identifier] = formattedObj
             })
-            const getBodyReg = /\<body[^>]*\>([^]*)\<\/body/m
-            // const reg1 = RegExp(`src\=\s*['"](.*?)`, 'gm')
-            // const reg2 = RegExp(`href\=\s*['"](.*?)['"]`, 'gm')
-            formattedObj.pages = formattedObj.pages.map((p: any, index: number) => {
-              let q
-              if (typeof (p) === 'object') {
-                // p = `<html><head></head><body>${p.body}</body></html>`
-                q = p.body
-              } else {
-                q = p
-              }
-              let pageBody = q
-              if (q.match(getBodyReg)) {
-                pageBody = q.match(getBodyReg)[1]
-                  .replace('src="', ` src="${this.imagesUrlbase}`)
-                // .replace(reg2, ` href="${this.imagesUrlbase}"`)
-              }
-              const fileInd = parseInt(formattedObj.pageJson[index].URL.replace('/assets/index', ''), 10)
-              return new Page({ body: pageBody, fileIndex: fileInd })
-            })
-            this.userData[v.contents[0].content.identifier] = formattedObj
           }
-          this.contentLoaded = true
-        }
+        })
       })
+      // get children
+
+      // loop over children
+      // get data
+
+      // this.activateRoute.parent.parent.data.subscribe(v => {
+      //   if (v.contents && v.contents.length) {
+      //     console.log(v)
+      //     this.allContents.push(v.contents[0].content)
+      //     if (v.contents[0].data) {
+      //       const url = v.contents[0].content.artifactUrl.substring(0, v.contents[0].content.artifactUrl.lastIndexOf('/'))
+      //       this.imagesUrlbase = `${url}/assets/`
+      //       const formattedObj = JSON.parse(JSON.stringify(v.contents[0].data))
+      //       formattedObj.pageJson.map((obj: ModuleObj) => {
+      //         if (obj.audio && obj.audio.length) {
+      //           obj.audio.map(audioObj => {
+      //             // audioObj.URL = JSON.parse(JSON.stringify(
+      //             //   audioBaseURL + audioObj.URL
+      //             // ).replace(this.downloadRegex, this.regexDownloadReplace))
+      //             audioObj.URL = this.imagesUrlbase + audioObj.URL
+      //             const splitUrl = audioObj.URL.split('/')
+      //             const hostURL = `${splitUrl[0]}//${splitUrl[2]}`
+      //             audioObj.URL = audioObj.URL.replace(hostURL, '')
+      //           })
+      //         }
+      //       })
+      //       const getBodyReg = /\<body[^>]*\>([^]*)\<\/body/m
+      //       // const reg1 = RegExp(`src\=\s*['"](.*?)`, 'gm')
+      //       // const reg2 = RegExp(`href\=\s*['"](.*?)['"]`, 'gm')
+      //       formattedObj.pages = formattedObj.pages.map((p: any, index: number) => {
+      //         let pageBody = p
+      //         if (p.match(getBodyReg)) {
+      //           pageBody = p.match(getBodyReg)[1]
+      //             .replace('src="', ` src="${this.imagesUrlbase}`)
+      //           // .replace(reg2, ` href="${this.imagesUrlbase}"`)
+      //         }
+      //         const fileInd = parseInt(formattedObj.pageJson[index].URL.replace('/assets/index', ''), 10)
+      //         return new Page({ body: pageBody, fileIndex: fileInd })
+      //       })
+      //       this.userData[v.contents[0].content.identifier] = formattedObj
+      //     }
+      //     this.contentLoaded = true
+      //   }
+      // })
     }
+    this.contentLoaded = true
     this.allLanguages = this.authInitService.ordinals.subTitles
     this.loaderService.changeLoadState(true)
     // active lex id
     this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
       if (!this.userData[id]) {
         this.userData[id] = new WebModuleData({})
-        this.webStoreSvc.reset()
       }
       this.currentId = id
-      this.webStoreSvc.currentId = id
-      this.webStoreSvc.changeWeb(0)
       this.changePage(0)
     })
 
@@ -260,9 +274,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
     this.userData[this.currentId].pageJson[this.selectedPage].title = event
     this.changedContent = true
   }
-  pagesDount(userData: string) {
-    this.userData = JSON.parse(userData)
-  }
+
   // add new page
   addPage() {
     const fileIndex = this.userData[this.currentId].pages.length ?
@@ -452,10 +464,6 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
 
   action(type: string) {
     switch (type) {
-      case 'back':
-        this.currentStep = 1
-        break
-
       case 'next':
         this.currentStep += 1
         break
@@ -464,9 +472,6 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
         break
       case 'save':
         this.save()
-        break
-      case 'saveAndNext':
-        this.save('next')
         break
       case 'push':
         this.takeAction()
@@ -483,16 +488,13 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
             if (this.allContents.length) {
               this.metaContentService.changeActiveCont.next(this.allContents[0].identifier)
             } else {
-              this.router.navigateByUrl('/author/cbp')
+              this.router.navigateByUrl('/author/home')
             }
           }
         })
         break
       case 'close':
-        this.router.navigateByUrl('/author/cbp')
-        break
-      case 'fulls':
-        this.fullScreenToggle()
+        this.router.navigateByUrl('/author/home')
         break
     }
   }
@@ -513,7 +515,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
             if (this.allContents.length) {
               this.metaContentService.changeActiveCont.next(this.allContents[0].identifier)
             } else {
-              this.router.navigateByUrl('/author/cbp')
+              this.router.navigateByUrl('/author/home')
             }
           },
           () => {
@@ -601,7 +603,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
           if (this.allContents.length) {
             this.metaContentService.changeActiveCont.next(this.allContents[0].identifier)
           } else {
-            this.router.navigateByUrl('/author/cbp')
+            this.router.navigateByUrl('/author/home')
           }
         },
         error => {
@@ -751,16 +753,16 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
   }
 
   customStepper(step: number) {
-    // this.currentStep = step
-    if (step === 2 && this.currentStep === 1) {
-      if (this.userData[this.currentId].pages.length) {
-        this.currentStep = step
-      } else {
-        this.showNotification(Notify.NO_CONTENT)
-      }
-    } else {
-      this.currentStep = step
-    }
+    this.currentStep = step
+    // if (step === 3 && this.currentStep === 2) {
+    //   if (this.userData[this.currentId].pages.length) {
+    //     this.currentStep = step
+    //   } else {
+    //     this.showNotification(Notify.NO_CONTENT)
+    //   }
+    // } else {
+    //   this.currentStep = step
+    // }
   }
 
   changeContent(data: NSContent.IContentMeta) {
@@ -807,7 +809,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
       )
   }
 
-  save(next?: string) {
+  save() {
     const needSave = Object.keys((this.metaContentService.upDatedContent[this.currentId] || {})).length
       || this.changedContent
     if (this.userData[this.currentId].pages.length > 0 && (needSave)) {
@@ -817,9 +819,6 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
           () => {
             this.loaderService.changeLoad.next(false)
             this.showNotification(Notify.SAVE_SUCCESS)
-            if (next) {
-              this.action('next')
-            }
           },
           () => {
             this.loaderService.changeLoad.next(false)
@@ -863,24 +862,4 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
       )
   }
 
-  fullScreenToggle = () => {
-    const doc: any = document
-    // const elm: any = doc.getElementById('web-container')
-    let elm: any = doc.getElementById('web-container')
-    if (!elm) {
-      elm = doc.getElementById('edit-meta')
-    }
-    if (!elm) {
-      elm = doc.getElementById('auth-root')
-    }
-    if (elm.requestFullscreen) {
-      !doc.fullscreenElement ? elm.requestFullscreen() : doc.exitFullscreen()
-    } else if (elm.mozRequestFullScreen) {
-      !doc.mozFullScreen ? elm.mozRequestFullScreen() : doc.mozCancelFullScreen()
-    } else if (elm.msRequestFullscreen) {
-      !doc.msFullscreenElement ? elm.msRequestFullscreen() : doc.msExitFullscreen()
-    } else if (elm.webkitRequestFullscreen) {
-      !doc.webkitIsFullscreen ? elm.webkitRequestFullscreen() : doc.webkitCancelFullscreen()
-    }
-  }
 }

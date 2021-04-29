@@ -21,20 +21,16 @@ import { of } from 'rxjs'
 import { mergeMap, tap, catchError } from 'rxjs/operators'
 import { UrlUploadComponent } from './../url-upload/url-upload.component'
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
-import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper'
 
 @Component({
   selector: 'ws-auth-curate',
   templateUrl: './curate.component.html',
   styleUrls: ['./curate.component.scss'],
-  providers: [{
-    provide: STEPPER_GLOBAL_OPTIONS, useValue: { displayDefaultIndicatorType: false },
-  }],
 })
 export class CurateComponent implements OnInit, OnDestroy {
   contents: NSContent.IContentMeta[] = []
   currentContent = ''
-  currentStep = 1
+  currentStep = 2
   allLanguages!: any[]
   disableCursor = false
   previewMode = false
@@ -143,7 +139,7 @@ export class CurateComponent implements OnInit, OnDestroy {
     this.contentService.changeActiveCont.next(content.identifier)
   }
 
-  save(next?: string) {
+  save() {
     const updatedContent = this.contentService.upDatedContent[this.currentContent] || {}
     if (Object.keys(updatedContent).length) {
       this.isChanged = true
@@ -157,9 +153,6 @@ export class CurateComponent implements OnInit, OnDestroy {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-          if (next) {
-            this.action(next)
-          }
         },
         error => {
           if (error.status === 409) {
@@ -193,9 +186,6 @@ export class CurateComponent implements OnInit, OnDestroy {
         },
         duration: NOTIFICATION_TIME * 1000,
       })
-      if (next) {
-        this.action(next)
-      }
     }
   }
 
@@ -316,7 +306,7 @@ export class CurateComponent implements OnInit, OnDestroy {
           if (this.contents.length) {
             this.contentService.changeActiveCont.next(this.contents[0].identifier)
           } else {
-            this.router.navigateByUrl('/author/cbp')
+            this.router.navigateByUrl('/author/home')
           }
         },
         error => {
@@ -444,17 +434,8 @@ export class CurateComponent implements OnInit, OnDestroy {
 
   action(type: string) {
     switch (type) {
-      case 'back':
-        this.currentStep = 1
-        break
-
       case 'next':
         this.currentStep += 1
-        break
-
-      case 'fullscreen':
-      case 'fulls':
-        this.fullScreenToggle()
         break
 
       case 'preview':
@@ -463,10 +444,6 @@ export class CurateComponent implements OnInit, OnDestroy {
 
       case 'save':
         this.save()
-        break
-
-      case 'saveAndNext':
-        this.save('next')
         break
 
       case 'push':
@@ -497,14 +474,14 @@ export class CurateComponent implements OnInit, OnDestroy {
             if (this.contents.length) {
               this.contentService.changeActiveCont.next(this.contents[0].identifier)
             } else {
-              this.router.navigateByUrl('/author/cbp')
+              this.router.navigateByUrl('/author/home')
             }
           }
         })
         break
 
       case 'close':
-        this.router.navigateByUrl('/author/cbp')
+        this.router.navigateByUrl('/author/home')
         break
     }
   }
@@ -530,7 +507,7 @@ export class CurateComponent implements OnInit, OnDestroy {
         if (this.contents.length) {
           this.contentService.changeActiveCont.next(this.contents[0].identifier)
         } else {
-          this.router.navigateByUrl('/author/cbp')
+          this.router.navigateByUrl('/author/home')
         }
       },
       error => {
@@ -581,13 +558,7 @@ export class CurateComponent implements OnInit, OnDestroy {
 
   fullScreenToggle = () => {
     const doc: any = document
-    let elm: any = doc.getElementById('curate-container')
-    if (!elm) {
-      elm = doc.getElementById('edit-meta')
-    }
-    if (!elm) {
-      elm = doc.getElementById('auth-root')
-    }
+    const elm: any = doc.getElementById('curate-container')
     if (elm.requestFullscreen) {
       !doc.fullscreenElement ? elm.requestFullscreen() : doc.exitFullscreen()
     } else if (elm.mozRequestFullScreen) {

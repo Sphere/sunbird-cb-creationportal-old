@@ -8,11 +8,11 @@ import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { BehaviorSubject, ReplaySubject } from 'rxjs'
+// import { tap } from 'rxjs/operators'
 import { IContentNode, IContentTreeNode } from './../interface/icontent-tree'
 import { CollectionResolverService } from './resolver.service'
-/* tslint:disable */
-import _ from 'lodash'
-/* tslint:enable */
+import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
+
 interface IProcessedError {
   id: string | number
   name: string
@@ -43,7 +43,7 @@ export class CollectionStoreService {
 
   currentParentNode!: number
   currentSelectedNode!: number
-  expendedNode = new Set<number>()
+
   constructor(
     private contentService: EditorContentService,
     private editorService: EditorService,
@@ -120,19 +120,30 @@ export class CollectionStoreService {
           const child = v.identifier
           return child
         }),
+        // children: oldParentChildList.map(v => {
+        //   const child = {
+        //     identifier: v.identifier,
+        //     reasonAdded: 'Added from Authoring Tool',
+        //     childrenClassifiers: [],
+        //   }
+        //   return child
+        // }),
       }
     }
-    // {
-    //   identifier: v.identifier,
-    //     reasonAdded: 'Added from Authoring Tool',
-    //       childrenClassifiers: [],
-    //       }
     this.changedHierarchy[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),
       children: newParentChildList.map(v => {
         const child = v.identifier
         return child
       }),
+      // children: newParentChildList.map(v => {
+      //   const child = {
+      //     identifier: v.identifier,
+      //     reasonAdded: 'Added from Authoring Tool',
+      //     childrenClassifiers: [],
+      //   }
+      //   return child
+      // }),
     }
     if (emitChange) {
       this.treeStructureChange.next(this.treeStructureChange.value)
@@ -177,20 +188,58 @@ export class CollectionStoreService {
     dropNode: IContentTreeNode,
     adjacentId?: number,
     dropLocation: 'above' | 'below' = 'below',
-    name: string = 'Untitled Content'
+    topicObj?: any,
+    fileType?: string
   ): Promise<boolean> {
     try {
-      /* tslint:disable */
-      // const parentMeta = this.contentService.originalContent[
-      //   (this.flatNodeMap.get(this.currentParentNode) as IContentNode).identifier]
-      /* tslint:disable */
+      // For Link
+      if (type === 'web') {
+        type = "link"
+      }
+
+      console.log('Type === ', type)
+      console.log('topicObj ', topicObj)
+
+      // let newChildUpdateCall = true
+      let topicName = 'Untitled Content', topicDescription = ''
+      if (Object.keys(topicObj).length !== 0) {
+        console.log('exist')
+        topicName = topicObj.topicName
+        topicDescription = topicObj.topicDescription
+      } else {
+        console.log('Not exist')
+      }
+
+
       const meta = this.authInitService.creationEntity.get(type) as ICreateEntity
+      console.log('store service ', meta, type)
+      const parentData = this.contentService.parentUpdatedMeta()
+
+
+      //Temporary Static Value
+      let mimeTypeData = meta.mimeType
+      if (type.toLowerCase() === 'assessment') {
+        mimeTypeData = "application/json"
+      }
+
       const requestBody = {
-        name,
-        description: '',
-        mimeType: meta.mimeType,
+        name: topicName,
+        description: topicDescription,
+        // mimeType: meta.mimeType,
+        mimeType: mimeTypeData,
         contentType: meta.contentType,
-        resourceType: meta.resourceType,
+        resourceType: parentData.categoryType || '',
+        categoryType: parentData.categoryType || '',
+        fileType: fileType || '',
+
+        // thumbnail: parentData.thumbnail,
+        // appIcon: parentData.appIcon,
+        posterImage: parentData.posterImage,
+        sourceName: parentData.sourceName,
+        subTitle: parentData.subTitle,
+        body: parentData.body,
+        //   sourceName : parentData.sourceName,
+
         locale:
           // tslint:disable-next-line: ter-computed-property-spacing
           this.contentService.originalContent[
@@ -198,9 +247,30 @@ export class CollectionStoreService {
             // tslint:disable-next-line: ter-computed-property-spacing
           ].locale || 'en',
         ...(meta.additionalMeta || {}),
-        primaryCategory: meta.primaryCategory
+        // primaryCategory: meta.primaryCategory
+        primaryCategory: meta.primaryCategory || 'Learning Resource',
+        // ownershipType: ["createdFor"]
       }
+
+      console.log('requestBody ===  ', requestBody)
+
+      // requestBody.posterImage = parentData.posterImage
+      // requestBody.sourceName = parentData.sourceName
+      // requestBody.subTitle = parentData.subTitle
+      // requestBody.body = parentData.body
+      // requestBody.categoryType = parentData.categoryType
+
+
+      // const content = await this.editorService.createAndReadContent(requestBody).toPromise()
+
       const content = await this.editorService.createAndReadContentV2(requestBody).toPromise()
+      console.log('COntent ===  ', content)
+      // if (content) {
+      //  // content.thumbnail = parentData.thumbnail
+      //  // content.appIcon = parentData.appIcon
+      // }
+
+
       this.contentService.setOriginalMeta(content)
       const contentDataMap = new Map<string, NSContent.IContentMeta>()
       const treeStructure = this.resolver.buildTreeAndMap(
@@ -211,12 +281,73 @@ export class CollectionStoreService {
         this.lexIdMap,
       )
       this.dragAndDrop(treeStructure, dropNode, adjacentId, dropLocation)
+
+      // if (newChildUpdateCall) {
+      //   this.updateNewSubChild()
+      // }
+
       return true
     } catch (ex) {
       this.logger.error(ex)
       return false
     }
   }
+
+
+  updateNewSubChild() {
+
+    console.log('STORE .....  .changedHierarchy  ', this.changedHierarchy)
+    console.log('currentContent ', this.contentService.currentContent)
+    // let childArr: any[] = []
+    let hierarchyOb = this.changedHierarchy
+    if (Object.keys(hierarchyOb).length !== 0) {
+      // this.changedHierarchy[this.contentService.currentContent]['children'].forEach((e: any) => {
+      //   childArr.push(e.identifier)
+      // })
+      // hierarchyOb[this.contentService.currentContent]['children'] = childArr
+      hierarchyOb[this.contentService.currentContent]['root'] = true
+    }
+
+    const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+      request: {
+        data: {
+          nodesModified: {},
+          hierarchy: hierarchyOb,
+        },
+      },
+    }
+
+
+    // console.log('updateContentV4   ', meta)
+    // this.apiService.patch<null>(
+    //   `/apis/proxies/v8/action/content/v3/hierarchy/update`,
+    //   meta,
+    // ).subscribe((d) => {
+    //   console.log('DDDDDD     ', d)
+    // })
+    console.log('updateContentV4  COURSE COLL', requestBodyV2)
+    this.editorService.updateContentV4(requestBodyV2).subscribe((d) => {
+      console.log('DDDDDD     ', d)
+      this.changedHierarchy = {}
+      Object.keys(this.contentService.upDatedContent).forEach(async id => {
+        this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
+      })
+      this.contentService.upDatedContent = {}
+    })
+
+
+    // this.editorService.updateContentV4(requestBodyV2).pipe(
+    //   tap(() => {
+    //     console.log('RESPONSE 0000')
+    //     this.changedHierarchy = {}
+    //     Object.keys(this.contentService.upDatedContent).forEach(async id => {
+    //       this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
+    //     })
+    //     this.contentService.upDatedContent = {}
+    //   }),
+    // )
+  }
+
 
   deleteNode(id: number) {
     const deleteIds = this.resolver.getFlatHierarchy(id, this.flatNodeMap, false)
@@ -359,20 +490,23 @@ export class CollectionStoreService {
             if (canAllow) {
               canPresent = true
               childTypeMap[index] = childTypeMap[index] + 1
-              if (element.position === 'n' && position !== children.length - 1) {
-                let isSameChild = true
-                children.slice(position).forEach(sibling => {
-                  const siblingChild = this.contentService.getUpdatedMeta(sibling.identifier)
-                  isSameChild = this.contentService.checkConditionV2(
-                    siblingChild,
-                    element.conditions,
-                  )
-                  if (!isSameChild) {
-                    errorMsg.push(`${childContent.name || 'Untitled Content'} should be last child`)
-                    return
-                  }
-                })
+              if (position) {
+                return
               }
+              // if (element.position === 'n' && position !== children.length - 1) {
+              //   let isSameChild = true
+              //   children.slice(position).forEach(sibling => {
+              //     const siblingChild = this.contentService.getUpdatedMeta(sibling.identifier)
+              //     isSameChild = this.contentService.checkConditionV2(
+              //       siblingChild,
+              //       element.conditions,
+              //     )
+              //     // if (!isSameChild) {
+              //     //   errorMsg.push(`${childContent.name || 'Untitled Content'} should be last child`)
+              //     //   return
+              //     // }
+              //   })
+              // }
               return
             }
           })
@@ -424,6 +558,7 @@ export class CollectionStoreService {
       if (!this.contentService.isValid(lexId)) {
         errorMsg.push('Mandatory fields are missing')
       }
+
       if (content.category === 'Resource') {
         if (content.mimeType === 'application/html' && !content.artifactUrl && !content.body) {
           errorMsg.push('Provide URL or populate "Body" field')

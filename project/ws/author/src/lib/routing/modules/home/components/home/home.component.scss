@@ -1,16 +1,5 @@
-@import 'ws-mixins';
-@import 'ws-common';
-
-.container-balanced {
-  @extend %page-center;
-}
-
-.fix-ww {
-  margin-left: auto !important;
-  margin-right: auto !important;
-  max-width: $max-screen;
-  /* display: flex; */
-  flex: 1;
+.font-size {
+  font-size: 16px;
 }
 
 .vertical-align {
@@ -20,18 +9,6 @@
 .search-box {
   display: block;
   max-width: 600px;
-}
-
-.img-class {
-  width: 20px;
-}
-
-.txt {
-  text-align: inherit;
-}
-
-.font-white {
-  color: #EDEDED !important;
 }
 
 .banner-img {
@@ -58,21 +35,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  // height: calc(100vh - 165px);
-}
-
-// .mat-accordion {
-//   background-color: #003F5C !important;
-// }
-
-.contain {
-  // background-color: #003F5C !important;
-  min-height: 80vh;
-  height: auto;
-}
-
-.border-0 {
-  border-right: none !important;
+  height: calc(100vh - 165px);
 }
 
 .matExpansion {
@@ -80,13 +43,11 @@
   cursor: pointer;
   flex-direction: row;
   align-items: center;
-  // padding: 0 24px;
-  padding: 10px 0 10px 0;
+  padding: 0 24px;
   border-radius: inherit;
   font-size: 15px;
   font-weight: 300;
   line-height: 48px;
-  background-color: #f5f6fa !important;
 }
 
 .mat-list-base {
@@ -94,39 +55,17 @@
 }
 
 ::ng-deep .mat-expansion-panel-body {
-  // padding: 0 24px 8px !important;
-  padding: 0 0 8px !important;
-  min-width: 260px !important;
+  padding: 0 24px 8px !important;
 }
-
 
 .mat-list-item {
   height: 40px;
 }
 
-.margin-bottom-xxs {
+.margin-bottom-xxs{
   margin-bottom: 4px;
 }
 
 .create-button {
   outline: none;
 }
-
-.btn-create {
-  background: #34D6A4 !important;
-  flex: 1;
-  margin: 0 5px 0 5px;
-  border-radius: 8px;
-  font-weight: 600;
-}
-
-.new-mat-divider {
-  background-color: #FFFFFF;
-  opacity: 0.3;
-}
-
-// #authToolExp {
-//   .mat-expansion-panel-body {
-//     padding: 0;
-//   }
-// }

@@ -160,7 +160,7 @@ export class IapAssessmentComponent implements OnInit {
                 this.preview()
               } else {
                 this.loaderService.changeLoad.next(false)
-                this.snackBar.open(response.list[0], 'X')
+                this.snackBar.open(response.list[0])
               }
             })
           }
@@ -182,7 +182,7 @@ export class IapAssessmentComponent implements OnInit {
         })
         break
       case 'close':
-        this.router.navigateByUrl('/author/cbp')
+        this.router.navigateByUrl('/author/home')
         break
     }
   }
@@ -322,7 +322,7 @@ export class IapAssessmentComponent implements OnInit {
         if (this.contents.length) {
           this.contentService.changeActiveCont.next(this.contents[0].identifier)
         } else {
-          this.router.navigateByUrl('/author/cbp')
+          this.router.navigateByUrl('/author/home')
         }
       },
       () => {
@@ -419,7 +419,7 @@ export class IapAssessmentComponent implements OnInit {
         })
       } else {
         if (response && response.list) {
-          this.snackBar.open(response.list[0], 'X')
+          this.snackBar.open(response.list[0])
         }
       }
     })
@@ -458,7 +458,7 @@ export class IapAssessmentComponent implements OnInit {
       const saveCall = (needSave
         ? this.triggerSave(updatedContent, this.currentContent)
         : of({} as any)
-      ).pipe(mergeMap(() => this.editorService.forwardBackward(body, this.currentContent, '')))
+      ).pipe(mergeMap(() => this.editorService.forwardBackward(body, this.currentContent)))
       this.loaderService.changeLoad.next(true)
 
       saveCall.subscribe(
@@ -474,7 +474,7 @@ export class IapAssessmentComponent implements OnInit {
           if (this.contents.length) {
             this.contentService.changeActiveCont.next(this.contents[0].identifier)
           } else {
-            this.router.navigateByUrl('/author/cbp')
+            this.router.navigateByUrl('/author/home')
           }
         },
         error => {
@@ -507,14 +507,7 @@ export class IapAssessmentComponent implements OnInit {
 
   fullScreenToggle = () => {
     const doc: any = document
-    // const elm: any = doc.getElementById('whole-container')
-    let elm: any = doc.getElementById('whole-container')
-    if (!elm) {
-      elm = doc.getElementById('edit-meta')
-    }
-    if (!elm) {
-      elm = doc.getElementById('auth-root')
-    }
+    const elm: any = doc.getElementById('whole-container')
     if (elm.requestFullscreen) {
       !doc.fullscreenElement ? elm.requestFullscreen() : doc.exitFullscreen()
     } else if (elm.mozRequestFullScreen) {

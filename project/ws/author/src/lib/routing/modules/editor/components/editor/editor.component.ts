@@ -77,7 +77,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-          this.route.navigateByUrl('/author/cbp')
+          this.route.navigateByUrl('/author/home')
           return
         }
         if (!hasAccess || contents[0].content.isMetaEditingDisabled) {
@@ -87,7 +87,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-          this.route.navigateByUrl('/author/cbp')
+          this.route.navigateByUrl('/author/home')
           return
         }
         contents.map(v => {
@@ -135,7 +135,7 @@ export class EditorComponent implements OnInit, OnDestroy {
         ) {
           this.route.navigate(['upload'], { relativeTo: this.router })
         } else if (
-          contents[0].content.mimeType === 'text/x-url' &&
+          contents[0].content.mimeType === 'application/html' &&
           !contents[0].content.isExternal
         ) {
           this.route.navigate(['upload'], { relativeTo: this.router })

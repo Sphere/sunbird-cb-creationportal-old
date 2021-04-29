@@ -26,8 +26,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core'
   styleUrls: ['./base.component.scss'],
 })
 export class BaseComponent implements OnInit, OnDestroy {
-  ngOnInit() { }
-  ngOnDestroy() { }
+  ngOnInit() {}
+  ngOnDestroy() {}
   // contents: NSContent.IContentMeta[] = []
   // currentParentId!: string
   // stepper: IAuthSteps[] = [
@@ -261,7 +261,7 @@ export class BaseComponent implements OnInit, OnDestroy {
   //         if (this.contents.length) {
   //           this.contentService.changeActiveCont.next(this.contents[0].identifier)
   //         } else {
-  //           this.router.navigateByUrl('/author/cbp')
+  //           this.router.navigateByUrl('/author/home')
   //         }
   //       },
   //       (error: any) => {
@@ -501,7 +501,7 @@ export class BaseComponent implements OnInit, OnDestroy {
   //       break
 
   //     case 'close':
-  //       this.router.navigateByUrl('/author/cbp')
+  //       this.router.navigateByUrl('/author/home')
   //       break
   //   }
   // }
@@ -521,7 +521,7 @@ export class BaseComponent implements OnInit, OnDestroy {
   //       if (this.contents.length) {
   //         this.contentService.changeActiveCont.next(this.contents[0].identifier)
   //       } else {
-  //         this.router.navigateByUrl('/author/cbp')
+  //         this.router.navigateByUrl('/author/home')
   //       }
   //     },
   //     error => {

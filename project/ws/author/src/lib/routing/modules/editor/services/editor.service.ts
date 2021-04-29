@@ -1,21 +1,20 @@
 import { Injectable } from '@angular/core'
 import { NsAutoComplete, UserAutocompleteService } from '@ws-widget/collection'
-// import { ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService } from '@ws-widget/utils'
 import {
   AUTHORING_CONTENT_BASE,
   CONTENT_BASE_COPY,
-  CONTENT_CREATE,
+  // CONTENT_CREATE,
   CONTENT_DELETE,
-  // CONTENT_READ,
+  CONTENT_READ,
   CONTENT_SAVE,
   CONTENT_SAVE_V2,
   SEARCH,
   STATUS_CHANGE,
   SEARCH_V6_ADMIN,
   SEARCH_V6_AUTH,
+  CONTENT_READ_HIERARCHY_AND_DATA,
   AUTHORING_BASE,
-  SEND_TO_REVIEW,
-  PUBLISH_CONTENT,
 } from '@ws/author/src/lib/constants/apiEndpoints'
 import { NSApiResponse } from '@ws/author/src/lib/interface//apiResponse'
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
@@ -31,13 +30,17 @@ import { environment } from '../../../../../../../../../src/environments/environ
 @Injectable()
 export class EditorService {
   accessPath: string[] = []
+  newCreatedLexid!: string
   constructor(
     private apiService: ApiService,
     private accessService: AccessControlService,
     private userAutoComplete: UserAutocompleteService,
+    private configSvc: ConfigurationsService,
   ) { }
 
   create(meta: NSApiRequest.ICreateMetaRequestGeneral): Observable<string> {
+
+    console.log('CREATE edit service 111111')
     const requestBody: NSApiRequest.ICreateMetaRequest = {
       content: {
         locale: 'en',
@@ -50,11 +53,23 @@ export class EditorService {
         createdBy: this.accessService.userId,
       },
     }
-
+    if (this.accessService.rootOrg === 'client2') {
+      if (meta.contentType === 'Knowledge Artifact') {
+        try {
+          const userPath = `client2/Australia/dealer_code-${this.configSvc.unMappedUser.json_unmapped_fields.dealer_group_code}`
+          requestBody.content.accessPaths = userPath
+        } catch {
+          requestBody.content.accessPaths = 'client2'
+        }
+      } else {
+        requestBody.content.accessPaths = 'client2'
+      }
+    }
     return this.apiService
       .post<NSApiRequest.ICreateMetaRequest>(
         // tslint:disable-next-line:max-line-length
-        `${CONTENT_CREATE}${this.accessService.orgRootOrgAsQuery}`,
+        // `${CONTENT_CREATE}${this.accessService.orgRootOrgAsQuery}`,
+        `${AUTHORING_BASE}content/v3/create`,
         requestBody,
       )
       .pipe(
@@ -64,7 +79,11 @@ export class EditorService {
       )
   }
 
+
   createV2(meta: NSApiRequest.ICreateMetaRequestGeneralV2): Observable<string> {
+
+    console.log('CREATE edit service 222222')
+
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {
@@ -89,7 +108,7 @@ export class EditorService {
         },
       },
     }
-
+    console.log('CREATE V2 EDITOR SERVICE ', requestBody)
     return this.apiService
       .post<NSApiRequest.ICreateMetaRequestV2>(
         // tslint:disable-next-line:max-line-length
@@ -104,12 +123,14 @@ export class EditorService {
   }
 
   readContent(id: string): Observable<NSContent.IContentMeta> {
+    this.newCreatedLexid = id
     return this.apiService.get<NSContent.IContentMeta>(
-      `${AUTHORING_BASE}${id}${this.accessService.orgRootOrgAsQuery}`,
+      `${CONTENT_READ}${id}${this.accessService.orgRootOrgAsQuery}`,
     )
   }
 
   readContentV2(id: string): Observable<NSContent.IContentMeta> {
+    this.newCreatedLexid = id
     return this.apiService.get<NSContent.IContentMeta>(
       `${AUTHORING_BASE}content/v3/read/${id}?mode=edit`,
     ).pipe(
@@ -118,16 +139,13 @@ export class EditorService {
       })
     )
   }
-
-  readcontentV3(id: string): Observable<NSContent.IContentMeta> {
-    return this.apiService.get<NSContent.IContentMeta>(
-      `/apis/proxies/v8/action/content/v3/hierarchy/${id}?mode=edit`
-    ).pipe(
-      map((data: any) => {
-        return data.result.content
-      })
-    )
+  createAndReadContentV2(
+    meta: NSApiRequest.ICreateMetaRequestGeneralV2,
+  ): Observable<NSContent.IContentMeta> {
+    console.log('EDITOR SERVICE META ', meta)
+    return this.createV2(meta).pipe(mergeMap(data => this.readContentV2(data)))
   }
+
 
   readMultipleContent(ids: string[]): Observable<NSContent.IContentMeta[]> {
     return this.apiService.get<NSContent.IContentMeta>(
@@ -136,15 +154,9 @@ export class EditorService {
   }
 
   createAndReadContent(
-    meta: any, // NSApiRequest.ICreateMetaRequestGeneral to enable top-bottom Aproach
+    meta: NSApiRequest.ICreateMetaRequestGeneral,
   ): Observable<NSContent.IContentMeta> {
     return this.create(meta).pipe(mergeMap(data => this.readContent(data)))
-  }
-
-  createAndReadContentV2(
-    meta: NSApiRequest.ICreateMetaRequestGeneralV2,
-  ): Observable<NSContent.IContentMeta> {
-    return this.createV2(meta).pipe(mergeMap(data => this.readContentV2(data)))
   }
 
   updateContent(meta: NSApiRequest.IContentUpdate): Observable<null> {
@@ -155,6 +167,7 @@ export class EditorService {
   }
 
   updateContentV2(meta: NSApiRequest.IContentUpdate): Observable<null> {
+    console.log('UPDATE CONTENT V2')
     return this.apiService.post<null>(
       `${CONTENT_SAVE_V2}${this.accessService.orgRootOrgAsQuery}`,
       meta,
@@ -167,7 +180,6 @@ export class EditorService {
       meta,
     )
   }
-
   updateContentV4(meta: NSApiRequest.IContentUpdateV3): Observable<null> {
     return this.apiService.patch<null>(
       `/apis/proxies/v8/action/content/v3/hierarchy/update`,
@@ -257,23 +269,6 @@ export class EditorService {
     return this.apiService.post<null>(STATUS_CHANGE + id, requestBody)
   }
 
-  sendToReview(id: string, status: string) {
-    if (status === 'Review') {
-      const requestbody = {
-        request: {
-          content: {
-            publisher: this.accessService.userName,
-            lastPublishedBy: this.accessService.userName,
-          },
-        },
-      }
-      return this.apiService.post<null>(PUBLISH_CONTENT + id, requestbody)
-    }  {
-      const requestbody = {}
-      return this.apiService.post<null>(SEND_TO_REVIEW + id, requestbody)
-    }
-  }
-
   readJSON(artifactUrl: string): Observable<any> {
     return this.apiService.get(`${AUTHORING_CONTENT_BASE}${encodeURIComponent(artifactUrl)}`)
   }
@@ -342,5 +337,15 @@ export class EditorService {
         author: this.accessService.userId,
         isAdmin: this.accessService.hasRole(['editor', 'admin']),
       })
+  }
+
+  getDataForContent(id: string) {
+    return this.apiService.get<{ content: NSContent.IContentMeta, data: any }[]>(
+      `${CONTENT_READ_HIERARCHY_AND_DATA}${id}`,
+    ).pipe(
+      catchError((v: any) => {
+        return of(v)
+      }),
+    )
   }
 }

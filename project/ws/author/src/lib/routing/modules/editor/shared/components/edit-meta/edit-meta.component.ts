@@ -10,18 +10,16 @@ import {
   OnInit,
   Output,
   ViewChild,
-  Inject,
-  HostListener,
 } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms'
 import { MatAutocompleteSelectedEvent } from '@angular/material'
 import { MatChipInputEvent } from '@angular/material/chips'
-import { MatDialog, MatDialogConfig, MAT_DIALOG_DATA } from '@angular/material/dialog'
+import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
-import { ConfigurationsService, ValueService } from '@ws-widget/utils'
+import { ConfigurationsService } from '@ws-widget/utils'
 import { ImageCropComponent } from '@ws-widget/utils/src/public-api'
-import { AUTHORING_BASE, CONTENT_BASE_STATIC, CONTENT_BASE_STREAM } from '@ws/author/src/lib/constants/apiEndpoints'
+import { AUTHORING_BASE, CONTENT_BASE_STATIC } from '@ws/author/src/lib/constants/apiEndpoints'
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '@ws/author/src/lib/constants/upload'
@@ -30,50 +28,32 @@ import { NotificationComponent } from '@ws/author/src/lib/modules/shared/compone
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { Observable, of, Subscription } from 'rxjs'
-// import { InterestService } from '../../../../../../../../../app/src/lib/routes/profile/routes/interest/services/interest.service'
+import { InterestService } from '../../../../../../../../../app/src/lib/routes/profile/routes/interest/services/interest.service'
 import { UploadService } from '../../services/upload.service'
 import { CatalogSelectComponent } from '../catalog-select/catalog-select.component'
 import { IFormMeta } from './../../../../../../interface/form'
 import { AccessControlService } from './../../../../../../modules/shared/services/access-control.service'
 import { AuthInitService } from './../../../../../../services/init.service'
 import { LoaderService } from './../../../../../../services/loader.service'
-import { CompetencyAddPopUpComponent } from '../competency-add-popup/competency-add-popup'
-import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
+// import { CollectionStoreService } from './../../../routing/modules/collection/services/store.service'
 import {
   debounceTime,
   distinctUntilChanged,
   filter,
-  // startWith,
+  startWith,
   switchMap,
   map,
-  startWith,
 } from 'rxjs/operators'
-import { CompetenceService } from '../../services/competence.service'
-import { NSCompetencie } from '../../../../../../interface/competencies.model'
-import { CompetenceViewComponent } from './competencies-view/competencies-view.component'
-import { AddThumbnailComponent } from '../../../shared/components/add-thumbnail/add-thumbnail.component'
 
-// import { NsWidgetResolver } from '@ws-widget/resolver'
-// import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper'
-/* tslint:disable */
-import _ from 'lodash'
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
-import { NSApiResponse } from '../../../../../../interface/apiResponse'
-/* tslint:enable */
-export interface IUsersData {
-  name?: string
-  id: string
-  srclang: string
-  languages: any[]
-}
 
+import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
+import { NSApiResponse } from '../../../../../../interface/apiResponse'
+import { environment } from '../../../../../../../../../../../src/environments/environment'
 @Component({
   selector: 'ws-auth-edit-meta',
   templateUrl: './edit-meta.component.html',
   styleUrls: ['./edit-meta.component.scss'],
-  // providers: [{
-  //   provide: STEPPER_GLOBAL_OPTIONS, useValue: { displayDefaultIndicatorType: false },
-  // }],
 })
 export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   contentMeta!: NSContent.IContentMeta
@@ -82,23 +62,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() nextAction = 'done'
   @Input() stage = 1
   @Input() type = ''
-  /**for side nav */
-  sideNavBarOpened = true
-  widgetDataa!: any
-  private defaultSideNavBarOpenedSubscription: any
-  public screenSizeIsLtMedium = false
-  isLtMedium$ = this.valueSvc.isLtMedium$
-  mode$ = this.isLtMedium$.pipe(map(isMedium => (isMedium ? 'over' : 'side')))
-  /**for side nav: END */
-  /**for side competency */
-  searchKey = ''
-  selectedId = ''
-  filteredCompetencies!: NSCompetencie.ICompetencie[]
-  queryControl = new FormControl('')
-  allCompetencies!: NSCompetencie.ICompetencie[]
-  /**for side competency: END */
+
   location = CONTENT_BASE_STATIC
-  display = 'none'
   selectable = true
   removable = true
   addOnBlur = true
@@ -115,7 +80,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   regionCtrl!: FormControl
   accessPathsCtrl!: FormControl
   keywordsCtrl!: FormControl
-  competencyCtrl!: FormControl
   contentForm!: FormGroup
   selectedSkills: string[] = []
   canUpdate = true
@@ -126,13 +90,13 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   jobProfileList: any[] = []
   regionList: any[] = []
   accessPathList: any[] = []
-  competencyValue: any[] = []
   infoType = ''
+  isSiemens = false
   fetchTagsStatus: 'done' | 'fetching' | null = null
   readonly separatorKeysCodes: number[] = [ENTER, COMMA]
   selectedIndex = 0
   hours = 0
-  minutes = 0
+  minutes = 1
   seconds = 0
   @Input() parentContent: string | null = null
   routerSubscription!: Subscription
@@ -141,16 +105,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   showMoreGlance = false
   complexityLevelList: string[] = []
   isEditEnabled = false
-  banners = [{ color: '#003F5C', isDefault: true }, { color: '#59468B', isDefault: false },
-  { color: '#185F49', isDefault: false }, { color: '#126489', isDefault: false }]
-
-  workFlow = [{ isActive: true, isCompleted: false, name: 'Basic Details', step: 0 },
-  { isActive: false, isCompleted: false, name: 'Classification', step: 1 },
-  { isActive: false, isCompleted: false, name: 'Intended for', step: 2 }]
-
-  allLanguages: any[] = []
-
-  file?: File
+  public sideNavBarOpened = false
 
   @ViewChild('creatorContactsView', { static: false }) creatorContactsView!: ElementRef
   @ViewChild('trackContactsView', { static: false }) trackContactsView!: ElementRef
@@ -161,27 +116,14 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('jobProfileView', { static: false }) jobProfileView!: ElementRef
   @ViewChild('regionView', { static: false }) regionView!: ElementRef
   @ViewChild('accessPathsView', { static: false }) accessPathsView!: ElementRef
-  @ViewChild('keywordsSearch', { static: false }) keywordsSearch!: ElementRef<any>
-  @ViewChild('competencyView', { static: true }) competencyView!: ElementRef<any>
+  @ViewChild('keywordsSearch', { static: true }) keywordsSearch!: ElementRef<any>
 
   timer: any
 
   filteredOptions$: Observable<string[]> = of([])
-  competencyOptions$: Observable<any[]> = of([])
-  @ViewChild('stickyMenu', { static: true }) menuElement!: ElementRef
-  elementPosition: any
-  sticky = false
-  @HostListener('window:scroll', ['$event'])
-  handleScroll() {
-    const windowScroll = window.pageYOffset
-    if (windowScroll >= this.elementPosition - 100) {
-      this.sticky = true
-    } else {
-      this.sticky = false
-    }
-  }
+  saveParent: any
+
   constructor(
-    private valueSvc: ValueService,
     private formBuilder: FormBuilder,
     private uploadService: UploadService,
     private snackBar: MatSnackBar,
@@ -190,94 +132,15 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     private contentService: EditorContentService,
     private configSvc: ConfigurationsService,
     private ref: ChangeDetectorRef,
-    private comptncySvc: CompetenceService,
+    private interestSvc: InterestService,
     private loader: LoaderService,
     private authInitService: AuthInitService,
     private accessService: AccessControlService,
     private apiService: ApiService,
-    @Inject(MAT_DIALOG_DATA) public data1: IUsersData,
-  ) {
-    // console.log("Parent component", this.parentContent)
-    this.updateLeftMenus()
-  }
-  updateLeftMenus() {
-    this.widgetDataa = {
-      widgetType: 'menus',
-      widgetSubType: 'leftMenu',
-      widgetData: {
-        logo: false,
-        menus: [
-          {
-            name: 'Overview',
-            key: 'basic-information',
-            fragment: true,
-            render: true,
-            enabled: true,
-            customRouting: false,
-            routerLink: 'basic-information',
-          },
-          {
-            name: 'Classification',
-            key: 'classification',
-            fragment: true,
-            render: true,
-            enabled: true,
-            customRouting: false,
-            routerLink: 'classification',
-          },
-          {
-            name: 'Competencies',
-            key: 'competencies',
-            fragment: true,
-            render: true,
-            enabled: true,
-            customRouting: false,
-            routerLink: 'competencies',
-          },
-          {
-            name: 'Intended for',
-            key: 'intended-for',
-            fragment: true,
-            render: true,
-            enabled: true,
-            customRouting: false,
-            routerLink: 'intended-for',
-          },
-          {
-            name: 'Stakeholders',
-            key: 'stakeholders',
-            fragment: true,
-            render: true,
-            enabled: true,
-            customRouting: false,
-            routerLink: 'stakeholders',
-          },
-        ],
-      },
-    }
-  }
-
-  openDialog() {
-
-    const dialogConfig = new MatDialogConfig()
-    const dialogRef = this.dialog.open(AddThumbnailComponent, dialogConfig)
-    const instance = dialogRef.componentInstance
-    instance.isUpdate = true
-    dialogRef.afterClosed().subscribe(data => {
-      // this.data = data
-      if (data.appURL) {
-        this.contentForm.controls.appIcon.setValue(data.appURL)
-        this.contentForm.controls.thumbnail.setValue(data.appURL)
-        this.canUpdate = true
-        this.storeData()
-      }
-      this.uploadAppIcon(data.file)
-    })
-  }
+  ) { }
 
   ngAfterViewInit() {
     this.ref.detach()
-    // this.elementPosition = this.menuElement.nativeElement.parentElement.offsetTop
     this.timer = setInterval(() => {
       this.ref.detectChanges()
       // tslint:disable-next-line: align
@@ -285,11 +148,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-    this.refreshData()
-    this.sidenavSubscribe()
-    this.typeCheck()
+    this.isSiemens = this.accessService.rootOrg.toLowerCase() === 'siemens'
     this.ordinals = this.authInitService.ordinals
-    this.ordinals.licenses = ['CC BY-NC-SA 4.0', 'Standard YouTube License', 'CC BY-NC 4.0', 'CC BY-SA 4.0', 'CC BY 4.0']
     this.audienceList = this.ordinals.audience
     this.jobProfileList = this.ordinals.jobProfile
     this.complexityLevelList = this.ordinals.audience
@@ -300,14 +160,12 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.editorsCtrl = new FormControl()
     this.creatorDetailsCtrl = new FormControl()
     this.keywordsCtrl = new FormControl('')
-    this.competencyCtrl = new FormControl('')
 
     this.audienceCtrl = new FormControl()
     this.jobProfileCtrl = new FormControl()
     this.regionCtrl = new FormControl()
     this.accessPathsCtrl = new FormControl()
     this.accessPathsCtrl.disable()
-
     this.creatorContactsCtrl.valueChanges
       .pipe(
         debounceTime(500),
@@ -450,73 +308,18 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       this.content = this.contentService.getUpdatedMeta(data)
     })
-    // this.filteredOptions$ = this.keywordsCtrl.valueChanges.pipe(
-    //   startWith(this.keywordsCtrl.value),
-    //   debounceTime(500),
-    //   distinctUntilChanged(),
-    //   switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
-    // )
-    this.competencyOptions$ = this.competencyCtrl.valueChanges.pipe(
-      startWith(this.competencyCtrl.value),
+
+    this.filteredOptions$ = this.keywordsCtrl.valueChanges.pipe(
+      startWith(this.keywordsCtrl.value),
       debounceTime(500),
       distinctUntilChanged(),
-      switchMap(value => this.comptncySvc.fetchAutocompleteCompetencyV2(value)),
+      switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
     )
-
-    this.allLanguages = this.data1.languages
-  }
-  sidenavSubscribe() {
-    this.defaultSideNavBarOpenedSubscription = this.isLtMedium$.subscribe(isLtMedium => {
-      this.sideNavBarOpened = !isLtMedium
-      this.screenSizeIsLtMedium = isLtMedium
-    })
-  }
-  start() {
-    const dialogRef = this.dialog.open(CompetencyAddPopUpComponent, {
-      minHeight: 'auto',
-      width: '80%',
-      panelClass: 'remove-pad',
-    })
-    dialogRef.afterClosed().subscribe((response: any) => {
-      if (response === 'postCreated') {
-        // this.refreshData(this.currentActivePage)
-      }
-    })
-  }
-  typeCheck() {
-    if (this.type) {
-      let dataName = ''
-      switch (this.type) {
-        case 'URL':
-          dataName = 'Attach Link'
-          break
-        case 'UPLOAD':
-          dataName = 'Upload'
-          break
-        case 'ASSE':
-          dataName = 'Assessment'
-          break
-        case 'WEB':
-          dataName = 'Web Pages'
-          break
-
-        default:
-          break
-      }
-      if (dataName) {
-        this.workFlow.push({
-          isActive: false,
-          isCompleted: true,
-          name: dataName,
-          step: -1,
-        })
-      }
-    }
   }
 
   optionSelected(keyword: string) {
     this.keywordsCtrl.setValue(' ')
-    this.keywordsSearch.nativeElement.blur()
+    // this.keywordsSearch.nativeElement.blur()
     if (keyword && keyword.length) {
       const value = this.contentForm.controls.keywords.value || []
       if (value.indexOf(keyword) === -1) {
@@ -526,58 +329,24 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  canPush(arr: any[], obj: any) {
-    for (const test of arr) {
-      if (test.id === obj.id) {
-        return false
-      }
-    }
-    return true
-
-  }
-
   ngOnDestroy() {
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe()
-    }
-    if (this.defaultSideNavBarOpenedSubscription) {
-      this.defaultSideNavBarOpenedSubscription.unsubscribe()
     }
     this.loader.changeLoad.next(false)
     this.ref.detach()
     clearInterval(this.timer)
   }
-  // customStepper() {
-  //   this.data.emit("next")
-  // if (step >= 0) {
-  //   if (this.selectedIndex !== step) {
-  //     this.selectedIndex = step
-  //     const oldStrip = this.workFlow.find(i => i.isActive)
 
-  //     this.workFlow[step].isActive = true
-  //     this.workFlow[step].isCompleted = false
-  //     if (oldStrip && oldStrip.step >= 0) {
-  //       this.workFlow[oldStrip.step].isActive = false
-  //       this.workFlow[oldStrip.step].isCompleted = true
-  //     }
-  //   }
-  // } else {
-  //   this.data.emit('back')
-  // }
-  // }
   private set content(contentMeta: NSContent.IContentMeta) {
+
     this.contentMeta = contentMeta
     this.isEditEnabled = this.contentService.hasAccess(
       contentMeta,
       false,
       this.parentContent ? this.contentService.getUpdatedMeta(this.parentContent) : undefined,
     )
-    // this.contentMeta.name = contentMeta.name === 'Untitled Content' ? '' : contentMeta.name
-    // this.contentMeta.name = contentMeta.name
-    if (!this.contentMeta.posterImage) {
-      this.contentMeta.posterImage = this.banners[0].color
-    }
-    // this.contentMeta.posterImage = contentMeta.posterImage
+    this.contentMeta.name = contentMeta.name === 'Untitled Content' ? '' : contentMeta.name
     this.canExpiry = this.contentMeta.expiryDate !== '99991231T235959+0000'
     if (this.canExpiry) {
       this.contentMeta.expiryDate =
@@ -669,7 +438,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         } else {
           if (v === 'expiryDate') {
             this.contentForm.controls[v].setValue(
-              new Date(new Date().setMonth(new Date().getMonth() + 6)),
+              new Date(new Date().setMonth(new Date().getMonth() + 60)),
             )
           } else {
             this.contentForm.controls[v].setValue(
@@ -718,7 +487,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   changeMimeType() {
-    const artifactUrl = this.contentForm.controls.artifactUrl.value
+    const artifactUrl = this.contentForm.controls.artifactUrl ? this.contentForm.controls.artifactUrl.value : ''
     if (this.contentForm.controls.contentType.value === 'Course') {
       this.contentForm.controls.mimeType.setValue('application/vnd.ekstep.content-collection')
     } else {
@@ -744,9 +513,9 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.resourceTypes = this.ordinals['Offering Mode'] || this.ordinals.categoryType || []
     }
 
-    // if (this.resourceTypes.indexOf(this.contentForm.controls.categoryType.value) < 0) {
-    //   this.contentForm.controls.resourceType.setValue('')
-    // }
+    if (this.resourceTypes.indexOf(this.contentForm.controls.categoryType.value) < 0) {
+      this.contentForm.controls.resourceType.setValue('')
+    }
   }
 
   private setDuration(seconds: any) {
@@ -771,31 +540,76 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   storeData() {
     try {
-      const originalMeta = this.contentService.getUpdatedMeta(this.contentMeta.identifier)
+      const originalMeta = this.contentService.getOriginalMeta(this.contentMeta.identifier)
       if (originalMeta && this.isEditEnabled) {
-        // const expiryDate = this.contentForm.value.expiryDate
+        const expiryDate = this.contentForm.value.expiryDate
         const currentMeta: NSContent.IContentMeta = JSON.parse(JSON.stringify(this.contentForm.value))
-        if (originalMeta.mimeType) {
+
+        const exemptArray = ['application/quiz', 'application/x-mpegURL', 'audio/mpeg']
+        if (exemptArray.includes(originalMeta.mimeType)) {
+          currentMeta.artifactUrl = originalMeta.artifactUrl
           currentMeta.mimeType = originalMeta.mimeType
         }
-        if (currentMeta) {
-          currentMeta.duration = (currentMeta.duration === '0') ? '0' : currentMeta.duration
+        if (!currentMeta.duration && originalMeta.duration) {
+          currentMeta.duration = originalMeta.duration
         }
-        const meta = <any>{}
-        // if (this.canExpiry) {
-        //   currentMeta.expiryDate = `${expiryDate
-        //     .toISOString()
-        //     .replace(/-/g, '')
-        //     .replace(/:/g, '')
-        //     .split('.')[0]
-        //     }+0000`
+        if (!currentMeta.appIcon && originalMeta.appIcon) {
+          currentMeta.appIcon = originalMeta.appIcon
+          currentMeta.thumbnail = originalMeta.thumbnail
+        }
+        // currentMeta.resourceType=currentMeta.categoryType;
+
+        if (currentMeta.status === 'Draft') {
+          const parentData = this.contentService.parentUpdatedMeta()
+
+          if (parentData && currentMeta.identifier !== parentData.identifier) {
+            //   currentMeta.thumbnail = parentData.thumbnail !== '' ? parentData.thumbnail : currentMeta.thumbnail
+            // currentMeta.appIcon = parentData.appIcon !== '' ? parentData.appIcon : currentMeta.appIcon
+            //  if (!currentMeta.posterImage) {
+            //   currentMeta.posterImage = parentData.posterImage !== '' ? parentData.posterImage : currentMeta.posterImage
+            //  }
+            if (!currentMeta.subTitle) {
+              currentMeta.subTitle = parentData.subTitle !== '' ? parentData.subTitle : currentMeta.subTitle
+            }
+            if (!currentMeta.body) {
+              currentMeta.body = parentData.body !== '' ? parentData.body : currentMeta.body
+            }
+            if (!currentMeta.categoryType) {
+              currentMeta.categoryType = parentData.categoryType !== '' ? parentData.categoryType : currentMeta.categoryType
+            }
+            if (!currentMeta.resourceType) {
+              currentMeta.resourceType = parentData.resourceType !== '' ? parentData.resourceType : currentMeta.resourceType
+            }
+
+            if (!currentMeta.sourceName) {
+              currentMeta.sourceName = parentData.sourceName !== '' ? parentData.sourceName : currentMeta.sourceName
+            }
+          }
+        }
+        // if(currentMeta.categoryType && !currentMeta.resourceType){
+        //   currentMeta.resourceType = currentMeta.categoryType
         // }
+
+        // if(currentMeta.resourceType && !currentMeta.categoryType){
+        //   currentMeta.categoryType = currentMeta.resourceType
+        // }
+
+        const meta = <any>{}
+        if (this.canExpiry) {
+          currentMeta.expiryDate = `${expiryDate
+            .toISOString()
+            .replace(/-/g, '')
+            .replace(/:/g, '')
+            .split('.')[0]
+            }+0000`
+        }
         Object.keys(currentMeta).map(v => {
           if (
             v !== 'versionKey' &&
             JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !==
-            JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])
+            JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta]) && v !== 'jobProfile'
           ) {
+
             if (
               currentMeta[v as keyof NSContent.IContentMeta] ||
               (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
@@ -816,58 +630,41 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
           }
         })
-        // Quick FIX
-        // if (this.stage >= 1 && !this.type) {
-        // delete meta.artifactUrl
-        //   delete meta.size
-        //   if (meta.creatorDetails && meta.creatorDetails.length === 0)
-        //     delete meta.creatorDetails
-        //   if (meta.trackContacts && meta.trackContacts.length === 0)
-        //     delete meta.trackContacts
-        //   if (meta.creatorContacts && meta.creatorContacts.length === 0)
-        //     delete meta.creatorContacts
-        //   if (meta.publisherDetails && meta.publisherDetails.length === 0)
-        //     delete meta.publisherDetails
-        // delete meta.duration
-        // }
-        // if (this.stage >= 2) {
-        //   delete meta.name
-        //   delete meta.body
-        //   delete meta.subTitle
-        //   delete meta.description
-        //   delete meta.thumbnail
-        //   delete meta.creatorLogo
-        //   delete meta.creatorThumbnail
-        //   delete meta.creatorPosterImage
-        //   delete meta.posterImage
-        //   delete meta.sourceName
-        //   delete meta.categoryType
-        // }
-        // if (this.stage >= 3) {
-        //   delete meta.complexityLevel
-        //   delete meta.idealScreenSize
-        //   delete meta.learningMode
-        //   delete meta.visibility
-        //   delete meta.exclusiveContent
-        //   delete meta.keywords
-        //   delete meta.catalogPaths
-        // }
+
+        if (this.stage >= 1 && !this.type) {
+          delete meta.artifactUrl
+        }
         this.contentService.setUpdatedMeta(meta, this.contentMeta.identifier)
+
       }
     } catch (ex) {
       this.snackBar.open('Please Save Parent first and refresh page.')
+      if (ex) {
+        // this.saveParent = true
+        // this.emitSaveData(true)
+      }
+      // this.contentService.parentContent
     }
+
   }
+  // emitSaveData(flag: boolean) {
+  //   if (flag) {
+  //     this.saveParent = 1
+  //     if (this.saveParent === 1) {
+  //       this.data.emit('save')
+  //     }
+  //     this.saveParent = 2
+  //   }
+  // }
 
   updateContentService(meta: string, value: any, event = false) {
     this.contentForm.controls[meta].setValue(value, { events: event })
     this.contentService.setUpdatedMeta({ [meta]: value } as any, this.contentMeta.identifier)
   }
 
-  // formNext() {
-  //   // this.selectedIndex = index
-  //   this.customStepper()
-  // }
+  formNext(index: number) {
+    this.selectedIndex = index
+  }
 
   addKeyword(event: MatChipInputEvent): void {
     const input = event.input
@@ -900,6 +697,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.contentForm.controls.keywords.value.splice(index, 1)
     this.contentForm.controls.keywords.setValue(this.contentForm.controls.keywords.value)
   }
+
   removeReferences(index: number): void {
     this.contentForm.controls.references.value.splice(index, 1)
     this.contentForm.controls.references.setValue(this.contentForm.controls.references.value)
@@ -952,6 +750,181 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   conceptToggle() {
     this.addConcepts = !this.addConcepts
   }
+
+  // uploadAppIcon(file: File) {
+  //   const formdata = new FormData()
+  //   const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
+  //   if (
+  //     !(
+  //       IMAGE_SUPPORT_TYPES.indexOf(
+  //         `.${fileName
+  //           .toLowerCase()
+  //           .split('.')
+  //           .pop()}`,
+  //       ) > -1
+  //     )
+  //   ) {
+  //     this.snackBar.openFromComponent(NotificationComponent, {
+  //       data: {
+  //         type: Notify.INVALID_FORMAT,
+  //       },
+  //       duration: NOTIFICATION_TIME * 1000,
+  //     })
+  //     return
+  //   }
+
+  //   if (file.size > IMAGE_MAX_SIZE) {
+  //     this.snackBar.openFromComponent(NotificationComponent, {
+  //       data: {
+  //         type: Notify.SIZE_ERROR,
+  //       },
+  //       duration: NOTIFICATION_TIME * 1000,
+  //     })
+  //     return
+  //   }
+
+  //   const dialogRef = this.dialog.open(ImageCropComponent, {
+  //     width: '70%',
+  //     data: {
+  //       isRoundCrop: false,
+  //       imageFile: file,
+  //       width: 265,
+  //       height: 150,
+  //       isThumbnail: true,
+  //       imageFileName: fileName,
+  //     },
+  //   })
+
+  //   dialogRef.afterClosed().subscribe({
+  //     next: (result: File) => {
+  //       if (result) {
+  //         formdata.append('content', result, fileName)
+  //         this.loader.changeLoad.next(true)
+  //         this.uploadService
+  //           .upload(formdata, {
+  //             contentId: this.contentMeta.identifier,
+  //             contentType: CONTENT_BASE_STATIC,
+  //           })
+  //           .subscribe(
+  //             data => {
+  //               if (data.code) {
+  //                 this.loader.changeLoad.next(false)
+  //                 this.canUpdate = false
+  //                 this.contentForm.controls.appIcon.setValue(data.artifactURL)
+  //                 this.contentForm.controls.thumbnail.setValue(data.artifactURL)
+  //                 this.contentForm.controls.posterImage.setValue(data.artifactURL)
+  //                 this.canUpdate = true
+  //                 this.storeData()
+  //                 this.snackBar.openFromComponent(NotificationComponent, {
+  //                   data: {
+  //                     type: Notify.UPLOAD_SUCCESS,
+  //                   },
+  //                   duration: NOTIFICATION_TIME * 1000,
+  //                 })
+  //               }
+  //             },
+  //             () => {
+  //               this.loader.changeLoad.next(false)
+  //               this.snackBar.openFromComponent(NotificationComponent, {
+  //                 data: {
+  //                   type: Notify.UPLOAD_FAIL,
+  //                 },
+  //                 duration: NOTIFICATION_TIME * 1000,
+  //               })
+  //             },
+  //           )
+  //       }
+  //     },
+  //   })
+  // }
+  // uploadSourceIcon(file: File) {
+  //   const formdata = new FormData()
+  //   const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
+  //   if (
+  //     !(
+  //       IMAGE_SUPPORT_TYPES.indexOf(
+  //         `.${fileName
+  //           .toLowerCase()
+  //           .split('.')
+  //           .pop()}`,
+  //       ) > -1
+  //     )
+  //   ) {
+  //     this.snackBar.openFromComponent(NotificationComponent, {
+  //       data: {
+  //         type: Notify.INVALID_FORMAT,
+  //       },
+  //       duration: NOTIFICATION_TIME * 1000,
+  //     })
+  //     return
+  //   }
+
+  //   if (file.size > IMAGE_MAX_SIZE) {
+  //     this.snackBar.openFromComponent(NotificationComponent, {
+  //       data: {
+  //         type: Notify.SIZE_ERROR,
+  //       },
+  //       duration: NOTIFICATION_TIME * 1000,
+  //     })
+  //     return
+  //   }
+
+  //   const dialogRef = this.dialog.open(ImageCropComponent, {
+  //     width: '70%',
+  //     data: {
+  //       isRoundCrop: false,
+  //       imageFile: file,
+  //       width: 72,
+  //       height: 72,
+  //       isThumbnail: true,
+  //       imageFileName: fileName,
+  //     },
+  //   })
+
+  //   dialogRef.afterClosed().subscribe({
+  //     next: (result: File) => {
+  //       if (result) {
+  //         formdata.append('content', result, fileName)
+  //         this.loader.changeLoad.next(true)
+  //         this.uploadService
+  //           .upload(formdata, {
+  //             contentId: this.contentMeta.identifier,
+  //             contentType: CONTENT_BASE_STATIC,
+  //           })
+  //           .subscribe(
+  //             data => {
+  //               if (data.code) {
+  //                 this.loader.changeLoad.next(false)
+  //                 this.canUpdate = false
+  //                 this.contentForm.controls.creatorLogo.setValue(data.artifactURL)
+  //                 this.contentForm.controls.creatorThumbnail.setValue(data.artifactURL)
+  //                 this.contentForm.controls.creatorPosterImage.setValue(data.artifactURL)
+  //                 this.canUpdate = true
+  //                 this.storeData()
+  //                 this.snackBar.openFromComponent(NotificationComponent, {
+  //                   data: {
+  //                     type: Notify.UPLOAD_SUCCESS,
+  //                   },
+  //                   duration: NOTIFICATION_TIME * 1000,
+  //                 })
+  //               }
+  //             },
+  //             () => {
+  //               this.loader.changeLoad.next(false)
+  //               this.snackBar.openFromComponent(NotificationComponent, {
+  //                 data: {
+  //                   type: Notify.UPLOAD_FAIL,
+  //                 },
+  //                 duration: NOTIFICATION_TIME * 1000,
+  //               })
+  //             },
+  //           )
+  //       }
+  //     },
+  //   })
+  // }
+
+
 
   uploadAppIcon(file: File) {
     const formdata = new FormData()
@@ -1024,6 +997,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             },
           }
 
+          console.log('CREATE V2 EDIT META TS')
+
           this.apiService
             .post<NSApiRequest.ICreateMetaRequest>(
               `${AUTHORING_BASE}content/v3/create`,
@@ -1038,6 +1013,58 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
                     contentId: meta.result.identifier,
                     contentType: CONTENT_BASE_STATIC,
                   })
+                  // .subscribe(
+                  //   data => {
+                  //     if (data.result) {
+                  //       const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
+                  //         request: {
+                  //           content: {
+                  //             // content_url: data.result.artifactUrl,
+                  //             // identifier: data.result.identifier,
+                  //             // node_id: data.result.node_id,
+                  //             artifactUrl: this.generateUrl(data.result.artifactUrl),
+                  //             versionKey: (new Date()).getTime().toString(),
+                  //           },
+                  //         },
+                  //       }
+                  //       this.apiService
+                  //         .patch<NSApiRequest.ICreateMetaRequest>(
+                  //           `${AUTHORING_BASE}content/v3/update/${data.result.identifier}`,
+                  //           updateArtf,
+                  //         )
+                  //         .subscribe(
+                  //           (meta1: NSApiResponse.IContentCreateResponseV2) => {
+                  //             if (meta1) {
+                  //             }
+                  //             this.loader.changeLoad.next(false)
+                  //             this.canUpdate = false
+                  //               this.contentForm.controls.appIcon.setValue(this.generateUrl(data.result.artifactUrl))
+                  //               this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.result.artifactUrl))
+                  //               this.canUpdate = true
+                  //               this.storeData()
+                  //             // this.contentForm.controls.posterImage.setValue(data.artifactURL)
+
+                  //             this.snackBar.openFromComponent(NotificationComponent, {
+                  //               data: {
+                  //                 type: Notify.UPLOAD_SUCCESS,
+                  //               },
+                  //               duration: NOTIFICATION_TIME * 1000,
+                  //             })
+                  //           })
+                  //     }
+                  //   },
+                  //   () => {
+                  //     this.loader.changeLoad.next(false)
+                  //     this.snackBar.openFromComponent(NotificationComponent, {
+                  //       data: {
+                  //         type: Notify.UPLOAD_FAIL,
+                  //       },
+                  //       duration: NOTIFICATION_TIME * 1000,
+                  //     })
+                  //   },
+                  // )
+
+
                   .subscribe(
                     data => {
                       if (data.result) {
@@ -1165,6 +1192,23 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       : ''
   }
 
+  generateUrl(oldUrl: string) {
+    const chunk = oldUrl.split('/')
+    const newChunk = environment.azureHost.split('/')
+    const newLink = []
+    for (let i = 0; i < chunk.length; i += 1) {
+      if (i === 2) {
+        newLink.push(newChunk[i])
+      } else if (i === 3) {
+        newLink.push(environment.azureBucket)
+      } else {
+        newLink.push(chunk[i])
+      }
+    }
+    const newUrl = newLink.join('/')
+    return newUrl
+  }
+
   showError(meta: string) {
     if (
       this.contentService.checkCondition(this.contentMeta.identifier, meta, 'required') &&
@@ -1187,9 +1231,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.contentForm.controls[field].setValue(this.contentForm.controls[field].value)
   }
 
-  // logs(avl: any) {
-  //   // console.log(avl)
-  // }
   addEmployee(event: MatAutocompleteSelectedEvent, field: string) {
     if (event.option.value && event.option.value.id) {
       this.loader.changeLoad.next(true)
@@ -1306,13 +1347,12 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       audience: [],
       body: [],
       catalogPaths: [],
-      // category: [],
-      // categoryType: [],
+      category: [],
+      categoryType: [],
       certificationList: [],
       certificationUrl: [],
       clients: [],
       complexityLevel: [],
-      difficultyLevel: [],
       concepts: [],
       contentIdAtSource: [],
       contentType: [],
@@ -1323,31 +1363,29 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       duration: [],
       editors: [],
       equivalentCertifications: [],
-      // expiryDate: [],
-      // exclusiveContent: [],
+      expiryDate: [],
+      exclusiveContent: [],
       idealScreenSize: [],
       identifier: [],
       introductoryVideo: [],
       introductoryVideoIcon: [],
       isExternal: [],
-      // isIframeSupported: [],
-      // isRejected: [],
+      isIframeSupported: [],
+      isRejected: [],
       fileType: [],
       jobProfile: [],
       kArtifacts: [],
       keywords: [],
-      competencies: [],
       learningMode: [],
       learningObjective: [],
       learningTrack: [],
-      license: [],
       locale: [],
       mimeType: [],
       name: [],
       nodeType: [],
       org: [],
       creatorDetails: [],
-      // passPercentage: [],
+      passPercentage: [],
       plagScan: [],
       playgroundInstructions: [],
       playgroundResources: [],
@@ -1366,16 +1404,14 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       sampleCertificates: [],
       skills: [],
       softwareRequirements: [],
-      // sourceName: [],
-      source: [],
+      sourceName: [],
       creatorLogo: [],
       creatorPosterImage: [],
       creatorThumbnail: [],
       status: [],
-      // studyDuration: [],
+      studyDuration: [],
       studyMaterials: [],
-      // subTitle: [],
-      purpose: '',
+      subTitle: [],
       subTitles: [],
       systemRequirements: [],
       thumbnail: [],
@@ -1384,11 +1420,10 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       unit: [],
       verifiers: [],
       visibility: [],
-      instructions: '',
-      versionKey: '',
+      versionKey: '',  // (new Date()).getTime()
     })
 
-    this.contentForm.valueChanges.pipe(debounceTime(700)).subscribe(() => {
+    this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       if (this.canUpdate) {
         this.storeData()
       }
@@ -1398,7 +1433,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.changeResourceType()
       this.filterOrdinals()
       this.changeMimeType()
-      // this.contentForm.controls.category.setValue(this.contentForm.controls.contentType.value)
+      this.contentForm.controls.category.setValue(this.contentForm.controls.contentType.value)
     })
 
     if (this.stage === 1) {
@@ -1410,7 +1445,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     // resourceType
     this.contentForm.controls.resourceType.valueChanges.subscribe(() => {
-      // this.contentForm.controls.categoryType.setValue(this.contentForm.controls.resourceType.value)
+      this.contentForm.controls.categoryType.setValue(this.contentForm.controls.resourceType.value)
+      // this.contentForm.controls.resourceType.setValue(this.contentForm.controls.resourceType.value)
     })
 
     this.contentForm.controls.resourceCategory.valueChanges.subscribe(() => {
@@ -1424,6 +1460,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     const dialogRef = this.dialog.open(CatalogSelectComponent, {
       width: '70%',
       maxHeight: '90vh',
+
       data: JSON.parse(JSON.stringify(oldCatalogs)),
     })
     dialogRef.afterClosed().subscribe((response: string[]) => {
@@ -1494,143 +1531,5 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     })
     return newCatalog
-  }
-
-  onDrop(file: any) {
-    const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
-    if (!fileName.toLowerCase().endsWith('.vtt')) {
-      this.snackBar.openFromComponent(NotificationComponent, {
-        data: {
-          type: Notify.INVALID_FORMAT,
-        },
-        duration: NOTIFICATION_TIME * 1000,
-      })
-    } else {
-      this.file = file
-      // this.getDuration()
-      this.upload()
-    }
-  }
-
-  clearUploadedFile() {
-    this.contentForm.controls.subTitles.setValue([])
-    this.file = undefined
-  }
-
-  upload() {
-
-    this.loader.changeLoad.next(true)
-    const formdata = new FormData()
-    formdata.append(
-      'content',
-      this.file as Blob,
-      (this.file as File).name.replace(/[^A-Za-z0-9.]/g, ''),
-    )
-    this.uploadService
-      .upload(
-        formdata, {
-        contentId: this.contentMeta.identifier,
-        contentType: CONTENT_BASE_STREAM,
-      }).subscribe(vtt => {
-
-        this.loader.changeLoad.next(false)
-
-        this.contentForm.controls.subTitles.setValue([{
-          url: vtt.result.artifactUrl,
-        }])
-
-      })
-  }
-  addCompetency(id: any) {
-    if (id) {
-      // API is not available
-      const vc = _.chain(this.allCompetencies).filter(i => {
-        return i.id === id
-      }).first().value()
-
-      if (vc) {
-        const value = this.contentForm.controls.competencies.value || []
-        const tempObj = {
-          id: vc.id,
-          name: vc.name,
-          description: vc.description,
-          competencyType: vc.additionalProperties.competencyType,
-        }
-        if (this.canPush(value, tempObj)) {
-          value.push(tempObj)
-          this.contentForm.controls.competencies.setValue(value)
-          this.refreshData()
-        }
-      }
-    }
-  }
-  removeCompetency(id: any): void {
-    const index = _.findIndex(this.contentForm.controls.competencies.value, { id })
-    this.contentForm.controls.competencies.value.splice(index, 1)
-    this.contentForm.controls.competencies.setValue(this.contentForm.controls.competencies.value)
-    this.refreshData()
-  }
-  view(item?: NSCompetencie.ICompetencie) {
-    const dialogRef = this.dialog.open(CompetenceViewComponent, {
-      // minHeight: 'auto',
-      width: '80%',
-      panelClass: 'remove-pad',
-      data: item,
-    })
-    const instance = dialogRef.componentInstance
-    instance.isUpdate = true
-    dialogRef.afterClosed().subscribe((response: any) => {
-      if (response && response.action === 'ADD') {
-        this.addCompetency(response.id)
-        // this.refreshData(this.currentActivePage)
-      } else if (response && response.action === 'DELETE') {
-        this.removeCompetency(response.id)
-      }
-    })
-  }
-  updateQuery(key: string) {
-    this.searchKey = key
-    this.refreshData()
-  }
-
-  reset() {
-    this.searchKey = ''
-    this.queryControl.setValue('')
-    this.selectedId = ''
-    this.refreshData()
-  }
-
-  resetSearch() {
-    this.reset()
-    // this.refreshData()
-  }
-  setSelectedCompetency(id: string) {
-    this.selectedId = id
-  }
-  refreshData() {
-    const searchJson = [
-      { type: 'COMPETENCY', field: 'name', keyword: this.searchKey },
-      { type: 'COMPETENCY', field: 'status', keyword: 'VERIFIED' },
-    ]
-    const searchObj = {
-      searches: searchJson,
-    }
-    this.comptncySvc.fetchCompetency(searchObj).subscribe((reponse: NSCompetencie.ICompetencieResponse) => {
-      if (reponse.statusInfo && reponse.statusInfo.statusCode === 200) {
-        let data = reponse.responseData
-        this.allCompetencies = reponse.responseData
-        const comp = this.contentForm.get('competencies')
-        if (comp && comp.value && comp.value.length > 0) {
-          data = _.flatten(_.map(comp.value, item => {
-            return _.filter(reponse.responseData, i => i.id === item.id)
-          }))
-          this.filteredCompetencies = reponse.responseData.filter(obj => {
-            return data.indexOf(obj) === -1
-          })
-        } else {
-          this.filteredCompetencies = reponse.responseData
-        }
-      }
-    })
   }
 }

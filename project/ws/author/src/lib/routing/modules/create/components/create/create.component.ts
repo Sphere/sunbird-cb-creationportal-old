@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Router } from '@angular/router'
@@ -13,6 +12,8 @@ import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 import { Subscription } from 'rxjs'
 import { CreateService } from './create.service'
+import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms'
 
 @Component({
   selector: 'ws-auth-generic',
@@ -25,10 +26,20 @@ export class CreateComponent implements OnInit, OnDestroy {
   routerSubscription = <Subscription>{}
   allLanguages: any
   language = ''
-  languageName = ''
   error = false
-  currentContent!: ICreateEntity | null
+  panelOpenState = false
+  allowReview = false
+  allowAuthor = false
+  allowRedo = false
+  allowPublish = false
+  allowExpiry = false
+  allowRestore = false
+  isNewDesign = false
+  content: ICreateEntity | undefined
+  courseObj = ''
+  courseEntity!: ICreateEntity
   createCourseForm!: FormGroup
+
   constructor(
     private snackBar: MatSnackBar,
     private svc: CreateService,
@@ -38,9 +49,7 @@ export class CreateComponent implements OnInit, OnDestroy {
     private authInitService: AuthInitService,
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
-  ) {
-    this.createForm()
-  }
+  ) { }
 
   ngOnInit() {
     this.authInitService.creationEntity.forEach(v => {
@@ -48,19 +57,36 @@ export class CreateComponent implements OnInit, OnDestroy {
         if (v.id === 'resource') {
           this.resourceEntity = v
         } else {
-          v.enabled = true
-          this.entity.push(v)
+          if (v.id === 'course') {
+            this.courseEntity = v
+          } else {
+            this.entity.push(v)
+          }
         }
       }
     })
-    this.entity = this.entity.reverse()
     this.loaderService.changeLoadState(false)
     this.allLanguages = this.authInitService.ordinals.subTitles || []
     this.language = this.accessControlSvc.locale
 
-    const selectedLang = this.allLanguages.find((i: any) => i.srclang === this.language)
-    if (selectedLang && selectedLang.srclang) {
-      this.languageName = selectedLang.label
+    this.allowAuthor = this.canShow('author')
+    this.allowRedo = this.accessControlSvc.authoringConfig.allowRedo
+    this.allowRestore = this.accessControlSvc.authoringConfig.allowRestore
+    this.allowExpiry = this.accessControlSvc.authoringConfig.allowExpiry
+    this.allowReview = this.canShow('review') && this.accessControlSvc.authoringConfig.allowReview
+    this.allowPublish = this.canShow('publish') && this.accessControlSvc.authoringConfig.allowPublish
+  }
+
+  canShow(role: string): boolean {
+    switch (role) {
+      case 'review':
+        return this.accessControlSvc.hasRole(REVIEW_ROLE)
+      case 'publish':
+        return this.accessControlSvc.hasRole(PUBLISH_ROLE)
+      case 'author':
+        return this.accessControlSvc.hasRole(CREATE_ROLE)
+      default:
+        return false
     }
   }
 
@@ -69,22 +95,71 @@ export class CreateComponent implements OnInit, OnDestroy {
   }
 
   contentClicked(content: ICreateEntity) {
-    this.currentContent = content
-
+    if (content) {
+      // this.showCreateCourseForm = true
+      this.content = content
+    }
   }
-  createContent() {
+
+  // createCourseClicked() {
+  //   this.loaderService.changeLoad.next(true)
+  //   if (this.content) {
+  //   this.svc
+  //     .create({
+  //       contentType: this.content.contentType,
+  //       mimeType: this.content.mimeType,
+  //       locale: this.language,
+  //       ...(this.content.additionalMeta || {}),
+  //     })
+  //     .subscribe(
+  //       (id: string) => {
+  //         this.loaderService.changeLoad.next(false)
+  //         this.snackBar.openFromComponent(NotificationComponent, {
+  //           data: {
+  //             type: Notify.CONTENT_CREATE_SUCCESS,
+  //           },
+  //           duration: NOTIFICATION_TIME * 1000,
+  //         })
+  //         this.router.navigateByUrl(`/author/editor/${id}`)
+  //       },
+  //       error => {
+  //         if (error.status === 409) {
+  //           this.dialog.open(ErrorParserComponent, {
+  //             width: '80vw',
+  //             height: '90vh',
+  //             data: {
+  //               errorFromBackendData: error.error,
+  //             },
+  //           })
+  //         }
+  //         this.loaderService.changeLoad.next(false)
+  //         this.snackBar.openFromComponent(NotificationComponent, {
+  //           data: {
+  //             type: Notify.CONTENT_FAIL,
+  //           },
+  //           duration: NOTIFICATION_TIME * 1000,
+  //         })
+  //       },
+  //     )
+  //   }
+  // }
+
+
+
+  createCourseClicked() {
+    console.log('!!!!!!!!!!!!!!!!!')
     this.loaderService.changeLoad.next(true)
     const _name = this.createCourseForm.get('name')
-    if (this.currentContent && _name && _name.value) {
+    if (this.content && _name && _name.value) {
 
       this.svc
         .createV2({
           name: _name.value,
-          contentType: this.currentContent.contentType,
-          mimeType: this.currentContent.mimeType,
+          contentType: this.content.contentType,
+          mimeType: this.content.mimeType,
           locale: this.language,
-          primaryCategory: this.currentContent.primaryCategory,
-          ...(this.currentContent.additionalMeta || {}),
+          primaryCategory: this.content.primaryCategory,
+          ...(this.content.additionalMeta || {}),
         })
         .subscribe(
           (id: string) => {
@@ -118,17 +193,16 @@ export class CreateComponent implements OnInit, OnDestroy {
         )
     }
   }
+
+
   createForm() {
     this.createCourseForm = this.formBuilder.group({
-      name: new FormControl('', [Validators.required, Validators.minLength(10)]),
+      name: new FormControl('', []),
     })
   }
-  cancel() {
-    this.createCourseForm.reset()
-    this.currentContent = null
-  }
-  setCurrentLanguage(lang: string, label: string) {
-    this.languageName = label
+
+
+  setCurrentLanguage(lang: string) {
     this.language = lang
   }
 }

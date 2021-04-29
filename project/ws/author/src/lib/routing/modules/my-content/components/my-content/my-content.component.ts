@@ -23,6 +23,7 @@ import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 import { Subscription } from 'rxjs'
 import { MyContentService } from '../../services/my-content.service'
 import { map } from 'rxjs/operators'
+import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
 
 @Component({
   selector: 'ws-auth-my-content',
@@ -53,9 +54,20 @@ export class MyContentComponent implements OnInit, OnDestroy {
   ordinals: any
   isAdmin = false
   currentAction: 'author' | 'reviewer' | 'expiry' | 'deleted' = 'author'
+  listview = true
   @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<
     any
   >
+
+  // sideNavBarOpened = true
+  panelOpenState = false
+  allowReview = false
+  allowAuthor = false
+  allowRedo = false
+  allowPublish = false
+  allowExpiry = false
+  allowRestore = false
+  isNewDesign = false
 
   public filterMenuItems: any = []
 
@@ -122,6 +134,13 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.setAction()
       this.fetchContent(false)
     })
+
+    this.allowAuthor = this.canShow('author')
+    this.allowRedo = this.accessService.authoringConfig.allowRedo
+    this.allowRestore = this.accessService.authoringConfig.allowRestore
+    this.allowExpiry = this.accessService.authoringConfig.allowExpiry
+    this.allowReview = this.canShow('review') && this.accessService.authoringConfig.allowReview
+    this.allowPublish = this.canShow('publish') && this.accessService.authoringConfig.allowPublish
   }
 
   fetchStatus() {
@@ -175,89 +194,62 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.queryFilter,
       this.isAdmin,
     )
-
     const requestData = {
-      locale: this.searchLanguage ? [this.searchLanguage] : ['en'],
-      query: this.queryFilter,
       request: {
+        locale: this.searchLanguage ? [this.searchLanguage] : [],
         query: this.queryFilter,
         filters: {
           status: this.fetchStatus(),
-          // creatorContacts: <string[]>[],
-          // trackContacts: <string[]>[],
-          // publisherDetails: <string[]>[],
-          // isMetaEditingDisabled: [false],
-          // isContentEditingDisabled: [false]
+          creatorContacts: <string[]>[],
+          trackContacts: <string[]>[],
+          publisherDetails: <string[]>[],
+          isMetaEditingDisabled: [false],
+          isContentEditingDisabled: [false],
         },
-        // pageNo: loadMoreFlag ? this.pagination.offset : 0,
-        sort_by: { lastUpdatedOn: 'desc' },
-        // pageSize: this.pagination.limit,
-        fields: [
-          'name',
-          'appIcon',
-          'mimeType',
-          'gradeLevel',
-          'identifier',
-          'medium',
-          'pkgVersion',
-          'board',
-          'subject',
-          'resourceType',
-          'primaryCategory',
-          'contentType',
-          'channel',
-          'organisation',
-          'trackable',
-          'status',
-          'authoringDisabled',
-        ],
-        facets: [
-          'primaryCategory',
-          'mimeType',
-        ],
-        // pageNo: loadMoreFlag ? this.pagination.offset : 0,
-        // sort: [{ lastUpdatedOn: 'desc' }],
-        // pageSize: this.pagination.limit,
-        // uuid: this.userId,
-        // rootOrg: this.accessService.rootOrg,
-        // // this is for Author Only
-        // isUserRecordEnabled: true,
+        pageNo: loadMoreFlag ? this.pagination.offset : 0,
+        sort: [{ lastUpdatedOn: 'desc' }],
+        pageSize: this.pagination.limit,
+        uuid: this.userId,
+        rootOrg: this.accessService.rootOrg,
+        // this is for Author Only
+        isUserRecordEnabled: !this.isAdmin,
       },
     }
-    // if (this.finalFilters.length) {
-    //   this.finalFilters.forEach((v: any) => {
-    //     searchV6Data.filters.forEach((filter: any) => {
-    //       filter.andFilters[0] = {
-    //         ...filter.andFilters[0],
-    //         [v.key]: v.value,
-    //       }
-    //     })
-    //     requestData.request.filters = { ...requestData.request.filters, [v.key]: v.value }
-    //   })
-    // }
-    // if (this.queryFilter) {
-    //   delete requestData.request.sort_by
-    // }
-    // if (
-    //   [
-    //     'draft',
-    //     'rejected',
-    //     'inreview',
-    //     'published',
-    //     'unpublished',
-    //     'processing',
-    //     'deleted',
-    //   ].indexOf(this.status) > -1 &&
-    //   !this.isAdmin
-    // ) {
-    //   requestData.request.filters.creatorContacts.push(this.userId)
-    // }
-    // if (this.status === 'review' && !this.isAdmin) {
-    //   requestData.request.filters.trackContacts.push(this.userId)
-    // }
-    // if (this.status === 'publish' && !this.isAdmin) {
-    //   requestData.request.filters.publisherDetails.push(this.userId)
-    // }
+    if (this.finalFilters.length) {
+      this.finalFilters.forEach((v: any) => {
+        searchV6Data.filters.forEach((filter: any) => {
+          filter.andFilters[0] = {
+            ...filter.andFilters[0],
+            [v.key]: v.value,
+          }
+        })
+        requestData.request.filters = { ...requestData.request.filters, [v.key]: v.value }
+      })
+    }
+    if (this.queryFilter) {
+      delete requestData.request.sort
+    }
+    if (
+      [
+        'draft',
+        'rejected',
+        'inreview',
+        'published',
+        'unpublished',
+        'processing',
+        'deleted',
+      ].indexOf(this.status) > -1 &&
+      !this.isAdmin
+    ) {
+      requestData.request.filters.creatorContacts.push(this.userId)
+    }
+    if (this.status === 'review' && !this.isAdmin) {
+      requestData.request.filters.trackContacts.push(this.userId)
+    }
+    if (this.status === 'publish' && !this.isAdmin) {
+      requestData.request.filters.publisherDetails.push(this.userId)
+    }
+
     this.loadService.changeLoad.next(true)
     const observable =
       this.status === 'expiry' || this.newDesign
@@ -652,5 +644,17 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
   setCurrentLanguage(lang: string) {
     this.searchLanguage = lang
+  }
+  canShow(role: string): boolean {
+    switch (role) {
+      case 'review':
+        return this.accessService.hasRole(REVIEW_ROLE)
+      case 'publish':
+        return this.accessService.hasRole(PUBLISH_ROLE)
+      case 'author':
+        return this.accessService.hasRole(CREATE_ROLE)
+      default:
+        return false
+    }
   }
 }

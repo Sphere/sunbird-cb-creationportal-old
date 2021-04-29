@@ -9,19 +9,12 @@ import { NotificationComponent } from '@ws/author/src/lib/modules/shared/compone
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 import { EditorContentService } from '../../../../../services/editor-content.service'
-import { IContentNode, IContentTreeNode } from '../../interface/icontent-tree'
-import { AuthPickerComponent } from '../../../../../shared/components/auth-picker/auth-picker.component'
-import { CollectionStoreService } from '../../services/store.service'
+import { IContentNode } from '../../interface/icontent-tree'
+import { AuthPickerComponent } from './../../../../../shared/components/auth-picker/auth-picker.component'
+import { IContentTreeNode } from './../../interface/icontent-tree'
+import { CollectionStoreService } from './../../services/store.service'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
-import { map, tap } from 'rxjs/operators'
-import { PickNameComponent } from './pick-name/pick-name.component'
-import { NSApiRequest } from '../../../../../../../../interface/apiRequest'
-import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
-import { isNumber } from 'lodash'
-import { ConfirmModalComponent } from '../../../../../shared/components/confirm-modal/confirm-modal.component'
-/* tslint:disable */
-import _ from 'lodash'
-/* tslint:enable */
+import { map } from 'rxjs/operators'
 @Component({
   selector: 'ws-auth-table-of-contents',
   templateUrl: './auth-table-of-contents.component.html',
@@ -58,7 +51,6 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
     .observe([Breakpoints.XSmall, Breakpoints.Small])
     .pipe(map((res: BreakpointState) => res.matches))
   leftarrow = true
-  currentContent!: string
   constructor(
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -67,7 +59,6 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
     private loaderService: LoaderService,
     private authInitService: AuthInitService,
     private breakpointObserver: BreakpointObserver,
-    private editorService: EditorService,
   ) { }
 
   private _transformer = (node: IContentNode, level: number): IContentTreeNode => {
@@ -85,56 +76,50 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.editorStore.changeActiveCont.subscribe(data => {
-      this.currentContent = data
-    })
     this.parentNodeId = this.store.currentParentNode
-    if (this.parentNodeId) {
-      this.treeControl = new FlatTreeControl<IContentTreeNode>(
-        node => node.level,
-        node => node.expandable,
-      )
+    this.treeControl = new FlatTreeControl<IContentTreeNode>(
+      node => node.level,
+      node => node.expandable,
+    )
 
-      this.treeFlattener = new MatTreeFlattener(
-        this._transformer,
-        node => node.level,
-        node => node.expandable,
-        node => node.children,
-      )
+    this.treeFlattener = new MatTreeFlattener(
+      this._transformer,
+      node => node.level,
+      node => node.expandable,
+      node => node.children,
+    )
 
-      this.store.onInvalidNodeChange.subscribe(v => {
-        this.invalidIds = v
-        this.expandNodesById(v)
-      })
-      this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener)
+    this.store.onInvalidNodeChange.subscribe(v => {
+      this.invalidIds = v
+      this.expandNodesById(v)
+    })
+    this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener)
 
-      this.store.treeStructureChange.subscribe(data => {
-        this.dataSource.data = [data as IContentNode]
-        if (this.parentNodeId === this.store.currentParentNode) {
-          this.expandNodesById()
-          if (this.selectedNode && !this.store.flatNodeMap.get(this.selectedNode)) {
-            this.parentHierarchy.forEach(v => {
-              if (this.store.flatNodeMap.get(v)) {
-                const identifier = this.store.uniqueIdMap.get(v) as string
-                this.selectedNode = v
-                this.editorStore.currentContent = identifier
-                this.store.currentSelectedNode = v
-                this.editorStore.changeActiveCont.next(identifier)
-                return
-              }
-            })
-          }
-        } else {
-          this.parentNodeId = this.store.currentParentNode
+    this.store.treeStructureChange.subscribe(data => {
+      this.dataSource.data = [data as IContentNode]
+      if (this.parentNodeId === this.store.currentParentNode) {
+        this.expandNodesById()
+        if (this.selectedNode && !this.store.flatNodeMap.get(this.selectedNode)) {
+          this.parentHierarchy.forEach(v => {
+            if (this.store.flatNodeMap.get(v)) {
+              const identifier = this.store.uniqueIdMap.get(v) as string
+              this.selectedNode = v
+              this.editorStore.currentContent = identifier
+              this.store.currentSelectedNode = v
+              this.editorStore.changeActiveCont.next(identifier)
+              return
+            }
+          })
         }
-      })
-      this.store.selectedNodeChange.subscribe(data => {
-        if (data) {
-          this.selectedNode = data
-        }
-      })
-    }
-
+      } else {
+        this.parentNodeId = this.store.currentParentNode
+      }
+    })
+    this.store.selectedNodeChange.subscribe(data => {
+      if (data) {
+        this.selectedNode = data
+      }
+    })
     this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
       this.mediumScreen = isLtMedium
       if (isLtMedium) {
@@ -153,50 +138,15 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
   }
 
   onNodeSelect(node: IContentTreeNode) {
-    let flag = false
     if (node.id !== this.selectedNode) {
-      const updatedContent = this.editorStore.upDatedContent || {}
-      if (Object.keys(updatedContent).length > 0) {
-        let tempUpdateContent = this.editorStore.upDatedContent[this.editorStore.currentContent]
-        if (tempUpdateContent) {
-          tempUpdateContent = this.editorStore.cleanProperties(tempUpdateContent)
-          if (
-            (Object.keys(tempUpdateContent).length === 1 && tempUpdateContent.versionKey)
-            || Object.keys(tempUpdateContent).length === 0) {
-            flag = false
-          } else {
-            flag = true
-          }
-        }
-      }
-      if (flag) {
-        this.dialog.open<ConfirmModalComponent>(ConfirmModalComponent)
-          .afterClosed()
-          .subscribe((res: any) => {
-            if (res.result) {
-              this.selectedNode = node.id
-              this.editorStore.currentContent = node.identifier
-              this.store.currentSelectedNode = node.id
-              this.editorStore.changeActiveCont.next(node.identifier)
-              this.action.emit({ type: 'editContent', identifier: node.identifier })
-              this.store.selectedNodeChange.next(node.id)
-              this.editorStore.upDatedContent = {}
-              // this.store.selectedNode
-              this.preserveExpandedNodes()
-            }
-          })
-      } else {
-        this.selectedNode = node.id
-        this.editorStore.currentContent = node.identifier
-        this.store.currentSelectedNode = node.id
-        this.editorStore.changeActiveCont.next(node.identifier)
-        this.action.emit({ type: 'editContent', identifier: node.identifier })
-        this.store.selectedNodeChange.next(node.id)
-        // this.store.selectedNode
-        this.preserveExpandedNodes()
-      }
+      this.selectedNode = node.id
+      this.editorStore.currentContent = node.identifier
+      this.store.currentSelectedNode = node.id
+      this.editorStore.changeActiveCont.next(node.identifier)
     }
   }
+
+
 
   closeSidenav() {
     this.closeEvent.emit(true)
@@ -304,26 +254,20 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
         this.expandedNodes.add(v.id)
       }
     })
-    this.store.expendedNode = this.expandedNodes
   }
 
   expandNodesById(ids?: number[]) {
-    let idSet = ids ? new Set(ids) : this.expandedNodes
-    if (!idSet || idSet.size === 0) {
-      idSet = this.store.expendedNode
-    }
-    if (this.treeControl.dataNodes && this.treeControl.dataNodes.length > 0) {
-      this.treeControl.dataNodes.forEach(node => {
-        if (idSet.has(node.id)) {
-          this.treeControl.expand(node)
-          let parent = this.getParentNode(node)
-          while (parent) {
-            this.treeControl.expand(parent)
-            parent = this.getParentNode(parent)
-          }
+    const idSet = ids ? new Set(ids) : this.expandedNodes
+    this.treeControl.dataNodes.forEach(node => {
+      if (idSet.has(node.id)) {
+        this.treeControl.expand(node)
+        let parent = this.getParentNode(node)
+        while (parent) {
+          this.treeControl.expand(parent)
+          parent = this.getParentNode(parent)
         }
-      })
-    }
+      }
+    })
   }
   /*
    Get the parent node of a node
@@ -409,36 +353,24 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
   }
 
   async createNewChildOrSibling(type: string, node: IContentTreeNode, asSibling = false) {
-    const dialog = this.dialog.open(PickNameComponent, {
-      width: 'auto',
-      height: 'auto',
-      data: {},
+    console.log('111111111')
+    const parentNode = (asSibling ? this.getParentNode(node) : node) as IContentTreeNode
+    this.loaderService.changeLoad.next(true)
+    this.preserveExpandedNodes()
+    this.expandedNodes.add(parentNode.id)
+    const isDone = await this.store.createChildOrSibling(
+      type,
+      parentNode,
+      asSibling ? node.id : undefined,
+      'below',
+    )
+    this.snackBar.openFromComponent(NotificationComponent, {
+      data: {
+        type: isDone ? Notify.SUCCESS : Notify.FAIL,
+      },
+      duration: NOTIFICATION_TIME * 1000,
     })
-    dialog.afterClosed().subscribe(async v => {
-      if (v && v.action === 'YES' && v.name) {
-        const parentNode = (asSibling ? this.getParentNode(node) : node) as IContentTreeNode
-        this.loaderService.changeLoad.next(true)
-        this.preserveExpandedNodes()
-        this.expandedNodes.add(parentNode.id)
-        const isDone = await this.store.createChildOrSibling(
-          type,
-          parentNode,
-          asSibling ? node.id : undefined,
-          'below',
-          v.name
-        )
-        if (isDone) {
-          this.triggerSave(parentNode).subscribe()
-        }
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: isDone ? Notify.SUCCESS : Notify.FAIL,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-        this.loaderService.changeLoad.next(false)
-      }
-    })
+    this.loaderService.changeLoad.next(false)
   }
 
   takeAction(action: string, node: IContentTreeNode, type?: string) {
@@ -472,83 +404,5 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
       default:
         break
     }
-  }
-
-  triggerSave(parentNode: IContentTreeNode) {
-    const nodesModified: any = {}
-    let isRootPresent = (parentNode && parentNode.identifier) ? true : false
-    Object.keys(this.editorStore.upDatedContent).forEach(v => {
-      if (!isRootPresent) {
-        isRootPresent = this.store.parentNode.includes(v)
-      }
-      nodesModified[v] = {
-        isNew: false,
-        root: this.store.parentNode.includes(v),
-        metadata: this.editorStore.upDatedContent[v],
-      }
-    })
-    if (!isRootPresent) {
-      nodesModified[this.currentContent] = {
-        isNew: false,
-        root: true,
-        metadata: {},
-      }
-    }
-    const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-      request: {
-        data: {
-          nodesModified,
-          hierarchy: this.store.changedHierarchy,
-        },
-      },
-    }
-    if (Object.keys(this.editorStore.upDatedContent)[0] && nodesModified[Object.keys(this.editorStore.upDatedContent)[0]]) {
-      const requestBody: NSApiRequest.IContentUpdateV2 = {
-        request: {
-          content: nodesModified[Object.keys(this.editorStore.upDatedContent)[0]].metadata,
-        },
-      }
-      requestBody.request.content = this.editorStore.cleanProperties(requestBody.request.content)
-      if (requestBody.request.content.duration) {
-        // tslint:disable-next-line:max-line-length
-        requestBody.request.content.duration = (isNumber(requestBody.request.content.duration) ? `${requestBody.request.content.duration}` : requestBody.request.content.duration)
-      }
-      return this.editorService.updateContentV3(requestBody, Object.keys(this.editorStore.upDatedContent)[0]).pipe(
-        tap(() => {
-          this.store.changedHierarchy = {}
-          Object.keys(this.editorStore.upDatedContent).forEach(id => {
-            this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
-            this.editorService.readContentV2(id).subscribe(resData => {
-              this.editorStore.resetVersionKey(resData.versionKey, resData.identifier)
-            })
-          })
-          this.editorStore.upDatedContent = {}
-        }),
-      )
-    }
-
-    return this.editorService.updateContentV4(requestBodyV2).pipe(
-      tap(() => {
-        this.store.changedHierarchy = {}
-        Object.keys(this.editorStore.upDatedContent).forEach(async id => {
-          this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
-        })
-        this.editorStore.upDatedContent = {}
-      }),
-    )
-
-    // const requestBody: NSApiRequest.IContentUpdate = {
-    //   nodesModified,
-    //   hierarchy: this.store.changedHierarchy,
-    // }
-    // return this.editorService.updateContentV2(requestBody).pipe(
-    //   tap(() => {
-    //     this.store.changedHierarchy = {}
-    //     Object.keys(this.editorStore.upDatedContent).forEach(id => {
-    //       this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
-    //     })
-    //     this.editorStore.upDatedContent = {}
-    //   }),
-    // )
   }
 }

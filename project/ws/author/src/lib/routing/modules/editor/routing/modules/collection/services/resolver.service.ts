@@ -84,6 +84,9 @@ export class CollectionResolverService {
             children.push(recursiveFn(v, treeStructure.id, haveAccessToChangeStructure)),
           )
         }
+        // currContent.children.forEach(v =>
+        //   children.push(recursiveFn(v, treeStructure.id, haveAccessToChangeStructure)),
+        // )
         treeStructure.children = children
       }
       flatNodeMap.set(treeStructure.id, treeStructure)
@@ -163,7 +166,7 @@ export class CollectionResolverService {
       if (content.isExternal) {
         return ICON_TYPE.externalContent
       }
-      return ICON_TYPE.htmlPicker
+      return ICON_TYPE.internalContent
     }
     if (content.mimeType === MIME_TYPE.pdf) {
       if (!content.artifactUrl) {
@@ -187,7 +190,7 @@ export class CollectionResolverService {
       return ICON_TYPE.htmlPicker
     }
     if (content.mimeType === MIME_TYPE.webModule) {
-      return ICON_TYPE.html
+      return ICON_TYPE.internalContent
     }
     if (content.mimeType === MIME_TYPE.handson) {
       return ICON_TYPE.handsOn

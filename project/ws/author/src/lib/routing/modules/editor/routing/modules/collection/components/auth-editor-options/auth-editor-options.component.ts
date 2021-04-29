@@ -3,9 +3,10 @@ import { DEPTH_RUE } from '@ws/author/src/lib/constants/depth-rule'
 import { ICreateEntity } from '@ws/author/src/lib/interface/create-entity'
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
-import { ICustomCreateEntity } from '../../interface/create-menu'
-import { IContentNode, IContentTreeNode } from '../../interface/icontent-tree'
-import { CollectionStoreService } from '../../services/store.service'
+import { ICustomCreateEntity } from './../../interface/create-menu'
+import { IContentNode, IContentTreeNode } from './../../interface/icontent-tree'
+import { CollectionStoreService } from './../../services/store.service'
+
 @Component({
   selector: 'ws-auth-editor-options',
   templateUrl: './auth-editor-options.component.html',
@@ -64,18 +65,21 @@ export class AuthEditorOptionsComponent implements OnInit {
   }
 
   formChildren(contentTypeConfig: any, currentDepth: number): ICustomCreateEntity[] {
+
     const topLevel = Array.from(this.creationContent.values())
     const child: ICustomCreateEntity[] = []
+
     topLevel.forEach(v => {
       if (
-        !v.parent &&
+        v.id !== 'resource' &&
+        v.id !== 'collection' &&
         contentTypeConfig.allowedCreationType &&
         contentTypeConfig.allowedCreationType.includes(v.id) &&
         this.authInitService.collectionConfig.maxDepth >=
         currentDepth + (DEPTH_RUE[v.contentType] || 1)
       ) {
         child.push(
-          this.recursiveAddFunction(v, contentTypeConfig.allowedCreationType, currentDepth),
+          this.recursiveAddFunction(v),
         )
       }
     })
@@ -83,8 +87,6 @@ export class AuthEditorOptionsComponent implements OnInit {
   }
   recursiveAddFunction(
     content: ICreateEntity,
-    allowedType: string[],
-    currentDepth: number,
   ): ICustomCreateEntity {
     const children: ICustomCreateEntity[] = []
     const returnValue: ICustomCreateEntity = {
@@ -93,25 +95,25 @@ export class AuthEditorOptionsComponent implements OnInit {
       name: content.name,
       icon: content.icon,
     }
-    if (content.children) {
-      content.children.forEach(v => {
-        const entity = this.authInitService.creationEntity.get(v)
-        if (
-          entity &&
-          allowedType.includes(entity.id) &&
-          this.authInitService.collectionConfig.maxDepth >=
-          currentDepth + (DEPTH_RUE[entity.contentType] || 1)
-        ) {
-          children.push(this.recursiveAddFunction(entity, allowedType, currentDepth))
-        }
-      })
-    }
+    // if (content.id === 'resource' && content.children) {
+    //   // console.log('children==>', content.children)
+    //   content.children.forEach(v => {
+    //     const entity = this.authInitService.creationEntity.get(v)
+    //     // console.log('entity==>', entity)
+    //     if (
+    //       entity &&
+    //       allowedType.includes(entity.id) &&
+    //       this.authInitService.collectionConfig.maxDepth >=
+    //       currentDepth + (DEPTH_RUE[entity.contentType] || 1)
+    //     ) {
+    //       children.push(this.recursiveAddFunction(entity, allowedType, currentDepth))
+    //     }
+    //   })
+    // }
     return returnValue
   }
 
   click(action: string, type?: string) {
-    if (type !== 'resource') {
-      this.action.emit({ action, type })
-    }
+    this.action.emit({ action, type })
   }
 }

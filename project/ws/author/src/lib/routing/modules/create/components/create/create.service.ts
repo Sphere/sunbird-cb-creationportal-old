@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import { ConfigurationsService } from '@ws-widget/utils/src/public-api'
-import { AUTHORING_BASE, CONTENT_CREATE } from '@ws/author/src/lib/constants/apiEndpoints'
+// import { AUTHORING_BASE, CONTENT_CREATE } from '@ws/author/src/lib/constants/apiEndpoints'
+import { AUTHORING_BASE } from '@ws/author/src/lib/constants/apiEndpoints'
 import { NSApiResponse } from '@ws/author/src/lib/interface//apiResponse'
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
@@ -17,18 +18,21 @@ export class CreateService {
     private accessService: AccessControlService,
   ) { }
 
-  create(meta: { mimeType: string; contentType: string; locale: string, name: string }): Observable<string> {
+  create(meta: {
+    mimeType: string; contentType: string; locale: string,
+    name?: string, description?: string
+  }): Observable<string> {
     const requestBody: NSApiRequest.ICreateMetaRequest = {
       content: {
         ...meta,
-        name: meta.name,
-        description: '',
+        name: meta.name || 'untitled content',
+        description: meta.description || '',
         category: meta.contentType,
         createdBy: this.accessService.userId,
         authoringDisabled: false,
         isContentEditingDisabled: false,
         isMetaEditingDisabled: false,
-        isExternal: meta.mimeType === 'text/x-url',
+        isExternal: meta.mimeType === 'application/html',
       },
     }
     if (this.accessService.rootOrg === 'client2') {
@@ -45,7 +49,8 @@ export class CreateService {
     }
     return this.apiService
       .post<NSApiRequest.ICreateMetaRequest>(
-        `${CONTENT_CREATE}${this.accessService.orgRootOrgAsQuery}`,
+        // `${CONTENT_CREATE}${this.accessService.orgRootOrgAsQuery}`,
+        `${AUTHORING_BASE}content/v3/create`,
         requestBody,
       )
       .pipe(
@@ -56,6 +61,10 @@ export class CreateService {
   }
 
   createV2(meta: { mimeType: string; contentType: string; locale: string, name: string, primaryCategory: string }): Observable<string> {
+
+
+
+
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {
@@ -80,18 +89,9 @@ export class CreateService {
         },
       },
     }
-    // if (this.accessService.rootOrg === 'client2') {
-    //   if (meta.contentType === 'Knowledge Artifact') {
-    //     try {
-    //       const userPath = `client2/Australia/dealer_code-${this.configSvc.unMappedUser.json_unmapped_fields.dealer_group_code}`
-    //       requestBody.content.accessPaths = userPath
-    //     } catch {
-    //       requestBody.content.accessPaths = 'client2'
-    //     }
-    //   } else {
-    //     requestBody.content.accessPaths = 'client2'
-    //   }
-    // }
+
+    console.log('CREATE V2 Create service', requestBody)
+
     return this.apiService
       .post<NSApiRequest.ICreateMetaRequest>(
         `${AUTHORING_BASE}content/v3/create`,

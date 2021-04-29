@@ -16,6 +16,14 @@ export interface IMenuFlatNode {
   levels: number
 }
 
+// export interface IFilterMenuNode {
+//   displayName: string
+//   content?: IFilterMenuNode[]
+//   type?: string
+//   checked?: boolean
+//   count?: number
+// }
+
 export interface IFilterMenuNode {
   values: any
   name: any

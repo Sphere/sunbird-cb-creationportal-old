@@ -8,6 +8,7 @@ import {
   Output,
   ViewChild,
   TemplateRef,
+  OnChanges,
 } from '@angular/core'
 import { FormBuilder, FormGroup } from '@angular/forms'
 import { MatSnackBar } from '@angular/material'
@@ -31,21 +32,19 @@ import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/compon
 import { mergeMap, tap } from 'rxjs/operators'
 import { IFormMeta } from './../../../../../../../../interface/form'
 import { AuthInitService } from './../../../../../../../../services/init.service'
-import { ProfanityPopUpComponent } from '../profanity-popup/profanity-popup'
-import { ProfanityService } from '../../services/profanity.service'
 import { environment } from '../../../../../../../../../../../../../src/environments/environment'
-// import { ProfanityService } from '../../services/profanity.service'
+import { ProfanityService } from '../../services/profanity.service'
 
 @Component({
   selector: 'ws-auth-file-upload',
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.scss'],
 })
-export class FileUploadComponent implements OnInit {
+export class FileUploadComponent implements OnInit, OnChanges {
   @ViewChild('guideline', { static: false }) guideline!: TemplateRef<HTMLElement>
   @ViewChild('errorFile', { static: false }) errorFile!: TemplateRef<HTMLElement>
   @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>
-
+  @Input() callSave = false
   fileUploadForm!: FormGroup
   iprAccepted = false
   file!: File | null
@@ -54,7 +53,6 @@ export class FileUploadComponent implements OnInit {
   enableUpload = true
   duration = '0'
   canUpdate = true
-  profanityData: any
   fileUploadCondition = {
     fileName: false,
     eval: false,
@@ -71,6 +69,8 @@ export class FileUploadComponent implements OnInit {
   @Input() canTransCode = false
   isMobile = false
   @Output() data = new EventEmitter<any>()
+  uploadedFileList: { [key: string]: File } = {}
+  updatedIPRList: { [key: string]: boolean } = {}
 
   constructor(
     private formBuilder: FormBuilder,
@@ -89,39 +89,41 @@ export class FileUploadComponent implements OnInit {
     this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
     this.currentContent = this.contentService.currentContent
     this.triggerDataChange()
+    this.createFileUploadForm()
     this.contentService.changeActiveCont.subscribe(data => {
       this.currentContent = data
+      this.uploadedFileList = this.contentService.getListOfFiles()
+      this.updatedIPRList = this.contentService.getListOfUpdatedIPR()
+      this.iprAccepted = false
       this.triggerDataChange()
     })
-    // this.profanityData = {
-    //   overAllOffensivescore: 0.996727610651836,
-    //   fileName: 'FINAL_14_03_2020_ENg1602233642821.pdf',
-    //   totalPageUploaded: 1,
-    //   profanityWordCount: 0,
-    //   pagesWithImages: 1,
-    //   profanityClassifications: {
-    //     bastard: {
-    //       offenceCategory: 'Offensive',
-    //       occurenceOnPage: [1, 2, 3],
-    //       totalWordCount: 3,
-    //     },
-    //     fuck: {
-    //       offenceCategory: 'Offensive',
-    //       occurenceOnPage: [1, 2, 3],
-    //       totalWordCount: 3,
-    //     },
-    //   },
-    //   imagesOccurrenceOnPageNo: [
-    //     1, 3, 5, 5,
-    //   ],
-    // }
+  }
 
+  createFileUploadForm() {
+    this.fileUploadForm = this.formBuilder.group({
+      artifactUrl: [],
+      isExternal: [],
+      isIframeSupported: [],
+      isInIntranet: [],
+      mimeType: [],
+      size: [],
+      duration: [],
+      downloadUrl: [],
+      transcoding: [],
+      versionKey: [],
+    })
+  }
+
+  ngOnChanges() {
+    if (this.callSave) {
+      this.triggerUpload()
+    }
   }
   triggerDataChange() {
     const updatedMeta = this.contentService.getUpdatedMeta(this.currentContent)
     if (
       !this.isCollectionEditor ||
-      (this.isCollectionEditor && updatedMeta.contentType === 'Resource')
+      (this.isCollectionEditor && updatedMeta.category === 'Resource')
     ) {
       this.assignData(updatedMeta)
     }
@@ -134,42 +136,32 @@ export class FileUploadComponent implements OnInit {
     this.canUpdate = false
     this.fileUploadForm.controls.artifactUrl.setValue(meta.artifactUrl || '')
     this.fileUploadForm.controls.mimeType.setValue(meta.mimeType || 'application/pdf')
-    // this.fileUploadForm.controls.isIframeSupported.setValue(meta.isIframeSupported || 'Yes')
-    // this.fileUploadForm.controls.isInIntranet.setValue(meta.isInIntranet || false)
+    this.fileUploadForm.controls.isIframeSupported.setValue(meta.isIframeSupported || 'Yes')
+    this.fileUploadForm.controls.isInIntranet.setValue(meta.isInIntranet || false)
     this.fileUploadForm.controls.isExternal.setValue(meta.isExternal || false)
     this.fileUploadForm.controls.size.setValue(meta.size || 0)
-    this.fileUploadForm.controls.duration.setValue(meta.duration || 0)
+    this.fileUploadForm.controls.duration.setValue(meta.duration || '0')
     this.fileUploadForm.controls.versionKey.setValue(meta.versionKey || '')
     this.canUpdate = true
     this.fileUploadForm.markAsPristine()
     this.fileUploadForm.markAsUntouched()
-    if (meta.artifactUrl) {
-      this.iprAccepted = true
-    }
+
+    // if (meta.artifactUrl) {
+    //   this.iprAccepted = true
+    // }
   }
 
   createForm() {
-    this.fileUploadForm = this.formBuilder.group({
-      artifactUrl: [],
-      isExternal: [],
-      // isIframeSupported: [],
-      // isInIntranet: [],
-      mimeType: [],
-      size: [],
-      duration: [],
-      downloadUrl: [],
-      transcoding: [],
-      versionKey: [],
-    })
+    this.createFileUploadForm()
     this.fileUploadForm.valueChanges.subscribe(() => {
       if (this.canUpdate) {
         this.storeData()
       }
     })
-    // this is commented as new UI is not comptable
-    this.fileUploadForm.controls.artifactUrl.valueChanges.subscribe(() => {
-      this.iprAccepted = false
-    })
+
+    // this.fileUploadForm.controls.artifactUrl.valueChanges.subscribe(() => {
+    //   this.iprAccepted = false
+    // })
   }
 
   onDrop(file: File) {
@@ -187,6 +179,7 @@ export class FileUploadComponent implements OnInit {
       !fileName.toLowerCase().endsWith('.pdf') &&
       !fileName.toLowerCase().endsWith('.zip') &&
       !fileName.toLowerCase().endsWith('.mp4') &&
+      !fileName.toLowerCase().endsWith('.m4v') &&
       !fileName.toLowerCase().endsWith('.mp3')
     ) {
       this.snackBar.openFromComponent(NotificationComponent, {
@@ -203,7 +196,7 @@ export class FileUploadComponent implements OnInit {
         duration: NOTIFICATION_TIME * 1000,
       })
     } else {
-      if (fileName.toLowerCase().endsWith('.mp4')) {
+      if (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v')) {
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
           width: this.isMobile ? '90vw' : '600px',
           height: 'auto',
@@ -237,10 +230,13 @@ export class FileUploadComponent implements OnInit {
   }
 
   assignFileValues(file: File, fileName: string) {
+    this.contentService.updateListOfFiles(this.currentContent, file)
+    this.contentService.updateListOfUpdatedIPR(this.currentContent, this.iprAccepted)
+
     this.file = file
     this.mimeType = fileName.toLowerCase().endsWith('.pdf')
       ? 'application/pdf'
-      : fileName.toLowerCase().endsWith('.mp4')
+      : (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v'))
         ? 'application/x-mpegURL'
         : fileName.toLowerCase().endsWith('.zip')
           ? 'application/html'
@@ -259,14 +255,18 @@ export class FileUploadComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe(result => {
       this.iprAccepted = result
+      this.contentService.updateListOfUpdatedIPR(this.currentContent, result)
     })
   }
 
   iprChecked() {
     this.iprAccepted = !this.iprAccepted
+    this.contentService.updateListOfUpdatedIPR(this.currentContent, this.iprAccepted)
   }
 
   clearUploadedFile() {
+    this.contentService.removeListOfFilesAndUpdatedIPR(this.currentContent)
+
     this.fileUploadForm.controls.artifactUrl.setValue(null)
     this.file = null
     this.duration = '0'
@@ -278,13 +278,6 @@ export class FileUploadComponent implements OnInit {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.UPLOAD_FILE,
-        },
-        duration: NOTIFICATION_TIME * 1000,
-      })
-    } else if (!this.iprAccepted) {
-      this.snackBar.openFromComponent(NotificationComponent, {
-        data: {
-          type: Notify.IPR_DECLARATION,
         },
         duration: NOTIFICATION_TIME * 1000,
       })
@@ -322,18 +315,23 @@ export class FileUploadComponent implements OnInit {
           let url = ''
           if (this.mimeType === 'application/html') {
             // tslint:disable-next-line:max-line-length
+            // url = `${document.location.origin}/content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
             url = `${environment.karmYogi}content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
-            // document.location.origin
+
           } else {
-            // url = (v.authArtifactURL || v.artifactURL || v.result.artifactUrl).replace(/%2F/g, '/')
+            // url = (v.authArtifactURL || v.artifactURL).replace(/%2F/g, '/')
             url = (v.result.artifactUrl).replace(/%2F/g, '/')
           }
           this.fileUploadForm.controls.artifactUrl.setValue(url)
-          this.fileUploadForm.controls.downloadUrl.setValue(v ? v.result.artifactUrl : '')
+          // this.fileUploadForm.controls.downloadUrl.setValue(v ? v.downloadURL : '')
           this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
+
+          this.fileUploadForm.controls.downloadUrl.setValue(v ? v.result.artifactUrl : '')
           if (this.mimeType === 'application/html' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
             this.fileUploadForm.controls.isExternal.setValue(false)
           }
+
+
           // if (this.mimeType === 'application/x-mpegURL') {
           //   this.fileUploadForm.controls.transcoding.setValue({
           //     lastTranscodedOn: null,
@@ -341,6 +339,9 @@ export class FileUploadComponent implements OnInit {
           //     status: 'STARTED',
           //   })
           // }
+
+
+
           this.fileUploadForm.controls.duration.setValue(this.duration)
           this.fileUploadForm.controls.size.setValue((this.file as File).size)
           this.canUpdate = true
@@ -351,6 +352,7 @@ export class FileUploadComponent implements OnInit {
           //     .startEncoding(v.authArtifactURL || v.artifactURL, this.currentContent)
           //     .pipe(map(() => v))
           // }
+
           if (this.mimeType === 'application/pdf') {
             this.profanityCheckAPICall(v.result.artifactUrl)
           }
@@ -359,6 +361,7 @@ export class FileUploadComponent implements OnInit {
       )
       .subscribe(
         _ => {
+          this.loaderService.changeLoad.next(false)
           this.storeData()
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
@@ -366,12 +369,10 @@ export class FileUploadComponent implements OnInit {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-          // if (this.mimeType !== 'application/pdf') {
-          this.data.emit('saveAndNext')
-          // }
+          this.data.emit('save')
         },
         () => {
-          // this.loaderService.changeLoad.next(false)
+          this.loaderService.changeLoad.next(false)
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
               type: Notify.UPLOAD_FAIL,
@@ -384,22 +385,7 @@ export class FileUploadComponent implements OnInit {
   profanityCheckAPICall(url: string) {
     this.profanityService.startProfanity(this.currentContent, url, (this.file ? this.file.name : this.currentContent)).subscribe()
   }
-  startProfanityPopup() {
-    this.loaderService.changeLoad.next(false)
-    const dialogRef = this.dialog.open(ProfanityPopUpComponent, {
-      minHeight: 'auto',
-      width: '80%',
-      panelClass: 'remove-pad',
-      data: this.profanityData,
-    })
-    dialogRef.afterClosed().subscribe((response: any) => {
-      if (response === 'postCreated') {
-        // this.refreshData(this.currentActivePage)
 
-      }
-      this.data.emit('save')
-    })
-  }
   storeData() {
     const originalMeta = this.contentService.getOriginalMeta(this.currentContent)
     const currentMeta = this.fileUploadForm.value

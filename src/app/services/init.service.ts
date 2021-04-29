@@ -47,6 +47,7 @@ const endpoint = {
 })
 export class InitService {
   private baseUrl = this.configSvc.baseUrl
+  // private baseUrl = 'assets/configurations/aastrika-sb-cbp.idc.tarento.com'
   constructor(
     private logger: LoggerService,
     private configSvc: ConfigurationsService,

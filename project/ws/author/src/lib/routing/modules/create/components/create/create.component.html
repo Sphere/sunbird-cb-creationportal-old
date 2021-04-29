@@ -1,98 +1,190 @@
-<div class="margin-l-l margin-r-l new-box" *ngIf="!error && !currentContent">
-  <div class="res-margin">
-    <div class="flex flex-col md:flex-row margin-top-xl padding-top-l justify-between margin-right-m">
-      <h2 class="mat-h3 ml-14">
-        Choose your starting point from the below available options
-      </h2>
-      <div *ngIf="allLanguages?.length && allLanguages?.length > 1"
-        class="mat-h3 flex items-center select-lang ws-mat-default-text">
-        <!-- {{allLanguages | json}} -->
-        <!-- <span class="mr-1 text-center" i18n>Select Language: </span> -->
-        <button class="lang-btn" mat-button [matMenuTriggerFor]="sortLang">
-          {{ languageName }}
-          <mat-icon>arrow_drop_down</mat-icon>
-        </button>
+<!-- <div class=" margin-l-l margin-r-l" *ngIf="!error"> -->
+  <!-- <div class="flex margin-left-xl flex-middle margin-bottom-xl flex-wrap">
+    <div class="flex flex-middle">
+      <p class="ws-mat-primary-text font-weight-bold title margin-right-xs" i18n>
+        CONTENT CREATION
+      </p>
+      <mat-icon class="ws-mat-primary-text margin-bottom-xxs">create</mat-icon>
+    </div>
+    <div class="margin-left grid">
+      <div class="stepper-grid">
+        <div
+          class="ws-mat-primary-background-op30 stepper-container cursor-pointer ws-mat-primary-background"
+        >
+          1
+        </div>
+        <p
+          class="margin-left-xs margin-remove-bottom font-weight-500 op30 ws-mat-primary-text op100"
+        >
+          Choose Type
+        </p>
+        <span class="border border-solid text-gray-500 mx-3"></span>
+      </div>
+      <div class="stepper-grid">
+        <div class="ws-mat-primary-background-op30 stepper-container cursor-pointer">
+          2
+        </div>
+        <p class="margin-left-xs margin-remove-bottom font-weight-500 op30 cursor-pointer">
+          Content
+        </p>
+        <span class="border border-solid text-gray-500 mx-3"></span>
+      </div>
+      <div class="flex flex-middle">
+        <div class="ws-mat-primary-background-op30 stepper-container cursor-pointer">
+          3
+        </div>
+        <p class="margin-left-xs margin-remove-bottom font-weight-500 op30 cursor-pointer" i18n>
+          Details
+        </p>
       </div>
     </div>
+  </div> -->
+  <!-- <div class="margin-top-xl"> -->
+    <mat-drawer-container class="example-container" *ngIf="!error">
+      <mat-drawer mode="side" opened>
+        <!-- <mat-accordion expanded *ngIf="allowAuthor">
+          <mat-expansion-panel [expanded]="true" class="no-shadow">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <span class="font-weight-500" i18n>Create Content</span>
+              </mat-panel-title>
+            </mat-expansion-panel-header> -->
+            <!-- <mat-list role="list">
+              <mat-list-item mat-button role="listitem">
+                <a routerLink="/author/my-content" [queryParams]="{ status: 'draft' }" i18n>Draft</a>
+              </mat-list-item>
+              </mat-list> -->
+              <!-- <ws-auth-entity-card [entity]="resourceEntity" [expanded]="true" (step)="contentClicked($event)">
+              </ws-auth-entity-card> -->
+              <!-- </div> -->
+              <!-- <div class="flex-3"> -->
+              <!-- <ng-container *ngFor="let createEntity of entity; let i = index">
+                <ws-auth-entity-card [entity]="createEntity" (step)="contentClicked($event)"></ws-auth-entity-card>
+                <mat-divider *ngIf="i % 2 !== 0"></mat-divider>
+              </ng-container>
+            </mat-expansion-panel>
+        </mat-accordion> -->
+
+      <ng-container *ngIf="isNewDesign">
+        <mat-accordion expanded *ngIf="allowAuthor">
+          <mat-expansion-panel [expanded]="true" class="no-shadow">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <span class="font-weight-500" i18n>My Content</span>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-list role="list">
+              <mat-list-item mat-button role="listitem">
+                <a routerLink="/author/my-content" [queryParams]="{ status: 'draft' }" i18n>Draft</a>
+              </mat-list-item>
+              <mat-list-item mat-button role="listitem">
+                <a routerLink="/author/my-content" [queryParams]="{ status: 'inreview' }" i18n>Sent for review</a>
+              </mat-list-item>
+              <mat-list-item mat-button role="listitem">
+                <a routerLink="/author/my-content" [queryParams]="{ status: 'published' }" i18n>Published</a>
+              </mat-list-item>
+              <mat-list-item mat-button role="listitem">
+                <a routerLink="/author/my-content" [queryParams]="{ status: 'unpublished' }" i18n>Unpublished</a>
+              </mat-list-item>
+              <mat-list-item *ngIf="allowExpiry" mat-button role="listitem">
+                <a routerLink="/author/my-content" [queryParams]="{ status: 'expiry' }" i18n>Expiring</a>
+              </mat-list-item>
+              <mat-list-item *ngIf="allowRestore" mat-button role="listitem">
+                <a routerLink="/author/my-content" [queryParams]="{ status: 'deleted' }" i18n>Deleted</a>
+              </mat-list-item>
+            </mat-list>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </ng-container>
+        <ng-container *ngIf="!isNewDesign">
+          <mat-accordion expanded *ngIf="allowAuthor">
+            <mat-expansion-panel [expanded]="true" class="no-shadow">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <span class="font-weight-500" i18n>My Content</span>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <mat-list role="list">
+                <mat-list-item mat-button role="listitem">
+                  <a routerLink="/author/my-content" [queryParams]="{ status: 'draft' }" i18n>Draft</a>
+                </mat-list-item>
+                <mat-list-item mat-button role="listitem">
+                  <a routerLink="/author/my-content" [queryParams]="{ status: 'inreview' }" i18n>Sent for review</a>
+                </mat-list-item>
+                <mat-list-item mat-button role="listitem">
+                  <a routerLink="/author/my-content" [queryParams]="{ status: 'published' }" i18n>Published</a>
+                </mat-list-item>
+                <mat-list-item mat-button role="listitem">
+                  <a routerLink="/author/my-content" [queryParams]="{ status: 'unpublished' }" i18n>Unpublished</a>
+                </mat-list-item>
+                <mat-list-item *ngIf="allowExpiry" mat-button role="listitem">
+                  <a routerLink="/author/my-content" [queryParams]="{ status: 'expiry' }" i18n>Expiring</a>
+                </mat-list-item>
+                <mat-list-item *ngIf="allowRestore" mat-button role="listitem">
+                  <a routerLink="/author/my-content" [queryParams]="{ status: 'deleted' }" i18n>Deleted</a>
+                </mat-list-item>
+              </mat-list>
+            </mat-expansion-panel>
+          </mat-accordion>
+          <!-- allowAuthor -->
+          <mat-accordion *ngIf="allowReview || allowPublish">
+            <mat-expansion-panel [expanded]="false" class="no-shadow">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <span class="font-weight-500" i18n>Action Items</span>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <mat-list role="list">
+                <mat-list-item role="listitem" *ngIf="allowRedo">
+                  <a routerLink="/author/my-content" [queryParams]="{ status: 'rejected' }" i18n>Redo</a>
+                </mat-list-item>
+                <mat-list-item role="listitem" *ngIf="allowReview">
+                  <a routerLink="/author/my-content" [queryParams]="{ status: 'review' }" i18n>Review</a>
+                </mat-list-item>
+                <mat-list-item role="listitem" *ngIf="allowPublish">
+                  <a routerLink="/author/my-content" [queryParams]="{ status: 'publish' }" i18n>Publish</a>
+                </mat-list-item>
+              </mat-list>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </ng-container>
+      </mat-drawer>
+      <mat-drawer-content>
     <div class="card-holder margin-top-l">
+
+      <div class="flex flex-col md:flex-row pl-5 justify-between">
+        <h3 class="mat-h3">
+          <!-- Choose your starting point from the below available options -->
+          <ws-author-create-course [content]="content"></ws-author-create-course>
+        </h3>
+        <div class="mat-h3 items-center select-lang">
+          <span class="mr-1 text-center" i18n>Select Language: </span>
+          <button class="lang-btn" *ngIf="allLanguages?.length" mat-button [matMenuTriggerFor]="sortLang">
+            {{ language | uppercase }}
+            <mat-icon>arrow_drop_down</mat-icon>
+          </button>
+        </div>
+      </div>
+
       <div class="flex flex-1 flex-wrap flex-col md:flex-row">
         <!-- <div class="flex-1"> -->
-        <!-- </div> -->
-        <!-- <div class="flex-3"> -->
-        <ng-container *ngFor="let createEntity of entity; let i = index">
-          <ws-auth-entity-card [entity]="createEntity" (step)="contentClicked($event)"></ws-auth-entity-card>
-          <mat-divider *ngIf="i % 2 !== 0"></mat-divider>
-        </ng-container>
-        <!-- <ws-auth-entity-card [entity]="resourceEntity" [expanded]="true" (step)="contentClicked($event)">
-        </ws-auth-entity-card> -->
+     
         <!-- </div> -->
       </div>
     </div>
-  </div>
-</div>
 
+  </mat-drawer-content>
+</mat-drawer-container>
+
+  <!-- </div>
+</div> -->
 <h2 *ngIf="error" class="mat-error margin-top-m text-center" i18n>
   Unable to load the page. Reload or try again after some time.
 </h2>
-
-<ng-container *ngIf="currentContent">
-  <form [formGroup]="createCourseForm" (ngSubmit)="!createCourseForm.invalid ? createContent(): null">
-    <mat-card class="ws-mat-accent-border flex-1">
-      <mat-card-header>
-        <mat-card-title>
-          <span class="mat-title">{{currentContent?.name}}</span>
-          {{createCourseForm.isValid}}
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="margin-top-s margin-left-m">
-          <div class="margin-top-xs flex flex-column ">
-            <span class="mat-subheading-2 margin-0" i18n="Title label|Label which explains the user to enter title"
-              [ngClass]="{ required: true }">
-              Title
-            </span>
-            <mat-form-field appearance="outline" class="margin-top-xs" [ngClass]="{ 'mat-form-field-invalid': (createCourseForm.controls['name'].hasError('minlength')
-                               &&   !createCourseForm.controls['name'].hasError('required')) }">
-              <input matInput #name formControlName="name" maxlength="500" i18n-placeholder placeholder="Type here"
-                [required]="'true'" />
-              <!-- <mat-hint align="end">{{ name.value.length }} / 500</mat-hint> -->
-              <mat-error *ngIf="!createCourseForm.controls['name'].hasError('required')"
-                i18n="name Error|Explains name is required">
-                Title is mandatory
-              </mat-error>
-              <mat-error *ngIf="createCourseForm.controls['name'].hasError('minlength')"
-                i18n="name Error|Explains name is required">
-                Minimum 10 Charactors requires to create
-              </mat-error>
-            </mat-form-field>
-          </div>
-        </div>
-      </mat-card-content>
-      <mat-card-actions>
-        <div class="flex flex-start margin-top-l margin-bottom-s margin-left-s">
-          <button [disabled]="createCourseForm.invalid" mat-raised-button type="submit"
-            class="ws-mat-accent-text ws-mat-accent-border-active margin-left-s">
-            <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Save
-            </span>
-          </button>
-          <!-- <button mat-button type="button" class="margin-left-s ws-mat-accent-border">
-            <mat-icon>delete</mat-icon>
-            <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Delete
-            </span>
-          </button> -->
-          <button mat-button type="button" class="margin-left-s ws-mat-accent-border" (click)="cancel()">
-            <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Cancel
-            </span>
-          </button>
-        </div>
-      </mat-card-actions>
-    </mat-card>
-  </form>
-</ng-container>
 <mat-menu #sortLang="matMenu">
   <ng-template matMenuContent>
-    <button mat-menu-item class="flex flex-between ws-mat-default-text" *ngFor="let lang of allLanguages"
-      (click)="setCurrentLanguage(lang.srclang,lang.label)">
+    <button mat-menu-item class="flex flex-between" *ngFor="let lang of allLanguages"
+      (click)="setCurrentLanguage(lang.srclang)">
       <span class="flex items-center w-full">
         <span>{{ lang.label | uppercase }}</span>
         <mat-icon class="ml-2" *ngIf="lang.srclang === language">check</mat-icon>

@@ -359,7 +359,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-          this.router.navigateByUrl('/author/cbp')
+          this.router.navigateByUrl('/author/home')
         },
         error => {
           if (error.status === 409) {
@@ -445,10 +445,10 @@ export class ChannelComponent implements OnInit, OnDestroy {
         if (v.artifactURL) {
           meta.artifactUrl = v.artifactURL
           meta.lastUpdatedOn = `${new Date()
-            .toISOString()
-            .replace(/-/g, '')
-            .replace(/:/g, '')
-            .split('.')[0]
+              .toISOString()
+              .replace(/-/g, '')
+              .replace(/:/g, '')
+              .split('.')[0]
             }+0000`
         }
         return this.triggerSave(meta, id)
@@ -550,7 +550,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
         break
 
       case 'close':
-        this.router.navigateByUrl('/author/cbp')
+        this.router.navigateByUrl('/author/home')
         break
     }
   }
@@ -571,7 +571,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
         if (this.contents.length) {
           this.contentService.changeActiveCont.next(this.contents[0].identifier)
         } else {
-          this.router.navigateByUrl('/author/cbp')
+          this.router.navigateByUrl('/author/home')
         }
       },
       error => {
@@ -600,14 +600,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
 
   fullScreenToggle = () => {
     const doc: any = document
-    let elm: any = doc.getElementById('upload-container')
-    if (!elm) {
-      elm = doc.getElementById('edit-meta')
-    }
-    if (!elm) {
-      elm = doc.getElementById('auth-root')
-    }
-
+    const elm: any = doc.getElementById('upload-container')
     if (elm.requestFullscreen) {
       !doc.fullscreenElement ? elm.requestFullscreen() : doc.exitFullscreen()
     } else if (elm.mozRequestFullScreen) {

@@ -20,11 +20,35 @@ export class EditorContentService {
   public changeActiveCont = new BehaviorSubject<string>('')
   public onContentChange = new BehaviorSubject<string>('')
 
+  listOfFiles: { [key: string]: File } = {}
+  listOfUpdatedIPR: { [key: string]: boolean } = {}
+
   constructor(
     private accessService: AccessControlService,
     private editorService: EditorService,
     private authInitService: AuthInitService,
   ) { }
+
+  getListOfFiles() {
+    return this.listOfFiles
+  }
+
+  updateListOfFiles(id: string, f: File) {
+    this.listOfFiles[id] = f
+  }
+
+  getListOfUpdatedIPR() {
+    return this.listOfUpdatedIPR
+  }
+
+  updateListOfUpdatedIPR(id: string, v: boolean) {
+    this.listOfUpdatedIPR[id] = v
+  }
+
+  removeListOfFilesAndUpdatedIPR(id: string,) {
+    delete this.listOfFiles[id]
+    delete this.listOfUpdatedIPR[id]
+  }
 
   getOriginalMeta(id: string): NSContent.IContentMeta {
     return this.originalContent[id]
@@ -70,6 +94,7 @@ export class EditorContentService {
   }
 
   setOriginalMeta(meta: NSContent.IContentMeta) {
+
     this.originalContent[meta.identifier] = JSON.parse(JSON.stringify(meta))
   }
 
@@ -82,11 +107,40 @@ export class EditorContentService {
     this.originalContent[id].versionKey = versionKey
   }
 
+  cleanProperties(objParam: any) {
+    const propertiesTobeExcluded: any = []
+    const obj = { ...objParam }
+    let propNames = Object.getOwnPropertyNames(obj)
+    propNames = propNames.filter(el => !propertiesTobeExcluded.includes(el))
+    for (const prop of propNames) {
+      const propName = prop
+      // tslint:disable-next-line: max-line-length
+      if (obj[propName] === null || obj[propName] === undefined || obj[propName] === '' || (isArray(obj[propName]) && obj[propName].length === 0)) {
+        delete obj[propName]
+      }
+    }
+    return obj
+  }
+
+  resetStatus() {
+    let isDraftPresent
+    Object.keys(this.originalContent).map(v => {
+      isDraftPresent = this.originalContent[v].status === 'Draft'
+    })
+    return isDraftPresent
+  }
+  changeStatusDraft() {
+    Object.keys(this.originalContent).map(v => {
+      this.originalContent[v].status = 'Draft'
+    })
+  }
+
   setUpdatedMeta(meta: NSContent.IContentMeta, id: string, emit = true) {
     this.upDatedContent[id] = {
       ...(this.upDatedContent[id] ? this.upDatedContent[id] : {}),
       ...JSON.parse(JSON.stringify(meta)),
     }
+    this.setOriginalMeta(meta)
     if (emit) {
       this.onContentChange.next(id)
     }
@@ -124,7 +178,7 @@ export class EditorContentService {
     return isPresent
   }
 
-  getParentUpdatedMeta(): NSContent.IContentMeta {
+  private getParentUpdatedMeta(): NSContent.IContentMeta {
     const meta = {} as any
     const parentMeta = this.getUpdatedMeta(this.parentContent)
     Object.keys(this.authInitService.authConfig).map(v => {
@@ -144,6 +198,9 @@ export class EditorContentService {
     return meta
   }
 
+  parentUpdatedMeta() {
+    return this.getParentUpdatedMeta()
+  }
   createInAnotherLanguage(
     language: string,
     meta = {},
@@ -169,7 +226,6 @@ export class EditorContentService {
     delete requestBody.status
     delete requestBody.categoryType
     delete requestBody.accessPaths
-
     return this.editorService
       .createAndReadContent(requestBody)
       .pipe(tap(v => this.setOriginalMeta(v)))
@@ -278,7 +334,7 @@ export class EditorContentService {
       }
     } catch (ex) {
       // tslint:disable-next-line: no-console
-      // console.log(ex)
+      // console.log(ex);
       returnValue = false
     }
     return returnValue
@@ -356,20 +412,5 @@ export class EditorContentService {
       // console.log(ex)
       return false
     }
-  }
-
-  cleanProperties(objParam: any) {
-    const propertiesTobeExcluded: any = []
-    const obj = { ...objParam }
-    let propNames = Object.getOwnPropertyNames(obj)
-    propNames = propNames.filter(el => !propertiesTobeExcluded.includes(el))
-    for (const prop of propNames) {
-      const propName = prop
-      // tslint:disable-next-line: max-line-length
-      if (obj[propName] === null || obj[propName] === undefined || obj[propName] === '' || (isArray(obj[propName]) && obj[propName].length === 0)) {
-        delete obj[propName]
-      }
-    }
-    return obj
   }
 }

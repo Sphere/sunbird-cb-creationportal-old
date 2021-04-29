@@ -1,13 +1,13 @@
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ViewEncapsulation } from '@angular/core'
+import { Component, OnDestroy, OnInit } from '@angular/core'
 import { FormGroup } from '@angular/forms'
-import { MatDialog, MatSnackBar, MatTab, MatTabGroup, MatTabHeader } from '@angular/material'
+import { MatDialog, MatSnackBar } from '@angular/material'
 import { ActivatedRoute, Router } from '@angular/router'
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 import { IActionButton, IActionButtonConfig } from '@ws/author/src/lib/interface/action-button'
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
-// import { IAuthSteps } from '@ws/author/src/lib/interface/auth-stepper'
+import { IAuthSteps } from '@ws/author/src/lib/interface/auth-stepper'
 import { NSContent } from '@ws/author/src/lib/interface/content'
 import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/components/comments-dialog/comments-dialog.component'
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
@@ -26,13 +26,7 @@ import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
 import { NotificationService } from '@ws/author/src/lib/services/notification.service'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
-import { isNumber } from 'lodash'
-import { ContentQualityService } from '../../../../../shared/services/content-quality.service'
-import { ConfigurationsService } from '../../../../../../../../../../../../../library/ws-widget/utils/src/public-api'
-/* tslint:disable */
-import _ from 'lodash'
-import { NSIQuality } from '../../../../../../../../interface/content-quality'
-/* tslint:enable */
+
 /**
  * @description
  * Parent component for the Collection editor. All the child component are loaded here. It decides the flow and the logic and
@@ -47,20 +41,16 @@ import { NSIQuality } from '../../../../../../../../interface/content-quality'
   selector: 'ws-auth-collection',
   templateUrl: './collection.component.html',
   styleUrls: ['./collection.component.scss'],
-  /* tslint:disable */
-  encapsulation: ViewEncapsulation.None,
-  /* tslint:enable */
   providers: [CollectionStoreService, CollectionResolverService],
 })
-export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CollectionComponent implements OnInit, OnDestroy {
   contents: NSContent.IContentMeta[] = []
   currentParentId!: string
-  // stepper: IAuthSteps[] = [
-  //   { title: 'Choose Type', disabled: true },
-  //   { title: 'Content', disabled: false },
-  //   { title: 'Details', disabled: false },
-  // ]
-  selectedIndex: number | null  // for tabs
+  stepper: IAuthSteps[] = [
+    { title: 'Choose Type', disabled: true },
+    { title: 'Content', disabled: false },
+    { title: 'Details', disabled: false },
+  ]
   isSubmitPressed = false
   showLanguageBar = false
   actionButton: IActionButtonConfig | null = null
@@ -72,7 +62,7 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
   previewIdentifier: string | null = null
   viewMode = 'meta'
   mimeTypeRoute = ''
-  currentContents: any
+
   mediumScreen = false
   sideBarOpened = false
   mediumSizeBreakpoint$ = this.breakpointObserver
@@ -80,7 +70,7 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
     .pipe(map((res: BreakpointState) => res.matches))
   mode$ = this.mediumSizeBreakpoint$.pipe(map(isMedium => (isMedium ? 'over' : 'side')))
   leftArrow = true
-  @ViewChild('tabGroup', { static: false }) tabGroup!: MatTabGroup
+
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -95,49 +85,40 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
     private notificationSvc: NotificationService,
     private accessControlSvc: AccessControlService,
     private breakpointObserver: BreakpointObserver,
-    private _qualityService: ContentQualityService,
-    private _configurationsService: ConfigurationsService,
-  ) {
-    this.selectedIndex = 0
-    this.contentService.changeActiveCont.subscribe(data => {
-      this.currentContent = data
-      this.viewMode = 'meta'
-      this.currentContents = this.contentService.getUpdatedMeta(data)
-      this.setVeiwMetaByType(this.currentContents)
-      // if (this.contentService.getUpdatedMeta(data).contentType !== 'Resource') {
-      //   this.viewMode = 'meta'
-      // }
-    })
-  }
+  ) { }
 
   ngOnInit() {
+    this.contentService.changeActiveCont.subscribe(data => {
+      this.currentContent = data
+      if (this.contentService.getUpdatedMeta(data).contentType !== 'Resource') {
+        this.viewMode = 'meta'
+      }
+    })
     if (this.activateRoute.parent && this.activateRoute.parent.parent) {
       this.routerSubscription = this.activateRoute.parent.parent.data.subscribe(data => {
-        if (data && data.contents) {
-          const contentDataMap = new Map<string, NSContent.IContentMeta>()
-          data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
-            this.storeService.parentNode.push(v.content.identifier)
-            this.resolverService.buildTreeAndMap(
-              v.content,
-              contentDataMap,
-              this.storeService.flatNodeMap,
-              this.storeService.uniqueIdMap,
-              this.storeService.lexIdMap,
-            )
-          })
-          contentDataMap.forEach(content => this.contentService.setOriginalMeta(content))
-          const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
-          this.currentParentId = this.currentContent
-          this.storeService.treeStructureChange.next(
-            this.storeService.flatNodeMap.get(currentNode) as IContentNode,
+        const contentDataMap = new Map<string, NSContent.IContentMeta>()
+        data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
+          this.storeService.parentNode.push(v.content.identifier)
+          this.resolverService.buildTreeAndMap(
+            v.content,
+            contentDataMap,
+            this.storeService.flatNodeMap,
+            this.storeService.uniqueIdMap,
+            this.storeService.lexIdMap,
           )
-          this.storeService.currentParentNode = currentNode
-          this.storeService.currentSelectedNode = currentNode
-          this.storeService.selectedNodeChange.next(currentNode)
-        }
+        })
+        contentDataMap.forEach(content => this.contentService.setOriginalMeta(content))
+        const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
+        this.currentParentId = this.currentContent
+        this.storeService.treeStructureChange.next(
+          this.storeService.flatNodeMap.get(currentNode) as IContentNode,
+        )
+        this.storeService.currentParentNode = currentNode
+        this.storeService.currentSelectedNode = currentNode
+        this.storeService.selectedNodeChange.next(currentNode)
       })
     }
-    // this.stepper = this.initService.collectionConfig.stepper
+    this.stepper = this.initService.collectionConfig.stepper
     this.showLanguageBar = this.initService.collectionConfig.languageBar
     const actionButton: IActionButton[] = []
     this.initService.collectionConfig.actionButtons.buttons.forEach(action => {
@@ -163,66 +144,20 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.mediumScreen = isLtMedium
       this.sideBarOpened = !isLtMedium
     })
-    // this.currentParentId
   }
-  ngAfterViewInit(): void {
-    if (this.tabGroup) {
-      this.tabGroup._handleClick = this.myTabChange.bind(this)
-    }
-  }
+
   ngOnDestroy() {
     this.loaderService.changeLoad.next(false)
   }
-  // tabClick(event: MatTabChangeEvent) {
-  //   // if (this.currentContent || this.currentParentId) {
-  //   //   this.selectedIndex = event.tab.position
-  //   // } else {
-  //   //   this.selectedIndex = 0
-  //   // }
-  //   // will do something if required
-  // }
-  myTabChange(tab: MatTab, tabHeader: MatTabHeader, idx: number) {
-    let result = false
-    // here I added all checks/conditions ; if everything is Ok result is changed to true
-    // ==> this way the tab change is allowed.
 
-    if (tab && tabHeader && idx >= 1 && (this.currentContent || this.currentParentId)) {
-      result = true
-      this.selectedIndex = idx
-    } else if (idx === 0) {
-      this.selectedIndex = idx
-      result = true
-    }
-    return result
-  }
   sidenavClose() {
     setTimeout(() => (this.leftArrow = true), 500)
   }
 
   save(nextAction?: string) {
-    _.forOwn(this.contentService.upDatedContent, (v, k) => {
-      if (k === this.contentService.currentContent) {
-        // can do anything
-        // const updatedData = this.contentService.getUpdatedMeta(k)
-        // if (v.body === '') {
-        //   // _.set(v, 'body', undefined)
-        //   delete v.body
-        // }
-        // if (v.description === '') {
-        //   // _.set(v, 'description', undefined)
-        //   delete v.description
-        // }
-      } else if (Object.keys(v).length) {
-        // _.set(this.contentService, `upDatedContent[${k}]`, {})
-        _.unset(_.get(this.contentService, 'upDatedContent'), k)
-
-      }
-    })
     const updatedContent = this.contentService.upDatedContent || {}
-    // const updatedContent = this.contentService.upDatedContent || {}
     if (
-      (Object.keys(updatedContent).length &&
-        (Object.values(updatedContent).length && JSON.stringify(Object.values(updatedContent)[0]) !== '{}')) ||
+      Object.keys(updatedContent).length ||
       Object.keys(this.storeService.changedHierarchy).length
     ) {
       this.isChanged = true
@@ -281,12 +216,6 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
       )
     } else {
       if (nextAction) {
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.UP_TO_DATE,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
         this.action(nextAction)
       } else {
         this.snackBar.openFromComponent(NotificationComponent, {
@@ -332,79 +261,30 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   takeAction() {
     this.isSubmitPressed = true
-    // const needSave = Object.keys(this.contentService.upDatedContent || {}).length
-    // if (!needSave && !this.isChanged) {
-    //   this.snackBar.openFromComponent(NotificationComponent, {
-    //     data: {
-    //       type: Notify.UP_TO_DATE,
-    //     },
-    //     duration: NOTIFICATION_TIME * 1000,
-    //   })
-    //   return
-    // }
-    if (this.validationCheck && this._configurationsService.userProfile) {
-      /** final call */
-      // const dialogRef = this.dialog.open(CommentsDialogComponent, {
-      //   width: '750px',
-      //   height: '450px',
-      //   data: this.contentService.getOriginalMeta(this.currentParentId),
-      // })
+    const needSave = Object.keys(this.contentService.upDatedContent || {}).length
+    if (!needSave && !this.isChanged) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.UP_TO_DATE,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+      return
+    }
+    if (this.validationCheck) {
+      const dialogRef = this.dialog.open(CommentsDialogComponent, {
+        width: '750px',
+        height: '450px',
+        data: this.contentService.getOriginalMeta(this.currentParentId),
+      })
 
-      // dialogRef.afterClosed().subscribe((commentsForm: FormGroup) => {
-      //   this.finalCall(commentsForm)
-      // })
-      /** final call */
-      const reqObj = {
-        resourceId: this.currentContent,
-        resourceType: 'content',
-        userId: this._configurationsService.userProfile.userId,
-        getLatestRecordEnabled: true,
-      }
-      let minPassPercentage = 20
-      this._qualityService.fetchresult(reqObj).subscribe((result: any) => {
-        if (result && result.result && result.result.resources) {
-          const rse = result.result.resources || []
-          if (rse.length === 1) {
-            let qualityScore: NSIQuality.IQualityResponse
-            qualityScore = rse[0]
-            if (qualityScore) {
-              if (qualityScore) {
-                const score = qualityScore.finalWeightedScore || 0
-                if (this.initService.authAdditionalConfig.contentQuality) {
-                  minPassPercentage = this.initService.authAdditionalConfig.contentQuality.passPercentage
-                }
-                if (score >= minPassPercentage && qualityScore.qualifiedMinCriteria) {
-                  /** final call */
-                  const dialogRef = this.dialog.open(CommentsDialogComponent, {
-                    width: '750px',
-                    height: '450px',
-                    data: this.contentService.getOriginalMeta(this.currentParentId),
-                  })
-
-                  dialogRef.afterClosed().subscribe((commentsForm: FormGroup) => {
-                    this.finalCall(commentsForm)
-                  })
-                  /** final call */
-                } else {
-                  this.snackBar.open(`To proceed further minimum quality score must be
-                  ${minPassPercentage}% or greater, and need to qualify in all the sections`)
-                }
-              } else {
-                this.snackBar.open(`To proceed further minimum quality score must be
-                ${minPassPercentage}% or greater, and need to qualify in all the sections`)
-              }
-            } else {
-              this.snackBar.open(`To proceed further minimum quality score must be
-               ${minPassPercentage}% or greater, and need to qualify in all the sections`)
-            }
-          } else {
-            this.snackBar.open(`To proceed further minimum quality score is required, and need to qualify in all the sections`)
-          }
-        }
+      dialogRef.afterClosed().subscribe((commentsForm: FormGroup) => {
+        this.finalCall(commentsForm)
       })
     }
   }
-  async finalCall(commentsForm: FormGroup) {
+
+  finalCall(commentsForm: FormGroup) {
     if (commentsForm) {
       const body: NSApiRequest.IForwardBackwardActionGeneral = {
         comment: commentsForm.controls.comments.value,
@@ -420,24 +300,14 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
       const needSave =
         Object.keys(this.contentService.upDatedContent || {}).length ||
         Object.keys(this.storeService.changedHierarchy).length
-      if (updatedMeta && updatedMeta.children && updatedMeta.children.length > 0) {
-        for (const element of updatedMeta.children) {
-          await this.editorService.sendToReview(element.identifier, element.status).subscribe(
-            // tslint:disable
-            data => console.log(data)
-            // tslint:enable
-          )
-        }
-      }
       const saveCall = (needSave ? this.triggerSave() : of({} as any)).pipe(
         mergeMap(() =>
           this.editorService
-            // .forwardBackward(
-            //   body,
-            //   this.currentParentId,
-            //   this.contentService.originalContent[this.currentParentId].status,
-            // )
-            .sendToReview(updatedMeta.identifier, updatedMeta.status)
+            .forwardBackward(
+              body,
+              this.currentParentId,
+              this.contentService.originalContent[this.currentParentId].status,
+            )
             .pipe(
               mergeMap(() =>
                 this.notificationSvc
@@ -469,7 +339,7 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
           if (this.contents.length) {
             this.contentService.changeActiveCont.next(this.contents[0].identifier)
           } else {
-            this.router.navigateByUrl('/author/cbp')
+            this.router.navigateByUrl('/author/home')
           }
         },
         (error: any) => {
@@ -575,6 +445,7 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   triggerSave() {
+    console.log('PPPPPPPPPPPPPP')
     const nodesModified: any = {}
     let isRootPresent = false
     Object.keys(this.contentService.upDatedContent).forEach(v => {
@@ -594,75 +465,21 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
         metadata: {},
       }
     }
-    const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-      request: {
-        data: {
-          nodesModified,
-          hierarchy: this.storeService.changedHierarchy,
-        },
-      },
-    }
-    if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.contentService.currentContent]) {
-      const requestBody: NSApiRequest.IContentUpdateV2 = {
-        request: {
-          content: nodesModified[this.contentService.currentContent].metadata,
-        },
-      }
-      requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
-      if (requestBody.request.content.duration) {
-        requestBody.request.content.duration =
-          (isNumber(requestBody.request.content.duration)
-            ? `${requestBody.request.content.duration}` : requestBody.request.content.duration)
-      }
-      if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
-        requestBody.request.content.reviewer = ''
-        requestBody.request.content.trackContacts.forEach((element, index) => {
-          if (index === 0) {
-            requestBody.request.content.reviewer = requestBody.request.content.reviewer + element.id
-          } else {
-            /* tslint:disable */
-            requestBody.request.content.reviewer = requestBody.request.content.reviewer + ', ' + element.id
-          }
-        })
-        delete requestBody.request.content.trackContacts
-      }
-      return this.editorService.updateContentV3(requestBody, this.contentService.currentContent).pipe(
-        tap(() => {
-          this.storeService.changedHierarchy = {}
-          Object.keys(this.contentService.upDatedContent).forEach(id => {
-            this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
-            this.editorService.readContentV2(id).subscribe(resData => {
-              this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
-            })
-          })
-          this.contentService.upDatedContent = {}
-        }),
-      )
+    const requestBody: NSApiRequest.IContentUpdate = {
+      nodesModified,
+      hierarchy: this.storeService.changedHierarchy,
     }
 
-    return this.editorService.updateContentV4(requestBodyV2).pipe(
+    console.log('PPPPPPPPPPPPPP changedHierarchy ', this.storeService.changedHierarchy)
+    return this.editorService.updateContentV2(requestBody).pipe(
       tap(() => {
         this.storeService.changedHierarchy = {}
-        Object.keys(this.contentService.upDatedContent).forEach(async id => {
+        Object.keys(this.contentService.upDatedContent).forEach(id => {
           this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
         })
         this.contentService.upDatedContent = {}
       }),
     )
-
-    // const requestBody: NSApiRequest.IContentUpdate = {
-    //   nodesModified,
-    //   hierarchy: this.storeService.changedHierarchy,
-    // }
-    // return this.editorService.updateContentV2(requestBody).pipe(
-    //   tap(() => {
-    //     this.storeService.changedHierarchy = {}
-    //     Object.keys(this.contentService.upDatedContent).forEach(id => {
-    //       this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
-    //     })
-    //     this.contentService.upDatedContent = {}
-    //   }),
-    // )
   }
 
   getMessage(type: 'success' | 'failure') {
@@ -700,7 +517,13 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
         break
       case 'editContent':
         const content = this.contentService.getUpdatedMeta(event.identifier)
-        this.setVeiwMetaByType(content)
+        if (['application/pdf', 'application/x-mpegURL'].includes(content.mimeType)) {
+          this.viewMode = 'upload'
+        } else if (content.mimeType === 'application/html' && !content.isExternal) {
+          this.viewMode = 'upload'
+        } else if (content.mimeType === 'application/html') {
+          this.viewMode = 'curate'
+        }
         break
       case 'preview':
         this.preview(event.identifier)
@@ -708,41 +531,12 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  setVeiwMetaByType(content: NSContent.IContentMeta) {
-    if (['application/pdf', 'application/x-mpegURL'].includes(content.mimeType)) {
-      this.viewMode = 'upload'
-    } else if ((content.mimeType === 'application/html' && !content.isExternal)
-      || content.mimeType === 'audio/mpeg') {
-      this.viewMode = 'upload'
-    } else if (content.mimeType === 'text/x-url') {
-      this.viewMode = 'curate'
-    } else if (content.mimeType === 'application/quiz') {
-      this.viewMode = 'quiz'
-    } else if (content.mimeType === 'application/web-module') {
-      this.viewMode = 'web'
-    } else {
-      this.viewMode = 'meta'
-    }
-  }
-
   action(type: string) {
     switch (type) {
       case 'next':
-        // this.viewMode = ''
-        if (this.selectedIndex != null) {
-          this.selectedIndex += 1
-        } else {
-          this.selectedIndex = 0
-        }
+        this.viewMode = 'meta'
         break
-      case 'back':
-        // this.viewMode = 'meta'
-        if (this.selectedIndex) {
-          this.selectedIndex -= 1
-        } else {
-          this.selectedIndex = 0
-        }
-        break
+
       case 'save':
         this.save()
         break
@@ -783,21 +577,19 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
             if (this.contents.length) {
               this.contentService.changeActiveCont.next(this.contents[0].identifier)
             } else {
-              this.router.navigateByUrl('/author/cbp/me')
+              this.router.navigateByUrl('/author/home')
             }
           }
         })
         break
 
       case 'fullscreen':
-      case 'fulls':
         this.fullScreenToggle()
         break
 
       case 'close':
-        this.router.navigateByUrl('/author/cbp/me')
+        this.router.navigateByUrl('/author/home')
         break
-
     }
   }
 
@@ -816,7 +608,7 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.contents.length) {
           this.contentService.changeActiveCont.next(this.contents[0].identifier)
         } else {
-          this.router.navigateByUrl('/author/cbp')
+          this.router.navigateByUrl('/author/home')
         }
       },
       error => {
@@ -862,14 +654,7 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   fullScreenToggle = () => {
     const doc: any = document
-    // const elm: any = doc.getElementById('auth-toc')
-    let elm: any = doc.getElementById('auth-toc')
-    if (!elm) {
-      elm = doc.getElementById('edit-meta')
-    }
-    if (!elm) {
-      elm = doc.getElementById('auth-root')
-    }
+    const elm: any = doc.getElementById('auth-toc')
     if (elm.requestFullscreen) {
       !doc.fullscreenElement ? elm.requestFullscreen() : doc.exitFullscreen()
     } else if (elm.mozRequestFullScreen) {

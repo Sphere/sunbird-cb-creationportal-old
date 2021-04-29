@@ -28,6 +28,65 @@ export class UploadService {
     private configSvc: ConfigurationsService,
   ) { }
 
+  // upload(
+  //   data: FormData,
+  //   contentData: NSApiRequest.IContentData,
+  //   options?: any,
+  //   isZip = false,
+  // ): Observable<NSApiResponse.IFileApiResponse> {
+  //   if (isZip) {
+  //     return this.zipUpload(data, contentData, options)
+  //   }
+  //   const file = data.get('content') as File
+  //   let fileName = file.name
+  //   if (FIXED_FILE_NAME.indexOf(fileName) < 0) {
+  //     fileName = this.appendToFilename(fileName)
+  //   }
+  //   const newFormData = new FormData()
+  //   newFormData.append('content', file, fileName)
+  //   return this.apiService.post<NSApiResponse.IFileApiResponse>(
+  //     // tslint:disable-next-line:max-line-length
+  // '${CONTENT_BASE}${this.accessService.rootOrg.replace(/ /g, '_')}/${this.accessService.org.replace(/ /g, '_')}/Public/${contentData.contentId.replace('.img', '')}${contentData.contentType}',
+  //     newFormData,
+  //     false,
+  //     options,
+  //   )
+  // }
+
+
+
+
+  // zipUpload(
+  //   data: FormData,
+  //   contentData: NSApiRequest.IContentData,
+  //   options?: any,
+  // ): Observable<NSApiResponse.IFileApiResponse> {
+  //   return this.apiService.post<NSApiResponse.IFileApiResponse>(
+  //     // tslint:disable-next-line:max-line-length
+  //     '${CONTENT_BASE_ZIP}${this.accessService.rootOrg.replace(/ /g, '_')}/${this.accessService.org.replace(/ /g, '_')}/Public/${contentData.contentId.replace('.img', '')}${contentData.contentType}',
+  //     data,
+  //     false,
+  //     options,
+  //   )
+  // }
+
+  // encodedUpload(
+  //   data: any,
+  //   fileName: string,
+  //   contentData: NSApiRequest.IContentData,
+  // ): Observable<NSApiResponse.IFileApiResponse> {
+  //   return this.apiService.post<NSApiResponse.IFileApiResponse>(
+  //     `${CONTENT_BASE_ENCODE}`,
+  //     {
+  //       fileName,
+  //       text: this.apiService.base64(CONTENT_BASE_ENCODE, data).data,
+  //       // tslint:disable-next-line:max-line-length
+  //       location: '${this.accessService.rootOrg.replace(/ /g, '_')}/${this.accessService.org.replace(/ /g, '_')}/Public/${contentData.contentId.replace('.img', '')}${contentData.contentType}',
+  //     },
+  //     false,
+  //   )
+  // }
+
   upload(
     data: FormData,
     contentData: NSApiRequest.IContentData,
@@ -35,7 +94,7 @@ export class UploadService {
     isZip = false,
   ): Observable<NSApiResponse.IFileApiResponseV2> {
     if (isZip) {
-      return this.zipUpload(data, contentData, options)
+      // return this.zipUpload(data, contentData, options)
     }
     const file = data.get('content') as File
     let fileName = file.name
@@ -54,6 +113,8 @@ export class UploadService {
     )
   }
 
+
+
   zipUpload(
     data: FormData,
     contentData: NSApiRequest.IContentData,
@@ -68,6 +129,7 @@ export class UploadService {
       options,
     )
   }
+
 
   encodedUpload(
     data: any,

@@ -1,16 +1,12 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { InitResolver } from '@ws/author/src/lib/services/init-resolve.service'
-// import { QualityJSONResolver } from '../../../services/quality-json-resolver.service'
 import { EditorComponent } from './components/editor/editor.component'
 
 const routes: Routes = [
   {
     path: '',
     component: EditorComponent,
-    // resolve: {
-    //   qualityJSON: QualityJSONResolver,
-    // },
     children: [
       {
         path: 'curate',
@@ -25,7 +21,7 @@ const routes: Routes = [
       {
         path: 'collection',
         data: {
-          load: ['collection', 'create', 'content-quality'],
+          load: ['collection', 'create'],
         },
         resolve: {
           script: InitResolver,

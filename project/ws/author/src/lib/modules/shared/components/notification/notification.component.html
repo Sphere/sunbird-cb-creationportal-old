@@ -70,7 +70,7 @@
 
 <p *ngIf="type === notify.UPLOAD_FILE">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">notification_important</mat-icon>
-  <span i18n>Choose the files then click on upload</span>
+  <span i18n>Upload the file!</span>
 </p>
 
 <p *ngIf="type === notify.TRANSCODE_FAIL">
@@ -94,10 +94,8 @@
 </p>
 
 <p *ngIf="type === notify.NO_ROLE" class="flex">
-  <mat-icon class="icon self-center" aria-hidden="false" i18n-aria-label aria-label="Notification">
-    notification_important</mat-icon>
-  <span i18n class="self-center">Selected user does not to have publish/review rights, please contact admin to get
-    publish/review rights for this user or
+  <mat-icon class="icon self-center" aria-hidden="false" i18n-aria-label aria-label="Notification">notification_important</mat-icon>
+  <span i18n class="self-center">Selected user does not to have publish/review rights, please contact admin to get publish/review rights for this user or
     select another user who has publish/review rights</span>
 </p>
 <p *ngIf="type === notify.NO_ACCESS">
@@ -155,11 +153,11 @@
   MAX_OPTIONS_REACHED = 'MAX_QUIZ_REACHED', -->
 <p *ngIf="type === notify.RESOURCE_NO_QUIZ">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
-  <span i18n>Resource should have at least one Quiz!</span>
+  <span i18n>Resource should have atlest one Quiz!</span>
 </p>
 <p *ngIf="type === notify.ASSESSMENT_MIN_QUIZ">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
-  <span i18n>Assessment should have at least 2 Quizzes!</span>
+  <span i18n>Assessment should have atlest 10 Quizzes!</span>
 </p>
 <p *ngIf="type === notify.MAX_QUIZ_REACHED">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
@@ -191,7 +189,7 @@
 </p>
 <p *ngIf="type === notify.MCQ_NO_OPTION_CORRECT">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
-  <span i18n>At least one option should be correct for MCQ!</span>
+  <span i18n>Atleast one option should be correct for MCQ!</span>
 </p>
 <p *ngIf="type === notify.MCQ_ALL_OPTIONS_CORRECT">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
@@ -237,8 +235,7 @@
   <span i18n>This class is already defined</span>
 </p>
 <p *ngIf="type === notify.RELATION_MIN_CLASS_REQUIRED">
-  <mat-icon class="icon self-center" aria-hidden="false" i18n-aria-label aria-label="Notification">
-    notification_important</mat-icon>
+  <mat-icon class="icon self-center" aria-hidden="false" i18n-aria-label aria-label="Notification">notification_important</mat-icon>
   <span class="self-center" i18n>Atleast two classes are required to create a relation</span>
 </p>
 <p *ngIf="type === notify.RELATION_EXISTS">
@@ -254,9 +251,4 @@
 <p *ngIf="type === notify.ROLE_REQUEST_SUBMIT_FAILURE">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
   <span i18n>Unable to submit your request. Try again </span>
-</p>
-
-<p *ngIf="type === notify.COMPETENCY_CREATED_SUCCESS">
-  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">notification_important</mat-icon>
-  <span i18n>Your Competency Request Success!. please wait the reviewer to approve it</span>
 </p>

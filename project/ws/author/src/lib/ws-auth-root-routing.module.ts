@@ -1,10 +1,10 @@
+import { CreateCourseComponent } from './routing/modules/create/components/create-course/create-course.component'
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { GeneralGuard } from '../../../../../src/app/guards/general.guard'
 import { AuthRootComponent } from './components/root/root.component'
 import { ViewerComponent } from './routing/components/viewer/viewer.component'
 import { CreateComponent } from './routing/modules/create/components/create/create.component'
-import { ConfirmationComponent } from './routing/modules/create/components/confirmation/confirmation.component'
 import { AuthHomeComponent } from './routing/modules/home/components/home/home.component'
 import { ContentAndDataReadMultiLangTOCResolver } from './services/content-and-data-read-multi-lang.service'
 import { ContentTOCResolver } from './services/content-resolve.service'
@@ -45,7 +45,6 @@ const routes: Routes = [
     resolve: {
       script: InitResolver,
     },
-    canActivate: [GeneralGuard],
   },
   {
     path: 'create-content',
@@ -72,6 +71,18 @@ const routes: Routes = [
     },
   },
   {
+    path: 'create-course',
+    data: {
+      // load: ['create', 'ordinals'],
+      requiredFeatures: ['authoring'],
+    },
+    canActivate: [GeneralGuard],
+    component: CreateCourseComponent,
+    resolve: {
+      script: InitResolver,
+    },
+  },
+  {
     path: '',
     pathMatch: 'full',
     redirectTo: 'home',
@@ -82,10 +93,6 @@ const routes: Routes = [
     resolve: {
       content: ContentTOCResolver,
     },
-  },
-  {
-    path: 'confirmation',
-    component: ConfirmationComponent,
   },
 ]
 
