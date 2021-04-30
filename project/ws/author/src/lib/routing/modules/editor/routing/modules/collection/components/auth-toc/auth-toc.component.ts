@@ -15,6 +15,9 @@ import { IContentTreeNode } from './../../interface/icontent-tree'
 import { CollectionStoreService } from './../../services/store.service'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
 import { map } from 'rxjs/operators'
+import { isNumber } from 'lodash'
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
 
 declare var $: any
 @Component({
@@ -57,6 +60,9 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     .observe([Breakpoints.XSmall, Breakpoints.Small])
     .pipe(map((res: BreakpointState) => res.matches))
   leftarrow = true
+  contentId :any | null = null
+
+
   constructor(
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -65,6 +71,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     private loaderService: LoaderService,
     private authInitService: AuthInitService,
     private breakpointObserver: BreakpointObserver,
+    private editorService: EditorService,
   ) { }
 
   private _transformer = (node: IContentNode, level: number): IContentTreeNode => {
@@ -104,6 +111,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.treeStructureChange.subscribe(data => {
       this.dataSource.data = [data as IContentNode]
       if (this.parentNodeId === this.store.currentParentNode) {
+        console.log('IF !!!!!!')
         this.expandNodesById([this.parentNodeId])
         if (this.selectedNode && !this.store.flatNodeMap.get(this.selectedNode)) {
           this.parentHierarchy.forEach(v => {
@@ -118,12 +126,15 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
           })
         }
       } else {
+        console.log('else !!!!!!')
         this.parentNodeId = this.store.currentParentNode
       }
     })
     this.store.selectedNodeChange.subscribe(data => {
       if (data) {
+        console.log('Data ===== ', data)
         this.selectedNode = data
+        this.contentId =  data.toString()
       }
     })
     this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
@@ -153,16 +164,67 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     if ($('#cdk-drop-list-0 > mat-tree-node').hasClass('selected')) {
       $('#cdk-drop-list-0 > mat-tree-node:nth-child(2)').removeClass('selected')
     }
-
+    console.log('node.id ', node.id, 'this.selectedNode ', this.selectedNode)
     if (node.id !== this.selectedNode) {
+
+      this.updateSelectedNodeIdentifier()
+
       this.action.emit({ type: 'editContent', identifier: node.identifier, nodeClicked: true })
       this.selectedNode = node.id
       this.editorStore.currentContent = node.identifier
       this.store.currentSelectedNode = node.id
+      this.contentId = node.identifier
       this.editorStore.changeActiveCont.next(node.identifier)
 
     }
   }
+
+
+  updateSelectedNodeIdentifier() {
+
+    console.log('CONTENT ID ', this.contentId)
+    console.log('this.editorStore.currentContent ', this.editorStore)
+    const updatedContent = this.editorStore.upDatedContent || {}
+    if (Object.keys(updatedContent).length > 0) {
+      let tempUpdateContent = this.editorStore.upDatedContent[this.contentId]
+      if (tempUpdateContent) {
+        tempUpdateContent = this.editorStore.cleanProperties(tempUpdateContent)
+        console.log('tempUpdateContent ', tempUpdateContent)
+        if (tempUpdateContent.duration) {
+          tempUpdateContent.duration =
+            (isNumber(tempUpdateContent.duration) ?
+              `${tempUpdateContent.duration}` :
+              tempUpdateContent.duration)
+        }
+        if (tempUpdateContent.category) {
+          delete tempUpdateContent.category
+        }
+        const requestBody: NSApiRequest.IContentUpdateV2 = {
+          request: {
+            content: tempUpdateContent,
+          },
+        }
+        console.log('requestbody ', requestBody)
+        this.editorService.updateContentV3(requestBody, this.contentId).subscribe((d)=> {
+          console.log('Response == ', d)
+          this.store.changedHierarchy = {}
+          Object.keys(this.editorStore.upDatedContent).forEach(id => {
+            console.log('this.contentService.upDatedContent === ', this.editorStore.upDatedContent[id])
+            this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
+            this.editorService.readContentV2(id).subscribe(resData => {
+              this.editorStore.resetVersionKey(resData.versionKey, resData.identifier)
+            })
+          })
+          this.editorStore.upDatedContent = {}
+        })
+
+
+      }
+    }
+
+  }
+
+
 
   closeSidenav() {
     this.closeEvent.emit(true)

@@ -1105,13 +1105,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       },
     }
 
-    // console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2, this.storeService.changedHierarchy)
+    console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2, this.storeService.changedHierarchy)
     if (Object.keys(this.storeService.changedHierarchy).length === 0) {
-      if (Object.keys(this.contentService.upDatedContent)[0] && nodesModified[Object.keys(this.contentService.upDatedContent)[0]]) {
+      if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.contentService.currentContent]) {
         const requestBody: NSApiRequest.IContentUpdateV2 = {
           request: {
             // content: nodesModified[Object.keys(this.contentService.upDatedContent)[0]].metadata,
             content: nodesModified[this.currentCourseId].metadata,
+            // content: nodesModified[this.contentService.currentContent].metadata,
           },
         }
         requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
@@ -1126,11 +1127,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           delete requestBody.request.content.category
         }
 
-        // console.log('UPDATE AUTH TABLE Parent ', requestBody)
+        console.log('UPDATE AUTH TABLE Parent ---- ', requestBody)
         return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
           tap(() => {
             this.storeService.changedHierarchy = {}
             Object.keys(this.contentService.upDatedContent).forEach(id => {
+              console.log('this.contentService.upDatedContent === ', this.contentService.upDatedContent[id])
               this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
               this.editorService.readContentV2(id).subscribe(resData => {
                 this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
@@ -1139,6 +1141,21 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             this.contentService.upDatedContent = {}
           }),
         )
+
+      //  return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
+      //     tap(() => {
+      //       this.storeService.changedHierarchy = {}
+      //       // Object.keys(this.contentService.upDatedContent).forEach(id => {
+      //         console.log('this.contentService.upDatedContent === ', this.contentService.upDatedContent[this.currentCourseId])
+      //         this.contentService.resetOriginalMeta(this.contentService.upDatedContent[this.currentCourseId], this.currentCourseId)
+      //         this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
+      //           this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
+      //         })
+      //       // })
+      //       // this.contentService.upDatedContent[this.currentCourseId] = {}
+      //     }),
+      //   )
+
       }
     }
 

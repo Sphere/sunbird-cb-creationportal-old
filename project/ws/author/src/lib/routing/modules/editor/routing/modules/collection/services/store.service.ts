@@ -200,7 +200,7 @@ export class CollectionStoreService {
       console.log('Type === ', type)
       console.log('topicObj ', topicObj)
 
-      // let newChildUpdateCall = true
+      let newChildUpdateCall = true
       let topicName = 'Untitled Content', topicDescription = ''
       if (Object.keys(topicObj).length !== 0) {
         console.log('exist')
@@ -282,9 +282,9 @@ export class CollectionStoreService {
       )
       this.dragAndDrop(treeStructure, dropNode, adjacentId, dropLocation)
 
-      // if (newChildUpdateCall) {
-      //   this.updateNewSubChild()
-      // }
+      if (newChildUpdateCall) {
+        // this.updateNewSubChild()
+      }
 
       return true
     } catch (ex) {

@@ -100,6 +100,7 @@ export class EditorContentService {
 
   resetOriginalMeta(meta: NSContent.IContentMeta, id: string) {
     this.originalContent[id] = { ...this.originalContent[id], ...JSON.parse(JSON.stringify(meta)) }
+    console.log('resetOriginalMeta ', this.originalContent[id])
     delete this.upDatedContent[id]
   }
 
@@ -135,12 +136,31 @@ export class EditorContentService {
     })
   }
 
+  // setUpdatedMeta(meta: NSContent.IContentMeta, id: string, emit = true) {
+  //   this.upDatedContent[id] = {
+  //     ...(this.upDatedContent[id] ? this.upDatedContent[id] : {}),
+  //     ...JSON.parse(JSON.stringify(meta)),
+  //   }
+  //   this.setOriginalMeta(meta)
+  //   if (emit) {
+  //     this.onContentChange.next(id)
+  //   }
+  // }
+
   setUpdatedMeta(meta: NSContent.IContentMeta, id: string, emit = true) {
     this.upDatedContent[id] = {
       ...(this.upDatedContent[id] ? this.upDatedContent[id] : {}),
       ...JSON.parse(JSON.stringify(meta)),
     }
-    this.setOriginalMeta(meta)
+
+    if (Object.keys(meta).length === 0) { // empty
+      this.setOriginalMeta(meta)
+    } else {
+      this.originalContent[id] = {
+        ...(this.originalContent[id] ? this.originalContent[id] : {}),
+        ...JSON.parse(JSON.stringify(meta)),
+      }
+    }
     if (emit) {
       this.onContentChange.next(id)
     }

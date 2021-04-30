@@ -355,7 +355,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
           : ''
     }
     this.assignFields()
-    this.setDuration(contentMeta.duration || 0)
+    this.setDuration(contentMeta.duration || '0')
     this.filterOrdinals()
     this.changeResourceType()
   }
