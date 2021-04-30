@@ -148,8 +148,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.currentContent = data
       this.currentCourseId = data
 
-      console.log('FFFFFFFFFFF   ', this.currentCourseId)
-
       if (this.contentService.getUpdatedMeta(data).contentType !== 'Resource') {
         this.viewMode = 'meta'
       }
@@ -281,7 +279,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       const parentNode = node
       this.loaderService.changeLoad.next(true)
-      console.log('111111111 BBB', param, this.couseCreated)
+      // console.log('111111111 BBB', param, this.couseCreated)
       const isDone = await this.storeService.createChildOrSibling(
         this.couseCreated,
         parentNode,
@@ -785,13 +783,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   triggerSave1() {
     const nodesModified: any = {}
     let isRootPresent = false
-    console.log('TTTTTTTTTTTTTTTTTTT ', this.contentService.upDatedContent)
+    // console.log('TTTTTTTTTTTTTTTTTTT ', this.contentService.upDatedContent)
 
-    console.log(Object.keys(this.storeService.changedHierarchy).length === 0)
+    // console.log(Object.keys(this.storeService.changedHierarchy).length === 0)
 
     if (Object.keys(this.storeService.changedHierarchy).length === 0) {  // changedHierarchy is empty == Edit update
       Object.keys(this.contentService.upDatedContent).forEach(v => {
-        console.log('AAAAAAAAAA STORE SERVICE ', v, this.storeService.parentNode.includes(v))
+        // console.log('AAAAAAAAAA STORE SERVICE ', v, this.storeService.parentNode.includes(v))
         if (!isRootPresent) {
           isRootPresent = this.storeService.parentNode.includes(v)
         }
@@ -809,10 +807,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         }
       }
 
-      console.log('nodesModified ', nodesModified)
-      console.log('this.contentService.currentContent ', this.contentService.currentContent)
-
-
       if (Object.keys(this.contentService.upDatedContent)[0] && nodesModified[Object.keys(this.contentService.upDatedContent)[0]]) {
         const requestBody: NSApiRequest.IContentUpdateV2 = {
           request: {
@@ -829,10 +823,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         if (requestBody.request.content.category) {
           delete requestBody.request.content.category
         }
-        console.log('requestBody updateContentV3', requestBody)
+        // console.log('requestBody updateContentV3', requestBody)
         return this.editorService.updateContentV3(requestBody, this.contentService.currentContent).pipe(
           tap(() => {
-            console.log('SUCCESS RESPONSE')
+            // console.log('SUCCESS RESPONSE')
             this.storeService.changedHierarchy = {}
             Object.keys(this.contentService.upDatedContent).forEach(id => {
               this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
@@ -892,23 +886,23 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     // }
 
 
-    const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-      request: {
-        data: {
-          nodesModified,
-          hierarchy: this.storeService.changedHierarchy,
-        },
-      },
-    }
-    console.log('parentNodeId  ', this.parentNodeId, 'currentParentId  ', this.currentParentId)
+    // const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+    //   request: {
+    //     data: {
+    //       nodesModified,
+    //       hierarchy: this.storeService.changedHierarchy,
+    //     },
+    //   },
+    // }
+    // console.log('parentNodeId  ', this.parentNodeId, 'currentParentId  ', this.currentParentId)
     let childArr: any[] = []
     let hierarchyOb = this.storeService.changedHierarchy
     this.storeService.changedHierarchy[this.currentParentId]['children'].forEach((e: any) => {
       childArr.push(e.identifier)
     })
     hierarchyOb[this.currentParentId]['children'] = childArr
-    console.log('------ ', hierarchyOb)
-    console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2)
+    // console.log('------ ', hierarchyOb)
+    // console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2)
 
     const requestBodyV22: NSApiRequest.IContentUpdateV3 = {
       request: {
@@ -918,7 +912,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         },
       },
     }
-    console.log('updateContentV4  COURSE COLL')
+    // console.log('updateContentV4  COURSE COLL')
     return this.editorService.updateContentV4(requestBodyV22).pipe(
       tap(() => {
         this.storeService.changedHierarchy = {}
@@ -979,8 +973,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     const nodesModified: any = {}
     let isRootPresent = false
 
-    console.log('TTTTTTTTTTTTTTTTTTT ', this.contentService.upDatedContent)
-    console.log('@@@@@@@  ', this.contentService.currentContent)
+    // console.log('TTTTTTTTTTTTTTTTTTT ', this.contentService.upDatedContent)
+    // console.log('@@@@@@@  ', this.contentService.currentContent)
 
     Object.keys(this.contentService.upDatedContent).forEach(v => {
       if (!isRootPresent) {
@@ -1000,7 +994,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       }
     }
 
-    console.log('parentNodeId  ', this.parentNodeId, 'currentParentId  ', this.currentParentId)
+    // console.log('parentNodeId  ', this.parentNodeId, 'currentParentId  ', this.currentParentId)
 
     // let childArr: any[] = []
     // let hierarchyOb = this.storeService.changedHierarchy
@@ -1020,7 +1014,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       },
     }
 
-    console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2, this.storeService.changedHierarchy)
+    // console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2, this.storeService.changedHierarchy)
     if (Object.keys(this.storeService.changedHierarchy).length === 0) {
       if (Object.keys(this.contentService.upDatedContent)[0] && nodesModified[Object.keys(this.contentService.upDatedContent)[0]]) {
         const requestBody: NSApiRequest.IContentUpdateV2 = {
@@ -1041,7 +1035,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           delete requestBody.request.content.category
         }
 
-        console.log('UPDATE AUTH TABLE Parent ', requestBody)
+        // console.log('UPDATE AUTH TABLE Parent ', requestBody)
         return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
           tap(() => {
             this.storeService.changedHierarchy = {}
@@ -1058,7 +1052,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
 
 
-    console.log('updateContentV4  COURSE COLL')
+    // console.log('updateContentV4  COURSE COLL')
     return this.editorService.updateContentV4(requestBodyV2).pipe(
       tap(() => {
         this.storeService.changedHierarchy = {}
@@ -1079,8 +1073,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     const nodesModified: any = {}
     let isRootPresent = false
 
-    console.log('TTTTTTTTTTTTTTTTTTT ', this.contentService.upDatedContent)
-    console.log('@@@@@@@  ', this.contentService.currentContent)
+    // console.log('TTTTTTTTTTTTTTTTTTT ', this.contentService.upDatedContent)
+    // console.log('@@@@@@@  ', this.contentService.currentContent)
 
     Object.keys(this.contentService.upDatedContent).forEach(v => {
       if (!isRootPresent) {
@@ -1100,7 +1094,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       }
     }
 
-    console.log('parentNodeId  ', this.parentNodeId, 'currentParentId  ', this.currentParentId)
+    // console.log('parentNodeId  ', this.parentNodeId, 'currentParentId  ', this.currentParentId)
 
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
@@ -1111,7 +1105,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       },
     }
 
-    console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2, this.storeService.changedHierarchy)
+    // console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2, this.storeService.changedHierarchy)
     if (Object.keys(this.storeService.changedHierarchy).length === 0) {
       if (Object.keys(this.contentService.upDatedContent)[0] && nodesModified[Object.keys(this.contentService.upDatedContent)[0]]) {
         const requestBody: NSApiRequest.IContentUpdateV2 = {
@@ -1132,7 +1126,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           delete requestBody.request.content.category
         }
 
-        console.log('UPDATE AUTH TABLE Parent ', requestBody)
+        // console.log('UPDATE AUTH TABLE Parent ', requestBody)
         return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
           tap(() => {
             this.storeService.changedHierarchy = {}
@@ -1149,7 +1143,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
 
 
-    console.log('updateContentV4  COURSE COLL')
+    // console.log('updateContentV4  COURSE COLL')
     return this.editorService.updateContentV4(requestBodyV2).pipe(
       tap(() => {
         this.storeService.changedHierarchy = {}
@@ -1203,17 +1197,37 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         }
 
         const content = this.contentService.getUpdatedMeta(event.identifier)
+
+        // console.log('COntent === ', content)
+
+        // if (['application/pdf', 'application/x-mpegURL'].includes(content.mimeType)) {
+        //   this.viewMode = 'upload'
+        // } else if (['video/x-youtube', 'application/html'].includes(content.mimeType) && content.fileType === 'link') {
+        //   this.viewMode = 'curate'
+        // } else if (content.mimeType === 'application/html') {
+        //   this.viewMode = 'upload'
+        // } else if (content.mimeType === 'application/quiz') {
+        //   this.viewMode = 'assessment'
+        // } else if (content.mimeType === 'application/web-module') {
+        //   this.viewMode = 'webmodule'
+        // }
+
+
         if (['application/pdf', 'application/x-mpegURL'].includes(content.mimeType)) {
           this.viewMode = 'upload'
-        } else if (['video/x-youtube', 'application/html'].includes(content.mimeType) && content.fileType === 'link') {
+        } else if (['video/x-youtube','text/x-url','application/html'].includes(content.mimeType) && content.fileType === 'link') {
           this.viewMode = 'curate'
         } else if (content.mimeType === 'application/html') {
           this.viewMode = 'upload'
-        } else if (content.mimeType === 'application/quiz') {
+        } else if (content.mimeType === 'application/quiz' || content.mimeType === 'application/json') {
           this.viewMode = 'assessment'
         } else if (content.mimeType === 'application/web-module') {
           this.viewMode = 'webmodule'
+        }else {
+          this.viewMode = 'meta'
         }
+
+
         // this.save()
         // localStorage.setItem('afterClick', nodeClicked)
         // if (nodeClicked) {

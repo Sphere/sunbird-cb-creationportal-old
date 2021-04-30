@@ -574,6 +574,12 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             if (!currentMeta.body) {
               currentMeta.body = parentData.body !== '' ? parentData.body : currentMeta.body
             }
+
+            if (!currentMeta.instructions) {
+              currentMeta.instructions = parentData.instructions !== '' ? parentData.instructions : currentMeta.instructions
+            }
+
+
             if (!currentMeta.categoryType) {
               currentMeta.categoryType = parentData.categoryType !== '' ? parentData.categoryType : currentMeta.categoryType
             }
@@ -997,8 +1003,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             },
           }
 
-          console.log('CREATE V2 EDIT META TS')
-
           this.apiService
             .post<NSApiRequest.ICreateMetaRequest>(
               `${AUTHORING_BASE}content/v3/create`,
@@ -1007,80 +1011,50 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             .subscribe(
               (meta: NSApiResponse.IContentCreateResponseV2) => {
                 // return data.result.identifier
-
                 this.uploadService
                   .upload(formdata, {
                     contentId: meta.result.identifier,
                     contentType: CONTENT_BASE_STATIC,
                   })
-                  // .subscribe(
-                  //   data => {
-                  //     if (data.result) {
-                  //       const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
-                  //         request: {
-                  //           content: {
-                  //             // content_url: data.result.artifactUrl,
-                  //             // identifier: data.result.identifier,
-                  //             // node_id: data.result.node_id,
-                  //             artifactUrl: this.generateUrl(data.result.artifactUrl),
-                  //             versionKey: (new Date()).getTime().toString(),
-                  //           },
-                  //         },
-                  //       }
-                  //       this.apiService
-                  //         .patch<NSApiRequest.ICreateMetaRequest>(
-                  //           `${AUTHORING_BASE}content/v3/update/${data.result.identifier}`,
-                  //           updateArtf,
-                  //         )
-                  //         .subscribe(
-                  //           (meta1: NSApiResponse.IContentCreateResponseV2) => {
-                  //             if (meta1) {
-                  //             }
-                  //             this.loader.changeLoad.next(false)
-                  //             this.canUpdate = false
-                  //               this.contentForm.controls.appIcon.setValue(this.generateUrl(data.result.artifactUrl))
-                  //               this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.result.artifactUrl))
-                  //               this.canUpdate = true
-                  //               this.storeData()
-                  //             // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-
-                  //             this.snackBar.openFromComponent(NotificationComponent, {
-                  //               data: {
-                  //                 type: Notify.UPLOAD_SUCCESS,
-                  //               },
-                  //               duration: NOTIFICATION_TIME * 1000,
-                  //             })
-                  //           })
-                  //     }
-                  //   },
-                  //   () => {
-                  //     this.loader.changeLoad.next(false)
-                  //     this.snackBar.openFromComponent(NotificationComponent, {
-                  //       data: {
-                  //         type: Notify.UPLOAD_FAIL,
-                  //       },
-                  //       duration: NOTIFICATION_TIME * 1000,
-                  //     })
-                  //   },
-                  // )
-
 
                   .subscribe(
                     data => {
                       if (data.result) {
-                        this.loader.changeLoad.next(false)
-                        this.canUpdate = false
-                        this.contentForm.controls.appIcon.setValue(data.result.artifactUrl)
-                        this.contentForm.controls.thumbnail.setValue(data.result.artifactUrl)
-                        // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-                        this.canUpdate = true
-                        this.storeData()
-                        this.snackBar.openFromComponent(NotificationComponent, {
-                          data: {
-                            type: Notify.UPLOAD_SUCCESS,
+                        const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
+                          request: {
+                            content: {
+                              // content_url: data.result.artifactUrl,
+                              // identifier: data.result.identifier,
+                              // node_id: data.result.node_id,
+                              artifactUrl: this.generateUrl(data.result.artifactUrl),
+                              versionKey: (new Date()).getTime().toString(),
+                            },
                           },
-                          duration: NOTIFICATION_TIME * 1000,
-                        })
+                        }
+                        this.apiService
+                          .patch<NSApiRequest.ICreateMetaRequest>(
+                            `${AUTHORING_BASE}content/v3/update/${data.result.identifier}`,
+                            updateArtf,
+                          )
+                          .subscribe(
+                            (meta1: NSApiResponse.IContentCreateResponseV2) => {
+                              if (meta1) {
+                              }
+                              this.loader.changeLoad.next(false)
+                              this.canUpdate = false
+                                this.contentForm.controls.appIcon.setValue(this.generateUrl(data.result.artifactUrl))
+                                this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.result.artifactUrl))
+                                this.canUpdate = true
+                                this.storeData()
+                              // this.contentForm.controls.posterImage.setValue(data.artifactURL)
+
+                              this.snackBar.openFromComponent(NotificationComponent, {
+                                data: {
+                                  type: Notify.UPLOAD_SUCCESS,
+                                },
+                                duration: NOTIFICATION_TIME * 1000,
+                              })
+                            })
                       }
                     },
                     () => {
@@ -1093,6 +1067,36 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
                       })
                     },
                   )
+
+
+                  // .subscribe(
+                  //   data => {
+                  //     if (data.result) {
+                  //       this.loader.changeLoad.next(false)
+                  //       this.canUpdate = false
+                  //       this.contentForm.controls.appIcon.setValue(data.result.artifactUrl)
+                  //       this.contentForm.controls.thumbnail.setValue(data.result.artifactUrl)
+                  //       // this.contentForm.controls.posterImage.setValue(data.artifactURL)
+                  //       this.canUpdate = true
+                  //       this.storeData()
+                  //       this.snackBar.openFromComponent(NotificationComponent, {
+                  //         data: {
+                  //           type: Notify.UPLOAD_SUCCESS,
+                  //         },
+                  //         duration: NOTIFICATION_TIME * 1000,
+                  //       })
+                  //     }
+                  //   },
+                  //   () => {
+                  //     this.loader.changeLoad.next(false)
+                  //     this.snackBar.openFromComponent(NotificationComponent, {
+                  //       data: {
+                  //         type: Notify.UPLOAD_FAIL,
+                  //       },
+                  //       duration: NOTIFICATION_TIME * 1000,
+                  //     })
+                  //   },
+                  // )
               },
             )
 
@@ -1420,6 +1424,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       unit: [],
       verifiers: [],
       visibility: [],
+      instructions: [],
       versionKey: '',  // (new Date()).getTime()
     })
 

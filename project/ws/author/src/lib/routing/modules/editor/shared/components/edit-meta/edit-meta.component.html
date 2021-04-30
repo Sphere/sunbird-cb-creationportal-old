@@ -5,7 +5,7 @@
       <mat-icon class="ws-mat-primary-text margin-top-l pointer cross-btn" (click)="sideNavBarOpened=false">
         clear
       </mat-icon>
-    </div>   
+    </div>
     <div class="inner-section">
       <div class="margin-right-l margin-top-l">
 
@@ -808,7 +808,7 @@
               </mat-form-field>
             </div>
 
-            <div class="margin-top-s" *ngIf="checkCondition('body', 'show')"
+            <!-- <div class="margin-top-s" *ngIf="checkCondition('body', 'show')"
               [ngClass]="{ disable: checkCondition('body', 'disabled') }">
               <label>
                 <div class="margin-top-xs flex flex-middle">
@@ -826,9 +826,34 @@
                 <ws-auth-plain-ckeditor [location]="location" [id]="contentMeta.identifier"
                   [content]="contentForm.controls.body.value || ''" (value)="updateContentService('body', $event)">
                 </ws-auth-plain-ckeditor>
-                <!-- <textarea (value)="updateContentService('body', $event)"></textarea> -->
               </div>
+            </div> -->
+
+
+
+            <div class="margin-top-s" *ngIf="checkCondition('instructions', 'show')"
+            [ngClass]="{ disable: checkCondition('instructions', 'disabled') }">
+            <label>
+              <div class="margin-top-xs flex flex-middle">
+                <b i18n [ngClass]="{ required: checkCondition('instructions', 'required') }">Content Body (Long Description)
+                </b>
+                <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('contentBody')">info
+                </mat-icon>
+              </div>
+              <span *ngIf="infoType === 'contentBody'" i18n>
+                HTML supported Editor in case you'd like to provide more descriptive details
+              </span>
+            </label>
+            <div class="margin-top-s margin-bottom-l" *ngIf="contentForm && contentForm.controls"
+              [ngClass]="{ 'mat-form-field-invalid': showError('instructions') }">
+              <ws-auth-plain-ckeditor [location]="location" [id]="contentMeta.identifier"
+                [content]="contentForm.controls.instructions.value || ''" (value)="updateContentService('instructions', $event)">
+              </ws-auth-plain-ckeditor>
+              <!-- <textarea (value)="updateContentService('body', $event)"></textarea> -->
             </div>
+          </div>
+
+
           </div>
 
           <!-- <div class="flex flex-end margin-top-l margin-bottom-s margin-right-l">
@@ -897,7 +922,7 @@
         </div>
 
         <div class="">
-        
+
 
 
           <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('sourceName', 'show')"
