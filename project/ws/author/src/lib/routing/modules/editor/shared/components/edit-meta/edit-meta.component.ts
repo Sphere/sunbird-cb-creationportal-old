@@ -1042,10 +1042,10 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
                               }
                               this.loader.changeLoad.next(false)
                               this.canUpdate = false
-                                this.contentForm.controls.appIcon.setValue(this.generateUrl(data.result.artifactUrl))
-                                this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.result.artifactUrl))
-                                this.canUpdate = true
-                                this.storeData()
+                              this.contentForm.controls.appIcon.setValue(this.generateUrl(data.result.artifactUrl))
+                              this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.result.artifactUrl))
+                              this.canUpdate = true
+                              this.storeData()
                               // this.contentForm.controls.posterImage.setValue(data.artifactURL)
 
                               this.snackBar.openFromComponent(NotificationComponent, {
@@ -1069,34 +1069,34 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
                   )
 
 
-                  // .subscribe(
-                  //   data => {
-                  //     if (data.result) {
-                  //       this.loader.changeLoad.next(false)
-                  //       this.canUpdate = false
-                  //       this.contentForm.controls.appIcon.setValue(data.result.artifactUrl)
-                  //       this.contentForm.controls.thumbnail.setValue(data.result.artifactUrl)
-                  //       // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-                  //       this.canUpdate = true
-                  //       this.storeData()
-                  //       this.snackBar.openFromComponent(NotificationComponent, {
-                  //         data: {
-                  //           type: Notify.UPLOAD_SUCCESS,
-                  //         },
-                  //         duration: NOTIFICATION_TIME * 1000,
-                  //       })
-                  //     }
-                  //   },
-                  //   () => {
-                  //     this.loader.changeLoad.next(false)
-                  //     this.snackBar.openFromComponent(NotificationComponent, {
-                  //       data: {
-                  //         type: Notify.UPLOAD_FAIL,
-                  //       },
-                  //       duration: NOTIFICATION_TIME * 1000,
-                  //     })
-                  //   },
-                  // )
+                // .subscribe(
+                //   data => {
+                //     if (data.result) {
+                //       this.loader.changeLoad.next(false)
+                //       this.canUpdate = false
+                //       this.contentForm.controls.appIcon.setValue(data.result.artifactUrl)
+                //       this.contentForm.controls.thumbnail.setValue(data.result.artifactUrl)
+                //       // this.contentForm.controls.posterImage.setValue(data.artifactURL)
+                //       this.canUpdate = true
+                //       this.storeData()
+                //       this.snackBar.openFromComponent(NotificationComponent, {
+                //         data: {
+                //           type: Notify.UPLOAD_SUCCESS,
+                //         },
+                //         duration: NOTIFICATION_TIME * 1000,
+                //       })
+                //     }
+                //   },
+                //   () => {
+                //     this.loader.changeLoad.next(false)
+                //     this.snackBar.openFromComponent(NotificationComponent, {
+                //       data: {
+                //         type: Notify.UPLOAD_FAIL,
+                //       },
+                //       duration: NOTIFICATION_TIME * 1000,
+                //     })
+                //   },
+                // )
               },
             )
 

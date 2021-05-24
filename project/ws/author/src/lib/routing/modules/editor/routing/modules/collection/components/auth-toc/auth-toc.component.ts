@@ -60,7 +60,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     .observe([Breakpoints.XSmall, Breakpoints.Small])
     .pipe(map((res: BreakpointState) => res.matches))
   leftarrow = true
-  contentId :any | null = null
+  contentId: any | null = null
 
 
   constructor(
@@ -134,7 +134,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
       if (data) {
         console.log('Data ===== ', data)
         this.selectedNode = data
-        this.contentId =  data.toString()
+        this.contentId = data.toString()
       }
     })
     this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
@@ -190,11 +190,13 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
       if (tempUpdateContent) {
         tempUpdateContent = this.editorStore.cleanProperties(tempUpdateContent)
         console.log('tempUpdateContent ', tempUpdateContent)
-        if (tempUpdateContent.duration) {
+        if (tempUpdateContent.duration || tempUpdateContent.duration == 0 || tempUpdateContent.duration == '0') {
           tempUpdateContent.duration =
             (isNumber(tempUpdateContent.duration) ?
               `${tempUpdateContent.duration}` :
               tempUpdateContent.duration)
+
+          console.log(isNumber(tempUpdateContent.duration))
         }
         if (tempUpdateContent.category) {
           delete tempUpdateContent.category
@@ -205,7 +207,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
           },
         }
         console.log('requestbody ', requestBody)
-        this.editorService.updateContentV3(requestBody, this.contentId).subscribe((d)=> {
+        this.editorService.updateContentV3(requestBody, this.contentId).subscribe((d) => {
           console.log('Response == ', d)
           this.store.changedHierarchy = {}
           Object.keys(this.editorStore.upDatedContent).forEach(id => {

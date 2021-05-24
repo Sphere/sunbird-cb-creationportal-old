@@ -1142,19 +1142,19 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           }),
         )
 
-      //  return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
-      //     tap(() => {
-      //       this.storeService.changedHierarchy = {}
-      //       // Object.keys(this.contentService.upDatedContent).forEach(id => {
-      //         console.log('this.contentService.upDatedContent === ', this.contentService.upDatedContent[this.currentCourseId])
-      //         this.contentService.resetOriginalMeta(this.contentService.upDatedContent[this.currentCourseId], this.currentCourseId)
-      //         this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
-      //           this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
-      //         })
-      //       // })
-      //       // this.contentService.upDatedContent[this.currentCourseId] = {}
-      //     }),
-      //   )
+        //  return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
+        //     tap(() => {
+        //       this.storeService.changedHierarchy = {}
+        //       // Object.keys(this.contentService.upDatedContent).forEach(id => {
+        //         console.log('this.contentService.upDatedContent === ', this.contentService.upDatedContent[this.currentCourseId])
+        //         this.contentService.resetOriginalMeta(this.contentService.upDatedContent[this.currentCourseId], this.currentCourseId)
+        //         this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
+        //           this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
+        //         })
+        //       // })
+        //       // this.contentService.upDatedContent[this.currentCourseId] = {}
+        //     }),
+        //   )
 
       }
     }
@@ -1215,7 +1215,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
         const content = this.contentService.getUpdatedMeta(event.identifier)
 
-        // console.log('COntent === ', content)
+        console.log('COntent === ', content)
 
         // if (['application/pdf', 'application/x-mpegURL'].includes(content.mimeType)) {
         //   this.viewMode = 'upload'
@@ -1232,7 +1232,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
         if (['application/pdf', 'application/x-mpegURL'].includes(content.mimeType)) {
           this.viewMode = 'upload'
-        } else if (['video/x-youtube','text/x-url','application/html'].includes(content.mimeType) && content.fileType === 'link') {
+        } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === 'link') {
+          // } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === '') {
           this.viewMode = 'curate'
         } else if (content.mimeType === 'application/html') {
           this.viewMode = 'upload'
@@ -1240,7 +1241,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.viewMode = 'assessment'
         } else if (content.mimeType === 'application/web-module') {
           this.viewMode = 'webmodule'
-        }else {
+        } else {
           this.viewMode = 'meta'
         }
 
