@@ -57,7 +57,7 @@ export class AppTocService {
     }
     if (content) {
       if (
-        content.artifactUrl.match(/youtu(.)?be/gi) &&
+        (content.artifactUrl || '').match(/youtu(.)?be/gi) &&
         this.configSvc.userProfile &&
         this.configSvc.userProfile.country === 'China'
       ) {
@@ -262,16 +262,14 @@ export class AppTocService {
 
   fetchMoreLikeThisPaid(contentId: string): Observable<NsContent.IContentMinimal[]> {
     return this.http.get<NsContent.IContentMinimal[]>(
-      `${
-      API_END_POINTS.CONTENT_NEXT
+      `${API_END_POINTS.CONTENT_NEXT
       }/${contentId}?exclusiveContent=true&ts=${new Date().getTime()}`,
     )
   }
 
   fetchMoreLikeThisFree(contentId: string): Observable<NsContent.IContentMinimal[]> {
     return this.http.get<NsContent.IContentMinimal[]>(
-      `${
-      API_END_POINTS.CONTENT_NEXT
+      `${API_END_POINTS.CONTENT_NEXT
       }/${contentId}?exclusiveContent=false&ts=${new Date().getTime()}`,
     )
   }

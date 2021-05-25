@@ -4,10 +4,16 @@ export const AUTHORING_SEARCH_BASE = `/apis/authSearchApi/`
 export const AUTHORING_CONTENT_BASE = '/apis/authContent/'
 export const AUTHORING_IAP_BASE = '/apis/authIapApi/'
 export const AUTHORING_NOTIFICATION_BASE = '/apis/authNotificationApi/'
+export const PROXY_SLAG_V8 = `apis/proxies/v8/`
 const ACTION_BASE = `${AUTHORING_BASE}action/`
 const CONTENT_FILE_BASE = 'content/'
 export const NOTIFICATION = `${AUTHORING_NOTIFICATION_BASE}v1/notification/event`
-export const SEARCH = `${AUTHORING_SEARCH_BASE}authsearch5`
+// export const SEARCH = `${AUTHORING_SEARCH_BASE}authsearch5`
+
+
+
+export const SEARCH = `${PROXY_SLAG_V8}sunbirdigot/read`
+
 export const STATUS_CHANGE = `${ACTION_BASE}content/status/change/`
 export const EXPIRY_DATE_ACTION = `${ACTION_BASE}content/extend`
 export const UNPUBLISH = `${ACTION_BASE}content/unpublish`

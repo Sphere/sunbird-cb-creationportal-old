@@ -24,6 +24,7 @@ import { Subscription } from 'rxjs'
 import { MyContentService } from '../../services/my-content.service'
 import { map } from 'rxjs/operators'
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
+import { ConfigurationsService } from '@ws-widget/utils'
 
 @Component({
   selector: 'ws-auth-my-content',
@@ -74,13 +75,22 @@ export class MyContentComponent implements OnInit, OnDestroy {
   dataSource: any
   hasChild = (_: number, node: IMenuFlatNode) => node.expandable
 
+  count: any = {}
+
   private _transformer = (node: IFilterMenuNode, level: number) => {
     return {
-      expandable: !!node.content && node.content.length > 0,
-      displayName: node.displayName,
+      // expandable: !!node.content && node.content.length > 0,
+      // displayName: node.displayName,
+      // checked: node.checked,
+      // type: node.type,
+      // count: node.count,
+      // levels: level,
+
+      expandable: !!node.values && node.values.length > 0,
+      displayName: node.name,
       checked: node.checked,
-      type: node.type,
-      count: node.count,
+      type: node.name,
+      count: node.count ? node.count : 0,
       levels: level,
     }
   }
@@ -94,6 +104,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private authInitService: AuthInitService,
+    private configService: ConfigurationsService,
   ) {
     this.filterMenuTreeControl = new FlatTreeControl<IMenuFlatNode>(
       node => node.levels,
@@ -126,21 +137,24 @@ export class MyContentComponent implements OnInit, OnDestroy {
       offset: 0,
       limit: 24,
     }
-    this.newDesign = this.accessService.authoringConfig.newDesign
+    // this.newDesign = this.accessService.authoringConfig.newDesign
+    // this.newDesign = _.get(this.accessService, 'authoringConfig.newDesign')
+    this.newDesign = false
     this.ordinals = this.authInitService.ordinals
     this.allLanguages = this.authInitService.ordinals.subTitles || []
     this.activatedRoute.queryParams.subscribe(params => {
       this.status = params.status
       this.setAction()
       this.fetchContent(false)
+      console.log('cardContent vvvv ', this.cardContent)
     })
 
     this.allowAuthor = this.canShow('author')
-    this.allowRedo = this.accessService.authoringConfig.allowRedo
-    this.allowRestore = this.accessService.authoringConfig.allowRestore
-    this.allowExpiry = this.accessService.authoringConfig.allowExpiry
-    this.allowReview = this.canShow('review') && this.accessService.authoringConfig.allowReview
-    this.allowPublish = this.canShow('publish') && this.accessService.authoringConfig.allowPublish
+    // this.allowRedo = this.accessService.authoringConfig.allowRedo
+    // this.allowRestore = this.accessService.authoringConfig.allowRestore
+    // this.allowExpiry = this.accessService.authoringConfig.allowExpiry
+    // this.allowReview = this.canShow('review') && this.accessService.authoringConfig.allowReview
+    // this.allowPublish = this.canShow('publish') && this.accessService.authoringConfig.allowPublish
   }
 
   fetchStatus() {
@@ -186,6 +200,122 @@ export class MyContentComponent implements OnInit, OnDestroy {
     }
   }
 
+  // fetchContent(loadMoreFlag: boolean, changeFilter = true) {
+  //   console.log('fetch content ')
+  //   const searchV6Data = this.myContSvc.getSearchBody(
+  //     this.status,
+  //     this.searchLanguage ? [this.searchLanguage] : [],
+  //     loadMoreFlag ? this.pagination.offset : 0,
+  //     this.queryFilter,
+  //     this.isAdmin,
+  //   )
+  //   const requestData = {
+  //     request: {
+  //       locale: this.searchLanguage ? [this.searchLanguage] : [],
+  //       query: this.queryFilter,
+  //       filters: {
+  //         status: this.fetchStatus(),
+  //         creatorContacts: <string[]>[],
+  //         trackContacts: <string[]>[],
+  //         publisherDetails: <string[]>[],
+  //         isMetaEditingDisabled: [false],
+  //         isContentEditingDisabled: [false],
+  //       },
+  //       pageNo: loadMoreFlag ? this.pagination.offset : 0,
+  //       sort: [{ lastUpdatedOn: 'desc' }],
+  //       pageSize: this.pagination.limit,
+  //       uuid: this.userId,
+  //       rootOrg: this.accessService.rootOrg,
+  //       // this is for Author Only
+  //       isUserRecordEnabled: !this.isAdmin,
+  //     },
+  //   }
+  //   if (this.finalFilters.length) {
+  //     this.finalFilters.forEach((v: any) => {
+  //       searchV6Data.filters.forEach((filter: any) => {
+  //         filter.andFilters[0] = {
+  //           ...filter.andFilters[0],
+  //           [v.key]: v.value,
+  //         }
+  //       })
+  //       requestData.request.filters = { ...requestData.request.filters, [v.key]: v.value }
+  //     })
+  //   }
+  //   if (this.queryFilter) {
+  //     delete requestData.request.sort
+  //   }
+  //   if (
+  //     [
+  //       'draft',
+  //       'rejected',
+  //       'inreview',
+  //       'published',
+  //       'unpublished',
+  //       'processing',
+  //       'deleted',
+  //     ].indexOf(this.status) > -1 &&
+  //     !this.isAdmin
+  //   ) {
+  //     requestData.request.filters.creatorContacts.push(this.userId)
+  //   }
+  //   if (this.status === 'review' && !this.isAdmin) {
+  //     requestData.request.filters.trackContacts.push(this.userId)
+  //   }
+  //   if (this.status === 'publish' && !this.isAdmin) {
+  //     requestData.request.filters.publisherDetails.push(this.userId)
+  //   }
+
+  //   this.loadService.changeLoad.next(true)
+  //   const observable =
+  //     this.status === 'expiry' || this.newDesign
+  //       ? this.myContSvc.fetchFromSearchV6(searchV6Data, this.isAdmin).pipe(
+  //         map((v: any) => {
+  //           return {
+  //             result: {
+  //               response: v,
+  //             },
+  //           }
+  //         }),
+  //       )
+  //       : this.myContSvc.fetchContent(requestData)
+  //   this.loadService.changeLoad.next(true)
+  //   observable.subscribe(
+  //     data => {
+  //       this.loadService.changeLoad.next(false)
+  //       if (changeFilter) {
+  //         this.filterMenuItems =
+  //           data && data.result && data.result.response && data.result.response.filters
+  //             ? data.result.response.filters
+  //             : this.filterMenuItems
+  //         this.dataSource.data = this.filterMenuItems
+  //       }
+  //       this.cardContent =
+  //         loadMoreFlag && !this.queryFilter
+  //           ? (this.cardContent || []).concat(
+  //             data && data.result && data.result.response ? data.result.response.result : [],
+  //           )
+  //           : data && data.result.response
+  //             ? data.result.response.result
+  //             : []
+  //       this.totalContent = data && data.result.response ? data.result.response.totalHits : 0
+  //       this.showLoadMore =
+  //         this.pagination.offset * this.pagination.limit + this.pagination.limit < this.totalContent
+  //           ? true
+  //           : false
+  //       this.fetchError = false
+  //     },
+  //     () => {
+  //       this.fetchError = true
+  //       this.cardContent = []
+  //       this.showLoadMore = false
+  //       this.loadService.changeLoad.next(false)
+  //     },
+  //   )
+  // }
+
+
+
+
   fetchContent(loadMoreFlag: boolean, changeFilter = true) {
     const searchV6Data = this.myContSvc.getSearchBody(
       this.status,
@@ -194,27 +324,71 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.queryFilter,
       this.isAdmin,
     )
+
+
+    let isUserRecordEnabled = true
+    const adminOnlyRoles = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor', 'content-creator'])
+    if (adminOnlyRoles && isUserRecordEnabled) {
+      isUserRecordEnabled = true
+    } else if (this.accessService.hasRole(['reviewer', 'publisher'])) {
+      isUserRecordEnabled = false
+    }
+
+
     const requestData = {
+      locale: this.searchLanguage ? [this.searchLanguage] : ['en'],
+      query: this.queryFilter,
       request: {
-        locale: this.searchLanguage ? [this.searchLanguage] : [],
         query: this.queryFilter,
         filters: {
           status: this.fetchStatus(),
-          creatorContacts: <string[]>[],
-          trackContacts: <string[]>[],
-          publisherDetails: <string[]>[],
-          isMetaEditingDisabled: [false],
-          isContentEditingDisabled: [false],
+          // creatorContacts: <string[]>[],
+          // trackContacts: <string[]>[],
+          // publisherDetails: <string[]>[],
+          // isMetaEditingDisabled: [false],
+          // isContentEditingDisabled: [false]
+          contentType: [                              // filter according to type
+            'Collection',
+            'Course',
+            'Learning Path'
+          ]
         },
-        pageNo: loadMoreFlag ? this.pagination.offset : 0,
-        sort: [{ lastUpdatedOn: 'desc' }],
-        pageSize: this.pagination.limit,
-        uuid: this.userId,
-        rootOrg: this.accessService.rootOrg,
-        // this is for Author Only
-        isUserRecordEnabled: !this.isAdmin,
+        // pageNo: loadMoreFlag ? this.pagination.offset : 0,
+        sort_by: { lastUpdatedOn: 'desc' },
+        // pageSize: this.pagination.limit,
+        fields: [
+          'name',
+          'appIcon',
+          'mimeType',
+          'gradeLevel',
+          'identifier',
+          'medium',
+          'pkgVersion',
+          'board',
+          'subject',
+          'resourceType',
+          'primaryCategory',
+          'contentType',
+          'channel',
+          'organisation',
+          'trackable',
+          'status',
+          'authoringDisabled',
+        ],
+        facets: [
+          'primaryCategory',
+          'mimeType',
+        ],
+        // pageNo: loadMoreFlag ? this.pagination.offset : 0,
+        // sort: [{ lastUpdatedOn: 'desc' }],
+        // pageSize: this.pagination.limit,
+        // uuid: this.userId,
+        // rootOrg: this.accessService.rootOrg,
+        // // this is for Author Only
+        // isUserRecordEnabled: true,
       },
     }
+
     if (this.finalFilters.length) {
       this.finalFilters.forEach((v: any) => {
         searchV6Data.filters.forEach((filter: any) => {
@@ -225,29 +399,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
         })
         requestData.request.filters = { ...requestData.request.filters, [v.key]: v.value }
       })
-    }
-    if (this.queryFilter) {
-      delete requestData.request.sort
-    }
-    if (
-      [
-        'draft',
-        'rejected',
-        'inreview',
-        'published',
-        'unpublished',
-        'processing',
-        'deleted',
-      ].indexOf(this.status) > -1 &&
-      !this.isAdmin
-    ) {
-      requestData.request.filters.creatorContacts.push(this.userId)
-    }
-    if (this.status === 'review' && !this.isAdmin) {
-      requestData.request.filters.trackContacts.push(this.userId)
-    }
-    if (this.status === 'publish' && !this.isAdmin) {
-      requestData.request.filters.publisherDetails.push(this.userId)
     }
 
     this.loadService.changeLoad.next(true)
@@ -263,26 +414,32 @@ export class MyContentComponent implements OnInit, OnDestroy {
           }),
         )
         : this.myContSvc.fetchContent(requestData)
-    this.loadService.changeLoad.next(true)
+    this.loadService.changeLoad.next(false)
+
+
     observable.subscribe(
       data => {
+        console.log('data ==========  ', data)
         this.loadService.changeLoad.next(false)
         if (changeFilter) {
           this.filterMenuItems =
-            data && data.result && data.result.response && data.result.response.filters
-              ? data.result.response.filters
+            data && data.result && data.result.facets
+              ? data.result.facets
               : this.filterMenuItems
           this.dataSource.data = this.filterMenuItems
         }
         this.cardContent =
           loadMoreFlag && !this.queryFilter
             ? (this.cardContent || []).concat(
-              data && data.result && data.result.response ? data.result.response.result : [],
+              data && data.result ? data.result.content : [],
             )
-            : data && data.result.response
-              ? data.result.response.result
+            : data && data.result.content
+              ? data.result.content
               : []
-        this.totalContent = data && data.result.response ? data.result.response.totalHits : 0
+
+        console.log('TTTTTTT  ', this.cardContent)
+
+        this.totalContent = data && data.result ? data.result.count : 0
         this.showLoadMore =
           this.pagination.offset * this.pagination.limit + this.pagination.limit < this.totalContent
             ? true
@@ -297,6 +454,13 @@ export class MyContentComponent implements OnInit, OnDestroy {
       },
     )
   }
+
+
+
+
+
+
+
 
   search() {
     if (this.searchInputElem.nativeElement) {
@@ -646,6 +810,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.searchLanguage = lang
   }
   canShow(role: string): boolean {
+    console.log('canshow')
     switch (role) {
       case 'review':
         return this.accessService.hasRole(REVIEW_ROLE)

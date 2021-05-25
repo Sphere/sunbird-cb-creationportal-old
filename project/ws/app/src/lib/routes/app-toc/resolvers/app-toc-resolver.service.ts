@@ -62,25 +62,73 @@ export class AppTocResolverService
     private router: Router,
   ) { }
 
+  // resolve(
+  //   route: ActivatedRouteSnapshot,
+  //   _state: RouterStateSnapshot,
+  // ): Observable<IResolveResponse<NsContent.IContent>> {
+  //   console.log('11111111')
+  //   const contentId = route.paramMap.get('id')
+  //   if (contentId) {
+  //     const forPreview = window.location.href.includes('/author/')
+  //     return (forPreview
+  //       // ? this.contentSvc.fetchAuthoringContent(contentId)
+  //       ? this.contentSvc.fetchAuthoringContentHierarchy(contentId)
+  //       : this.contentSvc.fetchContent(contentId, 'detail', ADDITIONAL_FIELDS_IN_CONTENT)
+  //     ).pipe(
+  //       map(data => ({ data, error: null })),
+  //       tap(resolveData => {
+  //         let currentRoute: string[] | string = window.location.href.split('/')
+  //         currentRoute = currentRoute[currentRoute.length - 1]
+  //         if (forPreview && currentRoute !== 'contents' && currentRoute !== 'overview') {
+  //           this.router.navigate([
+  //             `${forPreview ? '/author' : '/app'}/toc/${resolveData.data.identifier}/${resolveData.data.children.length ? 'contents' : 'overview'
+  //             }`,
+  //           ])
+  //         } else if (
+  //           currentRoute === 'contents' &&
+  //           resolveData.data &&
+  //           !resolveData.data.children.length
+  //         ) {
+  //           this.router.navigate([
+  //             `${forPreview ? '/author' : '/app'}/toc/${resolveData.data.identifier}/overview`,
+  //           ])
+  //         } else if (
+  //           resolveData.data &&
+  //           !forPreview &&
+  //           (resolveData.data.contentType === NsContent.EContentTypes.CHANNEL ||
+  //             resolveData.data.contentType === NsContent.EContentTypes.KNOWLEDGE_BOARD)
+  //         ) {
+  //           const urlObj = this.routePipe.transform(resolveData.data, forPreview)
+  //           this.router.navigate([urlObj.url], { queryParams: urlObj.queryParams })
+  //         }
+  //       }),
+  //       catchError((error: any) => of({ error, data: null })),
+  //     )
+  //   }
+  //   return of({ error: 'NO_ID', data: null })
+  // }
+
+
   resolve(
     route: ActivatedRouteSnapshot,
     _state: RouterStateSnapshot,
   ): Observable<IResolveResponse<NsContent.IContent>> {
+    console.log('11111111')
     const contentId = route.paramMap.get('id')
     if (contentId) {
       const forPreview = window.location.href.includes('/author/')
       return (forPreview
-        ? this.contentSvc.fetchAuthoringContent(contentId)
+        // ? this.contentSvc.fetchAuthoringContent(contentId)
+        ? this.contentSvc.fetchAuthoringContentHierarchy(contentId)
         : this.contentSvc.fetchContent(contentId, 'detail', ADDITIONAL_FIELDS_IN_CONTENT)
       ).pipe(
-        map(data => ({ data, error: null })),
+        map(data => ({ data: data && data.result && data.result.content, error: null })),
         tap(resolveData => {
           let currentRoute: string[] | string = window.location.href.split('/')
           currentRoute = currentRoute[currentRoute.length - 1]
           if (forPreview && currentRoute !== 'contents' && currentRoute !== 'overview') {
             this.router.navigate([
-              `${forPreview ? '/author' : '/app'}/toc/${resolveData.data.identifier}/${
-              resolveData.data.children.length ? 'contents' : 'overview'
+              `${forPreview ? '/author' : '/app'}/toc/${resolveData.data.identifier}/${resolveData.data.children.length ? 'contents' : 'overview'
               }`,
             ])
           } else if (
@@ -106,4 +154,6 @@ export class AppTocResolverService
     }
     return of({ error: 'NO_ID', data: null })
   }
+
+
 }
