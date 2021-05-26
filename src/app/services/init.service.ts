@@ -46,8 +46,11 @@ const endpoint = {
   providedIn: 'root',
 })
 export class InitService {
-  private baseUrl = this.configSvc.baseUrl
+  // private baseUrl = this.configSvc.baseUrl
   // private baseUrl = 'assets/configurations/aastrika-sb-cbp.idc.tarento.com'
+  private baseUrl = 'assets/configurations/aastrika-sb.idc.tarento.com'
+
+
   constructor(
     private logger: LoggerService,
     private configSvc: ConfigurationsService,
@@ -126,7 +129,6 @@ export class InitService {
       if (this.configSvc.userPreference.profileSettings) {
         this.configSvc.profileSettings = this.configSvc.userPreference.profileSettings
       }
-
       await this.fetchUserProfileV2()
       const appsConfigPromise = this.fetchAppsConfig()
       const instanceConfigPromise = this.fetchInstanceConfig() // config: depends only on details
@@ -323,18 +325,21 @@ export class InitService {
       }
       if (userPidProfileV2) {
         const userData: any = _.first(userPidProfileV2.result.UserProfile)
-        this.configSvc.userProfileV2 = {
-          userId: userData.userId,
-          firstName: userData.personalDetails.firstname,
-          surName: userData.personalDetails.surname,
-          middleName: userData.personalDetails.middlename,
-          departmentName: _.get(userData, 'employmentDetails.departmentName'),
-          // tslint:disable-next-line: max-line-length
-          userName: `${userData.personalDetails.firstname ? userData.personalDetails.firstname : ''}${userData.personalDetails.surname ? userData.personalDetails.surname : ''}`,
-          profileImage: userData && userData.photo,
-          dealerCode: null,
-          isManager: false,
+        if (userData) {
+          this.configSvc.userProfileV2 = {
+            userId: userData.userId,
+            firstName: userData.personalDetails.firstname,
+            surName: userData.personalDetails.surname,
+            middleName: userData.personalDetails.middlename,
+            departmentName: _.get(userData, 'employmentDetails.departmentName'),
+            // tslint:disable-next-line: max-line-length
+            userName: `${userData.personalDetails.firstname ? userData.personalDetails.firstname : ''}${userData.personalDetails.surname ? userData.personalDetails.surname : ''}`,
+            profileImage: userData && userData.photo,
+            dealerCode: null,
+            isManager: false,
+          }
         }
+
         if (this.configSvc.userProfile) {
           // tslint:disable-next-line: max-line-length
           this.configSvc.userProfile.departmentName = _.get(userData, 'employmentDetails.departmentName') ? userData.employmentDetails.departmentName : null

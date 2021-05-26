@@ -24,7 +24,7 @@ import { Subscription } from 'rxjs'
 import { MyContentService } from '../../services/my-content.service'
 import { map } from 'rxjs/operators'
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
-import { ConfigurationsService } from '@ws-widget/utils'
+import _ from 'lodash'
 
 @Component({
   selector: 'ws-auth-my-content',
@@ -103,8 +103,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     private accessService: AccessControlService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private authInitService: AuthInitService,
-    private configService: ConfigurationsService,
+    private authInitService: AuthInitService
   ) {
     this.filterMenuTreeControl = new FlatTreeControl<IMenuFlatNode>(
       node => node.levels,
@@ -137,24 +136,23 @@ export class MyContentComponent implements OnInit, OnDestroy {
       offset: 0,
       limit: 24,
     }
+
     // this.newDesign = this.accessService.authoringConfig.newDesign
-    // this.newDesign = _.get(this.accessService, 'authoringConfig.newDesign')
-    this.newDesign = false
+    this.newDesign = _.get(this.accessService, 'authoringConfig.newDesign')
     this.ordinals = this.authInitService.ordinals
     this.allLanguages = this.authInitService.ordinals.subTitles || []
     this.activatedRoute.queryParams.subscribe(params => {
       this.status = params.status
       this.setAction()
       this.fetchContent(false)
-      console.log('cardContent vvvv ', this.cardContent)
     })
 
     this.allowAuthor = this.canShow('author')
-    // this.allowRedo = this.accessService.authoringConfig.allowRedo
-    // this.allowRestore = this.accessService.authoringConfig.allowRestore
-    // this.allowExpiry = this.accessService.authoringConfig.allowExpiry
-    // this.allowReview = this.canShow('review') && this.accessService.authoringConfig.allowReview
-    // this.allowPublish = this.canShow('publish') && this.accessService.authoringConfig.allowPublish
+    this.allowRedo = this.accessService.authoringConfig.allowRedo
+    this.allowRestore = this.accessService.authoringConfig.allowRestore
+    this.allowExpiry = this.accessService.authoringConfig.allowExpiry
+    this.allowReview = this.canShow('review') && this.accessService.authoringConfig.allowReview
+    this.allowPublish = this.canShow('publish') && this.accessService.authoringConfig.allowPublish
   }
 
   fetchStatus() {
@@ -419,7 +417,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
     observable.subscribe(
       data => {
-        console.log('data ==========  ', data)
         this.loadService.changeLoad.next(false)
         if (changeFilter) {
           this.filterMenuItems =
@@ -436,9 +433,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
             : data && data.result.content
               ? data.result.content
               : []
-
-        console.log('TTTTTTT  ', this.cardContent)
-
         this.totalContent = data && data.result ? data.result.count : 0
         this.showLoadMore =
           this.pagination.offset * this.pagination.limit + this.pagination.limit < this.totalContent
@@ -810,7 +804,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.searchLanguage = lang
   }
   canShow(role: string): boolean {
-    console.log('canshow')
     switch (role) {
       case 'review':
         return this.accessService.hasRole(REVIEW_ROLE)

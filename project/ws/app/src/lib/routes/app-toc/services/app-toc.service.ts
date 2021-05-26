@@ -104,10 +104,14 @@ export class AppTocService {
       } else if (content.contentType === 'Collection') {
         tocStructure.learningModule += 1
       }
-      content.children.forEach(child => {
-        // tslint:disable-next-line: no-parameter-reassignment
-        tocStructure = this.getTocStructure(child, tocStructure)
-      })
+
+      if (content.children) {
+        content.children.forEach(child => {
+          // tslint:disable-next-line: no-parameter-reassignment
+          tocStructure = this.getTocStructure(child, tocStructure)
+        })
+      }
+
     } else if (
       content &&
       (content.contentType === 'Resource' || content.contentType === 'Knowledge Artifact')
@@ -161,13 +165,15 @@ export class AppTocService {
     if (content.contentType === 'Resource' || content.contentType === 'Knowledge Artifact') {
       return this.filterUnitContent(content, filterCategory) ? content : null
     }
-    const filteredChildren: NsContent.IContent[] = content.children
-      .map(childContent => this.filterToc(childContent, filterCategory))
-      .filter(unitContent => Boolean(unitContent)) as NsContent.IContent[]
-    if (filteredChildren && filteredChildren.length) {
-      return {
-        ...content,
-        children: filteredChildren,
+    if (content.children) {
+      const filteredChildren: NsContent.IContent[] = content.children
+        .map(childContent => this.filterToc(childContent, filterCategory))
+        .filter(unitContent => Boolean(unitContent)) as NsContent.IContent[]
+      if (filteredChildren && filteredChildren.length) {
+        return {
+          ...content,
+          children: filteredChildren,
+        }
       }
     }
     return null
