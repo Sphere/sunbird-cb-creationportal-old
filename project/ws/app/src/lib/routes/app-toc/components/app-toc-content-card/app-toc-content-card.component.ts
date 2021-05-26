@@ -33,7 +33,7 @@ export class AppTocContentCardComponent implements OnInit, OnChanges {
   }
   defaultThumbnail = ''
   viewChildren = false
-  constructor(private configSvc: ConfigurationsService) {}
+  constructor(private configSvc: ConfigurationsService) { }
 
   ngOnInit() {
     this.evaluateImmediateChildrenStructure()
@@ -76,7 +76,7 @@ export class AppTocContentCardComponent implements OnInit, OnChanges {
     return { url: '', queryParams: {} }
   }
   private evaluateImmediateChildrenStructure() {
-    if (this.content && this.content.children.length) {
+    if (this.content && this.content.children && this.content.children.length) {
       this.content.children.forEach((child: NsContent.IContent) => {
         if (child.contentType === NsContent.EContentTypes.COURSE) {
           this.contentStructure.course += 1
