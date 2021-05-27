@@ -166,23 +166,23 @@
                 *ngIf="reviewButton" [routerLink]="['/author/editor/' + content?.identifier]" class="action-button">
                 <img src="/assets/images/upload.svg" class="action-icons" />
               </a>
-              <!-- <ws-widget-btn-content-download [forPreview]="forPreview" [widgetData]="
+              <ws-widget-btn-content-download [forPreview]="forPreview" [widgetData]="
                       content
                         | pipePartialContent
                           : ['identifier', 'contentType', 'resourceType', 'mimeType', 'downloadUrl', 'isExternal',
                                   'artifactUrl']
-                    "></ws-widget-btn-content-download> -->
+                    "></ws-widget-btn-content-download>
               <ws-widget-btn-content-like [forPreview]="forPreview"
                 [widgetData]="content | pipePartialContent: ['identifier']">
               </ws-widget-btn-content-like>
-              <!-- <ws-widget-btn-content-share [forPreview]="forPreview" [widgetData]="content">
+              <ws-widget-btn-content-share [forPreview]="forPreview" [widgetData]="content">
               </ws-widget-btn-content-share>
-              <ws-widget-btn-kb [forPreview]="forPreview" [contentId]="content?.identifier"
+              <!--<ws-widget-btn-kb [forPreview]="forPreview" [contentId]="content?.identifier"
                 [contentName]="content?.name" [contentType]="content?.contentType" [status]="content?.status">
-              </ws-widget-btn-kb>
+              </ws-widget-btn-kb>-->
               <ws-widget-btn-goals [forPreview]="forPreview" *ngIf="isGoalsEnabled && btnGoalsConfig"
                 [widgetData]="btnGoalsConfig">
-              </ws-widget-btn-goals> -->
+              </ws-widget-btn-goals>
               <ws-widget-btn-playlist [forPreview]="forPreview" *ngIf="btnPlaylistConfig"
                 [widgetData]="btnPlaylistConfig">
               </ws-widget-btn-playlist>

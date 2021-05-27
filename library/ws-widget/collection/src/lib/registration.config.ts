@@ -19,8 +19,15 @@ import { BtnContentLikeComponent } from './btn-content-like/btn-content-like.com
 import { BtnContentLikeModule } from './btn-content-like/btn-content-like.module'
 import { BtnContentMailMeComponent } from './btn-content-mail-me/btn-content-mail-me.component'
 import { BtnContentMailMeModule } from './btn-content-mail-me/btn-content-mail-me.module'
-// import { BtnContentShareComponent } from './btn-content-share/btn-content-share.component'
-// import { BtnContentShareModule } from './btn-content-share/btn-content-share.module'
+import { BtnContentShareComponent } from './btn-content-share/btn-content-share.component'
+import { BtnContentShareModule } from './btn-content-share/btn-content-share.module'
+import { BtnContentDownloadComponent } from './btn-content-download/btn-content-download.component'
+import { BtnContentDownloadModule } from './btn-content-download/btn-content-download.module'
+
+
+import { BtnGoalsComponent } from './btn-goals/btn-goals.component'
+import { BtnGoalsModule } from './btn-goals/btn-goals.module'
+
 import { BtnFeatureComponent } from './btn-feature/btn-feature.component'
 import { BtnFeatureModule } from './btn-feature/btn-feature.module'
 import { BtnFullscreenComponent } from './btn-fullscreen/btn-fullscreen.component'
@@ -151,9 +158,11 @@ export const WIDGET_REGISTERED_MODULES = [
   BtnCatalogModule,
   BtnChannelAnalyticsModule,
 
+  BtnContentDownloadModule,
+  BtnGoalsModule,
   BtnContentLikeModule,
   BtnContentMailMeModule,
-  // BtnContentShareModule,
+  BtnContentShareModule,
   BtnFullscreenModule,
   BtnMailUserModule,
   BtnPageBackNavModule,
@@ -249,13 +258,28 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
+    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentDownload,
+    component: BtnContentDownloadComponent,
+  },
+  {
+    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentLike,
     component: BtnContentLikeComponent,
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
+    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.goals,
+    component: BtnGoalsComponent,
+  },
+  {
+    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentMailMe,
     component: BtnContentMailMeComponent,
+  },
+  {
+    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
+    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentShare,
+    component: BtnContentShareComponent,
   },
   // {
   //   widgetType: ROOT_WIDGET_CONFIG.actionButton._type,

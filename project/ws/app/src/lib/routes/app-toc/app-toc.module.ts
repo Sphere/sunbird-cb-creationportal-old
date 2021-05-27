@@ -55,7 +55,9 @@ import {
 } from '@ws-widget/utils'
 import {
   BtnCallModule,
-  // BtnContentDownloadModule,
+  BtnContentDownloadModule,
+  BtnGoalsModule,
+  BtnContentShareModule,
   BtnContentLikeModule,
   // BtnContentShareModule,
   // BtnContentFeedbackModule,
@@ -155,7 +157,9 @@ import { AppTocSinglePageDirective } from './routes/app-toc-single-page/app-toc-
     PipePartialContentModule,
     PipeContentRouteModule,
     BtnCallModule,
-    // BtnContentDownloadModule,
+    BtnContentDownloadModule,
+    BtnGoalsModule,
+    BtnContentShareModule,
     BtnContentLikeModule,
     // BtnContentFeedbackModule,
     BtnContentFeedbackV2Module,
