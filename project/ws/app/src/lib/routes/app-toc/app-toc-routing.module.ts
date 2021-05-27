@@ -12,6 +12,7 @@ import { AppTocContentsComponent } from './routes/app-toc-contents/app-toc-conte
 import { AppTocHomeComponent } from './routes/app-toc-home/app-toc-home.component'
 import { AppTocSinglePageComponent as AppTocSinglePageRootComponent } from './routes/app-toc-single-page/app-toc-single-page.component'
 import { AppTocCohortsComponent } from './components/app-toc-cohorts/app-toc-cohorts.component'
+import { LicenseComponent } from './components/license/license.component'
 
 const routes: Routes = [
   {
@@ -80,10 +81,19 @@ const routes: Routes = [
         },
       },
       {
+        path: 'license',
+        component: LicenseComponent,
+      },
+      {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'single-page-view',
+        redirectTo: 'overview',
       },
+      // {
+      //   path: '',
+      //   pathMatch: 'full',
+      //   redirectTo: 'single-page-view',
+      // },
     ],
   },
   {
