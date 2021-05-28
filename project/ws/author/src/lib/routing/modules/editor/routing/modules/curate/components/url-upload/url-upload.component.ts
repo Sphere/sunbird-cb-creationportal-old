@@ -121,8 +121,8 @@ export class UrlUploadComponent implements OnInit {
     //     duration: NOTIFICATION_TIME * 1000,
     //   })
     // } else {
-      this.storeData()
-      this.data.emit('save')
+    this.storeData()
+    this.data.emit('save')
     // }
   }
 
@@ -160,6 +160,7 @@ export class UrlUploadComponent implements OnInit {
   }
 
   check() {
+    console.log('TTTTTTTTT   url upload == ')
     // const disableIframe = true
     const artifactUrl = this.urlUploadForm.controls.artifactUrl.value
     this.canUpdate = false
@@ -169,6 +170,7 @@ export class UrlUploadComponent implements OnInit {
       this.configSvc.instanceConfig.authoring.urlPatternMatching
     ) {
       this.configSvc.instanceConfig.authoring.urlPatternMatching.map(v => {
+        console.log('V == ', v)
         if (artifactUrl.match(v.pattern)) {
           if (v.allowIframe && v.source === 'youtube') {
             this.urlUploadForm.controls.isIframeSupported.setValue('Yes')
@@ -179,19 +181,20 @@ export class UrlUploadComponent implements OnInit {
             // disableIframe = false
           }
           // if (v.allowReplace) {
-            switch (v.source) {
-              case 'youtube':
-                this.urlUploadForm.controls.artifactUrl.setValue(
-                  URLCheckerClass.youTubeUrlChange(artifactUrl),
-                )
-                // disableIframe = false;
-                this.urlUploadForm.controls.mimeType.setValue('video/x-youtube')
-                break
-            }
+          switch (v.source) {
+            case 'youtube':
+              this.urlUploadForm.controls.artifactUrl.setValue(
+                URLCheckerClass.youTubeUrlChange(artifactUrl),
+              )
+              // disableIframe = false;
+              this.urlUploadForm.controls.mimeType.setValue('video/x-youtube')
+              break
+          }
           // }
         } else {
           this.urlUploadForm.controls.isIframeSupported.setValue('No')
         }
+        console.log('this.urlUploadForm ', this.urlUploadForm.value)
       })
     }
     this.canUpdate = true

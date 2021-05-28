@@ -13,7 +13,8 @@ const PROTECTED_SLAG_V8 = '/apis/protected/v8'
 
 const API_END_POINTS = {
   CONTENT: `${PROTECTED_SLAG_V8}/content`,
-  AUTHORING_CONTENT: `/apis/authApi/hierarchy`,
+  // AUTHORING_CONTENT: `/apis/authApi/hierarchy`,
+  AUTHORING_CONTENT: (doId: string) => `/apis/authApi/content/v3/read/${doId}?mode=edit`,
   AUTHORING_CONTENT_HIERARCHY: (doId: string) => `/apis/proxies/v8/action/content/v3/hierarchy/${doId}?mode=edit`,
 
   CONTENT_LIKES: `${PROTECTED_SLAG_V8}/content/likeCount`,
@@ -60,7 +61,9 @@ export class WidgetContentService {
       .pipe(retry(1))
   }
   fetchAuthoringContent(contentId: string): Observable<NsContent.IContent> {
-    const url = `${API_END_POINTS.AUTHORING_CONTENT}/${contentId}`
+    // const url = `${API_END_POINTS.AUTHORING_CONTENT}/${contentId}`
+    // return this.http.get<NsContent.IContent>(url).pipe(retry(1))
+    const url = `${API_END_POINTS.AUTHORING_CONTENT(contentId)}`
     return this.http.get<NsContent.IContent>(url).pipe(retry(1))
   }
   fetchAuthoringContentHierarchy(contentId: string): Observable<NsContent.IContent> {

@@ -115,8 +115,8 @@ import { PlayerVideoComponent } from './player-video/player-video.component'
 import { PlayerVideoModule } from './player-video/player-video.module'
 import { PlayerWebPagesComponent } from './player-web-pages/player-web-pages.component'
 import { PlayerWebPagesModule } from './player-web-pages/player-web-pages.module'
-// import { PlayerYoutubeComponent } from './player-youtube/player-youtube.component'
-// import { PlayerYoutubeModule } from './player-youtube/player-youtube.module'
+import { PlayerYoutubeComponent } from './player-youtube/player-youtube.component'
+import { PlayerYoutubeModule } from './player-youtube/player-youtube.module'
 import { ReleaseNotesComponent } from './release-notes/release-notes.component'
 import { ReleaseNotesModule } from './release-notes/release-notes.module'
 import { SelectorResponsiveComponent } from './selector-responsive/selector-responsive.component'
@@ -199,7 +199,7 @@ export const WIDGET_REGISTERED_MODULES = [
   PlayerSlidesModule,
   PlayerVideoModule,
   PlayerWebPagesModule,
-  // PlayerYoutubeModule,
+  PlayerYoutubeModule,
   ReleaseNotesModule,
   SlidersModule,
   ElementHtmlModule,
@@ -417,11 +417,11 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     widgetSubType: ROOT_WIDGET_CONFIG.player.webPages,
     component: PlayerWebPagesComponent,
   },
-  // {
-  //   widgetType: ROOT_WIDGET_CONFIG.player._type,
-  //   widgetSubType: ROOT_WIDGET_CONFIG.player.youtube,
-  //   component: PlayerYoutubeComponent,
-  // },
+  {
+    widgetType: ROOT_WIDGET_CONFIG.player._type,
+    widgetSubType: ROOT_WIDGET_CONFIG.player.youtube,
+    component: PlayerYoutubeComponent,
+  },
   {
     widgetType: ROOT_WIDGET_CONFIG.releaseNotes._type,
     widgetSubType: ROOT_WIDGET_CONFIG.releaseNotes.user,
