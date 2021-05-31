@@ -1107,7 +1107,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
     console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2, this.storeService.changedHierarchy)
     if (Object.keys(this.storeService.changedHierarchy).length === 0) {
-      if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.contentService.currentContent]) {
+      // if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.contentService.currentContent]) {
+      if (Object.keys(this.contentService.upDatedContent)[0] && nodesModified[this.currentCourseId]) {
         const requestBody: NSApiRequest.IContentUpdateV2 = {
           request: {
             // content: nodesModified[Object.keys(this.contentService.upDatedContent)[0]].metadata,

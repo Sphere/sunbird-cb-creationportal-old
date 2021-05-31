@@ -61,6 +61,7 @@ export class UrlUploadComponent implements OnInit {
       mimeType: [],
       isInIntranet: ['', Validators.required],
       isExternal: [],
+      versionKey: '',
     })
     this.urlUploadForm.valueChanges.subscribe(() => {
       if (this.canUpdate) {
@@ -85,6 +86,7 @@ export class UrlUploadComponent implements OnInit {
     this.urlUploadForm.controls.isIframeSupported.setValue(meta.isIframeSupported || 'No')
     this.urlUploadForm.controls.isInIntranet.setValue(meta.isInIntranet || false)
     this.urlUploadForm.controls.isExternal.setValue(true)
+    this.urlUploadForm.controls.versionKey.setValue(meta.versionKey)
     this.canUpdate = true
     // if (meta.artifactUrl) {
     //   this.iprAccepted = true
@@ -144,6 +146,7 @@ export class UrlUploadComponent implements OnInit {
             meta[v] === false)
         ) {
           meta[v] = currentMeta[v]
+          meta['versionKey'] = currentMeta['versionKey']
         } else {
           meta[v] = JSON.parse(
             JSON.stringify(
@@ -187,7 +190,8 @@ export class UrlUploadComponent implements OnInit {
                 URLCheckerClass.youTubeUrlChange(artifactUrl),
               )
               // disableIframe = false;
-              this.urlUploadForm.controls.mimeType.setValue('video/x-youtube')
+              // this.urlUploadForm.controls.mimeType.setValue('video/x-youtube')
+              // this.urlUploadForm.controls.mimeType.setValue('text/x-url')
               break
           }
           // }
