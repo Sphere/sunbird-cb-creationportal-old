@@ -4,11 +4,17 @@
 
 export const environment: IEnvironment = {
   production: false,
-  sitePath: 'cbp_3000',
+  sitePath: 'aastrika-sb-cbp.idc.tarento.com',
   organisation: 'igot-karmayogi',
   framework: 'igot',
   channelId: '0131397178949058560',
   karmYogi: 'https://igot-sunbird.idc.tarento.com/',
+
+  azureHost: 'https://igot.blob.core.windows.net',
+  azureBucket: 'content',
+
+  azureOldHost: 'https://staas-bbs1.cloud.gov.in',
+  azureOldBuket: 'igot',
 }
 interface IEnvironment {
   production: boolean
@@ -17,6 +23,10 @@ interface IEnvironment {
   framework: string
   channelId: string
   karmYogi: string,
+  azureHost: string
+  azureBucket: string
+  azureOldHost: string
+  azureOldBuket: string
 }
 
 /*
