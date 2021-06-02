@@ -1105,7 +1105,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       },
     }
 
-    console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2, this.storeService.changedHierarchy)
+    // console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2, this.storeService.changedHierarchy)
     if (Object.keys(this.storeService.changedHierarchy).length === 0) {
       // if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.contentService.currentContent]) {
       if (Object.keys(this.contentService.upDatedContent)[0] && nodesModified[this.currentCourseId]) {
@@ -1131,6 +1131,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         console.log('UPDATE AUTH TABLE Parent ---- ', requestBody)
         return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
           tap(() => {
+            this.storeService.getHierarchyTreeStructure()
             this.storeService.changedHierarchy = {}
             Object.keys(this.contentService.upDatedContent).forEach(id => {
               console.log('this.contentService.upDatedContent === ', this.contentService.upDatedContent[id])

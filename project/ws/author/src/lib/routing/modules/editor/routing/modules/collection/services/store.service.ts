@@ -283,7 +283,7 @@ export class CollectionStoreService {
       this.dragAndDrop(treeStructure, dropNode, adjacentId, dropLocation)
 
       if (newChildUpdateCall) {
-        // this.updateNewSubChild()
+        this.getHierarchyTreeStructure()
       }
 
       return true
@@ -292,6 +292,50 @@ export class CollectionStoreService {
       return false
     }
   }
+
+
+
+  getHierarchyTreeStructure() {
+    let hierarchyObj: any = {}
+    this.treeStructureChange.subscribe((d: any) => {
+      if (!d.parentId) {
+        hierarchyObj[d.identifier] = {}
+        hierarchyObj[d.identifier]['children'] = []
+        hierarchyObj[d.identifier]['root'] = true
+      }
+      if (hierarchyObj[d.identifier]) {
+        d.children.forEach((e: any) => {
+          hierarchyObj[d.identifier]['children'].push(e.identifier)
+          if (e.children.length > 0) {
+            hierarchyObj[e.identifier] = {}
+            hierarchyObj[e.identifier]['children'] = []
+            hierarchyObj[e.identifier]['root'] = false
+          }
+          if (hierarchyObj[e.identifier]) {
+            e.children.forEach((el: any) => {
+              hierarchyObj[e.identifier]['children'].push(el.identifier)
+            })
+          }
+        })
+      }
+    })
+    const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+      request: {
+        data: {
+          nodesModified: {},
+          hierarchy: hierarchyObj,
+        },
+      },
+    }
+    this.editorService.updateContentV4(requestBodyV2).subscribe((d) => {
+      this.changedHierarchy = {}
+      Object.keys(this.contentService.upDatedContent).forEach(async id => {
+        this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
+      })
+      this.contentService.upDatedContent = {}
+    })
+  }
+
 
 
   updateNewSubChild() {

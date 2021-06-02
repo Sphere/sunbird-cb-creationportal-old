@@ -26,6 +26,7 @@ export class UrlUploadComponent implements OnInit {
   @Input() isCollectionEditor = false
   @Input() isSubmitPressed = false
   @Output() data = new EventEmitter<string>()
+  iframeSupportedClicked = false
 
   constructor(
     private formBuilder: FormBuilder,
@@ -162,6 +163,12 @@ export class UrlUploadComponent implements OnInit {
     this.contentService.setUpdatedMeta(meta, this.currentContent)
   }
 
+  isIframeSupportedClicked() {
+    if (this.urlUploadForm.controls.isIframeSupported.value === 'Yes') {
+      this.iframeSupportedClicked = true
+    }
+  }
+
   check() {
     console.log('TTTTTTTTT   url upload == ')
     // const disableIframe = true
@@ -191,7 +198,10 @@ export class UrlUploadComponent implements OnInit {
               )
               // disableIframe = false;
               // this.urlUploadForm.controls.mimeType.setValue('video/x-youtube')
-              // this.urlUploadForm.controls.mimeType.setValue('text/x-url')
+              this.urlUploadForm.controls.mimeType.setValue('text/x-url')
+              if (!this.iframeSupportedClicked) {
+                this.urlUploadForm.controls.isIframeSupported.setValue('Yes')
+              }
               break
           }
           // }
