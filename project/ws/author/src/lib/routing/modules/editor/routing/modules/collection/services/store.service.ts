@@ -327,7 +327,7 @@ export class CollectionStoreService {
         },
       },
     }
-    this.editorService.updateContentV4(requestBodyV2).subscribe((d) => {
+    this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
       this.changedHierarchy = {}
       Object.keys(this.contentService.upDatedContent).forEach(async id => {
         this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)

@@ -171,6 +171,7 @@ export class UrlUploadComponent implements OnInit {
 
   check() {
     console.log('TTTTTTTTT   url upload == ')
+    this.urlUploadForm.controls.isIframeSupported.setValue('No')
     // const disableIframe = true
     const artifactUrl = this.urlUploadForm.controls.artifactUrl.value
     this.canUpdate = false

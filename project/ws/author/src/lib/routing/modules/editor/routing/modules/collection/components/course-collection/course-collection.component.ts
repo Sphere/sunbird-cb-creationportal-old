@@ -434,6 +434,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   takeAction() {
+    console.log('Takeaction course')
     this.isSubmitPressed = true
     const needSave = Object.keys(this.contentService.upDatedContent || {}).length
     if (!needSave && !this.isChanged) {
@@ -446,6 +447,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       return
     }
     if (this.validationCheck) {
+      console.log('Takeaction course 111111')
       const dialogRef = this.dialog.open(CommentsDialogComponent, {
         width: '750px',
         height: '450px',
@@ -458,7 +460,113 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  finalCall(commentsForm: FormGroup) {
+  // finalCall(commentsForm: FormGroup) {
+  //   if (commentsForm) {
+  //     const body: NSApiRequest.IForwardBackwardActionGeneral = {
+  //       comment: commentsForm.controls.comments.value,
+  //       operation:
+  //         commentsForm.controls.action.value === 'accept' ||
+  //           ['Draft', 'Live'].includes(
+  //             this.contentService.originalContent[this.currentParentId].status,
+  //           )
+  //           ? 1
+  //           : 0,
+  //     }
+  //     const updatedMeta = this.contentService.getUpdatedMeta(this.currentParentId)
+  //     const needSave =
+  //       Object.keys(this.contentService.upDatedContent || {}).length ||
+  //       Object.keys(this.storeService.changedHierarchy).length
+  //     const saveCall = (needSave ? this.triggerSave() : of({} as any)).pipe(
+  //       mergeMap(() =>
+  //         this.editorService
+  //           .forwardBackward(
+  //             body,
+  //             this.currentParentId,
+  //             this.contentService.originalContent[this.currentParentId].status,
+  //           )
+  //           .pipe(
+  //             mergeMap(() =>
+  //               this.notificationSvc
+  //                 .triggerPushPullNotification(
+  //                   updatedMeta,
+  //                   body.comment,
+  //                   body.operation ? true : false,
+  //                 )
+  //                 .pipe(
+  //                   catchError(() => {
+  //                     return of({} as any)
+  //                   }),
+  //                 ),
+  //             ),
+  //           ),
+  //       ),
+  //     )
+  //     this.loaderService.changeLoad.next(true)
+  //     saveCall.subscribe(
+  //       () => {
+  //         this.loaderService.changeLoad.next(false)
+  //         this.snackBar.openFromComponent(NotificationComponent, {
+  //           data: {
+  //             type: this.getMessage('success'),
+  //           },
+  //           duration: NOTIFICATION_TIME * 1000,
+  //         })
+  //         this.contents = this.contents.filter(v => v.identifier !== this.currentParentId)
+  //         if (this.contents.length) {
+  //           this.contentService.changeActiveCont.next(this.contents[0].identifier)
+  //         } else {
+  //           this.router.navigateByUrl('/author/home')
+  //         }
+  //       },
+  //       (error: any) => {
+  //         if (error.status === 409) {
+  //           const errorMap = new Map<string, NSContent.IContentMeta>()
+  //           Object.keys(this.contentService.originalContent).forEach(v =>
+  //             errorMap.set(v, this.contentService.originalContent[v]),
+  //           )
+  //           const dialog = this.dialog.open(ErrorParserComponent, {
+  //             width: '80vw',
+  //             height: '90vh',
+  //             data: {
+  //               errorFromBackendData: error.error,
+  //               dataMapping: errorMap,
+  //             },
+  //           })
+  //           dialog.afterClosed().subscribe(v => {
+  //             if (v) {
+  //               if (typeof v === 'string') {
+  //                 this.storeService.selectedNodeChange.next(
+  //                   (this.storeService.lexIdMap.get(v) as number[])[0],
+  //                 )
+  //                 this.contentService.changeActiveCont.next(v)
+  //               } else {
+  //                 this.storeService.selectedNodeChange.next(v)
+  //                 this.contentService.changeActiveCont.next(
+  //                   this.storeService.uniqueIdMap.get(v) as string,
+  //                 )
+  //               }
+  //             }
+  //           })
+  //         }
+  //         this.loaderService.changeLoad.next(false)
+  //         this.snackBar.openFromComponent(NotificationComponent, {
+  //           data: {
+  //             type: this.getMessage('failure'),
+  //           },
+  //           duration: NOTIFICATION_TIME * 1000,
+  //         })
+  //       },
+  //     )
+  //   }
+  // }
+
+
+
+
+
+
+  async finalCall(commentsForm: FormGroup) {
+    let flag = 0
     if (commentsForm) {
       const body: NSApiRequest.IForwardBackwardActionGeneral = {
         comment: commentsForm.controls.comments.value,
@@ -470,92 +578,165 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             ? 1
             : 0,
       }
+
+      console.log('Body ===  ', body)
+
       const updatedMeta = this.contentService.getUpdatedMeta(this.currentParentId)
+      const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
       const needSave =
         Object.keys(this.contentService.upDatedContent || {}).length ||
         Object.keys(this.storeService.changedHierarchy).length
-      const saveCall = (needSave ? this.triggerSave() : of({} as any)).pipe(
-        mergeMap(() =>
-          this.editorService
-            .forwardBackward(
-              body,
-              this.currentParentId,
-              this.contentService.originalContent[this.currentParentId].status,
-            )
-            .pipe(
-              mergeMap(() =>
-                this.notificationSvc
-                  .triggerPushPullNotification(
-                    updatedMeta,
-                    body.comment,
-                    body.operation ? true : false,
-                  )
-                  .pipe(
-                    catchError(() => {
-                      return of({} as any)
-                    }),
-                  ),
-              ),
-            ),
-        ),
-      )
-      this.loaderService.changeLoad.next(true)
-      saveCall.subscribe(
-        () => {
-          this.loaderService.changeLoad.next(false)
-          this.snackBar.openFromComponent(NotificationComponent, {
-            data: {
-              type: this.getMessage('success'),
-            },
-            duration: NOTIFICATION_TIME * 1000,
-          })
-          this.contents = this.contents.filter(v => v.identifier !== this.currentParentId)
-          if (this.contents.length) {
-            this.contentService.changeActiveCont.next(this.contents[0].identifier)
-          } else {
-            this.router.navigateByUrl('/author/home')
-          }
-        },
-        (error: any) => {
-          if (error.status === 409) {
-            const errorMap = new Map<string, NSContent.IContentMeta>()
-            Object.keys(this.contentService.originalContent).forEach(v =>
-              errorMap.set(v, this.contentService.originalContent[v]),
-            )
-            const dialog = this.dialog.open(ErrorParserComponent, {
-              width: '80vw',
-              height: '90vh',
-              data: {
-                errorFromBackendData: error.error,
-                dataMapping: errorMap,
-              },
-            })
-            dialog.afterClosed().subscribe(v => {
-              if (v) {
-                if (typeof v === 'string') {
-                  this.storeService.selectedNodeChange.next(
-                    (this.storeService.lexIdMap.get(v) as number[])[0],
-                  )
-                  this.contentService.changeActiveCont.next(v)
-                } else {
-                  this.storeService.selectedNodeChange.next(v)
-                  this.contentService.changeActiveCont.next(
-                    this.storeService.uniqueIdMap.get(v) as string,
-                  )
-                }
+
+
+      console.log('updatedMeta  ', updatedMeta)
+      console.log('originalData  ', originalData)
+      console.log('needSave ', needSave)
+
+      if (body.operation) {
+        if (originalData && originalData.children && updatedMeta.children.length > 0) {
+          for (const element of originalData.children) {
+            console.log('Takeaction course 222222', element.identifier, element.status, updatedMeta.status)
+            await this.editorService.sendToReview(element.identifier, element.status, updatedMeta.status).subscribe(() => {
+              flag += 1
+              if (updatedMeta.children.length === flag) {
+                console.log('IFG flag')
+                this.finalSaveAndRedirect(needSave, updatedMeta, body)
               }
             })
           }
-          this.loaderService.changeLoad.next(false)
-          this.snackBar.openFromComponent(NotificationComponent, {
-            data: {
-              type: this.getMessage('failure'),
-            },
-            duration: NOTIFICATION_TIME * 1000,
-          })
-        },
-      )
+        }
+      } else {
+        console.log('ELSE Final call')
+        // this.changeStatusToDraft(body.comment)
+      }
+
+
+
+
+
+
+
+      // const saveCall = (needSave ? this.triggerSave() : of({} as any)).pipe(
+      //   mergeMap(() =>
+      //     this.editorService
+      //       .forwardBackward(
+      //         body,
+      //         this.currentParentId,
+      //         this.contentService.originalContent[this.currentParentId].status,
+      //       )
+      //       .pipe(
+      //         mergeMap(() =>
+      //           this.notificationSvc
+      //             .triggerPushPullNotification(
+      //               updatedMeta,
+      //               body.comment,
+      //               body.operation ? true : false,
+      //             )
+      //             .pipe(
+      //               catchError(() => {
+      //                 return of({} as any)
+      //               }),
+      //             ),
+      //         ),
+      //       ),
+      //   ),
+      // )
+
+
+
+
     }
+  }
+
+
+
+  finalSaveAndRedirect(needSave: any, updatedMeta: any, body: any) {
+
+    console.log('finalSaveAndRedirect -- ', needSave, 'updatedMeta ', updatedMeta, 'body ', body)
+
+    const saveCall = (needSave ? this.triggerSave() : of({} as any)).pipe(
+      mergeMap(() =>
+        this.editorService
+          .sendToReview(updatedMeta.identifier, updatedMeta.status, updatedMeta.status)
+          .pipe(
+            mergeMap(() => {
+              // this.notificationSvc
+              //   .triggerPushPullNotification(
+              //     updatedMeta,
+              //     body.comment,
+              //     body.operation ? true : false,
+              //   )
+              // .pipe(
+              //   catchError(() => {
+              //     return of({} as any)
+              //   }),
+              // ),
+              return of({} as any)
+            }
+            ),
+          ),
+      ),
+    )
+
+    this.loaderService.changeLoad.next(true)
+    saveCall.subscribe(
+      () => {
+        this.loaderService.changeLoad.next(false)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: this.getMessage('success'),
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+        this.contents = this.contents.filter(v => v.identifier !== this.currentParentId)
+        if (this.contents.length) {
+          this.contentService.changeActiveCont.next(this.contents[0].identifier)
+        } else {
+          this.router.navigate(['author', 'cbp'])
+        }
+      },
+      (error: any) => {
+        if (error.status === 409) {
+          const errorMap = new Map<string, NSContent.IContentMeta>()
+          Object.keys(this.contentService.originalContent).forEach(v =>
+            errorMap.set(v, this.contentService.originalContent[v]),
+          )
+          const dialog = this.dialog.open(ErrorParserComponent, {
+            width: '80vw',
+            height: '90vh',
+            data: {
+              errorFromBackendData: error.error,
+              dataMapping: errorMap,
+            },
+          })
+          dialog.afterClosed().subscribe(v => {
+            if (v) {
+              if (typeof v === 'string') {
+                this.storeService.selectedNodeChange.next(
+                  (this.storeService.lexIdMap.get(v) as number[])[0],
+                )
+                this.contentService.changeActiveCont.next(v)
+              } else {
+                this.storeService.selectedNodeChange.next(v)
+                this.contentService.changeActiveCont.next(
+                  this.storeService.uniqueIdMap.get(v) as string,
+                )
+              }
+            }
+          })
+        }
+        this.loaderService.changeLoad.next(false)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: this.getMessage('failure'),
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      },
+    )
+
+
+
   }
 
   preview(id: string) {

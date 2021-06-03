@@ -15,17 +15,21 @@ import {
   SEARCH_V6_AUTH,
   CONTENT_READ_HIERARCHY_AND_DATA,
   AUTHORING_BASE,
+  SEND_TO_REVIEW,
+  PUBLISH_CONTENT,
+  REJECT_CONTENT,
 } from '@ws/author/src/lib/constants/apiEndpoints'
 import { NSApiResponse } from '@ws/author/src/lib/interface//apiResponse'
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
 import { NSContent } from '@ws/author/src/lib/interface/content'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
-import { Observable, of } from 'rxjs'
+import { EMPTY, Observable, of } from 'rxjs'
 import { map, mergeMap, catchError } from 'rxjs/operators'
 import { CONTENT_READ_MULTIPLE_HIERARCHY } from './../../../../constants/apiEndpoints'
 import { ISearchContent, ISearchResult } from '../../../../interface/search'
 import { environment } from '../../../../../../../../../src/environments/environment'
+// import { HttpHeaders } from '@angular/common/http'
 
 @Injectable()
 export class EditorService {
@@ -139,6 +143,17 @@ export class EditorService {
       })
     )
   }
+
+  readcontentV3(id: string): Observable<NSContent.IContentMeta> {
+    return this.apiService.get<NSContent.IContentMeta>(
+      `/apis/proxies/v8/action/content/v3/hierarchy/${id}?mode=edit`
+    ).pipe(
+      map((data: any) => {
+        return data.result.content
+      })
+    )
+  }
+
   createAndReadContentV2(
     meta: NSApiRequest.ICreateMetaRequestGeneralV2,
   ): Observable<NSContent.IContentMeta> {
@@ -172,6 +187,9 @@ export class EditorService {
       `${CONTENT_SAVE_V2}${this.accessService.orgRootOrgAsQuery}`,
       meta,
     )
+  }
+  rejectContentApi(requestPayload: any, id: string): Observable<null> {
+    return this.apiService.post<any>(REJECT_CONTENT + id, requestPayload)
   }
 
   updateContentV3(meta: NSApiRequest.IContentUpdateV2, id: string): Observable<null> {
@@ -256,6 +274,8 @@ export class EditorService {
     id: string,
     status: string,
   ): Observable<null> {
+
+    alert('4444444')
     const requestBody: NSApiRequest.IForwardBackwardAction = {
       actor: this.accessService.userId,
       ...meta,
@@ -269,6 +289,54 @@ export class EditorService {
     return this.apiService.post<null>(STATUS_CHANGE + id, requestBody)
   }
 
+  sendToReview(id: string, status: string, parentStatus: string) {
+    // parentStatus = 'Review'
+    console.log('UUUUUUUU')
+    if (status === 'Review' && parentStatus === 'Review') {
+
+      console.log('this.accessService ', this.accessService)
+
+      // tslint:disable-next-line: no-shadowed-variable
+      const requestbody = {
+        request: {
+          content: {
+            publisher: this.accessService.userName,
+            lastPublishedBy: this.accessService.userName,
+          },
+        },
+      }
+      return this.apiService.post<any>(PUBLISH_CONTENT + id, requestbody)
+      // tslint:disable-next-line: no-else-after-return
+    } else if (status === 'Draft' && parentStatus === 'Draft') {
+      const requestbody = {}
+
+      // let headers = new HttpHeaders({
+      //   'wid': '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe',
+      // })
+      // let options = { headers: headers }
+
+      // console.log('this.accessService ', this.accessService)
+      // // tslint:disable-next-line: no-shadowed-variable
+      // const requestbody1 = {
+      //   request: {
+      //     content: {
+      //       publisher: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe',
+      //       lastPublishedBy: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe',
+      //     },
+      //   },
+      // }
+      // console.log('requestbody1 == ', requestbody1)
+      // console.log('PUBLISH_CONTENT ', PUBLISH_CONTENT, 'ID+++ ', id)
+      // let x = this.apiService.post<any>(PUBLISH_CONTENT + id, requestbody1, undefined, options)
+
+      // x.subscribe((d) => {
+      //   console.log('DDDDDDDD  ', d)
+      // })
+
+      return this.apiService.post<any>(SEND_TO_REVIEW + id, requestbody)
+    }
+    return EMPTY
+  }
   readJSON(artifactUrl: string): Observable<any> {
     return this.apiService.get(`${AUTHORING_CONTENT_BASE}${encodeURIComponent(artifactUrl)}`)
   }
