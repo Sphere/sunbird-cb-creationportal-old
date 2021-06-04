@@ -15,7 +15,7 @@ export class LicenseComponent implements OnInit {
   licenseName: any
   currentLicenseData: any
   constructor(private valueSvc: ValueService,
-    private route: ActivatedRoute,
+              private route: ActivatedRoute,
     // private configSvc: ConfigurationsService,
     // private widgetContentSvc: WidgetContentService
   ) {

@@ -127,7 +127,6 @@ export namespace NSApiRequest {
     | typeof CONTENT_BASE_WEBHOST_ASSETS
   }
 
-
   export interface ICreateImageMetaRequestV2 {
     request: {
       content: {

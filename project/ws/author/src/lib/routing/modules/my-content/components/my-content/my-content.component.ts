@@ -24,7 +24,7 @@ import { Subscription } from 'rxjs'
 import { MyContentService } from '../../services/my-content.service'
 import { map } from 'rxjs/operators'
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
-import _ from 'lodash'
+import * as l from 'lodash'
 
 @Component({
   selector: 'ws-auth-my-content',
@@ -32,6 +32,35 @@ import _ from 'lodash'
   styleUrls: ['./my-content.component.scss'],
 })
 export class MyContentComponent implements OnInit, OnDestroy {
+
+  constructor(
+    private myContSvc: MyContentService,
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private loadService: LoaderService,
+    private accessService: AccessControlService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
+    private authInitService: AuthInitService
+  ) {
+    this.filterMenuTreeControl = new FlatTreeControl<IMenuFlatNode>(
+      node => node.levels,
+      node => node.expandable,
+    )
+    this.filterMenuTreeFlattener = new MatTreeFlattener(
+      this._transformer,
+      node => node.levels,
+      node => node.expandable,
+      node => node.content,
+    )
+    this.dataSource = new MatTreeFlatDataSource(
+      this.filterMenuTreeControl,
+      this.filterMenuTreeFlattener,
+    )
+    this.dataSource.data = this.filterMenuItems
+    this.userId = this.accessService.userId
+    this.isAdmin = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor'])
+  }
   public sideNavBarOpened = false
   newDesign = true
   filterMenuTreeControl: FlatTreeControl<IMenuFlatNode>
@@ -73,9 +102,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
   public filterMenuItems: any = []
 
   dataSource: any
-  hasChild = (_: number, node: IMenuFlatNode) => node.expandable
 
   count: any = {}
+  hasChild = (_: number, node: IMenuFlatNode) => node.expandable
 
   private _transformer = (node: IFilterMenuNode, level: number) => {
     return {
@@ -95,35 +124,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
     }
   }
 
-  constructor(
-    private myContSvc: MyContentService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private loadService: LoaderService,
-    private accessService: AccessControlService,
-    private snackBar: MatSnackBar,
-    private dialog: MatDialog,
-    private authInitService: AuthInitService
-  ) {
-    this.filterMenuTreeControl = new FlatTreeControl<IMenuFlatNode>(
-      node => node.levels,
-      node => node.expandable,
-    )
-    this.filterMenuTreeFlattener = new MatTreeFlattener(
-      this._transformer,
-      node => node.levels,
-      node => node.expandable,
-      node => node.content,
-    )
-    this.dataSource = new MatTreeFlatDataSource(
-      this.filterMenuTreeControl,
-      this.filterMenuTreeFlattener,
-    )
-    this.dataSource.data = this.filterMenuItems
-    this.userId = this.accessService.userId
-    this.isAdmin = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor'])
-  }
-
   ngOnDestroy() {
     if (this.routerSubscription.unsubscribe) {
       this.routerSubscription.unsubscribe()
@@ -138,7 +138,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     }
 
     // this.newDesign = this.accessService.authoringConfig.newDesign
-    this.newDesign = _.get(this.accessService, 'authoringConfig.newDesign')
+    this.newDesign = l.get(this.accessService, 'authoringConfig.newDesign')
     this.ordinals = this.authInitService.ordinals
     this.allLanguages = this.authInitService.ordinals.subTitles || []
     this.activatedRoute.queryParams.subscribe(params => {
@@ -311,9 +311,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
   //   )
   // }
 
-
-
-
   fetchContent(loadMoreFlag: boolean, changeFilter = true) {
     const searchV6Data = this.myContSvc.getSearchBody(
       this.status,
@@ -323,7 +320,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isAdmin,
     )
 
-
     let isUserRecordEnabled = true
     const adminOnlyRoles = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor', 'content-creator'])
     if (adminOnlyRoles && isUserRecordEnabled) {
@@ -331,7 +327,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
     } else if (this.accessService.hasRole(['reviewer', 'publisher'])) {
       isUserRecordEnabled = false
     }
-
 
     const requestData = {
       locale: this.searchLanguage ? [this.searchLanguage] : ['en'],
@@ -348,8 +343,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
           contentType: [                              // filter according to type
             'Collection',
             'Course',
-            'Learning Path'
-          ]
+            'Learning Path',
+          ],
         },
         // pageNo: loadMoreFlag ? this.pagination.offset : 0,
         sort_by: { lastUpdatedOn: 'desc' },
@@ -414,7 +409,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
         : this.myContSvc.fetchContent(requestData)
     this.loadService.changeLoad.next(false)
 
-
     observable.subscribe(
       data => {
         this.loadService.changeLoad.next(false)
@@ -448,13 +442,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
       },
     )
   }
-
-
-
-
-
-
-
 
   search() {
     if (this.searchInputElem.nativeElement) {

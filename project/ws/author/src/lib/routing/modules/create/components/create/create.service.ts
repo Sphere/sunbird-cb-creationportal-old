@@ -62,9 +62,6 @@ export class CreateService {
 
   createV2(meta: { mimeType: string; contentType: string; locale: string, name: string, primaryCategory: string }): Observable<string> {
 
-
-
-
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {
@@ -89,9 +86,6 @@ export class CreateService {
         },
       },
     }
-
-    console.log('CREATE V2 Create service', requestBody)
-
     return this.apiService
       .post<NSApiRequest.ICreateMetaRequest>(
         `${AUTHORING_BASE}content/v3/create`,

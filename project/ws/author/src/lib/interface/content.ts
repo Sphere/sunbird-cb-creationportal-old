@@ -399,7 +399,6 @@ export namespace NSContent {
     orgLeftDate: string
   }
 
-
   export interface IRootOrg {
     dateTime: string
     preferredLanguage: string

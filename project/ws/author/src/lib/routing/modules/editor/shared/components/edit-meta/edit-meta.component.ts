@@ -579,7 +579,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
               currentMeta.instructions = parentData.instructions !== '' ? parentData.instructions : currentMeta.instructions
             }
 
-
             if (!currentMeta.categoryType) {
               currentMeta.categoryType = parentData.categoryType !== '' ? parentData.categoryType : currentMeta.categoryType
             }
@@ -930,8 +929,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   //   })
   // }
 
-
-
   uploadAppIcon(file: File) {
     const formdata = new FormData()
     const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
@@ -1067,7 +1064,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
                       })
                     },
                   )
-
 
                 // .subscribe(
                 //   data => {
@@ -1425,7 +1421,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       verifiers: [],
       visibility: [],
       instructions: [],
-      versionKey: '',  // (new Date()).getTime()
+      versionKey: (new Date()).getTime(),  // (new Date()).getTime()
     })
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {

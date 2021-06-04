@@ -15,7 +15,6 @@ export class ContentAndDataReadMultiLangTOCResolver implements Resolve<{ content
   ) {
   }
 
-
   // resolve(
   //   route: ActivatedRouteSnapshot,
   // ): Observable<{ content: NSContent.IContentMeta, data: any }[]> {
@@ -29,7 +28,6 @@ export class ContentAndDataReadMultiLangTOCResolver implements Resolve<{ content
   //     }),
   //   )
   // }
-
 
   // resolve(
   //   route: ActivatedRouteSnapshot,
@@ -45,8 +43,6 @@ export class ContentAndDataReadMultiLangTOCResolver implements Resolve<{ content
   //   )
   // }
 
-
-
   resolve(
     route: ActivatedRouteSnapshot,
   ): Observable<{ content: NSContent.IContentMeta, data: any }[]> | null {
@@ -56,7 +52,6 @@ export class ContentAndDataReadMultiLangTOCResolver implements Resolve<{ content
         `/apis/proxies/v8/action/content/v3/hierarchy/${id}?mode=edit`,
       ).pipe(
         map((data: any) => {
-          console.log('Hierarchy CONTENT-data-multi === IF ', data)
           return [data.result]
         }),
         catchError((v: any) => {
@@ -67,7 +62,5 @@ export class ContentAndDataReadMultiLangTOCResolver implements Resolve<{ content
     }
     return null
   }
-
-
 
 }

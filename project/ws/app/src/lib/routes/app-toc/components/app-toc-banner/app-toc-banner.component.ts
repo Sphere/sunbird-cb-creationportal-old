@@ -84,13 +84,10 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
-
-    console.log('-------- ', this.content)
     this.route.data.subscribe(data => {
       this.tocConfig = data.pageData.data
       if (this.content && this.isPostAssessment) {
         this.tocSvc.fetchPostAssessmentStatus(this.content.identifier).subscribe(res => {
-          console.log('Res == ', res)
           const assessmentData = res.result
           for (const o of assessmentData) {
             if (o.contentId === (this.content && this.content.identifier)) {
@@ -124,7 +121,6 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     if (this.authAccessService.hasAccess(this.content as any) && !this.isInIFrame) {
-      console.log('-------- ', this.content)
       const status: string = (this.content as any).status
       if (!this.forPreview) {
         this.editButton = true
@@ -460,6 +456,5 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   showOrgprofile(orgId: string) {
     this.router.navigate(['/app/org-details'], { queryParams: { orgId } })
   }
-
 
 }

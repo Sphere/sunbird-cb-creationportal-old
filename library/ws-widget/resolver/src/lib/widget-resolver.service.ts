@@ -73,8 +73,6 @@ export class WidgetResolverService {
       }
     })
 
-    console.log('allWidgetsConfigurations  ', allWidgetsConfigurations)
-
     this.restrictedWidgetKeys = restrictedWidgetKeysSet
     this.availableRegisteredWidgets = registrationConfig
     this.isInitialized = true
@@ -90,13 +88,7 @@ export class WidgetResolverService {
     receivedConfig: NsWidgetResolver.IRenderConfigWithAnyData,
     containerRef: ViewContainerRef,
   ): ComponentRef<any> | null {
-
-    console.log('UnresolvedComponent')
-
     const key = WidgetResolverService.getWidgetKey(receivedConfig)
-
-    console.log('Key yy', key)
-
     if (this.restrictedWidgetKeys && this.restrictedWidgetKeys.has(key)) {
       // Restricted
       return this.widgetResolved(containerRef, receivedConfig, RestrictedComponent)
@@ -111,9 +103,6 @@ export class WidgetResolverService {
         )
       ) {
         const config = this.availableRegisteredWidgets.get(key)
-
-        console.log('this.availableRegisteredWidgets ', this.availableRegisteredWidgets)
-
         if (config && config.component) {
           return this.widgetResolved(containerRef, receivedConfig, config.component)
         }

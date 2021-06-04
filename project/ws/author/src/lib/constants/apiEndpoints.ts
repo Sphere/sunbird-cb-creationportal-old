@@ -10,8 +10,6 @@ const CONTENT_FILE_BASE = 'content/'
 export const NOTIFICATION = `${AUTHORING_NOTIFICATION_BASE}v1/notification/event`
 // export const SEARCH = `${AUTHORING_SEARCH_BASE}authsearch5`
 
-
-
 export const SEARCH = `${PROXY_SLAG_V8}sunbirdigot/read`
 
 export const STATUS_CHANGE = `${ACTION_BASE}content/status/change/`
@@ -55,8 +53,6 @@ export const CONTENT_BASE_WEBHOST_ARTIFACT = '/web-hosted/artifact'
 export const CONTENT_BASE_LIVE = '/content-store'
 export const CONTENT_BASE_AUTHOR = '/contentv3/download'
 export const CONTENT_VIDEO_ENCODE = `${AUTHORING_CONTENT_BASE}contentv3/video-transcoding/start/`
-
-
 
 // new
 export const API_PROXY_V8 = 'apis/proxies/v8/'

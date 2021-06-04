@@ -62,7 +62,6 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
   leftarrow = true
   contentId: any | null = null
 
-
   constructor(
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -111,7 +110,6 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.treeStructureChange.subscribe(data => {
       this.dataSource.data = [data as IContentNode]
       if (this.parentNodeId === this.store.currentParentNode) {
-        console.log('IF !!!!!!')
         this.expandNodesById([this.parentNodeId])
         if (this.selectedNode && !this.store.flatNodeMap.get(this.selectedNode)) {
           this.parentHierarchy.forEach(v => {
@@ -126,13 +124,11 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
           })
         }
       } else {
-        console.log('else !!!!!!')
         this.parentNodeId = this.store.currentParentNode
       }
     })
     this.store.selectedNodeChange.subscribe(data => {
       if (data) {
-        console.log('Data ===== ', data)
         this.selectedNode = data
         this.contentId = data.toString()
       }
@@ -164,7 +160,6 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     if ($('#cdk-drop-list-0 > mat-tree-node').hasClass('selected')) {
       $('#cdk-drop-list-0 > mat-tree-node:nth-child(2)').removeClass('selected')
     }
-    console.log('node.id ', node.id, 'this.selectedNode ', this.selectedNode)
     if (node.id !== this.selectedNode) {
 
       this.updateSelectedNodeIdentifier()
@@ -179,24 +174,17 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-
   updateSelectedNodeIdentifier() {
-
-    console.log('CONTENT ID ', this.contentId)
-    console.log('this.editorStore.currentContent ', this.editorStore)
     const updatedContent = this.editorStore.upDatedContent || {}
     if (Object.keys(updatedContent).length > 0) {
       let tempUpdateContent = this.editorStore.upDatedContent[this.contentId]
       if (tempUpdateContent) {
         tempUpdateContent = this.editorStore.cleanProperties(tempUpdateContent)
-        console.log('tempUpdateContent ', tempUpdateContent)
-        if (tempUpdateContent.duration || tempUpdateContent.duration == 0 || tempUpdateContent.duration == '0') {
+        if (tempUpdateContent.duration || tempUpdateContent.duration === 0 || tempUpdateContent.duration === '0') {
           tempUpdateContent.duration =
             (isNumber(tempUpdateContent.duration) ?
               `${tempUpdateContent.duration}` :
               tempUpdateContent.duration)
-
-          console.log(isNumber(tempUpdateContent.duration))
         }
         if (tempUpdateContent.category) {
           delete tempUpdateContent.category
@@ -206,12 +194,9 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
             content: tempUpdateContent,
           },
         }
-        console.log('requestbody ', requestBody)
-        this.editorService.updateContentV3(requestBody, this.contentId).subscribe((d) => {
-          console.log('Response == ', d)
+        this.editorService.updateContentV3(requestBody, this.contentId).subscribe(() => {
           this.store.changedHierarchy = {}
           Object.keys(this.editorStore.upDatedContent).forEach(id => {
-            console.log('this.contentService.upDatedContent === ', this.editorStore.upDatedContent[id])
             this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
             this.editorService.readContentV2(id).subscribe(resData => {
               this.editorStore.resetVersionKey(resData.versionKey, resData.identifier)
@@ -220,13 +205,10 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
           this.editorStore.upDatedContent = {}
         })
 
-
       }
     }
 
   }
-
-
 
   closeSidenav() {
     this.closeEvent.emit(true)
@@ -437,9 +419,6 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loaderService.changeLoad.next(true)
     this.preserveExpandedNodes()
     this.expandedNodes.add(parentNode.id)
-    console.log('111111111 AAA')
-    console.log('Type ', type, 'node ', node)
-    console.log('parentNode == ', parentNode)
 
     const isDone = await this.store.createChildOrSibling(
       type,

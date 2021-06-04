@@ -146,8 +146,6 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
     }
   }
 
-
-
   closeSidenav() {
     this.closeEvent.emit(true)
   }
@@ -353,7 +351,6 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
   }
 
   async createNewChildOrSibling(type: string, node: IContentTreeNode, asSibling = false) {
-    console.log('111111111')
     const parentNode = (asSibling ? this.getParentNode(node) : node) as IContentTreeNode
     this.loaderService.changeLoad.next(true)
     this.preserveExpandedNodes()

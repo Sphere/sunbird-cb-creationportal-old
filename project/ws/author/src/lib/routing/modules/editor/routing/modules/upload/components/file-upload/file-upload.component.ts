@@ -316,7 +316,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
           if (this.mimeType === 'application/html') {
             // tslint:disable-next-line:max-line-length
             // url = `${document.location.origin}/content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
-            url = `${environment.karmYogi}content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
+            url = `${environment.karmYogi}content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/
+            ${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
 
           } else {
             // url = (v.authArtifactURL || v.artifactURL).replace(/%2F/g, '/')
@@ -331,7 +332,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
             this.fileUploadForm.controls.isExternal.setValue(false)
           }
 
-
           // if (this.mimeType === 'application/x-mpegURL') {
           //   this.fileUploadForm.controls.transcoding.setValue({
           //     lastTranscodedOn: null,
@@ -339,8 +339,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
           //     status: 'STARTED',
           //   })
           // }
-
-
 
           this.fileUploadForm.controls.duration.setValue(this.duration)
           this.fileUploadForm.controls.size.setValue((this.file as File).size)

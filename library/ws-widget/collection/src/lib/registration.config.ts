@@ -24,7 +24,6 @@ import { BtnContentShareModule } from './btn-content-share/btn-content-share.mod
 import { BtnContentDownloadComponent } from './btn-content-download/btn-content-download.component'
 import { BtnContentDownloadModule } from './btn-content-download/btn-content-download.module'
 
-
 import { BtnGoalsComponent } from './btn-goals/btn-goals.component'
 import { BtnGoalsModule } from './btn-goals/btn-goals.module'
 
