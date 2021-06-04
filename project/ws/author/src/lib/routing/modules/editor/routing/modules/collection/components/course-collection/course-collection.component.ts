@@ -448,6 +448,28 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       return
     }
     if (this.validationCheck) {
+
+      this.editorService.readcontentV3(this.contentService.parentContent).subscribe((resData: any) => {
+        if (resData && Object.keys(resData).length > 0) {
+          resData.creatorContacts =
+            this.jsonVerify(resData.creatorContacts) ? JSON.parse(resData.creatorContacts) : []
+          resData.trackContacts =
+            this.jsonVerify(resData.reviewer) ? JSON.parse(resData.reviewer) : []
+          resData.creatorDetails =
+            this.jsonVerify(resData.creatorDetails) ? JSON.parse(resData.creatorDetails) : []
+          resData.publisherDetails = this.jsonVerify(resData.publisherDetails) ?
+            JSON.parse(resData.publisherDetails) : []
+          if (resData.children.length > 0) {
+            resData.children.forEach((element: any) => {
+              element.creatorContacts = this.jsonVerify(element.creatorContacts) ? JSON.parse(element.creatorContacts) : []
+              element.trackContacts = this.jsonVerify(element.reviewer) ? JSON.parse(element.reviewer) : []
+              element.creatorDetails = this.jsonVerify(element.creatorDetails) ? JSON.parse(element.creatorDetails) : []
+              element.publisherDetails = this.jsonVerify(element.publisherDetails) ? JSON.parse(element.publisherDetails) : []
+            })
+          }
+          this.contentService.setOriginalMeta(resData)
+        }
+      })
       console.log('Takeaction course 111111')
       const dialogRef = this.dialog.open(CommentsDialogComponent, {
         width: '750px',
@@ -1779,4 +1801,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         ))
     )
   }
+
+  jsonVerify(s: string) { try { JSON.parse(s); return true } catch (e) { return false } }
 }
