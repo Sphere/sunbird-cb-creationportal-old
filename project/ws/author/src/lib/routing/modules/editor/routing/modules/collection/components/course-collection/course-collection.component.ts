@@ -18,12 +18,13 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 import { of, Subscription } from 'rxjs'
-import { map, mergeMap, tap, catchError } from 'rxjs/operators'
+// import { map, mergeMap, tap, catchError } from 'rxjs/operators'
+import { map, mergeMap, tap } from 'rxjs/operators'
 import { IContentNode, IContentTreeNode } from '../../interface/icontent-tree'
 import { CollectionResolverService } from './../../services/resolver.service'
 import { CollectionStoreService } from './../../services/store.service'
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
-import { NotificationService } from '@ws/author/src/lib/services/notification.service'
+// import { NotificationService } from '@ws/author/src/lib/services/notification.service'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
 import { HeaderServiceService } from './../../../../../../../../../../../../../src/app/services/header-service.service'
@@ -90,7 +91,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private editorService: EditorService,
     private router: Router,
-    private notificationSvc: NotificationService,
+    // private notificationSvc: NotificationService,
     private accessControlSvc: AccessControlService,
     private breakpointObserver: BreakpointObserver,
     private fb: FormBuilder,
@@ -563,10 +564,95 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
 
 
+  // async finalCall(commentsForm: FormGroup) {
+  //   let flag = 0
+  //   if (commentsForm) {
+  //     const body: NSApiRequest.IForwardBackwardActionGeneral = {
+  //       comment: commentsForm.controls.comments.value,
+  //       operation:
+  //         commentsForm.controls.action.value === 'accept' ||
+  //           ['Draft', 'Live'].includes(
+  //             this.contentService.originalContent[this.currentParentId].status,
+  //           )
+  //           ? 1
+  //           : 0,
+  //     }
+
+  //     console.log('Body ===  ', body)
+
+  //     const updatedMeta = this.contentService.getUpdatedMeta(this.currentParentId)
+  //     const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
+  //     const needSave =
+  //       Object.keys(this.contentService.upDatedContent || {}).length ||
+  //       Object.keys(this.storeService.changedHierarchy).length
+
+
+  //     console.log('updatedMeta  ', updatedMeta)
+  //     console.log('originalData  ', originalData)
+  //     console.log('needSave ', needSave)
+
+  //     if (body.operation) {
+  //       if (originalData && originalData.children && updatedMeta.children.length > 0) {
+  //         for (const element of originalData.children) {
+  //           console.log('Takeaction course 222222', element.identifier, element.status, updatedMeta.status)
+  //           await this.editorService.sendToReview(element.identifier, element.status, updatedMeta.status).subscribe(() => {
+  //             flag += 1
+  //             if (updatedMeta.children.length === flag) {
+  //               console.log('IFG flag')
+  //               this.finalSaveAndRedirect(needSave, updatedMeta, body)
+  //             }
+  //           })
+  //         }
+  //       }
+  //     } else {
+  //       console.log('ELSE Final call')
+  //       // this.changeStatusToDraft(body.comment)
+  //     }
+
+
+
+
+
+
+
+  //     // const saveCall = (needSave ? this.triggerSave() : of({} as any)).pipe(
+  //     //   mergeMap(() =>
+  //     //     this.editorService
+  //     //       .forwardBackward(
+  //     //         body,
+  //     //         this.currentParentId,
+  //     //         this.contentService.originalContent[this.currentParentId].status,
+  //     //       )
+  //     //       .pipe(
+  //     //         mergeMap(() =>
+  //     //           this.notificationSvc
+  //     //             .triggerPushPullNotification(
+  //     //               updatedMeta,
+  //     //               body.comment,
+  //     //               body.operation ? true : false,
+  //     //             )
+  //     //             .pipe(
+  //     //               catchError(() => {
+  //     //                 return of({} as any)
+  //     //               }),
+  //     //             ),
+  //     //         ),
+  //     //       ),
+  //     //   ),
+  //     // )
+
+
+
+
+  //   }
+  // }
 
 
   async finalCall(commentsForm: FormGroup) {
+    console.log('Final Call')
     let flag = 0
+    const resourceListToReview: any = []
+    const moduleListToReview: any = []
     if (commentsForm) {
       const body: NSApiRequest.IForwardBackwardActionGeneral = {
         comment: commentsForm.controls.comments.value,
@@ -578,77 +664,146 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             ? 1
             : 0,
       }
-
-      console.log('Body ===  ', body)
-
       const updatedMeta = this.contentService.getUpdatedMeta(this.currentParentId)
       const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
       const needSave =
         Object.keys(this.contentService.upDatedContent || {}).length ||
         Object.keys(this.storeService.changedHierarchy).length
-
-
-      console.log('updatedMeta  ', updatedMeta)
-      console.log('originalData  ', originalData)
-      console.log('needSave ', needSave)
-
       if (body.operation) {
         if (originalData && originalData.children && updatedMeta.children.length > 0) {
           for (const element of originalData.children) {
-            console.log('Takeaction course 222222', element.identifier, element.status, updatedMeta.status)
-            await this.editorService.sendToReview(element.identifier, element.status, updatedMeta.status).subscribe(() => {
-              flag += 1
-              if (updatedMeta.children.length === flag) {
-                console.log('IFG flag')
+            if (element.contentType === 'Collection') {
+              if (element.children.length > 0) {
+                element.children.forEach((subElement: any) => {
+                  const tempChildData = {
+                    identifier: subElement.identifier,
+                    status: subElement.status,
+                    parentStatus: updatedMeta.status,
+                  }
+                  resourceListToReview.push(tempChildData)
+                })
+              }
+              const tempParentData = {
+                identifier: element.identifier,
+                status: element.status,
+                parentStatus: updatedMeta.status,
+              }
+              moduleListToReview.push(tempParentData)
+
+            } else {
+              const tempData = {
+                identifier: element.identifier,
+                status: element.status,
+                parentStatus: updatedMeta.status,
+              }
+              resourceListToReview.push(tempData)
+            }
+          }
+          if (resourceListToReview.length > 0) {
+            for await (const element of resourceListToReview) {
+              if ((element.status === 'Live' || element.status === 'Review') && updatedMeta.status === 'Draft') {
+                flag += 1
+              } else if ((element.status === 'Live') && updatedMeta.status === 'Review') {
+                flag += 1
+              } else {
+                const tempRes = await this.editorService.sendToReview(element.identifier, element.status, updatedMeta.status).toPromise()
+                if (tempRes && tempRes.params && tempRes.params.status) {
+                  flag += 1
+                }
+              }
+            }
+            if (resourceListToReview.length === flag && moduleListToReview.length > 0) {
+              const tempRequset: NSApiRequest.IContentUpdateV3 = {
+                request: {
+                  data: {
+                    nodesModified: {},
+                    hierarchy: this.storeService.getTreeHierarchy(),
+                  },
+                },
+              }
+              if (updatedMeta.status !== 'Review') {
+                this.editorService.updateContentV4(tempRequset).subscribe(() => {
+                  this.finalSaveAndRedirect(needSave, updatedMeta, body)
+                  // this.sendModuleToReviewOrPublish(moduleListToReview, needSave, updatedMeta, body)
+                })
+              } else {
                 this.finalSaveAndRedirect(needSave, updatedMeta, body)
               }
-            })
+            } else if (resourceListToReview.length === flag) {
+              this.finalSaveAndRedirect(needSave, updatedMeta, body)
+            }
           }
         }
       } else {
-        console.log('ELSE Final call')
-        // this.changeStatusToDraft(body.comment)
+        this.changeStatusToDraft(body.comment)
       }
-
-
-
-
-
-
-
-      // const saveCall = (needSave ? this.triggerSave() : of({} as any)).pipe(
-      //   mergeMap(() =>
-      //     this.editorService
-      //       .forwardBackward(
-      //         body,
-      //         this.currentParentId,
-      //         this.contentService.originalContent[this.currentParentId].status,
-      //       )
-      //       .pipe(
-      //         mergeMap(() =>
-      //           this.notificationSvc
-      //             .triggerPushPullNotification(
-      //               updatedMeta,
-      //               body.comment,
-      //               body.operation ? true : false,
-      //             )
-      //             .pipe(
-      //               catchError(() => {
-      //                 return of({} as any)
-      //               }),
-      //             ),
-      //         ),
-      //       ),
-      //   ),
-      // )
-
-
-
-
     }
   }
 
+  changeStatusToDraft(comment: string) {
+    const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
+    const updatedData: any = []
+    originalData.children.forEach((ele: any) => {
+      updatedData.push(ele)
+    })
+    updatedData.push(originalData)
+    let flag = 0
+    updatedData.forEach((element: any) => {
+      const requestBody: any = {
+        request: {
+          content: {
+            rejectComment: comment,
+          },
+        },
+      }
+      this.loaderService.changeLoad.next(true)
+      this.editorService.rejectContentApi(requestBody, element.identifier).subscribe((resData: any) => {
+        if (resData && resData.params.status === 'successful') {
+          flag += 1
+          if (flag === updatedData.length) {
+            this.loaderService.changeLoad.next(false)
+            this.snackBar.openFromComponent(NotificationComponent, {
+              data: {
+                type: Notify.SAVE_SUCCESS,
+              },
+              duration: NOTIFICATION_TIME * 1000,
+            })
+            this.router.navigate(['author', 'cbp'])
+          } else {
+            this.loaderService.changeLoad.next(false)
+            this.snackBar.openFromComponent(NotificationComponent, {
+              data: {
+                type: Notify.SAVE_FAIL,
+              },
+              duration: NOTIFICATION_TIME * 1000,
+            })
+          }
+        }
+      },
+        // tslint:disable-next-line: align
+        _error => {
+          this.loaderService.changeLoad.next(false)
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: Notify.SAVE_FAIL,
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+        })
+    })
+  }
 
+  sendModuleToReviewOrPublish(moduleList: any, needSave: any, updatedMeta: any, body: any) {
+    let flag = 0
+    moduleList.forEach(async (element: any) => {
+      await this.editorService.sendToReview(element.identifier, element.status, element.parentStatus).subscribe(() => {
+        flag += 1
+        if (moduleList.length === flag) {
+          this.finalSaveAndRedirect(needSave, updatedMeta, body)
+        }
+      })
+    })
+  }
 
   finalSaveAndRedirect(needSave: any, updatedMeta: any, body: any) {
 

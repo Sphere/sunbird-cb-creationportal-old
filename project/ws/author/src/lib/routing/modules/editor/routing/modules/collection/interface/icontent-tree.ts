@@ -18,6 +18,7 @@ export interface IContentNode {
   editable: boolean
   children?: IContentNode[]
   category: string
+  contentType?: string
   childLoaded: boolean
   parentId?: number
 }

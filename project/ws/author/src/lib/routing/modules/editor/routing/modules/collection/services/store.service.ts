@@ -44,6 +44,9 @@ export class CollectionStoreService {
   currentParentNode!: number
   currentSelectedNode!: number
 
+
+  hierarchyTree: any = {}
+
   constructor(
     private contentService: EditorContentService,
     private editorService: EditorService,
@@ -640,4 +643,31 @@ export class CollectionStoreService {
       }
     }
   }
+
+  getTreeHierarchy() {
+    const newParentNode = this.flatNodeMap.get(this.currentParentNode) as IContentNode
+    this.hierarchyTree[newParentNode.identifier] = {
+      root: this.parentNode.includes(newParentNode.identifier),
+      children: (newParentNode.children) ? newParentNode.children.map(v => {
+        const child = v.identifier
+        return child
+      }) : [],
+    }
+    if (newParentNode.children && newParentNode.children.length > 0) {
+      newParentNode.children.forEach(element => {
+        if (element.children && element.children.length > 0 && !(Object.keys(this.hierarchyTree).includes(element.identifier))) {
+          this.hierarchyTree[element.identifier] = {
+            root: this.parentNode.includes(element.identifier),
+            contentType: element.contentType,
+            children: element.children.map(v => {
+              const child = v.identifier
+              return child
+            }),
+          }
+        }
+      })
+    }
+    return this.hierarchyTree
+  }
+
 }

@@ -290,12 +290,9 @@ export class EditorService {
   }
 
   sendToReview(id: string, status: string, parentStatus: string) {
-    // parentStatus = 'Review'
-    console.log('UUUUUUUU')
+    console.log('status ', status, 'parentStatus ', parentStatus)
     if (status === 'Review' && parentStatus === 'Review') {
-
-      console.log('this.accessService ', this.accessService)
-
+      console.log('REVIEW')
       // tslint:disable-next-line: no-shadowed-variable
       const requestbody = {
         request: {
@@ -307,36 +304,15 @@ export class EditorService {
       }
       return this.apiService.post<any>(PUBLISH_CONTENT + id, requestbody)
       // tslint:disable-next-line: no-else-after-return
-    } else if (status === 'Draft' && parentStatus === 'Draft') {
+    } else if (parentStatus === 'Draft') {
+      console.log('DRAFT')
       const requestbody = {}
-
-      // let headers = new HttpHeaders({
-      //   'wid': '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe',
-      // })
-      // let options = { headers: headers }
-
-      // console.log('this.accessService ', this.accessService)
-      // // tslint:disable-next-line: no-shadowed-variable
-      // const requestbody1 = {
-      //   request: {
-      //     content: {
-      //       publisher: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe',
-      //       lastPublishedBy: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe',
-      //     },
-      //   },
-      // }
-      // console.log('requestbody1 == ', requestbody1)
-      // console.log('PUBLISH_CONTENT ', PUBLISH_CONTENT, 'ID+++ ', id)
-      // let x = this.apiService.post<any>(PUBLISH_CONTENT + id, requestbody1, undefined, options)
-
-      // x.subscribe((d) => {
-      //   console.log('DDDDDDDD  ', d)
-      // })
-
       return this.apiService.post<any>(SEND_TO_REVIEW + id, requestbody)
     }
     return EMPTY
   }
+
+
   readJSON(artifactUrl: string): Observable<any> {
     return this.apiService.get(`${AUTHORING_CONTENT_BASE}${encodeURIComponent(artifactUrl)}`)
   }
