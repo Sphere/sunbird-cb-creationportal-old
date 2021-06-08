@@ -136,6 +136,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.canUpdate = false
     this.fileUploadForm.controls.artifactUrl.setValue(meta.artifactUrl || '')
     this.fileUploadForm.controls.mimeType.setValue(meta.mimeType || 'application/pdf')
+    this.mimeType = (meta.mimeType) ? meta.mimeType : ''
     this.fileUploadForm.controls.isIframeSupported.setValue(meta.isIframeSupported || 'Yes')
     this.fileUploadForm.controls.isInIntranet.setValue(meta.isInIntranet || false)
     this.fileUploadForm.controls.isExternal.setValue(meta.isExternal || false)
@@ -247,6 +248,41 @@ export class FileUploadComponent implements OnInit, OnChanges {
       this.extractFile()
     }
   }
+
+  // From IGOT
+
+  // assignFileValues(file: File, fileName: string) {
+  //   const currentContentData = this.contentService.originalContent[this.currentContent]
+  //   this.mimeType = fileName.toLowerCase().endsWith('.pdf')
+  //     ? 'application/pdf'
+  //     : fileName.toLowerCase().endsWith('.mp4')
+  //       ? 'video/mp4'
+  //       : fileName.toLowerCase().endsWith('.zip')
+  //         ? 'application/vnd.ekstep.html-archive'
+  //         : 'audio/mpeg'
+  //   if (
+  //     (currentContentData.status === 'Live' || currentContentData.prevStatus === 'Live')
+  //     && this.mimeType !== currentContentData.mimeType
+  //   ) {
+  //     this.snackBar.openFromComponent(NotificationComponent, {
+  //       data: {
+  //         type: Notify.CANNOT_CHANGE_MIME_TYPE,
+  //       },
+  //       duration: NOTIFICATION_TIME * 1000,
+  //     })
+  //     this.fileUploadForm.controls.artifactUrl.setValue(currentContentData.artifactUrl)
+  //     this.mimeType = currentContentData.mimeType
+  //     this.iprChecked()
+  //   } else {
+  //     this.file = file
+  //     if (this.mimeType === 'video/mp4' || this.mimeType === 'audio/mpeg') {
+  //       this.getDuration()
+  //     } else if (this.mimeType === 'application/vnd.ekstep.html-archive') {
+  //       this.extractFile()
+  //     }
+  //   }
+  // }
+
 
   showIpr() {
     const dialogRef = this.dialog.open(IprDialogComponent, {

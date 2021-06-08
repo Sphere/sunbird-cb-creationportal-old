@@ -86,6 +86,7 @@ export namespace NSApiRequest {
         primaryCategory: string
         isExternal: boolean
         license: string
+        ownershipType: string[]
       }
     }
   }
@@ -139,6 +140,7 @@ export namespace NSApiRequest {
         creator?: string
         license: string
         language: [string]
+        primaryCategory: string
       }
     }
   }

@@ -78,7 +78,7 @@ export class ContentCardComponent implements OnInit {
         }
         break
       case 'review':
-        if (this.data.status === 'InReview' || this.data.status === 'QualityReview') {
+        if (this.data.status === 'Review' || this.data.status === 'QualityReview') {
           returnValue = this.accessService.hasAccess(this.data)
         }
         break

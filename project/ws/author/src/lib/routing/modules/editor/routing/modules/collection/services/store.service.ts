@@ -86,6 +86,76 @@ export class CollectionStoreService {
     return allow
   }
 
+  // dragAndDrop(
+  //   dragNode: IContentTreeNode | IContentNode,
+  //   dropNode: IContentTreeNode,
+  //   adjacentId?: number,
+  //   dropLocation: 'above' | 'below' = 'below',
+  //   emitChange = true,
+  // ) {
+  //   const oldParentNode = dragNode.parentId ? this.flatNodeMap.get(dragNode.parentId) : undefined
+  //   const newParentNode = this.flatNodeMap.get(dropNode.id) as IContentNode
+  //   const oldParentChildList = oldParentNode ? (oldParentNode.children as IContentNode[]) : []
+  //   const newParentChildList = newParentNode.children as IContentNode[]
+  //   oldParentChildList.splice(
+  //     oldParentChildList.findIndex(v => v.id === dragNode.id),
+  //     1,
+  //   )
+  //   const childNode = this.flatNodeMap.get(dragNode.id) as IContentNode
+  //   childNode.parentId = dropNode.id
+  //   if (adjacentId) {
+  //     const dropPosition =
+  //       (dropNode.children || []).indexOf(adjacentId) + (dropLocation === 'above' ? -1 : 1)
+  //     const children = newParentNode.children as IContentNode[]
+  //     children.splice(dropPosition, 0, childNode)
+  //   } else {
+  //     if (newParentChildList) {
+  //       newParentChildList.push(childNode)
+  //     } else {
+  //       newParentNode.children = [childNode]
+  //     }
+  //   }
+  //   if (oldParentNode) {
+  //     this.changedHierarchy[oldParentNode.identifier] = {
+  //       root: this.parentNode.includes(oldParentNode.identifier),
+  //       contentType: oldParentNode.contentType,
+  //       children: oldParentChildList.map(v => {
+  //         const child = v.identifier
+  //         return child
+  //       }),
+  //       // children: oldParentChildList.map(v => {
+  //       //   const child = {
+  //       //     identifier: v.identifier,
+  //       //     reasonAdded: 'Added from Authoring Tool',
+  //       //     childrenClassifiers: [],
+  //       //   }
+  //       //   return child
+  //       // }),
+  //     }
+  //   }
+  //   this.changedHierarchy[newParentNode.identifier] = {
+  //     root: this.parentNode.includes(newParentNode.identifier),
+  //     contentType: newParentNode.contentType,
+  //     children: newParentChildList.map(v => {
+  //       const child = v.identifier
+  //       return child
+  //     }),
+  //     // children: newParentChildList.map(v => {
+  //     //   const child = {
+  //     //     identifier: v.identifier,
+  //     //     reasonAdded: 'Added from Authoring Tool',
+  //     //     childrenClassifiers: [],
+  //     //   }
+  //     //   return child
+  //     // }),
+  //   }
+  //   if (emitChange) {
+  //     this.treeStructureChange.next(this.treeStructureChange.value)
+  //   }
+  // }
+
+
+
   dragAndDrop(
     dragNode: IContentTreeNode | IContentNode,
     dropNode: IContentTreeNode,
@@ -118,6 +188,7 @@ export class CollectionStoreService {
     if (oldParentNode) {
       this.changedHierarchy[oldParentNode.identifier] = {
         root: this.parentNode.includes(oldParentNode.identifier),
+        contentType: "Course",
         children: oldParentChildList.map(v => {
           const child = v.identifier
           return child
@@ -131,9 +202,12 @@ export class CollectionStoreService {
         //   return child
         // }),
       }
+
+      console.log('newParentNode.contentType, ', newParentNode.contentType, oldParentNode.contentType)
     }
     this.changedHierarchy[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),
+      contentType: "Course",
       children: newParentChildList.map(v => {
         const child = v.identifier
         return child
@@ -147,10 +221,48 @@ export class CollectionStoreService {
       //   return child
       // }),
     }
+
+    console.log('newParentNode.contentType, ', newParentNode.contentType)
+    if (newParentChildList.length > 0) {
+      newParentChildList.forEach(element => {
+        if (element.children && element.children.length > 0 && !(Object.keys(this.changedHierarchy).includes(element.identifier))) {
+          this.changedHierarchy[element.identifier] = {
+            root: this.parentNode.includes(element.identifier),
+            contentType: element.contentType,
+            children: element.children.map(v => {
+              const child = v.identifier
+              return child
+            }),
+          }
+        }
+      })
+    }
+    if (this.parentNode.length > 0) {
+      this.parentNode.forEach(element => {
+        if (!Object.keys(this.changedHierarchy).includes(element)) {
+          const tempData: any = this.contentService.getOriginalMeta(element)
+          const childrenArray: any = []
+          if (tempData.children.length > 0) {
+            tempData.children.forEach((childData: any) => {
+              childrenArray.push(childData.identifier)
+            })
+          }
+          this.changedHierarchy[element] = {
+            root: this.parentNode.includes(element),
+            contentType: tempData.contentType,
+            children: childrenArray,
+          }
+        }
+      })
+    }
+
+
+
     if (emitChange) {
       this.treeStructureChange.next(this.treeStructureChange.value)
     }
   }
+
 
   async addChildOrSibling(
     ids: string[],
@@ -215,6 +327,7 @@ export class CollectionStoreService {
       let mimeTypeData = meta.mimeType
       if (cType.toLowerCase() === 'assessment') {
         mimeTypeData = 'application/json'
+        // mimeTypeData = 'application/vnd.ekstep.ecml-archive'
       }
 
       const requestBody = {
@@ -244,7 +357,7 @@ export class CollectionStoreService {
         ...(meta.additionalMeta || {}),
         // primaryCategory: meta.primaryCategory
         primaryCategory: meta.primaryCategory || 'Learning Resource',
-        // ownershipType: ["createdFor"]
+        ownershipType: ["createdFor"]
       }
 
       // requestBody.posterImage = parentData.posterImage
@@ -273,7 +386,7 @@ export class CollectionStoreService {
       this.dragAndDrop(treeStructure, dropNode, adjacentId, dropLocation)
 
       if (newChildUpdateCall) {
-        this.getHierarchyTreeStructure()
+        // this.getHierarchyTreeStructure()
       }
 
       return true
@@ -404,13 +517,46 @@ export class CollectionStoreService {
       this.changedHierarchy[parentNode.identifier] = {
         root: this.parentNode.includes(parentNode.identifier),
         children: children.map(v => {
-          const child = {
-            identifier: v.identifier,
-            reasonAdded: 'Added from Authoring Tool',
-            childrenClassifiers: [],
-          }
+          const child = v.identifier
+          // const child = {
+          //   identifier: v.identifier,
+          //   reasonAdded: 'Added from Authoring Tool',
+          //   childrenClassifiers: [],
+          // }
           return child
         }),
+      }
+      if (children.length > 0) {
+        children.forEach(element => {
+          if (element.children && element.children.length > 0 && !(Object.keys(this.changedHierarchy).includes(element.identifier))) {
+            this.changedHierarchy[element.identifier] = {
+              root: this.parentNode.includes(element.identifier),
+              contentType: element.contentType,
+              children: element.children.map(v => {
+                const child = v.identifier
+                return child
+              }),
+            }
+          }
+        })
+      }
+      if (this.parentNode.length > 0) {
+        this.parentNode.forEach(element => {
+          if (!Object.keys(this.changedHierarchy).includes(element)) {
+            const tempData: any = this.contentService.getOriginalMeta(element)
+            const childrenArray: any = []
+            if (tempData.children.length > 0) {
+              tempData.children.forEach((childData: any) => {
+                childrenArray.push(childData.identifier)
+              })
+            }
+            this.changedHierarchy[element] = {
+              root: this.parentNode.includes(element),
+              contentType: tempData.contentType,
+              children: childrenArray,
+            }
+          }
+        })
       }
     }
     this.treeStructureChange.next(this.treeStructureChange.value)
@@ -620,6 +766,7 @@ export class CollectionStoreService {
   }
 
   getTreeHierarchy() {
+    console.log('hierarchyTree === ', this.hierarchyTree)
     const newParentNode = this.flatNodeMap.get(this.currentParentNode) as IContentNode
     this.hierarchyTree[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),

@@ -73,7 +73,7 @@ export class CreateService {
           code: randomNumber,
           contentType: meta.contentType,
           createdBy: this.accessService.userId,
-          createdFor: [environment.channelId],
+          createdFor: [(this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId) ? this.configSvc.userProfile.rootOrgId : ''],
           creator: this.accessService.userName,
           description: '',
           framework: environment.framework,
@@ -83,6 +83,7 @@ export class CreateService {
           isExternal: meta.mimeType === 'text/x-url',
           primaryCategory: meta.primaryCategory,
           license: 'CC BY 4.0',
+          ownershipType: ['createdFor'],
         },
       },
     }

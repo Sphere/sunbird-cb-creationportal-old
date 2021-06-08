@@ -225,7 +225,7 @@ export namespace NSContent {
     interactivityLevel: string
     complexityLevel: string
     audience: string[]
-    duration: any
+    duration: string
     size: number
     mimeType: string
     minLexVersion: string
@@ -376,6 +376,12 @@ export namespace NSContent {
     purpose: string
     reviewer: string
     lastPublishedBy: string
+    reviewerIDs: string[]
+    publisherIDs: string[]
+    creatorIDs: string[]
+    draftImage: string
+    topics: string[]
+    prevStatus: string
   }
 
   export interface IOrganisations {

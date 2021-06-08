@@ -41,7 +41,11 @@ export class ViewerResolve
     //   return null
     // }
 
-    const forPreview = window.location.href.includes('/author/') || route.queryParamMap.get('preview') === 'true'
+
+    // const forPreview = window.location.href.includes('/author/') || route.queryParamMap.get('preview') === 'true'
+    const forPreview = true
+
+    console.log('YYYYYYYYYYYYYYY', forPreview)
     return (forPreview
       ? this.contentSvc.fetchAuthoringContent(this.viewerDataSvc.resourceId)
       : this.contentSvc.fetchContent(
