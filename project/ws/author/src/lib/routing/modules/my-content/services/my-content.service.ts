@@ -1,5 +1,5 @@
 import { ISearchResult } from './../../../../interface/search'
-import { HttpHeaders } from '@angular/common/http'
+// import { HttpHeaders } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { ConfigurationsService } from '@ws-widget/utils'
 import {
@@ -8,7 +8,8 @@ import {
   CONTENT_READ,
   SEARCH,
   STATUS_CHANGE,
-  UNPUBLISH,
+  // UNPUBLISH,
+  UNPUBLISH_CONTENT,
   EXPIRY_DATE_ACTION,
   CONTENT_RESTORE,
   SEARCH_V6_ADMIN,
@@ -172,23 +173,64 @@ export class MyContentService {
     return this.apiService.post<null>(EXPIRY_DATE_ACTION, requestBody)
   }
 
+
   upPublishOrDraft(id: string, unpublish = true): Observable<null> {
+    console.log('UNPUBLISH 55555555 UNPUBLISH_CONTENT', unpublish)
+
+
+    // return this.apiService.post<any>(
+    //   `${UNPUBLISH}${this.accessService.orgRootOrgAsQuery}`,
+    //   requestBody,
+    //   true,
+    //   {
+    //     headers: new HttpHeaders({
+    //       Accept: 'text/plain',
+    //     }),
+    //     responseType: 'text',
+    //   },
+    // )
+
+    const tempContentIds: string[] = []
+    tempContentIds.push(id)
     const requestBody = {
-      unpublish,
-      identifier: id,
-    }
-    return this.apiService.post<any>(
-      `${UNPUBLISH}${this.accessService.orgRootOrgAsQuery}`,
-      requestBody,
-      true,
-      {
-        headers: new HttpHeaders({
-          Accept: 'text/plain',
-        }),
-        responseType: 'text',
+      request: {
+        contentIds: tempContentIds,
       },
+    }
+
+
+    console.log('requestBody ', requestBody)
+
+    const tempOptions = {
+      body: requestBody,
+    }
+    return this.apiService.delete<any>(
+      `${UNPUBLISH_CONTENT}`, tempOptions
     )
+
+
   }
+
+
+
+  // upPublishOrDraft(id: string, unpublish = true): Observable<null> {
+  //   const requestBody = {
+  //     unpublish,
+  //     identifier: id,
+  //   }
+
+  //   return this.apiService.post<any>(
+  //     `${UNPUBLISH}${this.accessService.orgRootOrgAsQuery}`,
+  //     requestBody,
+  //     true,
+  //     {
+  //       headers: new HttpHeaders({
+  //         Accept: 'text/plain',
+  //       }),
+  //       responseType: 'text',
+  //     },
+  //   )
+  // }
 
   getSearchBody(
     mode: string,

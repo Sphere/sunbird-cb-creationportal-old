@@ -63,3 +63,4 @@ export const REJECT_CONTENT = `${ACTION_CONTENT_V3}reject/`
 export const API_PROTECTED_V8 = 'apis/protected/v8/'
 export const GET_DEPARTMENT_LIST = `${API_PROTECTED_V8}portal/listDeptNames`
 export const GET_CATALOG_DATA = `${API_PROTECTED_V8}catalog`
+export const UNPUBLISH_CONTENT = `${API_PROXY_V8}v1/content/retire`

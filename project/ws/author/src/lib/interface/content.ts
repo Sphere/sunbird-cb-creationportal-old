@@ -225,7 +225,7 @@ export namespace NSContent {
     interactivityLevel: string
     complexityLevel: string
     audience: string[]
-    duration: string
+    duration: any
     size: number
     mimeType: string
     minLexVersion: string

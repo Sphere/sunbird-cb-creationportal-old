@@ -646,8 +646,7 @@
             <mat-form-field appearance="outline" class="margin-top-xs"
               [ngClass]="{ 'mat-form-field-invalid': showError('name') }">
               <input matInput #name formControlName="name" maxlength="500" i18n-placeholder
-                placeholder="Enter a Descriptive title" [required]="checkCondition('name', 'required') ? true : null"
-                (click)="updateReviewer()" />
+                placeholder="Enter a Descriptive title" [required]="checkCondition('name', 'required') ? true : null" />
               <mat-hint align="end">{{ name.value.length }} / 500</mat-hint>
               <mat-error *ngIf="showError('name')" i18n="Name Error|Explains name is required">
                 Title is mandatory
@@ -757,7 +756,7 @@
                       " i18n>
                     Auto calculated from duration of the file
                   </p>
-                  <div class="flex">
+                  <div class="flex" (click)="updateReviewer()">
                     <div class="flex">
                       <mat-form-field appearance="outline" class="duration-width"
                         [ngClass]="{ 'mat-form-field-invalid': showError('duration') }">
@@ -902,7 +901,9 @@
               </mat-error>
             </div>
           </div>
-          <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('resourceType', 'show')"
+
+
+          <!-- <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('resourceType', 'show')"
             [ngClass]="{ disable: checkCondition('resourceType', 'disabled') }">
             <label [ngClass]="{ required: checkCondition('resourceType', 'required') }">
               <b *ngIf="isSiemens" i18n>Format</b>
@@ -922,7 +923,9 @@
                 </mat-error>
               </mat-form-field>
             </div>
-          </div>
+          </div> -->
+
+
         </div>
 
         <div class="">

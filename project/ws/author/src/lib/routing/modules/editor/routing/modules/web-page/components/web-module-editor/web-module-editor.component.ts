@@ -643,6 +643,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
         case 'InReview':
           return Notify.REVIEW_SUCCESS
         case 'Reviewed':
+        case 'Review':
           return Notify.PUBLISH_SUCCESS
         default:
           return ''
@@ -655,6 +656,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
       case 'InReview':
         return Notify.REVIEW_FAIL
       case 'Reviewed':
+      case 'Review':
         return Notify.PUBLISH_FAIL
       default:
         return ''
@@ -670,6 +672,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
       case 'QualityReview':
         return 'review'
       case 'Reviewed':
+      case 'Review':
         return 'publish'
       default:
         return 'sendForReview'

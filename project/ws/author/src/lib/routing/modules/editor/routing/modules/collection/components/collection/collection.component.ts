@@ -671,6 +671,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
       case 'InReview':
         return 'review'
       case 'Reviewed':
+      case 'Review':
         return 'publish'
       default:
         return 'sendForReview'

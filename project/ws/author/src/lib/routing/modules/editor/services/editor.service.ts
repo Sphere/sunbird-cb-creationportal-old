@@ -266,7 +266,6 @@ export class EditorService {
     status: string,
   ): Observable<null> {
 
-    alert('4444444')
     const requestBody: NSApiRequest.IForwardBackwardAction = {
       actor: this.accessService.userId,
       ...meta,
