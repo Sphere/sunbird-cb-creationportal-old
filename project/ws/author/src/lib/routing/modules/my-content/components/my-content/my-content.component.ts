@@ -25,6 +25,7 @@ import { MyContentService } from '../../services/my-content.service'
 import { map } from 'rxjs/operators'
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
 import * as l from 'lodash'
+import { ConfigurationsService } from '@ws-widget/utils'
 
 @Component({
   selector: 'ws-auth-my-content',
@@ -41,7 +42,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
     private accessService: AccessControlService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private authInitService: AuthInitService
+    private authInitService: AuthInitService,
+    private configService: ConfigurationsService,
   ) {
     this.filterMenuTreeControl = new FlatTreeControl<IMenuFlatNode>(
       node => node.levels,
@@ -312,6 +314,144 @@ export class MyContentComponent implements OnInit, OnDestroy {
   //   )
   // }
 
+
+
+  // fetchContent(loadMoreFlag: boolean, changeFilter = true) {
+  //   const searchV6Data = this.myContSvc.getSearchBody(
+  //     this.status,
+  //     this.searchLanguage ? [this.searchLanguage] : [],
+  //     loadMoreFlag ? this.pagination.offset : 0,
+  //     this.queryFilter,
+  //     this.isAdmin,
+  //   )
+
+  //   console.log('fetchContent my-component ')
+
+  //   let isUserRecordEnabled = true
+  //   const adminOnlyRoles = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor', 'content-creator'])
+  //   if (adminOnlyRoles && isUserRecordEnabled) {
+  //     isUserRecordEnabled = true
+  //   } else if (this.accessService.hasRole(['reviewer', 'publisher'])) {
+  //     isUserRecordEnabled = false
+  //   }
+
+  //   const requestData = {
+  //     locale: this.searchLanguage ? [this.searchLanguage] : ['en'],
+  //     query: this.queryFilter,
+  //     request: {
+  //       query: this.queryFilter,
+  //       filters: {
+  //         status: this.fetchStatus(),
+  //         // creatorContacts: <string[]>[],
+  //         // trackContacts: <string[]>[],
+  //         // publisherDetails: <string[]>[],
+  //         // isMetaEditingDisabled: [false],
+  //         // isContentEditingDisabled: [false]
+  //         contentType: [                              // filter according to type
+  //           'Collection',
+  //           'Course',
+  //           'Learning Path',
+  //         ],
+  //       },
+  //       // pageNo: loadMoreFlag ? this.pagination.offset : 0,
+  //       sort_by: { lastUpdatedOn: 'desc' },
+  //       // pageSize: this.pagination.limit,
+  //       fields: [
+  //         'name',
+  //         'appIcon',
+  //         'mimeType',
+  //         'gradeLevel',
+  //         'identifier',
+  //         'medium',
+  //         'pkgVersion',
+  //         'board',
+  //         'subject',
+  //         'resourceType',
+  //         'primaryCategory',
+  //         'contentType',
+  //         'channel',
+  //         'organisation',
+  //         'trackable',
+  //         'status',
+  //         'authoringDisabled',
+  //       ],
+  //       facets: [
+  //         'primaryCategory',
+  //         'mimeType',
+  //       ],
+  //       // pageNo: loadMoreFlag ? this.pagination.offset : 0,
+  //       // sort: [{ lastUpdatedOn: 'desc' }],
+  //       // pageSize: this.pagination.limit,
+  //       // uuid: this.userId,
+  //       // rootOrg: this.accessService.rootOrg,
+  //       // // this is for Author Only
+  //       // isUserRecordEnabled: true,
+  //     },
+  //   }
+
+  //   if (this.finalFilters.length) {
+  //     this.finalFilters.forEach((v: any) => {
+  //       searchV6Data.filters.forEach((filter: any) => {
+  //         filter.andFilters[0] = {
+  //           ...filter.andFilters[0],
+  //           [v.key]: v.value,
+  //         }
+  //       })
+  //       requestData.request.filters = { ...requestData.request.filters, [v.key]: v.value }
+  //     })
+  //   }
+
+  //   this.loadService.changeLoad.next(true)
+  //   const observable =
+  //     this.status === 'expiry' || this.newDesign
+  //       ? this.myContSvc.fetchFromSearchV6(searchV6Data, this.isAdmin).pipe(
+  //         map((v: any) => {
+  //           return {
+  //             result: {
+  //               response: v,
+  //             },
+  //           }
+  //         }),
+  //       )
+  //       : this.myContSvc.fetchContent(requestData)
+  //   this.loadService.changeLoad.next(false)
+
+  //   observable.subscribe(
+  //     data => {
+  //       this.loadService.changeLoad.next(false)
+  //       if (changeFilter) {
+  //         this.filterMenuItems =
+  //           data && data.result && data.result.facets
+  //             ? data.result.facets
+  //             : this.filterMenuItems
+  //         this.dataSource.data = this.filterMenuItems
+  //       }
+  //       this.cardContent =
+  //         loadMoreFlag && !this.queryFilter
+  //           ? (this.cardContent || []).concat(
+  //             data && data.result ? data.result.content : [],
+  //           )
+  //           : data && data.result.content
+  //             ? data.result.content
+  //             : []
+  //       this.totalContent = data && data.result ? data.result.count : 0
+  //       this.showLoadMore =
+  //         this.pagination.offset * this.pagination.limit + this.pagination.limit < this.totalContent
+  //           ? true
+  //           : false
+  //       this.fetchError = false
+  //     },
+  //     () => {
+  //       this.fetchError = true
+  //       this.cardContent = []
+  //       this.showLoadMore = false
+  //       this.loadService.changeLoad.next(false)
+  //     },
+  //   )
+  // }
+
+
+
   fetchContent(loadMoreFlag: boolean, changeFilter = true) {
     const searchV6Data = this.myContSvc.getSearchBody(
       this.status,
@@ -321,13 +461,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isAdmin,
     )
 
-    let isUserRecordEnabled = true
-    const adminOnlyRoles = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor', 'content-creator'])
-    if (adminOnlyRoles && isUserRecordEnabled) {
-      isUserRecordEnabled = true
-    } else if (this.accessService.hasRole(['reviewer', 'publisher'])) {
-      isUserRecordEnabled = false
-    }
+
+    console.log('fetchContent my-component ')
+
 
     const requestData = {
       locale: this.searchLanguage ? [this.searchLanguage] : ['en'],
@@ -340,35 +476,18 @@ export class MyContentComponent implements OnInit, OnDestroy {
           // trackContacts: <string[]>[],
           // publisherDetails: <string[]>[],
           // isMetaEditingDisabled: [false],
-          // isContentEditingDisabled: [false]
+          // isContentEditingDisabled: [false],
+          // sourceName: [_.get(this.departmentData, 'data.deptName')],
           contentType: [                              // filter according to type
             'Collection',
             'Course',
             'Learning Path',
           ],
+          createdFor: (this.configService.userProfile) ? [this.configService.userProfile.rootOrgId] : [],
         },
         // pageNo: loadMoreFlag ? this.pagination.offset : 0,
         sort_by: { lastUpdatedOn: 'desc' },
         // pageSize: this.pagination.limit,
-        fields: [
-          'name',
-          'appIcon',
-          'mimeType',
-          'gradeLevel',
-          'identifier',
-          'medium',
-          'pkgVersion',
-          'board',
-          'subject',
-          'resourceType',
-          'primaryCategory',
-          'contentType',
-          'channel',
-          'organisation',
-          'trackable',
-          'status',
-          'authoringDisabled',
-        ],
         facets: [
           'primaryCategory',
           'mimeType',
@@ -382,7 +501,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
         // isUserRecordEnabled: true,
       },
     }
-
     if (this.finalFilters.length) {
       this.finalFilters.forEach((v: any) => {
         searchV6Data.filters.forEach((filter: any) => {
@@ -394,6 +512,34 @@ export class MyContentComponent implements OnInit, OnDestroy {
         requestData.request.filters = { ...requestData.request.filters, [v.key]: v.value }
       })
     }
+    if (requestData.request.filters.status.includes('Unpublished')) {
+      requestData.request.filters.status = ['Retired']
+    }
+    // if (this.queryFilter) {
+    //   // tslint:disable
+    //   delete requestData.request.sort
+    //   // tslint:enable
+    // }
+    // if (
+    //   [
+    //     'draft',
+    //     'rejected',
+    //     'inreview',
+    //     'published',
+    //     'unpublished',
+    //     'processing',
+    //     'deleted',
+    //   ].indexOf(this.status) > -1 &&
+    //   !this.isAdmin
+    // ) {
+    //   requestData.request.filters.creatorContacts.push(this.userId)
+    // }
+    // if (this.status === 'review' && !this.isAdmin) {
+    //   requestData.request.filters.trackContacts.push(this.userId)
+    // }
+    // if (this.status === 'publish' && !this.isAdmin) {
+    //   requestData.request.filters.publisherDetails.push(this.userId)
+    // }
 
     this.loadService.changeLoad.next(true)
     const observable =
@@ -408,8 +554,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
           }),
         )
         : this.myContSvc.fetchContent(requestData)
-    this.loadService.changeLoad.next(false)
-
+    this.loadService.changeLoad.next(true)
     observable.subscribe(
       data => {
         this.loadService.changeLoad.next(false)
@@ -429,6 +574,10 @@ export class MyContentComponent implements OnInit, OnDestroy {
               ? data.result.content
               : []
         this.totalContent = data && data.result ? data.result.count : 0
+        // const index = _.findIndex(this.count, i => i.n === this.status)
+        // if (index >= 0) {
+        this.count[this.status] = this.totalContent
+        // }
         this.showLoadMore =
           this.pagination.offset * this.pagination.limit + this.pagination.limit < this.totalContent
             ? true
@@ -696,6 +845,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
   }
 
   finalCall(commentsForm: FormGroup, content: any) {
+    console.log('finalCall my contents')
     if (commentsForm) {
       let operationValue: any
       switch (content.type) {

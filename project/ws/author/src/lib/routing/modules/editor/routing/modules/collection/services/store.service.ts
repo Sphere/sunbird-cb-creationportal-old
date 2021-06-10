@@ -188,7 +188,7 @@ export class CollectionStoreService {
     if (oldParentNode) {
       this.changedHierarchy[oldParentNode.identifier] = {
         root: this.parentNode.includes(oldParentNode.identifier),
-        contentType: "Course",
+        // contentType: "Course",
         children: oldParentChildList.map(v => {
           const child = v.identifier
           return child
@@ -207,7 +207,7 @@ export class CollectionStoreService {
     }
     this.changedHierarchy[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),
-      contentType: "Course",
+      // contentType: "Course",
       children: newParentChildList.map(v => {
         const child = v.identifier
         return child
@@ -228,7 +228,7 @@ export class CollectionStoreService {
         if (element.children && element.children.length > 0 && !(Object.keys(this.changedHierarchy).includes(element.identifier))) {
           this.changedHierarchy[element.identifier] = {
             root: this.parentNode.includes(element.identifier),
-            contentType: element.contentType,
+            // contentType: element.contentType,
             children: element.children.map(v => {
               const child = v.identifier
               return child
@@ -531,7 +531,7 @@ export class CollectionStoreService {
           if (element.children && element.children.length > 0 && !(Object.keys(this.changedHierarchy).includes(element.identifier))) {
             this.changedHierarchy[element.identifier] = {
               root: this.parentNode.includes(element.identifier),
-              contentType: element.contentType,
+              // contentType: element.contentType,
               children: element.children.map(v => {
                 const child = v.identifier
                 return child
@@ -780,7 +780,7 @@ export class CollectionStoreService {
         if (element.children && element.children.length > 0 && !(Object.keys(this.hierarchyTree).includes(element.identifier))) {
           this.hierarchyTree[element.identifier] = {
             root: this.parentNode.includes(element.identifier),
-            contentType: element.contentType,
+            // contentType: element.contentType,
             children: element.children.map(v => {
               const child = v.identifier
               return child

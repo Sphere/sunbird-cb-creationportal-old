@@ -742,7 +742,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               }
             }
             if (resourceListToReview.length === flag && moduleListToReview.length > 0) {
-              console.log('moduleListToReview.length > 0')
               const tempRequset: NSApiRequest.IContentUpdateV3 = {
                 request: {
                   data: {
@@ -760,7 +759,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 this.finalSaveAndRedirect(needSave, updatedMeta)
               }
             } else if (resourceListToReview.length === flag) {
-              console.log('moduleListToReview < 0    flag ==', flag)
               this.finalSaveAndRedirect(needSave, updatedMeta)
             }
           }
@@ -838,7 +836,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   finalSaveAndRedirect(needSave: any, updatedMeta: any) {
     console.log('finalSaveAndRedirect Need save ', needSave, 'updatedMeta ', updatedMeta)
-    needSave = 0
+    // needSave = 0
     const saveCall = (needSave ? this.triggerSave() : of({} as any)).pipe(
       mergeMap(() =>
         this.editorService
