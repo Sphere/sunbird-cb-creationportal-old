@@ -4,5 +4,9 @@ export const environment = {
   organisation: 'igot-karmayogi',
   framework: 'igot',
   channelId: '0131397178949058560',
-  karmYogi: 'https://igot-sunbird.idc.tarento.com/',
+  karmYogi: 'https://karmayogi.nic.in/',
+  azureHost: 'https://karmayogi.nic.in',
+  azureBucket: 'content-store',
+  azureOldHost: 'https://staas-bbs1.cloud.gov.in',
+  azureOldBuket: 'igot',
 }

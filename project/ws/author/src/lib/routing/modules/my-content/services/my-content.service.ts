@@ -171,11 +171,8 @@ export class MyContentService {
     return this.apiService.post<null>(EXPIRY_DATE_ACTION, requestBody)
   }
 
-
-  upPublishOrDraft(id: string, unpublish = true): Observable<null> {
-    console.log('UNPUBLISH 55555555 UNPUBLISH_CONTENT', unpublish)
-
-
+  // upPublishOrDraft(id: string, unpublish = true): Observable<null> {
+  upPublishOrDraft(id: string): Observable<null> {
     // return this.apiService.post<any>(
     //   `${UNPUBLISH}${this.accessService.orgRootOrgAsQuery}`,
     //   requestBody,
@@ -196,9 +193,6 @@ export class MyContentService {
       },
     }
 
-
-    console.log('requestBody ', requestBody)
-
     const tempOptions = {
       body: requestBody,
     }
@@ -206,10 +200,7 @@ export class MyContentService {
       `${UNPUBLISH_CONTENT}`, tempOptions
     )
 
-
   }
-
-
 
   // upPublishOrDraft(id: string, unpublish = true): Observable<null> {
   //   const requestBody = {

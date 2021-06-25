@@ -43,7 +43,6 @@ export class ContentAndDataReadMultiLangTOCResolver implements Resolve<{ content
   //   )
   // }
 
-
   jsonVerify(s: string) { try { JSON.parse(s); return true } catch (e) { return false } }
 
   resolve(

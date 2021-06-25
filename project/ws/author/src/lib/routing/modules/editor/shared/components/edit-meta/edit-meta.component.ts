@@ -348,7 +348,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     )
     this.contentMeta.name = contentMeta.name === 'Untitled Content' ? '' : contentMeta.name
 
-
     if (this.contentMeta.creatorContacts && typeof this.contentMeta.creatorContacts === 'string') {
       this.contentMeta.creatorContacts = JSON.parse(this.contentMeta.creatorContacts)
     }
@@ -361,7 +360,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.contentMeta.publisherDetails && typeof this.contentMeta.publisherDetails === 'string') {
       this.contentMeta.publisherDetails = JSON.parse(this.contentMeta.publisherDetails)
     }
-
 
     this.canExpiry = this.contentMeta.expiryDate !== '99991231T235959+0000'
     if (this.canExpiry) {
@@ -1552,10 +1550,9 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   updateReviewer() {
-    this.contentForm.controls.trackContacts.setValue([{ "id": "7983c8e5-6365-48cf-8a3c-fd1060fb0bbe", "name": "AnkitVerma" }])
-    this.contentForm.controls.publisherDetails.setValue([{ "id": "7983c8e5-6365-48cf-8a3c-fd1060fb0bbe", "name": "AnkitVerma" }])
+    this.contentForm.controls.trackContacts.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
+    this.contentForm.controls.publisherDetails.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
   }
-
 
   public parseJsonData(s: string) {
     try {

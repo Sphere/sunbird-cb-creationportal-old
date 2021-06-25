@@ -283,7 +283,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
   //   }
   // }
 
-
   showIpr() {
     const dialogRef = this.dialog.open(IprDialogComponent, {
       width: '70%',

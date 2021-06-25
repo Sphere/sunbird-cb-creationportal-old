@@ -435,7 +435,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   takeAction() {
-    console.log('Take action')
     this.isSubmitPressed = true
     const needSave = Object.keys(this.contentService.upDatedContent || {}).length
     if (!needSave && !this.isChanged) {
@@ -477,7 +476,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
 
       dialogRef.afterClosed().subscribe((commentsForm: FormGroup) => {
-        console.log('Closed')
         this.finalCall(commentsForm)
       })
     }
@@ -657,8 +655,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   // }
 
   async finalCall(commentsForm: FormGroup) {
-
-    console.log('Final Calll')
     let flag = 0
     const resourceListToReview: any = []
     const moduleListToReview: any = []
@@ -679,20 +675,17 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         Object.keys(this.contentService.upDatedContent || {}).length ||
         Object.keys(this.storeService.changedHierarchy).length
 
+      // console.log('body ', body)
+      // console.log('updatedMeta ', updatedMeta)
+      // console.log('originalData ', originalData)
 
-      console.log('body ', body)
-      console.log('updatedMeta ', updatedMeta)
-      console.log('originalData ', originalData)
-
-      console.log('this.contentService.upDatedContent ', this.contentService.upDatedContent)
-      console.log('this.storeService.changedHierarchy ', this.storeService.changedHierarchy)
-      console.log('needSave ', needSave)
-
+      // console.log('this.contentService.upDatedContent ', this.contentService.upDatedContent)
+      // console.log('this.storeService.changedHierarchy ', this.storeService.changedHierarchy)
+      // console.log('needSave ', needSave)
 
       if (body.operation) {
         if (originalData && originalData.children && updatedMeta.children.length > 0) {
           for (const element of originalData.children) {
-            console.log('element ', element)
             if (element.contentType === 'Collection') {
               if (element.children.length > 0) {
                 element.children.forEach((subElement: any) => {
@@ -721,11 +714,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             }
           }
 
-
-          console.log('resourceListToReview ', resourceListToReview)
-          console.log('moduleListToReview ', moduleListToReview)
-
-
+          // console.log('resourceListToReview ', resourceListToReview)
+          // console.log('moduleListToReview ', moduleListToReview)
 
           if (resourceListToReview.length > 0) {
             for await (const element of resourceListToReview) {
@@ -734,7 +724,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               } else if ((element.status === 'Live') && updatedMeta.status === 'Review') {
                 flag += 1
               } else {
-                console.log('resourceListToReview else sendToReview')
                 const tempRes = await this.editorService.sendToReview(element.identifier, element.status, updatedMeta.status).toPromise()
                 if (tempRes && tempRes.params && tempRes.params.status) {
                   flag += 1
@@ -835,7 +824,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   finalSaveAndRedirect(needSave: any, updatedMeta: any) {
-    console.log('finalSaveAndRedirect Need save ', needSave, 'updatedMeta ', updatedMeta)
+    // console.log('finalSaveAndRedirect Need save ', needSave, 'updatedMeta ', updatedMeta)
     // needSave = 0
     const saveCall = (needSave ? this.triggerSave() : of({} as any)).pipe(
       mergeMap(() =>
@@ -1445,8 +1434,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
     // console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2, this.storeService.changedHierarchy)
 
-
-
     // if (Object.keys(this.storeService.changedHierarchy).length === 0) {
     // if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.contentService.currentContent]) {
     if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.currentCourseId]) {
@@ -1459,11 +1446,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       }
 
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
-
-      console.log('Duration  ', isNumber(requestBody.request.content.duration), requestBody.request.content.duration)
-
       if (requestBody.request.content.duration === 0 || requestBody.request.content.duration) {
-        console.log('duration 111111111')
         // tslint:disable-next-line:max-line-length
         requestBody.request.content.duration =
           // (isNumber(requestBody.request.content.duration) ?
@@ -1471,13 +1454,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           //   requestBody.request.content.duration)
           isNumber(requestBody.request.content.duration) ?
             requestBody.request.content.duration.toString() : requestBody.request.content.duration
-        console.log('requestBody.request.content.duration ', requestBody.request.content.duration)
       }
 
       if (requestBody.request.content.category) {
         delete requestBody.request.content.category
       }
-
 
       if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
         requestBody.request.content.reviewer = JSON.stringify(requestBody.request.content.trackContacts)
@@ -1489,8 +1470,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         requestBody.request.content.reviewerIDs = tempTrackRecords
         delete requestBody.request.content.trackContacts
       }
-
-      console.log('WWWWWWWWWWWWWWWWWWWWWWWWWW  ', requestBody.request.content)
 
       // if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
       //   requestBody.request.content.reviewer = JSON.stringify(requestBody.request.content.trackContacts)
@@ -1540,7 +1519,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.contentService.upDatedContent = {}
         }),
         tap(async () => {
-          console.log('this.storeService.getTreeHierarchy() ', this.storeService.getTreeHierarchy())
           const tempRequset: NSApiRequest.IContentUpdateV3 = {
             request: {
               data: {
@@ -1668,7 +1646,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   action(type: string) {
-    console.log('Actipn 124 ', type)
     switch (type) {
       case 'next':
         this.viewMode = 'meta'
@@ -1700,7 +1677,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         break
 
       case 'push':
-        console.log('this.getAction() ', this.getAction())
         if (this.getAction() === 'publish') {
           const dialogRefForPublish = this.dialog.open(ConfirmDialogComponent, {
             width: '70%',
@@ -1818,7 +1794,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   getAction(): string {
-    console.log('status ', this.contentService.originalContent[this.currentParentId].status)
     switch (this.contentService.originalContent[this.currentParentId].status) {
       case 'Draft':
       case 'Live':

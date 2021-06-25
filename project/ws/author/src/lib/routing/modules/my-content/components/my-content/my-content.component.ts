@@ -314,8 +314,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
   //   )
   // }
 
-
-
   // fetchContent(loadMoreFlag: boolean, changeFilter = true) {
   //   const searchV6Data = this.myContSvc.getSearchBody(
   //     this.status,
@@ -450,8 +448,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
   //   )
   // }
 
-
-
   fetchContent(loadMoreFlag: boolean, changeFilter = true) {
     const searchV6Data = this.myContSvc.getSearchBody(
       this.status,
@@ -460,11 +456,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.queryFilter,
       this.isAdmin,
     )
-
-
-    console.log('fetchContent my-component ')
-
-
     const requestData = {
       locale: this.searchLanguage ? [this.searchLanguage] : ['en'],
       query: this.queryFilter,
@@ -798,7 +789,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
   unPublishOrDraft(request: NSContent.IContentMeta) {
     this.loadService.changeLoad.next(true)
-    this.myContSvc.upPublishOrDraft(request.identifier, request.status !== 'Unpublished').subscribe(
+    // this.myContSvc.upPublishOrDraft(request.identifier, request.status !== 'Unpublished').subscribe(
+    this.myContSvc.upPublishOrDraft(request.identifier).subscribe(
       () => {
         this.loadService.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
@@ -845,7 +837,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
   }
 
   finalCall(commentsForm: FormGroup, content: any) {
-    console.log('finalCall my contents')
     if (commentsForm) {
       let operationValue: any
       switch (content.type) {
