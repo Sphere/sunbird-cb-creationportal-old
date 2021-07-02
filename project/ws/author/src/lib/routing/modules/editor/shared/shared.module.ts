@@ -54,7 +54,7 @@ import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal.
     AceEditorComponent,
     AuthEditorActionButtonsComponent,
     AuthPickerComponent,
-    ConfirmModalComponent
+    ConfirmModalComponent,
   ],
   entryComponents: [AuthPickerComponent],
   providers: [UploadService],

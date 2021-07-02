@@ -136,6 +136,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.canUpdate = false
     this.fileUploadForm.controls.artifactUrl.setValue(meta.artifactUrl || '')
     this.fileUploadForm.controls.mimeType.setValue(meta.mimeType || 'application/pdf')
+    this.mimeType = (meta.mimeType) ? meta.mimeType : ''
     this.fileUploadForm.controls.isIframeSupported.setValue(meta.isIframeSupported || 'Yes')
     this.fileUploadForm.controls.isInIntranet.setValue(meta.isInIntranet || false)
     this.fileUploadForm.controls.isExternal.setValue(meta.isExternal || false)
@@ -248,6 +249,40 @@ export class FileUploadComponent implements OnInit, OnChanges {
     }
   }
 
+  // From IGOT
+
+  // assignFileValues(file: File, fileName: string) {
+  //   const currentContentData = this.contentService.originalContent[this.currentContent]
+  //   this.mimeType = fileName.toLowerCase().endsWith('.pdf')
+  //     ? 'application/pdf'
+  //     : fileName.toLowerCase().endsWith('.mp4')
+  //       ? 'video/mp4'
+  //       : fileName.toLowerCase().endsWith('.zip')
+  //         ? 'application/vnd.ekstep.html-archive'
+  //         : 'audio/mpeg'
+  //   if (
+  //     (currentContentData.status === 'Live' || currentContentData.prevStatus === 'Live')
+  //     && this.mimeType !== currentContentData.mimeType
+  //   ) {
+  //     this.snackBar.openFromComponent(NotificationComponent, {
+  //       data: {
+  //         type: Notify.CANNOT_CHANGE_MIME_TYPE,
+  //       },
+  //       duration: NOTIFICATION_TIME * 1000,
+  //     })
+  //     this.fileUploadForm.controls.artifactUrl.setValue(currentContentData.artifactUrl)
+  //     this.mimeType = currentContentData.mimeType
+  //     this.iprChecked()
+  //   } else {
+  //     this.file = file
+  //     if (this.mimeType === 'video/mp4' || this.mimeType === 'audio/mpeg') {
+  //       this.getDuration()
+  //     } else if (this.mimeType === 'application/vnd.ekstep.html-archive') {
+  //       this.extractFile()
+  //     }
+  //   }
+  // }
+
   showIpr() {
     const dialogRef = this.dialog.open(IprDialogComponent, {
       width: '70%',
@@ -316,7 +351,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
           if (this.mimeType === 'application/html') {
             // tslint:disable-next-line:max-line-length
             // url = `${document.location.origin}/content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
-            url = `${environment.karmYogi}content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
+            url = `${environment.karmYogi}content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/
+            ${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
 
           } else {
             // url = (v.authArtifactURL || v.artifactURL).replace(/%2F/g, '/')
@@ -331,7 +367,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
             this.fileUploadForm.controls.isExternal.setValue(false)
           }
 
-
           // if (this.mimeType === 'application/x-mpegURL') {
           //   this.fileUploadForm.controls.transcoding.setValue({
           //     lastTranscodedOn: null,
@@ -339,8 +374,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
           //     status: 'STARTED',
           //   })
           // }
-
-
 
           this.fileUploadForm.controls.duration.setValue(this.duration)
           this.fileUploadForm.controls.size.setValue((this.file as File).size)

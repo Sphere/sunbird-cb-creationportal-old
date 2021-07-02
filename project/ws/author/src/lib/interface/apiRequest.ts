@@ -86,6 +86,7 @@ export namespace NSApiRequest {
         primaryCategory: string
         isExternal: boolean
         license: string
+        ownershipType: string[]
       }
     }
   }
@@ -127,7 +128,6 @@ export namespace NSApiRequest {
     | typeof CONTENT_BASE_WEBHOST_ASSETS
   }
 
-
   export interface ICreateImageMetaRequestV2 {
     request: {
       content: {
@@ -140,6 +140,7 @@ export namespace NSApiRequest {
         creator?: string
         license: string
         language: [string]
+        primaryCategory: string
       }
     }
   }

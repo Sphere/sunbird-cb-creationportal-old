@@ -347,6 +347,20 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.parentContent ? this.contentService.getUpdatedMeta(this.parentContent) : undefined,
     )
     this.contentMeta.name = contentMeta.name === 'Untitled Content' ? '' : contentMeta.name
+
+    if (this.contentMeta.creatorContacts && typeof this.contentMeta.creatorContacts === 'string') {
+      this.contentMeta.creatorContacts = JSON.parse(this.contentMeta.creatorContacts)
+    }
+    if (this.contentMeta.reviewer && typeof this.contentMeta.reviewer === 'string') {
+      this.contentMeta.trackContacts = JSON.parse(this.contentMeta.reviewer)
+    }
+    if (this.contentMeta.creatorDetails && typeof this.contentMeta.creatorDetails === 'string') {
+      this.contentMeta.creatorDetails = JSON.parse(this.contentMeta.creatorDetails)
+    }
+    if (this.contentMeta.publisherDetails && typeof this.contentMeta.publisherDetails === 'string') {
+      this.contentMeta.publisherDetails = JSON.parse(this.contentMeta.publisherDetails)
+    }
+
     this.canExpiry = this.contentMeta.expiryDate !== '99991231T235959+0000'
     if (this.canExpiry) {
       this.contentMeta.expiryDate =
@@ -578,7 +592,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             if (!currentMeta.instructions) {
               currentMeta.instructions = parentData.instructions !== '' ? parentData.instructions : currentMeta.instructions
             }
-
 
             if (!currentMeta.categoryType) {
               currentMeta.categoryType = parentData.categoryType !== '' ? parentData.categoryType : currentMeta.categoryType
@@ -930,8 +943,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   //   })
   // }
 
-
-
   uploadAppIcon(file: File) {
     const formdata = new FormData()
     const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
@@ -999,6 +1010,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
                 name: fileName,
                 language: ['English'],
                 license: 'CC BY 4.0',
+                primaryCategory: 'Asset',
               },
             },
           }
@@ -1067,7 +1079,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
                       })
                     },
                   )
-
 
                 // .subscribe(
                 //   data => {
@@ -1425,7 +1436,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       verifiers: [],
       visibility: [],
       instructions: [],
-      versionKey: '',  // (new Date()).getTime()
+      versionKey: (new Date()).getTime(),  // (new Date()).getTime()
     })
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
@@ -1537,4 +1548,19 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     })
     return newCatalog
   }
+
+  updateReviewer() {
+    this.contentForm.controls.trackContacts.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
+    this.contentForm.controls.publisherDetails.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
+  }
+
+  public parseJsonData(s: string) {
+    try {
+      const parsedString = JSON.parse(s)
+      return parsedString
+    } catch {
+      return []
+    }
+  }
+
 }

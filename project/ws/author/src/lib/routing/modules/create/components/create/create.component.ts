@@ -144,10 +144,7 @@ export class CreateComponent implements OnInit, OnDestroy {
   //   }
   // }
 
-
-
   createCourseClicked() {
-    console.log('!!!!!!!!!!!!!!!!!')
     this.loaderService.changeLoad.next(true)
     const _name = this.createCourseForm.get('name')
     if (this.content && _name && _name.value) {
@@ -194,13 +191,11 @@ export class CreateComponent implements OnInit, OnDestroy {
     }
   }
 
-
   createForm() {
     this.createCourseForm = this.formBuilder.group({
       name: new FormControl('', []),
     })
   }
-
 
   setCurrentLanguage(lang: string) {
     this.language = lang

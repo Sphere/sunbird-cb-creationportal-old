@@ -251,6 +251,7 @@ export namespace NsUser {
     surName?: string
     middleName?: string
     profileImage?: string
+    rootOrgId?: string
   }
 
   export interface IUserPidProfile {

@@ -45,7 +45,7 @@ export class EditorContentService {
     this.listOfUpdatedIPR[id] = v
   }
 
-  removeListOfFilesAndUpdatedIPR(id: string,) {
+  removeListOfFilesAndUpdatedIPR(id: string) {
     delete this.listOfFiles[id]
     delete this.listOfUpdatedIPR[id]
   }
@@ -100,7 +100,6 @@ export class EditorContentService {
 
   resetOriginalMeta(meta: NSContent.IContentMeta, id: string) {
     this.originalContent[id] = { ...this.originalContent[id], ...JSON.parse(JSON.stringify(meta)) }
-    console.log('resetOriginalMeta ', this.originalContent[id])
     delete this.upDatedContent[id]
   }
 

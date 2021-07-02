@@ -62,9 +62,6 @@ export class CreateService {
 
   createV2(meta: { mimeType: string; contentType: string; locale: string, name: string, primaryCategory: string }): Observable<string> {
 
-
-
-
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {
@@ -76,7 +73,7 @@ export class CreateService {
           code: randomNumber,
           contentType: meta.contentType,
           createdBy: this.accessService.userId,
-          createdFor: [environment.channelId],
+          createdFor: [(this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId) ? this.configSvc.userProfile.rootOrgId : ''],
           creator: this.accessService.userName,
           description: '',
           framework: environment.framework,
@@ -86,12 +83,10 @@ export class CreateService {
           isExternal: meta.mimeType === 'text/x-url',
           primaryCategory: meta.primaryCategory,
           license: 'CC BY 4.0',
+          ownershipType: ['createdFor'],
         },
       },
     }
-
-    console.log('CREATE V2 Create service', requestBody)
-
     return this.apiService
       .post<NSApiRequest.ICreateMetaRequest>(
         `${AUTHORING_BASE}content/v3/create`,

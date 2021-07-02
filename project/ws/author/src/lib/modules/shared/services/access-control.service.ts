@@ -13,7 +13,9 @@ export class AccessControlService {
   constructor(
     private configService: ConfigurationsService,
     @Inject(APP_BASE_HREF) private baseHref: string,
-  ) { }
+  ) {
+    console.log('this.configService.userRoles == ', this.configService.userRoles)
+  }
 
   hasRole(role: string[]): boolean {
     let returnValue = false
@@ -82,6 +84,7 @@ export class AccessControlService {
   }
 
   getAction(status: string, operation?: number): string {
+    console.log('Access control GETACTION called')
     switch (status) {
       case 'Draft':
       case 'Live':
@@ -96,6 +99,58 @@ export class AccessControlService {
         return 'submitted'
     }
   }
+  // hasAccess(
+  //   meta: NSContent.IContentMeta,
+  //   forPreview = false,
+  //   parentMeta?: NSContent.IContentMeta,
+  // ): boolean {
+  //   if (this.hasRole(['editor', 'admin'])) {
+  //     return true
+  //   }
+  //   let returnValue = false
+  //   if (['Draft', 'Live'].indexOf(meta.status) > -1) {
+  //     if (meta.creatorContacts && meta.creatorContacts.length) {
+  //       meta.creatorContacts.forEach(v => {
+  //         if (v.id === this.userId) {
+  //           returnValue = true
+  //         }
+  //       })
+  //     }
+  //   }
+  //   if (meta.status === 'InReview' && this.hasRole(['reviewer'])) {
+  //     if (meta.trackContacts && meta.trackContacts.length) {
+  //       meta.trackContacts.forEach(v => {
+  //         if (v.id === this.userId) {
+  //           returnValue = true
+  //         }
+  //       })
+  //     }
+  //     if (!returnValue && parentMeta && parentMeta.creatorContacts && meta.creatorContacts) {
+  //       returnValue = parentMeta.creatorContacts.some(v =>
+  //         meta.creatorContacts.find(cv => cv.id === v.id),
+  //       )
+  //     }
+  //   }
+  //   if (['Reviewed'].indexOf(meta.status) > -1 && this.hasRole(['publisher'])) {
+  //     if (meta.publisherDetails && meta.publisherDetails.length) {
+  //       meta.publisherDetails.forEach(v => {
+  //         if (v.id === this.userId) {
+  //           returnValue = true
+  //         }
+  //       })
+  //     }
+  //     if (!returnValue && parentMeta && parentMeta.creatorContacts && meta.creatorContacts) {
+  //       returnValue = parentMeta.creatorContacts.some(v =>
+  //         meta.creatorContacts.find(cv => cv.id === v.id),
+  //       )
+  //     }
+  //   }
+  //   if (forPreview && meta.visibility === 'Public') {
+  //     returnValue = true
+  //   }
+  //   return returnValue
+  // }
+
   hasAccess(
     meta: NSContent.IContentMeta,
     forPreview = false,
@@ -106,39 +161,35 @@ export class AccessControlService {
     }
     let returnValue = false
     if (['Draft', 'Live'].indexOf(meta.status) > -1) {
-      if (meta.creatorContacts && meta.creatorContacts.length) {
-        meta.creatorContacts.forEach(v => {
-          if (v.id === this.userId) {
+      if (meta.creatorIDs && meta.creatorIDs.length) {
+        meta.creatorIDs.forEach(v => {
+          if (v === this.userId) {
             returnValue = true
           }
         })
       }
     }
-    if (meta.status === 'InReview' && this.hasRole(['reviewer'])) {
-      if (meta.trackContacts && meta.trackContacts.length) {
-        meta.trackContacts.forEach(v => {
-          if (v.id === this.userId) {
-            returnValue = true
-          }
-        })
+    if ((meta.status === 'InReview' || meta.status === 'Review') && this.hasRole(['reviewer'])) {
+      if (meta.reviewerIDs && meta.reviewerIDs.length > 0) {
+        if (meta.reviewerIDs.includes(this.userId)) {
+          returnValue = true
+        }
       }
-      if (!returnValue && parentMeta && parentMeta.creatorContacts && meta.creatorContacts) {
-        returnValue = parentMeta.creatorContacts.some(v =>
-          meta.creatorContacts.find(cv => cv.id === v.id),
+      if (!returnValue && parentMeta && parentMeta.creatorIDs && meta.creatorIDs) {
+        returnValue = parentMeta.creatorIDs.some(v =>
+          meta.creatorIDs.find(cv => cv === v),
         )
       }
     }
     if (['Reviewed'].indexOf(meta.status) > -1 && this.hasRole(['publisher'])) {
-      if (meta.publisherDetails && meta.publisherDetails.length) {
-        meta.publisherDetails.forEach(v => {
-          if (v.id === this.userId) {
-            returnValue = true
-          }
-        })
+      if (meta.publisherIDs && meta.publisherIDs.length > 0) {
+        if (meta.publisherIDs.includes(this.userId)) {
+          returnValue = true
+        }
       }
-      if (!returnValue && parentMeta && parentMeta.creatorContacts && meta.creatorContacts) {
-        returnValue = parentMeta.creatorContacts.some(v =>
-          meta.creatorContacts.find(cv => cv.id === v.id),
+      if (!returnValue && parentMeta && parentMeta.creatorIDs && meta.creatorIDs) {
+        returnValue = parentMeta.creatorIDs.some(v =>
+          meta.creatorIDs.find(cv => cv === v),
         )
       }
     }

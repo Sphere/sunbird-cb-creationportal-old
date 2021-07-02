@@ -435,7 +435,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   takeAction() {
-    console.log('Takeaction course')
     this.isSubmitPressed = true
     const needSave = Object.keys(this.contentService.upDatedContent || {}).length
     if (!needSave && !this.isChanged) {
@@ -448,7 +447,28 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       return
     }
     if (this.validationCheck) {
-      console.log('Takeaction course 111111')
+
+      this.editorService.readcontentV3(this.contentService.parentContent).subscribe((resData: any) => {
+        if (resData && Object.keys(resData).length > 0) {
+          resData.creatorContacts =
+            this.jsonVerify(resData.creatorContacts) ? JSON.parse(resData.creatorContacts) : []
+          resData.trackContacts =
+            this.jsonVerify(resData.reviewer) ? JSON.parse(resData.reviewer) : []
+          resData.creatorDetails =
+            this.jsonVerify(resData.creatorDetails) ? JSON.parse(resData.creatorDetails) : []
+          resData.publisherDetails = this.jsonVerify(resData.publisherDetails) ?
+            JSON.parse(resData.publisherDetails) : []
+          if (resData.children.length > 0) {
+            resData.children.forEach((element: any) => {
+              element.creatorContacts = this.jsonVerify(element.creatorContacts) ? JSON.parse(element.creatorContacts) : []
+              element.trackContacts = this.jsonVerify(element.reviewer) ? JSON.parse(element.reviewer) : []
+              element.creatorDetails = this.jsonVerify(element.creatorDetails) ? JSON.parse(element.creatorDetails) : []
+              element.publisherDetails = this.jsonVerify(element.publisherDetails) ? JSON.parse(element.publisherDetails) : []
+            })
+          }
+          this.contentService.setOriginalMeta(resData)
+        }
+      })
       const dialogRef = this.dialog.open(CommentsDialogComponent, {
         width: '750px',
         height: '450px',
@@ -561,9 +581,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //   }
   // }
 
-
-
-
   // async finalCall(commentsForm: FormGroup) {
   //   let flag = 0
   //   if (commentsForm) {
@@ -586,7 +603,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //       Object.keys(this.contentService.upDatedContent || {}).length ||
   //       Object.keys(this.storeService.changedHierarchy).length
 
-
   //     console.log('updatedMeta  ', updatedMeta)
   //     console.log('originalData  ', originalData)
   //     console.log('needSave ', needSave)
@@ -608,12 +624,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //       console.log('ELSE Final call')
   //       // this.changeStatusToDraft(body.comment)
   //     }
-
-
-
-
-
-
 
   //     // const saveCall = (needSave ? this.triggerSave() : of({} as any)).pipe(
   //     //   mergeMap(() =>
@@ -641,15 +651,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //     //   ),
   //     // )
 
-
-
-
   //   }
   // }
 
-
   async finalCall(commentsForm: FormGroup) {
-    console.log('Final Call')
     let flag = 0
     const resourceListToReview: any = []
     const moduleListToReview: any = []
@@ -669,6 +674,15 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       const needSave =
         Object.keys(this.contentService.upDatedContent || {}).length ||
         Object.keys(this.storeService.changedHierarchy).length
+
+      // console.log('body ', body)
+      // console.log('updatedMeta ', updatedMeta)
+      // console.log('originalData ', originalData)
+
+      // console.log('this.contentService.upDatedContent ', this.contentService.upDatedContent)
+      // console.log('this.storeService.changedHierarchy ', this.storeService.changedHierarchy)
+      // console.log('needSave ', needSave)
+
       if (body.operation) {
         if (originalData && originalData.children && updatedMeta.children.length > 0) {
           for (const element of originalData.children) {
@@ -699,6 +713,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               resourceListToReview.push(tempData)
             }
           }
+
+          // console.log('resourceListToReview ', resourceListToReview)
+          // console.log('moduleListToReview ', moduleListToReview)
+
           if (resourceListToReview.length > 0) {
             for await (const element of resourceListToReview) {
               if ((element.status === 'Live' || element.status === 'Review') && updatedMeta.status === 'Draft') {
@@ -721,16 +739,16 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                   },
                 },
               }
-              if (updatedMeta.status !== 'Review') {
+              if (updatedMeta.status === 'Draft') {
                 this.editorService.updateContentV4(tempRequset).subscribe(() => {
-                  this.finalSaveAndRedirect(needSave, updatedMeta, body)
+                  this.finalSaveAndRedirect(needSave, updatedMeta)
                   // this.sendModuleToReviewOrPublish(moduleListToReview, needSave, updatedMeta, body)
                 })
               } else {
-                this.finalSaveAndRedirect(needSave, updatedMeta, body)
+                this.finalSaveAndRedirect(needSave, updatedMeta)
               }
             } else if (resourceListToReview.length === flag) {
-              this.finalSaveAndRedirect(needSave, updatedMeta, body)
+              this.finalSaveAndRedirect(needSave, updatedMeta)
             }
           }
         }
@@ -793,22 +811,21 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     })
   }
 
-  sendModuleToReviewOrPublish(moduleList: any, needSave: any, updatedMeta: any, body: any) {
+  sendModuleToReviewOrPublish(moduleList: any, needSave: any, updatedMeta: any) {
     let flag = 0
     moduleList.forEach(async (element: any) => {
       await this.editorService.sendToReview(element.identifier, element.status, element.parentStatus).subscribe(() => {
         flag += 1
         if (moduleList.length === flag) {
-          this.finalSaveAndRedirect(needSave, updatedMeta, body)
+          this.finalSaveAndRedirect(needSave, updatedMeta)
         }
       })
     })
   }
 
-  finalSaveAndRedirect(needSave: any, updatedMeta: any, body: any) {
-
-    console.log('finalSaveAndRedirect -- ', needSave, 'updatedMeta ', updatedMeta, 'body ', body)
-
+  finalSaveAndRedirect(needSave: any, updatedMeta: any) {
+    // console.log('finalSaveAndRedirect Need save ', needSave, 'updatedMeta ', updatedMeta)
+    // needSave = 0
     const saveCall = (needSave ? this.triggerSave() : of({} as any)).pipe(
       mergeMap(() =>
         this.editorService
@@ -889,8 +906,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         })
       },
     )
-
-
 
   }
 
@@ -993,12 +1008,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //   )
   // }
 
-
-
-
-
-
-
   // triggerSave() {
   //   const nodesModified: any = {}
   //   let isRootPresent = false
@@ -1027,7 +1036,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //   //   nodesModified,
   //   //   hierarchy: this.storeService.changedHierarchy,
   //   // }
-
 
   //   const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
   //     request: {
@@ -1110,12 +1118,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //   // )
   // }
 
-
-
-
-
-
-
   triggerSave1() {
     const nodesModified: any = {}
     let isRootPresent = false
@@ -1176,7 +1178,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       }
 
-
     }
     // else {  // this.storeService.changedHierarchy is empty == Create update
 
@@ -1221,7 +1222,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     //   )
     // }
 
-
     // const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
     //   request: {
     //     data: {
@@ -1231,8 +1231,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     //   },
     // }
     // console.log('parentNodeId  ', this.parentNodeId, 'currentParentId  ', this.currentParentId)
-    let childArr: any[] = []
-    let hierarchyOb = this.storeService.changedHierarchy
+    const childArr: any[] = []
+    const hierarchyOb = this.storeService.changedHierarchy
     this.storeService.changedHierarchy[this.currentParentId]['children'].forEach((e: any) => {
       childArr.push(e.identifier)
     })
@@ -1258,7 +1258,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         this.contentService.upDatedContent = {}
       }),
     )
-
 
     // const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
     //   request: {
@@ -1299,10 +1298,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     // )
 
   }
-
-
-
-
 
   triggerSave2() {
 
@@ -1387,7 +1382,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       }
     }
 
-
     // console.log('updateContentV4  COURSE COLL')
     return this.editorService.updateContentV4(requestBodyV2).pipe(
       tap(() => {
@@ -1399,10 +1393,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       }),
     )
 
-
-
   }
-
 
   triggerSave() {
 
@@ -1442,61 +1433,120 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
 
     // console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2, this.storeService.changedHierarchy)
-    if (Object.keys(this.storeService.changedHierarchy).length === 0) {
-      // if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.contentService.currentContent]) {
-      if (Object.keys(this.contentService.upDatedContent)[0] && nodesModified[this.currentCourseId]) {
-        const requestBody: NSApiRequest.IContentUpdateV2 = {
-          request: {
-            // content: nodesModified[Object.keys(this.contentService.upDatedContent)[0]].metadata,
-            content: nodesModified[this.currentCourseId].metadata,
-            // content: nodesModified[this.contentService.currentContent].metadata,
-          },
-        }
-        requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
-        if (requestBody.request.content.duration) {
-          // tslint:disable-next-line:max-line-length
-          requestBody.request.content.duration =
-            (isNumber(requestBody.request.content.duration) ?
-              `${requestBody.request.content.duration}` :
-              requestBody.request.content.duration)
-        }
-        if (requestBody.request.content.category) {
-          delete requestBody.request.content.category
-        }
 
-        console.log('UPDATE AUTH TABLE Parent ---- ', requestBody)
-        return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
-          tap(() => {
-            this.storeService.getHierarchyTreeStructure()
-            this.storeService.changedHierarchy = {}
-            Object.keys(this.contentService.upDatedContent).forEach(id => {
-              console.log('this.contentService.upDatedContent === ', this.contentService.upDatedContent[id])
-              this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
-              this.editorService.readContentV2(id).subscribe(resData => {
-                this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
-              })
-            })
-            this.contentService.upDatedContent = {}
-          }),
-        )
-
-        //  return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
-        //     tap(() => {
-        //       this.storeService.changedHierarchy = {}
-        //       // Object.keys(this.contentService.upDatedContent).forEach(id => {
-        //         console.log('this.contentService.upDatedContent === ', this.contentService.upDatedContent[this.currentCourseId])
-        //         this.contentService.resetOriginalMeta(this.contentService.upDatedContent[this.currentCourseId], this.currentCourseId)
-        //         this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
-        //           this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
-        //         })
-        //       // })
-        //       // this.contentService.upDatedContent[this.currentCourseId] = {}
-        //     }),
-        //   )
-
+    // if (Object.keys(this.storeService.changedHierarchy).length === 0) {
+    // if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.contentService.currentContent]) {
+    if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.currentCourseId]) {
+      const requestBody: NSApiRequest.IContentUpdateV2 = {
+        request: {
+          // content: nodesModified[Object.keys(this.contentService.upDatedContent)[0]].metadata,
+          content: nodesModified[this.currentCourseId].metadata,
+          // content: nodesModified[this.contentService.currentContent].metadata,
+        },
       }
-    }
 
+      requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
+      if (requestBody.request.content.duration === 0 || requestBody.request.content.duration) {
+        // tslint:disable-next-line:max-line-length
+        requestBody.request.content.duration =
+          // (isNumber(requestBody.request.content.duration) ?
+          //   `${requestBody.request.content.duration}` :
+          //   requestBody.request.content.duration)
+          isNumber(requestBody.request.content.duration) ?
+            requestBody.request.content.duration.toString() : requestBody.request.content.duration
+      }
+
+      if (requestBody.request.content.category) {
+        delete requestBody.request.content.category
+      }
+
+      if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
+        requestBody.request.content.reviewer = JSON.stringify(requestBody.request.content.trackContacts)
+        requestBody.request.content.reviewerIDs = []
+        const tempTrackRecords: string[] = []
+        requestBody.request.content.trackContacts.forEach(element => {
+          tempTrackRecords.push(element.id)
+        })
+        requestBody.request.content.reviewerIDs = tempTrackRecords
+        delete requestBody.request.content.trackContacts
+      }
+
+      // if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
+      //   requestBody.request.content.reviewer = JSON.stringify(requestBody.request.content.trackContacts)
+      //   requestBody.request.content.reviewerIDs = []
+      //   const tempTrackRecords: string[] = []
+      //   requestBody.request.content.trackContacts.forEach(element => {
+      //     tempTrackRecords.push(element.id)
+      //   })
+      //   requestBody.request.content.reviewerIDs = tempTrackRecords
+      //   delete requestBody.request.content.trackContacts
+      // }
+      // if (requestBody.request.content.publisherDetails && requestBody.request.content.publisherDetails.length > 0) {
+      //   requestBody.request.content.publisherIDs = []
+      //   const tempPublisherRecords: string[] = []
+      //   requestBody.request.content.publisherDetails.forEach(element => {
+      //     tempPublisherRecords.push(element.id)
+      //   })
+      //   requestBody.request.content.publisherIDs = tempPublisherRecords
+      // }
+      // if (requestBody.request.content.creatorContacts && requestBody.request.content.creatorContacts.length > 0) {
+      //   requestBody.request.content.creatorIDs = []
+      //   const tempCreatorsRecords: string[] = []
+      //   requestBody.request.content.creatorContacts.forEach(element => {
+      //     tempCreatorsRecords.push(element.id)
+      //   })
+      //   requestBody.request.content.creatorIDs = tempCreatorsRecords
+      // }
+      // if (requestBody.request.content.catalogPaths && requestBody.request.content.catalogPaths.length > 0) {
+      //   requestBody.request.content.topics = []
+      //   const tempTopicData: string[] = []
+      //   requestBody.request.content.catalogPaths.forEach((element: any) => {
+      //     tempTopicData.push(element.identifier)
+      //   })
+      //   requestBody.request.content.topics = tempTopicData
+      // }
+
+      return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
+        tap(() => {
+          // this.storeService.getHierarchyTreeStructure()
+          this.storeService.changedHierarchy = {}
+          Object.keys(this.contentService.upDatedContent).forEach(id => {
+            this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
+            this.editorService.readContentV2(id).subscribe(resData => {
+              this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
+            })
+          })
+          this.contentService.upDatedContent = {}
+        }),
+        tap(async () => {
+          const tempRequset: NSApiRequest.IContentUpdateV3 = {
+            request: {
+              data: {
+                nodesModified: {},
+                hierarchy: this.storeService.getTreeHierarchy(),
+              },
+            },
+          }
+          await this.editorService.updateContentV4(tempRequset).subscribe(() => { })
+        })
+      )
+
+      //  return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
+      //     tap(() => {
+      //       this.storeService.changedHierarchy = {}
+      //       // Object.keys(this.contentService.upDatedContent).forEach(id => {
+      //         console.log('this.contentService.upDatedContent === ', this.contentService.upDatedContent[this.currentCourseId])
+      //         this.contentService.resetOriginalMeta(this.contentService.upDatedContent[this.currentCourseId], this.currentCourseId)
+      //         this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
+      //           this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
+      //         })
+      //       // })
+      //       // this.contentService.upDatedContent[this.currentCourseId] = {}
+      //     }),
+      //   )
+
+    }
+    // }
 
     // console.log('updateContentV4  COURSE COLL')
     return this.editorService.updateContentV4(requestBodyV2).pipe(
@@ -1509,8 +1559,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       }),
     )
 
-
-
   }
   getMessage(type: 'success' | 'failure') {
     if (type === 'success') {
@@ -1521,6 +1569,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         case 'InReview':
           return Notify.REVIEW_SUCCESS
         case 'Reviewed':
+        case 'Review':
           return Notify.PUBLISH_SUCCESS
         default:
           return ''
@@ -1533,6 +1582,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       case 'InReview':
         return Notify.REVIEW_FAIL
       case 'Reviewed':
+      case 'Review':
         return Notify.PUBLISH_FAIL
       default:
         return ''
@@ -1552,9 +1602,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         }
 
         const content = this.contentService.getUpdatedMeta(event.identifier)
-
-        console.log('COntent === ', content)
-
         // if (['application/pdf', 'application/x-mpegURL'].includes(content.mimeType)) {
         //   this.viewMode = 'upload'
         // } else if (['video/x-youtube', 'application/html'].includes(content.mimeType) && content.fileType === 'link') {
@@ -1566,7 +1613,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         // } else if (content.mimeType === 'application/web-module') {
         //   this.viewMode = 'webmodule'
         // }
-
 
         if (['application/pdf', 'application/x-mpegURL'].includes(content.mimeType)) {
           this.viewMode = 'upload'
@@ -1582,7 +1628,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         } else {
           this.viewMode = 'meta'
         }
-
 
         // this.save()
         // localStorage.setItem('afterClick', nodeClicked)
@@ -1779,4 +1824,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         ))
     )
   }
+
+  jsonVerify(s: string) { try { JSON.parse(s); return true } catch (e) { return false } }
 }

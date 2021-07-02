@@ -27,12 +27,7 @@ export class ViewerResolve
     private platform: Platform,
   ) { }
 
-
-
   resolve(route: ActivatedRouteSnapshot): Observable<IResolveResponse<NsContent.IContent>> | null {
-
-    console.log('viwer resolver ', route.data.resourceType)
-
     const resourceType = route.data.resourceType
     this.viewerDataSvc.reset(route.paramMap.get('resourceId'))
     if (!this.viewerDataSvc.resourceId) {
@@ -46,7 +41,8 @@ export class ViewerResolve
     //   return null
     // }
 
-    const forPreview = window.location.href.includes('/author/') || route.queryParamMap.get('preview') === 'true'
+    // const forPreview = window.location.href.includes('/author/') || route.queryParamMap.get('preview') === 'true'
+    const forPreview = true
     return (forPreview
       ? this.contentSvc.fetchAuthoringContent(this.viewerDataSvc.resourceId)
       : this.contentSvc.fetchContent(
@@ -57,9 +53,6 @@ export class ViewerResolve
     ).pipe(map((data: any) => {
       return data && data.result && (data.result.content || {})
     })).pipe(tap(content => {
-
-      console.log('content tap ', content)
-
       if (content.status === 'Deleted' || content.status === 'Expired') {
         this.router.navigate([
           `${forPreview ? '/author' : '/app'}/toc/${content.identifier}/overview`,
@@ -108,7 +101,6 @@ export class ViewerResolve
       }),
     )
   }
-
 
   // resolve(route: ActivatedRouteSnapshot): Observable<IResolveResponse<NsContent.IContent>> | null {
   //   console.log('viwer resolver ', route.data.resourceType)

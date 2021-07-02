@@ -445,10 +445,10 @@ export class ChannelComponent implements OnInit, OnDestroy {
         if (v.artifactURL) {
           meta.artifactUrl = v.artifactURL
           meta.lastUpdatedOn = `${new Date()
-              .toISOString()
-              .replace(/-/g, '')
-              .replace(/:/g, '')
-              .split('.')[0]
+            .toISOString()
+            .replace(/-/g, '')
+            .replace(/:/g, '')
+            .split('.')[0]
             }+0000`
         }
         return this.triggerSave(meta, id)
@@ -481,6 +481,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
         case 'InReview':
           return Notify.REVIEW_SUCCESS
         case 'Reviewed':
+        case 'Review':
           return Notify.PUBLISH_SUCCESS
         default:
           return ''
@@ -493,6 +494,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
       case 'InReview':
         return Notify.REVIEW_FAIL
       case 'Reviewed':
+      case 'Review':
         return Notify.PUBLISH_FAIL
       default:
         return ''
@@ -620,6 +622,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
       case 'InReview':
         return 'review'
       case 'Reviewed':
+      case 'Review':
         return 'publish'
       default:
         return 'sendForReview'

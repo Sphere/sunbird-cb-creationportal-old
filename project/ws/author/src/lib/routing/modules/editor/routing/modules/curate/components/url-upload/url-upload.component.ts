@@ -170,7 +170,6 @@ export class UrlUploadComponent implements OnInit {
   }
 
   check() {
-    console.log('TTTTTTTTT   url upload == ')
     this.urlUploadForm.controls.isIframeSupported.setValue('No')
     // const disableIframe = true
     const artifactUrl = this.urlUploadForm.controls.artifactUrl.value
@@ -181,7 +180,6 @@ export class UrlUploadComponent implements OnInit {
       this.configSvc.instanceConfig.authoring.urlPatternMatching
     ) {
       this.configSvc.instanceConfig.authoring.urlPatternMatching.map(v => {
-        console.log('V == ', v)
         if (artifactUrl.match(v.pattern)) {
           if (v.allowIframe && v.source === 'youtube') {
             this.urlUploadForm.controls.isIframeSupported.setValue('Yes')
@@ -209,7 +207,6 @@ export class UrlUploadComponent implements OnInit {
         } else {
           this.urlUploadForm.controls.isIframeSupported.setValue('No')
         }
-        console.log('this.urlUploadForm ', this.urlUploadForm.value)
       })
     }
     this.canUpdate = true

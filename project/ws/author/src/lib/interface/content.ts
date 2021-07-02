@@ -376,6 +376,12 @@ export namespace NSContent {
     purpose: string
     reviewer: string
     lastPublishedBy: string
+    reviewerIDs: string[]
+    publisherIDs: string[]
+    creatorIDs: string[]
+    draftImage: string
+    topics: string[]
+    prevStatus: string
   }
 
   export interface IOrganisations {
@@ -398,7 +404,6 @@ export namespace NSContent {
     isApproved: boolean
     orgLeftDate: string
   }
-
 
   export interface IRootOrg {
     dateTime: string

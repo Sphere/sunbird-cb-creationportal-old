@@ -69,8 +69,6 @@ export class PlayerYoutubeComponent extends WidgetBaseComponent
   }
 
   ngOnInit() {
-
-    console.log("Youtube video")
     this.screenSubscription = this.valueSvc.isXSmall$.subscribe(isXsSmall => {
       if (isXsSmall) {
         this.screenHeight = '100%'

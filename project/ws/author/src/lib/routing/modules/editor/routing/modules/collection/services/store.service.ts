@@ -44,7 +44,6 @@ export class CollectionStoreService {
   currentParentNode!: number
   currentSelectedNode!: number
 
-
   hierarchyTree: any = {}
 
   constructor(
@@ -87,6 +86,74 @@ export class CollectionStoreService {
     return allow
   }
 
+  // dragAndDrop(
+  //   dragNode: IContentTreeNode | IContentNode,
+  //   dropNode: IContentTreeNode,
+  //   adjacentId?: number,
+  //   dropLocation: 'above' | 'below' = 'below',
+  //   emitChange = true,
+  // ) {
+  //   const oldParentNode = dragNode.parentId ? this.flatNodeMap.get(dragNode.parentId) : undefined
+  //   const newParentNode = this.flatNodeMap.get(dropNode.id) as IContentNode
+  //   const oldParentChildList = oldParentNode ? (oldParentNode.children as IContentNode[]) : []
+  //   const newParentChildList = newParentNode.children as IContentNode[]
+  //   oldParentChildList.splice(
+  //     oldParentChildList.findIndex(v => v.id === dragNode.id),
+  //     1,
+  //   )
+  //   const childNode = this.flatNodeMap.get(dragNode.id) as IContentNode
+  //   childNode.parentId = dropNode.id
+  //   if (adjacentId) {
+  //     const dropPosition =
+  //       (dropNode.children || []).indexOf(adjacentId) + (dropLocation === 'above' ? -1 : 1)
+  //     const children = newParentNode.children as IContentNode[]
+  //     children.splice(dropPosition, 0, childNode)
+  //   } else {
+  //     if (newParentChildList) {
+  //       newParentChildList.push(childNode)
+  //     } else {
+  //       newParentNode.children = [childNode]
+  //     }
+  //   }
+  //   if (oldParentNode) {
+  //     this.changedHierarchy[oldParentNode.identifier] = {
+  //       root: this.parentNode.includes(oldParentNode.identifier),
+  //       contentType: oldParentNode.contentType,
+  //       children: oldParentChildList.map(v => {
+  //         const child = v.identifier
+  //         return child
+  //       }),
+  //       // children: oldParentChildList.map(v => {
+  //       //   const child = {
+  //       //     identifier: v.identifier,
+  //       //     reasonAdded: 'Added from Authoring Tool',
+  //       //     childrenClassifiers: [],
+  //       //   }
+  //       //   return child
+  //       // }),
+  //     }
+  //   }
+  //   this.changedHierarchy[newParentNode.identifier] = {
+  //     root: this.parentNode.includes(newParentNode.identifier),
+  //     contentType: newParentNode.contentType,
+  //     children: newParentChildList.map(v => {
+  //       const child = v.identifier
+  //       return child
+  //     }),
+  //     // children: newParentChildList.map(v => {
+  //     //   const child = {
+  //     //     identifier: v.identifier,
+  //     //     reasonAdded: 'Added from Authoring Tool',
+  //     //     childrenClassifiers: [],
+  //     //   }
+  //     //   return child
+  //     // }),
+  //   }
+  //   if (emitChange) {
+  //     this.treeStructureChange.next(this.treeStructureChange.value)
+  //   }
+  // }
+
   dragAndDrop(
     dragNode: IContentTreeNode | IContentNode,
     dropNode: IContentTreeNode,
@@ -119,6 +186,7 @@ export class CollectionStoreService {
     if (oldParentNode) {
       this.changedHierarchy[oldParentNode.identifier] = {
         root: this.parentNode.includes(oldParentNode.identifier),
+        // contentType: "Course",
         children: oldParentChildList.map(v => {
           const child = v.identifier
           return child
@@ -135,6 +203,7 @@ export class CollectionStoreService {
     }
     this.changedHierarchy[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),
+      // contentType: "Course",
       children: newParentChildList.map(v => {
         const child = v.identifier
         return child
@@ -148,6 +217,40 @@ export class CollectionStoreService {
       //   return child
       // }),
     }
+
+    if (newParentChildList.length > 0) {
+      newParentChildList.forEach(element => {
+        if (element.children && element.children.length > 0 && !(Object.keys(this.changedHierarchy).includes(element.identifier))) {
+          this.changedHierarchy[element.identifier] = {
+            root: this.parentNode.includes(element.identifier),
+            // contentType: element.contentType,
+            children: element.children.map(v => {
+              const child = v.identifier
+              return child
+            }),
+          }
+        }
+      })
+    }
+    if (this.parentNode.length > 0) {
+      this.parentNode.forEach(element => {
+        if (!Object.keys(this.changedHierarchy).includes(element)) {
+          const tempData: any = this.contentService.getOriginalMeta(element)
+          const childrenArray: any = []
+          if (tempData.children.length > 0) {
+            tempData.children.forEach((childData: any) => {
+              childrenArray.push(childData.identifier)
+            })
+          }
+          this.changedHierarchy[element] = {
+            root: this.parentNode.includes(element),
+            contentType: tempData.contentType,
+            children: childrenArray,
+          }
+        }
+      })
+    }
+
     if (emitChange) {
       this.treeStructureChange.next(this.treeStructureChange.value)
     }
@@ -195,34 +298,28 @@ export class CollectionStoreService {
     fileType?: string
   ): Promise<boolean> {
     try {
+      let cType = type
       // For Link
       if (type === 'web') {
-        type = "link"
+        cType = 'link'
       }
 
-      console.log('Type === ', type)
-      console.log('topicObj ', topicObj)
-
-      let newChildUpdateCall = true
-      let topicName = 'Untitled Content', topicDescription = ''
+      const newChildUpdateCall = true
+      let topicName = 'Untitled Content'
+      let topicDescription = ''
       if (Object.keys(topicObj).length !== 0) {
-        console.log('exist')
         topicName = topicObj.topicName
         topicDescription = topicObj.topicDescription
-      } else {
-        console.log('Not exist')
       }
 
-
-      const meta = this.authInitService.creationEntity.get(type) as ICreateEntity
-      console.log('store service ', meta, type)
+      const meta = this.authInitService.creationEntity.get(cType) as ICreateEntity
       const parentData = this.contentService.parentUpdatedMeta()
 
-
-      //Temporary Static Value
+      // Temporary Static Value
       let mimeTypeData = meta.mimeType
-      if (type.toLowerCase() === 'assessment') {
-        mimeTypeData = "application/json"
+      if (cType.toLowerCase() === 'assessment') {
+        mimeTypeData = 'application/json'
+        // mimeTypeData = 'application/vnd.ekstep.ecml-archive'
       }
 
       const requestBody = {
@@ -252,10 +349,8 @@ export class CollectionStoreService {
         ...(meta.additionalMeta || {}),
         // primaryCategory: meta.primaryCategory
         primaryCategory: meta.primaryCategory || 'Learning Resource',
-        // ownershipType: ["createdFor"]
+        ownershipType: ['createdFor'],
       }
-
-      console.log('requestBody ===  ', requestBody)
 
       // requestBody.posterImage = parentData.posterImage
       // requestBody.sourceName = parentData.sourceName
@@ -263,16 +358,13 @@ export class CollectionStoreService {
       // requestBody.body = parentData.body
       // requestBody.categoryType = parentData.categoryType
 
-
       // const content = await this.editorService.createAndReadContent(requestBody).toPromise()
 
       const content = await this.editorService.createAndReadContentV2(requestBody).toPromise()
-      console.log('COntent ===  ', content)
       // if (content) {
       //  // content.thumbnail = parentData.thumbnail
       //  // content.appIcon = parentData.appIcon
       // }
-
 
       this.contentService.setOriginalMeta(content)
       const contentDataMap = new Map<string, NSContent.IContentMeta>()
@@ -286,7 +378,7 @@ export class CollectionStoreService {
       this.dragAndDrop(treeStructure, dropNode, adjacentId, dropLocation)
 
       if (newChildUpdateCall) {
-        this.getHierarchyTreeStructure()
+        // this.getHierarchyTreeStructure()
       }
 
       return true
@@ -296,10 +388,8 @@ export class CollectionStoreService {
     }
   }
 
-
-
   getHierarchyTreeStructure() {
-    let hierarchyObj: any = {}
+    const hierarchyObj: any = {}
     this.treeStructureChange.subscribe((d: any) => {
       if (!d.parentId) {
         hierarchyObj[d.identifier] = {}
@@ -339,14 +429,9 @@ export class CollectionStoreService {
     })
   }
 
-
-
   updateNewSubChild() {
-
-    console.log('STORE .....  .changedHierarchy  ', this.changedHierarchy)
-    console.log('currentContent ', this.contentService.currentContent)
     // let childArr: any[] = []
-    let hierarchyOb = this.changedHierarchy
+    const hierarchyOb = this.changedHierarchy
     if (Object.keys(hierarchyOb).length !== 0) {
       // this.changedHierarchy[this.contentService.currentContent]['children'].forEach((e: any) => {
       //   childArr.push(e.identifier)
@@ -364,7 +449,6 @@ export class CollectionStoreService {
       },
     }
 
-
     // console.log('updateContentV4   ', meta)
     // this.apiService.patch<null>(
     //   `/apis/proxies/v8/action/content/v3/hierarchy/update`,
@@ -372,16 +456,13 @@ export class CollectionStoreService {
     // ).subscribe((d) => {
     //   console.log('DDDDDD     ', d)
     // })
-    console.log('updateContentV4  COURSE COLL', requestBodyV2)
-    this.editorService.updateContentV4(requestBodyV2).subscribe((d) => {
-      console.log('DDDDDD     ', d)
+    this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
       this.changedHierarchy = {}
       Object.keys(this.contentService.upDatedContent).forEach(async id => {
         this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
       })
       this.contentService.upDatedContent = {}
     })
-
 
     // this.editorService.updateContentV4(requestBodyV2).pipe(
     //   tap(() => {
@@ -394,7 +475,6 @@ export class CollectionStoreService {
     //   }),
     // )
   }
-
 
   deleteNode(id: number) {
     const deleteIds = this.resolver.getFlatHierarchy(id, this.flatNodeMap, false)
@@ -429,13 +509,46 @@ export class CollectionStoreService {
       this.changedHierarchy[parentNode.identifier] = {
         root: this.parentNode.includes(parentNode.identifier),
         children: children.map(v => {
-          const child = {
-            identifier: v.identifier,
-            reasonAdded: 'Added from Authoring Tool',
-            childrenClassifiers: [],
-          }
+          const child = v.identifier
+          // const child = {
+          //   identifier: v.identifier,
+          //   reasonAdded: 'Added from Authoring Tool',
+          //   childrenClassifiers: [],
+          // }
           return child
         }),
+      }
+      if (children.length > 0) {
+        children.forEach(element => {
+          if (element.children && element.children.length > 0 && !(Object.keys(this.changedHierarchy).includes(element.identifier))) {
+            this.changedHierarchy[element.identifier] = {
+              root: this.parentNode.includes(element.identifier),
+              // contentType: element.contentType,
+              children: element.children.map(v => {
+                const child = v.identifier
+                return child
+              }),
+            }
+          }
+        })
+      }
+      if (this.parentNode.length > 0) {
+        this.parentNode.forEach(element => {
+          if (!Object.keys(this.changedHierarchy).includes(element)) {
+            const tempData: any = this.contentService.getOriginalMeta(element)
+            const childrenArray: any = []
+            if (tempData.children.length > 0) {
+              tempData.children.forEach((childData: any) => {
+                childrenArray.push(childData.identifier)
+              })
+            }
+            this.changedHierarchy[element] = {
+              root: this.parentNode.includes(element),
+              contentType: tempData.contentType,
+              children: childrenArray,
+            }
+          }
+        })
       }
     }
     this.treeStructureChange.next(this.treeStructureChange.value)
@@ -658,7 +771,7 @@ export class CollectionStoreService {
         if (element.children && element.children.length > 0 && !(Object.keys(this.hierarchyTree).includes(element.identifier))) {
           this.hierarchyTree[element.identifier] = {
             root: this.parentNode.includes(element.identifier),
-            contentType: element.contentType,
+            // contentType: element.contentType,
             children: element.children.map(v => {
               const child = v.identifier
               return child

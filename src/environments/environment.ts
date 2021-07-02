@@ -9,10 +9,8 @@ export const environment: IEnvironment = {
   framework: 'test_fw_1',
   channelId: '0131397178949058560',
   karmYogi: 'https://igot-sunbird.idc.tarento.com/',
-
   azureHost: 'https://igot.blob.core.windows.net',
   azureBucket: 'content',
-
   azureOldHost: 'https://staas-bbs1.cloud.gov.in',
   azureOldBuket: 'igot',
 }

@@ -43,8 +43,6 @@ export class EditorService {
   ) { }
 
   create(meta: NSApiRequest.ICreateMetaRequestGeneral): Observable<string> {
-
-    console.log('CREATE edit service 111111')
     const requestBody: NSApiRequest.ICreateMetaRequest = {
       content: {
         locale: 'en',
@@ -83,11 +81,7 @@ export class EditorService {
       )
   }
 
-
   createV2(meta: NSApiRequest.ICreateMetaRequestGeneralV2): Observable<string> {
-
-    console.log('CREATE edit service 222222')
-
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {
@@ -99,7 +93,7 @@ export class EditorService {
           code: randomNumber,
           contentType: meta.contentType,
           createdBy: this.accessService.userId,
-          createdFor: [environment.channelId],
+          createdFor: [(this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId) ? this.configSvc.userProfile.rootOrgId : ''],
           creator: this.accessService.userName,
           description: '',
           framework: environment.framework,
@@ -109,10 +103,10 @@ export class EditorService {
           isExternal: meta.mimeType === 'application/html',
           primaryCategory: meta.primaryCategory,
           license: 'CC BY 4.0',
+          ownershipType: ['createdFor'],
         },
       },
     }
-    console.log('CREATE V2 EDITOR SERVICE ', requestBody)
     return this.apiService
       .post<NSApiRequest.ICreateMetaRequestV2>(
         // tslint:disable-next-line:max-line-length
@@ -157,10 +151,8 @@ export class EditorService {
   createAndReadContentV2(
     meta: NSApiRequest.ICreateMetaRequestGeneralV2,
   ): Observable<NSContent.IContentMeta> {
-    console.log('EDITOR SERVICE META ', meta)
     return this.createV2(meta).pipe(mergeMap(data => this.readContentV2(data)))
   }
-
 
   readMultipleContent(ids: string[]): Observable<NSContent.IContentMeta[]> {
     return this.apiService.get<NSContent.IContentMeta>(
@@ -182,7 +174,6 @@ export class EditorService {
   }
 
   updateContentV2(meta: NSApiRequest.IContentUpdate): Observable<null> {
-    console.log('UPDATE CONTENT V2')
     return this.apiService.post<null>(
       `${CONTENT_SAVE_V2}${this.accessService.orgRootOrgAsQuery}`,
       meta,
@@ -275,7 +266,6 @@ export class EditorService {
     status: string,
   ): Observable<null> {
 
-    alert('4444444')
     const requestBody: NSApiRequest.IForwardBackwardAction = {
       actor: this.accessService.userId,
       ...meta,
@@ -290,9 +280,7 @@ export class EditorService {
   }
 
   sendToReview(id: string, status: string, parentStatus: string) {
-    console.log('status ', status, 'parentStatus ', parentStatus)
     if (status === 'Review' && parentStatus === 'Review') {
-      console.log('REVIEW')
       // tslint:disable-next-line: no-shadowed-variable
       const requestbody = {
         request: {
@@ -305,13 +293,11 @@ export class EditorService {
       return this.apiService.post<any>(PUBLISH_CONTENT + id, requestbody)
       // tslint:disable-next-line: no-else-after-return
     } else if (parentStatus === 'Draft') {
-      console.log('DRAFT')
       const requestbody = {}
       return this.apiService.post<any>(SEND_TO_REVIEW + id, requestbody)
     }
     return EMPTY
   }
-
 
   readJSON(artifactUrl: string): Observable<any> {
     return this.apiService.get(`${AUTHORING_CONTENT_BASE}${encodeURIComponent(artifactUrl)}`)

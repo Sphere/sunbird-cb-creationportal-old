@@ -181,8 +181,8 @@
                     </span>
                   </mat-select-trigger>
                   <mat-option *ngFor="let org of ordinals.org" [value]="org">{{
-                        org
-                      }}</mat-option>
+                    org
+                    }}</mat-option>
                 </mat-select>
                 <mat-error *ngIf="showError('org')" i18n>Organisation is mandatory </mat-error>
               </mat-form-field>
@@ -385,8 +385,9 @@
               <mat-form-field appearance="outline" class="margin-top-xs" class="margin-top-xs"
                 [ngClass]="{ 'mat-form-field-invalid': showError('trackContacts') }">
                 <mat-chip-list #reviewerChipList i18n-aria-label aria-label="Reviewer selection">
-                  <mat-chip *ngFor="let author of contentForm.controls.trackContacts.value" [selectable]="selectable"
-                    [removable]="removable" (removed)="removeEmployee(author, 'trackContacts')">
+                  <mat-chip *ngFor="let author of parseJsonData(contentForm.controls.trackContacts.value)"
+                    [selectable]="selectable" [removable]="removable"
+                    (removed)="removeEmployee(author, 'trackContacts')">
                     {{ author.name }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                   </mat-chip>
@@ -501,23 +502,23 @@
       </div>
 
       <div class="margin-top-xs margin-left-xl margin-right-l flex-1" *ngIf="checkCondition('learningMode', 'show')"
-      [ngClass]="{ disable: checkCondition('learningMode', 'disabled') }">
-      <label [ngClass]="{ required: checkCondition('learningMode', 'required') }">
-        <b i18n>Mode</b>
-      </label>
-      <div class="margin-top-l">
-        <mat-form-field appearance="outline" class="margin-top-s"
-          [ngClass]="{ 'mat-form-field-invalid': showError('learningMode') }">
-          <mat-select formControlName="learningMode" i18n-placeholder placeholder="--Select--">
-            <mat-option *ngIf="!checkCondition('learningMode', 'required')" i18n [value]="null">None
-            </mat-option>
-            <mat-option *ngFor="let learningMode of ordinals.learningMode" [value]="learningMode">
-              {{ learningMode }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="showError('learningMode')" i18n>Mode is mandatory </mat-error>
-        </mat-form-field>
+        [ngClass]="{ disable: checkCondition('learningMode', 'disabled') }">
+        <label [ngClass]="{ required: checkCondition('learningMode', 'required') }">
+          <b i18n>Mode</b>
+        </label>
+        <div class="margin-top-l">
+          <mat-form-field appearance="outline" class="margin-top-s"
+            [ngClass]="{ 'mat-form-field-invalid': showError('learningMode') }">
+            <mat-select formControlName="learningMode" i18n-placeholder placeholder="--Select--">
+              <mat-option *ngIf="!checkCondition('learningMode', 'required')" i18n [value]="null">None
+              </mat-option>
+              <mat-option *ngFor="let learningMode of ordinals.learningMode" [value]="learningMode">
+                {{ learningMode }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="showError('learningMode')" i18n>Mode is mandatory </mat-error>
+          </mat-form-field>
+        </div>
       </div>
-    </div>
 
       <ng-template i18n>
         Stakeholders
@@ -755,7 +756,7 @@
                       " i18n>
                     Auto calculated from duration of the file
                   </p>
-                  <div class="flex">
+                  <div class="flex" (click)="updateReviewer()">
                     <div class="flex">
                       <mat-form-field appearance="outline" class="duration-width"
                         [ngClass]="{ 'mat-form-field-invalid': showError('duration') }">
@@ -832,26 +833,28 @@
 
 
             <div class="margin-top-s" *ngIf="checkCondition('instructions', 'show')"
-            [ngClass]="{ disable: checkCondition('instructions', 'disabled') }">
-            <label>
-              <div class="margin-top-xs flex flex-middle">
-                <b i18n [ngClass]="{ required: checkCondition('instructions', 'required') }">Content Body (Long Description)
-                </b>
-                <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('contentBody')">info
-                </mat-icon>
+              [ngClass]="{ disable: checkCondition('instructions', 'disabled') }">
+              <label>
+                <div class="margin-top-xs flex flex-middle">
+                  <b i18n [ngClass]="{ required: checkCondition('instructions', 'required') }">Content Body (Long
+                    Description)
+                  </b>
+                  <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('contentBody')">info
+                  </mat-icon>
+                </div>
+                <span *ngIf="infoType === 'contentBody'" i18n>
+                  HTML supported Editor in case you'd like to provide more descriptive details
+                </span>
+              </label>
+              <div class="margin-top-s margin-bottom-l" *ngIf="contentForm && contentForm.controls"
+                [ngClass]="{ 'mat-form-field-invalid': showError('instructions') }">
+                <ws-auth-plain-ckeditor [location]="location" [id]="contentMeta.identifier"
+                  [content]="contentForm.controls.instructions.value || ''"
+                  (value)="updateContentService('instructions', $event)">
+                </ws-auth-plain-ckeditor>
+                <!-- <textarea (value)="updateContentService('body', $event)"></textarea> -->
               </div>
-              <span *ngIf="infoType === 'contentBody'" i18n>
-                HTML supported Editor in case you'd like to provide more descriptive details
-              </span>
-            </label>
-            <div class="margin-top-s margin-bottom-l" *ngIf="contentForm && contentForm.controls"
-              [ngClass]="{ 'mat-form-field-invalid': showError('instructions') }">
-              <ws-auth-plain-ckeditor [location]="location" [id]="contentMeta.identifier"
-                [content]="contentForm.controls.instructions.value || ''" (value)="updateContentService('instructions', $event)">
-              </ws-auth-plain-ckeditor>
-              <!-- <textarea (value)="updateContentService('body', $event)"></textarea> -->
             </div>
-          </div>
 
 
           </div>
@@ -898,7 +901,9 @@
               </mat-error>
             </div>
           </div>
-          <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('resourceType', 'show')"
+
+
+          <!-- <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('resourceType', 'show')"
             [ngClass]="{ disable: checkCondition('resourceType', 'disabled') }">
             <label [ngClass]="{ required: checkCondition('resourceType', 'required') }">
               <b *ngIf="isSiemens" i18n>Format</b>
@@ -918,7 +923,9 @@
                 </mat-error>
               </mat-form-field>
             </div>
-          </div>
+          </div> -->
+
+
         </div>
 
         <div class="">

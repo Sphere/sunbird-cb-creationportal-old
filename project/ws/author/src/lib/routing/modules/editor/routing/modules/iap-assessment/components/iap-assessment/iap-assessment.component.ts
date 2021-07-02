@@ -531,7 +531,7 @@ export class IapAssessmentComponent implements OnInit {
         return 'sendForReview'
       case 'InReview':
         return 'review'
-      case 'Reviewed':
+      case 'Review':
         return 'publish'
       default:
         return 'sendForReview'

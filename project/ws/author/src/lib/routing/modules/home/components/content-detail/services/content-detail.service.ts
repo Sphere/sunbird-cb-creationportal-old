@@ -147,7 +147,6 @@ export class MyContentService {
     id: string,
     status: string,
   ): Observable<null> {
-    alert('11111111')
     const requestBody: NSApiRequest.IForwardBackwardAction = {
       actor: this.accessService.userId,
       ...meta,
