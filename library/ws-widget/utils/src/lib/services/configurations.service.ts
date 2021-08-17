@@ -21,11 +21,14 @@ export class ConfigurationsService {
   appSetup = true
   // The url the user tried to access while landing in the app before accepting tnc
   userUrl = ''
-  baseUrl = `assets/configurations/${(locationHost || window.location.host).replace(':', '_')}`
-  sitePath = `assets/configurations/${(instanceConfigPath || window.location.host).replace(
-    ':',
-    '_',
-  )}`
+  // baseUrl = `assets/configurations/${(locationHost || window.location.host).replace(':', '_')}`
+  // sitePath = `assets/configurations/${(instanceConfigPath || window.location.host).replace(
+  //   ':',
+  //   '_',
+  // )}`
+  assignedLocalhost = locationHost
+  baseUrl = `assets/configurations`
+  sitePath = `assets/configurations`
   hostPath = (instanceConfigPath || window.location.host).replace(':', '_')
 
   userRoles: Set<string> | null = null
@@ -43,6 +46,8 @@ export class ConfigurationsService {
   userPreference: IUserPreference | null = null
   userProfile: NsUser.IUserProfile | null = null
   userProfileV2: NsUser.IUserProfile | null = null
+  nodebbUserProfile: NsUser.INodebbUserProfile | null = null
+  isActive = true
 
   // created to store complete user details sent by pid
   unMappedUser: any
