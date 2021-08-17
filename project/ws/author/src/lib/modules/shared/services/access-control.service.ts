@@ -13,9 +13,7 @@ export class AccessControlService {
   constructor(
     private configService: ConfigurationsService,
     @Inject(APP_BASE_HREF) private baseHref: string,
-  ) {
-    console.log('this.configService.userRoles == ', this.configService.userRoles)
-  }
+  ) { }
 
   hasRole(role: string[]): boolean {
     let returnValue = false
@@ -84,7 +82,6 @@ export class AccessControlService {
   }
 
   getAction(status: string, operation?: number): string {
-    console.log('Access control GETACTION called')
     switch (status) {
       case 'Draft':
       case 'Live':

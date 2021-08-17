@@ -275,7 +275,9 @@ export class InitService {
   //         lastName: userPidProfile.result.response.lastName,
 
   //         // tslint:disable-next-line: max-line-length
-  //         userName: `${userPidProfile.result.response.firstName ? userPidProfile.result.response.firstName : ' '}${userPidProfile.result.response.lastName ? userPidProfile.result.response.lastName : ' '}`,
+  //         userName: `${userPidProfile.result.response.firstName ?
+  //                  userPidProfile.result.response.firstName : ' '}${userPidProfile.result.response.lastName
+  //            ? userPidProfile.result.response.lastName : ' '}`,
   //         profileImage: userPidProfile.result.response.thumbnail,
   //         dealerCode: null,
   //         isManager: false,
@@ -319,7 +321,6 @@ export class InitService {
   //     //   this.configSvc.userRoles.add('is_manager')
   //   }
   // }
-
 
   private async fetchStartUpDetails(): Promise<any> {
     // const userRoles: string[] = []
@@ -432,7 +433,9 @@ export class InitService {
   //           middleName: userData.personalDetails.middlename,
   //           departmentName: _.get(userData, 'employmentDetails.departmentName'),
   //           // tslint:disable-next-line: max-line-length
-  //           userName: `${userData.personalDetails.firstname ? userData.personalDetails.firstname : ''}${userData.personalDetails.surname ? userData.personalDetails.surname : ''}`,
+  //           userName: `${userData.personalDetails.firstname
+  //                        ? userData.personalDetails.firstname : ''}${userData.personalDetails.surname
+  //                                    ? userData.personalDetails.surname : ''}`,
   //           profileImage: userData && userData.photo,
   //           dealerCode: null,
   //           isManager: false,
@@ -441,7 +444,8 @@ export class InitService {
 
   //       if (this.configSvc.userProfile) {
   //         // tslint:disable-next-line: max-line-length
-  //         this.configSvc.userProfile.departmentName = _.get(userData, 'employmentDetails.departmentName') ? userData.employmentDetails.departmentName : null
+  //         this.configSvc.userProfile.departmentName = _.get(userData, 'employmentDetails.departmentName')
+  // ? userData.employmentDetails.departmentName : null
   //       }
 
   //     }
@@ -544,11 +548,11 @@ export class InitService {
     const tourGuide = appsConfig.tourGuide
     const features: { [id: string]: NsAppsConfig.IFeature } = Object.values(
       appsConfig.features,
-    ).reduce((map: { [id: string]: NsAppsConfig.IFeature }, feature: NsAppsConfig.IFeature) => {
+    ).reduce((map1: { [id: string]: NsAppsConfig.IFeature }, feature: NsAppsConfig.IFeature) => {
       if (hasUnitPermission(feature.permission, this.configSvc.restrictedFeatures, true)) {
-        map[feature.id] = feature
+        map1[feature.id] = feature
       }
-      return map
+      return map1
       // tslint:disable-next-line: align
     }, {})
     const groups = appsConfig.groups

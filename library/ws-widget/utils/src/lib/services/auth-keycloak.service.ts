@@ -91,8 +91,6 @@ export class AuthKeycloakService {
 
   async initAuth(): Promise<boolean> {
 
-    console.log('KK  ', this.configSvc.instanceConfig)
-
     if (!this.configSvc.instanceConfig) {
       return false
     }
