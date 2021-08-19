@@ -6,7 +6,8 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router'
-import { ConfigurationsService, AuthKeycloakService } from '../../../library/ws-widget/utils/src/public-api'
+// import { ConfigurationsService, AuthKeycloakService } from '../../../library/ws-widget/utils/src/public-api'
+import { ConfigurationsService } from '../../../library/ws-widget/utils/src/public-api'
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,7 @@ export class GeneralGuard implements CanActivate {
   constructor(
     private router: Router,
     private configSvc: ConfigurationsService,
-    private authSvc: AuthKeycloakService
+    // private authSvc: AuthKeycloakService
   ) { }
 
   async canActivate(
@@ -32,30 +33,37 @@ export class GeneralGuard implements CanActivate {
     requiredFeatures: string[],
     requiredRoles: string[],
   ): Promise<T | UrlTree | boolean> {
+    let refAppend = `?ref=${encodeURIComponent(state.url)}`
+    /* tslint:disable */
+    console.log(refAppend)
     /**
      * Test IF User is authenticated
      */
-    if (!this.configSvc.isAuthenticated) {
-      let refAppend = ''
-      if (state.url) {
-        refAppend = `?ref=${encodeURIComponent(state.url)}`
-      }
-      // return this.router.parseUrl(`/login${refAppend}`)
 
-      let redirectUrl
-      if (refAppend) {
-        redirectUrl = document.baseURI + refAppend
-      } else {
-        redirectUrl = document.baseURI
-      }
+    // if (!this.configSvc.isAuthenticated) {
+    //   let refAppend = ''
+    //   if (state.url) {
+    //     refAppend = `?ref=${encodeURIComponent(state.url)}`
+    //   }
+    //   // return this.router.parseUrl(`/login${refAppend}`)
 
-      try {
-        Promise.resolve(this.authSvc.login('S', redirectUrl))
-        return true
-      } catch (e) {
-        return false
-      }
-    }
+    //   let redirectUrl
+    //   if (refAppend) {
+    //     redirectUrl = document.baseURI + refAppend
+    //   } else {
+    //     redirectUrl = document.baseURI
+    //   }
+
+    //   try {
+    //     Promise.resolve(this.authSvc.login('S', redirectUrl))
+    //     return true
+    //   } catch (e) {
+    //     return false
+    //   }
+    // }
+
+
+
     // If invalid user
     if (
       this.configSvc.userProfile === null &&

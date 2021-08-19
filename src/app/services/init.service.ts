@@ -137,7 +137,7 @@ export class InitService {
       //   this.configSvc.profileSettings = this.configSvc.userPreference.profileSettings
       // }
       // await this.fetchUserProfileV2()
-      await this.createUserInNodebb()
+      // await this.createUserInNodebb()
       const appsConfigPromise = this.fetchAppsConfig()
       const instanceConfigPromise = this.fetchInstanceConfig() // config: depends only on details
       const widgetStatusPromise = this.fetchWidgetStatus() // widget: depends only on details & feature
@@ -224,12 +224,21 @@ export class InitService {
     const publicConfig: NsInstanceConfig.IConfig = await this.http
       .get<NsInstanceConfig.IConfig>(`${this.baseUrl}/host.config.json`)
       .toPromise()
+    publicConfig.rootOrg = 'aastrika'
+    publicConfig.org = ['aastrika']
+
+    console.log('Public configgg ', publicConfig)
+
     this.configSvc.instanceConfig = publicConfig
     this.configSvc.rootOrg = publicConfig.rootOrg
     this.configSvc.org = publicConfig.org
     // TODO: set one org as default org :: use user preference
     this.configSvc.activeOrg = publicConfig.org[0]
     this.configSvc.appSetup = publicConfig.appSetup
+
+
+    console.log('COnfig service ', this.configSvc)
+
     return publicConfig
   }
 
@@ -331,6 +340,10 @@ export class InitService {
           .get<any>(endpoint.profilePid)
           .pipe(map((res: any) => res.result.response))
           .toPromise()
+
+        userPidProfile.roles = [...userPidProfile.roles, 'PUBLIC', 'EDITOR']
+        console.log('ROlesss  ', userPidProfile.roles)
+
         if (userPidProfile && userPidProfile.roles && userPidProfile.roles.length > 0 &&
           this.hasRole(userPidProfile.roles)) {
 
@@ -471,6 +484,11 @@ export class InitService {
     const publicConfig = await this.http
       .get<NsInstanceConfig.IConfig>(`${this.configSvc.sitePath}/site.config.json`)
       .toPromise()
+
+
+    publicConfig.rootOrg = 'aastrika'
+    publicConfig.org = ['aastrika']
+
     this.configSvc.instanceConfig = publicConfig
     this.configSvc.rootOrg = publicConfig.rootOrg
     this.configSvc.org = publicConfig.org
@@ -479,33 +497,33 @@ export class InitService {
     return publicConfig
   }
 
-  private async createUserInNodebb(): Promise<any> {
-    const req = {
-      request: {
-        username: (this.configSvc.userProfile && this.configSvc.userProfile.userName) || '',
-        identifier: (this.configSvc.userProfile && this.configSvc.userProfile.userId) || '',
-        fullname: this.configSvc.userProfile ? `${this.configSvc.userProfile.firstName} ${this.configSvc.userProfile.lastName}` : '',
-      },
-    }
-    let createUserRes: null
+  // private async createUserInNodebb(): Promise<any> {
+  //   const req = {
+  //     request: {
+  //       username: (this.configSvc.userProfile && this.configSvc.userProfile.userName) || '',
+  //       identifier: (this.configSvc.userProfile && this.configSvc.userProfile.userId) || '',
+  //       fullname: this.configSvc.userProfile ? `${this.configSvc.userProfile.firstName} ${this.configSvc.userProfile.lastName}` : '',
+  //     },
+  //   }
+  //   let createUserRes: null
 
-    try {
-      createUserRes = await this.http
-        .post<any>(endpoint.CREATE_USER_API, req)
-        .toPromise()
-    } catch (e) {
-      this.configSvc.nodebbUserProfile = null
-      throw new Error('Invalid user')
-    }
+  //   try {
+  //     createUserRes = await this.http
+  //       .post<any>(endpoint.CREATE_USER_API, req)
+  //       .toPromise()
+  //   } catch (e) {
+  //     this.configSvc.nodebbUserProfile = null
+  //     throw new Error('Invalid user')
+  //   }
 
-    const nodebbUserData: any = _.get(createUserRes, 'result')
-    if (createUserRes) {
-      this.configSvc.nodebbUserProfile = {
-        username: nodebbUserData.userName,
-        email: 'null',
-      }
-    }
-  }
+  //   const nodebbUserData: any = _.get(createUserRes, 'result')
+  //   if (createUserRes) {
+  //     this.configSvc.nodebbUserProfile = {
+  //       username: nodebbUserData.userName,
+  //       email: 'null',
+  //     }
+  //   }
+  // }
 
   private async fetchFeaturesStatus(): Promise<Set<string>> {
     // TODO: use the rootOrg and org to fetch the features
@@ -625,7 +643,7 @@ export class InitService {
   hasRole(role: string[]): boolean {
     let returnValue = false
     // const rolesForCBP = environment.portalRoles
-    const rolesForCBP: any = ['PUBLIC']
+    const rolesForCBP: any = ['PUBLIC', 'EDITOR']
     role.forEach(v => {
       if ((rolesForCBP).includes(v)) {
         returnValue = true

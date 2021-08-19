@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { AuthKeycloakService } from '@ws-widget/utils'
+// import { AuthKeycloakService } from '@ws-widget/utils'
 import { NsContent } from '../../../library/ws-widget/collection/src/public-api'
 // tslint:disable-next-line: max-line-length
 import {
@@ -9,10 +9,10 @@ import {
   GET_PLAYERCONTENT_JSON,
   GO_OFFLINE,
   IOS_OPEN_IN_BROWSER,
-  ISAUTHENTICATED_OUTGOING,
+  // ISAUTHENTICATED_OUTGOING,
   NAVIGATION_DATA_INCOMING,
-  SESSIONID_OUTGOING,
-  TOKEN_OUTGOING,
+  // SESSIONID_OUTGOING,
+  // TOKEN_OUTGOING,
 } from '../models/mobile-events.model'
 import { NavigationExternalService } from './navigation-external.service'
 interface IWindowMobileAppModified extends Window {
@@ -31,9 +31,9 @@ declare var window: IWindowMobileAppModified
 })
 export class MobileAppsService {
   constructor(
-    private authSvc: AuthKeycloakService,
+    // private authSvc: AuthKeycloakService,
     private navigateSvc: NavigationExternalService,
-  ) {}
+  ) { }
 
   init() {
     this.setupGlobalMethods()
@@ -90,17 +90,19 @@ export class MobileAppsService {
     })
   }
   setupGlobalMethods() {
+    console.log('MOBILEEE')
     // Incoming Requests
     window.navigateTo = (url: string, params?: any) => {
       document.dispatchEvent(new CustomEvent(NAVIGATION_DATA_INCOMING, { detail: { url, params } }))
     }
 
     // Incoming Requests with outgoing data
-    window.getToken = () => this.sendDataAppToClient(TOKEN_OUTGOING, this.authSvc.token)
-    window.getToken()
-    window.getSessionId = () => this.sendDataAppToClient(SESSIONID_OUTGOING, this.authSvc.sessionId)
-    window.isAuthenticated = () =>
-      this.sendDataAppToClient(ISAUTHENTICATED_OUTGOING, this.authSvc.isAuthenticated)
+    // window.getToken = () => this.sendDataAppToClient(TOKEN_OUTGOING, this.authSvc.token)
+    // window.getToken()
+    // window.getSessionId = () => this.sendDataAppToClient(SESSIONID_OUTGOING, this.authSvc.sessionId)
+    // window.isAuthenticated = () =>
+    //   this.sendDataAppToClient(ISAUTHENTICATED_OUTGOING, this.authSvc.isAuthenticated)
+    console.log('ENd mobile')
   }
 
   isFunctionAvailableInAndroid(functionName: string) {

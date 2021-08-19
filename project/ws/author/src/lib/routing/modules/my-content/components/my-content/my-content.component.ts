@@ -474,7 +474,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
             'Course',
             'Learning Path',
           ],
-          createdFor: (this.configService.userProfile) ? [this.configService.userProfile.rootOrgId] : [],
+          // createdFor: (this.configService.userProfile) ? [this.configService.userProfile.rootOrgId] : [],
         },
         // pageNo: loadMoreFlag ? this.pagination.offset : 0,
         sort_by: { lastUpdatedOn: 'desc' },

@@ -19,9 +19,9 @@ export class UserPreferenceService {
     this.configurationSvc.prefChangeNotifier
       .pipe(debounceTime(250))
       .subscribe((changedUserPref?: Partial<IUserPreference>) => {
-        if (this.configurationSvc.isAuthenticated) {
-          this.saveUserPreference(changedUserPref)
-        }
+        // if (this.configurationSvc.isAuthenticated) {
+        this.saveUserPreference(changedUserPref)
+        // }
       })
   }
 
