@@ -341,7 +341,7 @@ export class InitService {
           .pipe(map((res: any) => res.result.response))
           .toPromise()
 
-        userPidProfile.roles = [...userPidProfile.roles, 'PUBLIC', 'EDITOR']
+        userPidProfile.roles = [...userPidProfile.roles, 'PUBLIC', 'EDITOR', 'CONTENT_CREATOR']
         console.log('ROlesss  ', userPidProfile.roles)
 
         if (userPidProfile && userPidProfile.roles && userPidProfile.roles.length > 0 &&
@@ -643,7 +643,7 @@ export class InitService {
   hasRole(role: string[]): boolean {
     let returnValue = false
     // const rolesForCBP = environment.portalRoles
-    const rolesForCBP: any = ['PUBLIC', 'EDITOR']
+    const rolesForCBP: any = ['PUBLIC', 'EDITOR', 'CONTENT_CREATOR']
     role.forEach(v => {
       if ((rolesForCBP).includes(v)) {
         returnValue = true

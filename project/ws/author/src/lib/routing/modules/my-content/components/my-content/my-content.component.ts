@@ -25,7 +25,7 @@ import { MyContentService } from '../../services/my-content.service'
 import { map } from 'rxjs/operators'
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
 import * as l from 'lodash'
-import { ConfigurationsService } from '@ws-widget/utils'
+// import { ConfigurationsService } from '@ws-widget/utils'
 
 @Component({
   selector: 'ws-auth-my-content',
@@ -43,7 +43,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private authInitService: AuthInitService,
-    private configService: ConfigurationsService,
+    // private configService: ConfigurationsService,
   ) {
     this.filterMenuTreeControl = new FlatTreeControl<IMenuFlatNode>(
       node => node.levels,
