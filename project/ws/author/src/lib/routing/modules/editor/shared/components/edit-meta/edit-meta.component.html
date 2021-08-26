@@ -682,7 +682,7 @@
         <div class="">
 
           <div class="flex flex-column">
-            <div class="margin-top-xs margin-left-l" *ngIf="checkCondition('appIcon', 'show')"
+            <!-- <div class="margin-top-xs margin-left-l" *ngIf="checkCondition('appIcon', 'show')"
               [ngClass]="{ disable: checkCondition('appIcon', 'disabled') }">
               <label>
                 <div class="margin-top-xs flex flex-middle"
@@ -701,6 +701,46 @@
                       'ws-mat-warn-text': showError('appIcon')
                     }" height="150" width="256" [src]="contentForm.controls.appIcon.value | relativeUrl"
                   (error)="changeToDefaultImg($event)" />
+                <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadThumbnail.click()">
+                  <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
+                  <input type="file" #uploadThumbnail
+                    (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null"
+                    style="display: none;" [accept]="imageTypes.toString()" />
+                </div>
+              </div>
+            </div> -->
+
+            <div class="margin-top-xs margin-left-l" *ngIf="checkCondition('appIcon', 'show')"
+              [ngClass]="{ disable: checkCondition('appIcon', 'disabled') }">
+              <!-- <label>
+                <div class="margin-top-xs flex flex-middle"
+                  [ngClass]="{ required: checkCondition('appIcon', 'required') }">
+                  <b i18n>Thumbnail</b>
+                  <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('appIcon')">info
+                  </mat-icon>
+                </div>
+                <span i18n *ngIf="infoType === 'appIcon'">
+                  Maximum file size - 1 MB
+                </span>
+              </label> -->
+              <label>
+                <div class="margin-top-xs flex flex-middle">
+                  <b i18n>Thumbnail</b>
+                  <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('appIcon')">info
+                  </mat-icon>
+                </div>
+                <span i18n *ngIf="infoType === 'appIcon'">
+                  Maximum file size - 1 MB
+                </span>
+              </label>
+              <div class="margin-top-xs">
+                <!-- <img class="image max-width" [ngClass]="{
+                      'image-border': showError('appIcon'),
+                      'ws-mat-warn-text': showError('appIcon')
+                    }" height="150" width="256" [src]="contentForm.controls.appIcon.value | relativeUrl"
+                  (error)="changeToDefaultImg($event)" /> -->
+                <img class="image max-width" height="150" width="256"
+                  [src]="contentForm.controls.appIcon.value | relativeUrl" (error)="changeToDefaultImg($event)" />
                 <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadThumbnail.click()">
                   <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
                   <input type="file" #uploadThumbnail

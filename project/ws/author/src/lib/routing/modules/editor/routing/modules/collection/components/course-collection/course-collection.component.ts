@@ -405,7 +405,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   get validationCheck(): boolean {
     const currentNodeId = this.storeService.lexIdMap.get(this.currentParentId) as number[]
-    const returnValue = this.storeService.validationCheck(currentNodeId[0])
+    let returnValue = this.storeService.validationCheck(currentNodeId[0])
+
+    // console.log('returnvalue ', returnValue)
+
+    returnValue = null
+
     if (returnValue) {
       const dialog = this.dialog.open(ErrorParserComponent, {
         width: '80vw',
@@ -437,6 +442,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   takeAction() {
     this.isSubmitPressed = true
     const needSave = Object.keys(this.contentService.upDatedContent || {}).length
+    console.log('Neddsave ', needSave)
     if (!needSave && !this.isChanged) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -446,6 +452,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
       return
     }
+
+    console.log('this.validationCheck', this.validationCheck)
+
     if (this.validationCheck) {
 
       this.editorService.readcontentV3(this.contentService.parentContent).subscribe((resData: any) => {
@@ -1590,6 +1599,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
+
+    console.log('XXXXXXX')
+
     // const nodeClicked = event.nodeClicked
     this.contentService.changeActiveCont.next(event.identifier)
     switch (event.type) {
@@ -1794,6 +1806,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   getAction(): string {
+    console.log('Get action')
     switch (this.contentService.originalContent[this.currentParentId].status) {
       case 'Draft':
       case 'Live':
