@@ -34,6 +34,9 @@ import { IFormMeta } from './../../../../../../../../interface/form'
 import { AuthInitService } from './../../../../../../../../services/init.service'
 import { environment } from '../../../../../../../../../../../../../src/environments/environment'
 import { ProfanityService } from '../../services/profanity.service'
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+import { CollectionStoreService } from '../../../collection/services/store.service'
+import { NSApiRequest } from '../../../../../../../../interface/apiRequest'
 
 @Component({
   selector: 'ws-auth-file-upload',
@@ -69,8 +72,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
   @Input() canTransCode = false
   isMobile = false
   @Output() data = new EventEmitter<any>()
-  uploadedFileList: { [key: string]: File } = {}
-  updatedIPRList: { [key: string]: boolean } = {}
+  uploadedFileList: { [key: string]: File } = { }
+  updatedIPRList: { [key: string]: boolean } = { }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -83,6 +86,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
     private valueSvc: ValueService,
     private accessService: AccessControlService,
     private profanityService: ProfanityService,
+    private editorService: EditorService,
+    private storeService: CollectionStoreService,
   ) { }
 
   ngOnInit() {
@@ -308,7 +313,29 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.mimeType = ''
   }
 
-  triggerUpload() {
+  // triggerUpload() {
+  //   if (!this.file) {
+  //     this.snackBar.openFromComponent(NotificationComponent, {
+  //       data: {
+  //         type: Notify.UPLOAD_FILE,
+  //       },
+  //       duration: NOTIFICATION_TIME * 1000,
+  //     })
+  //   } else {
+  //     this.upload()
+  //   }
+  // }
+
+  errorMessage() {
+    this.snackBar.openFromComponent(NotificationComponent, {
+      data: {
+        type: Notify.UPLOAD_FAIL,
+      },
+      duration: NOTIFICATION_TIME * 1000,
+    })
+  }
+
+  async triggerUpload() {
     if (!this.file) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -317,7 +344,49 @@ export class FileUploadComponent implements OnInit, OnChanges {
         duration: NOTIFICATION_TIME * 1000,
       })
     } else {
-      this.upload()
+      this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
+      this.storeData()
+      const nodesModified: any = { }
+      Object.keys(this.contentService.upDatedContent).forEach(v => {
+        nodesModified[v] = {
+          isNew: false,
+          root: this.storeService.parentNode.includes(v),
+          metadata: this.contentService.upDatedContent[v],
+        }
+      })
+      const requestBody: NSApiRequest.IContentUpdateV2 = {
+        request: {
+          content: nodesModified[this.contentService.currentContent].metadata,
+        },
+      }
+      requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
+      const contenUpdateRes: any =
+        await this.editorService.updateContentV3(requestBody, this.contentService.currentContent).toPromise().catch(_error => { })
+      if (contenUpdateRes && contenUpdateRes.params && contenUpdateRes.params.status === 'successful') {
+        const updateHierarchyReq: NSApiRequest.IContentUpdateV3 = {
+          request: {
+            data: {
+              nodesModified: { },
+              hierarchy: this.storeService.getTreeHierarchy(),
+            },
+          },
+        }
+        const updateHierarchyRes: any = await this.editorService.updateContentV4(updateHierarchyReq).toPromise().catch(_error => { })
+        if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
+          const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
+          if (hierarchyData) {
+            this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
+            this.upload()
+          } else {
+            this.errorMessage()
+          }
+        } else {
+          this.errorMessage()
+        }
+      } else {
+        this.errorMessage()
+      }
+      // this.upload()
     }
   }
 
@@ -422,7 +491,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
   storeData() {
     const originalMeta = this.contentService.getOriginalMeta(this.currentContent)
     const currentMeta = this.fileUploadForm.value
-    const meta: any = {}
+    const meta: any = { }
     Object.keys(currentMeta).map(v => {
       if (
         v !== 'versionKey' &&

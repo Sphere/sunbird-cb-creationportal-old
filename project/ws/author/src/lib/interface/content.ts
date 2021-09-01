@@ -1,6 +1,7 @@
 export namespace NSContent {
   export type IContentType =
     | 'Learning Path'
+    | 'CourseUnit'
     | 'Collection'
     | 'Course'
     | 'Resource'
@@ -381,7 +382,9 @@ export namespace NSContent {
     creatorIDs: string[]
     draftImage: string
     topics: string[]
-    prevStatus: string
+    prevStatus: string,
+    reviewStatus: string,
+    streamingUrl: string[],
   }
 
   export interface IOrganisations {

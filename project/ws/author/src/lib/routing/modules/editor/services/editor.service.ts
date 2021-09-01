@@ -18,6 +18,7 @@ import {
   SEND_TO_REVIEW,
   PUBLISH_CONTENT,
   REJECT_CONTENT,
+  EMAIL_NOTIFICATION,
 } from '@ws/author/src/lib/constants/apiEndpoints'
 import { NSApiResponse } from '@ws/author/src/lib/interface//apiResponse'
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
@@ -185,13 +186,36 @@ export class EditorService {
 
   updateContentV3(meta: NSApiRequest.IContentUpdateV2, id: string): Observable<null> {
     return this.apiService.patch<null>(
-      `${AUTHORING_BASE}content/v3/update/${id}`,
+      // `${AUTHORING_BASE}content/v3/update/${id}`,
+      `/apis/proxies/v8/action/content/v3/update/${id}`,
       meta,
     )
   }
+
   updateContentV4(meta: NSApiRequest.IContentUpdateV3): Observable<null> {
     return this.apiService.patch<null>(
       `/apis/proxies/v8/action/content/v3/hierarchy/update`,
+      meta,
+    )
+  }
+
+  updateContentWithFewFields(requestBody: any, identifier: string): Observable<any> {
+    return this.apiService.patch<any>(
+      `/apis/proxies/v8/action/content/v3/update/${identifier}`,
+      requestBody,
+    )
+  }
+
+  updateContentForReviwer(requestBody: any, identifier: string): Observable<any> {
+    return this.apiService.patch<any>(
+      `/apis/proxies/v8/action/content/v3/updateReviewStatus/${identifier}`,
+      requestBody
+    )
+  }
+
+  updateHierarchyForReviwer(meta: NSApiRequest.IContentUpdateV3): Observable<any> {
+    return this.apiService.patch<null>(
+      `/apis/proxies/v8/action/content/v3/hierarchyUpdate`,
       meta,
     )
   }
@@ -279,24 +303,44 @@ export class EditorService {
     return this.apiService.post<null>(STATUS_CHANGE + id, requestBody)
   }
 
-  sendToReview(id: string, status: string, parentStatus: string) {
-    if (status === 'Review' && parentStatus === 'Review') {
-      // tslint:disable-next-line: no-shadowed-variable
-      const requestbody = {
-        request: {
-          content: {
-            publisher: this.accessService.userName,
-            lastPublishedBy: this.accessService.userName,
-          },
-        },
-      }
-      return this.apiService.post<any>(PUBLISH_CONTENT + id, requestbody)
-      // tslint:disable-next-line: no-else-after-return
-    } else if (parentStatus === 'Draft') {
-      const requestbody = {}
+  // sendToReview(id: string, status: string, parentStatus: string) {
+  //   if (status === 'Review' && parentStatus === 'Review') {
+  //     // tslint:disable-next-line: no-shadowed-variable
+  //     const requestbody = {
+  //       request: {
+  //         content: {
+  //           publisher: this.accessService.userName,
+  //           lastPublishedBy: this.accessService.userName,
+  //         },
+  //       },
+  //     }
+  //     return this.apiService.post<any>(PUBLISH_CONTENT + id, requestbody)
+  //     // tslint:disable-next-line: no-else-after-return
+  //   } else if (parentStatus === 'Draft') {
+  //     const requestbody = { }
+  //     return this.apiService.post<any>(SEND_TO_REVIEW + id, requestbody)
+  //   }
+  //   return EMPTY
+  // }
+
+  sendToReview(id: string, parentStatus: string) {
+    if (parentStatus === 'Draft') {
+      const requestbody = { }
       return this.apiService.post<any>(SEND_TO_REVIEW + id, requestbody)
     }
     return EMPTY
+  }
+
+  publishContent(id: string) {
+    const requestbody = {
+      request: {
+        content: {
+          publisher: this.accessService.userName,
+          lastPublishedBy: this.accessService.userName,
+        },
+      },
+    }
+    return this.apiService.post<any>(PUBLISH_CONTENT + id, requestbody)
   }
 
   readJSON(artifactUrl: string): Observable<any> {
@@ -378,4 +422,10 @@ export class EditorService {
       }),
     )
   }
+
+  sendEmailNotificationAPI(requestBody: any): Observable<any> {
+    return this.apiService.post<any>(EMAIL_NOTIFICATION, requestBody)
+  }
+
+
 }

@@ -88,6 +88,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    console.log('COllection called')
     this.contentService.changeActiveCont.subscribe(data => {
       this.currentContent = data
       if (this.contentService.getUpdatedMeta(data).contentType !== 'Resource') {
@@ -155,7 +156,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
   }
 
   save(nextAction?: string) {
-    const updatedContent = this.contentService.upDatedContent || {}
+    const updatedContent = this.contentService.upDatedContent || { }
     if (
       Object.keys(updatedContent).length ||
       Object.keys(this.storeService.changedHierarchy).length
@@ -261,7 +262,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
 
   takeAction() {
     this.isSubmitPressed = true
-    const needSave = Object.keys(this.contentService.upDatedContent || {}).length
+    const needSave = Object.keys(this.contentService.upDatedContent || { }).length
     if (!needSave && !this.isChanged) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -298,9 +299,9 @@ export class CollectionComponent implements OnInit, OnDestroy {
       }
       const updatedMeta = this.contentService.getUpdatedMeta(this.currentParentId)
       const needSave =
-        Object.keys(this.contentService.upDatedContent || {}).length ||
+        Object.keys(this.contentService.upDatedContent || { }).length ||
         Object.keys(this.storeService.changedHierarchy).length
-      const saveCall = (needSave ? this.triggerSave() : of({} as any)).pipe(
+      const saveCall = (needSave ? this.triggerSave() : of({ } as any)).pipe(
         mergeMap(() =>
           this.editorService
             .forwardBackward(
@@ -318,7 +319,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
                   )
                   .pipe(
                     catchError(() => {
-                      return of({} as any)
+                      return of({ } as any)
                     }),
                   ),
               ),
@@ -385,11 +386,11 @@ export class CollectionComponent implements OnInit, OnDestroy {
   }
 
   preview(id: string) {
-    const updatedContent = this.contentService.upDatedContent || {}
+    const updatedContent = this.contentService.upDatedContent || { }
     const saveCall =
       Object.keys(updatedContent).length || Object.keys(this.storeService.changedHierarchy).length
         ? this.triggerSave()
-        : of({} as any)
+        : of({ } as any)
     this.loaderService.changeLoad.next(true)
     saveCall.subscribe(
       () => {
@@ -445,7 +446,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
   }
 
   triggerSave() {
-    const nodesModified: any = {}
+    const nodesModified: any = { }
     let isRootPresent = false
     Object.keys(this.contentService.upDatedContent).forEach(v => {
       if (!isRootPresent) {
@@ -461,7 +462,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
       nodesModified[this.currentParentId] = {
         isNew: false,
         root: true,
-        metadata: {},
+        metadata: { },
       }
     }
     const requestBody: NSApiRequest.IContentUpdate = {
@@ -470,11 +471,11 @@ export class CollectionComponent implements OnInit, OnDestroy {
     }
     return this.editorService.updateContentV2(requestBody).pipe(
       tap(() => {
-        this.storeService.changedHierarchy = {}
+        this.storeService.changedHierarchy = { }
         Object.keys(this.contentService.upDatedContent).forEach(id => {
           this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
         })
-        this.contentService.upDatedContent = {}
+        this.contentService.upDatedContent = { }
       }),
     )
   }

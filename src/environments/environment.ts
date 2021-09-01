@@ -13,7 +13,7 @@ export const environment: IEnvironment = {
   azureBucket: 'content',
   azureOldHost: 'https://staas-bbs1.cloud.gov.in',
   azureOldBuket: 'igot',
-  // portalRoles: (((window as { [key: string]: any })['env']['portalRoles'] || '').split(',')) || [],
+  cbpPortal: 'https://aastrika-sb-cbp.idc.tarento.com/',
 }
 interface IEnvironment {
   production: boolean
@@ -26,6 +26,7 @@ interface IEnvironment {
   azureBucket: string
   azureOldHost: string
   azureOldBuket: string
+  cbpPortal: string
   // portalRoles: string[]
 }
 

@@ -39,12 +39,12 @@ export class CollectionStoreService {
    */
   lexIdMap = new Map<string, number[]>()
 
-  changedHierarchy: any = {}
+  changedHierarchy: any = { }
 
   currentParentNode!: number
   currentSelectedNode!: number
 
-  hierarchyTree: any = {}
+  hierarchyTree: any = { }
 
   constructor(
     private contentService: EditorContentService,
@@ -346,7 +346,7 @@ export class CollectionStoreService {
             (this.flatNodeMap.get(this.currentParentNode) as IContentNode).identifier
             // tslint:disable-next-line: ter-computed-property-spacing
           ].locale || 'en',
-        ...(meta.additionalMeta || {}),
+        ...(meta.additionalMeta || { }),
         // primaryCategory: meta.primaryCategory
         primaryCategory: meta.primaryCategory || 'Learning Resource',
         ownershipType: ['createdFor'],
@@ -389,10 +389,10 @@ export class CollectionStoreService {
   }
 
   getHierarchyTreeStructure() {
-    const hierarchyObj: any = {}
+    const hierarchyObj: any = { }
     this.treeStructureChange.subscribe((d: any) => {
       if (!d.parentId) {
-        hierarchyObj[d.identifier] = {}
+        hierarchyObj[d.identifier] = { }
         hierarchyObj[d.identifier]['children'] = []
         hierarchyObj[d.identifier]['root'] = true
       }
@@ -400,7 +400,7 @@ export class CollectionStoreService {
         d.children.forEach((e: any) => {
           hierarchyObj[d.identifier]['children'].push(e.identifier)
           if (e.children.length > 0) {
-            hierarchyObj[e.identifier] = {}
+            hierarchyObj[e.identifier] = { }
             hierarchyObj[e.identifier]['children'] = []
             hierarchyObj[e.identifier]['root'] = false
           }
@@ -415,17 +415,17 @@ export class CollectionStoreService {
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
-          nodesModified: {},
+          nodesModified: { },
           hierarchy: hierarchyObj,
         },
       },
     }
     this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-      this.changedHierarchy = {}
+      this.changedHierarchy = { }
       Object.keys(this.contentService.upDatedContent).forEach(async id => {
         this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
       })
-      this.contentService.upDatedContent = {}
+      this.contentService.upDatedContent = { }
     })
   }
 
@@ -443,7 +443,7 @@ export class CollectionStoreService {
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
-          nodesModified: {},
+          nodesModified: { },
           hierarchy: hierarchyOb,
         },
       },
@@ -457,11 +457,11 @@ export class CollectionStoreService {
     //   console.log('DDDDDD     ', d)
     // })
     this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-      this.changedHierarchy = {}
+      this.changedHierarchy = { }
       Object.keys(this.contentService.upDatedContent).forEach(async id => {
         this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
       })
-      this.contentService.upDatedContent = {}
+      this.contentService.upDatedContent = { }
     })
 
     // this.editorService.updateContentV4(requestBodyV2).pipe(
@@ -589,6 +589,7 @@ export class CollectionStoreService {
   }
 
   validationCheck(id: number): IProcessedError[] | null {
+    console.log('Validatiopncheck')
     const returnValue: Map<number, IProcessedError> = new Map<number, IProcessedError>()
     const errorIds = new Set<number>()
     const hierarchy = this.resolver.getFlatHierarchy(id, this.flatNodeMap)
