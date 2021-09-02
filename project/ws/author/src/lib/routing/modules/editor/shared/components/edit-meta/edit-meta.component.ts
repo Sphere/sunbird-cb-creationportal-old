@@ -584,6 +584,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             //  }
             if (!currentMeta.subTitle) {
               currentMeta.subTitle = parentData.subTitle !== '' ? parentData.subTitle : currentMeta.subTitle
+              currentMeta.purpose = parentData.subTitle !== '' ? parentData.subTitle : currentMeta.subTitle
             }
             if (!currentMeta.body) {
               currentMeta.body = parentData.body !== '' ? parentData.body : currentMeta.body
@@ -613,7 +614,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         //   currentMeta.categoryType = currentMeta.resourceType
         // }
 
-        const meta = <any>{}
+        const meta = <any>{ }
         if (this.canExpiry) {
           currentMeta.expiryDate = `${expiryDate
             .toISOString()
@@ -1437,6 +1438,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       visibility: [],
       instructions: [],
       versionKey: (new Date()).getTime(),  // (new Date()).getTime()
+      purpose: '',
     })
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
@@ -1470,6 +1472,12 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         this.contentForm.controls.resourceCategory.value,
       )
     })
+  }
+
+  setPurposeValue(sub: any) {
+    console.log('subtityle ', sub)
+    this.contentForm.controls.purpose.setValue(sub)
+    console.log(this.contentForm.controls.purpose.value)
   }
   openCatalogSelector() {
     const oldCatalogs = this.addCommonToCatalog(this.contentForm.controls.catalogPaths.value)

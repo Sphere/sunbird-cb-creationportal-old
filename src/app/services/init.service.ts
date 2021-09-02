@@ -227,17 +227,12 @@ export class InitService {
     publicConfig.rootOrg = 'aastrika'
     publicConfig.org = ['aastrika']
 
-    console.log('Public configgg ', publicConfig)
-
     this.configSvc.instanceConfig = publicConfig
     this.configSvc.rootOrg = publicConfig.rootOrg
     this.configSvc.org = publicConfig.org
     // TODO: set one org as default org :: use user preference
     this.configSvc.activeOrg = publicConfig.org[0]
     this.configSvc.appSetup = publicConfig.appSetup
-
-
-    console.log('COnfig service ', this.configSvc)
 
     return publicConfig
   }
@@ -572,7 +567,7 @@ export class InitService {
       }
       return map1
       // tslint:disable-next-line: align
-    }, {})
+    }, { })
     const groups = appsConfig.groups
       .map((group: NsAppsConfig.IGroup) => ({
         ...group,

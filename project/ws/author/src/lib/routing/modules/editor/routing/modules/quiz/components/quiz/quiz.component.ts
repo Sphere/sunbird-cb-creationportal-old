@@ -2,8 +2,9 @@ import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/compone
 import { Component, OnInit, ChangeDetectorRef, OnDestroy, Input, Output, EventEmitter, OnChanges } from '@angular/core'
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
-import { map, mergeMap, tap, catchError } from 'rxjs/operators'
-import { forkJoin, of, Observable, Subscription } from 'rxjs'
+// import { map, mergeMap, tap, catchError } from 'rxjs/operators'
+import { map, mergeMap, catchError } from 'rxjs/operators'
+import { forkJoin, of, Observable, Subscription, EMPTY } from 'rxjs'
 import { MatDialog } from '@angular/material'
 import { ActivatedRoute, Router } from '@angular/router'
 
@@ -40,6 +41,7 @@ import { CONTENT_BASE_WEBHOST } from '@ws/author/src/lib/constants/apiEndpoints'
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
 import { FormGroup } from '@angular/forms'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+import { environment } from '../../../../../../../../../../../../../src/environments/environment'
 
 @Component({
   selector: 'ws-auth-quiz',
@@ -114,7 +116,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     this.showSettingButtons = this.accessControl.rootOrg === 'client1'
     if (this.activateRoute.parent && this.activateRoute.parent.parent) {
       this.activateRoute.parent.parent.data.subscribe(v => {
-        let courseChildren =  v.contents[0].content.children
+        let courseChildren = v.contents[0].content.children
         // Children
         const firstLevelChilds = courseChildren.filter((item: any) => {
           return item.category === 'Collection'
@@ -122,7 +124,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         // find assements
         let firstLevelchildArray: any = []
 
-         firstLevelChilds.map((item: any) => {
+        firstLevelChilds.map((item: any) => {
 
           firstLevelchildArray = firstLevelchildArray.concat(item.children)
         })
@@ -139,15 +141,15 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                 v.contents = data
 
                 this.quizStoreSvc.collectiveQuiz[element.identifier] = v.contents[0].data
-                ? v.contents[0].data.questions
-                : []
+                  ? v.contents[0].data.questions
+                  : []
 
-              this.canEditJson = this.quizResolverSvc.canEdit(v.contents[0].content)
-              this.resourceType = v.contents[0].content.categoryType || 'Quiz'
-              this.quizDuration = v.contents[0].content.duration || 300
-              this.questionsArr =
-                this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier] || []
-              this.contentLoaded = true
+                this.canEditJson = this.quizResolverSvc.canEdit(v.contents[0].content)
+                this.resourceType = v.contents[0].content.categoryType || 'Quiz'
+                this.quizDuration = v.contents[0].content.duration || 300
+                this.questionsArr =
+                  this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier] || []
+                this.contentLoaded = true
               }
               )
 
@@ -194,6 +196,113 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       this.quizStoreSvc.changeQuiz(0)
     })
   }
+
+  /**
+   * IGOT Reference of reading
+   * https://aastrika-sb.idc.tarento.com/assets/public/public/do_1133575688784117761150/artifact/do_1133575688784117761150_1630583149734_quiz.json
+   */
+
+  // ngOnInit() {
+  //   this.showSettingButtons = true
+  //   this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
+
+  //     this.allLanguages = this.authInitService.ordinals.subTitles
+  //     this.loaderService.changeLoadState(true)
+  //     this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
+  //     this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
+  //       this.sideNavBarOpened = !isLtMedium
+  //       this.mediumScreenSize = isLtMedium
+  //       if (isLtMedium) {
+  //         this.showContent = false
+  //       } else {
+  //         this.showContent = true
+  //       }
+  //     })
+
+  //     if (this.activateRoute.parent && this.activateRoute.parent.parent) {
+  //       this.activateRoute.parent.parent.data.subscribe(v => {
+  //         this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(newData => {
+  //           const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
+  //           const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
+  //             this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({ } as any))
+  //           fileData.subscribe(jsonResponse => {
+  //             console.log('Json response nnn ', jsonResponse)
+  //             if (jsonResponse && Object.keys(jsonResponse).length > 1) {
+  //               if (v.contents && v.contents.length) {
+  //                 if (jsonResponse) {
+  //                   v.contents[0].data = jsonResponse
+  //                 }
+  //                 this.allContents.push(v.contents[0].content)
+  //                 if (v.contents[0].data) {
+  //                   this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data.questions
+  //                 } else if (newData[0] && newData[0].data && newData[0].data.questions) {
+  //                   this.quizStoreSvc.collectiveQuiz[id] = newData[0].data.questions
+  //                 } else {
+  //                   this.quizResolverSvc.getUpdatedData(id).subscribe(updatedData => {
+  //                     if (updatedData && updatedData[0]) {
+  //                       this.quizStoreSvc.collectiveQuiz[id] = updatedData[0].data.questions
+  //                       // need to arrange
+  //                       this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+  //                       this.resourceType = quizContent.categoryType || 'Assessment'
+  //                       this.quizDuration = quizContent.duration || '300'
+  //                       this.questionsArr =
+  //                         this.quizStoreSvc.collectiveQuiz[id] || []
+  //                       this.contentLoaded = true
+  //                       this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
+  //                       this.currentId = id
+  //                       this.quizStoreSvc.currentId = id
+  //                       this.quizStoreSvc.changeQuiz(0)
+  //                       // need to re-arrange
+  //                     }
+  //                   })
+  //                   this.quizStoreSvc.collectiveQuiz[id] = []
+  //                 }
+
+  //                 // this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data
+  //                 //   ? v.contents[0].data.questions
+  //                 //   : []
+
+  //                 this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+  //                 this.resourceType = quizContent.categoryType || 'Assessment'
+  //                 this.quizDuration = quizContent.duration || '300'
+  //                 this.questionsArr =
+  //                   this.quizStoreSvc.collectiveQuiz[id] || []
+  //                 this.contentLoaded = true
+  //               }
+  //               if (!this.quizStoreSvc.collectiveQuiz[id]) {
+  //                 this.quizStoreSvc.collectiveQuiz[id] = []
+  //               }
+  //             } else {
+  //               this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+  //               this.resourceType = quizContent.categoryType || 'Assessment'
+  //               this.quizDuration = quizContent.duration || '300'
+  //               this.questionsArr =
+  //                 this.quizStoreSvc.collectiveQuiz[id] || []
+  //               this.contentLoaded = true
+  //               if (!this.quizStoreSvc.collectiveQuiz[id]) {
+  //                 this.quizStoreSvc.collectiveQuiz[id] = []
+  //               }
+  //             }
+
+  //           })
+  //         })
+  //       })
+
+  //       // selected quiz index
+  //       this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
+  //         this.selectedQuizIndex = index
+  //       })
+  //       // active lex id
+  //       if (!this.quizStoreSvc.collectiveQuiz[id]) {
+  //         this.quizStoreSvc.collectiveQuiz[id] = []
+  //       }
+  //       this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
+  //       this.currentId = id
+  //       this.quizStoreSvc.currentId = id
+  //       this.quizStoreSvc.changeQuiz(0)
+  //     }
+  //   })
+  // }
 
   ngOnChanges() {
     // if (this.callSave) {
@@ -273,50 +382,117 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   triggerSave(meta: NSContent.IContentMeta, id: string) {
-    const requestBody: NSApiRequest.IContentUpdate = {
-      hierarchy: {},
-      nodesModified: {
-        [id]: {
-          isNew: false,
-          root: true,
-          metadata: meta,
-        },
-      },
-    }
+    // const requestBody: NSApiRequest.IContentUpdate = {
+    //   hierarchy: { },
+    //   nodesModified: {
+    //     [id]: {
+    //       isNew: false,
+    //       root: true,
+    //       metadata: meta,
+    //     },
+    //   },
+    // }
 
-    return this.editorService
-      .updateContent(requestBody)
-      .pipe(tap(() => this.metaContentService.resetOriginalMeta(meta, id)))
+    // return this.editorService
+    //   .updateContent(requestBody)
+    //   .pipe(tap(() => this.metaContentService.resetOriginalMeta(meta, id)))
+    if (meta && id) {
+      this.metaContentService.setUpdatedMeta(meta, id)
+      this.data.emit('saveAndNext')
+    }
+    return of({ })
   }
+
+  generateUrl(oldUrl: string) {
+    const chunk = oldUrl.split('/')
+    const newChunk = environment.azureHost.split('/')
+    const newLink = []
+    for (let i = 0; i < chunk.length; i += 1) {
+      if (i === 2) {
+        newLink.push(newChunk[i])
+      } else if (i === 3) {
+        newLink.push(environment.azureBucket)
+      } else {
+        newLink.push(chunk[i])
+      }
+    }
+    const newUrl = newLink.join('/')
+    return newUrl
+  }
+
+  // wrapperForTriggerSave() {
+  //   this.loaderService.changeLoad.next(true)
+  //   const updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+
+  //   const hasTimeChanged =
+  //     (this.metaContentService.upDatedContent[this.currentId] || { }).duration &&
+  //     this.quizDuration !== this.metaContentService.upDatedContent[this.currentId].duration
+  //   const doUploadJson = this.quizStoreSvc.hasChanged || hasTimeChanged
+  //   if (!(this.metaContentService.getUpdatedMeta(this.currentId) || { }).duration) {
+  //     this.metaContentService.setUpdatedMeta({ duration: this.quizDuration } as any, this.currentId)
+  //   }
+  //   return (doUploadJson
+  //     ? this.triggerUpload(JSON.parse(JSON.stringify(updatedQuizData)))
+  //     : of({ } as any)
+  //   ).pipe(
+  //     mergeMap(v => {
+  //       const updatedMeta = JSON.parse(
+  //         JSON.stringify(this.metaContentService.upDatedContent[this.currentId] || { }),
+  //       )
+  //       const check = this.resourceType === ASSESSMENT ? v.length && v[1] && v[1].code : true
+  //       if (v && v[0] && v[0].code && check) {
+  //         updatedMeta.artifactUrl = (v[0].authArtifactURL || v[0].artifactURL).replace(/%2F/g, '/')
+  //         this.quizDuration = this.metaContentService.getUpdatedMeta(this.currentId).duration
+  //         updatedMeta.downloadUrl = v[0].downloadURL.replace(/%2F/g, '/')
+  //         this.quizStoreSvc.hasChanged = false
+  //       }
+  //       return this.triggerSave(updatedMeta, this.currentId)
+  //     }),
+  //   )
+  // }
 
   wrapperForTriggerSave() {
     this.loaderService.changeLoad.next(true)
     const updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
-
     const hasTimeChanged =
-      (this.metaContentService.upDatedContent[this.currentId] || {}).duration &&
+      (this.metaContentService.upDatedContent[this.currentId] || { }).duration &&
       this.quizDuration !== this.metaContentService.upDatedContent[this.currentId].duration
+
     const doUploadJson = this.quizStoreSvc.hasChanged || hasTimeChanged
-    if (!(this.metaContentService.getUpdatedMeta(this.currentId) || {}).duration) {
+    if (!(this.metaContentService.getUpdatedMeta(this.currentId) || { }).duration) {
       this.metaContentService.setUpdatedMeta({ duration: this.quizDuration } as any, this.currentId)
     }
     return (doUploadJson
       ? this.triggerUpload(JSON.parse(JSON.stringify(updatedQuizData)))
-      : of({} as any)
-    ).pipe(
-      mergeMap(v => {
-        const updatedMeta = JSON.parse(
-          JSON.stringify(this.metaContentService.upDatedContent[this.currentId] || {}),
-        )
-        const check = this.resourceType === ASSESSMENT ? v.length && v[1] && v[1].code : true
-        if (v && v[0] && v[0].code && check) {
-          updatedMeta.artifactUrl = (v[0].authArtifactURL || v[0].artifactURL).replace(/%2F/g, '/')
-          this.quizDuration = this.metaContentService.getUpdatedMeta(this.currentId).duration
-          updatedMeta.downloadUrl = v[0].downloadURL.replace(/%2F/g, '/')
-          this.quizStoreSvc.hasChanged = false
-        }
+      : of({ } as any)
+      // ).pipe(map(v => v.result))
+    ).pipe(mergeMap(v => {
+      // tslint:disable-next-line: no-parameter-reassignment
+      v = v[0].result
+      const updatedMeta = this.metaContentService.upDatedContent[this.currentId] || { }
+      // const check = this.resourceType === ASSESSMENT ? v.length && v[1] && v[1].code : true
+      // if (v && v[0] && v[0].code && check) {
+      if (v && (v.artifactUrl || v.content_url)) {
+        updatedMeta.artifactUrl = this.generateUrl(v.authArtifactUrl || v.artifactUrl)
+        updatedMeta.versionKey = v.versionKey
+        // this.quizDuration = this.metaContentService.getUpdatedMeta(this.currentId).duration
+        updatedMeta.downloadUrl = this.generateUrl(v.content_url)
+        this.quizStoreSvc.hasChanged = false
+        // this.editorService.readContentV2(this.currentId).subscribe(resData => {
+        //   this.metaContentService.resetOriginalMeta(resData, this.currentId)
+        //   this.metaContentService.resetVersionKey(resData.versionKey, resData.identifier)
+        //   this.loaderService.changeLoad.next(true)
+        // }, () => {
+        //   this.loaderService.changeLoad.next(true)
+        //   this.snackBar.open('Error Occured! Please refresh the page.')
+        // })
+        // this.metaContentService.setUpdatedMeta(updatedMeta, this.currentId)
         return this.triggerSave(updatedMeta, this.currentId)
-      }),
+      }
+      return EMPTY
+
+      // }
+    })
     )
   }
 
@@ -324,8 +500,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     this.canValidate = true
     const hasMinLen = (this.resourceType !== ASSESSMENT && this.questionsArr.length)
       || (this.resourceType === ASSESSMENT && this.questionsArr.length >= this.quizConfig.minQues)
-    const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || {}).length
-      || this.quizStoreSvc.hasChanged
+    // const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || { }).length
+    //   || this.quizStoreSvc.hasChanged
+    const needSave = this.quizStoreSvc.hasChanged
     if (hasMinLen && needSave) {
       if (this.canEditJson) {
         this.checkValidity()
@@ -364,17 +541,36 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  // uploadJson(array: any[], fileName: string) {
+  //   this.quizDuration = this.metaContentService.getUpdatedMeta(this.currentId).duration
+  //   const quizData = {
+  //     timeLimit: this.quizDuration,
+  //     isAssessment: this.resourceType === ASSESSMENT,
+  //     questions: array,
+  //   }
+  //   // const blob = new Blob([JSON.stringify(quizData, null, 2)], { type: 'application/json' })
+  //   // const formdata = new FormData()
+  //   // formdata.append('content', blob)
+  //   return this.uploadService.encodedUpload(quizData, fileName, {
+  //     contentId: this.currentId,
+  //     contentType: CONTENT_BASE_WEBHOST,
+  //   })
+  // }
+
   uploadJson(array: any[], fileName: string) {
+    console.log('Upload JSon')
     this.quizDuration = this.metaContentService.getUpdatedMeta(this.currentId).duration
     const quizData = {
-      timeLimit: this.quizDuration,
+      // tslint:disable-next-line: prefer-template
+      timeLimit: parseInt(this.quizDuration + '', 10) || 5,
       isAssessment: this.resourceType === ASSESSMENT,
       questions: array,
     }
-    // const blob = new Blob([JSON.stringify(quizData, null, 2)], { type: 'application/json' })
-    // const formdata = new FormData()
-    // formdata.append('content', blob)
-    return this.uploadService.encodedUpload(quizData, fileName, {
+    const blob = new Blob([JSON.stringify(quizData, null, 2)], { type: 'application/json' })
+    const formdata = new FormData()
+    formdata.append('content', blob)
+
+    return this.uploadService.encodedUploadAWS(formdata, fileName, {
       contentId: this.currentId,
       contentType: CONTENT_BASE_WEBHOST,
     })
@@ -401,6 +597,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   // have to upload two jsons one original json and other without answer
   // original json will be in assessment-key.json and other in assessment.json
   triggerUpload(data: any[]) {
+
+    console.log('Trigger Upload ')
     const dataWithOutAns = JSON.parse(JSON.stringify(data))
     const dataWithAns = JSON.parse(JSON.stringify(data))
     dataWithOutAns.map((ques: any) => {
@@ -430,7 +628,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       })
     })
     this.resourceType = this.metaContentService.getUpdatedMeta(this.currentId).categoryType
-    // console.log(dataWithAns, dataWithOutAns)
+    console.log('resourceType  ', this.resourceType)
+    console.log(dataWithAns, dataWithOutAns)
     const uploadData = this.resourceType === ASSESSMENT ? dataWithOutAns : dataWithAns
     return forkJoin([
       this.uploadJson(
@@ -439,11 +638,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       ),
       this.resourceType === ASSESSMENT
         ? this.uploadJson(dataWithAns, ASSESSMENT_JSON_WITH_KEY)
-        : of({} as any),
+        : of({ } as any),
     ])
   }
 
   action(type: string) {
+    console.log('Quiz action type ', type)
     switch (type) {
       case 'next':
         this.currentStep += 1
@@ -543,7 +743,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       const needSave =
         this.quizStoreSvc.hasChanged ||
-        Object.keys(this.metaContentService.upDatedContent[this.currentId] || {}).length
+        Object.keys(this.metaContentService.upDatedContent[this.currentId] || { }).length
       if (needSave) {
         this.checkValidity()
         if (this.isValid) {
@@ -604,7 +804,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   takeAction() {
     const needSave =
-      Object.keys(this.metaContentService.upDatedContent[this.currentId] || {}).length ||
+      Object.keys(this.metaContentService.upDatedContent[this.currentId] || { }).length ||
       this.quizStoreSvc.hasChanged
     if (!needSave && this.metaContentService.getUpdatedMeta(this.currentId).status === 'Live') {
       this.showNotification(Notify.UP_TO_DATE)
@@ -659,13 +859,13 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
             : 0,
       }
 
-      const updatedContent = this.metaContentService.upDatedContent[this.currentId] || {}
+      const updatedContent = this.metaContentService.upDatedContent[this.currentId] || { }
       const updatedMeta = this.metaContentService.getUpdatedMeta(this.currentId)
-      const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || {})
+      const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || { })
         .length
       const saveCall = (needSave
         ? this.triggerSave(updatedContent, this.currentId)
-        : of({} as any)
+        : of({ } as any)
       ).pipe(
         mergeMap(() =>
           this.editorService
@@ -684,7 +884,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                   )
                   .pipe(
                     catchError(() => {
-                      return of({} as any)
+                      return of({ } as any)
                     }),
                   ),
               ),

@@ -41,8 +41,8 @@ export class MobileAppsService {
   }
 
   public simulateMobile() {
-    window.appRef = {}
-    window.webkit = {}
+    window.appRef = { }
+    window.webkit = { }
   }
 
   get isMobile(): boolean {
@@ -70,10 +70,10 @@ export class MobileAppsService {
     return false
   }
   goOffline() {
-    this.sendDataAppToClient(GO_OFFLINE, {})
+    this.sendDataAppToClient(GO_OFFLINE, { })
   }
   viewSettings() {
-    this.sendDataAppToClient(DISPLAY_SETTING, {})
+    this.sendDataAppToClient(DISPLAY_SETTING, { })
   }
   sendViewerData(viewerData: NsContent.IContent) {
     this.sendDataAppToClient(GET_PLAYERCONTENT_JSON, viewerData)
@@ -90,7 +90,6 @@ export class MobileAppsService {
     })
   }
   setupGlobalMethods() {
-    console.log('MOBILEEE')
     // Incoming Requests
     window.navigateTo = (url: string, params?: any) => {
       document.dispatchEvent(new CustomEvent(NAVIGATION_DATA_INCOMING, { detail: { url, params } }))
@@ -102,7 +101,6 @@ export class MobileAppsService {
     // window.getSessionId = () => this.sendDataAppToClient(SESSIONID_OUTGOING, this.authSvc.sessionId)
     // window.isAuthenticated = () =>
     //   this.sendDataAppToClient(ISAUTHENTICATED_OUTGOING, this.authSvc.isAuthenticated)
-    console.log('ENd mobile')
   }
 
   isFunctionAvailableInAndroid(functionName: string) {

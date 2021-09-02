@@ -841,7 +841,8 @@
               <mat-form-field appearance="outline" class="margin-top-xs"
                 [ngClass]="{ 'mat-form-field-invalid': showError('subTitle') }">
                 <input matInput formControlName="subTitle" #subTitle maxlength="1000" i18n-placeholder
-                  placeholder="Enter subtitle here" [required]="checkCondition('subTitle', 'required') ? true : null" />
+                  (keyup)="setPurposeValue(subTitle.value)" placeholder="Enter subtitle here"
+                  [required]="checkCondition('subTitle', 'required') ? true : null" />
                 <mat-hint align="end">{{ subTitle.value.length }} / 1000</mat-hint>
                 <mat-error *ngIf="showError('subTitle')" i18n="Subtitle Error|Explains Subtitle is required">
                   Subtitle is mandatory

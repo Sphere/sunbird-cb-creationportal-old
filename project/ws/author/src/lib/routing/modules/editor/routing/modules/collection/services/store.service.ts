@@ -315,12 +315,14 @@ export class CollectionStoreService {
       const meta = this.authInitService.creationEntity.get(cType) as ICreateEntity
       const parentData = this.contentService.parentUpdatedMeta()
 
+      console.log('Meta === ', meta)
+
       // Temporary Static Value
       let mimeTypeData = meta.mimeType
-      if (cType.toLowerCase() === 'assessment') {
-        mimeTypeData = 'application/json'
-        // mimeTypeData = 'application/vnd.ekstep.ecml-archive'
-      }
+      // if (cType.toLowerCase() === 'assessment') {
+      //   mimeTypeData = 'application/json'
+      //   // mimeTypeData = 'application/vnd.ekstep.ecml-archive'
+      // }
 
       const requestBody = {
         name: topicName,

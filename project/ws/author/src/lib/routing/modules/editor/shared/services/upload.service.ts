@@ -145,6 +145,40 @@ export class UploadService {
     )
   }
 
+  encodedUploadAWS(
+    data: any,
+    fileName: string,
+    contentData: NSApiRequest.IContentData,
+  ): Observable<NSApiResponse.IFileApiResponse> {
+    // return this.apiService.post<NSApiResponse.IFileApiResponse>(
+    //   `${CONTENT_BASE_ENCODE}`,
+    //   {
+    //     fileName,
+    //     text: this.apiService.base64(CONTENT_BASE_ENCODE, data).data,
+    //     // tslint:disable-next-line:max-line-length
+    //     location: `${this.accessService.rootOrg.replace(/ /g, '_')}/
+    //    ${this.accessService.org.replace(/ /g, '_')}/Public/${contentData.contentId.replace('.img', '')}
+    //    ${contentData.contentType}`,
+    //   },
+    //   false,
+    // )
+    const file = data.get('content') as File
+    // file.name = fileName
+    // if (FIXED_FILE_NAME.indexOf(fileName) < 0) {
+    //   fileName = this.appendToFilename(fileName)
+    // }
+    const newFormData = new FormData()
+    newFormData.append('data', file, fileName)
+    return this.apiService.post<NSApiResponse.IFileApiResponseV2>(
+      // tslint:disable-next-line:max-line-length
+      // ${CONTENT_BASE}${this.accessService.rootOrg.replace(/ /g, '_')}/${this.accessService.org.replace(/ /g, '_')}/Public/${contentData.contentId.replace('.img', '')}${contentData.contentType}
+      `apis/proxies/v8/upload/action/content/v3/upload/${contentData.contentId}`,
+      newFormData,
+      false,
+      null,
+    )
+  }
+
   startEncoding(url: string, id: string): Observable<any> {
     return this.apiService.post(CONTENT_VIDEO_ENCODE + id.replace('.img', ''), {
       authArtifactURL: url,
