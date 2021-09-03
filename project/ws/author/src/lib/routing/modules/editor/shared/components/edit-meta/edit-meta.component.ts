@@ -555,6 +555,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   storeData() {
     try {
       const originalMeta = this.contentService.getOriginalMeta(this.contentMeta.identifier)
+
       if (originalMeta && this.isEditEnabled) {
         const expiryDate = this.contentForm.value.expiryDate
         const currentMeta: NSContent.IContentMeta = JSON.parse(JSON.stringify(this.contentForm.value))
@@ -614,7 +615,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         //   currentMeta.categoryType = currentMeta.resourceType
         // }
 
-        const meta = <any>{ }
+        const meta = <any>{}
         if (this.canExpiry) {
           currentMeta.expiryDate = `${expiryDate
             .toISOString()
@@ -1401,7 +1402,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       nodeType: [],
       org: [],
       creatorDetails: [],
-      passPercentage: [],
+      // passPercentage: [],
       plagScan: [],
       playgroundInstructions: [],
       playgroundResources: [],
@@ -1475,9 +1476,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setPurposeValue(sub: any) {
-    console.log('subtityle ', sub)
     this.contentForm.controls.purpose.setValue(sub)
-    console.log(this.contentForm.controls.purpose.value)
   }
   openCatalogSelector() {
     const oldCatalogs = this.addCommonToCatalog(this.contentForm.controls.catalogPaths.value)

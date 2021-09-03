@@ -337,7 +337,7 @@ export class InitService {
           .toPromise()
 
         userPidProfile.roles = [...userPidProfile.roles, 'PUBLIC', 'EDITOR', 'CONTENT_CREATOR']
-        console.log('ROlesss  ', userPidProfile.roles)
+        // console.log('ROlesss  ', userPidProfile.roles)
 
         if (userPidProfile && userPidProfile.roles && userPidProfile.roles.length > 0 &&
           this.hasRole(userPidProfile.roles)) {
@@ -480,7 +480,6 @@ export class InitService {
       .get<NsInstanceConfig.IConfig>(`${this.configSvc.sitePath}/site.config.json`)
       .toPromise()
 
-
     publicConfig.rootOrg = 'aastrika'
     publicConfig.org = ['aastrika']
 
@@ -567,7 +566,7 @@ export class InitService {
       }
       return map1
       // tslint:disable-next-line: align
-    }, { })
+    }, {})
     const groups = appsConfig.groups
       .map((group: NsAppsConfig.IGroup) => ({
         ...group,

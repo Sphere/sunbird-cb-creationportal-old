@@ -739,8 +739,16 @@
                       'ws-mat-warn-text': showError('appIcon')
                     }" height="150" width="256" [src]="contentForm.controls.appIcon.value | relativeUrl"
                   (error)="changeToDefaultImg($event)" /> -->
-                <img class="image max-width" height="150" width="256"
-                  [src]="contentForm.controls.appIcon.value | relativeUrl" (error)="changeToDefaultImg($event)" />
+
+                <!-- <img class="image max-width" height="150" width="256" [src]="contentForm.controls.appIcon.value "
+                  (error)="changeToDefaultImg($event)" /> -->
+
+                <img class="image max-width" [ngClass]="{
+                                                          'image-border': showError('appIcon'),
+                                                          'ws-mat-warn-text': showError('appIcon')
+                                                        }" height="150" width="256"
+                  [src]="contentForm.controls.appIcon.value" (error)="changeToDefaultImg($event)" />
+
                 <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadThumbnail.click()">
                   <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
                   <input type="file" #uploadThumbnail

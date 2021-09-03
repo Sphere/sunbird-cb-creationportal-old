@@ -11,17 +11,17 @@ import { IAssessmentDetails } from '../routing/modules/iap-assessment/interface/
 import { isArray } from 'lodash'
 @Injectable()
 export class EditorContentService {
-  originalContent: { [key: string]: NSContent.IContentMeta } = { }
-  upDatedContent: { [key: string]: NSContent.IContentMeta } = { }
-  iapContent: { [key: string]: IAssessmentDetails } = { }
+  originalContent: { [key: string]: NSContent.IContentMeta } = {}
+  upDatedContent: { [key: string]: NSContent.IContentMeta } = {}
+  iapContent: { [key: string]: IAssessmentDetails } = {}
   public currentContent!: string
   public parentContent!: string
   public isSubmitted = false
   public changeActiveCont = new BehaviorSubject<string>('')
   public onContentChange = new BehaviorSubject<string>('')
 
-  listOfFiles: { [key: string]: File } = { }
-  listOfUpdatedIPR: { [key: string]: boolean } = { }
+  listOfFiles: { [key: string]: File } = {}
+  listOfUpdatedIPR: { [key: string]: boolean } = {}
 
   constructor(
     private accessService: AccessControlService,
@@ -59,7 +59,7 @@ export class EditorContentService {
       return JSON.parse(
         JSON.stringify({
           ...this.originalContent[id],
-          ...(this.upDatedContent[id] ? this.upDatedContent[id] : { }),
+          ...(this.upDatedContent[id] ? this.upDatedContent[id] : {}),
         }),
       )
     } {
@@ -67,7 +67,7 @@ export class EditorContentService {
       if (value) {
         return value
       }
-      return JSON.parse(JSON.stringify({ }))
+      return JSON.parse(JSON.stringify({}))
     }
   }
   getChildData(id: string): NSContent.IContentMeta | undefined {
@@ -165,7 +165,7 @@ export class EditorContentService {
 
   setUpdatedMeta(meta: NSContent.IContentMeta, id: string, emit = true) {
     this.upDatedContent[id] = {
-      ...(this.upDatedContent[id] ? this.upDatedContent[id] : { }),
+      ...(this.upDatedContent[id] ? this.upDatedContent[id] : {}),
       ...JSON.parse(JSON.stringify(meta)),
     }
 
@@ -173,7 +173,7 @@ export class EditorContentService {
       this.setOriginalMeta(meta)
     } else {
       this.originalContent[id] = {
-        ...(this.originalContent[id] ? this.originalContent[id] : { }),
+        ...(this.originalContent[id] ? this.originalContent[id] : {}),
         ...JSON.parse(JSON.stringify(meta)),
       }
     }
@@ -184,7 +184,7 @@ export class EditorContentService {
 
   setIapContent(meta: IAssessmentDetails, id: string) {
     this.iapContent[id] = {
-      ...(this.iapContent[id] ? this.iapContent[id] : { }),
+      ...(this.iapContent[id] ? this.iapContent[id] : {}),
       ...JSON.parse(JSON.stringify(meta)),
     }
   }
@@ -193,7 +193,7 @@ export class EditorContentService {
   }
 
   reset() {
-    this.originalContent = { }
+    this.originalContent = {}
     this.currentContent = ''
     this.isSubmitted = false
   }
@@ -215,7 +215,7 @@ export class EditorContentService {
   }
 
   private getParentUpdatedMeta(): NSContent.IContentMeta {
-    const meta = { } as any
+    const meta = {} as any
     const parentMeta = this.getUpdatedMeta(this.parentContent)
     Object.keys(this.authInitService.authConfig).map(v => {
       // tslint:disable-next-line: no-console
@@ -239,7 +239,7 @@ export class EditorContentService {
   }
   createInAnotherLanguage(
     language: string,
-    meta = { },
+    meta = {},
   ): Observable<NSContent.IContentMeta | boolean> {
     const parentContent = this.getParentUpdatedMeta()
     if (this.isLangPresent(language)) {
@@ -269,13 +269,12 @@ export class EditorContentService {
 
   isValid(id: string): boolean {
     let isValid = true
-    let arr = ['competencies', 'draftImage', 'source', 'purpose']
+    const arr = ['competencies', 'draftImage', 'source', 'purpose']
 
-    console.log('Editor content authInitService ', this.authInitService.authConfig)
     Object.keys(this.authInitService.authConfig).map(v => {
       if (!arr.includes(v)) {
         if (this.checkCondition(id, v, 'required') && !this.isPresent(v, id)) {
-          console.log('checkCondition  ', v)
+          // console.log('checkCondition  ', v)
           isValid = false
         }
       }
@@ -455,7 +454,6 @@ export class EditorContentService {
       return false
     }
   }
-
 
   jsonVerify(s: string) { try { JSON.parse(s); return true } catch (e) { return false } }
 

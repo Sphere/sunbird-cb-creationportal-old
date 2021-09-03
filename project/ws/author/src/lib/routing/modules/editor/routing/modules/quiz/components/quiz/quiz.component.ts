@@ -199,7 +199,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * IGOT Reference of reading
-   * https://aastrika-sb.idc.tarento.com/assets/public/public/do_1133575688784117761150/artifact/do_1133575688784117761150_1630583149734_quiz.json
+   * https://aastrika-sb.idc.tarento.com/assets/public/public/do_1133575688784117761150
+   * /artifact/do_1133575688784117761150_1630583149734_quiz.json
    */
 
   // ngOnInit() {
@@ -226,7 +227,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   //           const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
   //             this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({ } as any))
   //           fileData.subscribe(jsonResponse => {
-  //             console.log('Json response nnn ', jsonResponse)
   //             if (jsonResponse && Object.keys(jsonResponse).length > 1) {
   //               if (v.contents && v.contents.length) {
   //                 if (jsonResponse) {
@@ -400,7 +400,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       this.metaContentService.setUpdatedMeta(meta, id)
       this.data.emit('saveAndNext')
     }
-    return of({ })
+    return of({})
   }
 
   generateUrl(oldUrl: string) {
@@ -455,21 +455,21 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     this.loaderService.changeLoad.next(true)
     const updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
     const hasTimeChanged =
-      (this.metaContentService.upDatedContent[this.currentId] || { }).duration &&
+      (this.metaContentService.upDatedContent[this.currentId] || {}).duration &&
       this.quizDuration !== this.metaContentService.upDatedContent[this.currentId].duration
 
     const doUploadJson = this.quizStoreSvc.hasChanged || hasTimeChanged
-    if (!(this.metaContentService.getUpdatedMeta(this.currentId) || { }).duration) {
+    if (!(this.metaContentService.getUpdatedMeta(this.currentId) || {}).duration) {
       this.metaContentService.setUpdatedMeta({ duration: this.quizDuration } as any, this.currentId)
     }
     return (doUploadJson
       ? this.triggerUpload(JSON.parse(JSON.stringify(updatedQuizData)))
-      : of({ } as any)
+      : of({} as any)
       // ).pipe(map(v => v.result))
     ).pipe(mergeMap(v => {
       // tslint:disable-next-line: no-parameter-reassignment
       v = v[0].result
-      const updatedMeta = this.metaContentService.upDatedContent[this.currentId] || { }
+      const updatedMeta = this.metaContentService.upDatedContent[this.currentId] || {}
       // const check = this.resourceType === ASSESSMENT ? v.length && v[1] && v[1].code : true
       // if (v && v[0] && v[0].code && check) {
       if (v && (v.artifactUrl || v.content_url)) {
@@ -558,7 +558,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   // }
 
   uploadJson(array: any[], fileName: string) {
-    console.log('Upload JSon')
     this.quizDuration = this.metaContentService.getUpdatedMeta(this.currentId).duration
     const quizData = {
       // tslint:disable-next-line: prefer-template
@@ -597,8 +596,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   // have to upload two jsons one original json and other without answer
   // original json will be in assessment-key.json and other in assessment.json
   triggerUpload(data: any[]) {
-
-    console.log('Trigger Upload ')
     const dataWithOutAns = JSON.parse(JSON.stringify(data))
     const dataWithAns = JSON.parse(JSON.stringify(data))
     dataWithOutAns.map((ques: any) => {
@@ -628,8 +625,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       })
     })
     this.resourceType = this.metaContentService.getUpdatedMeta(this.currentId).categoryType
-    console.log('resourceType  ', this.resourceType)
-    console.log(dataWithAns, dataWithOutAns)
     const uploadData = this.resourceType === ASSESSMENT ? dataWithOutAns : dataWithAns
     return forkJoin([
       this.uploadJson(
@@ -638,12 +633,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       ),
       this.resourceType === ASSESSMENT
         ? this.uploadJson(dataWithAns, ASSESSMENT_JSON_WITH_KEY)
-        : of({ } as any),
+        : of({} as any),
     ])
   }
 
   action(type: string) {
-    console.log('Quiz action type ', type)
     switch (type) {
       case 'next':
         this.currentStep += 1
@@ -743,7 +737,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       const needSave =
         this.quizStoreSvc.hasChanged ||
-        Object.keys(this.metaContentService.upDatedContent[this.currentId] || { }).length
+        Object.keys(this.metaContentService.upDatedContent[this.currentId] || {}).length
       if (needSave) {
         this.checkValidity()
         if (this.isValid) {
@@ -804,7 +798,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   takeAction() {
     const needSave =
-      Object.keys(this.metaContentService.upDatedContent[this.currentId] || { }).length ||
+      Object.keys(this.metaContentService.upDatedContent[this.currentId] || {}).length ||
       this.quizStoreSvc.hasChanged
     if (!needSave && this.metaContentService.getUpdatedMeta(this.currentId).status === 'Live') {
       this.showNotification(Notify.UP_TO_DATE)
@@ -859,13 +853,13 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
             : 0,
       }
 
-      const updatedContent = this.metaContentService.upDatedContent[this.currentId] || { }
+      const updatedContent = this.metaContentService.upDatedContent[this.currentId] || {}
       const updatedMeta = this.metaContentService.getUpdatedMeta(this.currentId)
-      const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || { })
+      const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || {})
         .length
       const saveCall = (needSave
         ? this.triggerSave(updatedContent, this.currentId)
-        : of({ } as any)
+        : of({} as any)
       ).pipe(
         mergeMap(() =>
           this.editorService
@@ -884,7 +878,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                   )
                   .pipe(
                     catchError(() => {
-                      return of({ } as any)
+                      return of({} as any)
                     }),
                   ),
               ),

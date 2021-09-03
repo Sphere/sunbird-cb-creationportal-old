@@ -33,7 +33,7 @@ export class GeneralGuard implements CanActivate {
     requiredFeatures: string[],
     requiredRoles: string[],
   ): Promise<T | UrlTree | boolean> {
-    let refAppend = `?ref=${encodeURIComponent(state.url)}`
+    const refAppend = `?ref=${encodeURIComponent(state.url)}`
     /* tslint:disable */
     console.log(refAppend)
     /**

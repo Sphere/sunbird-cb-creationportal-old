@@ -329,7 +329,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   save(nextAction?: string) {
 
-    const updatedContent = this.contentService.upDatedContent || { }
+    const updatedContent = this.contentService.upDatedContent || {}
     if (this.viewMode === 'assessment') {
       this.triggerQuizSave = true
     } else
@@ -414,7 +414,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     const currentNodeId = this.storeService.lexIdMap.get(this.currentParentId) as number[]
     let returnValue = this.storeService.validationCheck(currentNodeId[0])
 
-    console.log('returnvalue ', returnValue)
+    // console.log('returnvalue ', returnValue)
 
     // returnValue = null
 
@@ -448,8 +448,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   takeAction(contentAction?: string) {
     this.isSubmitPressed = true
-    const needSave = Object.keys(this.contentService.upDatedContent || { }).length
-    console.log('Neddsave ', needSave)
+    const needSave = Object.keys(this.contentService.upDatedContent || {}).length
+    // console.log('Neddsave ', needSave)
     if (!needSave && !this.isChanged) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -460,7 +460,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       return
     }
 
-    console.log('this.validationCheck', this.validationCheck)
+    // console.log('this.validationCheck', this.validationCheck)
 
     if (this.validationCheck) {
 
@@ -494,8 +494,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       // dialogRef.afterClosed().subscribe((commentsForm: FormGroup) => {
       //   this.finalCall(commentsForm)
       // })
-      dialogRef.afterClosed().subscribe((commentsForm: FormGroup) => {
-        console.log(commentsForm)
+      dialogRef.afterClosed().subscribe(() => {
         this.finalCall(contentAction)
       })
     }
@@ -787,7 +786,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   async finalCall(contentActionTaken: any) {
     contentActionTaken = 'acceptConent'
-    console.log('Final call ', contentActionTaken)
     let flag = 0
     const resourceListToReview: any = []
     const moduleListToReview: any = []
@@ -867,7 +865,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             const tempRequset: NSApiRequest.IContentUpdateV3 = {
               request: {
                 data: {
-                  nodesModified: { },
+                  nodesModified: {},
                   hierarchy: this.storeService.getTreeHierarchy(),
                 },
               },
@@ -888,7 +886,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         }
       }
     } else {
-      console.log('Content rejected')
       this.changeStatusToDraft('Content Rejected')
     }
   }
@@ -973,7 +970,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         const tempRequset: NSApiRequest.IContentUpdateV3 = {
           request: {
             data: {
-              nodesModified: { },
+              nodesModified: {},
               hierarchy: this.storeService.getTreeHierarchy(),
             },
           },
@@ -1148,7 +1145,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         const tempRequset: NSApiRequest.IContentUpdateV3 = {
           request: {
             data: {
-              nodesModified: { },
+              nodesModified: {},
               hierarchy: this.storeService.getTreeHierarchy(),
             },
           },
@@ -1394,7 +1391,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
 
   finalSaveAndRedirect(updatedMeta: any) {
-    const saveCall = (of({ } as any)).pipe(
+    const saveCall = (of({} as any)).pipe(
       mergeMap(() =>
         this.editorService
           // .forwardBackward(
@@ -1416,7 +1413,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               //     return of({} as any)
               //   }),
               // ),
-              return of({ } as any)
+              return of({} as any)
             }
             ),
           ),
@@ -1501,7 +1498,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     )
   }
   preview(id: string) {
-    const updatedContent = this.contentService.upDatedContent || { }
+    const updatedContent = this.contentService.upDatedContent || {}
     let isContentUpdated = false
     _.each(updatedContent, i => { if (Object.keys(i).length > 0) { isContentUpdated = true } })
 
@@ -1512,7 +1509,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     const saveCall =
       (isContentUpdated || Object.keys(this.storeService.changedHierarchy).length) && this.checkForEmptyData
         ? this.triggerSave()
-        : of({ } as any)
+        : of({} as any)
 
 
     this.loaderService.changeLoad.next(true)
@@ -1719,7 +1716,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   // }
 
   triggerSave1() {
-    const nodesModified: any = { }
+    const nodesModified: any = {}
     let isRootPresent = false
     // console.log('TTTTTTTTTTTTTTTTTTT ', this.contentService.upDatedContent)
 
@@ -1741,7 +1738,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         nodesModified[this.currentContent] = {
           isNew: false,
           root: true,
-          metadata: { },
+          metadata: {},
         }
       }
 
@@ -1765,14 +1762,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         return this.editorService.updateContentV3(requestBody, this.contentService.currentContent).pipe(
           tap(() => {
             // console.log('SUCCESS RESPONSE')
-            this.storeService.changedHierarchy = { }
+            this.storeService.changedHierarchy = {}
             Object.keys(this.contentService.upDatedContent).forEach(id => {
               this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
               this.editorService.readContentV2(id).subscribe(resData => {
                 this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
               })
             })
-            this.contentService.upDatedContent = { }
+            this.contentService.upDatedContent = {}
           }),
         )
 
@@ -1851,11 +1848,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     // console.log('updateContentV4  COURSE COLL')
     return this.editorService.updateContentV4(requestBodyV22).pipe(
       tap(() => {
-        this.storeService.changedHierarchy = { }
+        this.storeService.changedHierarchy = {}
         Object.keys(this.contentService.upDatedContent).forEach(async id => {
           this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
         })
-        this.contentService.upDatedContent = { }
+        this.contentService.upDatedContent = {}
       }),
     )
 
@@ -1901,7 +1898,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   triggerSave2() {
 
-    const nodesModified: any = { }
+    const nodesModified: any = {}
     let isRootPresent = false
 
     // console.log('TTTTTTTTTTTTTTTTTTT ', this.contentService.upDatedContent)
@@ -1921,7 +1918,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       nodesModified[this.currentParentId] = {
         isNew: false,
         root: true,
-        metadata: { },
+        metadata: {},
       }
     }
 
@@ -1939,7 +1936,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
-          nodesModified: { },
+          nodesModified: {},
           hierarchy: this.storeService.changedHierarchy,
         },
       },
@@ -1969,14 +1966,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         // console.log('UPDATE AUTH TABLE Parent ', requestBody)
         return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
           tap(() => {
-            this.storeService.changedHierarchy = { }
+            this.storeService.changedHierarchy = {}
             Object.keys(this.contentService.upDatedContent).forEach(id => {
               this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
               this.editorService.readContentV2(id).subscribe(resData => {
                 this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
               })
             })
-            this.contentService.upDatedContent = { }
+            this.contentService.upDatedContent = {}
           }),
         )
       }
@@ -1985,11 +1982,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     // console.log('updateContentV4  COURSE COLL')
     return this.editorService.updateContentV4(requestBodyV2).pipe(
       tap(() => {
-        this.storeService.changedHierarchy = { }
+        this.storeService.changedHierarchy = {}
         Object.keys(this.contentService.upDatedContent).forEach(async id => {
           this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
         })
-        this.contentService.upDatedContent = { }
+        this.contentService.upDatedContent = {}
       }),
     )
 
@@ -1997,7 +1994,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   triggerSave() {
 
-    const nodesModified: any = { }
+    const nodesModified: any = {}
     let isRootPresent = false
 
     // console.log('TTTTTTTTTTTTTTTTTTT ', this.contentService.upDatedContent)
@@ -2017,7 +2014,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       nodesModified[this.currentParentId] = {
         isNew: false,
         root: true,
-        metadata: { },
+        metadata: {},
       }
     }
 
@@ -2026,7 +2023,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
-          nodesModified: { },
+          nodesModified: {},
           hierarchy: this.storeService.changedHierarchy,
         },
       },
@@ -2109,25 +2106,24 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
         tap(() => {
           // this.storeService.getHierarchyTreeStructure()
-          this.storeService.changedHierarchy = { }
+          this.storeService.changedHierarchy = {}
           Object.keys(this.contentService.upDatedContent).forEach(id => {
             this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
             this.editorService.readContentV2(id).subscribe(resData => {
               this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
             })
           })
-          this.contentService.upDatedContent = { }
+          this.contentService.upDatedContent = {}
         }),
         tap(async () => {
           const tempRequset: NSApiRequest.IContentUpdateV3 = {
             request: {
               data: {
-                nodesModified: { },
+                nodesModified: {},
                 hierarchy: this.storeService.getTreeHierarchy(),
               },
             },
           }
-          console.log('FFFFFFFFFFFF', this.currentCourseId)
           await this.editorService.updateContentV4(tempRequset).subscribe(() => {
             this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
               this.contentService.resetOriginalMetaWithHierarchy(data)
@@ -2160,14 +2156,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     // console.log('updateContentV4  COURSE COLL')
     return this.editorService.updateContentV4(requestBodyV2).pipe(
       tap(() => {
-        this.storeService.changedHierarchy = { }
+        this.storeService.changedHierarchy = {}
         Object.keys(this.contentService.upDatedContent).forEach(async id => {
           this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
         })
         this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
           this.contentService.resetOriginalMetaWithHierarchy(data)
         })
-        this.contentService.upDatedContent = { }
+        this.contentService.upDatedContent = {}
       }),
     )
 
@@ -2202,8 +2198,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
-
-    console.log('XXXXXXX')
 
     // const nodeClicked = event.nodeClicked
     this.contentService.changeActiveCont.next(event.identifier)
@@ -2261,7 +2255,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   action(type: string) {      // recheck
-    console.log('action ', type)
+    // console.log('action ', type)
     switch (type) {
       case 'next':
         this.viewMode = 'meta'
@@ -2418,7 +2412,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   getAction(): string {
-    console.log('Get action', this.contentService.originalContent[this.currentParentId].status)
     switch (this.contentService.originalContent[this.currentParentId].status) {
       case 'Draft':
       case 'Live':
@@ -2451,8 +2444,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   get checkForEmptyData(): boolean {
-    const updatedContent = this.contentService.upDatedContent || { }
-    let nodesModified = { }
+    const updatedContent = this.contentService.upDatedContent || {}
+    let nodesModified = {}
     let flag = false
     Object.keys(updatedContent).forEach(ele => {
       nodesModified = this.contentService.cleanProperties(updatedContent[ele])

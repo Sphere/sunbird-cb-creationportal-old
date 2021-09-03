@@ -427,5 +427,4 @@ export class EditorService {
     return this.apiService.post<any>(EMAIL_NOTIFICATION, requestBody)
   }
 
-
 }

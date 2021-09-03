@@ -72,8 +72,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
   @Input() canTransCode = false
   isMobile = false
   @Output() data = new EventEmitter<any>()
-  uploadedFileList: { [key: string]: File } = { }
-  updatedIPRList: { [key: string]: boolean } = { }
+  uploadedFileList: { [key: string]: File } = {}
+  updatedIPRList: { [key: string]: boolean } = {}
 
   constructor(
     private formBuilder: FormBuilder,
@@ -346,7 +346,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
     } else {
       this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
       this.storeData()
-      const nodesModified: any = { }
+      const nodesModified: any = {}
       Object.keys(this.contentService.upDatedContent).forEach(v => {
         nodesModified[v] = {
           isNew: false,
@@ -366,7 +366,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
         const updateHierarchyReq: NSApiRequest.IContentUpdateV3 = {
           request: {
             data: {
-              nodesModified: { },
+              nodesModified: {},
               hierarchy: this.storeService.getTreeHierarchy(),
             },
           },
@@ -491,7 +491,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
   storeData() {
     const originalMeta = this.contentService.getOriginalMeta(this.currentContent)
     const currentMeta = this.fileUploadForm.value
-    const meta: any = { }
+    const meta: any = {}
     Object.keys(currentMeta).map(v => {
       if (
         v !== 'versionKey' &&

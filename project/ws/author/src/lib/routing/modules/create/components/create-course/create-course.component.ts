@@ -29,11 +29,11 @@ export class CreateCourseComponent implements OnInit {
   iprAccepted = false
 
   constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private svc: CreateService,
-    private router: Router,
-    private loaderService: LoaderService, private dialog: MatDialog,
-    private authInitService: AuthInitService,
-    private accessControlSvc: AccessControlService,
-    private formBuilder: FormBuilder) { }
+              private router: Router,
+              private loaderService: LoaderService, private dialog: MatDialog,
+              private authInitService: AuthInitService,
+              private accessControlSvc: AccessControlService,
+              private formBuilder: FormBuilder) { }
   createCourseForm!: FormGroup
   ngOnInit() {
     this.createCourseForm = this.fb.group({
@@ -119,9 +119,6 @@ export class CreateCourseComponent implements OnInit {
     this.loaderService.changeLoad.next(true)
     // const _name = this.createCourseForm.get('name')
     if (this.content && this.courseData.courseName) {
-
-
-      console.log('course clicked')
       this.svc
         .createV2({
           name: this.courseData.courseName,
