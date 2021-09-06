@@ -5,6 +5,7 @@ const helmet = require('helmet')
 const timeout = require('connect-timeout')
 const morgan = require('morgan')
 const httpProxy = require('http-proxy')
+// const healthcheck = require('express-healthcheck')
 
 const CONSTANTS = {
   PORTAL_PORT: parseInt(process.env.PORTAL_PORT || '3002', 10),
@@ -18,6 +19,13 @@ var proxy = httpProxy.createProxyServer({
   timeout: 10000,
 })
 app.use(timeout('100s'))
+
+// app.use('/healthcheck', healthcheck({
+//   healthy() {
+//     return { everything: 'is ok' }
+//   },
+// }))
+
 // Add required helmet configurations
 app.use(
   helmet({
@@ -56,7 +64,8 @@ serveAssets('/ja')
 function serveAssets(hostPath) {
   app.use(
     `${hostPath}/assets`,
-    proxyCreator(express.Router(), CONSTANTS.WEB_HOST_PROXY + '/web-hosted/client-assets/dist'),
+    // proxyCreator(express.Router(), CONSTANTS.WEB_HOST_PROXY + '/web-hosted/client-assets/dist'),
+     express.static(path.join(__dirname, `${hostPath}`, `assets`)) //  "public" off of current is root
   )
 }
 
@@ -95,7 +104,8 @@ function uiHostCreator(hostPath, hostFolderName) {
   )
   app.get(`${hostPath}/*`, (req, res) => {
     if (req.url.startsWith('/assets/')) {
-      res.status(404).send('requested asset is not available')
+      res.sendFile(path.join(__dirname, `www/${hostFolderName}/${req.url}`))
+      // res.status(404).send('requested asset is not available')
     } else {
       res.sendFile(path.join(__dirname, `www/${hostFolderName}/index.html`))
     }
