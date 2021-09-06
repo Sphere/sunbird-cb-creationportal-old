@@ -58,7 +58,8 @@ export class AppInterceptorService implements HttpInterceptor {
             switch (error.status) {
               case 419:      // login
                 const localUrl = location.origin
-                const pageName = '/page/home'
+                // const pageName = '/page/home'
+                const pageName = '/author/cbp/me'
                 if (localStorage.getItem('telemetrySessionId')) {
                   localStorage.removeItem('telemetrySessionId')
                 }

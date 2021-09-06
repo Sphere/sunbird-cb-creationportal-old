@@ -454,7 +454,8 @@ export const WIDGET_LIBRARY = {
     data: {
       path: [
         {
-          clickUrl: '/page/home',
+          // clickUrl: '/page/home',
+          clickUrl: '/author/cbp/me',
           text: 'Home',
         },
         {

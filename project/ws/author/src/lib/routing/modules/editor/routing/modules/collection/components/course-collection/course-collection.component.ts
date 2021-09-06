@@ -287,7 +287,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       const parentNode = node
       this.loaderService.changeLoad.next(true)
-      // console.log('111111111 BBB', param, this.couseCreated)
       const isDone = await this.storeService.createChildOrSibling(
         this.couseCreated,
         parentNode,
@@ -307,12 +306,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
 
       if (isDone) {
-
         const newCreatedLexid = this.editorService.newCreatedLexid
         const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
         this.storeService.currentSelectedNode = newCreatedNode
         this.storeService.selectedNodeChange.next(newCreatedNode)
         this.currentContent = this.editorService.newCreatedLexid
+        // update the id
+        this.contentService.currentContent = newCreatedLexid
       }
       this.showAddchapter = false
       this.loaderService.changeLoad.next(false)

@@ -354,12 +354,18 @@ export class FileUploadComponent implements OnInit, OnChanges {
           metadata: this.contentService.upDatedContent[v],
         }
       })
+
       const requestBody: NSApiRequest.IContentUpdateV2 = {
         request: {
           content: nodesModified[this.contentService.currentContent].metadata,
         },
       }
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
+
+      if (requestBody.request.content.category) {
+        delete requestBody.request.content.category
+      }
+
       const contenUpdateRes: any =
         await this.editorService.updateContentV3(requestBody, this.contentService.currentContent).toPromise().catch(_error => { })
       if (contenUpdateRes && contenUpdateRes.params && contenUpdateRes.params.status === 'successful') {

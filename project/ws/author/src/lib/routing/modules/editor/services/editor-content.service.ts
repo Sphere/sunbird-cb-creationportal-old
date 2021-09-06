@@ -269,7 +269,7 @@ export class EditorContentService {
 
   isValid(id: string): boolean {
     let isValid = true
-    const arr = ['competencies', 'draftImage', 'source', 'purpose']
+    const arr = ['competencies', 'draftImage', 'source', 'purpose', 'appIcon', 'license']
 
     Object.keys(this.authInitService.authConfig).map(v => {
       if (!arr.includes(v)) {
