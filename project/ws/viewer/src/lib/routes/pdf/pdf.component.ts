@@ -6,6 +6,7 @@ import { WsEvents, EventService } from '@ws-widget/utils'
 import { NsWidgetResolver } from '@ws-widget/resolver'
 import { ActivatedRoute } from '@angular/router'
 import { ViewerUtilService } from '../../viewer-util.service'
+import { environment } from '../../../../../../../src/environments/environment'
 
 @Component({
   selector: 'viewer-pdf',
@@ -41,7 +42,7 @@ export class PdfComponent implements OnInit, OnDestroy {
     private viewerSvc: ViewerUtilService,
     private eventSvc: EventService,
     private accessControlSvc: AccessControlService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     if (
@@ -59,9 +60,10 @@ export class PdfComponent implements OnInit, OnDestroy {
               this.discussionForumWidget.widgetData.isDisabled = true
             }
           }
-          this.widgetResolverPdfData.widgetData.pdfUrl = this.pdfData
-            ? `/apis/authContent/${encodeURIComponent(this.pdfData.artifactUrl)}`
-            : ''
+          // this.widgetResolverPdfData.widgetData.pdfUrl = this.pdfData
+          //   ? `/apis/authContent/${encodeURIComponent(this.pdfData.artifactUrl)}`
+          //   : ''
+          this.widgetResolverPdfData.widgetData.pdfUrl = this.generateUrl(this.pdfData.artifactUrl)
           this.widgetResolverPdfData.widgetData.disableTelemetry = true
           this.isFetchingDataComplete = true
         })
@@ -76,9 +78,9 @@ export class PdfComponent implements OnInit, OnDestroy {
             this.formDiscussionForumWidget(this.pdfData)
           }
 
-          if (this.pdfData && this.pdfData.artifactUrl.indexOf('content-store') >= 0) {
-            await this.setS3Cookie(this.pdfData.identifier)
-          }
+          // if (this.pdfData && this.pdfData.artifactUrl.indexOf('content-store') >= 0) {
+          //   await this.setS3Cookie(this.pdfData.identifier)
+          // }
           this.widgetResolverPdfData.widgetData.resumePage = 1
           if (this.pdfData && this.pdfData.identifier) {
             if (this.activatedRoute.snapshot.queryParams.collectionId) {
@@ -92,9 +94,11 @@ export class PdfComponent implements OnInit, OnDestroy {
           }
           this.widgetResolverPdfData.widgetData.pdfUrl = this.pdfData
             ? this.forPreview
-              ? this.viewerSvc.getAuthoringUrl(this.pdfData.artifactUrl)
+              ? this.pdfData.artifactUrl
+              // ? this.viewerSvc.getAuthoringUrl(this.pdfData.artifactUrl)
               : this.pdfData.artifactUrl
             : ''
+
           this.widgetResolverPdfData.widgetData.identifier = this.pdfData && this.pdfData.identifier
           this.widgetResolverPdfData = JSON.parse(JSON.stringify(this.widgetResolverPdfData))
           if (this.pdfData) {
@@ -104,9 +108,26 @@ export class PdfComponent implements OnInit, OnDestroy {
           }
           this.isFetchingDataComplete = true
         },
-        () => {},
+        () => { },
       )
     }
+  }
+
+  generateUrl(oldUrl: string) {
+    const chunk = oldUrl.split('/')
+    const newChunk = environment.azureHost.split('/')
+    const newLink = []
+    for (let i = 0; i < chunk.length; i += 1) {
+      if (i === 2) {
+        newLink.push(newChunk[i])
+      } else if (i === 3) {
+        newLink.push(environment.azureBucket)
+      } else {
+        newLink.push(chunk[i])
+      }
+    }
+    const newUrl = newLink.join('/')
+    return newUrl
   }
 
   formDiscussionForumWidget(content: NsContent.IContent) {
@@ -163,15 +184,15 @@ export class PdfComponent implements OnInit, OnDestroy {
     })
   }
 
-  private async setS3Cookie(contentId: string) {
-    await this.contentSvc
-      .setS3Cookie(contentId)
-      .toPromise()
-      .catch(() => {
-        // throw new DataResponseError('COOKIE_SET_FAILURE')
-      })
-    return
-  }
+  // private async setS3Cookie(contentId: string) {
+  //   await this.contentSvc
+  //     .setS3Cookie(contentId)
+  //     .toPromise()
+  //     .catch(() => {
+  //       // throw new DataResponseError('COOKIE_SET_FAILURE')
+  //     })
+  //   return
+  // }
 
   ngOnDestroy() {
     if (this.pdfData) {

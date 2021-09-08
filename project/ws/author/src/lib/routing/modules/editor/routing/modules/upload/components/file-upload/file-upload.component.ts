@@ -235,7 +235,27 @@ export class FileUploadComponent implements OnInit, OnChanges {
     }
   }
 
+  // assignFileValues(file: File, fileName: string) {
+  //   this.contentService.updateListOfFiles(this.currentContent, file)
+  //   this.contentService.updateListOfUpdatedIPR(this.currentContent, this.iprAccepted)
+
+  //   this.file = file
+  //   this.mimeType = fileName.toLowerCase().endsWith('.pdf')
+  //     ? 'application/pdf'
+  //     : (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v'))
+  //       ? 'application/x-mpegURL'
+  //       : fileName.toLowerCase().endsWith('.zip')
+  //         ? 'application/html'
+  //         : 'audio/mpeg'
+  //   if (this.mimeType === 'application/x-mpegURL' || this.mimeType === 'audio/mpeg') {
+  //     this.getDuration()
+  //   } else if (this.mimeType === 'application/html') {
+  //     this.extractFile()
+  //   }
+  // }
+
   assignFileValues(file: File, fileName: string) {
+    const currentContentData = this.contentService.originalContent[this.currentContent]
     this.contentService.updateListOfFiles(this.currentContent, file)
     this.contentService.updateListOfUpdatedIPR(this.currentContent, this.iprAccepted)
 
@@ -243,15 +263,33 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.mimeType = fileName.toLowerCase().endsWith('.pdf')
       ? 'application/pdf'
       : (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v'))
-        ? 'application/x-mpegURL'
+        ? 'video/mp4'
         : fileName.toLowerCase().endsWith('.zip')
-          ? 'application/html'
+          ? 'application/vnd.ekstep.html-archive'
           : 'audio/mpeg'
-    if (this.mimeType === 'application/x-mpegURL' || this.mimeType === 'audio/mpeg') {
-      this.getDuration()
-    } else if (this.mimeType === 'application/html') {
-      this.extractFile()
+
+    if (
+      (currentContentData.status === 'Live' || currentContentData.prevStatus === 'Live')
+      && this.mimeType !== currentContentData.mimeType
+    ) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.CANNOT_CHANGE_MIME_TYPE,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+      this.fileUploadForm.controls.artifactUrl.setValue(currentContentData.artifactUrl)
+      this.mimeType = currentContentData.mimeType
+      this.iprChecked()
+    } else {
+      this.file = file
+      if (this.mimeType === 'video/mp4' || this.mimeType === 'audio/mpeg') {
+        this.getDuration()
+      } else if (this.mimeType === 'application/vnd.ekstep.html-archive') {
+        this.extractFile()
+      }
     }
+
   }
 
   // From IGOT
@@ -396,6 +434,119 @@ export class FileUploadComponent implements OnInit, OnChanges {
     }
   }
 
+  // upload() {
+  //   const formdata = new FormData()
+  //   formdata.append(
+  //     'content',
+  //     this.file as Blob,
+  //     (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''),
+  //   )
+  //   this.loaderService.changeLoad.next(true)
+  //   this.uploadService
+  //     .upload(
+  //       formdata,
+  //       {
+  //         contentId: this.currentContent,
+  //         contentType:
+  //           this.mimeType === 'application/pdf'
+  //             ? CONTENT_BASE_STATIC
+  //             : this.mimeType === 'application/html'
+  //               ? CONTENT_BASE_WEBHOST
+  //               : CONTENT_BASE_STREAM,
+  //       },
+  //       undefined,
+  //       this.mimeType === 'application/html',
+  //     )
+  //     .pipe(
+  //       tap(v => {
+  //         this.canUpdate = false
+  //         let url = ''
+  //         if (this.mimeType === 'application/html') {
+  //           // tslint:disable-next-line:max-line-length
+  //           // url = `${document.location.origin}/content-store/${this.accessService.rootOrg}/${this.accessService.org}/
+  //                            Public/${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
+  //           url = `${environment.karmYogi}content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/
+  //           ${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
+
+  //         } else {
+  //           // url = (v.authArtifactURL || v.artifactURL).replace(/%2F/g, '/')
+  //           url = (v.result.artifactUrl).replace(/%2F/g, '/')
+  //         }
+  //         this.fileUploadForm.controls.artifactUrl.setValue(url)
+  //         // this.fileUploadForm.controls.downloadUrl.setValue(v ? v.downloadURL : '')
+  //         this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
+
+  //         this.fileUploadForm.controls.downloadUrl.setValue(v ? v.result.artifactUrl : '')
+  //         if (this.mimeType === 'application/html' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
+  //           this.fileUploadForm.controls.isExternal.setValue(false)
+  //         }
+
+  //         // if (this.mimeType === 'application/x-mpegURL') {
+  //         //   this.fileUploadForm.controls.transcoding.setValue({
+  //         //     lastTranscodedOn: null,
+  //         //     retryCount: 0,
+  //         //     status: 'STARTED',
+  //         //   })
+  //         // }
+
+  //         this.fileUploadForm.controls.duration.setValue(this.duration)
+  //         this.fileUploadForm.controls.size.setValue((this.file as File).size)
+  //         this.canUpdate = true
+  //       }),
+  //       mergeMap(v => {
+  //         // if (this.mimeType === 'application/x-mpegURL') {
+  //         //   return this.uploadService
+  //         //     .startEncoding(v.authArtifactURL || v.artifactURL, this.currentContent)
+  //         //     .pipe(map(() => v))
+  //         // }
+
+  //         if (this.mimeType === 'application/pdf') {
+  //           this.profanityCheckAPICall(v.result.artifactUrl)
+  //         }
+  //         return of(v)
+  //       }),
+  //     )
+  //     .subscribe(
+  //       _ => {
+  //         this.loaderService.changeLoad.next(false)
+  //         this.storeData()
+  //         this.snackBar.openFromComponent(NotificationComponent, {
+  //           data: {
+  //             type: Notify.UPLOAD_SUCCESS,
+  //           },
+  //           duration: NOTIFICATION_TIME * 1000,
+  //         })
+  //         this.data.emit('save')
+  //       },
+  //       () => {
+  //         this.loaderService.changeLoad.next(false)
+  //         this.snackBar.openFromComponent(NotificationComponent, {
+  //           data: {
+  //             type: Notify.UPLOAD_FAIL,
+  //           },
+  //           duration: NOTIFICATION_TIME * 1000,
+  //         })
+  //       },
+  //     )
+  // }
+
+  generateUrl(oldUrl: string) {
+    const chunk = oldUrl.split('/')
+    const newChunk = environment.azureHost.split('/')
+    const newLink = []
+    for (let i = 0; i < chunk.length; i += 1) {
+      if (i === 2) {
+        newLink.push(newChunk[i])
+      } else if (i === 3) {
+        newLink.push(environment.azureBucket)
+      } else {
+        newLink.push(chunk[i])
+      }
+    }
+    const newUrl = newLink.join('/')
+    return newUrl
+  }
+
   upload() {
     const formdata = new FormData()
     formdata.append(
@@ -412,17 +563,28 @@ export class FileUploadComponent implements OnInit, OnChanges {
           contentType:
             this.mimeType === 'application/pdf'
               ? CONTENT_BASE_STATIC
-              : this.mimeType === 'application/html'
+              : this.mimeType === 'application/vnd.ekstep.html-archive'
                 ? CONTENT_BASE_WEBHOST
                 : CONTENT_BASE_STREAM,
         },
         undefined,
-        this.mimeType === 'application/html',
+        // this.mimeType === 'application/html',
+        this.mimeType === 'application/vnd.ekstep.html-archive',
       )
       .pipe(
         tap(v => {
           this.canUpdate = false
           let url = ''
+          const artifactUrl = v.result && v.result.artifactUrl ? v.result.artifactUrl : ''
+          if (this.mimeType === 'video/mp4' || this.mimeType === 'application/pdf' || this.mimeType === 'audio/mpeg') {
+            this.fileUploadForm.controls.artifactUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
+            this.fileUploadForm.controls.downloadUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
+          } else {
+            this.fileUploadForm.controls.artifactUrl.setValue(v ? artifactUrl : '')
+            this.fileUploadForm.controls.downloadUrl.setValue(v ? artifactUrl : '')
+          }
+          this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
+
           if (this.mimeType === 'application/html') {
             // tslint:disable-next-line:max-line-length
             // url = `${document.location.origin}/content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
@@ -434,12 +596,18 @@ export class FileUploadComponent implements OnInit, OnChanges {
             url = (v.result.artifactUrl).replace(/%2F/g, '/')
           }
           this.fileUploadForm.controls.artifactUrl.setValue(url)
-          // this.fileUploadForm.controls.downloadUrl.setValue(v ? v.downloadURL : '')
-          this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
+          // // this.fileUploadForm.controls.downloadUrl.setValue(v ? v.downloadURL : '')
+          // this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
 
-          this.fileUploadForm.controls.downloadUrl.setValue(v ? v.result.artifactUrl : '')
-          if (this.mimeType === 'application/html' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
+          // this.fileUploadForm.controls.downloadUrl.setValue(v ? v.result.artifactUrl : '')
+          // if (this.mimeType === 'application/html' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
+          //   this.fileUploadForm.controls.isExternal.setValue(false)
+          // }
+
+          if (this.mimeType === 'application/vnd.ekstep.html-archive' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
             this.fileUploadForm.controls.isExternal.setValue(false)
+            // this.fileUploadForm.controls['streamingUrl'].setValue(v ?
+            //   this.generateStreamUrl((this.fileUploadCondition.url) ? this.fileUploadCondition.url : '') : '')
           }
 
           // if (this.mimeType === 'application/x-mpegURL') {
@@ -449,6 +617,13 @@ export class FileUploadComponent implements OnInit, OnChanges {
           //     status: 'STARTED',
           //   })
           // }
+          if (this.mimeType === 'video/mp4') {
+            this.fileUploadForm.controls.transcoding.setValue({
+              lastTranscodedOn: null,
+              retryCount: 0,
+              status: 'STARTED',
+            })
+          }
 
           this.fileUploadForm.controls.duration.setValue(this.duration)
           this.fileUploadForm.controls.size.setValue((this.file as File).size)
@@ -490,6 +665,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
         },
       )
   }
+
   profanityCheckAPICall(url: string) {
     this.profanityService.startProfanity(this.currentContent, url, (this.file ? this.file.name : this.currentContent)).subscribe()
   }
@@ -562,6 +738,10 @@ export class FileUploadComponent implements OnInit, OnChanges {
   closeDialog() {
     this.dialog.closeAll()
   }
+
+  // generateStreamUrl(fileName: string) {
+  //   return `${environment.karmYogi}${environment.scromContentEndpoint}${this.currentContent}-snapshot/${fileName}`
+  // }
 
   processAndShowResult() {
     if (this.errorFileList.length) {
