@@ -1,4 +1,4 @@
-import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+// import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 import { ValueService } from '@ws-widget/utils/src/public-api'
 import {
   Component,
@@ -84,7 +84,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
     private loaderService: LoaderService,
     private authInitService: AuthInitService,
     private valueSvc: ValueService,
-    private accessService: AccessControlService,
+    // private accessService: AccessControlService,
     private profanityService: ProfanityService,
     private editorService: EditorService,
     private storeService: CollectionStoreService,
