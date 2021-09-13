@@ -51,8 +51,9 @@
     }" [routerLink]="
       data.contentType !== 'Knowledge Board' ? ['/author/viewer/' + data.identifier] : []
     " [queryParamsHandling]="data.contentType === 'Knowledge Board' ? 'preserve' : ''">
-      <img class="" role="link" [src]="data.appIcon | relativeUrl" (error)="changeToDefaultImg($event)"
-        [alt]="data.name" />
+      <!-- <img class="" role="link" [src]="data.appIcon | relativeUrl" (error)="changeToDefaultImg($event)"
+        [alt]="data.name" /> -->
+      <img class="" role="link" [src]="data.appIcon" (error)="changeToDefaultImg($event)" [alt]="data.name" />
     </a>
   </div>
   <div class="item2">

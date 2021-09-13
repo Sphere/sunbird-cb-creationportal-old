@@ -124,6 +124,7 @@ export namespace NsContent {
     references?: { url: string; title: string }[]
     resumePage?: number // For player WebModule in UI
     [key: string]: any
+    streamingUrl?: string
   }
 
   export interface IContentMinimal {

@@ -116,6 +116,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
       downloadUrl: [],
       transcoding: [],
       versionKey: [],
+      streamingUrl: [],
     })
   }
 
@@ -148,6 +149,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.fileUploadForm.controls.size.setValue(meta.size || 0)
     this.fileUploadForm.controls.duration.setValue(meta.duration || '0')
     this.fileUploadForm.controls.versionKey.setValue(meta.versionKey || '')
+    this.fileUploadForm.controls.streamingUrl.setValue(meta.streamingUrl || '')
     this.canUpdate = true
     this.fileUploadForm.markAsPristine()
     this.fileUploadForm.markAsUntouched()
@@ -226,6 +228,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
             this.fileUploadCondition.preview &&
             this.fileUploadCondition.externalReference
           ) {
+
             this.assignFileValues(file, fileName)
           }
         })
@@ -572,9 +575,65 @@ export class FileUploadComponent implements OnInit, OnChanges {
         this.mimeType === 'application/vnd.ekstep.html-archive',
       )
       .pipe(
+        // tap(v => {
+        //   this.canUpdate = false
+        //   let url = ''
+        //   const artifactUrl = v.result && v.result.artifactUrl ? v.result.artifactUrl : ''
+        //   if (this.mimeType === 'video/mp4' || this.mimeType === 'application/pdf' || this.mimeType === 'audio/mpeg') {
+        //     this.fileUploadForm.controls.artifactUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
+        //     this.fileUploadForm.controls.downloadUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
+        //   } else {
+        //     this.fileUploadForm.controls.artifactUrl.setValue(v ? artifactUrl : '')
+        //     this.fileUploadForm.controls.downloadUrl.setValue(v ? artifactUrl : '')
+        //   }
+        //   this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
+
+        //   if (this.mimeType === 'application/html') {
+        //     // tslint:disable-next-line:max-line-length
+        //     // url = `${document.location.origin}/content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
+        //     url = `${environment.karmYogi}content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/
+        //     ${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
+
+        //   } else {
+        //     // url = (v.authArtifactURL || v.artifactURL).replace(/%2F/g, '/')
+        //     url = (v.result.artifactUrl).replace(/%2F/g, '/')
+        //   }
+        //   this.fileUploadForm.controls.artifactUrl.setValue(url)
+        //   // // this.fileUploadForm.controls.downloadUrl.setValue(v ? v.downloadURL : '')
+        //   // this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
+
+        //   // this.fileUploadForm.controls.downloadUrl.setValue(v ? v.result.artifactUrl : '')
+        //   // if (this.mimeType === 'application/html' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
+        //   //   this.fileUploadForm.controls.isExternal.setValue(false)
+        //   // }
+
+        //   if (this.mimeType === 'application/vnd.ekstep.html-archive' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
+        //     this.fileUploadForm.controls.isExternal.setValue(false)
+        //     // this.fileUploadForm.controls['streamingUrl'].setValue(v ?
+        //     //   this.generateStreamUrl((this.fileUploadCondition.url) ? this.fileUploadCondition.url : '') : '')
+        //   }
+
+        //   // if (this.mimeType === 'application/x-mpegURL') {
+        //   //   this.fileUploadForm.controls.transcoding.setValue({
+        //   //     lastTranscodedOn: null,
+        //   //     retryCount: 0,
+        //   //     status: 'STARTED',
+        //   //   })
+        //   // }
+        //   if (this.mimeType === 'video/mp4') {
+        //     this.fileUploadForm.controls.transcoding.setValue({
+        //       lastTranscodedOn: null,
+        //       retryCount: 0,
+        //       status: 'STARTED',
+        //     })
+        //   }
+
+        //   this.fileUploadForm.controls.duration.setValue(this.duration)
+        //   this.fileUploadForm.controls.size.setValue((this.file as File).size)
+        //   this.canUpdate = true
+        // }),
         tap(v => {
           this.canUpdate = false
-          let url = ''
           const artifactUrl = v.result && v.result.artifactUrl ? v.result.artifactUrl : ''
           if (this.mimeType === 'video/mp4' || this.mimeType === 'application/pdf' || this.mimeType === 'audio/mpeg') {
             this.fileUploadForm.controls.artifactUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
@@ -585,38 +644,12 @@ export class FileUploadComponent implements OnInit, OnChanges {
           }
           this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
 
-          if (this.mimeType === 'application/html') {
-            // tslint:disable-next-line:max-line-length
-            // url = `${document.location.origin}/content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
-            url = `${environment.karmYogi}content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/
-            ${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
-
-          } else {
-            // url = (v.authArtifactURL || v.artifactURL).replace(/%2F/g, '/')
-            url = (v.result.artifactUrl).replace(/%2F/g, '/')
-          }
-          this.fileUploadForm.controls.artifactUrl.setValue(url)
-          // // this.fileUploadForm.controls.downloadUrl.setValue(v ? v.downloadURL : '')
-          // this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
-
-          // this.fileUploadForm.controls.downloadUrl.setValue(v ? v.result.artifactUrl : '')
-          // if (this.mimeType === 'application/html' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
-          //   this.fileUploadForm.controls.isExternal.setValue(false)
-          // }
-
           if (this.mimeType === 'application/vnd.ekstep.html-archive' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
             this.fileUploadForm.controls.isExternal.setValue(false)
-            // this.fileUploadForm.controls['streamingUrl'].setValue(v ?
-            //   this.generateStreamUrl((this.fileUploadCondition.url) ? this.fileUploadCondition.url : '') : '')
+            this.fileUploadForm.controls['streamingUrl'].setValue(v ?
+              this.generateStreamUrl((this.fileUploadCondition.url) ? this.fileUploadCondition.url : '') : '')
           }
 
-          // if (this.mimeType === 'application/x-mpegURL') {
-          //   this.fileUploadForm.controls.transcoding.setValue({
-          //     lastTranscodedOn: null,
-          //     retryCount: 0,
-          //     status: 'STARTED',
-          //   })
-          // }
           if (this.mimeType === 'video/mp4') {
             this.fileUploadForm.controls.transcoding.setValue({
               lastTranscodedOn: null,
@@ -739,9 +772,9 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.dialog.closeAll()
   }
 
-  // generateStreamUrl(fileName: string) {
-  //   return `${environment.karmYogi}${environment.scromContentEndpoint}${this.currentContent}-snapshot/${fileName}`
-  // }
+  generateStreamUrl(fileName: string) {
+    return `${environment.karmYogi}${environment.scromContentEndpoint}${this.currentContent}-snapshot/${fileName}`
+  }
 
   processAndShowResult() {
     if (this.errorFileList.length) {
