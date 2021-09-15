@@ -1,23 +1,28 @@
-<div class="appicon-image">
-  <mat-toolbar role="navigation" i18n-aria-label aria-label="Toolbar" *ngIf="isAuthor && !forPreview" class="detailBar"
-    [color]="pageNavbar.color" [ngStyle]="pageNavbar?.styles">
-    <!-- <ws-widget-btn-page-back [widgetData]="{ url: 'home',titles:[{title:'Details',url:'none'}] }">
-    </ws-widget-btn-page-back> -->
-    <!-- <span class="margin-left-xs text-truncate">
+<!-- <div class="appicon-image"> -->
+<!-- <mat-toolbar role="navigation" i18n-aria-label aria-label="Toolbar" *ngIf="isAuthor && !forPreview" class="detailBar"
+    [color]="pageNavbar.color" [ngStyle]="pageNavbar?.styles"> -->
+
+<!-- <ws-widget-btn-page-back [widgetData]="{ url: 'home',titles:[{title:'Details',url:'none'}] }">
+</ws-widget-btn-page-back> -->
+<!-- <span class="margin-left-xs text-truncate">
       <span i18n>Details</span>
     </span> -->
+<!--
     <span class="spacer"></span>
     <a *ngIf="isAuthor && !forPreview" [routerLink]="'/author/editor/' + content?.identifier" mat-button>
       <mat-icon>create</mat-icon>
       <span i18n class="ml-2">Edit</span>
-    </a>
-    <!-- <ng-container *ngIf="isAuthor" [wsResolverWidget]="authorBtnWidget"></ng-container> -->
-  </mat-toolbar>
+    </a> -->
 
-  <ws-app-toc-banner role="banner" [banners]="banners" [forPreview]="forPreview" [content]="content"
-    [analytics]="analytics" [resumeData]="resumeData">
-  </ws-app-toc-banner>
-</div>
+<!-- <ng-container *ngIf="isAuthor" [wsResolverWidget]="authorBtnWidget"></ng-container> -->
+<!-- </mat-toolbar> -->
+
+<ws-app-toc-banner role="banner" [banners]="banners" [forPreview]="forPreview" [content]="content"
+  [analytics]="analytics" [resumeData]="resumeData">
+</ws-app-toc-banner>
+<!-- </div> -->
+
+
 <ng-container>
   <div role="main" class="toc-body" *ngIf="!errorCode; else tocError">
     <nav mat-tab-nav-bar class="toc-links mt-8 mat-app-background">
