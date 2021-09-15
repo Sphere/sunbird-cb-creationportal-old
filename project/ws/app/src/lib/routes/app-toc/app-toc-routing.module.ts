@@ -13,6 +13,7 @@ import { AppTocHomeComponent } from './routes/app-toc-home/app-toc-home.componen
 import { AppTocSinglePageComponent as AppTocSinglePageRootComponent } from './routes/app-toc-single-page/app-toc-single-page.component'
 import { AppTocCohortsComponent } from './components/app-toc-cohorts/app-toc-cohorts.component'
 import { LicenseComponent } from './components/license/license.component'
+import { AppTocOverviewComponent as AppTocOverviewRootComponent } from './routes/app-toc-overview/app-toc-overview.component'
 
 const routes: Routes = [
   {
@@ -48,7 +49,8 @@ const routes: Routes = [
       },
       {
         path: 'overview',
-        component: AppTocSinglePageRootComponent,
+        // component: AppTocSinglePageRootComponent,
+        component: AppTocOverviewRootComponent,
         // pathMatch: 'full',
         // redirectTo: 'single-page-view',
       },
