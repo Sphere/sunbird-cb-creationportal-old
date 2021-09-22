@@ -7,7 +7,8 @@
       <!-- <mat-icon class="ml-4">info</mat-icon> -->
     </div>
     <h3 class="mat-h3 ws-mat-primary-text" *ngIf="showInfo">
-      <ng-container> Add the topics that interest you and help iGOT to know you better. This information will be used to
+      <ng-container> Add the topics that interest you and help Sphere Creator to know you better. This information will
+        be used to
         improve the learning
         recommendations. Take the first step to your personalized learning experience!
       </ng-container>
@@ -29,7 +30,7 @@
       (optionSelected)="optionSelected($event.option.value)">
       <mat-option *ngIf="interestSearch.value" [value]="interestSearch.value">{{
         interestSearch.value
-      }}</mat-option>
+        }}</mat-option>
       <mat-option *ngFor="let option of filteredOptions$ | async" [value]="option">{{ option }}</mat-option>
     </mat-autocomplete>
   </div>
@@ -56,7 +57,7 @@
         (removed)="removeInterest(userInterest)">
         <a class="cursor-pointer" (click)="removeInterest(userInterest)">{{
           userInterest
-        }}</a>
+          }}</a>
         <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>
     </mat-chip-list>
