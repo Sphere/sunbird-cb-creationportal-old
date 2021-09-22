@@ -590,7 +590,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
 
         //   if (this.mimeType === 'application/html') {
         //     // tslint:disable-next-line:max-line-length
-        //     // url = `${document.location.origin}/content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
+        //     // url = `${document.location.origin}/content-store/${this.accessService.rootOrg}/
+        // ${this.accessService.org}/Public/${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
         //     url = `${environment.karmYogi}content-store/${this.accessService.rootOrg}/${this.accessService.org}/Public/
         //     ${this.currentContent}/web-hosted/${this.fileUploadCondition.url}`
 
