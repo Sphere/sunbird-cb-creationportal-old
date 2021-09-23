@@ -6,6 +6,7 @@ import { NsContent } from '@ws-widget/collection/src/lib/_services/widget-conten
 import { NsContentConstants } from '@ws-widget/collection/src/lib/_constants/widget-content.constants'
 import { NsAppToc, NsCohorts } from '../models/app-toc.model'
 import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
+import { map } from 'rxjs/operators'
 
 // TODO: move this in some common place
 const PROTECTED_SLAG_V8 = '/apis/protected/v8'
@@ -14,6 +15,7 @@ const PROXY_SLAG_V8 = '/apis/proxies/v8'
 const API_END_POINTS = {
   CONTENT_PARENTS: `${PROTECTED_SLAG_V8}/content/parents`,
   CONTENT_NEXT: `${PROTECTED_SLAG_V8}/content/next`,
+  CONTENT_PARENTS_V2: `${PROXY_SLAG_V8}/action/content/v3/hierarchy/`,
   CONTENT_PARENT: (contentId: string) => `${PROTECTED_SLAG_V8}/content/${contentId}/parent`,
   CONTENT_AUTH_PARENT: (contentId: string, rootOrg: string, org: string) =>
     `/apis/authApi/action/content/parent/hierarchy/${contentId}?rootOrg=${rootOrg}&org=${org}`,
@@ -304,16 +306,29 @@ export class AppTocService {
     )
   }
 
-  fetchContentParent(contentId: string, data: NsAppToc.IContentParentReq, forPreview = false) {
-    return this.http.post<NsAppToc.IContentParentResponse>(
-      forPreview
-        ? API_END_POINTS.CONTENT_AUTH_PARENT(
-          contentId,
-          this.configSvc.rootOrg || '',
-          this.configSvc.org ? this.configSvc.org[0] : '',
-        )
-        : API_END_POINTS.CONTENT_PARENT(contentId),
-      data,
+  // fetchContentParent(contentId: string, data: NsAppToc.IContentParentReq, forPreview = false) {
+  //   return this.http.post<NsAppToc.IContentParentResponse>(
+  //     forPreview
+  //       ? API_END_POINTS.CONTENT_AUTH_PARENT(
+  //         contentId,
+  //         this.configSvc.rootOrg || '',
+  //         this.configSvc.org ? this.configSvc.org[0] : '',
+  //       )
+  //       : API_END_POINTS.CONTENT_PARENT(contentId),
+  //     data,
+  //   )
+  // }
+
+  fetchContentParent(contentId: string, _data: NsAppToc.IContentParentReq, _forPreview = false) {
+    return this.http.get<NsAppToc.IContentParentResponseV2>(
+      `${API_END_POINTS.CONTENT_PARENTS_V2}${contentId}?mode=edit`
+    ).pipe(
+      map((data: any) => {
+        if (data && data.params && data.params.status === 'successful') {
+          return data.result.content
+        }
+      })
     )
   }
+
 }
