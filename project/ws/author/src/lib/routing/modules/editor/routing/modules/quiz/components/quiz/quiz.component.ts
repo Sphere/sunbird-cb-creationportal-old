@@ -561,8 +561,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   // }
 
   uploadJson(array: any[], fileName: string) {
-    this.quizDuration = this.metaContentService.getUpdatedMeta(this.currentId).duration ?
-      this.metaContentService.getUpdatedMeta(this.currentId).duration : 300
+    this.quizDuration = (this.metaContentService.getUpdatedMeta(this.currentId).duration &&
+      this.metaContentService.getUpdatedMeta(this.currentId).duration != '0') ?
+      this.metaContentService.getUpdatedMeta(this.currentId).duration : '300'
     const quizData = {
       // tslint:disable-next-line: prefer-template
       // timeLimit: parseInt(this.quizDuration + '', 10) || 300
@@ -570,6 +571,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       isAssessment: this.resourceType === ASSESSMENT,
       questions: array,
     }
+
     const blob = new Blob([JSON.stringify(quizData, null, 2)], { type: 'application/json' })
     const formdata = new FormData()
     formdata.append('content', blob)
