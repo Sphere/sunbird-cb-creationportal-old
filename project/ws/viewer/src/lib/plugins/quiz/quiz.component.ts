@@ -14,7 +14,7 @@ import { NSQuiz } from './quiz.model'
 import { QuestionComponent } from './components/question/question.component'
 import { SubmitQuizDialogComponent } from './components/submit-quiz-dialog/submit-quiz-dialog.component'
 import { OnConnectionBindInfo } from 'jsplumb'
-import { QuizService } from './quiz.service'
+// import { QuizService } from './quiz.service'
 import { EventService } from '../../../../../../../library/ws-widget/utils/src/public-api'
 export type FetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
 
@@ -78,7 +78,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private events: EventService,
     public dialog: MatDialog,
-    private quizSvc: QuizService,
+    // private quizSvc: QuizService,
   ) { }
 
   ngOnInit() {
