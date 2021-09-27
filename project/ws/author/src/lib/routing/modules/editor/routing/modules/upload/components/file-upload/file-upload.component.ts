@@ -93,7 +93,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
     this.currentContent = this.contentService.currentContent
-    this.triggerDataChange()
+    // this.triggerDataChange()
     this.createFileUploadForm()
     this.contentService.changeActiveCont.subscribe(data => {
       this.currentContent = data
@@ -108,8 +108,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.fileUploadForm = this.formBuilder.group({
       artifactUrl: [],
       isExternal: [],
-      isIframeSupported: [],
-      isInIntranet: [],
+      // isIframeSupported: [],
+      // isInIntranet: [],
       mimeType: [],
       size: [],
       duration: [],
@@ -117,6 +117,15 @@ export class FileUploadComponent implements OnInit, OnChanges {
       transcoding: [],
       versionKey: [],
       streamingUrl: [],
+    })
+    this.fileUploadForm.valueChanges.subscribe(() => {
+      if (this.canUpdate) {
+        this.storeData()
+      }
+    })
+    // this is commented as new UI is not comptable
+    this.fileUploadForm.controls.artifactUrl.valueChanges.subscribe(() => {
+      this.iprAccepted = false
     })
   }
 
@@ -143,8 +152,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.fileUploadForm.controls.artifactUrl.setValue(meta.artifactUrl || '')
     this.fileUploadForm.controls.mimeType.setValue(meta.mimeType || 'application/pdf')
     this.mimeType = (meta.mimeType) ? meta.mimeType : ''
-    this.fileUploadForm.controls.isIframeSupported.setValue(meta.isIframeSupported || 'Yes')
-    this.fileUploadForm.controls.isInIntranet.setValue(meta.isInIntranet || false)
+    // this.fileUploadForm.controls.isIframeSupported.setValue(meta.isIframeSupported || 'Yes')
+    // this.fileUploadForm.controls.isInIntranet.setValue(meta.isInIntranet || false)
     this.fileUploadForm.controls.isExternal.setValue(meta.isExternal || false)
     this.fileUploadForm.controls.size.setValue(meta.size || 0)
     this.fileUploadForm.controls.duration.setValue(meta.duration || '0')
@@ -154,9 +163,9 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.fileUploadForm.markAsPristine()
     this.fileUploadForm.markAsUntouched()
 
-    // if (meta.artifactUrl) {
-    //   this.iprAccepted = true
-    // }
+    if (meta.artifactUrl) {
+      this.iprAccepted = true
+    }
   }
 
   createForm() {

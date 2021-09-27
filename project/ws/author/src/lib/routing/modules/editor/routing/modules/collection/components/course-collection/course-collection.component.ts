@@ -328,7 +328,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   save(nextAction?: string) {
-
     const updatedContent = this.contentService.upDatedContent || {}
     if (this.viewMode === 'assessment') {
       this.triggerQuizSave = true
@@ -2103,15 +2102,16 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       //   requestBody.request.content.topics = tempTopicData
       // }
 
+
       return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
         tap(() => {
           // this.storeService.getHierarchyTreeStructure()
           this.storeService.changedHierarchy = {}
           Object.keys(this.contentService.upDatedContent).forEach(id => {
             this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
-            this.editorService.readContentV2(id).subscribe(resData => {
-              this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
-            })
+            // this.editorService.readContentV2(id).subscribe(resData => {
+            //   this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
+            // })
           })
           this.contentService.upDatedContent = {}
         }),
@@ -2135,6 +2135,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           // })
         })
       )
+
+
+
+      /**--------------------end------------------ */
+
+
+
 
       //  return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
       //     tap(() => {
@@ -2223,7 +2230,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         //   this.viewMode = 'webmodule'
         // }
 
-        if (['application/pdf', 'application/x-mpegURL'].includes(content.mimeType)) {
+        if (['application/pdf', 'application/x-mpegURL', 'application/vnd.ekstep.html-archive', 'audio/mpeg', 'video/mp4'].includes(content.mimeType)) {
           this.viewMode = 'upload'
           // } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === 'link') {
         } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === '') {
@@ -2255,7 +2262,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   action(type: string) {      // recheck
-    // console.log('action ', type)
     switch (type) {
       case 'next':
         this.viewMode = 'meta'
