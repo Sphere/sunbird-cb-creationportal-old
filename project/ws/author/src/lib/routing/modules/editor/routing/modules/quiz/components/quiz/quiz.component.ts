@@ -401,7 +401,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     //   .pipe(tap(() => this.metaContentService.resetOriginalMeta(meta, id)))
     if (meta && id) {
       this.metaContentService.setUpdatedMeta(meta, id)
-      this.data.emit('saveAndNext')
+      this.data.emit('save')
     }
     return of({})
   }
