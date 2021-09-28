@@ -371,12 +371,41 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
           currNode = this.getParentNode(currNode)
         }
         this.store.deleteNode(node.id)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.SUCCESS,
+
+        const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+          request: {
+            data: {
+              nodesModified: {},
+              hierarchy: this.store.getTreeHierarchy(),
+            },
           },
-          duration: NOTIFICATION_TIME * 1000,
+        }
+        this.loaderService.changeLoad.next(true)
+
+        this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: Notify.SUCCESS,
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+          this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+            this.editorStore.resetOriginalMetaWithHierarchy(data)
+          })
+          this.store.changedHierarchy = {}
+          this.loaderService.changeLoad.next(false)
+          // tslint:disable-next-line: align
+        }, error => {
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: (error) ? Notify.FAIL : '',
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+          this.loaderService.changeLoad.next(false)
         })
+
+
       }
     })
   }
@@ -439,7 +468,6 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   takeAction(action: string, node: IContentTreeNode, type?: string) {
-
     switch (action) {
       case 'editMeta':
       case 'editContent':
