@@ -84,6 +84,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   treeControl!: FlatTreeControl<IContentTreeNode>
   triggerQuizSave = false
   triggerUploadSave = false
+  courseId = ''
 
   constructor(
     private contentService: EditorContentService,
@@ -116,6 +117,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.routerValuesCall()
+    this.courseId = this.storeService.parentNode[0]
     this.parentNodeId = this.storeService.currentParentNode
     // this.expandNodesById([this.parentNodeId])
     this.createTopicForm = this.fb.group({
@@ -126,6 +128,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.stepper = this.initService.collectionConfig.stepper
     this.showLanguageBar = this.initService.collectionConfig.languageBar
     const actionButton: IActionButton[] = []
+
     this.initService.collectionConfig.actionButtons.buttons.forEach(action => {
       if (
         this.contentService.checkConditionV2(
@@ -493,10 +496,21 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       // dialogRef.afterClosed().subscribe((commentsForm: FormGroup) => {
       //   this.finalCall(commentsForm)
       // })
-      dialogRef.afterClosed().subscribe(() => {
-        this.finalCall(contentAction)
+      dialogRef.afterClosed().subscribe((d) => {
+        // this.finalCall(contentAction)
+        if (this.getAction() === 'sendForReview' && d.value.action === 'reject') {
+          contentAction = 'rejectContent'
+          this.finalCall(contentAction)
+        } else {
+          this.finalCall(contentAction)
+        }
+
+
       })
     }
+
+
+
   }
 
   // finalCall(commentsForm: FormGroup) {
@@ -784,7 +798,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
 
   async finalCall(contentActionTaken: any) {
-    contentActionTaken = 'acceptConent'
     let flag = 0
     const resourceListToReview: any = []
     const moduleListToReview: any = []
@@ -1518,7 +1531,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.contentService.getUpdatedMeta(id).mimeType as any,
         )
         this.loaderService.changeLoad.next(false)
-        this.previewIdentifier = id
+        // this.previewIdentifier = id
+        this.loaderService.changeLoad.next(false)
+        const url = `author/viewer/${this.mimeTypeRoute}/${id}?collectionId=${this.courseId}&collectionType=Course`
+        this.router.navigateByUrl(url)
       },
       error => {
         if (error.status === 409) {
