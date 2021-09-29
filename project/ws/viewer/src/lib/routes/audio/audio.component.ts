@@ -11,6 +11,7 @@ import {
 } from '@ws-widget/collection'
 import { ViewerUtilService } from '../../viewer-util.service'
 import { NsWidgetResolver } from '@ws-widget/resolver'
+import { environment } from '../../../../../../../src/environments/environment'
 
 @Component({
   selector: 'viewer-audio',
@@ -61,9 +62,10 @@ export class AudioComponent implements OnInit, OnDestroy {
             this.formDiscussionForumWidget(this.audioData)
           }
           this.widgetResolverAudioData = this.initWidgetResolverAudioData()
-          this.widgetResolverAudioData.widgetData.url = this.audioData
-            ? `/apis/authContent/${encodeURIComponent(this.audioData.artifactUrl)}`
-            : ''
+          // this.widgetResolverAudioData.widgetData.url = this.audioData
+          //   ? `/apis/authContent/${encodeURIComponent(this.audioData.artifactUrl)}`
+          //   : ''
+          this.widgetResolverAudioData.widgetData.url = this.generateUrl(this.audioData.artifactUrl)
           this.widgetResolverAudioData.widgetData.disableTelemetry = true
           this.isFetchingDataComplete = true
 
@@ -94,9 +96,9 @@ export class AudioComponent implements OnInit, OnDestroy {
           if (this.audioData) {
             this.formDiscussionForumWidget(this.audioData)
           }
-          if (this.audioData && this.audioData.artifactUrl.indexOf('content-store') >= 0) {
-            await this.setS3Cookie(this.audioData.identifier)
-          }
+          // if (this.audioData && this.audioData.artifactUrl.indexOf('content-store') >= 0) {
+          //   await this.setS3Cookie(this.audioData.identifier)
+          // }
           this.widgetResolverAudioData = this.initWidgetResolverAudioData()
           if (this.audioData && this.audioData.identifier) {
             if (this.activatedRoute.snapshot.queryParams.collectionId) {
@@ -112,7 +114,8 @@ export class AudioComponent implements OnInit, OnDestroy {
             this.widgetResolverAudioData.widgetData.disableTelemetry = true
           }
 
-          if (data.content.data.subTitles[0]) {
+          // if (data.content.data.subTitles[0]) {
+          if (data.content.data.subTitles && data.content.data.subTitles[0]) {
 
             let subTitlesUrl = ''
             if (data.content.data.subTitles[0].url.indexOf('/content-store/') > -1) {
@@ -130,7 +133,8 @@ export class AudioComponent implements OnInit, OnDestroy {
 
           this.widgetResolverAudioData.widgetData.url = this.audioData
             ? this.forPreview
-              ? this.viewerSvc.getAuthoringUrl(this.audioData.artifactUrl)
+              ? this.audioData.artifactUrl
+              // ? this.viewerSvc.getAuthoringUrl(this.audioData.artifactUrl)
               : this.audioData.artifactUrl
             : ''
           this.widgetResolverAudioData.widgetData.identifier = this.audioData
@@ -143,6 +147,24 @@ export class AudioComponent implements OnInit, OnDestroy {
         () => { },
       )
     }
+  }
+
+
+  generateUrl(oldUrl: string) {
+    const chunk = oldUrl.split('/')
+    const newChunk = environment.azureHost.split('/')
+    const newLink = []
+    for (let i = 0; i < chunk.length; i += 1) {
+      if (i === 2) {
+        newLink.push(newChunk[i])
+      } else if (i === 3) {
+        newLink.push(environment.azureBucket)
+      } else {
+        newLink.push(chunk[i])
+      }
+    }
+    const newUrl = newLink.join('/')
+    return newUrl
   }
 
   ngOnDestroy() {
@@ -210,13 +232,13 @@ export class AudioComponent implements OnInit, OnDestroy {
     })
   }
 
-  private async setS3Cookie(contentId: string) {
-    await this.contentSvc
-      .setS3Cookie(contentId)
-      .toPromise()
-      .catch(() => {
-        // throw new DataResponseError('COOKIE_SET_FAILURE')
-      })
-    return
-  }
+  // private async setS3Cookie(contentId: string) {
+  //   await this.contentSvc
+  //     .setS3Cookie(contentId)
+  //     .toPromise()
+  //     .catch(() => {
+  //       // throw new DataResponseError('COOKIE_SET_FAILURE')
+  //     })
+  //   return
+  // }
 }
