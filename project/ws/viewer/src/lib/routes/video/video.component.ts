@@ -12,6 +12,7 @@ import { ValueService } from '@ws-widget/utils'
 import { ActivatedRoute } from '@angular/router'
 import { ViewerUtilService } from '../../viewer-util.service'
 import { Platform } from '@angular/cdk/platform'
+import { environment } from '../../../../../../../src/environments/environment'
 
 @Component({
   selector: 'viewer-video',
@@ -61,11 +62,12 @@ export class VideoComponent implements OnInit, OnDestroy {
           }
           this.widgetResolverVideoData = this.initWidgetResolverVideoData(this.videoData)
           let url = ''
-          if (this.videoData.artifactUrl.indexOf('/content-store/') > -1) {
-            url = `/apis/authContent/${new URL(this.videoData.artifactUrl).pathname}`
-          } else {
-            url = `/apis/authContent/${encodeURIComponent(this.videoData.artifactUrl)}`
-          }
+          // if (this.videoData.artifactUrl.indexOf('/content-store/') > -1) {
+          //   url = `/apis/authContent/${new URL(this.videoData.artifactUrl).pathname}`
+          // } else {
+          //   url = `/apis/authContent/${encodeURIComponent(this.videoData.artifactUrl)}`
+          // }
+          url = this.generateUrl(this.videoData.artifactUrl)
           this.widgetResolverVideoData.widgetData.url = this.videoData ? url : ''
           this.widgetResolverVideoData.widgetData.disableTelemetry = true
           this.isFetchingDataComplete = true
@@ -109,7 +111,7 @@ export class VideoComponent implements OnInit, OnDestroy {
           }
           this.widgetResolverVideoData.widgetData.url = this.videoData
             ? this.forPreview
-              ? this.viewerSvc.getAuthoringUrl(this.videoData.artifactUrl)
+              ? this.videoData.artifactUrl //this.viewerSvc.getAuthoringUrl(this.videoData.artifactUrl)
               : this.videoData.artifactUrl
             : ''
           this.widgetResolverVideoData.widgetData.resumePoint = this.getResumePoint(this.videoData)
@@ -118,7 +120,8 @@ export class VideoComponent implements OnInit, OnDestroy {
             : ''
           this.widgetResolverVideoData.widgetData.mimeType = data.content.data.mimeType
 
-          if (data.content.data.subTitles[0]) {
+          // if (data.content.data.subTitles[0]) {
+          if (data.content.data.subTitles && data.content.data.subTitles[0]) {
 
             let subTitlesUrl = ''
             if (data.content.data.subTitles[0].url.indexOf('/content-store/') > -1) {
@@ -136,14 +139,31 @@ export class VideoComponent implements OnInit, OnDestroy {
           }
 
           this.widgetResolverVideoData = JSON.parse(JSON.stringify(this.widgetResolverVideoData))
-          if (this.videoData && this.videoData.artifactUrl.indexOf('content-store') >= 0) {
-            await this.setS3Cookie(this.videoData.identifier)
-          }
+          // if (this.videoData && this.videoData.artifactUrl.indexOf('content-store') >= 0) {
+          //   await this.setS3Cookie(this.videoData.identifier)
+          // }
           this.isFetchingDataComplete = true
         },
         () => { },
       )
     }
+  }
+
+  generateUrl(oldUrl: string) {
+    const chunk = oldUrl.split('/')
+    const newChunk = environment.azureHost.split('/')
+    const newLink = []
+    for (let i = 0; i < chunk.length; i += 1) {
+      if (i === 2) {
+        newLink.push(newChunk[i])
+      } else if (i === 3) {
+        newLink.push(environment.azureBucket)
+      } else {
+        newLink.push(chunk[i])
+      }
+    }
+    const newUrl = newLink.join('/')
+    return newUrl
   }
 
   ngOnDestroy() {
@@ -232,11 +252,11 @@ export class VideoComponent implements OnInit, OnDestroy {
       )
     })
   }
-  private async setS3Cookie(contentId: string) {
-    await this.contentSvc
-      .setS3Cookie(contentId)
-      .toPromise()
-      .catch(() => { })
-    return
-  }
+  // private async setS3Cookie(contentId: string) {
+  //   await this.contentSvc
+  //     .setS3Cookie(contentId)
+  //     .toPromise()
+  //     .catch(() => { })
+  //   return
+  // }
 }
