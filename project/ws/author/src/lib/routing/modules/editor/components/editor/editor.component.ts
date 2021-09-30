@@ -129,7 +129,7 @@ export class EditorComponent implements OnInit, OnDestroy {
         } else if (contents[0].content.contentType === 'Knowledge Artifact') {
           this.route.navigate(['kartifact-pa'], { relativeTo: this.router })
         } else if (
-          ['application/pdf', 'application/x-mpegURL', 'audio/mpeg'].indexOf(
+          ['application/pdf', 'video/mp4', 'application/x-mpegURL', 'audio/mpeg'].indexOf(
             contents[0].content.mimeType,
           ) > -1
         ) {

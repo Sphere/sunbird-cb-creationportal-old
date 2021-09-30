@@ -748,7 +748,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
 
   getDuration() {
     const content = document.createElement(
-      this.mimeType === 'application/x-mpegURL' ? 'video' : 'audio',
+      this.mimeType === 'video/mp4' ? 'video' : 'audio',
     )
     content.preload = 'metadata'
     this.enableUpload = false

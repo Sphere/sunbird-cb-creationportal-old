@@ -560,7 +560,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         const expiryDate = this.contentForm.value.expiryDate
         const currentMeta: NSContent.IContentMeta = JSON.parse(JSON.stringify(this.contentForm.value))
 
-        const exemptArray = ['application/quiz', 'application/x-mpegURL', 'audio/mpeg',
+        const exemptArray = ['application/quiz', 'application/x-mpegURL', 'audio/mpeg', 'video/mp4',
           'application/vnd.ekstep.html-archive', "application/json"]
         if (exemptArray.includes(originalMeta.mimeType)) {
           currentMeta.artifactUrl = originalMeta.artifactUrl
