@@ -405,7 +405,6 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
           this.loaderService.changeLoad.next(false)
         })
 
-
       }
     })
   }

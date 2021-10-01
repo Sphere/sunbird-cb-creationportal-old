@@ -15,7 +15,7 @@ export const environment: IEnvironment = {
   azureOldHost: 'https://staas-bbs1.cloud.gov.in',
   azureOldBuket: 'igot',
   cbpPortal: 'https://aastrika-sb-cbp.idc.tarento.com/',
-  scromContentEndpoint: 'assets/public/content/html/'
+  scromContentEndpoint: 'assets/public/content/html/',
 }
 interface IEnvironment {
   production: boolean

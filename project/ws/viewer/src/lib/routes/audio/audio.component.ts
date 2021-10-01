@@ -149,7 +149,6 @@ export class AudioComponent implements OnInit, OnDestroy {
     }
   }
 
-
   generateUrl(oldUrl: string) {
     const chunk = oldUrl.split('/')
     const newChunk = environment.azureHost.split('/')

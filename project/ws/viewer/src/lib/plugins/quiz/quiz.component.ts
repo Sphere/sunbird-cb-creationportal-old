@@ -277,7 +277,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   //   // this.fetchingResultsStatus = 'done'
   // }
 
-
   submitQuiz() {
     // this.raiseTelemetry('quiz', null, 'submit')
     this.isSubmitted = true
@@ -350,7 +349,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     //   },
     // )
   }
-
 
   showAnswers() {
     this.showMtfAnswers()

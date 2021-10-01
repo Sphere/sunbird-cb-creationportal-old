@@ -562,7 +562,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   uploadJson(array: any[], fileName: string) {
     this.quizDuration = (this.metaContentService.getUpdatedMeta(this.currentId).duration &&
-      this.metaContentService.getUpdatedMeta(this.currentId).duration != '0') ?
+      this.metaContentService.getUpdatedMeta(this.currentId).duration !== '0') ?
       this.metaContentService.getUpdatedMeta(this.currentId).duration : '300'
     const quizData = {
       // tslint:disable-next-line: prefer-template
