@@ -9,4 +9,5 @@ export const environment = {
   azureBucket: 'content-store',
   azureOldHost: 'https://staas-bbs1.cloud.gov.in',
   azureOldBuket: 'igot',
+  scromContentEndpoint: 'assets/public/content/html/',
 }
