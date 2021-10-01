@@ -61,7 +61,7 @@
 
 
 
-          <mat-menu #menu="matMenu">
+          <!-- <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="setContentType('collection')">
               <mat-icon>book</mat-icon>
               <span>Topic</span>
@@ -83,7 +83,45 @@
               <span>Web Page</span>
             </button>
 
+          </mat-menu> -->
+
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="setContentType('collection')">
+              <mat-icon>book</mat-icon>
+              <span>Topic</span>
+            </button>
+            <button mat-menu-item (click)="setContentType('assessment')">
+              <mat-icon>check_circle</mat-icon>
+              <span>Add Assessment</span>
+            </button>
+            <button mat-menu-item (click)="setContentType('web')">
+              <mat-icon>link</mat-icon>
+              <span>Attach a link</span>
+            </button>
+            <button mat-menu-item (click)="setContentType('upload', 'zip')">
+              <mat-icon>cloud_upload</mat-icon>
+              <span>Upload scorm</span>
+            </button>
+            <button mat-menu-item (click)="setContentType('webModule')">
+              <mat-icon>insert_drive_file</mat-icon>
+              <span>Web Page</span>
+            </button>
+            <button mat-menu-item (click)="setContentType('upload', 'pdf')">
+              <mat-icon>picture_as_pdf</mat-icon>
+              <span>Upload PDF</span>
+            </button>
+            <button mat-menu-item (click)="setContentType('upload', 'audio')">
+              <mat-icon>audiotrack</mat-icon>
+              <span>Upload Audio</span>
+            </button>
+            <button mat-menu-item (click)="setContentType('upload', 'video')">
+              <mat-icon>videocam</mat-icon>
+              <span>Upload Video</span>
+            </button>
+
+
           </mat-menu>
+
         </div>
 
       </form>

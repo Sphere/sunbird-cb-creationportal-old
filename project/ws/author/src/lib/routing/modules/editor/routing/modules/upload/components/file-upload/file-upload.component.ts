@@ -74,6 +74,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
   @Output() data = new EventEmitter<any>()
   uploadedFileList: { [key: string]: File } = {}
   updatedIPRList: { [key: string]: boolean } = {}
+  filetype!: string | null
+  acceptType!: string | '.mp3,.mp4,.pdf,.zip,.m4v'
 
   constructor(
     private formBuilder: FormBuilder,
@@ -91,6 +93,27 @@ export class FileUploadComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit() {
+    this.filetype = this.storeService.uploadFileTypeValue
+    if (this.filetype === 'audio') {
+      this.acceptType = '.mp3'
+    }
+
+    switch (this.filetype) {
+      case 'audio':
+        this.acceptType = '.mp3'
+        break
+      case 'video':
+        this.acceptType = '.mp4, .m4v'
+        break
+      case 'pdf':
+        this.acceptType = '.pdf'
+        break
+      case 'zip':
+        this.acceptType = '.zip'
+        break
+      default:
+        this.acceptType = '.mp3,.mp4,.pdf,.zip,.m4v'
+    }
     this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
     this.currentContent = this.contentService.currentContent
     // this.triggerDataChange()
@@ -163,9 +186,34 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.fileUploadForm.markAsPristine()
     this.fileUploadForm.markAsUntouched()
 
+    if (meta.mimeType) {
+      this.setAcceptType(meta.mimeType)
+    }
+
     if (meta.artifactUrl) {
       this.iprAccepted = true
     }
+  }
+
+  setAcceptType(mimetype: string) {
+    switch (mimetype) {
+      case 'audio/mpeg':
+        this.acceptType = '.mp3'
+        break
+
+      case 'video/mp4':
+        this.acceptType = '.mp4, .m4v'
+        break
+      case 'application/pdf':
+        this.acceptType = '.pdf'
+        break
+      case 'application/vnd.ekstep.html-archive':
+        this.acceptType = '.zip'
+        break
+      default:
+        this.acceptType = '.mp3,.mp4,.pdf,.zip,.m4v'
+    }
+
   }
 
   createForm() {

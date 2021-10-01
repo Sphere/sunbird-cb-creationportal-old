@@ -272,7 +272,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     // console.log('newchap', this.newChapterName)
   }
 
-  async setContentType(param: string) {
+  async setContentType(param: string, filetype?: string) {
+    if (filetype) {
+      this.storeService.uploadFileType.next(filetype)
+    }
     if (this.createTopicForm && this.createTopicForm.value) {
 
       this.couseCreated = param

@@ -60,6 +60,11 @@ export class CollectionStoreService {
     return this.selectedNodeChange.value
   }
 
+  uploadFileType = new BehaviorSubject<string | null>(null)
+  get uploadFileTypeValue() {
+    return this.uploadFileType.value
+  }
+
   allowDrop(dragNode: IContentTreeNode, dropNode: IContentTreeNode): boolean {
     let allow = true
     if (!dragNode.editable || !dropNode.editable) {
@@ -289,6 +294,27 @@ export class CollectionStoreService {
     }
   }
 
+  setUploadContentAcceptType() {
+    let acceptMimeType = ''
+    switch (this.uploadFileTypeValue) {
+      case 'audio':
+        acceptMimeType = 'audio/mpeg'
+        break
+      case 'video':
+        acceptMimeType = 'video/mp4'
+        break
+      case 'pdf':
+        acceptMimeType = 'application/pdf'
+        break
+      case 'zip':
+        acceptMimeType = 'application/vnd.ekstep.html-archive'
+        break
+      default:
+        acceptMimeType = 'application/pdf'
+    }
+    return acceptMimeType
+  }
+
   async createChildOrSibling(
     type: string,
     dropNode: IContentTreeNode,
@@ -316,11 +342,15 @@ export class CollectionStoreService {
       const parentData = this.contentService.parentUpdatedMeta()
 
       // Temporary Static Value
-      const mimeTypeData = meta.mimeType
+      let mimeTypeData = meta.mimeType
       // if (cType.toLowerCase() === 'assessment') {
       //   mimeTypeData = 'application/json'
       //   // mimeTypeData = 'application/vnd.ekstep.ecml-archive'
       // }
+
+      if (cType === 'upload') {
+        mimeTypeData = this.setUploadContentAcceptType()
+      }
 
       const requestBody = {
         name: topicName,
