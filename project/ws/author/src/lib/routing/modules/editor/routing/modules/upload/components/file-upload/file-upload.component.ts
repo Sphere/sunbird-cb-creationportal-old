@@ -831,7 +831,9 @@ export class FileUploadComponent implements OnInit, OnChanges {
   }
 
   generateStreamUrl(fileName: string) {
-    return `${environment.karmYogi}${environment.scromContentEndpoint}${this.currentContent}-snapshot/${fileName}`
+    // return `${environment.karmYogi}${environment.scromContentEndpoint}${this.currentContent}-snapshot/${fileName}`
+    return `${environment.azureHost}/${environment.azureBucket}/html/${this.currentContent}-snapshot/${fileName}`
+
   }
 
   processAndShowResult() {
