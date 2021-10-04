@@ -213,7 +213,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
         const width = window.outerWidth
         const height = window.outerHeight
         const isWindowOpen = window.open(
-          this.htmlContent.artifactUrl,
+          this.htmlContent.streamingUrl,
           '_blank',
           `toolbar=yes,
              scrollbars=yes,

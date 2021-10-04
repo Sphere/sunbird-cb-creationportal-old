@@ -58,7 +58,8 @@
             {{uploadedFileList[currentContent]?.name}}
           </ng-container>
           <ng-template #elseBlock>
-            {{ fileUploadForm.controls.artifactUrl.value.split('/').pop() }}
+            <!-- {{ fileUploadForm.controls.artifactUrl.value.split('/').pop() }} -->
+            {{ 'File exists '}}
             <ng-container> </ng-container>
           </ng-template>
         </p>
