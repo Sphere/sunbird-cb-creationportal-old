@@ -110,6 +110,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy() {
     this.cdr.detach()
+    if (this.activeIndexSubscription) {
+      this.activeIndexSubscription.unsubscribe()
+    }
+    if (this.activeContentSubscription) {
+      this.activeContentSubscription.unsubscribe()
+    }
   }
 
   // ngOnInit() {
@@ -205,8 +211,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     this.showSettingButtons = true
-    this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
 
+    this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
       this.allLanguages = this.authInitService.ordinals.subTitles
       this.loaderService.changeLoadState(true)
       this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
@@ -222,72 +228,74 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
       if (this.activateRoute.parent && this.activateRoute.parent.parent) {
         this.activateRoute.parent.parent.data.subscribe(v => {
-
           this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(newData => {
             const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
-            const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
-              this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({} as any))
+            if (quizContent.mimeType == 'application/json') {
+              const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
+                this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({} as any))
 
-            fileData.subscribe(jsonResponse => {
-              // console.log('jsonResponse ', jsonResponse)
-              if (jsonResponse && Object.keys(jsonResponse).length > 1) {
-                if (v.contents && v.contents.length) {
-                  if (jsonResponse) {
-                    v.contents[0].data = jsonResponse
+              fileData.subscribe(jsonResponse => {
+                // console.log('jsonResponse ', jsonResponse)
+                if (jsonResponse && Object.keys(jsonResponse).length > 1) {
+                  if (v.contents && v.contents.length) {
+                    if (jsonResponse) {
+                      v.contents[0].data = jsonResponse
+                    }
+                    this.allContents.push(v.contents[0].content)
+                    if (v.contents[0].data) {
+                      this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data.questions
+                    } else if (newData[0] && newData[0].data && newData[0].data.questions) {
+                      this.quizStoreSvc.collectiveQuiz[id] = newData[0].data.questions
+                    } else {
+                      this.quizResolverSvc.getUpdatedData(id).subscribe(updatedData => {
+                        if (updatedData && updatedData[0]) {
+                          this.quizStoreSvc.collectiveQuiz[id] = updatedData[0].data.questions
+                          // need to arrange
+                          this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+                          this.resourceType = quizContent.categoryType || 'Assessment'
+                          this.quizDuration = quizContent.duration || '300'
+                          this.questionsArr =
+                            this.quizStoreSvc.collectiveQuiz[id] || []
+                          this.contentLoaded = true
+                          this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
+                          this.currentId = id
+                          this.quizStoreSvc.currentId = id
+                          this.quizStoreSvc.changeQuiz(0)
+                          // need to re-arrange
+                        }
+                      })
+                      this.quizStoreSvc.collectiveQuiz[id] = []
+                    }
+
+                    // this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data
+                    //   ? v.contents[0].data.questions
+                    //   : []
+
+                    this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+                    this.resourceType = quizContent.categoryType || 'Assessment'
+                    this.quizDuration = quizContent.duration || '300'
+                    this.questionsArr =
+                      this.quizStoreSvc.collectiveQuiz[id] || []
+                    this.contentLoaded = true
                   }
-                  this.allContents.push(v.contents[0].content)
-                  if (v.contents[0].data) {
-                    this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data.questions
-                  } else if (newData[0] && newData[0].data && newData[0].data.questions) {
-                    this.quizStoreSvc.collectiveQuiz[id] = newData[0].data.questions
-                  } else {
-                    this.quizResolverSvc.getUpdatedData(id).subscribe(updatedData => {
-                      if (updatedData && updatedData[0]) {
-                        this.quizStoreSvc.collectiveQuiz[id] = updatedData[0].data.questions
-                        // need to arrange
-                        this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
-                        this.resourceType = quizContent.categoryType || 'Assessment'
-                        this.quizDuration = quizContent.duration || '300'
-                        this.questionsArr =
-                          this.quizStoreSvc.collectiveQuiz[id] || []
-                        this.contentLoaded = true
-                        this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
-                        this.currentId = id
-                        this.quizStoreSvc.currentId = id
-                        this.quizStoreSvc.changeQuiz(0)
-                        // need to re-arrange
-                      }
-                    })
+                  if (!this.quizStoreSvc.collectiveQuiz[id]) {
                     this.quizStoreSvc.collectiveQuiz[id] = []
                   }
-
-                  // this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data
-                  //   ? v.contents[0].data.questions
-                  //   : []
-
+                } else {
                   this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
                   this.resourceType = quizContent.categoryType || 'Assessment'
                   this.quizDuration = quizContent.duration || '300'
                   this.questionsArr =
                     this.quizStoreSvc.collectiveQuiz[id] || []
                   this.contentLoaded = true
+                  if (!this.quizStoreSvc.collectiveQuiz[id]) {
+                    this.quizStoreSvc.collectiveQuiz[id] = []
+                  }
                 }
-                if (!this.quizStoreSvc.collectiveQuiz[id]) {
-                  this.quizStoreSvc.collectiveQuiz[id] = []
-                }
-              } else {
-                this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
-                this.resourceType = quizContent.categoryType || 'Assessment'
-                this.quizDuration = quizContent.duration || '300'
-                this.questionsArr =
-                  this.quizStoreSvc.collectiveQuiz[id] || []
-                this.contentLoaded = true
-                if (!this.quizStoreSvc.collectiveQuiz[id]) {
-                  this.quizStoreSvc.collectiveQuiz[id] = []
-                }
-              }
 
-            })
+              })
+            }
+
           })
         })
 
