@@ -141,7 +141,6 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
       //   `${this.htmlContent.artifactUrl}?timestamp='${new Date().getTime()}`
       // )
 
-
       if (this.htmlContent.mimeType !== 'text/x-url') {
         let url = ''
 

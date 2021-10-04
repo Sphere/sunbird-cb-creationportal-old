@@ -230,7 +230,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         this.activateRoute.parent.parent.data.subscribe(v => {
           this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(newData => {
             const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
-            if (quizContent.mimeType == 'application/json') {
+            if (quizContent.mimeType === 'application/json') {
               const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
                 this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({} as any))
 
