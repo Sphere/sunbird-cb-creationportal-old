@@ -1558,8 +1558,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   updateReviewer() {
-    this.contentForm.controls.trackContacts.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
-    this.contentForm.controls.publisherDetails.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
+    // this.contentForm.controls.trackContacts.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
+    // this.contentForm.controls.publisherDetails.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
   }
 
   public parseJsonData(s: string) {

@@ -385,9 +385,9 @@
               <mat-form-field appearance="outline" class="margin-top-xs" class="margin-top-xs"
                 [ngClass]="{ 'mat-form-field-invalid': showError('trackContacts') }">
                 <mat-chip-list #reviewerChipList i18n-aria-label aria-label="Reviewer selection">
-                  <mat-chip *ngFor="let author of parseJsonData(contentForm.controls.trackContacts.value)"
-                    [selectable]="selectable" [removable]="removable"
-                    (removed)="removeEmployee(author, 'trackContacts')">
+                  <!-- <mat-chip *ngFor="let author of parseJsonData(contentForm.controls.trackContacts.value)" -->
+                  <mat-chip *ngFor="let author of contentForm.controls.trackContacts.value" [selectable]="selectable"
+                    [removable]="removable" (removed)="removeEmployee(author, 'trackContacts')">
                     {{ author.name }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                   </mat-chip>
@@ -618,8 +618,10 @@
           (click)="sideNavBarOpened=false">
           <span class="text-white" i18n>Cancel</span>
         </button>
+        <!-- <button mat-raised-button type="button" class="text-white ws-mat-primary-background text-white"
+          (click)="data.emit('push'); isSubmitPressed = true"> -->
         <button mat-raised-button type="button" class="text-white ws-mat-primary-background text-white"
-          (click)="data.emit('push'); isSubmitPressed = true">
+          (click)="data.emit('save'); isSubmitPressed = true">
           <span class="text-white" i18n>
             Save
           </span>
@@ -804,7 +806,7 @@
                       " i18n>
                     Auto calculated from duration of the file
                   </p>
-                  <div class="flex" (click)="updateReviewer()">
+                  <div class="flex">
                     <div class="flex">
                       <mat-form-field appearance="outline" class="duration-width"
                         [ngClass]="{ 'mat-form-field-invalid': showError('duration') }">
