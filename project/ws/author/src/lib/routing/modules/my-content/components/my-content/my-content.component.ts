@@ -25,7 +25,7 @@ import { MyContentService } from '../../services/my-content.service'
 import { map } from 'rxjs/operators'
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
 import * as l from 'lodash'
-// import { ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService } from '@ws-widget/utils'
 
 @Component({
   selector: 'ws-auth-my-content',
@@ -43,7 +43,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private authInitService: AuthInitService,
-    // private configService: ConfigurationsService,
+    private configService: ConfigurationsService,
   ) {
     this.filterMenuTreeControl = new FlatTreeControl<IMenuFlatNode>(
       node => node.levels,
@@ -474,6 +474,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
             'Course',
             'Learning Path',
           ],
+          createdBy: this.configService.userProfile ? this.configService.userProfile.userId : ''
           // createdFor: (this.configService.userProfile) ? [this.configService.userProfile.rootOrgId] : [],
         },
         // pageNo: loadMoreFlag ? this.pagination.offset : 0,
@@ -492,6 +493,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         // isUserRecordEnabled: true,
       },
     }
+
     if (this.finalFilters.length) {
       this.finalFilters.forEach((v: any) => {
         searchV6Data.filters.forEach((filter: any) => {

@@ -69,7 +69,7 @@
       }}</span> -->
     <p class="fs-13 margin-remove flex items-center">
       <!-- <span class="mr-1 max-width-name"> by {{ data.creatorContacts[0].name}}</span> -->
-      <span class="mr-1 max-width-name"> by {{ ' '}} </span>
+      <span class="mr-1 max-width-name"> by {{data.creator}} </span>
       <span class="mr-1" *ngIf="data?.publishedOn"> on
         {{ data?.publishedOn | date }},</span>
       <span class="mr-1" *ngIf="!data?.publishedOn && data?.lastUpdatedOn"> on
