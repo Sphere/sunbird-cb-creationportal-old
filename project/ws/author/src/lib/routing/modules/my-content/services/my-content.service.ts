@@ -50,6 +50,22 @@ export class MyContentService {
       })
   }
 
+  deleteOrUnpublishContent(id: string): Observable<null> {
+    const tempContentIds: string[] = []
+    tempContentIds.push(id)
+    const requestBody = {
+      request: {
+        contentIds: tempContentIds,
+      },
+    }
+    const tempOptions = {
+      body: requestBody,
+    }
+    return this.apiService.delete<any>(
+      `${UNPUBLISH_CONTENT}`, tempOptions
+    )
+  }
+
   restoreContent(id: string): Observable<null> {
     return this.apiService.post(`${CONTENT_RESTORE}${this.accessService.orgRootOrgAsQuery}`, {
       identifier: id,

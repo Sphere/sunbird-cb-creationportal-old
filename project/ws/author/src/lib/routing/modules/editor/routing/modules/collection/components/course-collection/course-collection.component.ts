@@ -2086,40 +2086,40 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         delete requestBody.request.content.trackContacts
       }
 
-      // if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
-      //   requestBody.request.content.reviewer = JSON.stringify(requestBody.request.content.trackContacts)
-      //   requestBody.request.content.reviewerIDs = []
-      //   const tempTrackRecords: string[] = []
-      //   requestBody.request.content.trackContacts.forEach(element => {
-      //     tempTrackRecords.push(element.id)
-      //   })
-      //   requestBody.request.content.reviewerIDs = tempTrackRecords
-      //   delete requestBody.request.content.trackContacts
-      // }
-      // if (requestBody.request.content.publisherDetails && requestBody.request.content.publisherDetails.length > 0) {
-      //   requestBody.request.content.publisherIDs = []
-      //   const tempPublisherRecords: string[] = []
-      //   requestBody.request.content.publisherDetails.forEach(element => {
-      //     tempPublisherRecords.push(element.id)
-      //   })
-      //   requestBody.request.content.publisherIDs = tempPublisherRecords
-      // }
-      // if (requestBody.request.content.creatorContacts && requestBody.request.content.creatorContacts.length > 0) {
-      //   requestBody.request.content.creatorIDs = []
-      //   const tempCreatorsRecords: string[] = []
-      //   requestBody.request.content.creatorContacts.forEach(element => {
-      //     tempCreatorsRecords.push(element.id)
-      //   })
-      //   requestBody.request.content.creatorIDs = tempCreatorsRecords
-      // }
-      // if (requestBody.request.content.catalogPaths && requestBody.request.content.catalogPaths.length > 0) {
-      //   requestBody.request.content.topics = []
-      //   const tempTopicData: string[] = []
-      //   requestBody.request.content.catalogPaths.forEach((element: any) => {
-      //     tempTopicData.push(element.identifier)
-      //   })
-      //   requestBody.request.content.topics = tempTopicData
-      // }
+      if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
+        requestBody.request.content.reviewer = JSON.stringify(requestBody.request.content.trackContacts)
+        requestBody.request.content.reviewerIDs = []
+        const tempTrackRecords: string[] = []
+        requestBody.request.content.trackContacts.forEach(element => {
+          tempTrackRecords.push(element.id)
+        })
+        requestBody.request.content.reviewerIDs = tempTrackRecords
+        delete requestBody.request.content.trackContacts
+      }
+      if (requestBody.request.content.publisherDetails && requestBody.request.content.publisherDetails.length > 0) {
+        requestBody.request.content.publisherIDs = []
+        const tempPublisherRecords: string[] = []
+        requestBody.request.content.publisherDetails.forEach(element => {
+          tempPublisherRecords.push(element.id)
+        })
+        requestBody.request.content.publisherIDs = tempPublisherRecords
+      }
+      if (requestBody.request.content.creatorContacts && requestBody.request.content.creatorContacts.length > 0) {
+        requestBody.request.content.creatorIDs = []
+        const tempCreatorsRecords: string[] = []
+        requestBody.request.content.creatorContacts.forEach(element => {
+          tempCreatorsRecords.push(element.id)
+        })
+        requestBody.request.content.creatorIDs = tempCreatorsRecords
+      }
+      if (requestBody.request.content.catalogPaths && requestBody.request.content.catalogPaths.length > 0) {
+        requestBody.request.content.topics = []
+        const tempTopicData: string[] = []
+        requestBody.request.content.catalogPaths.forEach((element: any) => {
+          tempTopicData.push(element.identifier)
+        })
+        requestBody.request.content.topics = tempTopicData
+      }
 
 
       return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(

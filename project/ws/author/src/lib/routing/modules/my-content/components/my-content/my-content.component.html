@@ -94,10 +94,16 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <a routerLink="/author/my-content" [queryParams]="{ status: 'inreview' }" i18n>Sent for review</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+              <a routerLink="/author/my-content" [queryParams]="{ status: 'reviewed' }" i18n>Under publish</a>
+            </mat-list-item>
+            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+              <a routerLink="/author/my-content" [queryParams]="{ status: 'publish' }" i18n>Under processing</a>
+            </mat-list-item>
+            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'published' }" i18n>Published</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
-              <a routerLink="/author/my-content" [queryParams]="{ status: 'unpublished' }" i18n>Unpublished</a>
+              <a routerLink="/author/my-content" [queryParams]="{ status: 'unpublished' }" i18n>Retired</a>
             </mat-list-item>
             <mat-list-item *ngIf="allowExpiry" mat-button role="listitem" [routerLinkActive]="['active']">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'expiry' }" i18n>Expiring</a>

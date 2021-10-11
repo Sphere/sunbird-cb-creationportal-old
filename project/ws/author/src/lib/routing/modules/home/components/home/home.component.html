@@ -16,13 +16,13 @@
             <span class="font-weight-500" i18n>Create Content</span>
           </mat-panel-title>
         </mat-expansion-panel-header> -->
-        
-        <!-- <mat-list role="list">
+
+    <!-- <mat-list role="list">
           <mat-list-item mat-button role="listitem">
             <a routerLink="/author/my-content" [queryParams]="{ status: 'draft' }" i18n>Draft</a>
           </mat-list-item>
           </mat-list> -->
-        <!-- </mat-expansion-panel>
+    <!-- </mat-expansion-panel>
       </mat-accordion> -->
 
     <ng-container *ngIf="isNewDesign">
@@ -38,6 +38,12 @@
             <mat-list-item *ngIf="allowAuthor" mat-button role="listitem">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'inreview' }" i18n>Sent for review</a>
             </mat-list-item>
+            <mat-list-item *ngIf="allowAuthor" mat-button role="listitem">
+              <a routerLink="/author/my-content" [queryParams]="{ status: 'reviewed' }" i18n>Under publish</a>
+            </mat-list-item>
+            <mat-list-item *ngIf="allowAuthor" mat-button role="listitem">
+              <a routerLink="/author/my-content" [queryParams]="{ status: 'publish' }" i18n>Under processing</a>
+            </mat-list-item>
             <mat-list-item role="listitem" *ngIf="allowReview">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'review' }" i18n>Review</a>
             </mat-list-item>
@@ -48,7 +54,7 @@
               <a routerLink="/author/my-content" [queryParams]="{ status: 'published' }" i18n>Published</a>
             </mat-list-item>
             <mat-list-item *ngIf="allowAuthor" mat-button role="listitem">
-              <a routerLink="/author/my-content" [queryParams]="{ status: 'unpublished' }" i18n>Unpublished</a>
+              <a routerLink="/author/my-content" [queryParams]="{ status: 'unpublished' }" i18n>Retired</a>
             </mat-list-item>
             <mat-list-item *ngIf="allowExpiry && allowAuthor" mat-button role="listitem">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'expiry' }" i18n>Expiring</a>
@@ -76,10 +82,16 @@
               <a routerLink="/author/my-content" [queryParams]="{ status: 'inreview' }" i18n>Sent for review</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem">
+              <a routerLink="/author/my-content" [queryParams]="{ status: 'reviewed' }" i18n>Under publish</a>
+            </mat-list-item>
+            <mat-list-item mat-button role="listitem">
+              <a routerLink="/author/my-content" [queryParams]="{ status: 'publish' }" i18n>Under processing</a>
+            </mat-list-item>
+            <mat-list-item mat-button role="listitem">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'published' }" i18n>Published</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem">
-              <a routerLink="/author/my-content" [queryParams]="{ status: 'unpublished' }" i18n>Unpublished</a>
+              <a routerLink="/author/my-content" [queryParams]="{ status: 'unpublished' }" i18n>Retired</a>
             </mat-list-item>
             <mat-list-item *ngIf="allowExpiry" mat-button role="listitem">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'expiry' }" i18n>Expiring</a>

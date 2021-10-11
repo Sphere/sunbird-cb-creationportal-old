@@ -220,8 +220,9 @@ export class EditorService {
     )
   }
 
-  fetchEmployeeList(data: string): Observable<any[]> {
-    return this.userAutoComplete.fetchAutoComplete(data).pipe(
+  fetchEmployeeList(data: string, roleType?: string): Observable<any[]> {
+    // return this.userAutoComplete.fetchAutoComplete(data).pipe(
+    return this.userAutoComplete.fetchAutoCompleteV2(data, roleType).pipe(
       map((v: NsAutoComplete.IUserAutoComplete[]) => {
         return v.map(user => {
           return {
@@ -325,7 +326,7 @@ export class EditorService {
 
   sendToReview(id: string, parentStatus: string) {
     if (parentStatus === 'Draft') {
-      const requestbody = { }
+      const requestbody = {}
       return this.apiService.post<any>(SEND_TO_REVIEW + id, requestbody)
     }
     return EMPTY

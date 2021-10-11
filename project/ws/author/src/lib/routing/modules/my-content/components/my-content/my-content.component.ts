@@ -171,13 +171,16 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'expiry':
         return ['Live']
       case 'publish':
-        return ['Reviewed']
+        return ['Review']
+      // return ['Reviewed']
       case 'processing':
         return ['Processing']
       case 'unpublished':
-        return ['Unpublished']
+        return ['Unpublished', 'Retired']
       case 'deleted':
         return ['Deleted']
+      case 'reviewed':
+        return ['Review']
     }
     return ['Draft']
   }
@@ -461,22 +464,23 @@ export class MyContentComponent implements OnInit, OnDestroy {
       query: this.queryFilter,
       request: {
         query: this.queryFilter,
-        filters: {
-          status: this.fetchStatus(),
-          // creatorContacts: <string[]>[],
-          // trackContacts: <string[]>[],
-          // publisherDetails: <string[]>[],
-          // isMetaEditingDisabled: [false],
-          // isContentEditingDisabled: [false],
-          // sourceName: [_.get(this.departmentData, 'data.deptName')],
-          contentType: [                              // filter according to type
-            'Collection',
-            'Course',
-            'Learning Path',
-          ],
-          createdBy: this.configService.userProfile ? this.configService.userProfile.userId : '',
-          // createdFor: (this.configService.userProfile) ? [this.configService.userProfile.rootOrgId] : [],
-        },
+        // filters: {
+        //   status: this.fetchStatus(),
+        //   // creatorContacts: <string[]>[],
+        //   // trackContacts: <string[]>[],
+        //   // publisherDetails: <string[]>[],
+        //   // isMetaEditingDisabled: [false],
+        //   // isContentEditingDisabled: [false],
+        //   // sourceName: [_.get(this.departmentData, 'data.deptName')],
+        //   contentType: [                              // filter according to type
+        //     'Collection',
+        //     'Course',
+        //     'Learning Path',
+        //   ],
+        //   createdBy: this.configService.userProfile ? this.configService.userProfile.userId : '',
+        //   // createdFor: (this.configService.userProfile) ? [this.configService.userProfile.rootOrgId] : [],
+        // },
+        filters: <any>{},
         // pageNo: loadMoreFlag ? this.pagination.offset : 0,
         sort_by: { lastUpdatedOn: 'desc' },
         // pageSize: this.pagination.limit,
@@ -493,6 +497,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
         // isUserRecordEnabled: true,
       },
     }
+    requestData.request.filters['status'] = this.fetchStatus()
+    requestData.request.filters['contentType'] = ['Collection', 'Course', 'Learning Path']
 
     if (this.finalFilters.length) {
       this.finalFilters.forEach((v: any) => {
@@ -533,6 +539,55 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // if (this.status === 'publish' && !this.isAdmin) {
     //   requestData.request.filters.publisherDetails.push(this.userId)
     // }
+
+    switch (this.status) {
+      case 'published':
+        if (this.accessService.hasRole(['content_creator'])) {
+          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+        } else
+          if (this.accessService.hasRole(['content_reviewer'])) {
+            requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+          } else
+
+            if (this.accessService.hasRole(['content_publisher'])) {
+              requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+            }
+
+        break
+      case 'publish':
+        requestData.request.filters['reviewStatus'] = 'Reviewed'
+        requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+        break
+      case 'reviewed':
+        requestData.request.filters['reviewStatus'] = 'Reviewed'
+        if (this.accessService.hasRole(['content_creator'])) {
+          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+        } else
+          if (this.accessService.hasRole(['content_reviewer'])) {
+            requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+          } else
+            if (this.accessService.hasRole(['content_publisher'])) {
+              requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+            }
+        break
+      case 'inreview':
+        requestData.request.filters['reviewStatus'] = 'InReview'
+        if (this.accessService.hasRole(['content_creator'])) {
+          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+        } else
+          if (this.accessService.hasRole(['content_reviewer'])) {
+            requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+          } else if (this.accessService.hasRole(['content_publisher'])) {
+            requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+          }
+        break
+      case 'draft':
+      case 'unpublished':
+        if (this.accessService.hasRole(['content_creator'])) {
+          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+        }
+        break
+    }
 
     this.loadService.changeLoad.next(true)
     const observable =
@@ -629,7 +684,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
   deleteContent(request: NSContent.IContentMeta) {
     this.loadService.changeLoad.next(true)
     this.myContSvc
-      .deleteContent(request.identifier, request.contentType === 'Knowledge Board')
+      // .deleteContent(request.identifier, request.contentType === 'Knowledge Board')
+      .deleteOrUnpublishContent(request.identifier)
       .subscribe(
         () => {
           this.loadService.changeLoad.next(false)
