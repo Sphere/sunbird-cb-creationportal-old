@@ -83,6 +83,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
       }
       if (typeof iframeSupport !== 'boolean') {
         iframeSupport = this.htmlContent.isIframeSupported.toLowerCase()
+
         if (iframeSupport === 'no') {
           this.showIframeSupportWarning = true
           setTimeout(
@@ -199,6 +200,14 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   openInNewTab() {
+
+    let openInNewWindowUrl = ''
+
+    if (this.htmlContent && this.htmlContent.mimeType === 'text/x-url') {
+      openInNewWindowUrl = this.htmlContent.artifactUrl
+    } else if (this.htmlContent && this.htmlContent.streamingUrl) {
+      openInNewWindowUrl = this.htmlContent.streamingUrl
+    }
     if (this.htmlContent) {
       if (this.mobAppSvc && this.mobAppSvc.isMobile) {
         // window.open(this.htmlContent.artifactUrl)
@@ -212,7 +221,8 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
         const width = window.outerWidth
         const height = window.outerHeight
         const isWindowOpen = window.open(
-          this.htmlContent.streamingUrl,
+          // this.htmlContent.streamingUrl,
+          openInNewWindowUrl,
           '_blank',
           `toolbar=yes,
              scrollbars=yes,
