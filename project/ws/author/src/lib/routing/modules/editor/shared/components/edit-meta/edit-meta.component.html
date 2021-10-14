@@ -386,6 +386,7 @@
                 [ngClass]="{ 'mat-form-field-invalid': showError('trackContacts') }">
                 <mat-chip-list #reviewerChipList i18n-aria-label aria-label="Reviewer selection">
                   <!-- <mat-chip *ngFor="let author of parseJsonData(contentForm.controls.trackContacts.value)" -->
+
                   <mat-chip *ngFor="let author of contentForm.controls.trackContacts.value" [selectable]="selectable"
                     [removable]="removable" (removed)="removeEmployee(author, 'trackContacts')">
                     {{ author.name }}

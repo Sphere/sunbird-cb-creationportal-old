@@ -199,6 +199,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
           if (typeof value === 'string' && value) {
             this.employeeList = <any[]>[]
             this.fetchTagsStatus = 'fetching'
+
             return this.editorService.fetchEmployeeList(value, 'CONTENT_REVIEWER')
           }
           return of([])
