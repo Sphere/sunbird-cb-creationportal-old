@@ -60,7 +60,7 @@ export class UrlUploadComponent implements OnInit {
       artifactUrl: [''],
       isIframeSupported: [{ value: 'Yes', disabled: false }, Validators.required],
       mimeType: [],
-      isInIntranet: ['', Validators.required],
+      isInIntranet: ['Yes', Validators.required],
       isExternal: [],
       versionKey: '',
     })
