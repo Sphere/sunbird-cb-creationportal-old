@@ -997,7 +997,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'publish':
         return this.accessService.hasRole(PUBLISH_ROLE)
       case 'author':
-        return this.accessService.hasRole(CREATE_ROLE)
+        return this.accessService.hasRole(CREATE_ROLE) || this.accessService.hasRole(REVIEW_ROLE)
+          || this.accessService.hasRole(PUBLISH_ROLE)
       default:
         return false
     }

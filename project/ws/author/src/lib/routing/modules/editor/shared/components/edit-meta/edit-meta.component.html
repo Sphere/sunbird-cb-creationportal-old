@@ -373,7 +373,7 @@
             [ngClass]="{ disable: checkCondition('trackContacts', 'disabled') }">
             <label>
               <div class="margin-top-xs flex flex-middle">
-                <b i18n>Reviewers</b>
+                <b [ngClass]="{ required: checkCondition('trackContacts', 'required') }" i18n>Reviewers</b>
                 <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('reviewers')">info
                 </mat-icon>
               </div>

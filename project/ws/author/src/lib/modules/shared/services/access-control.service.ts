@@ -15,6 +15,7 @@ export class AccessControlService {
     @Inject(APP_BASE_HREF) private baseHref: string,
   ) { }
 
+
   hasRole(role: string[]): boolean {
     let returnValue = false
     role.forEach(v => {
@@ -166,7 +167,7 @@ export class AccessControlService {
         })
       }
     }
-    if ((meta.status === 'InReview' || meta.status === 'Review') && this.hasRole(['reviewer'])) {
+    if ((meta.status === 'InReview' || meta.status === 'Review') && this.hasRole(['content_reviewer'])) {
       if (meta.reviewerIDs && meta.reviewerIDs.length > 0) {
         if (meta.reviewerIDs.includes(this.userId)) {
           returnValue = true
@@ -178,7 +179,7 @@ export class AccessControlService {
         )
       }
     }
-    if (['Reviewed'].indexOf(meta.status) > -1 && this.hasRole(['publisher'])) {
+    if (['Reviewed'].indexOf(meta.status) > -1 && this.hasRole(['content_publisher'])) {
       if (meta.publisherIDs && meta.publisherIDs.length > 0) {
         if (meta.publisherIDs.includes(this.userId)) {
           returnValue = true

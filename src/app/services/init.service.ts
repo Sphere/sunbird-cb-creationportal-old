@@ -336,7 +336,8 @@ export class InitService {
           .pipe(map((res: any) => res.result.response))
           .toPromise()
 
-        userPidProfile.roles = [...userPidProfile.roles, 'PUBLIC', 'EDITOR', 'CONTENT_CREATOR']
+        // userPidProfile.roles = [...userPidProfile.roles, 'PUBLIC', 'EDITOR', 'CONTENT_CREATOR']
+        userPidProfile.roles = [...userPidProfile.roles, 'EDITOR']
         // console.log('ROlesss  ', userPidProfile.roles)
 
         if (userPidProfile && userPidProfile.roles && userPidProfile.roles.length > 0 &&
