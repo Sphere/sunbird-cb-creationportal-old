@@ -27,6 +27,7 @@ export class UrlUploadComponent implements OnInit {
   @Input() isSubmitPressed = false
   @Output() data = new EventEmitter<string>()
   iframeSupportedClicked = false
+  setIframeVal = ''
 
   constructor(
     private formBuilder: FormBuilder,
@@ -40,6 +41,7 @@ export class UrlUploadComponent implements OnInit {
   ngOnInit() {
     this.currentContent = this.contentService.currentContent
     this.contentService.changeActiveCont.subscribe(data => {
+      this.setIframeVal = ''
       this.currentContent = data
       this.triggerDataChange()
     })
@@ -81,6 +83,9 @@ export class UrlUploadComponent implements OnInit {
     if (!this.urlUploadForm) {
       this.createForm()
     }
+
+    // this.setIframeVal = meta.isIframeSupported || 'No'
+
     this.canUpdate = false
     this.urlUploadForm.controls.artifactUrl.setValue(meta.artifactUrl || '')
     this.urlUploadForm.controls.mimeType.setValue(meta.mimeType || 'application/html')
@@ -89,6 +94,9 @@ export class UrlUploadComponent implements OnInit {
     this.urlUploadForm.controls.isExternal.setValue(true)
     this.urlUploadForm.controls.versionKey.setValue(meta.versionKey)
     this.canUpdate = true
+
+    // this.setIframeVal = this.urlUploadForm.value.isIframeSupported || 'No'
+
     // if (meta.artifactUrl) {
     //   this.iprAccepted = true
     // }
@@ -132,6 +140,7 @@ export class UrlUploadComponent implements OnInit {
   storeData() {
     const originalMeta = this.contentService.getOriginalMeta(this.currentContent)
     const currentMeta = this.urlUploadForm.value
+
     const meta: any = {}
     // if (currentMeta.artifactUrl && !this.iprAccepted) {
     //   return
@@ -170,7 +179,9 @@ export class UrlUploadComponent implements OnInit {
   }
 
   check() {
-    this.urlUploadForm.controls.isIframeSupported.setValue('No')
+    // console.log(this.setIframeVal)
+    // this.urlUploadForm.controls.isIframeSupported.setValue('No')
+
     // const disableIframe = true
     const artifactUrl = this.urlUploadForm.controls.artifactUrl.value
     this.canUpdate = false
@@ -182,7 +193,8 @@ export class UrlUploadComponent implements OnInit {
       this.configSvc.instanceConfig.authoring.urlPatternMatching.map(v => {
         if (artifactUrl.match(v.pattern)) {
           if (v.allowIframe && v.source === 'youtube') {
-            this.urlUploadForm.controls.isIframeSupported.setValue('Yes')
+            // this.urlUploadForm.controls.isIframeSupported.setValue('Yes')
+            // this.urlUploadForm.controls.isIframeSupported.setValue(this.setIframeVal)
 
           } else {
             this.urlUploadForm.controls.isIframeSupported.setValue('No')
@@ -198,15 +210,16 @@ export class UrlUploadComponent implements OnInit {
               // disableIframe = false;
               // this.urlUploadForm.controls.mimeType.setValue('video/x-youtube')
               this.urlUploadForm.controls.mimeType.setValue('text/x-url')
-              if (!this.iframeSupportedClicked) {
-                this.urlUploadForm.controls.isIframeSupported.setValue('Yes')
-              }
+              // if (!this.iframeSupportedClicked) {
+              //   this.urlUploadForm.controls.isIframeSupported.setValue('Yes')
+              // }
               break
           }
           // }
-        } else {
-          this.urlUploadForm.controls.isIframeSupported.setValue('No')
         }
+        // else {
+        //   this.urlUploadForm.controls.isIframeSupported.setValue('No')
+        // }
       })
     }
     this.canUpdate = true
