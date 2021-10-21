@@ -14,10 +14,11 @@ import { AuthPickerComponent } from './../../../../../shared/components/auth-pic
 import { IContentTreeNode } from './../../interface/icontent-tree'
 import { CollectionStoreService } from './../../services/store.service'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
-import { map } from 'rxjs/operators'
+import { catchError, map, tap } from 'rxjs/operators'
 import { isNumber } from 'lodash'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
+import { EMPTY } from 'rxjs'
 
 declare var $: any
 @Component({
@@ -106,7 +107,6 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
       this.expandNodesById(v)
     })
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener)
-
     this.store.treeStructureChange.subscribe(data => {
       this.dataSource.data = [data as IContentNode]
       if (this.parentNodeId === this.store.currentParentNode) {
@@ -130,7 +130,8 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.selectedNodeChange.subscribe(data => {
       if (data) {
         this.selectedNode = data
-        this.contentId = data.toString()
+        const fnode = this.store.flatNodeMap.get(this.selectedNode)
+        this.contentId = fnode ? fnode.identifier : data.toString()
       }
     })
     this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
@@ -194,15 +195,30 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
             content: tempUpdateContent,
           },
         }
-        this.editorService.updateContentV3(requestBody, this.contentId).subscribe(() => {
+
+        this.editorService.updateContentV3(requestBody, this.contentId).subscribe(async () => {
           this.store.changedHierarchy = {}
           Object.keys(this.editorStore.upDatedContent).forEach(id => {
             this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
-            this.editorService.readContentV2(id).subscribe(resData => {
-              this.editorStore.resetVersionKey(resData.versionKey, resData.identifier)
-            })
+            // this.editorService.readContentV2(id).subscribe(resData => {
+            //   this.editorStore.resetVersionKey(resData.versionKey, resData.identifier)
+            // })
           })
           this.editorStore.upDatedContent = {}
+
+          const tempRequset: NSApiRequest.IContentUpdateV3 = {
+            request: {
+              data: {
+                nodesModified: {},
+                hierarchy: this.store.getTreeHierarchy(),
+              },
+            },
+          }
+          await this.editorService.updateContentV4(tempRequset).subscribe(() => {
+            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+              this.editorStore.resetOriginalMetaWithHierarchy(data)
+            })
+          })
         })
 
       }
@@ -448,14 +464,32 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     this.preserveExpandedNodes()
     this.expandedNodes.add(parentNode.id)
 
-    const isDone = await this.store.createChildOrSibling(
+    // const isDone = await this.store.createChildOrSibling(
+    //   type,
+    //   parentNode,
+    //   asSibling ? node.id : undefined,
+    //   'below',
+    //   {},
+    //   type === 'web' ? 'link' : ''
+    // )
+
+    const contentData = await this.store.createChildOrSibling(
       type,
       parentNode,
       asSibling ? node.id : undefined,
       'below',
       {},
-      type === 'web' ? 'link' : ''
+      type === 'web' ? 'link' : '',
+      true
     )
+    const isDone = contentData.isDone
+    const createdContent = contentData.content
+
+    if (createdContent && createdContent.identifier) {
+      this.triggerSave(createdContent).subscribe()
+    } else {
+      this.loaderService.changeLoad.next(false)
+    }
 
     this.snackBar.openFromComponent(NotificationComponent, {
       data: {
@@ -504,4 +538,102 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // this.action.emit({ type: 'showAddChapter', identifier: '' })
   }
+
+  triggerSave(
+    createdContent: any
+  ) {
+    // const nodesModified: any = {}
+    // let isRootPresent = (parentNode && parentNode.identifier) ? true : false
+    // Object.keys(this.editorStore.upDatedContent).forEach(v => {
+    //   if (!isRootPresent) {
+    //     isRootPresent = this.store.parentNode.includes(v)
+    //   }
+    //   nodesModified[v] = {
+    //     isNew: false,
+    //     root: this.store.parentNode.includes(v),
+    //     metadata: this.editorStore.upDatedContent[v],
+    //   }
+    // })
+    // if (!isRootPresent) {
+    //   nodesModified[this.currentContent] = {
+    //     isNew: false,
+    //     root: true,
+    //     metadata: {},
+    //   }
+    // }
+    const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+      request: {
+        data: {
+          nodesModified: {},
+          hierarchy: this.store.getTreeHierarchy(),
+          // hierarchy: this.store.changedHierarchy,
+        },
+      },
+    }
+
+    // if (Object.keys(this.editorStore.upDatedContent)[0] && nodesModified[Object.keys(this.editorStore.upDatedContent)[0]]) {
+    //   const requestBody: NSApiRequest.IContentUpdateV2 = {
+    //     request: {
+    //       content: nodesModified[Object.keys(this.editorStore.upDatedContent)[0]].metadata,
+    //     },
+    //   }
+    //   requestBody.request.content = this.editorStore.cleanProperties(requestBody.request.content)
+    //   if (requestBody.request.content.duration) {
+    //     // tslint:disable-next-line:max-line-length
+    // tslint:disable-next-line: max-line-length
+    //     requestBody.request.content.duration = (isNumber(requestBody.request.content.duration) ? `${requestBody.request.content.duration}` : requestBody.request.content.duration)
+    //   }
+    //   return this.editorService.updateContentV3(requestBody, Object.keys(this.editorStore.upDatedContent)[0]).pipe(
+    //     tap(() => {
+    //       debugger
+    //       this.store.changedHierarchy = {}
+    //       Object.keys(this.editorStore.upDatedContent).forEach(id => {
+    //         this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
+    //         this.editorService.readContentV2(id).subscribe(resData => {
+    //           this.editorStore.resetVersionKey(resData.versionKey, resData.identifier)
+    //         })
+    //       })
+    //       this.editorStore.upDatedContent = {}
+    //     }),
+    //   )
+    // }
+    return this.editorService.updateContentV4(requestBodyV2).pipe(
+      tap(() => {
+        this.store.changedHierarchy = {}
+      }),
+      tap(async () => {
+        await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.editorStore.resetOriginalMetaWithHierarchy(data)
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: Notify.SUCCESS,
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+          this.loaderService.changeLoad.next(false)
+          // tslint:disable-next-line: align
+        }, error => {
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: (error) ? Notify.FAIL : '',
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+          this.loaderService.changeLoad.next(false)
+        })
+      }),
+      catchError(() => {
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.FAIL,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+        this.store.deleteContentNode(createdContent)
+        this.loaderService.changeLoad.next(false)
+        return EMPTY
+      })
+    )
+  }
+
 }

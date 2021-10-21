@@ -192,6 +192,7 @@ export class CollectionStoreService {
       this.changedHierarchy[oldParentNode.identifier] = {
         root: this.parentNode.includes(oldParentNode.identifier),
         // contentType: "Course",
+        contentType: oldParentNode.contentType,
         children: oldParentChildList.map(v => {
           const child = v.identifier
           return child
@@ -209,6 +210,7 @@ export class CollectionStoreService {
     this.changedHierarchy[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),
       // contentType: "Course",
+      // contentType: newParentNode.contentType,
       children: newParentChildList.map(v => {
         const child = v.identifier
         return child
@@ -228,6 +230,7 @@ export class CollectionStoreService {
         if (element.children && element.children.length > 0 && !(Object.keys(this.changedHierarchy).includes(element.identifier))) {
           this.changedHierarchy[element.identifier] = {
             root: this.parentNode.includes(element.identifier),
+            // contentType: element.contentType,
             // contentType: element.contentType,
             children: element.children.map(v => {
               const child = v.identifier
@@ -249,7 +252,7 @@ export class CollectionStoreService {
           }
           this.changedHierarchy[element] = {
             root: this.parentNode.includes(element),
-            contentType: tempData.contentType,
+            // contentType: tempData.contentType,
             children: childrenArray,
           }
         }
@@ -321,8 +324,10 @@ export class CollectionStoreService {
     adjacentId?: number,
     dropLocation: 'above' | 'below' = 'below',
     topicObj?: any,
-    fileType?: string
-  ): Promise<boolean> {
+    fileType?: string,
+    sendContent?: boolean
+    // ): Promise<boolean> {
+  ): Promise<any> {
     try {
       let cType = type
       // For Link
@@ -397,6 +402,7 @@ export class CollectionStoreService {
       // }
 
       this.contentService.setOriginalMeta(content)
+
       const contentDataMap = new Map<string, NSContent.IContentMeta>()
       const treeStructure = this.resolver.buildTreeAndMap(
         content,
@@ -409,6 +415,10 @@ export class CollectionStoreService {
 
       if (newChildUpdateCall) {
         // this.getHierarchyTreeStructure()
+      }
+
+      if (sendContent) {
+        return { content, isDone: true }
       }
 
       return true
@@ -798,7 +808,7 @@ export class CollectionStoreService {
     }
     if (newParentNode.children && newParentNode.children.length > 0) {
       newParentNode.children.forEach(element => {
-        if (element.children && element.children.length > 0 && !(Object.keys(this.hierarchyTree).includes(element.identifier))) {
+        if (element.children && element.children.length > 0) {
           this.hierarchyTree[element.identifier] = {
             root: this.parentNode.includes(element.identifier),
             // contentType: element.contentType,
@@ -811,6 +821,28 @@ export class CollectionStoreService {
       })
     }
     return this.hierarchyTree
+  }
+
+  async deleteContentNode(content: any) {
+    const newParentNode = this.flatNodeMap.get(this.currentParentNode) as IContentNode
+    if (newParentNode && newParentNode.children && newParentNode.children.length > 0) {
+      let contentNodeId = 0
+      await newParentNode.children.forEach((element: any) => {
+        if (element.identifier === content.identifier) {
+          contentNodeId = element.id
+        }
+        if (element.children && element.children.length > 0) {
+          element.children.forEach((subEle: any) => {
+            if (subEle.identifier === content.identifier) {
+              contentNodeId = subEle.id
+            }
+          })
+        }
+      })
+      if (contentNodeId > 0) {
+        this.deleteNode(contentNodeId)
+      }
+    }
   }
 
 }

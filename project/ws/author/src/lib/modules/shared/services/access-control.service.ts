@@ -15,7 +15,6 @@ export class AccessControlService {
     @Inject(APP_BASE_HREF) private baseHref: string,
   ) { }
 
-
   hasRole(role: string[]): boolean {
     let returnValue = false
     role.forEach(v => {
