@@ -62,8 +62,6 @@ export class GeneralGuard implements CanActivate {
     //   }
     // }
 
-
-
     // If invalid user
     if (
       this.configSvc.userProfile === null &&
