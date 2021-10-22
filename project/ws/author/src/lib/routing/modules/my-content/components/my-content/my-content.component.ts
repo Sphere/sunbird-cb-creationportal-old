@@ -498,7 +498,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       },
     }
     requestData.request.filters['status'] = this.fetchStatus()
-    requestData.request.filters['contentType'] = ['Collection', 'Course', 'Learning Path']
+    // requestData.request.filters['contentType'] = ['Collection', 'Course', 'Learning Path']
+    requestData.request.filters['contentType'] = ['Course', 'Learning Path']
 
     if (this.finalFilters.length) {
       this.finalFilters.forEach((v: any) => {
@@ -582,11 +583,21 @@ export class MyContentComponent implements OnInit, OnDestroy {
           }
         break
       case 'draft':
-      case 'unpublished':
-        if (this.accessService.hasRole(['content_creator'])) {
+        // case 'unpublished':
+        if (this.accessService.hasRole(['content_creator']) ||
+          this.accessService.hasRole(['content_reviewer']) ||
+          this.accessService.hasRole(['content_publisher'])) {
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         }
         break
+      case 'unpublished':
+        if (this.accessService.hasRole(['content_creator'])) {
+          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+        } else if (this.accessService.hasRole(['content_reviewer'])) {
+          requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+        } else if (this.accessService.hasRole(['content_publisher'])) {
+          requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+        }
     }
 
     this.loadService.changeLoad.next(true)
