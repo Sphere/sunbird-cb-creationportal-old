@@ -68,7 +68,8 @@ export class ContentCardComponent implements OnInit {
         }
         break
       case 'publish':
-        if (this.data.status === 'Reviewed') {
+        // if (this.data.status === 'Reviewed') {
+        if (this.data.reviewStatus === 'Reviewed' && this.data.status === 'Review') {
           returnValue = this.accessService.hasAccess(this.data)
         }
         break
@@ -78,7 +79,8 @@ export class ContentCardComponent implements OnInit {
         }
         break
       case 'review':
-        if (this.data.status === 'Review' || this.data.status === 'QualityReview') {
+        // if (this.data.status === 'Review' || this.data.status === 'QualityReview') {
+        if (this.data.reviewStatus === 'Review' && this.data.status === 'Review') {
           returnValue = this.accessService.hasAccess(this.data)
         }
         break

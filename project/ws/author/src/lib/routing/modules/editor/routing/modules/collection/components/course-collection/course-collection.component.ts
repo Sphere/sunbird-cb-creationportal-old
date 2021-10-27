@@ -342,8 +342,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         // TODO  console.log('viewmode', this.viewMode)
         this.triggerUploadSave = true
       }
+
     if (
-      Object.keys(updatedContent).length ||
+      (Object.keys(updatedContent).length &&
+        (Object.values(updatedContent).length && JSON.stringify(Object.values(updatedContent)[0]) !== '{}')) ||
       Object.keys(this.storeService.changedHierarchy).length
     ) {
       this.isChanged = true
@@ -403,8 +405,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       )
     } else {
       if (nextAction) {
+        console.log('Save IF ')
         this.action(nextAction)
       } else {
+        console.log('Save Else ')
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
             type: Notify.UP_TO_DATE,
@@ -453,17 +457,18 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   takeAction(contentAction?: string) {
     this.isSubmitPressed = true
-    const needSave = Object.keys(this.contentService.upDatedContent || {}).length
-    // console.log('Neddsave ', needSave)
-    if (!needSave && !this.isChanged) {
-      this.snackBar.openFromComponent(NotificationComponent, {
-        data: {
-          type: Notify.UP_TO_DATE,
-        },
-        duration: NOTIFICATION_TIME * 1000,
-      })
-      return
-    }
+    // const needSave = Object.keys(this.contentService.upDatedContent || {}).length
+
+    // if (!needSave && !this.isChanged) {
+    // if (!this.isChanged) {
+    //   this.snackBar.openFromComponent(NotificationComponent, {
+    //     data: {
+    //       type: Notify.UP_TO_DATE,
+    //     },
+    //     duration: NOTIFICATION_TIME * 1000,
+    //   })
+    //   return
+    // }
 
     // console.log('this.validationCheck', this.validationCheck)
 
@@ -2281,6 +2286,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   action(type: string) {      // recheck
+
+    console.log('Type ===  ', type)
+
     switch (type) {
       case 'next':
         this.viewMode = 'meta'
@@ -2313,6 +2321,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       case 'push':
         if (this.getAction() === 'publish') {
+          console.log('IFFF')
           const dialogRefForPublish = this.dialog.open(ConfirmDialogComponent, {
             width: '70%',
             data: 'publishMessage',
@@ -2323,6 +2332,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             }
           })
         } else {
+          console.log('ELSEEEE')
           this.takeAction('acceptConent')
         }
         break

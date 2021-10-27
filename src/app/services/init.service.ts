@@ -337,7 +337,7 @@ export class InitService {
           .toPromise()
 
         // userPidProfile.roles = [...userPidProfile.roles, 'PUBLIC', 'EDITOR', 'CONTENT_CREATOR']
-        userPidProfile.roles = [...userPidProfile.roles, 'EDITOR']
+        userPidProfile.roles = [...userPidProfile.roles]
         // console.log('ROlesss  ', userPidProfile.roles)
 
         if (userPidProfile && userPidProfile.roles && userPidProfile.roles.length > 0 &&

@@ -153,7 +153,7 @@ export class AllContentComponent implements OnInit, OnDestroy {
     } else {
       this.leftmenues = this.authInitService.authAdditionalConfig.menus
     }
-    this.isAdmin = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor', 'content-creator'])
+    this.isAdmin = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor', 'content_creator'])
     // if (this.courseTaken && this.courseTaken.mandatoryCourseCompleted) {
     this.initCardTable()
     // } else {
@@ -781,7 +781,7 @@ export class AllContentComponent implements OnInit, OnDestroy {
     this.searchLanguage = lang
   }
   get isAllowed() {
-    return this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor', 'content-creator'])
+    return this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor', 'content_creator'])
   }
   isAllowedTab(roles: string[]) {
     if (roles && roles.length > 0) {

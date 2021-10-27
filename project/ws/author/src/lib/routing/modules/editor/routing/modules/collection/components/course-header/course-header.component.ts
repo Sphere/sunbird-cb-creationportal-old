@@ -24,14 +24,14 @@ export class CourseHeaderComponent implements OnInit {
   constructor(private configSvc: ConfigurationsService, private domSanitizer: DomSanitizer,
               private headerService: HeaderServiceService,
               private store: CollectionStoreService) {
-                this.headerService.showCourseHeader.subscribe(data => {
-                  this.courseNameHeader = data
-                })
-   }
+    this.headerService.showCourseHeader.subscribe(data => {
+      this.courseNameHeader = data
+    })
+  }
 
   ngOnInit() {
     if (this.configSvc.instanceConfig) {
-       this.domSanitizer.bypassSecurityTrustResourceUrl(
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
         this.appIcon = this.configSvc.instanceConfig.logos.app,
       )
     }
@@ -45,6 +45,6 @@ export class CourseHeaderComponent implements OnInit {
     }
   }
   showCourseSettings() {
-   this.subAction.emit({ type: 'editContent', identifier: this.store.parentNode[0], nodeClicked: true })
+    this.subAction.emit({ type: 'editContent', identifier: this.store.parentNode[0], nodeClicked: true })
   }
 }

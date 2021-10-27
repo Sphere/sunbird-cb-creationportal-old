@@ -219,7 +219,7 @@ export class CollectionResolverService {
   hasAccess(content: NSContent.IContentMeta, parentMeta?: NSContent.IContentMeta): boolean {
     return this.contentService.hasAccess(content, false, parentMeta) &&
       content.status === 'InReview'
-      ? this.authInitService.collectionConfig.enabledRole.includes('reviewer')
+      ? this.authInitService.collectionConfig.enabledRole.includes('content_reviewer')
       : content.status === 'Reviewed'
         ? this.authInitService.collectionConfig.enabledRole.includes('publisher')
         : ['Draft', 'Live'].includes(content.status)
