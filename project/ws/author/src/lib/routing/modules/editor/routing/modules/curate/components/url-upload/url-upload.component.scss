@@ -62,3 +62,9 @@ input{
 .margin-left5{
   margin-left: 5rem;
 }
+
+.disable {
+  opacity: 0.3;
+  pointer-events: none;
+  cursor: none;
+}

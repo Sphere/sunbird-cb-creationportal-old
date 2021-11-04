@@ -408,14 +408,14 @@ export class EditorContentService {
    * @returns {boolean}  True if passed the evaluation
    * @memberof EditorContentService
    */
-  checkConditionV2(content: NSContent.IContentMeta, conditions?: IConditionsV2): boolean {
+  checkConditionV2(content: NSContent.IContentMeta, conditions?: IConditionsV2, title?: string): boolean {
     if (conditions) {
       let returnValue = true
       if (conditions.notFit && conditions.notFit.length) {
-        returnValue = !this.checkUniqueCondition(content, conditions.notFit as any)
+        returnValue = !this.checkUniqueCondition(content, conditions.notFit as any, title)
       }
       if (returnValue && conditions.fit && conditions.fit.length) {
-        returnValue = this.checkUniqueCondition(content, conditions.fit as any)
+        returnValue = this.checkUniqueCondition(content, conditions.fit as any, title)
       }
       return returnValue
     }
@@ -433,6 +433,7 @@ export class EditorContentService {
   checkUniqueCondition(
     content: NSContent.IContentMeta,
     conditions: { [key in keyof NSContent.IContentMeta]: any[] }[],
+    title?: string
   ): boolean {
     try {
       return conditions.some(condition => {
@@ -445,6 +446,20 @@ export class EditorContentService {
           ) {
             isLocalPassed = false
           }
+
+          if (title === 'Review') {
+            if (content['reviewStatus' as keyof NSContent.IContentMeta] === 'InReview') {
+              isLocalPassed = true
+            } else {
+              isLocalPassed = false
+            }
+          } else if (title === 'Publish'
+            && content[meta as keyof NSContent.IContentMeta] === 'Review'
+            && content['reviewStatus' as keyof NSContent.IContentMeta] === 'Reviewed'
+          ) {
+            isLocalPassed = true
+          }
+
         })
         return isLocalPassed
       })

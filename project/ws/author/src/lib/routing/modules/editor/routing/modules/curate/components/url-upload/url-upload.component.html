@@ -11,7 +11,8 @@
           </mat-error>
         </mat-form-field>
       </div> -->
-      <div class="margin-top-xl">
+
+      <div class="margin-top-xl" [ngClass]="{ disable: !isCreatorEnable }">
         <p class="font-weight-bold margin-remove-bottom" i18n>
           Link
         </p>
@@ -34,7 +35,7 @@
           </mat-select>
         </mat-form-field>
       </div> -->
-      <div class="margin-top-xs">
+      <div class="margin-top-xs" [ngClass]="{ disable: !isCreatorEnable }">
         <p class="font-weight-bold margin-remove-bottom" i18n>
           Opens in a new tab?
         </p>

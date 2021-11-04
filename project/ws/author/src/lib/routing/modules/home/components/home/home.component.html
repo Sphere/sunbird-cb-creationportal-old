@@ -1,6 +1,6 @@
 <mat-sidenav-container class="nav-container" autosize>
   <mat-sidenav [mode]="mode$ | async" [(opened)]="sideNavBarOpened">
-    <div *ngIf="allowAuthor"
+    <div *ngIf="allowAuthorContentCreate"
       class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l padding-remove-left create-button">
       <button mat-button class="font-weight-bold margin-remove-bottom mat-h3 ws-mat-primary-text ws-mat-primary-border"
         [routerLink]="'/author/create'" id="ws-auth-root-home-btn-create" name="ws-auth-root-home-btn-create">

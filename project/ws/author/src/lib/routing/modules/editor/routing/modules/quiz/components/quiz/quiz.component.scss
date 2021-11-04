@@ -159,3 +159,9 @@ mat-sidenav{
   width: auto;
   transition: 0.5s;
 }
+
+.disable {
+  opacity: 0.3;
+  pointer-events: none;
+  cursor: none;
+}

@@ -14,6 +14,7 @@ export class AuthHomeComponent implements OnInit, OnDestroy {
   panelOpenState = false
   allowReview = false
   allowAuthor = false
+  allowAuthorContentCreate = false
   allowRedo = false
   allowPublish = false
   allowExpiry = false
@@ -27,6 +28,7 @@ export class AuthHomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.allowAuthor = this.canShow('author')
+    this.allowAuthorContentCreate = this.canShow('author_create')
     this.allowRedo = this.accessService.authoringConfig.allowRedo
     this.allowRestore = this.accessService.authoringConfig.allowRestore
     this.allowExpiry = this.accessService.authoringConfig.allowExpiry
@@ -53,6 +55,8 @@ export class AuthHomeComponent implements OnInit, OnDestroy {
       case 'author':
         return this.accessService.hasRole(CREATE_ROLE) || this.accessService.hasRole(REVIEW_ROLE)
           || this.accessService.hasRole(PUBLISH_ROLE)
+      case 'author_create':
+        return this.accessService.hasRole(CREATE_ROLE)
       default:
         return false
     }

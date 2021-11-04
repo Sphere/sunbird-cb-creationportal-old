@@ -341,12 +341,19 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private set content(contentMeta: NSContent.IContentMeta) {
 
+    const isCreator = (this.configSvc.userProfile && this.configSvc.userProfile.userId === contentMeta.createdBy)
+      ? true : false
+
+
     this.contentMeta = contentMeta
-    this.isEditEnabled = this.contentService.hasAccess(
+    const isEditable = this.contentService.hasAccess(
       contentMeta,
       false,
       this.parentContent ? this.contentService.getUpdatedMeta(this.parentContent) : undefined,
     )
+
+    this.isEditEnabled = isEditable
+
     this.contentMeta.name = contentMeta.name === 'Untitled Content' ? '' : contentMeta.name
 
     if (this.contentMeta.creatorContacts && typeof this.contentMeta.creatorContacts === 'string') {
@@ -369,10 +376,15 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
           ? <any>this.convertToISODate(contentMeta.expiryDate)
           : ''
     }
+
     this.assignFields()
     this.setDuration(contentMeta.duration || '0')
+
+    this.isEditEnabled = isCreator && isEditable
+
     this.filterOrdinals()
     this.changeResourceType()
+
   }
 
   filterOrdinals() {
@@ -556,7 +568,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   storeData() {
     try {
       const originalMeta = this.contentService.getOriginalMeta(this.contentMeta.identifier)
-
       if (originalMeta && this.isEditEnabled) {
         const expiryDate = this.contentForm.value.expiryDate
         const currentMeta: NSContent.IContentMeta = JSON.parse(JSON.stringify(this.contentForm.value))

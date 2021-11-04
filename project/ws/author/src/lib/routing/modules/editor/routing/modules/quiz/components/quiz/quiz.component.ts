@@ -90,6 +90,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   @Output() data = new EventEmitter<string>()
   @Input() callSave = false
 
+  @Input() isCreatorEnable = true
+
   constructor(
     private router: Router,
     private activateRoute: ActivatedRoute,

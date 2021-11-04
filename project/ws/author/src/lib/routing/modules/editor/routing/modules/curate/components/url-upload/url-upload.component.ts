@@ -28,6 +28,7 @@ export class UrlUploadComponent implements OnInit {
   @Output() data = new EventEmitter<string>()
   iframeSupportedClicked = false
   setIframeVal = ''
+  @Input() isCreatorEnable = true
 
   constructor(
     private formBuilder: FormBuilder,

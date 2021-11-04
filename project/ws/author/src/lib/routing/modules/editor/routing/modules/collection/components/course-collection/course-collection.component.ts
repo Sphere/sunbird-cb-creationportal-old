@@ -85,6 +85,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   triggerQuizSave = false
   triggerUploadSave = false
   courseId = ''
+  checkCreator = false
 
   constructor(
     private contentService: EditorContentService,
@@ -134,6 +135,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         this.contentService.checkConditionV2(
           this.contentService.getOriginalMeta(this.currentParentId),
           action.conditions,
+          action.title
         )
       ) {
         actionButton.push({
@@ -322,7 +324,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       }
       this.showAddchapter = false
       this.loaderService.changeLoad.next(false)
-
       this.subAction({ type: 'editContent', identifier: this.editorService.newCreatedLexid, nodeClicked: false })
       this.createTopicForm.reset()
       this.save()
@@ -405,10 +406,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       )
     } else {
       if (nextAction) {
-        console.log('Save IF ')
         this.action(nextAction)
       } else {
-        console.log('Save Else ')
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
             type: Notify.UP_TO_DATE,
@@ -460,7 +459,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     // const needSave = Object.keys(this.contentService.upDatedContent || {}).length
 
     // if (!needSave && !this.isChanged) {
-    // if (!this.isChanged) {
+    //   // if (!this.isChanged) {
     //   this.snackBar.openFromComponent(NotificationComponent, {
     //     data: {
     //       type: Notify.UP_TO_DATE,
@@ -469,6 +468,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     //   })
     //   return
     // }
+
 
     // console.log('this.validationCheck', this.validationCheck)
 
@@ -2229,7 +2229,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
-
     // const nodeClicked = event.nodeClicked
     this.contentService.changeActiveCont.next(event.identifier)
     switch (event.type) {
@@ -2242,6 +2241,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         }
 
         const content = this.contentService.getUpdatedMeta(event.identifier)
+
+        const isCreator = (this._configurationsService.userProfile
+          && this._configurationsService.userProfile.userId === content.createdBy)
+          ? true : false
+        this.checkCreator = isCreator
+
         // if (['application/pdf', 'application/x-mpegURL'].includes(content.mimeType)) {
         //   this.viewMode = 'upload'
         // } else if (['video/x-youtube', 'application/html'].includes(content.mimeType) && content.fileType === 'link') {
@@ -2286,9 +2291,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   action(type: string) {      // recheck
-
-    console.log('Type ===  ', type)
-
     switch (type) {
       case 'next':
         this.viewMode = 'meta'
@@ -2321,7 +2323,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       case 'push':
         if (this.getAction() === 'publish') {
-          console.log('IFFF')
           const dialogRefForPublish = this.dialog.open(ConfirmDialogComponent, {
             width: '70%',
             data: 'publishMessage',
@@ -2332,7 +2333,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             }
           })
         } else {
-          console.log('ELSEEEE')
           this.takeAction('acceptConent')
         }
         break

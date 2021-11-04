@@ -117,3 +117,9 @@ ul li {
     margin-top: 1rem;
   }
 }
+
+.disable {
+  opacity: 0.3;
+  pointer-events: none;
+  cursor: none;
+}

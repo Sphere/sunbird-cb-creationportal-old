@@ -77,6 +77,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
   filetype!: string | null
   acceptType!: string | '.mp3,.mp4,.pdf,.zip,.m4v'
 
+  @Input() isCreatorEnable = true
+
   constructor(
     private formBuilder: FormBuilder,
     private snackBar: MatSnackBar,

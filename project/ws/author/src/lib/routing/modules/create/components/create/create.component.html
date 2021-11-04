@@ -40,6 +40,14 @@
     </div>
   </div> -->
 <!-- <div class="margin-top-xl"> -->
+<div *ngIf="allowAuthorContentCreate"
+  class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l padding-remove-left create-button">
+  <button mat-button class="font-weight-bold margin-remove-bottom mat-h3 ws-mat-primary-text ws-mat-primary-border"
+    [routerLink]="'/author/create'" id="ws-auth-root-home-btn-create" name="ws-auth-root-home-btn-create">
+    <ng-container i18n>Create Content 123</ng-container>
+    <mat-icon class="ws-mat-primary-text margin-left-m margin-bottom-xxs">create</mat-icon>
+  </button>
+</div>
 <mat-drawer-container class="example-container" *ngIf="!error">
   <mat-drawer mode="side" opened>
     <!-- <mat-accordion expanded *ngIf="allowAuthor">
@@ -64,15 +72,6 @@
               </ng-container>
             </mat-expansion-panel>
         </mat-accordion> -->
-
-    <div *ngIf="allowAuthor"
-      class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l padding-remove-left create-button">
-      <button mat-button class="font-weight-bold margin-remove-bottom mat-h3 ws-mat-primary-text ws-mat-primary-border"
-        [routerLink]="'/author/create'" id="ws-auth-root-home-btn-create" name="ws-auth-root-home-btn-create">
-        <ng-container i18n>Create Content 123</ng-container>
-        <mat-icon class="ws-mat-primary-text margin-left-m margin-bottom-xxs">create</mat-icon>
-      </button>
-    </div>
 
     <ng-container *ngIf="isNewDesign">
       <mat-accordion expanded *ngIf="allowAuthor">

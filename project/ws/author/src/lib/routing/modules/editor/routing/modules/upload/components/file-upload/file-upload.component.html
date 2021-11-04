@@ -1,4 +1,4 @@
-<div class="margin-top-m margin-left-xl">
+<div class="margin-top-m margin-left-xl" [ngClass]="{ disable: !isCreatorEnable }">
   <div class="flex mt-8 margin-bottom-xl top-heading flex-Update">
     <div class="upload-box flex flex-middle flex-col justify-center p-20 cursor-pointer" (click)="fileInput.click()"
       wsAuthDragDrop (fileDropped)="onDrop($event)">
