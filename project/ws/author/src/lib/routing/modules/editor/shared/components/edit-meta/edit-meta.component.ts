@@ -1451,7 +1451,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       verifiers: [],
       visibility: [],
       instructions: [],
-      versionKey: (new Date()).getTime(),  // (new Date()).getTime()
+      versionKey: '',  // (new Date()).getTime()
       purpose: '',
     })
 
