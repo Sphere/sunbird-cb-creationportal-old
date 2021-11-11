@@ -60,7 +60,7 @@ export class CreateService {
       )
   }
 
-  createV2(meta: { mimeType: string; contentType: string; locale: string, name: string, primaryCategory: string, purpose: string }): Observable<string> {
+  createV2(meta: { mimeType: string; contentType: string; locale: string, name: string, primaryCategory: string, purpose?: string }): Observable<string> {
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {

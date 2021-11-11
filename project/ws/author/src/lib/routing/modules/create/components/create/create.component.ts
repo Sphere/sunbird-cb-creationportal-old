@@ -152,11 +152,13 @@ export class CreateComponent implements OnInit, OnDestroy {
   createCourseClicked() {
     this.loaderService.changeLoad.next(true)
     const _name = this.createCourseForm.get('name')
-    if (this.content && _name && _name.value) {
+    const _purpose = this.createCourseForm.get('purpose')
+    if (this.content && _name && _name.value && _purpose && _purpose.value) {
 
       this.svc
         .createV2({
           name: _name.value,
+          purpose: _purpose.value,
           contentType: this.content.contentType,
           mimeType: this.content.mimeType,
           locale: this.language,
