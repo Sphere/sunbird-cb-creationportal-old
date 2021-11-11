@@ -62,6 +62,7 @@ export namespace NSApiRequest {
     locale?: string
     isExternal?: boolean
     primaryCategory: string
+    purpose?: string
   }
 
   export interface IContentUpdateV2 {
@@ -87,6 +88,7 @@ export namespace NSApiRequest {
         isExternal: boolean
         license: string
         ownershipType: string[]
+        purpose?: string
       }
     }
   }
