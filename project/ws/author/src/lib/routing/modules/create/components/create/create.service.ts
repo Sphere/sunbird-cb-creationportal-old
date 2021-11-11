@@ -60,7 +60,7 @@ export class CreateService {
       )
   }
 
-  createV2(meta: { mimeType: string; contentType: string; locale: string, name: string, primaryCategory: string }): Observable<string> {
+  createV2(meta: { mimeType: string; contentType: string; locale: string, name: string, primaryCategory: string, purpose: string }): Observable<string> {
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {
@@ -78,7 +78,11 @@ export class CreateService {
           framework: environment.framework,
           mimeType: meta.mimeType,
           name: meta.name,
-          organisation: [environment.organisation],
+          purpose: (meta.purpose) ? meta.purpose : '',
+          // organisation: [environment.organisation],
+          organisation: [
+            (this.configSvc.userProfile && this.configSvc.userProfile.departmentName) ? this.configSvc.userProfile.departmentName : '',
+          ],
           isExternal: meta.mimeType === 'text/x-url',
           primaryCategory: meta.primaryCategory,
           license: 'CC BY 4.0',
