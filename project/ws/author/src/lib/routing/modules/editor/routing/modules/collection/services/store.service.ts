@@ -210,7 +210,7 @@ export class CollectionStoreService {
     this.changedHierarchy[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),
       // contentType: "Course",
-      // contentType: newParentNode.contentType,
+      contentType: newParentNode.contentType,
       children: newParentChildList.map(v => {
         const child = v.identifier
         return child
@@ -231,7 +231,7 @@ export class CollectionStoreService {
           this.changedHierarchy[element.identifier] = {
             root: this.parentNode.includes(element.identifier),
             // contentType: element.contentType,
-            // contentType: element.contentType,
+            contentType: element.contentType,
             children: element.children.map(v => {
               const child = v.identifier
               return child
@@ -252,7 +252,7 @@ export class CollectionStoreService {
           }
           this.changedHierarchy[element] = {
             root: this.parentNode.includes(element),
-            // contentType: tempData.contentType,
+            contentType: tempData.contentType,
             children: childrenArray,
           }
         }
@@ -563,7 +563,7 @@ export class CollectionStoreService {
           if (element.children && element.children.length > 0 && !(Object.keys(this.changedHierarchy).includes(element.identifier))) {
             this.changedHierarchy[element.identifier] = {
               root: this.parentNode.includes(element.identifier),
-              // contentType: element.contentType,
+              contentType: element.contentType,
               children: element.children.map(v => {
                 const child = v.identifier
                 return child
@@ -801,6 +801,7 @@ export class CollectionStoreService {
     const newParentNode = this.flatNodeMap.get(this.currentParentNode) as IContentNode
     this.hierarchyTree[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),
+      contentType: newParentNode.category,
       children: (newParentNode.children) ? newParentNode.children.map(v => {
         const child = v.identifier
         return child
@@ -812,6 +813,7 @@ export class CollectionStoreService {
           this.hierarchyTree[element.identifier] = {
             root: this.parentNode.includes(element.identifier),
             // contentType: element.contentType,
+            contentType: element.category,
             children: element.children.map(v => {
               const child = v.identifier
               return child
