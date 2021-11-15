@@ -11,7 +11,10 @@ export class ViewerUtilService {
   API_ENDPOINTS = {
     setS3Cookie: `/apis/v8/protected/content/setCookie`,
     PROGRESS_UPDATE: `/apis/protected/v8/user/realTimeProgress/update`,
+    ASSESSMENT_QUIZ_JSON: `apis/protected/v8/assessment/get`,
+
   }
+
   downloadRegex = new RegExp(`(/content-store/.*?)(\\\)?\\\\?['"])`, 'gm')
   authoringBase = '/apis/authContent/'
   constructor(private http: HttpClient, private configservice: ConfigurationsService) { }
@@ -70,6 +73,16 @@ export class ViewerUtilService {
         this.regexDownloadReplace,
       ),
     )
+  }
+
+  async getQuizJson(data: any) {
+    let quizJSON = await this.http
+      .post<any>(this.API_ENDPOINTS.ASSESSMENT_QUIZ_JSON, data)
+      .toPromise()
+      .catch((_err: any) => {
+        // throw new DataResponseError('MANIFEST_FETCH_FAILED');
+      })
+    return quizJSON
   }
 
 }

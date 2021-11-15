@@ -14,7 +14,7 @@ import { NSQuiz } from './quiz.model'
 import { QuestionComponent } from './components/question/question.component'
 import { SubmitQuizDialogComponent } from './components/submit-quiz-dialog/submit-quiz-dialog.component'
 import { OnConnectionBindInfo } from 'jsplumb'
-// import { QuizService } from './quiz.service'
+import { QuizService } from './quiz.service'
 import { EventService } from '../../../../../../../library/ws-widget/utils/src/public-api'
 export type FetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
 
@@ -78,11 +78,10 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private events: EventService,
     public dialog: MatDialog,
-    // private quizSvc: QuizService,
+    private quizSvc: QuizService,
   ) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   scroll(qIndex: number) {
     if (!this.sidenavOpenDefault) {
@@ -293,61 +292,69 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.fetchingResultsStatus = 'done'
-    // const submitQuizJson = JSON.parse(JSON.stringify(this.quizJson))
-    // this.fetchingResultsStatus = 'fetching'
-    // const requestData: NSQuiz.IQuizSubmitRequest = this.quizSvc.createAssessmentSubmitRequest(
-    //   this.identifier,
-    //   this.name,
-    //   {
-    //     ...submitQuizJson,
-    //     timeLimit: this.quizJson.timeLimit * 1000,
-    //   },
-    //   this.questionAnswerHash,
-    // )
 
-    // const sanitizedRequestData: NSQuiz.IQuizSubmitRequest = this.quizSvc.sanitizeAssessmentSubmitRequest(requestData)
+    /** ------------start------------------- */
 
-    // this.quizSvc.submitQuizV2(sanitizedRequestData).subscribe(
-    //   (res: NSQuiz.IQuizSubmitResponse) => {
-    //     if (this.quizJson.isAssessment) {
-    //       this.isIdeal = true
-    //     }
-    //     this.fetchingResultsStatus = 'done'
-    //     this.numCorrectAnswers = res.correct
-    //     this.numIncorrectAnswers = res.inCorrect
-    //     this.numUnanswered = res.blank
-    //     this.passPercentage = res.passPercent
-    //     this.result = res.result
-    //     if (this.result >= this.passPercentage) {
-    //       this.isCompleted = true
-    //     }
-    //     // const result = {
-    //     //   result: (this.numCorrectAnswers * 100.0) / this.processedContent.quiz.questions.length,
-    //     //   total: this.processedContent.quiz.questions.length,
-    //     //   blank: res.blank,
-    //     //   correct: res.correct,
-    //     //   inCorrect: res.inCorrect,
-    //     //   passPercentage: res.passPercent,
-    //     // }
-    //     // this.quizSvc.firePlayerTelemetryEvent(
-    //     //   this.processedContent.content.identifier,
-    //     //   this.collectionId,
-    //     //   MIME_TYPE.quiz,
-    //     //   result,
-    //     //   this.isCompleted,
-    //     //   'DONE',
-    //     //   this.isIdeal,
-    //     //   true,
-    //     // )
-    //     const top = document.getElementById('quiz-end')
-    //     if (top !== null) {
-    //       top.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    //     }
-    //   },
-    //   (_error: any) => {
-    //     this.fetchingResultsStatus = 'error'
-    //   },
-    // )
+    const submitQuizJson = JSON.parse(JSON.stringify(this.quizJson))
+    this.fetchingResultsStatus = 'fetching'
+    const requestData: NSQuiz.IQuizSubmitRequest = this.quizSvc.createAssessmentSubmitRequest(
+      this.identifier,
+      this.name,
+      {
+        ...submitQuizJson,
+        timeLimit: this.quizJson.timeLimit * 1000,
+      },
+      this.questionAnswerHash,
+    )
+
+    requestData['artifactUrl'] = this.artifactUrl
+
+    const sanitizedRequestData: NSQuiz.IQuizSubmitRequest = this.quizSvc.sanitizeAssessmentSubmitRequest(requestData)
+
+    this.quizSvc.submitQuizV2(sanitizedRequestData).subscribe(
+      (res: NSQuiz.IQuizSubmitResponse) => {
+        if (this.quizJson.isAssessment) {
+          this.isIdeal = true
+        }
+        this.fetchingResultsStatus = 'done'
+        this.numCorrectAnswers = res.correct
+        this.numIncorrectAnswers = res.inCorrect
+        this.numUnanswered = res.blank
+        this.passPercentage = res.passPercent
+        this.result = res.result
+        if (this.result >= this.passPercentage) {
+          this.isCompleted = true
+        }
+        // const result = {
+        //   result: (this.numCorrectAnswers * 100.0) / this.processedContent.quiz.questions.length,
+        //   total: this.processedContent.quiz.questions.length,
+        //   blank: res.blank,
+        //   correct: res.correct,
+        //   inCorrect: res.inCorrect,
+        //   passPercentage: res.passPercent,
+        // }
+        // this.quizSvc.firePlayerTelemetryEvent(
+        //   this.processedContent.content.identifier,
+        //   this.collectionId,
+        //   MIME_TYPE.quiz,
+        //   result,
+        //   this.isCompleted,
+        //   'DONE',
+        //   this.isIdeal,
+        //   true,
+        // )
+        const top = document.getElementById('quiz-end')
+        if (top !== null) {
+          top.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      },
+      (_error: any) => {
+        this.fetchingResultsStatus = 'error'
+      },
+    )
+
+    /** ------------end------------------- */
+
   }
 
   showAnswers() {

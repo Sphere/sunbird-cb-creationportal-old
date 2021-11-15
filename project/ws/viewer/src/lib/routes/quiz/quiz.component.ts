@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { Subscription } from 'rxjs'
-import { HttpClient } from '@angular/common/http'
+// import { HttpClient } from '@angular/common/http'
 import { NsContent, WidgetContentService } from '@ws-widget/collection'
 import { NSQuiz } from '../../plugins/quiz/quiz.model'
 import { ActivatedRoute } from '@angular/router'
 import { WsEvents, EventService } from '@ws-widget/utils'
 import { ViewerUtilService } from '../../viewer-util.service'
 import { environment } from '../../../../../../../src/environments/environment'
+// import { take } from 'rxjs/operators'
 
 @Component({
   selector: 'viewer-quiz',
@@ -28,7 +29,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
   constructor(
     private activatedRoute: ActivatedRoute,
-    private http: HttpClient,
+    // private http: HttpClient,
     // private httpBackend: HttpBackend,
     private contentSvc: WidgetContentService,
     private eventSvc: EventService,
@@ -70,8 +71,8 @@ export class QuizComponent implements OnInit, OnDestroy {
       this.activatedRoute.snapshot.queryParams.collectionType
       && this.quizData) {
       await this.contentSvc.continueLearning(this.quizData.identifier,
-                                             this.activatedRoute.snapshot.queryParams.collectionId,
-                                             this.activatedRoute.snapshot.queryParams.collectionType,
+        this.activatedRoute.snapshot.queryParams.collectionId,
+        this.activatedRoute.snapshot.queryParams.collectionType,
       )
     } else if (this.quizData) {
       await this.contentSvc.continueLearning(this.quizData.identifier)
@@ -106,6 +107,33 @@ export class QuizComponent implements OnInit, OnDestroy {
     this.eventSvc.dispatchEvent(event)
   }
 
+  // private async transformQuiz(content: NsContent.IContent): Promise<NSQuiz.IQuiz> {
+  //   // const artifactUrl = this.forPreview
+  //   //   ? this.viewSvc.getAuthoringUrl(content.artifactUrl)
+  //   //   : content.artifactUrl
+  //   const artifactUrl = this.generateUrl(content.artifactUrl)
+  //   // const newHttpClient = new HttpClient(this.httpBackend)
+
+  //   let quizJSON: NSQuiz.IQuiz = await this.http
+  //     .get<any>(artifactUrl || '')
+  //     .toPromise()
+  //     .catch((_err: any) => {
+  //       // throw new DataResponseError('MANIFEST_FETCH_FAILED');
+  //     })
+  //   if (this.forPreview && quizJSON) {
+  //     quizJSON = this.viewSvc.replaceToAuthUrl(quizJSON)
+  //   }
+  //   quizJSON.questions.forEach((question: NSQuiz.IQuestion) => {
+  //     if (question.multiSelection && question.questionType === undefined) {
+  //       question.questionType = 'mcq-mca'
+  //     } else if (!question.multiSelection && question.questionType === undefined) {
+  //       question.questionType = 'mcq-sca'
+  //     }
+  //   })
+  //   return quizJSON
+  // }
+
+
   private async transformQuiz(content: NsContent.IContent): Promise<NSQuiz.IQuiz> {
     // const artifactUrl = this.forPreview
     //   ? this.viewSvc.getAuthoringUrl(content.artifactUrl)
@@ -113,12 +141,25 @@ export class QuizComponent implements OnInit, OnDestroy {
     const artifactUrl = this.generateUrl(content.artifactUrl)
     // const newHttpClient = new HttpClient(this.httpBackend)
 
-    let quizJSON: NSQuiz.IQuiz = await this.http
-      .get<any>(artifactUrl || '')
-      .toPromise()
-      .catch((_err: any) => {
-        // throw new DataResponseError('MANIFEST_FETCH_FAILED');
-      })
+    // let quizJSON: NSQuiz.IQuiz = await this.http
+    //   .get<any>(artifactUrl || '')
+    //   .toPromise()
+    //   .catch((_err: any) => {
+    //     // throw new DataResponseError('MANIFEST_FETCH_FAILED');
+    //   })
+    const quizObj = {
+      artifactUrl
+    }
+
+    let quizJSON = await this.viewSvc.getQuizJson(quizObj)
+
+    // let qq = await this.http
+    //   .post<any>(`apis/protected/v8/assessment/get`, quizObj)
+    //   .toPromise()
+    //   .catch((_err: any) => {
+    //     // throw new DataResponseError('MANIFEST_FETCH_FAILED');
+    //   })
+
     if (this.forPreview && quizJSON) {
       quizJSON = this.viewSvc.replaceToAuthUrl(quizJSON)
     }
@@ -130,7 +171,12 @@ export class QuizComponent implements OnInit, OnDestroy {
       }
     })
     return quizJSON
+
+
   }
+
+
+
   // private async setS3Cookie(contentId: string) {
   //   await this.contentSvc
   //     .setS3Cookie(contentId)
