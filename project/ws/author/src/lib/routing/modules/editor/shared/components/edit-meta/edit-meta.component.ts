@@ -344,7 +344,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     const isCreator = (this.configSvc.userProfile && this.configSvc.userProfile.userId === contentMeta.createdBy)
       ? true : false
 
-
     this.contentMeta = contentMeta
     const isEditable = this.contentService.hasAccess(
       contentMeta,
@@ -639,7 +638,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         Object.keys(currentMeta).map(v => {
           if (
-            v !== 'versionKey' &&
+            v !== 'versionKey' && v !== 'visibility' &&
             JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !==
             JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta]) && v !== 'jobProfile'
           ) {
@@ -662,7 +661,25 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             }
           } else if (v === 'versionKey') {
             meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
+          } else if (v === 'visibility') {
+            // if (currentMeta['contentType'] === 'CourseUnit' && currentMeta[v] !== 'Parent') {
+            //   // console.log('%c COURSE UNIT ', 'color: #f5ec3d', meta[v],  currentMeta[v])
+            //   meta[v as keyof NSContent.IContentMeta] = 'Default'
+            // }
           }
+
+          // else if(v === 'visibility') {
+          //   console.log('VISIBILITY ', currentMeta['contentType'])
+          //   if(currentMeta['contentType'] === 'Resource' && originalMeta['depth'] === 2 && currentMeta[v] !== 'Parent') {
+          //     console.log('%c RESOURCE DEPTH 2 ', 'color: #d9388b', meta[v], currentMeta[v])
+          //       meta[v as keyof NSContent.IContentMeta] = 'Parent'
+          //   } else if(currentMeta['contentType'] === 'Resource' && originalMeta['depth'] === 1) {
+          //     console.log('%c RESOURCE DEPTH 1 ', 'color: #38d9c9')
+          //   } else if(currentMeta['contentType'] === 'CourseUnit' && currentMeta[v] !== 'Parent') {
+          //     console.log('%c COURSE UNIT ', 'color: #f5ec3d', meta[v],  currentMeta[v])
+          //       meta[v as keyof NSContent.IContentMeta] = 'Parent'
+          //   }
+          // }
         })
 
         if (this.stage >= 1 && !this.type) {

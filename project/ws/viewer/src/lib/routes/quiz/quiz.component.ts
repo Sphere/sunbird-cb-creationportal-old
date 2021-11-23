@@ -71,8 +71,8 @@ export class QuizComponent implements OnInit, OnDestroy {
       this.activatedRoute.snapshot.queryParams.collectionType
       && this.quizData) {
       await this.contentSvc.continueLearning(this.quizData.identifier,
-        this.activatedRoute.snapshot.queryParams.collectionId,
-        this.activatedRoute.snapshot.queryParams.collectionType,
+                                             this.activatedRoute.snapshot.queryParams.collectionId,
+                                             this.activatedRoute.snapshot.queryParams.collectionType,
       )
     } else if (this.quizData) {
       await this.contentSvc.continueLearning(this.quizData.identifier)
@@ -133,7 +133,6 @@ export class QuizComponent implements OnInit, OnDestroy {
   //   return quizJSON
   // }
 
-
   private async transformQuiz(content: NsContent.IContent): Promise<NSQuiz.IQuiz> {
     // const artifactUrl = this.forPreview
     //   ? this.viewSvc.getAuthoringUrl(content.artifactUrl)
@@ -148,7 +147,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     //     // throw new DataResponseError('MANIFEST_FETCH_FAILED');
     //   })
     const quizObj = {
-      artifactUrl
+      artifactUrl,
     }
 
     let quizJSON = await this.viewSvc.getQuizJson(quizObj)
@@ -172,10 +171,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     })
     return quizJSON
 
-
   }
-
-
 
   // private async setS3Cookie(contentId: string) {
   //   await this.contentSvc

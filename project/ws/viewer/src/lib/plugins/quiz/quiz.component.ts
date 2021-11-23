@@ -343,9 +343,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         //   this.isIdeal,
         //   true,
         // )
-        const top = document.getElementById('quiz-end')
-        if (top !== null) {
-          top.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        const topq = document.getElementById('quiz-end')
+        if (topq !== null) {
+          topq.scrollIntoView({ behavior: 'smooth', block: 'start' })
         }
       },
       (_error: any) => {

@@ -76,7 +76,7 @@ export class ViewerUtilService {
   }
 
   async getQuizJson(data: any) {
-    let quizJSON = await this.http
+    const quizJSON = await this.http
       .post<any>(this.API_ENDPOINTS.ASSESSMENT_QUIZ_JSON, data)
       .toPromise()
       .catch((_err: any) => {

@@ -204,7 +204,6 @@ export class EditorService {
   }
 
   updateContentWithFewFields(requestBody: any, identifier: string): Observable<any> {
-    console.log('updateContentWithFewFields ')
     return this.apiService.patch<any>(
       `/apis/proxies/v8/action/content/v3/update/${identifier}`,
       requestBody,
