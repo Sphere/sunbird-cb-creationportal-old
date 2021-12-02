@@ -58,7 +58,12 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     }
     this.viewerDataServiceSubscription = this.viewerDataSvc.tocChangeSubject.subscribe(data => {
       this.prevResourceUrl = data.prevResource
-      this.nextResourceUrl = data.nextResource
+      if (data.nextResource === '/author/viewer//undefined') {
+        this.nextResourceUrl = null
+      } else {
+        this.nextResourceUrl = data.nextResource
+      }
+
       if (this.resourceId !== this.viewerDataSvc.resourceId) {
         this.resourceId = this.viewerDataSvc.resourceId as string
         this.resourceName = this.viewerDataSvc.resource ? this.viewerDataSvc.resource.name : ''

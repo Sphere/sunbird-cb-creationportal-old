@@ -1,9 +1,12 @@
-<mat-card class="mt-5 ml-5 mb-4" [ngClass]="{'ml-5': !isXSmall }" *ngIf="currentLicenseData">
+<mat-card class="mt-5 ml-5 mb-4" [ngClass]="{'ml-5': !isXSmall }">
     <h2 class="margin-bottom-m">License terms</h2>
-    <p>{{currentLicenseData[0].licenseName}}</p>
-    <p>{{currentLicenseData[0].desc}}</p>
-    <p>{{currentLicenseData[0].licenseName}} For details see below:‎</p>
-    <div class="license-link">
-        <a class="blue-link" href="{{currentLicenseData[0].link}}" target="_blank">{{currentLicenseData[0].link}}</a>
+    <p>CC BY</p>
+    <p>This license allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, so
+        long as
+        attribution is given to the creator. The license allows for commercial use.</p>
+    <p>CC BY For details see below:‎</p>
+    <div class="license-link cursor-pointer">
+        <a class="blue-link" href="https://creativecommons.org/licenses/by/4.0/"
+            target="_blank">https://creativecommons.org/licenses/by/4.0/</a>
     </div>
 </mat-card>

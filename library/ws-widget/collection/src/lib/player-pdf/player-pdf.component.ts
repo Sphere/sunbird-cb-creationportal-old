@@ -141,11 +141,11 @@ export class PlayerPdfComponent extends WidgetBaseComponent
           }
         }
         await this.render()
-        setTimeout(() => this.preserveAllApiCalls(), 500)
+        setTimeout(() => this.preserveAllApiCalls(), 50)
       })
 
     if (!this.widgetData.disableTelemetry) {
-      this.runnerSubs = interval(30000).subscribe(_ => {
+      this.runnerSubs = interval(300).subscribe(_ => {
         this.eventDispatcher(WsEvents.EnumTelemetrySubType.HeartBeat)
       })
       this.eventDispatcher(WsEvents.EnumTelemetrySubType.Init)

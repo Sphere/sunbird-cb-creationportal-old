@@ -94,7 +94,9 @@
   <!-- <div mat-line> {{folder.updated | date}} </div> -->
   <div class="item3 action-buttons">
 
-    <button *ngIf="!forExpiry && !forDelete" mat-icon-button [matMenuTriggerFor]="moreMenu">
+    <button *ngIf="!forExpiry && !forDelete && (showMenuItem('edit')||showMenuItem('delete')||showMenuItem('moveToInReview')||
+    showMenuItem('publish')||showMenuItem('unpublish')||showMenuItem('review')||showMenuItem('moveToDraft'))"
+      mat-icon-button [matMenuTriggerFor]="moreMenu">
       <mat-icon>more_vert</mat-icon>
     </button>
     <button *ngIf="forExpiry" (click)="takeAction('expiryExtend')" i18n-matTooltip matTooltip="Take Action"
@@ -138,12 +140,12 @@
     <mat-icon>reply</mat-icon>
     <span i18n>Send content to previous state</span>
   </a>
-  <ng-container>
+  <!-- <ng-container>
     <a *ngIf="showMenuItem('lang')" mat-menu-item [matMenuTriggerFor]="langMenu">
       <mat-icon>translate</mat-icon>
       <span i18n>Languages</span>
     </a>
-  </ng-container>
+  </ng-container> -->
 </mat-menu>
 <mat-menu #langMenu="matMenu">
   <ng-container *ngIf="translationArray && translationArray.length">

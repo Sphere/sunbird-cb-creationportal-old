@@ -2,7 +2,8 @@
   class="mat-elevation-z3 custom mobile">
   <div class="fix-ww" id="root-tool-bar" title="toolbar" i18n-aria-label role="toolbar">
     <ng-container *ngIf="mode === 'top'">
-      <a routerLink="/author/cbp" class="logo-dim" role="link" title="Home" i18n-aria-title i18n-aria-label>
+      <a routerLink="/author/cbp" class="logo-dim cursor-pointer" role="link" title="Home" i18n-aria-title
+        i18n-aria-label>
         <img [src]="appIcon" alt="Application Logo" class="app-logo" />
       </a>
       <!-- <span class="spacer"></span> -->
@@ -77,8 +78,8 @@
 
 <ng-template #navbarSide let-item="item">
   <ng-container *ngIf="item.type === 'widgetButton'" [wsResolverWidget]="item.config"></ng-container>
-  <ws-widget-btn-feature *ngIf="item.type === 'featureButton'" [id]="item.config.actionBtnId" [widgetData]="item.config"
-    [showFixedLength]="true"></ws-widget-btn-feature>
+  <!-- <ws-widget-btn-feature *ngIf="item.type === 'featureButton'" [id]="item.config.actionBtnId" [widgetData]="item.config"
+    [showFixedLength]="true"></ws-widget-btn-feature> -->
 </ng-template>
 
 <mat-menu #helpMenu="matMenu">
