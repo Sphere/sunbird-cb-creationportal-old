@@ -109,7 +109,7 @@
               </ws-widget-display-content-type>
               <span *ngIf="widgetData.content.duration" class="text-gray-600" i18n-title title="Duration">
                 &nbsp;&nbsp;|&nbsp;&nbsp;{{
-                  widgetData.content.duration | pipeDurationTransform: 'hms'
+                widgetData.content.duration | pipeDurationTransform: 'hms'
                 }}
               </span>
             </div>
@@ -146,7 +146,7 @@
             </ws-widget-display-content-type>
             <span *ngIf="widgetData.content.duration" class="text-gray-600" i18n-title title="Duration">
               &nbsp;&nbsp;|&nbsp;&nbsp;{{
-                widgetData.content.duration | pipeDurationTransform: 'hms'
+              widgetData.content.duration | pipeDurationTransform: 'hms'
               }}
             </span>
           </div>
@@ -445,7 +445,7 @@
           <div class="ws-mat-primary-background text-truncate px-4 py-2 -mx-4 text-white">
             <span *ngIf="widgetData.content?.complexityLevel">{{
               widgetData.content?.complexityLevel
-            }}</span>
+              }}</span>
 
             <span i18n *ngIf="widgetData.content?.subTitle">
               |

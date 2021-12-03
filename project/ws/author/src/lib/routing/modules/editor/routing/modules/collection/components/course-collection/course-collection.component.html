@@ -2,7 +2,7 @@
 </ws-author-course-header>
 
 <mat-drawer-container autosize="true" id="auth-toc" class="example-container">
-  <mat-drawer mode="side" [(opened)]="sideBarOpened">
+  <mat-drawer mode="side" [(opened)]="sideBarOpened" class="side-nav">
 
     <div class="sticky">
       <!-- (closeEvent)="sidenav.toggle(); leftArrow = !leftArrow" check on this -->
@@ -11,7 +11,8 @@
       </ws-author-auth-toc>
 
       <div class="margin-left-l margin-top-m ">
-        <a class="flex flex-middle margin-left-l" (click)="showAddchapter = true"><span class="material-icons">
+        <a class="flex flex-middle margin-left-l cursor-pointer" (click)="showAddchapter = true"><span
+            class="material-icons">
             add
           </span>
           <p class="margin-left-xs margin-remove-bottom cursor-pointer">Add Content</p>

@@ -24,7 +24,6 @@
     height: $image-height;
     width: (16 / 9) * $image-height;
     margin-right: $size-s;
-    cursor: pointer;
   }
 
   @media only screen and (max-width:469px) {
@@ -99,7 +98,6 @@
     height: $image-height;
     width: (16 / 9) * $image-height;
     margin-right: $size-s;
-    cursor: pointer;
   }
 
   @media only screen and (max-width:469px) {
