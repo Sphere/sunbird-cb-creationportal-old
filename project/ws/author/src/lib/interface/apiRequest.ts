@@ -68,6 +68,7 @@ export namespace NSApiRequest {
   export interface IContentUpdateV2 {
     request: {
       content: NSContent.IContentMeta
+      visibility: any
     }
   }
 
@@ -155,6 +156,8 @@ export namespace NSApiRequest {
         // content_url: string
         // node_id: string
         versionKey: string
+        thumbnail: string
+        appIcon: string
       }
     }
   }
