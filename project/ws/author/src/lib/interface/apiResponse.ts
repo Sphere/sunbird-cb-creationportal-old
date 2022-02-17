@@ -15,6 +15,8 @@ export namespace NSApiResponse {
     id: string
     ver: string
     ts: string
+    artifactUrl: any
+    identifier: any
     params: {
       resmsgid: string
       msgid: string

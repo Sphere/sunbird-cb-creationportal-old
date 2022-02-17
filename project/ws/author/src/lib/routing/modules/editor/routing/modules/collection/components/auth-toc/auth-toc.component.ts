@@ -190,10 +190,21 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
         if (tempUpdateContent.category) {
           delete tempUpdateContent.category
         }
-        const requestBody: NSApiRequest.IContentUpdateV2 = {
-          request: {
-            content: tempUpdateContent,
-          },
+        let requestBody: NSApiRequest.IContentUpdateV2
+        if (tempUpdateContent.contentType === 'CourseUnit') {
+          requestBody = {
+            request: {
+              content: tempUpdateContent,
+              visibility: 'Parent',
+            },
+          }
+        } else {
+          requestBody = {
+            request: {
+              content: tempUpdateContent,
+              visibility: 'default',
+            },
+          }
         }
 
         if (Object.keys(tempUpdateContent).length !== 1) {

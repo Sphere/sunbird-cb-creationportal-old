@@ -1018,7 +1018,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         imageFileName: fileName,
       },
     })
-
     dialogRef.afterClosed().subscribe({
       next: (result: File) => {
         if (result) {
@@ -1063,21 +1062,24 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
                   .subscribe(
                     data => {
-                      if (data.result) {
+                      if (data) {
+                        const generateURL = this.generateUrl(data.artifactUrl)
                         const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
                           request: {
                             content: {
                               // content_url: data.result.artifactUrl,
                               // identifier: data.result.identifier,
                               // node_id: data.result.node_id,
-                              artifactUrl: this.generateUrl(data.result.artifactUrl),
+                              thumbnail: generateURL,
+                              appIcon: generateURL,
+                              artifactUrl: generateURL,
                               versionKey: (new Date()).getTime().toString(),
                             },
                           },
                         }
                         this.apiService
                           .patch<NSApiRequest.ICreateMetaRequest>(
-                            `${AUTHORING_BASE}content/v3/update/${data.result.identifier}`,
+                            `${AUTHORING_BASE}content/v3/update/${data.identifier}`,
                             updateArtf,
                           )
                           .subscribe(
@@ -1086,8 +1088,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
                               }
                               this.loader.changeLoad.next(false)
                               this.canUpdate = false
-                              this.contentForm.controls.appIcon.setValue(this.generateUrl(data.result.artifactUrl))
-                              this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.result.artifactUrl))
+                              this.contentForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
+                              this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
                               this.canUpdate = true
                               this.storeData()
                               // this.contentForm.controls.posterImage.setValue(data.artifactURL)
@@ -1239,7 +1241,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       : ''
   }
 
-  generateUrl(oldUrl: string) {
+  generateUrl(oldUrl: any) {
     const chunk = oldUrl.split('/')
     const newChunk = environment.azureHost.split('/')
     const newLink = []

@@ -454,12 +454,24 @@ export class FileUploadComponent implements OnInit, OnChanges {
           metadata: this.contentService.upDatedContent[v],
         }
       })
-
-      const requestBody: NSApiRequest.IContentUpdateV2 = {
-        request: {
-          content: nodesModified[this.contentService.currentContent].metadata,
-        },
+      const tempUpdateContent = this.contentService.getOriginalMeta(this.currentContent)
+      let requestBody: NSApiRequest.IContentUpdateV2
+      if (tempUpdateContent.contentType === 'CourseUnit') {
+        requestBody = {
+          request: {
+            content: nodesModified[this.contentService.currentContent].metadata,
+            visibility: 'Parent',
+          },
+        }
+      } else {
+        requestBody = {
+          request: {
+            content: nodesModified[this.contentService.currentContent].metadata,
+            visibility: 'default',
+          },
+        }
       }
+
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
 
       if (requestBody.request.content.category) {
