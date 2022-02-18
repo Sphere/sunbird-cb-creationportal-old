@@ -125,6 +125,7 @@ export namespace NsContent {
     resumePage?: number // For player WebModule in UI
     [key: string]: any
     streamingUrl?: string
+    entryPoint?: string
   }
 
   export interface IContentMinimal {

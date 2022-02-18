@@ -4,17 +4,17 @@
 
 export const environment: IEnvironment = {
   production: false,
-  sitePath: 'aastrika-sb-cbp.idc.tarento.com',
+  sitePath: 'cbp-sphere.aastrika.org',
   organisation: 'aastrika',
   framework: 'test_fw_1',
   channelId: '0131397178949058560',
   // karmYogi: 'https://igot-sunbird.idc.tarento.com/',
-  karmYogi: 'https://aastrika-sb.idc.tarento.com/',
+  karmYogi: 'https://cbp-sphere.aastrika.org/',
   azureHost: 'https://sunbirdcontent.s3-ap-south-1.amazonaws.com',
   azureBucket: 'content',
   azureOldHost: 'https://staas-bbs1.cloud.gov.in',
   azureOldBuket: 'igot',
-  cbpPortal: 'https://aastrika-sb-cbp.idc.tarento.com/',
+  cbpPortal: 'https://cbp-sphere.aastrika.org/',
   scromContentEndpoint: 'assets/public/content/html/',
 }
 interface IEnvironment {

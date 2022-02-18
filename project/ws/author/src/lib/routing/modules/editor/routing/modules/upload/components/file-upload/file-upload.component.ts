@@ -142,6 +142,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
       transcoding: [],
       versionKey: [],
       streamingUrl: [],
+      entryPoint: []
     })
     this.fileUploadForm.valueChanges.subscribe(() => {
       if (this.canUpdate) {
@@ -184,6 +185,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.fileUploadForm.controls.duration.setValue(meta.duration || '0')
     this.fileUploadForm.controls.versionKey.setValue(meta.versionKey || '')
     this.fileUploadForm.controls.streamingUrl.setValue(meta.streamingUrl || '')
+    this.fileUploadForm.controls.entryPoint.setValue(meta.entryPoint || '')
+
     this.canUpdate = true
     this.fileUploadForm.markAsPristine()
     this.fileUploadForm.markAsUntouched()
@@ -456,7 +459,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
       })
       const tempUpdateContent = this.contentService.getOriginalMeta(this.currentContent)
       let requestBody: NSApiRequest.IContentUpdateV2
-      if (tempUpdateContent.contentType === 'CourseUnit') {
+      if (tempUpdateContent.category === 'CourseUnit') {
         requestBody = {
           request: {
             content: nodesModified[this.contentService.currentContent].metadata,
@@ -720,6 +723,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
             this.fileUploadForm.controls.isExternal.setValue(false)
             this.fileUploadForm.controls['streamingUrl'].setValue(v ?
               this.generateStreamUrl((this.fileUploadCondition.url) ? this.fileUploadCondition.url : '') : '')
+            this.fileUploadForm.controls['entryPoint'].setValue('/index_lms.html' + this.fileUploadCondition.url)
           }
 
           if (this.mimeType === 'video/mp4') {
@@ -776,6 +780,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
   }
 
   storeData() {
+    debugger
     const originalMeta = this.contentService.getOriginalMeta(this.currentContent)
     const currentMeta = this.fileUploadForm.value
     const meta: any = {}
@@ -792,6 +797,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
         ) {
           meta[v] = currentMeta[v]
         } else {
+          console.log("this.authInitService", this.authInitService)
           meta[v] = JSON.parse(
             JSON.stringify(
               this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[

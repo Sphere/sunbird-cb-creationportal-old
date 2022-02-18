@@ -385,6 +385,7 @@ export namespace NSContent {
     prevStatus: string,
     reviewStatus: string,
     streamingUrl: string[],
+    entryPoint: string[]
   }
 
   export interface IOrganisations {

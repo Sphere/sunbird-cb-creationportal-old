@@ -2059,7 +2059,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.currentCourseId]) {
       let tempUpdateContent = this.contentService.upDatedContent[this.currentCourseId]
       let requestBody: NSApiRequest.IContentUpdateV2
-      if (tempUpdateContent.contentType === 'CourseUnit') {
+      if (tempUpdateContent.category === 'CourseUnit') {
         requestBody = {
           request: {
             content: tempUpdateContent,
