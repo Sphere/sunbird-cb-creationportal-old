@@ -695,7 +695,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
         tap(v => {
           this.canUpdate = false
           //const artifactUrl = v.result && v.result.artifactUrl ? v.result.artifactUrl : ''
-          const artifactUrl = v && v.artifactUrl ? v.artifactUrl : ''
+           const artifactUrl = v && v.artifactUrl ? v.artifactUrl : ''
           if (this.mimeType === 'video/mp4' || this.mimeType === 'application/pdf' || this.mimeType === 'audio/mpeg') {
             this.fileUploadForm.controls.artifactUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
             this.fileUploadForm.controls.downloadUrl.setValue(v ? this.generateUrl(artifactUrl) : '')

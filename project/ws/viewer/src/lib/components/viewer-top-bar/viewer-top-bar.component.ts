@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router'
 import { ConfigurationsService, NsPage, ValueService } from '@ws-widget/utils'
 import { Subscription } from 'rxjs'
 import { ViewerDataService } from '../../viewer-data.service'
+import { NsContent } from '@ws-widget/collection/src/lib/_services/widget-content.model'
 
 @Component({
   selector: 'viewer-viewer-top-bar',
@@ -25,6 +26,8 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
   pageNavbar: Partial<NsPage.INavBackground> = this.configSvc.pageNavBar
   resourceId: string = (this.viewerDataSvc.resourceId as string) || ''
   resourceName: string | null = this.viewerDataSvc.resource ? this.viewerDataSvc.resource.name : ''
+  @Input() screenContent: NsContent.IContent | null = null
+  @Output() fsState: EventEmitter<boolean> = new EventEmitter()
   collectionId = ''
   logo = true
   isPreview = false
