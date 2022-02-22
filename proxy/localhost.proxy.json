@@ -57,7 +57,7 @@
     }
   },
   "/assets/*": {
-    "target": "http://localhost:8080",
+    "target": "https://cbp-sphere.aastrika.org",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true,
