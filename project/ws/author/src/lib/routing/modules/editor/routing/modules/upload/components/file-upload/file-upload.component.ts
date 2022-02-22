@@ -76,7 +76,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
   updatedIPRList: { [key: string]: boolean } = {}
   filetype!: string | null
   acceptType!: string | '.mp3,.mp4,.pdf,.zip,.m4v'
-  entryPoint = '/index_lms.html'
+  entryPoint: any
 
   @Input() isCreatorEnable = true
 
