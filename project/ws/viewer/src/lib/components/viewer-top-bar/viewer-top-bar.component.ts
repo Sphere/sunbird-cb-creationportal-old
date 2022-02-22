@@ -56,7 +56,8 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     // }
     if (this.configSvc.instanceConfig) {
       this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        this.configSvc.instanceConfig.logos.app,
+        `/cbp-assets/icons/logo.png`
+        // this.configSvc.instanceConfig.logos.app,
       )
     }
     this.viewerDataServiceSubscription = this.viewerDataSvc.tocChangeSubject.subscribe(data => {
