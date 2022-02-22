@@ -12,7 +12,7 @@
     "postbuild": "npm run compress:gzip && npm run compress:brotli",
     "compress:brotli": "gzipper --brotli --gzip-level=9 --verbose ./dist/www",
     "compress:gzip": "gzipper --verbose --gzip-level=9 ./dist/www",
-    "build:local": "node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --prod",
+    "build:local": "node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --prod --configuration=dev",
     "build:stats": "ng build --stats-json",
     "start:cbp-dev": "node --max_old_space_size=12288 ./node_modules/@angular/cli/bin/ng serve --proxy-config proxy/cbp-dev-ip.proxy.json -o",
     "analyse": "webpack-bundle-analyzer ./dist/www/ng serve --proxy-config proxy/localhost.proxy.json -o/stats-es5.json",
@@ -119,12 +119,5 @@
     "typescript": "~3.5.3",
     "typescript-tslint-plugin": "^0.5.4",
     "webpack-bundle-analyzer": "^3.4.1"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint:fix",
-      "pre-push": "npm run build:local",
-      "post-commit": "git status"
-    }
   }
 }
