@@ -68,7 +68,6 @@ export namespace NSApiRequest {
   export interface IContentUpdateV2 {
     request: {
       content: NSContent.IContentMeta
-      visibility: any
     }
   }
 

@@ -34,7 +34,7 @@ export class QuizService {
       ...quiz,
       identifier,
       title,
-      courseId
+      courseId,
     }
     quizWithAnswers.questions.map(question => {
       if (
