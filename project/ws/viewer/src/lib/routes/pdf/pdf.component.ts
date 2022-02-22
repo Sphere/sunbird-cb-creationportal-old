@@ -1,7 +1,9 @@
 import { AccessControlService } from '@ws/author'
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { Subscription } from 'rxjs'
-import { NsContent, NsDiscussionForum, WidgetContentService } from '@ws-widget/collection'
+import { NsContent, NsDiscussionForum,
+  // WidgetContentService
+} from '@ws-widget/collection'
 import { WsEvents, EventService } from '@ws-widget/utils'
 import { NsWidgetResolver } from '@ws-widget/resolver'
 import { ActivatedRoute } from '@angular/router'
@@ -38,7 +40,7 @@ export class PdfComponent implements OnInit, OnDestroy {
   > | null = null
   constructor(
     private activatedRoute: ActivatedRoute,
-    private contentSvc: WidgetContentService,
+    // private contentSvc: WidgetContentService,
     private viewerSvc: ViewerUtilService,
     private eventSvc: EventService,
     private accessControlSvc: AccessControlService,
@@ -82,16 +84,16 @@ export class PdfComponent implements OnInit, OnDestroy {
           //   await this.setS3Cookie(this.pdfData.identifier)
           // }
           this.widgetResolverPdfData.widgetData.resumePage = 1
-          if (this.pdfData && this.pdfData.identifier) {
-            if (this.activatedRoute.snapshot.queryParams.collectionId) {
-              await this.fetchContinueLearning(
-                this.activatedRoute.snapshot.queryParams.collectionId,
-                this.pdfData.identifier,
-              )
-            } else {
-              await this.fetchContinueLearning(this.pdfData.identifier, this.pdfData.identifier)
-            }
-          }
+          // if (this.pdfData && this.pdfData.identifier) {
+          //   if (this.activatedRoute.snapshot.queryParams.collectionId) {
+          //     await this.fetchContinueLearning(
+          //       this.activatedRoute.snapshot.queryParams.collectionId,
+          //       this.pdfData.identifier,
+          //     )
+          //   } else {
+          //     await this.fetchContinueLearning(this.pdfData.identifier, this.pdfData.identifier)
+          //   }
+          // }
           this.widgetResolverPdfData.widgetData.pdfUrl = this.pdfData
             ? this.forPreview
               ? this.pdfData.artifactUrl
@@ -168,21 +170,21 @@ export class PdfComponent implements OnInit, OnDestroy {
     this.eventSvc.dispatchEvent(event)
   }
 
-  async fetchContinueLearning(collectionId: string, pdfId: string): Promise<boolean> {
-    return new Promise(resolve => {
-      this.contentSvc.fetchContentHistory(collectionId).subscribe(
-        data => {
-          if (data) {
-            if (data.identifier === pdfId && data.continueData && data.continueData.progress) {
-              this.widgetResolverPdfData.widgetData.resumePage = Number(data.continueData.progress)
-            }
-          }
-          resolve(true)
-        },
-        () => resolve(true),
-      )
-    })
-  }
+  // async fetchContinueLearning(collectionId: string, pdfId: string): Promise<boolean> {
+  //   return new Promise(resolve => {
+  //     this.contentSvc.fetchContentHistory(collectionId).subscribe(
+  //       data => {
+  //         if (data) {
+  //           if (data.identifier === pdfId && data.continueData && data.continueData.progress) {
+  //             this.widgetResolverPdfData.widgetData.resumePage = Number(data.continueData.progress)
+  //           }
+  //         }
+  //         resolve(true)
+  //       },
+  //       () => resolve(true),
+  //     )
+  //   })
+  // }
 
   // private async setS3Cookie(contentId: string) {
   //   await this.contentSvc

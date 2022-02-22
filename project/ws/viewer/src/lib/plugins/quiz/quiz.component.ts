@@ -300,6 +300,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     const requestData: NSQuiz.IQuizSubmitRequest = this.quizSvc.createAssessmentSubmitRequest(
       this.identifier,
       this.name,
+      this.collectionId,
       {
         ...submitQuizJson,
         timeLimit: this.quizJson.timeLimit * 1000,

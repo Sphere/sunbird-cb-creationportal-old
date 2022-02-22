@@ -5,7 +5,7 @@ import {
   NsContent,
   IWidgetsPlayerMediaData,
   NsDiscussionForum,
-  WidgetContentService,
+  // WidgetContentService,
 } from '@ws-widget/collection'
 import { NsWidgetResolver } from '@ws-widget/resolver'
 import { ValueService } from '@ws-widget/utils'
@@ -38,7 +38,7 @@ export class VideoComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private valueSvc: ValueService,
     private viewerSvc: ViewerUtilService,
-    private contentSvc: WidgetContentService,
+    // private contentSvc: WidgetContentService,
     private platform: Platform,
     private accessControlSvc: AccessControlService,
   ) { }
@@ -99,16 +99,16 @@ export class VideoComponent implements OnInit, OnDestroy {
             this.formDiscussionForumWidget(this.videoData)
           }
           this.widgetResolverVideoData = this.initWidgetResolverVideoData(this.videoData as any)
-          if (this.videoData && this.videoData.identifier) {
-            if (this.activatedRoute.snapshot.queryParams.collectionId) {
-              await this.fetchContinueLearning(
-                this.activatedRoute.snapshot.queryParams.collectionId,
-                this.videoData.identifier,
-              )
-            } else {
-              await this.fetchContinueLearning(this.videoData.identifier, this.videoData.identifier)
-            }
-          }
+          // if (this.videoData && this.videoData.identifier) {
+          //   if (this.activatedRoute.snapshot.queryParams.collectionId) {
+          //     await this.fetchContinueLearning(
+          //       this.activatedRoute.snapshot.queryParams.collectionId,
+          //       this.videoData.identifier,
+          //     )
+          //   } else {
+          //     await this.fetchContinueLearning(this.videoData.identifier, this.videoData.identifier)
+          //   }
+          // }
           this.widgetResolverVideoData.widgetData.url = this.videoData
             ? this.forPreview
               ? this.videoData.artifactUrl // this.viewerSvc.getAuthoringUrl(this.videoData.artifactUrl)
@@ -230,28 +230,28 @@ export class VideoComponent implements OnInit, OnDestroy {
       widgetType: 'discussionForum',
     }
   }
-  async fetchContinueLearning(collectionId: string, videoId: string): Promise<boolean> {
-    return new Promise(resolve => {
-      this.contentSvc.fetchContentHistory(collectionId).subscribe(
-        data => {
-          if (data) {
-            if (
-              data.identifier === videoId &&
-              data.continueData &&
-              data.continueData.progress &&
-              this.widgetResolverVideoData
-            ) {
-              this.widgetResolverVideoData.widgetData.resumePoint = Number(
-                data.continueData.progress,
-              )
-            }
-          }
-          resolve(true)
-        },
-        () => resolve(true),
-      )
-    })
-  }
+  // async fetchContinueLearning(collectionId: string, videoId: string): Promise<boolean> {
+  //   return new Promise(resolve => {
+  //     this.contentSvc.fetchContentHistory(collectionId).subscribe(
+  //       data => {
+  //         if (data) {
+  //           if (
+  //             data.identifier === videoId &&
+  //             data.continueData &&
+  //             data.continueData.progress &&
+  //             this.widgetResolverVideoData
+  //           ) {
+  //             this.widgetResolverVideoData.widgetData.resumePoint = Number(
+  //               data.continueData.progress,
+  //             )
+  //           }
+  //         }
+  //         resolve(true)
+  //       },
+  //       () => resolve(true),
+  //     )
+  //   })
+  // }
   // private async setS3Cookie(contentId: string) {
   //   await this.contentSvc
   //     .setS3Cookie(contentId)

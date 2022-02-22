@@ -1,5 +1,5 @@
 <ng-container *ngIf="!isFetching; else Loading">
-  <mat-card *ngIf="collection && collectionCard">
+<!--   <mat-card *ngIf="collection && collectionCard">
     <mat-card-content>
       <span class="width-expand flex flex-middle">
         <a class="viewer-toc-header-thumbnail align-self-start margin-auto" [routerLink]="collectionCard?.redirectUrl"
@@ -30,15 +30,6 @@
               pipeLimitTo: 300 }}</span>
           </span>
           <div *ngIf="collectionCard?.type === 'content'" class="width-1-1">
-            <!-- <ws-widget-btn-content-like
-              [widgetData]="{ identifier: collectionCard?.id }"
-            ></ws-widget-btn-content-like>
-            <ws-widget-btn-content-share [forPreview]="forPreview"></ws-widget-btn-content-share>
-            <ws-widget-btn-goals [forPreview]="forPreview"></ws-widget-btn-goals>
-            <ws-widget-btn-playlist [forPreview]="forPreview"></ws-widget-btn-playlist>
-            <ws-widget-btn-content-feedback
-              [forPreview]="forPreview"
-            ></ws-widget-btn-content-feedback> -->
           </div>
         </span>
         <span>
@@ -48,7 +39,7 @@
         </span>
       </span>
     </mat-card-content>
-  </mat-card>
+  </mat-card> -->
 
   <mat-divider *ngIf="collection" class="margin-bottom-xs"></mat-divider>
   <div *ngIf="collection" class="flex flex-middle">

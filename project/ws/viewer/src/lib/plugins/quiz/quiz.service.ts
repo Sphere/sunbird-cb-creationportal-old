@@ -26,6 +26,7 @@ export class QuizService {
   createAssessmentSubmitRequest(
     identifier: string,
     title: string,
+    courseId: string,
     quiz: NSQuiz.IQuiz,
     questionAnswerHash: { [questionId: string]: any[] },
   ): NSQuiz.IQuizSubmitRequest {
@@ -33,6 +34,7 @@ export class QuizService {
       ...quiz,
       identifier,
       title,
+      courseId
     }
     quizWithAnswers.questions.map(question => {
       if (
