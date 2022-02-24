@@ -153,10 +153,10 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
         //   url = `${environment.azureHost}/${environment.azureBucket}/content/html/
         //   ${this.htmlContent.identifier}-snapshot/index.html?timestamp='${new Date().getTime()}`
         // }
-
         if (this.htmlContent.streamingUrl) {
           url = `${this.htmlContent.streamingUrl}?timestamp='${new Date().getTime()}`
         }
+
         this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
       } else {
         this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.htmlContent.artifactUrl)

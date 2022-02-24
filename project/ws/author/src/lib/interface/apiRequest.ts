@@ -155,6 +155,8 @@ export namespace NSApiRequest {
         // content_url: string
         // node_id: string
         versionKey: string
+        thumbnail: string
+        appIcon: string
       }
     }
   }

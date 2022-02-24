@@ -901,7 +901,7 @@
                     [matTextareaAutosize]="true" maxlength="2000" matInput rows="3" formControlName="description"
                     i18n-placeholder placeholder="Description will appear on card"
                     [required]="checkCondition('description', 'required') ? true : null">
-            </textarea>
+                  </textarea>
                   <mat-hint align="end">{{ description.value.length }} / 2000</mat-hint>
                   <mat-error *ngIf="showError('description')" i18n>Summary of the course is mandatory
                   </mat-error>
@@ -930,8 +930,6 @@
               </div>
             </div> -->
 
-
-
             <div class="margin-top-s" *ngIf="checkCondition('instructions', 'show')"
               [ngClass]="{ disable: checkCondition('instructions', 'disabled') }">
               <label>
@@ -939,7 +937,8 @@
                   <!-- <b i18n [ngClass]="{ required: checkCondition('instructions', 'required') }">Content Body (Long
                     Description)
                   </b> -->
-                  <b i18n [ngClass]="{ required: checkCondition('body', 'required') }">Long description of the course
+                  <b i18n [ngClass]="{ required: checkCondition('instructions', 'required') }">Long description of the
+                    course
                   </b>
                   <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('contentBody')">info
                   </mat-icon>
@@ -957,7 +956,6 @@
                 <!-- <textarea (value)="updateContentService('body', $event)"></textarea> -->
               </div>
             </div>
-
 
           </div>
 

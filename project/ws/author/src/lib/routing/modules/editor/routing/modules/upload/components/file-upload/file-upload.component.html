@@ -244,7 +244,8 @@
     <div style="overflow: auto; max-height: 400px" class="mt-4">
       <mat-radio-group aria-labelledby="example-radio-group-label" class="flex flex-1 flex-column example-radio-group"
         [(ngModel)]="fileUploadCondition.url">
-        <mat-radio-button class="example-radio-button" *ngFor="let file of fileList" [value]="file">
+        <mat-radio-button class="example-radio-button" *ngFor="let file of fileList" [value]="file"
+          (change)="selectEntryPoint(file)">
           {{file}}
         </mat-radio-button>
       </mat-radio-group>

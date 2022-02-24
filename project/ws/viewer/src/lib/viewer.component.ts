@@ -27,7 +27,7 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewChecked {
   content: NsContent.IContent | null = null
   errorType = ErrorType
   private isLtMedium$ = this.valueSvc.isLtMedium$
-  sideNavBarOpened = false
+  sideNavBarOpened = true
   mode: 'over' | 'side' = 'side'
   forPreview = window.location.href.includes('/author/')
   isTypeOfCollection = true
@@ -72,7 +72,7 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.isTypeOfCollection = this.activatedRoute.snapshot.queryParams.collectionType ? true : false
     this.screenSizeSubscription = this.isLtMedium$.subscribe(isSmall => {
       // this.sideNavBarOpened = !isSmall
-      this.sideNavBarOpened = isSmall ? false : false
+      this.sideNavBarOpened = isSmall ? false : true
       this.mode = isSmall ? 'over' : 'side'
     })
     this.resourceChangeSubscription = this.dataSvc.changedSubject.subscribe(_ => {
@@ -136,7 +136,8 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   toggleSideBar() {
-    this.sideNavBarOpened = !this.sideNavBarOpened
+    this.sideNavBarOpened = true
+    // this.sideNavBarOpened = !this.sideNavBarOpened
   }
 
   minimizeBar() {

@@ -76,6 +76,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
   updatedIPRList: { [key: string]: boolean } = {}
   filetype!: string | null
   acceptType!: string | '.mp3,.mp4,.pdf,.zip,.m4v'
+  entryPoint = '/index_lms.html'
 
   @Input() isCreatorEnable = true
 
@@ -142,6 +143,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
       transcoding: [],
       versionKey: [],
       streamingUrl: [],
+      entryPoint: [],
     })
     this.fileUploadForm.valueChanges.subscribe(() => {
       if (this.canUpdate) {
@@ -169,6 +171,10 @@ export class FileUploadComponent implements OnInit, OnChanges {
     }
   }
 
+  selectEntryPoint(file: any) {
+    this.entryPoint = '/' + `${file}`
+  }
+
   assignData(meta: NSContent.IContentMeta) {
     if (!this.fileUploadForm) {
       this.createForm()
@@ -184,6 +190,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.fileUploadForm.controls.duration.setValue(meta.duration || '0')
     this.fileUploadForm.controls.versionKey.setValue(meta.versionKey || '')
     this.fileUploadForm.controls.streamingUrl.setValue(meta.streamingUrl || '')
+    this.fileUploadForm.controls.entryPoint.setValue(meta.entryPoint || '')
+
     this.canUpdate = true
     this.fileUploadForm.markAsPristine()
     this.fileUploadForm.markAsUntouched()
@@ -454,12 +462,18 @@ export class FileUploadComponent implements OnInit, OnChanges {
           metadata: this.contentService.upDatedContent[v],
         }
       })
+      const tempUpdateContent = this.contentService.getOriginalMeta(this.currentContent)
+      let requestBody: NSApiRequest.IContentUpdateV2
 
-      const requestBody: NSApiRequest.IContentUpdateV2 = {
+      if (tempUpdateContent.category === 'CourseUnit') {
+        nodesModified.visibility = 'Parent'
+      }
+      requestBody = {
         request: {
           content: nodesModified[this.contentService.currentContent].metadata,
         },
       }
+
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
 
       if (requestBody.request.content.category) {
@@ -694,7 +708,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
         // }),
         tap(v => {
           this.canUpdate = false
-          const artifactUrl = v.result && v.result.artifactUrl ? v.result.artifactUrl : ''
+          // const artifactUrl = v.result && v.result.artifactUrl ? v.result.artifactUrl : ''
+          const artifactUrl = v && v.artifactUrl ? v.artifactUrl : ''
           if (this.mimeType === 'video/mp4' || this.mimeType === 'application/pdf' || this.mimeType === 'audio/mpeg') {
             this.fileUploadForm.controls.artifactUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
             this.fileUploadForm.controls.downloadUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
@@ -703,11 +718,11 @@ export class FileUploadComponent implements OnInit, OnChanges {
             this.fileUploadForm.controls.downloadUrl.setValue(v ? artifactUrl : '')
           }
           this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
-
           if (this.mimeType === 'application/vnd.ekstep.html-archive' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
             this.fileUploadForm.controls.isExternal.setValue(false)
             this.fileUploadForm.controls['streamingUrl'].setValue(v ?
               this.generateStreamUrl((this.fileUploadCondition.url) ? this.fileUploadCondition.url : '') : '')
+            this.fileUploadForm.controls['entryPoint'].setValue(this.entryPoint ? this.entryPoint : '')
           }
 
           if (this.mimeType === 'video/mp4') {
@@ -730,7 +745,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
           // }
 
           if (this.mimeType === 'application/pdf') {
-            this.profanityCheckAPICall(v.result.artifactUrl)
+            this.profanityCheckAPICall(v.artifactUrl)
           }
           return of(v)
         }),

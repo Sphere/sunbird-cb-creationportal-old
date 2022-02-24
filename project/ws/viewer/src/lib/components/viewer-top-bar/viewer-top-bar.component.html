@@ -16,8 +16,8 @@
         : (forPreview ? '/author' : '/app') + '/toc/' + resourceId + '/overview'
     }"></ws-widget-btn-page-back>
   <mat-icon style="cursor: pointer;" (click)="back()" *ngIf="forChannel">arrow_back</mat-icon> -->
-  <a *ngIf="logo" mat-button routerLink="/author/home">
-    <img [src]="appIcon" alt="Application Logo" class="app-logo" />
+  <a *ngIf="logo" i18n-matTooltip matTooltip="Home" mat-button routerLink="/author/home">
+    <img [src]="appIcon" alt="Application Logo" width="60" height="60" />
   </a>
   <a mat-icon-button class="width-auto" [routerLink]="prevResourceUrl" *ngIf="isTypeOfCollection"
     [disabled]="!prevResourceUrl" queryParamsHandling="preserve" accesskey="<">
@@ -40,8 +40,8 @@
   <ws-widget-btn-fullscreen [widgetType]="'actionButton'" [widgetSubType]="'actionButtonFullscreen'"
     [widgetData]="{ fsContainer: frameReference }"></ws-widget-btn-fullscreen>
   <!-- </a> -->
-  <a href="javascript:void(0)" mat-icon-button *ngIf="isTypeOfCollection" role="link" class="width-auto"
+<!--   <a href="javascript:void(0)" mat-icon-button *ngIf="isTypeOfCollection" role="link" class="width-auto"
     [ngClass]="{'xsmall': !logo}" (click)="toggleSideBar()" accesskey="M">
     <mat-icon>menu</mat-icon>
-  </a>
+  </a> -->
 </mat-toolbar>

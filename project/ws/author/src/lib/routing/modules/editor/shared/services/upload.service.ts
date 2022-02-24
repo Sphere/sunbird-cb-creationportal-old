@@ -92,7 +92,7 @@ export class UploadService {
     contentData: NSApiRequest.IContentData,
     options?: any,
     isZip = false,
-  ): Observable<NSApiResponse.IFileApiResponseV2> {
+  ): Observable<any> {
     if (isZip) {
       // return this.zipUpload(data, contentData, options)
     }
@@ -103,7 +103,7 @@ export class UploadService {
     }
     const newFormData = new FormData()
     newFormData.append('data', file, fileName)
-    return this.apiService.post<NSApiResponse.IFileApiResponseV2>(
+    return this.apiService.post<any>(
       // tslint:disable-next-line:max-line-length
       // ${CONTENT_BASE}${this.accessService.rootOrg.replace(/ /g, '_')}/${this.accessService.org.replace(/ /g, '_')}/Public/${contentData.contentId.replace('.img', '')}${contentData.contentType}
       `apis/proxies/v8/upload/action/content/v3/upload/${contentData.contentId}`,

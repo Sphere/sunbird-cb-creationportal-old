@@ -179,6 +179,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     const updatedContent = this.editorStore.upDatedContent || {}
     if (Object.keys(updatedContent).length > 0) {
       let tempUpdateContent = this.editorStore.upDatedContent[this.contentId]
+      const contentType = tempUpdateContent.category
       if (tempUpdateContent) {
         tempUpdateContent = this.editorStore.cleanProperties(tempUpdateContent)
         if (tempUpdateContent.duration || tempUpdateContent.duration === 0 || tempUpdateContent.duration === '0') {
@@ -190,7 +191,11 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
         if (tempUpdateContent.category) {
           delete tempUpdateContent.category
         }
-        const requestBody: NSApiRequest.IContentUpdateV2 = {
+        let requestBody: NSApiRequest.IContentUpdateV2
+        if (contentType === 'CourseUnit') {
+          tempUpdateContent.visibility = 'Parent'
+        }
+        requestBody = {
           request: {
             content: tempUpdateContent,
           },
