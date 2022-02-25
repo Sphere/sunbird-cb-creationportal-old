@@ -52,3 +52,20 @@
 .overflow-none {
   overflow: hidden;
 }
+.theme-igot.day-mode .ws-mat-primary-text {
+    color: #5f5f5f !important;
+}
+
+
+.mat-display-1, .mat-typography .mat-display-1 {
+    font: 300 36px/40px Montserrat;
+    margin: 20px 0;
+}
+ .mat-h4, .mat-subheading-1, .mat-typography h4 {
+    font: 600 16px/24px Montserrat;
+    margin: 20px 0px;
+}
+.mat-h2, .mat-title, .mat-typography h2 {
+    font: 600 20px/30px Montserrat;
+    margin: 0 0 16px;
+}
