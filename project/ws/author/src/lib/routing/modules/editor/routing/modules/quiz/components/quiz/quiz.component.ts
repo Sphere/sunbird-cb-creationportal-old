@@ -465,7 +465,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   // }
 
   wrapperForTriggerSave() {
-    this.loaderService.changeLoad.next(true)
+    this.loaderService.changeLoad.next(false)
     const updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
     const hasTimeChanged =
       (this.metaContentService.upDatedContent[this.currentId] || {}).duration &&

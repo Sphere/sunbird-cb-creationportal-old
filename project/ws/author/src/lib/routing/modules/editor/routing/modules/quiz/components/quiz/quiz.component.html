@@ -125,8 +125,7 @@
       </ws-auth-edit-meta>
     </div>
   </div>
-  <button (click)="action('save')" mat-menu-item [ngClass]="{ disable: !isCreatorEnable }">
-
+  <button (click)="action('save')" style="float: right;margin-right: 35px;" mat-raised-button  color="accent" [ngClass]="{ disable: !isCreatorEnable }">
     <ng-container i18n>Save</ng-container>
   </button>
   <!--

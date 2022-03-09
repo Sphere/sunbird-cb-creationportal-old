@@ -549,7 +549,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     const second = seconds % 60
     this.hours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
     this.minutes = minutes ? minutes % 60 : 0
-    this.seconds = second || 0
+    this.seconds = second || 30
   }
 
   timeToSeconds() {
@@ -685,6 +685,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.stage >= 1 && !this.type) {
           delete meta.artifactUrl
         }
+
         this.contentService.setUpdatedMeta(meta, this.contentMeta.identifier)
 
       }
@@ -1477,6 +1478,13 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       if (this.canUpdate) {
         this.storeData()
+        // this.contentForm.controls.publisherDetails.setValue(
+        //   this.contentForm.controls.publisherDetails.value
+        // )
+
+        // this.contentForm.controls.trackContacts.setValue(
+        //   this.contentForm.controls.trackContacts.value
+        // )
       }
     })
 
@@ -1494,6 +1502,13 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         )
       })
     }
+
+    //     this.contentForm.controls.publisherDetails.valueChanges.subscribe(() => {
+    //   this.contentForm.controls.publisherDetails.setValue(
+    //     this.contentForm.controls.publisherDetails.value || [],
+    //   )
+    // })
+
     // resourceType
     this.contentForm.controls.resourceType.valueChanges.subscribe(() => {
       this.contentForm.controls.categoryType.setValue(this.contentForm.controls.resourceType.value)

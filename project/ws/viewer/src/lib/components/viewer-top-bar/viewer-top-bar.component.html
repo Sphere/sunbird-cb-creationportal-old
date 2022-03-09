@@ -19,19 +19,19 @@
   <a *ngIf="logo" i18n-matTooltip matTooltip="Home" mat-button routerLink="/author/home">
     <img [src]="appIcon" alt="Application Logo" width="60" height="60" />
   </a>
-  <a mat-icon-button class="width-auto" [routerLink]="prevResourceUrl" *ngIf="isTypeOfCollection"
+<!--   <a mat-icon-button class="width-auto" [routerLink]="prevResourceUrl" *ngIf="isTypeOfCollection"
     [disabled]="!prevResourceUrl" queryParamsHandling="preserve" accesskey="<">
     <mat-icon>skip_previous</mat-icon><span *ngIf="logo">PREV</span>
-  </a>
+  </a> -->
   <h1 *ngIf="logo" class="width-expand text-center text-truncate">
     {{ resourceName }}
   </h1>
   <!-- [disabled]="!nextResourceUrl" -->
-  <a mat-icon-button class="width-auto mr-10" [routerLink]="nextResourceUrl"
+<!--   <a mat-icon-button class="width-auto mr-10" [routerLink]="nextResourceUrl"
     *ngIf="isTypeOfCollection && nextResourceUrl" queryParamsHandling="preserve" accesskey=">">
     <span *ngIf="logo">NEXT</span>
     <mat-icon>skip_next</mat-icon>
-  </a>
+  </a> -->
   <a mat-icon-button class="width-auto mr-10" routerLink="/author/cbp/me" *ngIf="isTypeOfCollection && !nextResourceUrl"
     accesskey=">">
     <span *ngIf="logo" class="finish">FINISH</span>
