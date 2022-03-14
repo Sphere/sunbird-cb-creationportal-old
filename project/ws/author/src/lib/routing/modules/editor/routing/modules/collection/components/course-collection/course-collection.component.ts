@@ -335,6 +335,63 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     setTimeout(() => (this.leftArrow = true), 500)
   }
 
+  tempSave() {
+      //this.loaderService.changeLoad.next(true)
+      this.triggerSave().subscribe(
+        () => {
+          if (nextAction) {
+            this.action(nextAction)
+          }
+          //this.loaderService.changeLoad.next(false)
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: Notify.SAVE_SUCCESS,
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+          // window.location.reload()
+        },
+        (error: any) => {
+          if (error.status === 409) {
+            const errorMap = new Map<string, NSContent.IContentMeta>()
+            Object.keys(this.contentService.originalContent).forEach(v =>
+              errorMap.set(v, this.contentService.originalContent[v]),
+            )
+            const dialog = this.dialog.open(ErrorParserComponent, {
+              width: '80vw',
+              height: '90vh',
+              data: {
+                errorFromBackendData: error.error,
+                dataMapping: errorMap,
+              },
+            })
+            dialog.afterClosed().subscribe(v => {
+              if (v) {
+                if (typeof v === 'string') {
+                  this.storeService.selectedNodeChange.next(
+                    (this.storeService.lexIdMap.get(v) as number[])[0],
+                  )
+                  this.contentService.changeActiveCont.next(v)
+                } else {
+                  this.storeService.selectedNodeChange.next(v)
+                  this.contentService.changeActiveCont.next(
+                    this.storeService.uniqueIdMap.get(v) as string,
+                  )
+                }
+              }
+            })
+          }
+          //this.loaderService.changeLoad.next(false)
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: Notify.SAVE_FAIL,
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+        },
+      )
+  }
+
   save(nextAction?: string) {
     const updatedContent = this.contentService.upDatedContent || {}
     if (this.viewMode === 'assessment') {
@@ -867,6 +924,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                   },
                 },
               }
+
               const reviewRes =
                 await this.editorService.sendToReview(element.identifier, updatedMeta.status).toPromise().catch(_error => { })
               if (reviewRes && reviewRes.params && reviewRes.params.status === 'successful') {
@@ -2241,7 +2299,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         break
       case 'editContent':
         if (event.nodeClicked === false) {
-          //  this.save('refresh')
+          this.tempSave()
         }
 
         const content = this.contentService.getUpdatedMeta(event.identifier)

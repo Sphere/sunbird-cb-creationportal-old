@@ -482,6 +482,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     ).pipe(mergeMap(v => {
       // tslint:disable-next-line: no-parameter-reassignment
       v = v[0].result
+      this.showNotification(Notify.SAVE_SUCCESS)
       const updatedMeta = this.metaContentService.upDatedContent[this.currentId] || {}
       // const check = this.resourceType === ASSESSMENT ? v.length && v[1] && v[1].code : true
       // if (v && v[0] && v[0].code && check) {

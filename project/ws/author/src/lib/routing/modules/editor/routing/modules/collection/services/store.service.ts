@@ -754,20 +754,31 @@ export class CollectionStoreService {
       const errorMsg: string[] = []
       const lexId = this.uniqueIdMap.get(v) as string
       const content = this.contentService.getUpdatedMeta(lexId)
-
+      
       if (content.name === '') {
          errorMsg.push('Course title cannot be empty')
       }
        if (content.description === '') {
-        errorMsg.push('Course description cannot be empty')
+        errorMsg.push('Course description/summary cannot be empty')
       }
        if (content.purpose === '') {
         errorMsg.push('Course subtitle cannot be empty')
       }
-       if (content.instructions === '') {
+       if (content.instructions && content.instructions === '') {
         errorMsg.push('Course long description cannot be empty')
       }
-
+      if(content.thumbnail && content.thumbnail === '') {
+        errorMsg.push('Course thumbnail cannot be empty')
+      }
+      if(content.sourceName && content.sourceName === "My Learning World") {
+        errorMsg.push('Course provider/source cannot be empty')
+      }
+      if(content.mimeType === 'text/x-url' && content.artifactUrl === '') {
+        errorMsg.push('Course artifactUrl cannot be empty')
+      }
+      if(content.mimeType === 'text/x-url' && (/(http(s?)):\/\//i.test(content.artifactUrl)) === false) {
+        errorMsg.push('Course artifactUrl entered is not valid')
+      }
        if (content.publisherDetails && content.publisherDetails.length === 0 && content.parent === undefined) {
         errorMsg.push('Course publisher details cannot be empty')
       }
