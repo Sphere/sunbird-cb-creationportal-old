@@ -83,9 +83,9 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
       // }
 
       if (typeof iframeSupport !== 'boolean') {
-        iframeSupport = this.htmlContent.isIframeSupported.toLowerCase()
+        //iframeSupport = this.htmlContent.isIframeSupported.toLowerCase()
         // if (iframeSupport === 'no') {
-          if (iframeSupport === 'yes') {
+          if (this.htmlContent.isIframeSupported.toLowerCase() === 'yes') {
           this.showIframeSupportWarning = true
           setTimeout(
             () => {
