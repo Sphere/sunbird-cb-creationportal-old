@@ -75,16 +75,15 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
       : []
 
     // //console.log(this.htmlContent)
-    //let iframeSupport: string | null =
-      //this.htmlContent && this.htmlContent.isIframeSupported
+    // let iframeSupport: string | null =
+      // this.htmlContent && this.htmlContent.isIframeSupported
     if (this.htmlContent && this.htmlContent.artifactUrl) {
       // if (this.htmlContent.artifactUrl.startsWith('http://')) {
       //   this.htmlContent.isIframeSupported = 'No'
       // }
       // @ts-ignore
       if (typeof this.htmlContent.isIframeSupported === 'string') {
-        //iframeSupport = this.htmlContent.isIframeSupported
-        //console.log(iframeSupport)
+        // iframeSupport = this.htmlContent.isIframeSupported
         // if (iframeSupport === 'no') {
           if (this.htmlContent.isIframeSupported === 'Yes') {
           this.showIframeSupportWarning = true
@@ -100,8 +99,6 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
             },
             30,
           )
-        } else if (this.htmlContent.isIframeSupported === 'maybe') {
-          this.showIframeSupportWarning = true
         } else {
           this.showIframeSupportWarning = false
         }
