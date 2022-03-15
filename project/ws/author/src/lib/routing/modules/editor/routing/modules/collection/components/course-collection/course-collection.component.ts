@@ -339,9 +339,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       //this.loaderService.changeLoad.next(true)
       this.triggerSave().subscribe(
         () => {
-          if (nextAction) {
-            this.action(nextAction)
-          }
           //this.loaderService.changeLoad.next(false)
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
