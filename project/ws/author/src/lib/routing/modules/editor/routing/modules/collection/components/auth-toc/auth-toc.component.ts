@@ -179,11 +179,11 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     const updatedContent = this.editorStore.upDatedContent || {}
     if (Object.keys(updatedContent).length > 0) {
       let tempUpdateContent = this.editorStore.upDatedContent[this.contentId]
-      if(tempUpdateContent === undefined) {
+      if (tempUpdateContent === undefined) {
         this.triggerSave()
         return
-      } 
-      const contentType = tempUpdateContent.category  
+      }
+      const contentType = tempUpdateContent.category
 
       if (tempUpdateContent) {
         tempUpdateContent = this.editorStore.cleanProperties(tempUpdateContent)

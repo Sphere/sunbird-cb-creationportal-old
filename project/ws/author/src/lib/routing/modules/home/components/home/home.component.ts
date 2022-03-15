@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core'
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core'
 import { map } from 'rxjs/operators'
 import { ValueService } from '@ws-widget/utils/src/public-api'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
@@ -8,6 +8,8 @@ import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/const
   selector: 'ws-auth-root-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
+    // tslint:disable-next-line
+  encapsulation: ViewEncapsulation.None,
 })
 export class AuthHomeComponent implements OnInit, OnDestroy {
   sideNavBarOpened = true

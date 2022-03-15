@@ -682,7 +682,7 @@
         <div class="margin-top-s" *ngIf="checkCondition('subTitle', 'show')"
           [ngClass]="{ disable: checkCondition('subTitle', 'disabled') }">
           <p class="font-weight-bold margin-remove-bottom"
-            [ngClass]="{ required: checkCondition('subTitle', 'required') }">
+            [ngClass]="{ required: true }">
             <!-- Subtitle -->
             Subtitle of the course
           </p>
@@ -751,12 +751,20 @@
               </label> -->
               <label>
                 <div class="margin-top-xs flex flex-middle">
+                   <p class="font-weight-bold margin-remove-bottom"
+            [ngClass]="{ required: true }">
                   <b i18n>Thumbnail</b>
+                </p>
                   <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('appIcon')">info
                   </mat-icon>
                 </div>
                 <span i18n *ngIf="infoType === 'appIcon'">
-                  Maximum file size - 1 MB
+                  <ul>
+                    <li>
+                  Maximum file size - 1 MB  </li>
+                  <li>Resolution for thumbnail - 760 px * 400 px </li>
+               
+              </ul>
                 </span>
               </label>
               <div class="margin-top-xs">
@@ -1034,14 +1042,14 @@
 
           <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('sourceName', 'show')"
             [ngClass]="{ disable: checkCondition('sourceName', 'disabled') }">
-            <label [ngClass]="{ required: checkCondition('sourceName', 'required') }">
+            <label [ngClass]="{ required: true }">
               <b i18n>Provider/Source</b>
             </label>
             <div class="margin-top-l">
               <mat-form-field appearance="outline" class="margin-top-s"
                 [ngClass]="{ 'mat-form-field-invalid': showError('sourceName') }">
                 <mat-select formControlName="sourceName" i18n-placeholder placeholder="--Select--">
-                  <mat-option *ngIf="!checkCondition('sourceName', 'required')" i18n [value]="null">None</mat-option>
+                  <!--<mat-option *ngIf="!checkCondition('sourceName', 'required')" i18n [value]="null">None</mat-option>-->                  
                   <mat-option *ngFor="let sourceName of ordinals.sourceName" [value]="sourceName">
                     {{ sourceName }}</mat-option>
                 </mat-select>
@@ -1051,10 +1059,9 @@
           </div>
         </div>
 
-        <div class="">
+    <!--     <div class="">
           <div class="margin-top-m margin-left-xl flex-1" *ngIf="checkCondition('catalogPaths', 'show')"
             [ngClass]="{ disable: checkCondition('catalogPaths', 'disabled') }">
-            <!-- <label> -->
             <div class="margin-top-s flex flex-middle">
               <b [ngClass]="{ required: checkCondition('catalogPaths', 'required') }" i18n>Catalog</b>
               <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('catalogPaths')">info
@@ -1070,7 +1077,6 @@
             <span i18n *ngIf="infoType === 'catalogPaths'">
               Select the tags for placement of your content in the catalog
             </span>
-            <!-- </label> -->
             <div class="margin-top-l flex margin-right-xl"
               [ngClass]="{ 'mat-form-field-invalid': showError('catalogPaths') }">
               <mat-form-field *ngIf="(contentForm.controls.catalogPaths.value || []).length > 0"
@@ -1101,7 +1107,7 @@
               0 Catalog Selected
             </p>
           </div>
-        </div>
+        </div> -->
         <!-- <div class="flex flex-end margin-top-l margin-bottom-l margin-right-l">
             <button mat-raised-button type="button"
               class="text-white ws-mat-primary-background text-white margin-right-m" (click)="data.emit('save')">

@@ -1,7 +1,7 @@
 import { Router } from '@angular/router'
 import { DashBoardService } from './dashboard.service'
-import { Component, OnInit, 
-  ViewEncapsulation  
+import { Component, OnInit,
+  ViewEncapsulation,
 } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable } from 'rxjs'
@@ -25,7 +25,7 @@ import {
   selector: 'ws-auth-root-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  encapsulation: ViewEncapsulation.ShadowDom 
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
 export class DashboardComponent implements OnInit {
   public options = [

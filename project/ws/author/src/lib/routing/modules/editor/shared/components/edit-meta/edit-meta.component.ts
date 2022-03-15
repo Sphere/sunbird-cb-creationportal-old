@@ -549,7 +549,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     const second = seconds % 60
     this.hours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
     this.minutes = minutes ? minutes % 60 : 0
-    this.seconds = second || 30
+    this.seconds = second || 0
   }
 
   timeToSeconds() {
