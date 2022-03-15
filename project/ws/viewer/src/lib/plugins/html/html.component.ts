@@ -78,13 +78,14 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
     let iframeSupport: boolean | string | null =
       this.htmlContent && this.htmlContent.isIframeSupported
     if (this.htmlContent && this.htmlContent.artifactUrl) {
-      if (this.htmlContent.artifactUrl.startsWith('http://')) {
-        this.htmlContent.isIframeSupported = 'No'
-      }
+      // if (this.htmlContent.artifactUrl.startsWith('http://')) {
+      //   this.htmlContent.isIframeSupported = 'No'
+      // }
+
       if (typeof iframeSupport !== 'boolean') {
         iframeSupport = this.htmlContent.isIframeSupported.toLowerCase()
-
-        if (iframeSupport === 'no') {
+        // if (iframeSupport === 'no') {
+          if (iframeSupport === 'yes') {
           this.showIframeSupportWarning = true
           setTimeout(
             () => {
@@ -138,25 +139,11 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
         )
       }
 
-      // this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(
-      //   `${this.htmlContent.artifactUrl}?timestamp='${new Date().getTime()}`
-      // )
-
       if (this.htmlContent.mimeType !== 'text/x-url') {
         let url = ''
-
-        // if (this.htmlContent.streamingUrl) {
-        //   this.htmlContent.streamingUrl = this.htmlContent.streamingUrl.split('//').join('//cbp.')
-        //   url = `${this.htmlContent.streamingUrl}?timestamp='${new Date().getTime()}`
-        // } else {
-        //   // tslint:disable-next-line: max-line-length
-        //   url = `${environment.azureHost}/${environment.azureBucket}/content/html/
-        //   ${this.htmlContent.identifier}-snapshot/index.html?timestamp='${new Date().getTime()}`
-        // }
         if (this.htmlContent.streamingUrl) {
           url = `${this.htmlContent.streamingUrl}?timestamp='${new Date().getTime()}`
         }
-
         this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
       } else {
         this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.htmlContent.artifactUrl)
