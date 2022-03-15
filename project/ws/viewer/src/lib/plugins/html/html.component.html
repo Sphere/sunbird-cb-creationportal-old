@@ -83,7 +83,7 @@
   </h2>
 </div>
 
-<div class="container-v2" *ngIf="!htmlContent?.isIframeSupported === 'Yes'">
+<div class="container-v2" *ngIf="htmlContent?.isIframeSupported === 'No'">
   <!-- [hidden]="this.pageFetchStatus !== 'done'" *ngIf="
     htmlContent?.isIframeSupported !== 'No' &&
     (!htmlContent?.isInIntranet || (htmlContent?.isInIntranet && isUserInIntranet)) &&
