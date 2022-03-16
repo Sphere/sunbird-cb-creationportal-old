@@ -138,9 +138,9 @@ export class CreateCourseComponent implements OnInit {
           this.identifier = id
           const request = {
             'category': {
-              "context": [
+              'context': [
                 {
-                  "type": 'course',
+                  'type': 'course',
                   'identifier': id
                 }
               ]
