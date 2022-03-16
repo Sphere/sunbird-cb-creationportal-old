@@ -275,7 +275,7 @@ export class EditorContentService {
       if (!arr.includes(v)) {
         if (this.checkCondition(id, v, 'required') && !this.isPresent(v, id)) {
           // console.log('checkCondition  ', v)
-          isValid = false
+          isValid = true
         }
       }
     })

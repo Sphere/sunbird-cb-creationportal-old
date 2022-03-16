@@ -179,7 +179,12 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     const updatedContent = this.editorStore.upDatedContent || {}
     if (Object.keys(updatedContent).length > 0) {
       let tempUpdateContent = this.editorStore.upDatedContent[this.contentId]
+      if (tempUpdateContent === undefined) {
+        this.triggerSave()
+        return
+      }
       const contentType = tempUpdateContent.category
+
       if (tempUpdateContent) {
         tempUpdateContent = this.editorStore.cleanProperties(tempUpdateContent)
         if (tempUpdateContent.duration || tempUpdateContent.duration === 0 || tempUpdateContent.duration === '0') {
@@ -572,7 +577,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   triggerSave(
-    createdContent: any
+    createdContent?: any
   ) {
     // const nodesModified: any = {}
     // let isRootPresent = (parentNode && parentNode.identifier) ? true : false

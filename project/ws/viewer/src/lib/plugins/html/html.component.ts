@@ -75,16 +75,17 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
       : []
 
     // //console.log(this.htmlContent)
-    let iframeSupport: boolean | string | null =
-      this.htmlContent && this.htmlContent.isIframeSupported
+    // let iframeSupport: string | null =
+      // this.htmlContent && this.htmlContent.isIframeSupported
     if (this.htmlContent && this.htmlContent.artifactUrl) {
-      if (this.htmlContent.artifactUrl.startsWith('http://')) {
-        this.htmlContent.isIframeSupported = 'No'
-      }
-      if (typeof iframeSupport !== 'boolean') {
-        iframeSupport = this.htmlContent.isIframeSupported.toLowerCase()
-
-        if (iframeSupport === 'no') {
+      // if (this.htmlContent.artifactUrl.startsWith('http://')) {
+      //   this.htmlContent.isIframeSupported = 'No'
+      // }
+      // @ts-ignore
+      if (typeof this.htmlContent.isIframeSupported === 'string') {
+        // iframeSupport = this.htmlContent.isIframeSupported
+        // if (iframeSupport === 'no') {
+          if (this.htmlContent.isIframeSupported === 'Yes') {
           this.showIframeSupportWarning = true
           setTimeout(
             () => {
@@ -98,8 +99,6 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
             },
             30,
           )
-        } else if (iframeSupport === 'maybe') {
-          this.showIframeSupportWarning = true
         } else {
           this.showIframeSupportWarning = false
         }
@@ -138,25 +137,11 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
         )
       }
 
-      // this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(
-      //   `${this.htmlContent.artifactUrl}?timestamp='${new Date().getTime()}`
-      // )
-
       if (this.htmlContent.mimeType !== 'text/x-url') {
         let url = ''
-
-        // if (this.htmlContent.streamingUrl) {
-        //   this.htmlContent.streamingUrl = this.htmlContent.streamingUrl.split('//').join('//cbp.')
-        //   url = `${this.htmlContent.streamingUrl}?timestamp='${new Date().getTime()}`
-        // } else {
-        //   // tslint:disable-next-line: max-line-length
-        //   url = `${environment.azureHost}/${environment.azureBucket}/content/html/
-        //   ${this.htmlContent.identifier}-snapshot/index.html?timestamp='${new Date().getTime()}`
-        // }
         if (this.htmlContent.streamingUrl) {
           url = `${this.htmlContent.streamingUrl}?timestamp='${new Date().getTime()}`
         }
-
         this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
       } else {
         this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.htmlContent.artifactUrl)
