@@ -30,9 +30,13 @@ export class CreateCourseComponent implements OnInit {
   courseData: any
   iprAccepted = false
   identifier: any
-  constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private svc: CreateService,
+  constructor(
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar,
+    private svc: CreateService,
     private router: Router,
-    private loaderService: LoaderService, private dialog: MatDialog,
+    private loaderService: LoaderService,
+    private dialog: MatDialog,
     private authInitService: AuthInitService,
     private accessControlSvc: AccessControlService,
     private formBuilder: FormBuilder) { }
@@ -133,11 +137,11 @@ export class CreateCourseComponent implements OnInit {
         }).pipe(mergeMap((id: string) => {
           this.identifier = id
           const request = {
-            "category": {
+            'category': {
               "context": [
                 {
-                  "type": "course",
-                  "identifier": id
+                  "type": 'course',
+                  'identifier': id
                 }
               ]
             }
