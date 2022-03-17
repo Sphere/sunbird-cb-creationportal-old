@@ -6,7 +6,7 @@ import { ConfigurationsService, EventService } from '@ws-widget/utils'
 // import { startWith, map } from 'rxjs/operators'
 import { IResolveResponse } from 'library/ws-widget/utils/src/lib/resolvers/resolver.model'
 import { Observable, of } from 'rxjs'
-import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs/operators'
+// import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs/operators'
 import { InterestService } from '../../services/interest.service'
 
 @Component({
@@ -66,12 +66,12 @@ export class InterestComponent implements OnInit {
     this.fetchSuggestedInterests()
     this.interestControl.setValue('')
 
-    this.filteredOptions$ = this.interestControl.valueChanges.pipe(
-      startWith(this.interestControl.value),
-      debounceTime(500),
-      distinctUntilChanged(),
-      switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
-    )
+    // this.filteredOptions$ = this.interestControl.valueChanges.pipe(
+    //   startWith(this.interestControl.value),
+    //   debounceTime(500),
+    //   distinctUntilChanged(),
+    //   switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
+    // )
 
     // this.filteredOptions$ = this.interestControl.valueChanges.pipe()
 

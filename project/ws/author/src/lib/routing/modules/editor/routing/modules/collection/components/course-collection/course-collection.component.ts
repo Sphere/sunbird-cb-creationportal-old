@@ -2184,7 +2184,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         })
         requestBody.request.content.topics = tempTopicData
       }
-
+console.log(requestBody)
 
       return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
         tap(() => {

@@ -468,6 +468,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
       if (tempUpdateContent.category === 'CourseUnit') {
         nodesModified.visibility = 'Parent'
       }
+
       requestBody = {
         request: {
           content: nodesModified[this.contentService.currentContent].metadata,

@@ -86,7 +86,6 @@ export class UrlUploadComponent implements OnInit {
     }
 
     // this.setIframeVal = meta.isIframeSupported || 'No'
-
     this.canUpdate = false
     this.urlUploadForm.controls.artifactUrl.setValue(meta.artifactUrl || '')
     this.urlUploadForm.controls.mimeType.setValue(meta.mimeType || 'application/html')
@@ -141,7 +140,6 @@ export class UrlUploadComponent implements OnInit {
   storeData() {
     const originalMeta = this.contentService.getOriginalMeta(this.currentContent)
     const currentMeta = this.urlUploadForm.value
-
     const meta: any = {}
     // if (currentMeta.artifactUrl && !this.iprAccepted) {
     //   return
