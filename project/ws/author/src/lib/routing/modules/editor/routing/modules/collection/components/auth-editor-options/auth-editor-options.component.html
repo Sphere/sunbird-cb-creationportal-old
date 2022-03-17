@@ -68,7 +68,7 @@
   <button *ngIf="node.category === 'Resource'" mat-menu-item (click)="click('preview')">
     <mat-icon aria-hidden="false" class="node-icon ws-mat-primary-text" i18n-aria-label aria-label="Preview">
       remove_red_eye</mat-icon>
-    <ng-container i18n>Previewo</ng-container>
+    <ng-container i18n>Preview</ng-container>
   </button>
   <button (click)="click('delete')" [disabled]="!node.parentId && node.editable"
     [class.op500]="!node.parentId && node.editable" mat-menu-item>
