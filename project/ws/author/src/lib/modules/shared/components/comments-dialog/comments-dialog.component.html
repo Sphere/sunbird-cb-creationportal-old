@@ -1,5 +1,40 @@
-<h2 mat-dialog-title i18n>Provide comments</h2>
-<mat-dialog-content>
+<mat-dialog-content *ngIf="contentMeta && contentMeta.reviewStatus === 'Reviewed'">
+  <h2 class="text-bold">List of Resources</h2>
+  <h4 class="text-bold">Note: All the resources have to be Live before publishing CBP</h4>
+  <div style="min-height: 260px;">
+    <table>
+      <thead>
+        <th>Name</th>
+        <th>Status</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let course of contentMeta.children">
+          <td>{{course.name}}</td>
+          <td>{{course.status}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="margin-top-s">
+    <div style="float: left;">
+      <button mat-raised-button i18n (click)="refreshCourse()">Refresh</button>
+    </div>
+    <div style="float: right;">
+      <button class="margin-left-s" style="margin-right: 10px;" (click)="click('publishResources')" mat-raised-button
+        color="primary" i18n *ngIf="!showPublishCBPBtn">
+        Publish Resources
+      </button>
+      <button class="margin-left-s" style="margin-right: 10px;" (click)="publishCourse()" mat-raised-button
+        color="primary" i18n *ngIf="showPublishCBPBtn">
+        Publish CBP
+      </button>
+      <button mat-dialog-close mat-raised-button i18n>Cancel</button>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-content *ngIf="contentMeta && contentMeta.reviewStatus !== 'Reviewed'">
+  <h2 mat-dialog-title i18n>Provide comments</h2>
   <form [formGroup]="commentsForm">
     <mat-form-field appearance="fill" class="width-1-1">
       <textarea rows="3" matInput placeholder=" For eg. This content is submitted/accepted/rejected because..."

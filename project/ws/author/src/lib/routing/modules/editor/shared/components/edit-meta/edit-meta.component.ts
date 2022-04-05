@@ -106,6 +106,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   complexityLevelList: string[] = []
   isEditEnabled = false
   public sideNavBarOpened = false
+  gatingEnabled!: FormControl
+  issueCertification!: FormControl
 
   @ViewChild('creatorContactsView', { static: false }) creatorContactsView!: ElementRef
   @ViewChild('trackContactsView', { static: false }) trackContactsView!: ElementRef
@@ -479,6 +481,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             )
           }
         }
+        this.contentForm.controls.sourceName.setValue(this.contentMeta.sourceName)
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
           this.contentForm.controls[v].markAsTouched()
@@ -1063,7 +1066,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
                   .subscribe(
                     data => {
-                      if (data) {
+                      if (data && data.name !== 'Error') {
                         const generateURL = this.generateUrl(data.artifactUrl)
                         const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
                           request: {
@@ -1099,9 +1102,12 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
                                 data: {
                                   type: Notify.UPLOAD_SUCCESS,
                                 },
-                                duration: NOTIFICATION_TIME * 1000,
+                                duration: NOTIFICATION_TIME * 2000,
                               })
                             })
+                      } else {
+                        this.loader.changeLoad.next(false)
+                        this.snackBar.open(data.message, undefined, { duration: 2000 })
                       }
                     },
                     () => {
@@ -1434,6 +1440,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       name: [],
       nodeType: [],
       org: [],
+      gatingEnabled: true,
+      issueCertification: false,
       creatorDetails: [],
       // passPercentage: [],
       plagScan: [],

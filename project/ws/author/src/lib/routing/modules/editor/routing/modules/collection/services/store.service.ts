@@ -755,21 +755,21 @@ export class CollectionStoreService {
       const lexId = this.uniqueIdMap.get(v) as string
       const content = this.contentService.getUpdatedMeta(lexId)
       if (content.name === '') {
-         errorMsg.push('Course title cannot be empty')
+        errorMsg.push('Course title cannot be empty')
       }
-       if (content.description === '') {
+      if (content.description === '') {
         errorMsg.push('Course description/summary cannot be empty')
       }
-       if (content.purpose === '') {
+      if (content.purpose === '') {
         errorMsg.push('Course subtitle cannot be empty')
       }
-       if (content.instructions === '') {
+      if (content.instructions === '') {
         errorMsg.push('Course long description cannot be empty')
       }
-      if (content.thumbnail === '') {
+      if (content.thumbnail === undefined || content.thumbnail === '') {
         errorMsg.push('Course thumbnail cannot be empty')
       }
-      if (content.sourceName && content.sourceName === 'My Learning World') {
+      if (content.sourceName === undefined && content.status === 'Draft' && content.parent !== undefined) {
         errorMsg.push('Course provider/source cannot be empty')
       }
       if (content.mimeType === 'text/x-url' && content.artifactUrl === '') {
@@ -778,10 +778,10 @@ export class CollectionStoreService {
       if (content.mimeType === 'text/x-url' && !(/(http(s?)):\/\//i.test(content.artifactUrl))) {
         errorMsg.push('Course artifactUrl entered is not valid')
       }
-       if (content.publisherDetails && content.publisherDetails.length === 0 && content.parent === undefined) {
+      if (content.publisherDetails && content.publisherDetails.length === 0 && content.parent === undefined) {
         errorMsg.push('Course publisher details cannot be empty')
       }
-       if (content.trackContacts && content.trackContacts.length === 0 && content.parent === undefined) {
+      if (content.trackContacts && content.trackContacts.length === 0 && content.parent === undefined) {
         errorMsg.push('Course reviewer details cannot be empty')
       }
 

@@ -1,8 +1,10 @@
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
-import { Component, OnInit, Inject } from '@angular/core'
+import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core'
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { NSContent } from '@ws/author/src/lib/interface/content'
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'ws-auth-root-comments-dialog',
@@ -13,14 +15,26 @@ export class CommentsDialogComponent implements OnInit {
   commentsForm!: FormGroup
   contentMeta!: NSContent.IContentMeta
   history = <NSContent.IComments[]>[]
+  @Output() action = new EventEmitter<{ action: string }>()
   isSubmitPressed = false
   showNewFlow = false
+  showPublishCBPBtn = false
+
   constructor(
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<CommentsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: NSContent.IContentMeta,
     private authInitService: AuthInitService,
-  ) {}
+    private editorService: EditorService,
+    private router: Router
+  ) {
+    this.authInitService.currentMessage.subscribe(
+      async (msg: any) => {
+        if (msg) {
+          await this.refreshCourse()
+        }
+      })
+  }
 
   ngOnInit() {
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
@@ -57,5 +71,29 @@ export class CommentsDialogComponent implements OnInit {
       this.commentsForm.controls['comments'].markAsTouched()
       this.commentsForm.controls['action'].markAsTouched()
     }
+  }
+  async refreshCourse() {
+    const url = this.router.url
+    const id = url.split('/')
+    this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
+      this.contentMeta = res
+    })
+    let flag = 0
+    for await (const element of this.contentMeta.children) {
+      if (element.status === 'Live') {
+        flag += 1
+      }
+    }
+    if (flag === this.contentMeta.children.length) {
+      this.showPublishCBPBtn = true
+    }
+  }
+
+  publishCourse() {
+    this.authInitService.changeMessage('PublishCBP')
+  }
+
+  click(action: string) {
+    this.authInitService.changeMessage(action)
   }
 }
