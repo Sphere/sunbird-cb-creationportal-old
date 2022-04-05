@@ -12,6 +12,8 @@ import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 import { IprDialogComponent } from '@ws/author/src/lib/modules/shared/components/ipr-dialog/ipr-dialog.component'
+import { mergeMap } from 'rxjs/operators'
+
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -27,13 +29,17 @@ export class CreateCourseComponent implements OnInit {
   resourceEntity!: ICreateEntity
   courseData: any
   iprAccepted = false
-
-  constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private svc: CreateService,
-              private router: Router,
-              private loaderService: LoaderService, private dialog: MatDialog,
-              private authInitService: AuthInitService,
-              private accessControlSvc: AccessControlService,
-              private formBuilder: FormBuilder) { }
+  identifier: any
+  constructor(
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar,
+    private svc: CreateService,
+    private router: Router,
+    private loaderService: LoaderService,
+    private dialog: MatDialog,
+    private authInitService: AuthInitService,
+    private accessControlSvc: AccessControlService,
+    private formBuilder: FormBuilder) { }
   createCourseForm!: FormGroup
   ngOnInit() {
     this.createCourseForm = this.fb.group({
@@ -127,9 +133,23 @@ export class CreateCourseComponent implements OnInit {
           locale: this.language,
           primaryCategory: this.content.primaryCategory,
           ...(this.content.additionalMeta || {}),
-        })
+
+        }).pipe(mergeMap((id: string) => {
+          this.identifier = id
+          const request = {
+            'category': {
+              'context': [
+                {
+                  'type': 'course',
+                  'identifier': id
+                }
+              ]
+            }
+          }
+          return this.svc.createForum(request)
+        }))
         .subscribe(
-          (id: string) => {
+          () => {
             this.loaderService.changeLoad.next(false)
             this.snackBar.openFromComponent(NotificationComponent, {
               data: {
@@ -137,7 +157,8 @@ export class CreateCourseComponent implements OnInit {
               },
               duration: NOTIFICATION_TIME * 1000,
             })
-            this.router.navigateByUrl(`/author/editor/${id}`)
+            this.router.navigateByUrl(`/author/editor/${this.identifier
+              }`)
           },
           error => {
             if (error.status === 409) {
