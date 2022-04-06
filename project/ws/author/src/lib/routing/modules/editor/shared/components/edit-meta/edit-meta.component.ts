@@ -573,7 +573,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       if (originalMeta && this.isEditEnabled) {
         const expiryDate = this.contentForm.value.expiryDate
         const currentMeta: NSContent.IContentMeta = JSON.parse(JSON.stringify(this.contentForm.value))
-
         const exemptArray = ['application/quiz', 'application/x-mpegURL', 'audio/mpeg', 'video/mp4',
           'application/vnd.ekstep.html-archive', 'application/json']
         if (exemptArray.includes(originalMeta.mimeType)) {
@@ -645,12 +644,10 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !==
             JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta]) && v !== 'jobProfile'
           ) {
-
             if (
               currentMeta[v as keyof NSContent.IContentMeta] ||
-              (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
-                currentMeta[v as keyof NSContent.IContentMeta] === false)
-            ) {
+              // (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
+                currentMeta[v as keyof NSContent.IContentMeta] === false) {
               meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
             } else {
               meta[v as keyof NSContent.IContentMeta] = JSON.parse(
@@ -700,15 +697,14 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       // this.contentService.parentContent
     }
-
   }
   // emitSaveData(flag: boolean) {
   //   if (flag) {
-  //     this.saveParent = 1
-  //     if (this.saveParent === 1) {
+  //     //this.saveParent = 1
+  //     //if (this.saveParent === 1) {
   //       this.data.emit('save')
-  //     }
-  //     this.saveParent = 2
+  //     //}
+  //     //this.saveParent = 2
   //   }
   // }
 

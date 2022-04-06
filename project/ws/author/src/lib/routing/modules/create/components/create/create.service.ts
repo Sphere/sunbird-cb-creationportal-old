@@ -11,7 +11,7 @@ import { map } from 'rxjs/operators'
 import { environment } from '../../../../../../../../../../src/environments/environment'
 import { HttpClient } from '@angular/common/http'
 const API_END_POINTS = {
-  CREATE_FORUM: `/apis/proxies/v8/discussion/forum/v3/create`
+  CREATE_FORUM: `/apis/proxies/v8/discussion/forum/v3/create`,
 }
 @Injectable()
 export class CreateService {
@@ -112,5 +112,3 @@ export class CreateService {
     return this.http.post(API_END_POINTS.CREATE_FORUM, req)
   }
 }
-
-
