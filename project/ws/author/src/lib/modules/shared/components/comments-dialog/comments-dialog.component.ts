@@ -1,5 +1,5 @@
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
-import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core'
+import { Component, OnInit, Inject, Output, EventEmitter, ElementRef, ViewChild  } from '@angular/core'
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { NSContent } from '@ws/author/src/lib/interface/content'
@@ -19,7 +19,7 @@ export class CommentsDialogComponent implements OnInit {
   isSubmitPressed = false
   showNewFlow = false
   showPublishCBPBtn = false
-
+ @ViewChild('divClick') divClick: ElementRef;
   constructor(
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<CommentsDialogComponent>,
@@ -29,16 +29,32 @@ export class CommentsDialogComponent implements OnInit {
     private router: Router
   ) {
     this.authInitService.currentMessage.subscribe(
-      async (msg: any) => {
+       (msg: any) => {
         if (msg) {
-          await this.refreshCourse()
+          this.refreshCourse()
         }
+        setTimeout(() => {
+    this.divClick.nativeElement.click();
+    }, 200)
       })
   }
 
   ngOnInit() {
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
     this.contentMeta = this.data
+    //await this.refreshCourse()
+    let flag = 0
+    for (const element of this.contentMeta.children) {
+      if (element.status === 'Live') {
+        flag += 1
+      }
+    }
+    if (flag === this.contentMeta.children.length) {
+         /* tslint:disable-next-line */
+      console.log("a")
+      this.showPublishCBPBtn = true
+    }
+
     this.commentsForm = this.formBuilder.group({
       comments: ['', [Validators.required]],
       action: ['', [Validators.required]],
@@ -72,19 +88,21 @@ export class CommentsDialogComponent implements OnInit {
       this.commentsForm.controls['action'].markAsTouched()
     }
   }
-  async refreshCourse() {
+  refreshCourse() {
     const url = this.router.url
     const id = url.split('/')
     this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
       this.contentMeta = res
     })
     let flag = 0
-    for await (const element of this.contentMeta.children) {
+    for (const element of this.contentMeta.children) {
       if (element.status === 'Live') {
         flag += 1
       }
     }
     if (flag === this.contentMeta.children.length) {
+         /* tslint:disable-next-line */
+         console.log("b")
       this.showPublishCBPBtn = true
     }
   }

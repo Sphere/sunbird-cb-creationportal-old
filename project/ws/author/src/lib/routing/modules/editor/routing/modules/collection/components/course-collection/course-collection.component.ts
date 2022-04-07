@@ -1032,7 +1032,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       } else {
         this.loaderService.changeLoad.next(false)
-        this.loaderService.changeLoad.next(false)
         this.snackBar.open('The status of the resources present in the course is not correct, please retire the course and start over again', undefined, { duration: 3000 })
         // this.snackBar.openFromComponent(NotificationComponent, {
         //   data: {

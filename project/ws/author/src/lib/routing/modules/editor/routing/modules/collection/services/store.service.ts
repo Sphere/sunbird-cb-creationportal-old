@@ -683,6 +683,8 @@ export class CollectionStoreService {
         }
         children.forEach((child: IContentNode, position: number) => {
           const childContent = this.contentService.getUpdatedMeta(child.identifier)
+             /* tslint:disable-next-line */
+          console.log(`${childContent} `)
           let canPresent = false
           allowedTypes.forEach((element: IAllowedType, index: number) => {
             const canAllow = this.contentService.checkConditionV2(childContent, element.conditions)
@@ -766,7 +768,7 @@ export class CollectionStoreService {
       if (content.instructions === '') {
         errorMsg.push('Course long description cannot be empty')
       }
-      if (content.thumbnail === undefined || content.thumbnail === '') {
+      if (content.thumbnail === undefined || content.thumbnail === '' && content.status === 'Draft') {
         errorMsg.push('Course thumbnail cannot be empty')
       }
       if (content.sourceName === undefined && content.status === 'Draft' && content.parent !== undefined) {
