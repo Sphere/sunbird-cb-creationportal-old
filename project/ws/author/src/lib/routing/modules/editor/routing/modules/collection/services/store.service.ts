@@ -684,8 +684,9 @@ export class CollectionStoreService {
         children.forEach((child: IContentNode, position: number) => {
           const childContent = this.contentService.getUpdatedMeta(child.identifier)
              /* tslint:disable-next-line */
-          console.log(`${childContent} `)
+          console.log(childContent)
           let canPresent = false
+
           allowedTypes.forEach((element: IAllowedType, index: number) => {
             const canAllow = this.contentService.checkConditionV2(childContent, element.conditions)
             if (canAllow) {
