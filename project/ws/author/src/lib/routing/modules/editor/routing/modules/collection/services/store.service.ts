@@ -769,7 +769,7 @@ export class CollectionStoreService {
       if (content.instructions === '') {
         errorMsg.push('Course long description cannot be empty')
       }
-      if (content.thumbnail === undefined || content.thumbnail === '' && content.status === 'Draft') {
+      if (content.thumbnail === undefined && content.status === 'Draft') {
         errorMsg.push('Course thumbnail cannot be empty')
       }
       if (content.sourceName === undefined && content.status === 'Draft' && content.parent !== undefined) {

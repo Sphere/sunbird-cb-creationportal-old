@@ -5,7 +5,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { NSContent } from '@ws/author/src/lib/interface/content'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { Router } from '@angular/router'
-
+// import $ from 'jquery'
 @Component({
   selector: 'ws-auth-root-comments-dialog',
   templateUrl: './comments-dialog.component.html',
@@ -29,30 +29,40 @@ export class CommentsDialogComponent implements OnInit {
     private router: Router
   ) {
     this.authInitService.currentMessage.subscribe(
-      (msg: any) => {
-        if (msg) {
-          this.refreshCourse()
-          const url = this.router.url
-          const id = url.split('/')
-          this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
-            this.contentMeta = res
-          })
-          let flag = 0
-          for (const element of this.contentMeta.children) {
+      async(result: any) => {
+             /* tslint:disable-next-line */
+        console.log(result)
+        if (result) {
+          await this.updateUI(result)
+          // const url = this.router.url
+          // const id = url.split('/')
+          // this.editorService.readcontentV3(id[3]).subscribe((res1: any) => {
+          //   if (res1) {
+          //     this.editorService.readcontentV3(id[3]).subscribe((res2: any) => {
+          //       if (res2) {
+          //         this.contentMeta = res2
+          //       }
+          //     })
+          //   }
+          // })
+
+        }
+      })
+  }
+async updateUI(res: any) {
+  if (res) {
+        this.contentMeta = res
+              let flag = 0
+          for await (const element of this.contentMeta.children) {
             if (element.status === 'Live') {
               flag += 1
             }
           }
           if (flag === this.contentMeta.children.length) {
-            /* tslint:disable-next-line */
-            console.log("a")
             this.showPublishCBPBtn = true
           }
-
-        }
-      })
   }
-
+}
   ngOnInit() {
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
     this.contentMeta = this.data
@@ -63,8 +73,6 @@ export class CommentsDialogComponent implements OnInit {
       }
     }
     if (flag === this.contentMeta.children.length) {
-      /* tslint:disable-next-line */
-      console.log("a1")
       this.showPublishCBPBtn = true
     }
     this.commentsForm = this.formBuilder.group({
@@ -113,8 +121,6 @@ export class CommentsDialogComponent implements OnInit {
       }
     }
     if (flag === this.contentMeta.children.length) {
-      /* tslint:disable-next-line */
-      console.log("b")
       this.showPublishCBPBtn = true
     }
   }

@@ -1027,7 +1027,15 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           },
         }
         await this.editorService.updateHierarchyForReviwer(tempRequset).toPromise().catch(_error => { })
-        this.initService.changeMessage(metaData.identifier)
+        console.log(this.contentService.parentContent)
+                   this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+                         /* tslint:disable-next-line */
+                    console.log(data)
+              this.contentService.resetOriginalMetaWithHierarchy(data)
+              this.initService.changeMessage(metaData.identifier)
+              // tslint:disable-next-line: align
+            })
+        
         this.loaderService.changeLoad.next(false)
 
       } else {
