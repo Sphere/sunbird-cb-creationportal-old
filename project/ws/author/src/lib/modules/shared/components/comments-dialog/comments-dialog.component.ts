@@ -28,9 +28,9 @@ export class CommentsDialogComponent implements OnInit {
     private editorService: EditorService,
     private router: Router
   ) {
-    this.authInitService.currentMessage.subscribe(
-      async(result: any) => {
-             /* tslint:disable-next-line */
+    this.authInitService.publishMessage.subscribe(
+      async (result: any) => {
+        /* tslint:disable-next-line */
         console.log(result)
         if (result) {
           await this.updateUI(result)
@@ -49,20 +49,20 @@ export class CommentsDialogComponent implements OnInit {
         }
       })
   }
-async updateUI(res: any) {
-  if (res) {
-        this.contentMeta = res
-              let flag = 0
-          for await (const element of this.contentMeta.children) {
-            if (element.status === 'Live') {
-              flag += 1
-            }
-          }
-          if (flag === this.contentMeta.children.length) {
-            this.showPublishCBPBtn = true
-          }
+  updateUI(res: any) {
+    if (res) {
+      this.contentMeta = res
+      let flag = 0
+      for (const element of this.contentMeta.children) {
+        if (element.status === 'Live') {
+          flag += 1
+        }
+      }
+      if (flag === this.contentMeta.children.length) {
+        this.showPublishCBPBtn = true
+      }
+    }
   }
-}
   ngOnInit() {
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
     this.contentMeta = this.data

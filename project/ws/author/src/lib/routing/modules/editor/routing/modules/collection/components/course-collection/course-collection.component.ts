@@ -916,7 +916,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         if (originalData.reviewStatus === 'InReview' && originalData.status === 'Review') {
           this.reviewerApproved(originalData, resourceListToReview)
         } else if (originalData.reviewStatus === 'Reviewed' && originalData.status === 'Review') {
-          this.contentPublish(originalData, resourceListToReview)
+          //this.contentPublish(originalData, resourceListToReview)
+          this.contentPublish(resourceListToReview)
         } else if (resourceListToReview.length > 0) {
           this.loaderService.changeLoad.next(true)
           for await (const element of resourceListToReview) {
@@ -978,7 +979,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  async contentPublish(metaData: NSContent.IContentMeta, resourceList: any) {
+  //async contentPublish(metaData: NSContent.IContentMeta, resourceList: any) {
+  async contentPublish(resourceList: any) {
     this.loaderService.changeLoad.next(true)
     let flag = 0
     if (resourceList && resourceList.length > 0) {
@@ -1027,15 +1029,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           },
         }
         await this.editorService.updateHierarchyForReviwer(tempRequset).toPromise().catch(_error => { })
-        console.log(this.contentService.parentContent)
-                   this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
-                         /* tslint:disable-next-line */
-                    console.log(data)
-              this.contentService.resetOriginalMetaWithHierarchy(data)
-              this.initService.changeMessage(metaData.identifier)
-              // tslint:disable-next-line: align
-            })
-        
+        this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+          /* tslint:disable-next-line */
+          console.log(data)
+          this.contentService.resetOriginalMetaWithHierarchy(data)
+          this.initService.publishData(data)
+          // tslint:disable-next-line: align
+        })
+
         this.loaderService.changeLoad.next(false)
 
       } else {

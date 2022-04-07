@@ -22,6 +22,9 @@ interface IPermission {
 export class AuthInitService {
   private messageSource = new Subject<any>()
   public currentMessage = this.messageSource.asObservable()
+  private publishSource = new Subject<any>()
+  public publishMessage = this.publishSource.asObservable()
+
   authConfig!: IFormMeta
   authMetaV2!: { [key: string]: IMetaUnit<any> }
   ordinals: any
@@ -40,5 +43,8 @@ export class AuthInitService {
   permissionDetails!: { role: string; editContent: IPermission; editMeta: IPermission }[]
   changeMessage(message: string) {
     this.messageSource.next(message)
+  }
+  publishData(message: any) {
+    this.publishSource.next(message)
   }
 }
