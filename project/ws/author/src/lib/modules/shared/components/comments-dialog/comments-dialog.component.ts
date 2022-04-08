@@ -60,6 +60,8 @@ export class CommentsDialogComponent implements OnInit {
       }
       if (flag === this.contentMeta.children.length) {
         this.showPublishCBPBtn = true
+      } else {
+        this.refreshCourse()
       }
     }
   }
