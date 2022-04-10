@@ -34,18 +34,6 @@ export class CommentsDialogComponent implements OnInit {
         console.log(result)
         if (result) {
           await this.updateUI(result)
-          // const url = this.router.url
-          // const id = url.split('/')
-          // this.editorService.readcontentV3(id[3]).subscribe((res1: any) => {
-          //   if (res1) {
-          //     this.editorService.readcontentV3(id[3]).subscribe((res2: any) => {
-          //       if (res2) {
-          //         this.contentMeta = res2
-          //       }
-          //     })
-          //   }
-          // })
-
         }
       })
   }
@@ -69,12 +57,21 @@ export class CommentsDialogComponent implements OnInit {
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
     this.contentMeta = this.data
     let flag = 0
+    let count = 0
     for (const element of this.contentMeta.children) {
       if (element.status === 'Live') {
         flag += 1
       }
+      if (element.children) {
+        for (const elem of element.children) {
+          if (elem.status === 'Live') {
+            count += 1
+          }
+        }
+      }
     }
-    if (flag === this.contentMeta.children.length) {
+
+    if (flag === count && flag !== 0 && count !== 0) {
       this.showPublishCBPBtn = true
     }
     this.commentsForm = this.formBuilder.group({
@@ -121,8 +118,32 @@ export class CommentsDialogComponent implements OnInit {
       if (element.status === 'Live') {
         flag += 1
       }
+      if (element.children) {
+        for (const elem of element.children) {
+          if (elem.status === 'Live') {
+            flag += 1
+          }
+        }
+      }
     }
-    if (flag === this.contentMeta.children.length) {
+    let count = 0
+    for (const element of this.contentMeta.children) {
+      if (element.status === 'Live') {
+        count += 1
+      }
+      if (element.children) {
+        for (const elem of element.children) {
+          if (elem.status === 'Live') {
+            count += 1
+          }
+        }
+      }
+    }
+    /* tslint:disable-next-line */
+    console.log(count, 143)
+    /* tslint:disable-next-line */
+    console.log(flag, 145)
+    if (flag === count) {
       this.showPublishCBPBtn = true
     }
   }

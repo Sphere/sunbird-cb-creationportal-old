@@ -7,10 +7,26 @@
         <th>Name</th>
         <th>Status</th>
       </thead>
-      <tbody>
-        <tr *ngFor="let course of contentMeta.children">
-          <td>{{course.name}}</td>
-          <td>{{course.status}}</td>
+      <tbody *ngFor="let course of contentMeta.children">
+        <tr>
+          <td *ngIf="course.children">
+            <span>{{course.name}}</span>
+            <table>
+              <thead>
+                <th>Children Name</th>
+                <th>Children Status</th>
+              </thead>
+              <tbody>
+                <tr *ngFor="let sub of course.children">
+                  <td>{{sub.name}}</td>
+                  <td>{{sub.status}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+          <td *ngIf="!course.children">{{course.name}}</td>
+          <td *ngIf="course.children && course.status === 'Draft'">&nbsp;</td>
+          <td *ngIf="!course.children">{{course.status}}</td>
         </tr>
       </tbody>
     </table>
