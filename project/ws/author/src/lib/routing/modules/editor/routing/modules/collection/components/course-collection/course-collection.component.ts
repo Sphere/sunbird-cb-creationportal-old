@@ -87,6 +87,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   triggerUploadSave = false
   courseId = ''
   checkCreator = false
+  versionKey: any
 
   constructor(
     private contentService: EditorContentService,
@@ -122,6 +123,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         }
         if (data === 'PublishCBP') {
           this.PublishCBP()
+        }
+      })
+    
+    this.initService.uploadMessage.subscribe(
+      (data: any) => {
+        if(data) {
+          this.save()
         }
       })
   }
@@ -170,11 +178,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.contentService.changeActiveCont.subscribe(data => {
       this.currentContent = data
       this.currentCourseId = data
-
       if (this.contentService.getUpdatedMeta(data).contentType !== 'Resource') {
         this.viewMode = 'meta'
       }
-
     })
 
     if (this.activateRoute.parent && this.activateRoute.parent.parent) {
@@ -344,7 +350,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     setTimeout(() => (this.leftArrow = true), 500)
   }
 
-  tempSave() {
+  async tempSave() {
+    if (this.contentService.getUpdatedMeta(this.currentCourseId).category === 'CourseUnit') {
+      this.versionKey = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
+
+    }
+
     //this.loaderService.changeLoad.next(true)
     this.triggerSave().subscribe(
       () => {
@@ -398,7 +409,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     )
   }
 
-  save(nextAction?: string) {
+  async save(nextAction?: string) {
     const updatedContent = this.contentService.upDatedContent || {}
     if (this.viewMode === 'assessment') {
       this.triggerQuizSave = true
@@ -415,6 +426,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     ) {
       this.isChanged = true
       this.loaderService.changeLoad.next(true)
+
+      if (this.contentService.getUpdatedMeta(this.currentCourseId).category === 'CourseUnit') {
+        this.versionKey = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
+      }
+
       this.triggerSave().subscribe(
         () => {
           if (nextAction) {
@@ -913,6 +929,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             resourceListToReview.push(tempData)
           }
         }
+
         if (originalData.reviewStatus === 'InReview' && originalData.status === 'Review') {
           this.reviewerApproved(originalData, resourceListToReview)
         } else if (originalData.reviewStatus === 'Reviewed' && originalData.status === 'Review') {
@@ -1028,15 +1045,17 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             },
           },
         }
-        await this.editorService.updateHierarchyForReviwer(tempRequset).toPromise().catch(_error => { })
-        this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
-          /* tslint:disable-next-line */
-          console.log(data)
-          this.contentService.resetOriginalMetaWithHierarchy(data)
-          this.initService.publishData(data)
-          // tslint:disable-next-line: align
-        })
+        let result = await this.editorService.updateHierarchyForReviwer(tempRequset).toPromise().catch(_error => { })
 
+        if (result.params.status === 'successful') {
+          this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+            /* tslint:disable-next-line */
+            console.log(data)
+            this.contentService.resetOriginalMetaWithHierarchy(data)
+            this.initService.publishData(data)
+            // tslint:disable-next-line: align
+          })
+        }
         this.loaderService.changeLoad.next(false)
 
       } else {
@@ -1064,7 +1083,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         data: {
           type: Notify.SAVE_SUCCESS,
         },
-        duration: NOTIFICATION_TIME * 1000,
+        duration: NOTIFICATION_TIME * 2000,
+      })
+      this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+        /* tslint:disable-next-line */
+        console.log(data)
+        // this.contentService.resetOriginalMetaWithHierarchy(data)
+        // this.initService.publishData(data)
+        // tslint:disable-next-line: align
       })
       await this.sendEmailNotification('publishCompleted')
       this.router.navigate(['author', 'cbp'])
@@ -2161,7 +2187,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
 
     // console.log('parentNodeId  ', this.parentNodeId, 'currentParentId  ', this.currentParentId)
-
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
@@ -2181,7 +2206,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       if (tempUpdateContent.category === 'CourseUnit') {
         tempUpdateContent.visibility = 'Parent'
+        tempUpdateContent.versionKey = this.versionKey.versionKey
       }
+
       requestBody = {
         request: {
           content: tempUpdateContent,
@@ -2189,6 +2216,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       }
 
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
+
       if (requestBody.request.content.duration === 0 || requestBody.request.content.duration) {
         // tslint:disable-next-line:max-line-length
         requestBody.request.content.duration =
@@ -2248,9 +2276,31 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         })
         requestBody.request.content.topics = tempTopicData
       }
-      return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
+
+      let nodesModified = {}
+      return this.editorService.updateNewContentV3(requestBody, this.currentCourseId).pipe(
         tap(() => {
           // this.storeService.getHierarchyTreeStructure()
+          Object.keys(this.contentService.upDatedContent).forEach(v => {
+            nodesModified = {
+              [v]: {
+                isNew: false,
+                objectType: "Content",
+                root: this.storeService.parentNode.includes(v),
+                metadata: requestBody.request.content,
+              }
+            }
+          })
+          // modifydata(data) {
+          //   let filtered = {}
+          //   for (const key in data) {
+          //     if (key !== 'visibility' && key !== 'versionKey') {
+          //       filtered[key] = data[key]
+          //     }
+          //     console.log(filtered)
+          //     return filtered
+          //   }
+          // }
           this.storeService.changedHierarchy = {}
           Object.keys(this.contentService.upDatedContent).forEach(id => {
             this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
@@ -2264,7 +2314,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           const tempRequset: NSApiRequest.IContentUpdateV3 = {
             request: {
               data: {
-                nodesModified: {},
+                nodesModified: nodesModified,
                 hierarchy: this.storeService.getTreeHierarchy(),
               },
             },

@@ -1,3 +1,5 @@
+
+import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { NsAutoComplete, UserAutocompleteService } from '@ws-widget/collection'
 import { ConfigurationsService } from '@ws-widget/utils'
@@ -41,6 +43,7 @@ export class EditorService {
     private accessService: AccessControlService,
     private userAutoComplete: UserAutocompleteService,
     private configSvc: ConfigurationsService,
+    private http: HttpClient,
   ) { }
 
   create(meta: NSApiRequest.ICreateMetaRequestGeneral): Observable<string> {
@@ -152,6 +155,20 @@ export class EditorService {
       })
     )
   }
+  contentRead(id: string): Observable<any> {
+
+    const res = this.apiService.get<any>(
+      `/apis/proxies/v8/action/content/v3/hierarchy/${id}.img`
+    )
+    return res
+
+  }
+
+  checkReadAPI(id: string): Observable<any> {
+    return this.apiService.get<any>(
+      `/apis/authApi/content/v3/read/${id}?mode=edit`
+    )
+  }
 
   createAndReadContentV2(
     meta: NSApiRequest.ICreateMetaRequestGeneralV2,
@@ -190,6 +207,14 @@ export class EditorService {
 
   updateContentV3(meta: NSApiRequest.IContentUpdateV2, id: string): Observable<null> {
     return this.apiService.patch<null>(
+      // `${AUTHORING_BASE}content/v3/update/${id}`,
+      `/apis/proxies/v8/action/content/v3/update/${id}`,
+      meta,
+    )
+  }
+
+  updateNewContentV3(meta: NSApiRequest.IContentUpdateV2, id: string): Observable<null> {
+    return this.http.patch<null>(
       // `${AUTHORING_BASE}content/v3/update/${id}`,
       `/apis/proxies/v8/action/content/v3/update/${id}`,
       meta,

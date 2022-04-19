@@ -342,7 +342,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private set content(contentMeta: NSContent.IContentMeta) {
-
     const isCreator = (this.configSvc.userProfile && this.configSvc.userProfile.userId === contentMeta.createdBy)
       ? true : false
 
@@ -1073,25 +1072,31 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
                               thumbnail: generateURL,
                               appIcon: generateURL,
                               artifactUrl: generateURL,
-                              versionKey: (new Date()).getTime().toString(),
+                              // versionKey: (new Date()).getTime().toString(),
+                              versionKey: meta.result.versionKey,
                             },
                           },
                         }
+
                         this.apiService
                           .patch<NSApiRequest.ICreateMetaRequest>(
                             `${AUTHORING_BASE}content/v3/update/${data.identifier}`,
                             updateArtf,
                           )
+                        // this.editorService.checkReadAPI(data.identifier)
                           .subscribe(
-                            (meta1: NSApiResponse.IContentCreateResponseV2) => {
-                              if (meta1) {
+                            (res: any) => {
+                              if (res) {
                               }
                               this.loader.changeLoad.next(false)
                               this.canUpdate = false
                               this.contentForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
                               this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
                               this.canUpdate = true
+                              // this.data.emit('save')
                               this.storeData()
+                              this.authInitService.uploadData('thumbnail')
+
                               // this.contentForm.controls.posterImage.setValue(data.artifactURL)
 
                               this.snackBar.openFromComponent(NotificationComponent, {

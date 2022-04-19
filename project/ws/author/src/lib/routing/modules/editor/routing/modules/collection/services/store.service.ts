@@ -12,6 +12,7 @@ import { BehaviorSubject, ReplaySubject } from 'rxjs'
 import { IContentNode, IContentTreeNode } from './../interface/icontent-tree'
 import { CollectionResolverService } from './resolver.service'
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
+import { Router } from '@angular/router'
 
 interface IProcessedError {
   id: string | number
@@ -52,6 +53,7 @@ export class CollectionStoreService {
     private resolver: CollectionResolverService,
     private authInitService: AuthInitService,
     private logger: LoggerService,
+    private router: Router
   ) { }
 
   treeStructureChange = new BehaviorSubject<IContentNode | null>(null)
@@ -683,8 +685,8 @@ export class CollectionStoreService {
         }
         children.forEach((child: IContentNode, position: number) => {
           const childContent = this.contentService.getUpdatedMeta(child.identifier)
-             /* tslint:disable-next-line */
-          console.log(childContent)
+          /* tslint:disable-next-line */
+          console.log(content)
           let canPresent = false
 
           allowedTypes.forEach((element: IAllowedType, index: number) => {
@@ -717,13 +719,21 @@ export class CollectionStoreService {
           }
         })
         allowedTypes.forEach((type: IAllowedType, index: number) => {
-          if (type.minimum && childTypeMap[index] < type.minimum) {
-            errorMsg.push(
-              `Minimum ${type.minimum} contents of type ${this.formStringFromCondition(
-                type.conditions,
-              )} is required. But only ${childTypeMap[index]} is present`,
-            )
-          }
+          const url = this.router.url
+          const id = url.split('/')
+          let contentData: any
+          this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
+            contentData = res
+            if (contentData.status === 'Draft') {
+              if (type.minimum && childTypeMap[index] < type.minimum) {
+                errorMsg.push(
+                  `Minimum ${type.minimum} contents of type ${this.formStringFromCondition(
+                    type.conditions,
+                  )} is required. But only ${childTypeMap[index]} is present`,
+                )
+              }
+            }
+          })
           if (type.maximum && type.maximum < childTypeMap[index]) {
             errorMsg.push(
               `Maximum ${type.maximum} contents of type ${this.formStringFromCondition(
@@ -757,10 +767,12 @@ export class CollectionStoreService {
       const errorMsg: string[] = []
       const lexId = this.uniqueIdMap.get(v) as string
       const content = this.contentService.getUpdatedMeta(lexId)
+      // const url = this.router.url
+      // const id = url.split('/')
       if (content.name === '') {
         errorMsg.push('Course title cannot be empty')
       }
-      if (content.description === '') {
+      if (content.description === '' && content.status === 'Draft') {
         errorMsg.push('Course description/summary cannot be empty')
       }
       if (content.purpose === '') {
@@ -769,6 +781,8 @@ export class CollectionStoreService {
       if (content.instructions === '') {
         errorMsg.push('Course long description cannot be empty')
       }
+      /*Workaround*/
+      // && content.parent != id[3]
       if (content.thumbnail === undefined && content.status === 'Draft') {
         errorMsg.push('Course thumbnail cannot be empty')
       }

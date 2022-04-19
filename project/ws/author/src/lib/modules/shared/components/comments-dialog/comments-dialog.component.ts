@@ -5,7 +5,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { NSContent } from '@ws/author/src/lib/interface/content'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { Router } from '@angular/router'
-// import $ from 'jquery'
+
 @Component({
   selector: 'ws-auth-root-comments-dialog',
   templateUrl: './comments-dialog.component.html',
@@ -19,7 +19,7 @@ export class CommentsDialogComponent implements OnInit {
   isSubmitPressed = false
   showNewFlow = false
   showPublishCBPBtn = false
-
+  courseEdited: any
   constructor(
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<CommentsDialogComponent>,
@@ -44,6 +44,8 @@ export class CommentsDialogComponent implements OnInit {
       for (const element of this.contentMeta.children) {
         if (element.status === 'Live') {
           flag += 1
+        } else {
+          flag -= 1
         }
       }
       if (flag === this.contentMeta.children.length) {
@@ -56,24 +58,34 @@ export class CommentsDialogComponent implements OnInit {
   ngOnInit() {
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
     this.contentMeta = this.data
-    let flag = 0
-    let count = 0
-    for (const element of this.contentMeta.children) {
-      if (element.status === 'Live') {
-        flag += 1
-      }
-      if (element.children) {
-        for (const elem of element.children) {
-          if (elem.status === 'Live') {
-            count += 1
-          }
+    // let flag = 0
+    // let count = 0
+    // for (const element of this.contentMeta.children) {
+    //   if (element.status === 'Live') {
+    //     flag += 1
+    //   }
+    //   if (element.children) {
+    //     for (const elem of element.children) {
+    //       if (elem.status === 'Live') {
+    //         count += 1
+    //       }
+    //     }
+    //   }
+    // }
+    const url = this.router.url
+    const id = url.split('/')
+    this.editorService.contentRead(id[3])
+      .subscribe((res: any) => {
+        if (res.params.status === 'successful') {
+          this.courseEdited = true
+        } else {
+          this.courseEdited = false
         }
-      }
-    }
-
-    if (flag === count && flag !== 0 && count !== 0) {
-      this.showPublishCBPBtn = true
-    }
+      },         error => {
+        if (error) {
+          this.courseEdited = false
+        }
+      })
     this.commentsForm = this.formBuilder.group({
       comments: ['', [Validators.required]],
       action: ['', [Validators.required]],
@@ -113,39 +125,41 @@ export class CommentsDialogComponent implements OnInit {
     this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
       this.contentMeta = res
     })
-    let flag = 0
-    for (const element of this.contentMeta.children) {
-      if (element.status === 'Live') {
-        flag += 1
-      }
-      if (element.children) {
-        for (const elem of element.children) {
-          if (elem.status === 'Live') {
-            flag += 1
-          }
-        }
-      }
-    }
-    let count = 0
-    for (const element of this.contentMeta.children) {
-      if (element.status === 'Live') {
-        count += 1
-      }
-      if (element.children) {
-        for (const elem of element.children) {
-          if (elem.status === 'Live') {
-            count += 1
-          }
-        }
-      }
-    }
+    // let flag = 0
+    // for (const element of this.contentMeta.children) {
+    //   if (element.status === 'Live') {
+    //     flag += 1
+    //   } else {
+    //     flag -= 1
+    //   }
+      // if (element.children) {
+      //   for (const elem of element.children) {
+      //     if (elem.status === 'Live') {
+      //       flag += 1
+      //     }
+      //   }
+      // }
+    // }
+    // let count = 0
+    // for (const element of this.contentMeta.children) {
+    //   if (element.status === 'Live') {
+    //     count += 1
+    //   }
+    //   if (element.children) {
+    //     for (const elem of element.children) {
+    //       if (elem.status === 'Live') {
+    //         count += 1
+    //       }
+    //     }
+    //   }
+    // }
     /* tslint:disable-next-line */
-    console.log(count, 143)
+    //console.log(143)
     /* tslint:disable-next-line */
-    console.log(flag, 145)
-    if (flag === count) {
-      this.showPublishCBPBtn = true
-    }
+    //console.log(flag, 145)
+    // if (flag === count) {
+      //this.showPublishCBPBtn = true
+    // }
   }
 
   publishCourse() {
