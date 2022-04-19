@@ -81,11 +81,25 @@ export class CommentsDialogComponent implements OnInit {
         } else {
           this.courseEdited = false
         }
-      },         error => {
+      }, error => {
         if (error) {
           this.courseEdited = false
         }
       })
+    let flag = 0
+    for (const element of this.contentMeta.children) {
+      if (element.status === 'Live') {
+        flag += 1
+      }
+      if (element.children) {
+        flag += 1
+      }
+    }
+
+    if (flag === this.contentMeta.children.length) {
+      this.showPublishCBPBtn = true
+    }
+
     this.commentsForm = this.formBuilder.group({
       comments: ['', [Validators.required]],
       action: ['', [Validators.required]],
@@ -125,6 +139,22 @@ export class CommentsDialogComponent implements OnInit {
     this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
       this.contentMeta = res
     })
+    let flag = 0
+    for (const element of this.contentMeta.children) {
+      if (element.status === 'Live') {
+        flag += 1
+      }
+      if (element.children) {
+        flag += 1
+      }
+    }
+
+    if (flag === this.contentMeta.children.length) {
+      this.showPublishCBPBtn = true
+    }
+    // else {
+    //   //this.refreshCourse()
+    // }
     // let flag = 0
     // for (const element of this.contentMeta.children) {
     //   if (element.status === 'Live') {
@@ -132,13 +162,13 @@ export class CommentsDialogComponent implements OnInit {
     //   } else {
     //     flag -= 1
     //   }
-      // if (element.children) {
-      //   for (const elem of element.children) {
-      //     if (elem.status === 'Live') {
-      //       flag += 1
-      //     }
-      //   }
-      // }
+    // if (element.children) {
+    //   for (const elem of element.children) {
+    //     if (elem.status === 'Live') {
+    //       flag += 1
+    //     }
+    //   }
+    // }
     // }
     // let count = 0
     // for (const element of this.contentMeta.children) {
@@ -158,7 +188,7 @@ export class CommentsDialogComponent implements OnInit {
     /* tslint:disable-next-line */
     //console.log(flag, 145)
     // if (flag === count) {
-      //this.showPublishCBPBtn = true
+    //this.showPublishCBPBtn = true
     // }
   }
 
