@@ -351,7 +351,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   async tempSave() {
-    if (this.contentService.getUpdatedMeta(this.currentCourseId).category === 'CourseUnit') {
+    if (this.contentService.getUpdatedMeta(this.currentCourseId)) {
       this.versionKey = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
 
     }
@@ -426,8 +426,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     ) {
       this.isChanged = true
       this.loaderService.changeLoad.next(true)
-
-      if (this.contentService.getUpdatedMeta(this.currentCourseId).category === 'CourseUnit') {
+      console.log(this.contentService.getUpdatedMeta(this.currentCourseId))
+      if (this.contentService.getUpdatedMeta(this.currentCourseId)) {
         this.versionKey = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
       }
 
@@ -2207,6 +2207,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       if (tempUpdateContent.category === 'CourseUnit') {
         tempUpdateContent.visibility = 'Parent'
         tempUpdateContent.versionKey = this.versionKey.versionKey
+      } else {
+        tempUpdateContent.versionKey = this.versionKey.versionKey
       }
 
       requestBody = {
@@ -2278,6 +2280,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       }
 
       let nodesModified = {}
+
       return this.editorService.updateNewContentV3(requestBody, this.currentCourseId).pipe(
         tap(() => {
           // this.storeService.getHierarchyTreeStructure()
