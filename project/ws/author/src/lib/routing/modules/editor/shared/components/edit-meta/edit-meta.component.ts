@@ -47,9 +47,10 @@ import {
 
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
 
-import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
-import { NSApiResponse } from '../../../../../../interface/apiResponse'
+// import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
+// import { NSApiResponse } from '../../../../../../interface/apiResponse'
 import { environment } from '../../../../../../../../../../../src/environments/environment'
+import { HttpClient } from '@angular/common/http'
 @Component({
   selector: 'ws-auth-edit-meta',
   templateUrl: './edit-meta.component.html',
@@ -138,7 +139,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     private loader: LoaderService,
     private authInitService: AuthInitService,
     private accessService: AccessControlService,
-    private apiService: ApiService,
+    // private apiService: ApiService,
+    private http: HttpClient
   ) { }
 
   ngAfterViewInit() {
@@ -646,7 +648,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             if (
               currentMeta[v as keyof NSContent.IContentMeta] ||
               // (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
-                currentMeta[v as keyof NSContent.IContentMeta] === false) {
+              currentMeta[v as keyof NSContent.IContentMeta] === false) {
               meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
             } else {
               meta[v as keyof NSContent.IContentMeta] = JSON.parse(
@@ -1045,13 +1047,13 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             },
           }
 
-          this.apiService
+          this.http
             .post<NSApiRequest.ICreateMetaRequest>(
               `${AUTHORING_BASE}content/v3/create`,
               requestBody,
             )
             .subscribe(
-              (meta: NSApiResponse.IContentCreateResponseV2) => {
+              (meta: any) => {
                 // return data.result.identifier
                 this.uploadService
                   .upload(formdata, {
@@ -1062,50 +1064,49 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
                   .subscribe(
                     data => {
                       if (data && data.name !== 'Error') {
-                        const generateURL = this.generateUrl(data.artifactUrl)
-                        const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
-                          request: {
-                            content: {
-                              // content_url: data.result.artifactUrl,
-                              // identifier: data.result.identifier,
-                              // node_id: data.result.node_id,
-                              thumbnail: generateURL,
-                              appIcon: generateURL,
-                              artifactUrl: generateURL,
-                              // versionKey: (new Date()).getTime().toString(),
-                              versionKey: meta.result.versionKey,
-                            },
-                          },
-                        }
+                        // const generateURL = this.generateUrl(data.artifactUrl)
+                        // const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
+                        //   request: {
+                        //     content: {
+                        //       // content_url: data.result.artifactUrl,
+                        //       // identifier: data.result.identifier,
+                        //       // node_id: data.result.node_id,
+                        //       thumbnail: generateURL,
+                        //       appIcon: generateURL,
+                        //       artifactUrl: generateURL,
+                        //       // versionKey: (new Date()).getTime().toString(),
+                        //       versionKey: meta.result.versionKey,
+                        //     },
+                        //   },
+                        // }
 
-                        this.apiService
-                          .patch<NSApiRequest.ICreateMetaRequest>(
-                            `${AUTHORING_BASE}content/v3/update/${data.identifier}`,
-                            updateArtf,
-                          )
+                        // this.apiService
+                        //   .patch<NSApiRequest.ICreateMetaRequest>(
+                        //     `${AUTHORING_BASE}content/v3/update/${data.identifier}`,
+                        //     updateArtf,
+                        //   )
                         // this.editorService.checkReadAPI(data.identifier)
-                          .subscribe(
-                            (res: any) => {
-                              if (res) {
-                              }
-                              this.loader.changeLoad.next(false)
-                              this.canUpdate = false
-                              this.contentForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
-                              this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
-                              this.canUpdate = true
-                              // this.data.emit('save')
-                              this.storeData()
-                              this.authInitService.uploadData('thumbnail')
-
-                              // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-
-                              this.snackBar.openFromComponent(NotificationComponent, {
-                                data: {
-                                  type: Notify.UPLOAD_SUCCESS,
-                                },
-                                duration: NOTIFICATION_TIME * 2000,
-                              })
-                            })
+                        // .subscribe(
+                        //   (res: any) => {
+                        //     console.log(res)
+                        //     if (res) {
+                        //     }
+                        this.loader.changeLoad.next(false)
+                        this.canUpdate = false
+                        this.contentForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
+                        this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
+                        this.canUpdate = true
+                        // this.data.emit('save')
+                        this.storeData()
+                        this.authInitService.uploadData('thumbnail')
+                        // this.contentForm.controls.posterImage.setValue(data.artifactURL)
+                        this.snackBar.openFromComponent(NotificationComponent, {
+                          data: {
+                            type: Notify.UPLOAD_SUCCESS,
+                          },
+                          duration: NOTIFICATION_TIME * 2000,
+                        })
+                        // })
                       } else {
                         this.loader.changeLoad.next(false)
                         this.snackBar.open(data.message, undefined, { duration: 2000 })

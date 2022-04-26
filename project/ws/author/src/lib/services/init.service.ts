@@ -26,6 +26,8 @@ export class AuthInitService {
   public publishMessage = this.publishSource.asObservable()
   private uploadSource = new Subject<any>()
   public uploadMessage = this.uploadSource.asObservable()
+  private editCourseContent = new Subject<any>()
+  public editCourseMessage = this.editCourseContent.asObservable()
 
   authConfig!: IFormMeta
   authMetaV2!: { [key: string]: IMetaUnit<any> }
@@ -52,5 +54,8 @@ export class AuthInitService {
   }
   uploadData(message: any) {
     this.uploadSource.next(message)
+  }
+  editCourse(message: any) {
+    this.editCourseContent.next(message)
   }
 }

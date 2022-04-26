@@ -188,7 +188,7 @@ export class CommentsDialogComponent implements OnInit {
     /* tslint:disable-next-line */
     //console.log(flag, 145)
     // if (flag === count) {
-    //this.showPublishCBPBtn = true
+    // this.showPublishCBPBtn = true
     // }
   }
 

@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core'
 import { ConfigurationsService } from '@ws-widget/utils/src/public-api'
 // import { AUTHORING_BASE, CONTENT_CREATE } from '@ws/author/src/lib/constants/apiEndpoints'
 import { AUTHORING_BASE } from '@ws/author/src/lib/constants/apiEndpoints'
-//import { NSApiResponse } from '@ws/author/src/lib/interface//apiResponse'
+// import { NSApiResponse } from '@ws/author/src/lib/interface//apiResponse'
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
-//import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
+// import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { environment } from '../../../../../../../../../../src/environments/environment'
@@ -16,7 +16,7 @@ const API_END_POINTS = {
 @Injectable()
 export class CreateService {
   constructor(
-    //private apiService: ApiService,
+    // private apiService: ApiService,
     private configSvc: ConfigurationsService,
     private accessService: AccessControlService,
     private http: HttpClient,

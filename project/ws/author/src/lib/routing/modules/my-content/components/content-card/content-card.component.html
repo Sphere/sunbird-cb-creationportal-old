@@ -44,7 +44,7 @@
 </div>
 
 <div class="d-flex" *ngIf="changeView">
-  <div class="item1">
+  <div class="item1" *ngIf="!pageName">
     <a [ngClass]="{
       pointer: data.contentType !== 'Knowledge Board',
       cursor: data.contentType === 'Knowledge Board'
@@ -56,14 +56,32 @@
       <img class="" role="link" [src]="data.appIcon" (error)="changeToDefaultImg($event)" [alt]="data.name" />
     </a>
   </div>
-  <div class="item2">
+  <div class="item1" *ngIf="pageName">
     <a [ngClass]="{
+      pointer: data.contentType !== 'Knowledge Board',
+      cursor: data.contentType === 'Knowledge Board'
+    }">
+      <img class="" role="link" [src]="data.appIcon" (error)="changeToDefaultImg($event)" [alt]="data.name" />
+    </a>
+  </div>
+  <div class="item2">
+    <div *ngIf="!pageName">
+      <a [ngClass]="{
         pointer: data.contentType !== 'Knowledge Board',
         cursor: data.contentType === 'Knowledge Board'
       }" [routerLink]="(data | pipeContentRoute: true).url" [title]="data.name" aria-label="Content"
-      i18n-aria-label="Content | Click to view">
-      <span class="font-weight-500">{{ data.name || 'Untitled Content' }} </span>
-    </a>
+        i18n-aria-label="Content | Click to view">
+        <span class="font-weight-500">{{ data.name || 'Untitled Content' }} </span>
+      </a>
+    </div>
+    <div *ngIf="pageName">
+      <a [ngClass]="{
+        pointer: data.contentType !== 'Knowledge Board',
+        cursor: data.contentType === 'Knowledge Board'
+      }" [title]="data.name" aria-label="Content" i18n-aria-label="Content | Click to view">
+        <span class="font-weight-500">{{ data.name || 'Untitled Content' }} </span>
+      </a>
+    </div>
     <!-- <span class="ws-mat-primary-text uppercase font-weight-500">{{
         data.description
       }}</span> -->
@@ -111,7 +129,9 @@
 </div>
 
 <mat-menu #moreMenu="matMenu">
-  <a *ngIf="showMenuItem('edit')" mat-menu-item (click)="takeAction('edit')">
+  <a *ngIf="showMenuItem('edit')" mat-menu-item (click)="editCourse('editCourse')" [routerLink]="
+      data.contentType !== 'Knowledge Board' ? ['/author/editor/' + data.identifier + '/collection'] : []
+    " [queryParamsHandling]="data.contentType === 'Knowledge Board' ? 'preserve' : ''">
     <mat-icon>edit</mat-icon>
     <span i18n>Edit</span>
   </a>

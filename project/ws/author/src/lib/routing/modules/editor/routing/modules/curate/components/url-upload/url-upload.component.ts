@@ -89,7 +89,8 @@ export class UrlUploadComponent implements OnInit {
     this.canUpdate = false
     this.urlUploadForm.controls.artifactUrl.setValue(meta.artifactUrl || '')
     this.urlUploadForm.controls.mimeType.setValue(meta.mimeType || 'application/html')
-    this.urlUploadForm.controls.isIframeSupported.setValue(meta.isIframeSupported || 'No')
+    //this.urlUploadForm.controls.isIframeSupported.setValue(meta.isIframeSupported || 'No')
+    this.urlUploadForm.controls.isIframeSupported.setValue(meta.isIframeSupported)
     this.urlUploadForm.controls.isInIntranet.setValue(meta.isInIntranet || false)
     this.urlUploadForm.controls.isExternal.setValue(true)
     this.urlUploadForm.controls.versionKey.setValue(meta.versionKey)
@@ -172,6 +173,7 @@ export class UrlUploadComponent implements OnInit {
   }
 
   isIframeSupportedClicked() {
+    this.storeData()
     if (this.urlUploadForm.controls.isIframeSupported.value === 'Yes') {
       this.iframeSupportedClicked = true
     }
@@ -196,7 +198,7 @@ export class UrlUploadComponent implements OnInit {
             // this.urlUploadForm.controls.isIframeSupported.setValue(this.setIframeVal)
 
           } else {
-            this.urlUploadForm.controls.isIframeSupported.setValue('No')
+            //this.urlUploadForm.controls.isIframeSupported.setValue('No')
             this.urlUploadForm.controls.mimeType.setValue('application/html')
             // disableIframe = false
           }

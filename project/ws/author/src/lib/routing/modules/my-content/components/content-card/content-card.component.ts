@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'ws-auth-root-content-card',
@@ -15,11 +17,18 @@ export class ContentCardComponent implements OnInit {
   filteredSubTitles: any[] = []
   translationArray: any = []
   userId!: string
+  pageName = false
   @Output() action = new EventEmitter<any>()
   isBaseContent: Boolean = true
-  constructor(private accessService: AccessControlService) { }
+  constructor(private accessService: AccessControlService,
+    private authInitService: AuthInitService,
+    private router: Router) { }
 
   ngOnInit() {
+    console.log((this.router.url).includes('published'))
+    if ((this.router.url).includes('published')) {
+      this.pageName = true
+    }
     if (this.data.hasTranslations && this.data.hasTranslations.length) {
       this.translationArray = this.translationArray.concat(this.data.hasTranslations)
     }
@@ -109,6 +118,10 @@ export class ContentCardComponent implements OnInit {
       type: actionType,
       data: this.data,
     })
+  }
+
+  editCourse(actionType: string) {
+    this.authInitService.editCourse(actionType)
   }
 
   changeToDefaultImg($event: any) {

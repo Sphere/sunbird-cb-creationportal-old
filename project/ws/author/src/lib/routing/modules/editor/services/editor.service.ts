@@ -71,7 +71,7 @@ export class EditorService {
         requestBody.content.accessPaths = 'client2'
       }
     }
-    return this.apiService
+    return this.http
       .post<NSApiRequest.ICreateMetaRequest>(
         // tslint:disable-next-line:max-line-length
         // `${CONTENT_CREATE}${this.accessService.orgRootOrgAsQuery}`,
@@ -79,7 +79,7 @@ export class EditorService {
         requestBody,
       )
       .pipe(
-        map((data: NSApiResponse.IContentCreateResponse) => {
+        map((data: any) => {
           return data.identifier
         }),
       )
@@ -115,14 +115,14 @@ export class EditorService {
         },
       },
     }
-    return this.apiService
+    return this.http
       .post<NSApiRequest.ICreateMetaRequestV2>(
         // tslint:disable-next-line:max-line-length
         `${AUTHORING_BASE}content/v3/create`,
         requestBody,
       )
       .pipe(
-        map((data: NSApiResponse.IContentCreateResponseV2) => {
+        map((data: any) => {
           return data.result.identifier
         }),
       )
@@ -213,7 +213,7 @@ export class EditorService {
     )
   }
 
-  updateNewContentV3(meta: NSApiRequest.IContentUpdateV2, id: string): Observable<null> {
+  updateNewContentV3(meta: any, id: string): Observable<null> {
     return this.http.patch<null>(
       // `${AUTHORING_BASE}content/v3/update/${id}`,
       `/apis/proxies/v8/action/content/v3/update/${id}`,

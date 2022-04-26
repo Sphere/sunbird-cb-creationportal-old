@@ -88,6 +88,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   courseId = ''
   checkCreator = false
   versionKey: any
+  versionID: any
 
   constructor(
     private contentService: EditorContentService,
@@ -125,11 +126,17 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.PublishCBP()
         }
       })
-    
+
     this.initService.uploadMessage.subscribe(
       (data: any) => {
-        if(data) {
+        if (data) {
           this.save()
+        }
+      })
+    this.initService.editCourseMessage.subscribe(
+      (data: any) => {
+        if (data) {
+          this.editPublishCourse()
         }
       })
   }
@@ -426,9 +433,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     ) {
       this.isChanged = true
       this.loaderService.changeLoad.next(true)
-      console.log(this.contentService.getUpdatedMeta(this.currentCourseId))
       if (this.contentService.getUpdatedMeta(this.currentCourseId)) {
-        this.versionKey = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
+        this.versionID = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
+        this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
       }
 
       this.triggerSave().subscribe(
@@ -1237,6 +1244,78 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //       })
   //   })
   // }
+
+  async editPublishCourse() {
+    const originalData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise()
+    const resourceListToReview: any = []
+    const tempData = {
+      identifier: originalData.identifier,
+      status: originalData.status,
+      versionKey: originalData.versionKey,
+    }
+    resourceListToReview.push(tempData)
+
+    originalData.children.forEach((element: any) => {
+      if (element.contentType === 'CourseUnit' || element.contentType === 'Collection') {
+        if (element.children.length > 0) {
+          element.children.forEach((subElement: any) => {
+            const tempChildData = {
+              identifier: subElement.identifier,
+              status: subElement.status,
+              versionKey: subElement.versionKey,
+            }
+            resourceListToReview.push(tempChildData)
+          })
+        }
+      } else {
+        const tempData = {
+          identifier: element.identifier,
+          status: element.status,
+          versionKey: element.versionKey,
+        }
+        resourceListToReview.push(tempData)
+      }
+    })
+    let flag = 0
+    const updateContentReq: any = {
+      request: {
+        content: {
+          versionKey: 0,
+        },
+      },
+    }
+    if (resourceListToReview.length > 0) {
+      for await (const element of resourceListToReview) {
+        this.loaderService.changeLoad.next(true)
+        updateContentReq.request.content.versionKey = element.versionKey
+        const updateContentRes =
+          await this.editorService.updateNewContentV3(_.omit(updateContentReq, 'status'), element.identifier).toPromise().catch(_error => { })
+        if (updateContentRes) {
+          flag += 1
+        } else {
+          flag -= 1
+        }
+      }
+      if (flag === resourceListToReview.length) {
+        this.loaderService.changeLoad.next(false)
+      } else {
+        this.loaderService.changeLoad.next(false)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.SAVE_FAIL,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      }
+    } else {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.SAVE_FAIL,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    }
+  }
 
   async changeStatusToDraft(comment: string) {
     const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
@@ -2206,9 +2285,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       if (tempUpdateContent.category === 'CourseUnit') {
         tempUpdateContent.visibility = 'Parent'
-        tempUpdateContent.versionKey = this.versionKey.versionKey
+        tempUpdateContent.versionKey = this.versionID.versionKey
       } else {
-        tempUpdateContent.versionKey = this.versionKey.versionKey
+        tempUpdateContent.versionKey = this.versionID.versionKey
       }
 
       requestBody = {
@@ -2290,7 +2369,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 isNew: false,
                 objectType: "Content",
                 root: this.storeService.parentNode.includes(v),
-                metadata: requestBody.request.content,
+                metadata: _.omit(requestBody.request.content, ['versionKey', 'status'])
               }
             }
           })
@@ -2317,7 +2396,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           const tempRequset: NSApiRequest.IContentUpdateV3 = {
             request: {
               data: {
-                nodesModified: nodesModified,
+                nodesModified: this.versionKey.category === "CourseUnit" ? nodesModified : {},
                 hierarchy: this.storeService.getTreeHierarchy(),
               },
             },
@@ -2414,8 +2493,23 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.tempSave()
         }
 
+        // const url = this.router.url
+        // const id = url.split('/')
+        //  this.editorService.contentRead(id[3])
+        //    //this.editorService.readcontentV3(id[3])
+        //      .subscribe((res: any) => {
+        //        console.log(res)
+        //        if(res.params.status === 'successful') {
+        //          console.log(res)
+        //          this.editPublishCourse('editPublishCourse')
+        //        }
+        //      }, error => {
+        //        if (error) {
+        //          console.log(error)
+        //          //this.courseEdited = false
+        //        }
+        //      })
         const content = this.contentService.getUpdatedMeta(event.identifier)
-
         const isCreator = (this._configurationsService.userProfile
           && this._configurationsService.userProfile.userId === content.createdBy)
           ? true : false
