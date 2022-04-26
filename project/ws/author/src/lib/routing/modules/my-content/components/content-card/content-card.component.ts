@@ -25,7 +25,6 @@ export class ContentCardComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit() {
-    console.log((this.router.url).includes('published'))
     if ((this.router.url).includes('published')) {
       this.pageName = true
     }
