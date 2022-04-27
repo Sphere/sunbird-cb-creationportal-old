@@ -12,6 +12,7 @@ import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/
 import { IFormMeta } from './../../../../../../../../interface/form'
 import { AuthInitService } from './../../../../../../../../services/init.service'
 import { URLCheckerClass } from './url-upload.helper'
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 
 @Component({
   selector: 'ws-auth-url-upload',
@@ -37,6 +38,7 @@ export class UrlUploadComponent implements OnInit {
     private contentService: EditorContentService,
     private configSvc: ConfigurationsService,
     private initService: AuthInitService,
+    private editorService: EditorService,
   ) { }
 
   ngOnInit() {
@@ -44,12 +46,19 @@ export class UrlUploadComponent implements OnInit {
     this.contentService.changeActiveCont.subscribe(data => {
       this.setIframeVal = ''
       this.currentContent = data
-      this.triggerDataChange()
+      this.editorService.checkReadAPI(data)
+        .subscribe(
+          (res: any) => {
+            if (res) {
+              this.triggerDataChange(res.result.content.isIframeSupported)
+            }
+          })
     })
   }
 
-  triggerDataChange() {
+  triggerDataChange(isIframeSupported: any) {
     const updatedMeta = this.contentService.getUpdatedMeta(this.currentContent)
+    updatedMeta["isIframeSupported"] = isIframeSupported
     if (
       !this.isCollectionEditor ||
       (this.isCollectionEditor && updatedMeta.category === 'Resource')
@@ -84,7 +93,6 @@ export class UrlUploadComponent implements OnInit {
     if (!this.urlUploadForm) {
       this.createForm()
     }
-
     // this.setIframeVal = meta.isIframeSupported || 'No'
     this.canUpdate = false
     this.urlUploadForm.controls.artifactUrl.setValue(meta.artifactUrl || '')

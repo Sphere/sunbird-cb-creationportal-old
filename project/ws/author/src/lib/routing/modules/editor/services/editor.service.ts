@@ -33,11 +33,13 @@ import { CONTENT_READ_MULTIPLE_HIERARCHY } from './../../../../constants/apiEndp
 import { ISearchContent, ISearchResult } from '../../../../interface/search'
 import { environment } from '../../../../../../../../../src/environments/environment'
 // import { HttpHeaders } from '@angular/common/http'
+import { share } from 'rxjs/operators'
 
 @Injectable()
 export class EditorService {
   accessPath: string[] = []
   newCreatedLexid!: string
+  someDataObservable!: Observable<any>
   constructor(
     private apiService: ApiService,
     private accessService: AccessControlService,
@@ -165,9 +167,14 @@ export class EditorService {
   }
 
   checkReadAPI(id: string): Observable<any> {
-    return this.apiService.get<any>(
-      `/apis/authApi/content/v3/read/${id}?mode=edit`
-    )
+    if (this.someDataObservable) {
+      return this.someDataObservable
+    } else {
+      this.someDataObservable = this.apiService.get<any>(
+        `/apis/authApi/content/v3/read/${id}?mode=edit`
+      ).pipe(share())
+      return this.someDataObservable
+    }
   }
 
   createAndReadContentV2(
