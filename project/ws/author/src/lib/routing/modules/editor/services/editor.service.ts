@@ -167,12 +167,11 @@ export class EditorService {
   checkReadAPI(id: string): Observable<any> {
     if (this.someDataObservable) {
       return this.someDataObservable
-    } else {
-      this.someDataObservable = this.apiService.get<any>(
-        `/apis/authApi/content/v3/read/${id}?mode=edit`
-      ).pipe(share())
-      return this.someDataObservable
     }
+    this.someDataObservable = this.apiService.get<any>(
+      `/apis/authApi/content/v3/read/${id}?mode=edit`
+    ).pipe(share())
+    return this.someDataObservable
   }
 
   createAndReadContentV2(
