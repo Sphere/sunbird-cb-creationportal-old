@@ -28,12 +28,11 @@ import { NSContent } from '@ws/author/src/lib/interface/content'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
 import { EMPTY, Observable, of } from 'rxjs'
-import { map, mergeMap, catchError } from 'rxjs/operators'
+import { map, mergeMap, catchError, share } from 'rxjs/operators'
 import { CONTENT_READ_MULTIPLE_HIERARCHY } from './../../../../constants/apiEndpoints'
 import { ISearchContent, ISearchResult } from '../../../../interface/search'
 import { environment } from '../../../../../../../../../src/environments/environment'
 // import { HttpHeaders } from '@angular/common/http'
-import { share } from 'rxjs/operators'
 
 @Injectable()
 export class EditorService {
@@ -163,7 +162,6 @@ export class EditorService {
       `/apis/proxies/v8/action/content/v3/hierarchy/${id}.img`
     )
     return res
-
   }
 
   checkReadAPI(id: string): Observable<any> {
