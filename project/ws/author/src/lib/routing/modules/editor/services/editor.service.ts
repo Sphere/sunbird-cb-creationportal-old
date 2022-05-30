@@ -186,30 +186,30 @@ export class EditorService {
     return this.apiService.get<NSContent.IContentMeta>(
       `/apis/proxies/v8/action/content/v3/hierarchy/${id}?mode=edit`
     )
-    .pipe(
-      map((data: any) => {
-        const tempReturnData = data.result.content.children.filter((v: NSContent.IContentMeta) => v.identifier === moduleId)
-        this.newCreatedLexid = tempReturnData[0].identifier
-        return tempReturnData[0]
-      })
-    )
+      .pipe(
+        map((data: any) => {
+          const tempReturnData = data.result.content.children.filter((v: NSContent.IContentMeta) => v.identifier === moduleId)
+          this.newCreatedLexid = tempReturnData[0].identifier
+          return tempReturnData[0]
+        })
+      )
   }
   createModule(meta: any) {
     return this.apiService.patch<null>(
       `/apis/proxies/v8/action/content/v3/hierarchy/update`,
       meta,
     )
-    // .pipe(
-    //   map((data: any) => {
-    //     return data.result
-    //   })
-    //   )
-    .pipe(
-      map((data: any) => {
-        const temp = Object.keys(data.result.identifiers).filter((v: any) => !v.includes('do_'))
-        return data.result.identifiers[temp[0]]
-      })
-    )
+      // .pipe(
+      //   map((data: any) => {
+      //     return data.result
+      //   })
+      //   )
+      .pipe(
+        map((data: any) => {
+          const temp = Object.keys(data.result.identifiers).filter((v: any) => !v.includes('do_'))
+          return data.result.identifiers[temp[0]]
+        })
+      )
   }
 
   createAndReadContentV2(
@@ -255,7 +255,6 @@ export class EditorService {
     )
   }
 
-
   updateContentV3(meta: NSApiRequest.IContentUpdateV2, id: string): Observable<null> {
     return this.apiService.patch<null>(
       // `${AUTHORING_BASE}content/v3/update/${id}`,
@@ -279,18 +278,16 @@ export class EditorService {
     )
   }
 
-updateContentV6(meta: NSApiRequest.IContentUpdateV3, check: boolean): Observable<null> {
-  if(check === false) {
-        return this.apiService.patch<null>(
-      `/apis/proxies/v8/action/content/v3/hierarchy/update`,
-      meta,
-    )
-  } else {
-    //window.location.reload()
+  updateContentV6(meta: NSApiRequest.IContentUpdateV3, check: boolean): Observable<null> {
+    if (!check) {
+      return this.apiService.patch<null>(
+        `/apis/proxies/v8/action/content/v3/hierarchy/update`,
+        meta,
+      )
+    }
     return this.someDataObservable
   }
 
-  }
   updateContentWithFewFields(requestBody: any, identifier: string): Observable<any> {
     return this.apiService.patch<any>(
       `/apis/proxies/v8/action/content/v3/update/${identifier}`,

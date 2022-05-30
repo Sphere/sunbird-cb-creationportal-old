@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { LoggerService } from '@ws-widget/utils'
+import { LoggerService, ConfigurationsService } from '@ws-widget/utils'
 import { DEPTH_RUE } from '@ws/author/src/lib/constants/depth-rule'
 import { IAllowedType } from '@ws/author/src/lib/interface/collection-child-config'
 import { NSContent } from '@ws/author/src/lib/interface/content'
@@ -15,7 +15,6 @@ import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
 import { Router } from '@angular/router'
 // import { v4 as uuidv4 } from 'uuid'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
-import { ConfigurationsService } from '@ws-widget/utils'
 import { environment } from '../../../../../../../../../../../../src/environments/environment'
 
 interface IProcessedError {
@@ -27,7 +26,7 @@ interface IProcessedError {
 export class CollectionStoreService {
   parentNode: string[] = []
   invalidIds: number[] = []
-  createdModuleUpdate: boolean = false
+  createdModuleUpdate = false
   onInvalidNodeChange = new ReplaySubject<number[]>()
   /**
    * Map from flat node to nested node. This helps us finding the nested node to be modified
@@ -180,7 +179,6 @@ export class CollectionStoreService {
     const oldParentChildList = oldParentNode ? (oldParentNode.children as IContentNode[]) : []
     const newParentChildList = newParentNode.children as IContentNode[]
     let request: any
-    let result: any
     oldParentChildList.splice(
       oldParentChildList.findIndex(v => v.id === dragNode.id),
       1,
@@ -255,11 +253,13 @@ export class CollectionStoreService {
         request: {
           rootId: this.parentNode[0],
           unitId: dropNode.identifier,
-          children: [this.editorService.resourseID]
-        }
+          children: [this.editorService.resourseID],
+        },
       }
       if (this.parentNode[0] !== dropNode.identifier) {
-        result = await this.editorService.resourceToModule(request).toPromise()
+        const result = await this.editorService.resourceToModule(request).toPromise()
+        // tslint:disable-next-line:no-console
+        console.log(result)
       }
     }
     if (this.parentNode.length > 0) {
@@ -364,7 +364,7 @@ export class CollectionStoreService {
         topicName = topicObj.topicName
         topicDescription = topicObj.topicDescription
       }
-      
+
       const meta = this.authInitService.creationEntity.get(cType) as ICreateEntity
       const parentData = this.contentService.parentUpdatedMeta()
       let content
@@ -416,15 +416,15 @@ export class CollectionStoreService {
       // requestBody.categoryType = parentData.categoryType
 
       // const content = await this.editorService.createAndReadContent(requestBody).toPromise()
-      
+
       if (meta.primaryCategory === 'Course Unit') {
         content = await this.editorService.createAndReadModule(this.getModuleRequest(requestBody),
-          parentData.identifier).toPromise()
+                                                               parentData.identifier).toPromise()
         this.createdModuleUpdate = true
       } else {
         content = await this.editorService.createAndReadContentV2(requestBody).toPromise()
       }
-      
+
       // if (content) {
       //  // content.thumbnail = parentData.thumbnail
       //  // content.appIcon = parentData.appIcon
@@ -932,7 +932,7 @@ export class CollectionStoreService {
       if (content.mimeType === 'text/x-url' && content.artifactUrl === '') {
         errorMsg.push('Course artifactUrl cannot be empty')
       }
-      //if (content.mimeType === 'text/x-url' && !(/(http(s?)):\/\//i.test(content.artifactUrl))) {
+      // if (content.mimeType === 'text/x-url' && !(/(http(s?)):\/\//i.test(content.artifactUrl))) {
       // if (content.mimeType === 'text/x-url') {
       //   errorMsg.push('Course artifactUrl entered is not valid')
       // }

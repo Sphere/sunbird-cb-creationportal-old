@@ -461,7 +461,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.queryFilter,
       this.isAdmin,
     )
-    
+
     const requestData = {
       locale: this.searchLanguage ? [this.searchLanguage] : ['en'],
       query: this.queryFilter,
@@ -544,12 +544,12 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // if (this.status === 'publish' && !this.isAdmin) {
     //   requestData.request.filters.publisherDetails.push(this.userId)
     // }
-    
+
     switch (this.status) {
       case 'published':
         // if (this.accessService.hasRole(['content_creator'])) {
         //   requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
-        // } 
+        // }
         // else
         //   if (this.accessService.hasRole(['content_reviewer'])) {
         //     requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
@@ -581,17 +581,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
         if (this.accessService.hasRole(['content_publisher'])) {
               requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
             }
-
-        // if (this.accessService.hasRole(['content_creator'])) {
-        //   requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
-        // } else
-        //   if (this.accessService.hasRole(['content_reviewer'])) {
-        //     requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
-        //   } 
-          // else
-          //   if (this.accessService.hasRole(['content_publisher'])) {
-          //     requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
-          //   }
         break
       case 'inreview':
         requestData.request.filters['reviewStatus'] = 'InReview'

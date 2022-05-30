@@ -1090,6 +1090,19 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   async PublishCBP() {
     this.loaderService.changeLoad.next(true)
+            const tempRequset: NSApiRequest.IContentUpdateV3 = {
+          request: {
+            data: {
+              nodesModified: this.contentService.getNodeModifyData(),
+              hierarchy: this.storeService.getTreeHierarchy(),
+            },
+          },
+        }
+        const updateHierarchyRes = await this.editorService.updateContentV4(tempRequset).toPromise().catch(_error => { })
+        // tslint:disable-next-line:no-console
+        console.log(updateHierarchyRes)
+        // if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
+
     const url = this.router.url
     const id = url.split('/')
     const publishParentRes = await this.editorService.publishContent(id[3]).toPromise().catch(_error => { })

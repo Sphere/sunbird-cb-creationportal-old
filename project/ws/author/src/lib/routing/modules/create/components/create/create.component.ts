@@ -95,7 +95,7 @@ export class CreateComponent implements OnInit, OnDestroy {
   }
 
   createBtn() {
-    //this.router.navigateByUrl('/author/create')
+    // this.router.navigateByUrl('/author/create')
     location.href = '/author/create'
   }
   ngOnDestroy() {

@@ -130,11 +130,11 @@ export class EditorContentService {
     const nodesModify: any = {}
     const parentData = this.getOriginalMeta(this.parentContent)
     // console.log(parentData)
-    //console.log(this.upDatedContent)
+    // console.log(this.upDatedContent)
     // console.log((Object.keys(this.upDatedContent)[0]))
-    //const id = Object.keys(this.upDatedContent)[this.currentContent]
+    // const id = Object.keys(this.upDatedContent)[this.currentContent]
     const id = this.currentContentID
-    //const data = this.cleanProperties(this.upDatedContent[id])
+    // const data = this.cleanProperties(this.upDatedContent[id])
     const data = this.currentContentData
     // if (data && data.duration === 0 || data && data.duration) {
     //   // tslint:disable-next-line:max-line-length
@@ -146,27 +146,27 @@ export class EditorContentService {
         root: true,
         objectType: 'Content',
         contentType: 'Course',
-        metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : null,
+        metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
       }
       parentData.children.forEach((element: any) => {
 
-        if (element.contentType === 'Collection' || element.contentType === "CourseUnit") {
+        if (element.contentType === 'Collection' || element.contentType === 'CourseUnit') {
           nodesModify[element.identifier] = {
             isNew: false,
             root: (element.identifier === parentData.identifier) ? true : false,
             objectType: 'Content',
-            contentType: "Course",
-            metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : null,
+            contentType: 'Course',
+            metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
           }
         }
         if (element.children && element.children.length > 0) {
           parentData.children.forEach((subEle: any) => {
-            if (subEle.contentType === 'Collection' || element.contentType === "CourseUnit") {
+            if (subEle.contentType === 'Collection' || element.contentType === 'CourseUnit') {
               nodesModify[subEle.identifier] = {
                 isNew: false,
                 root: (subEle.identifier === parentData.identifier) ? true : false,
                 objectType: 'Content',
-                contentType: "Course",
+                contentType: 'Course',
                 metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
               }
             }
