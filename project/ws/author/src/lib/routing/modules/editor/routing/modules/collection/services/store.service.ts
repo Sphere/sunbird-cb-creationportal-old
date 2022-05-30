@@ -938,6 +938,7 @@ export class CollectionStoreService {
       // if (content.mimeType === 'text/x-url') {
       //   errorMsg.push('Course artifactUrl entered is not valid')
       // }
+      // tslint:disable-next-line:max-line-length
       if (content.publisherDetails && content.publisherDetails.length === 0 && content.parent === undefined && content.prevStatus !== "Processing") {
         errorMsg.push('Course publisher details cannot be empty')
       }
