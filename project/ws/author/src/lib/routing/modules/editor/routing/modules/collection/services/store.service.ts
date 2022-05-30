@@ -468,33 +468,33 @@ export class CollectionStoreService {
     }
     if (parentData && parentData.children && parentData.children.length > 0) {
       nodesModify[parentData.identifier] = {
-        objectType: 'Content',
-        contentType: 'Course',
+        // objectType: 'Content',
+        // contentType: 'Course',
         isNew: false,
         root: true,
       }
-      // parentData.children.forEach((element: any) => {
-      //   if (element.primaryCategory === 'Course Unit') {
-      //     nodesModify[element.identifier] = {
-      //       isNew: false,
-      //       root: (element.identifier === parentData.identifier) ? true : false,
-      //     }
-      //   }
-      //   if (element.children && element.children.length > 0) {
-      //     parentData.children.forEach((subEle: any) => {
-      //       if (subEle.primaryCategory === 'Course Unit') {
-      //         nodesModify[subEle.identifier] = {
-      //           isNew: false,
-      //           root: (subEle.identifier === parentData.identifier) ? true : false,
-      //         }
-      //       }
-      //     })
-      //   }
-      // })
+      parentData.children.forEach((element: any) => {
+        if (element.primaryCategory === 'Course Unit') {
+          nodesModify[element.identifier] = {
+            isNew: false,
+            root: (element.identifier === parentData.identifier) ? true : false,
+          }
+        }
+        if (element.children && element.children.length > 0) {
+          parentData.children.forEach((subEle: any) => {
+            if (subEle.primaryCategory === 'Course Unit') {
+              nodesModify[subEle.identifier] = {
+                isNew: false,
+                root: (subEle.identifier === parentData.identifier) ? true : false,
+              }
+            }
+          })
+        }
+      })
     } else {
       nodesModify[parentData.identifier] = {
-        objectType: 'Content',
-        contentType: 'Course',
+        // objectType: 'Content',
+        // contentType: 'Course',
         isNew: false,
         root: true,
       }
@@ -907,6 +907,7 @@ export class CollectionStoreService {
       const errorMsg: string[] = []
       const lexId = this.uniqueIdMap.get(v) as string
       const content = this.contentService.getUpdatedMeta(lexId)
+      console.log(content)
       // const url = this.router.url
       // const id = url.split('/')
       if (content.name === '') {

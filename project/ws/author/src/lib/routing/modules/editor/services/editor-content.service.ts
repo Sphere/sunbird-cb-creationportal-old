@@ -134,19 +134,19 @@ export class EditorContentService {
     // console.log((Object.keys(this.upDatedContent)[0]))
     // const id = Object.keys(this.upDatedContent)[this.currentContent]
     const id = this.currentContentID
-    // const data = this.cleanProperties(this.upDatedContent[id])
-    const data = this.currentContentData
-    // if (data && data.duration === 0 || data && data.duration) {
-    //   // tslint:disable-next-line:max-line-length
-    //   data.duration = _.isNumber(data.duration) ? data.duration.toString() : data.duration
-    // }
+    const data = this.cleanProperties(this.upDatedContent[id])
+    //nst data = this.currentContentData
+    if (data && data.duration === 0 || data && data.duration) {
+      // tslint:disable-next-line:max-line-length
+      data.duration = _.isNumber(data.duration) ? data.duration.toString() : data.duration
+    }
     if (parentData) {
       nodesModify[parentData.identifier] = {
         isNew: false,
         root: true,
         objectType: 'Content',
         contentType: 'Course',
-        metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
+         metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
       }
       parentData.children.forEach((element: any) => {
 
@@ -154,9 +154,9 @@ export class EditorContentService {
           nodesModify[element.identifier] = {
             isNew: false,
             root: (element.identifier === parentData.identifier) ? true : false,
-            objectType: 'Content',
-            contentType: 'Course',
-            metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
+            // objectType: 'Content',
+            // contentType: 'Course',
+             metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
           }
         }
         if (element.children && element.children.length > 0) {
@@ -165,8 +165,8 @@ export class EditorContentService {
               nodesModify[subEle.identifier] = {
                 isNew: false,
                 root: (subEle.identifier === parentData.identifier) ? true : false,
-                objectType: 'Content',
-                contentType: 'Course',
+                // objectType: 'Content',
+                // contentType: 'Course',
                 metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
               }
             }

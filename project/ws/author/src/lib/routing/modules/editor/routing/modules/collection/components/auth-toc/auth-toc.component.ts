@@ -162,31 +162,30 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
       $('#cdk-drop-list-0 > mat-tree-node:nth-child(2)').removeClass('selected')
     }
     if (node.id !== this.selectedNode) {
-
-      this.updateSelectedNodeIdentifier(node)
+console.log(node)
+      this.updateSelectedNodeIdentifier()
 
       this.action.emit({ type: 'editContent', identifier: node.identifier, nodeClicked: true })
       this.selectedNode = node.id
       this.editorStore.currentContent = node.identifier
       this.store.currentSelectedNode = node.id
-         this.preserveExpandedNodes()
       this.contentId = node.identifier
       this.editorStore.changeActiveCont.next(node.identifier)
 
     }
   }
 
-  async updateSelectedNodeIdentifier(node: any) {
+  async updateSelectedNodeIdentifier() {
     const updatedContent = this.editorStore.upDatedContent || {}
     if (Object.keys(updatedContent).length > 0) {
       let tempUpdateContent = this.editorStore.upDatedContent[this.contentId]
       if (tempUpdateContent === undefined) {
         this.triggerSave()
         return
-      }
+      } 
       // else {
       //   console.log(this.contentId)
-      //   let key
+      //   let key 
       //  key = await this.editorService.readcontentV3(this.contentId).toPromise()
       //   tempUpdateContent.versionKey = key.versionKey
       // }
@@ -212,22 +211,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
             content: tempUpdateContent,
           },
         }
-
-if (node.category === 'Collection') {
-            const tempRequset: NSApiRequest.IContentUpdateV3 = {
-              request: {
-                data: {
-                  nodesModified: this.editorStore.getNodeModifyData(),
-                  hierarchy: this.store.getTreeHierarchy(),
-                },
-              },
-            }
-            await this.editorService.updateContentV4(tempRequset).subscribe(() => {
-              this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-                this.editorStore.resetOriginalMetaWithHierarchy(data)
-              })
-            })
-} else {
+console.log(contentType)
 
         if (Object.keys(tempUpdateContent).length !== 1) {
           this.editorService.updateContentV3(requestBody, this.contentId).subscribe(async () => {
@@ -280,10 +264,11 @@ if (node.category === 'Collection') {
             })
           })
         }
+
       }
     }
+
   }
-}
 
   closeSidenav() {
     this.closeEvent.emit(true)

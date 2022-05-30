@@ -278,15 +278,15 @@ export class EditorService {
     )
   }
 
-  updateContentV6(meta: NSApiRequest.IContentUpdateV3, check: boolean): Observable<null> {
-    if (!check) {
-      return this.apiService.patch<null>(
-        `/apis/proxies/v8/action/content/v3/hierarchy/update`,
-        meta,
-      )
-    }
-    return this.someDataObservable
-  }
+  // updateContentV6(meta: NSApiRequest.IContentUpdateV3, check: boolean): Observable<null> {
+  //   if (!check) {
+  //     return this.apiService.patch<null>(
+  //       `/apis/proxies/v8/action/content/v3/hierarchy/update`,
+  //       meta,
+  //     )
+  //   } 
+  //   //window.location.reload()
+  // }
 
   updateContentWithFewFields(requestBody: any, identifier: string): Observable<any> {
     return this.apiService.patch<any>(
