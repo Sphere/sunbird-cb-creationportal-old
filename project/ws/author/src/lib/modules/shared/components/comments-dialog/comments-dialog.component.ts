@@ -56,7 +56,7 @@ export class CommentsDialogComponent implements OnInit {
     }
   }
   ngOnInit() {
-    
+
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
     this.contentMeta = this.data
     // let flag = 0

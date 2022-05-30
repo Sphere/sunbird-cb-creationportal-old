@@ -135,7 +135,7 @@ export class EditorContentService {
     // const id = Object.keys(this.upDatedContent)[this.currentContent]
     const id = this.currentContentID
     const data = this.cleanProperties(this.upDatedContent[id])
-    //nst data = this.currentContentData
+    // nst data = this.currentContentData
     if (data && data.duration === 0 || data && data.duration) {
       // tslint:disable-next-line:max-line-length
       data.duration = _.isNumber(data.duration) ? data.duration.toString() : data.duration

@@ -907,7 +907,6 @@ export class CollectionStoreService {
       const errorMsg: string[] = []
       const lexId = this.uniqueIdMap.get(v) as string
       const content = this.contentService.getUpdatedMeta(lexId)
-      console.log(content)
       // const url = this.router.url
       // const id = url.split('/')
       if (content.name === '') {
