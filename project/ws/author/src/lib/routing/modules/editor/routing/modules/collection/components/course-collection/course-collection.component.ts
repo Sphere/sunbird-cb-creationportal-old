@@ -1089,19 +1089,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   async PublishCBP() {
     this.loaderService.changeLoad.next(true)
-            const tempRequset: NSApiRequest.IContentUpdateV3 = {
-          request: {
-            data: {
-              nodesModified: this.contentService.getNodeModifyData(),
-              hierarchy: this.storeService.getTreeHierarchy(),
-            },
-          },
-        }
-        const updateHierarchyRes = await this.editorService.updateContentV4(tempRequset).toPromise().catch(_error => { })
-        // tslint:disable-next-line:no-console
-        console.log(updateHierarchyRes)
-        // if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
-
     const url = this.router.url
     const id = url.split('/')
     const publishParentRes = await this.editorService.publishContent(id[3]).toPromise().catch(_error => { })
@@ -1268,83 +1255,89 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   // }
 
   async editPublishCourse() {
-    const originalData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise()
 
-    const resourceListToReview: any = []
-    const tempData = {
-      identifier: originalData.identifier,
-      status: originalData.status,
-      versionKey: originalData.versionKey,
-    }
-    resourceListToReview.push(tempData)
+    this.changeStatusToDraft('Content Edit')
 
-    originalData.children.forEach((element: any) => {
+    // const originalData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise()
 
-      if (element.contentType === 'CourseUnit' || element.contentType === 'Collection') {
-        if (element.children && element.children.length > 0) {
-          element.children.forEach((subElement: any) => {
-            const tempChildData = {
-              identifier: subElement.identifier,
-              status: subElement.status,
-              versionKey: subElement.versionKey,
-            }
-            resourceListToReview.push(tempChildData)
-          })
-        }
-      } else {
-        const tempData = {
-          identifier: element.identifier,
-          status: element.status,
-          versionKey: element.versionKey,
-        }
-        resourceListToReview.push(tempData)
-      }
-    })
-    let flag = 0
-    const updateContentReq: any = {
-      request: {
-        content: {
-          versionKey: 0,
-        },
-      },
-    }
-    if (resourceListToReview.length > 0) {
-      for await (const element of resourceListToReview) {
-        this.loaderService.changeLoad.next(true)
-        updateContentReq.request.content.versionKey = element.versionKey
-        const updateContentRes =
-          await this.editorService.updateNewContentV3(_.omit(updateContentReq, 'status'), element.identifier).toPromise().catch(_error => { })
-        if (updateContentRes) {
-          flag += 1
-        } else {
-          flag -= 1
-        }
-      }
-      if (flag === resourceListToReview.length) {
-        this.loaderService.changeLoad.next(false)
-      } else {
-        this.loaderService.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.SAVE_FAIL,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-      }
-    } else {
-      this.snackBar.openFromComponent(NotificationComponent, {
-        data: {
-          type: Notify.SAVE_FAIL,
-        },
-        duration: NOTIFICATION_TIME * 1000,
-      })
-    }
+    // const resourceListToReview: any = []
+    // const tempData = {
+    //   identifier: originalData.identifier,
+    //   status: originalData.status,
+    //   versionKey: originalData.versionKey,
+    // }
+    // resourceListToReview.push(tempData)
+
+    // originalData.children.forEach((element: any) => {
+
+    //   if (element.contentType === 'CourseUnit' || element.contentType === 'Collection') {
+    //     if (element.children && element.children.length > 0) {
+    //       element.children.forEach((subElement: any) => {
+    //         const tempChildData = {
+    //           identifier: subElement.identifier,
+    //           status: subElement.status,
+    //           versionKey: subElement.versionKey,
+    //         }
+    //         resourceListToReview.push(tempChildData)
+    //       })
+    //     }
+    //   } else {
+    //     const tempData = {
+    //       identifier: element.identifier,
+    //       status: element.status,
+    //       versionKey: element.versionKey,
+    //     }
+    //     resourceListToReview.push(tempData)
+    //   }
+    // })
+    // let flag = 0
+    // const updateContentReq: any = {
+    //   request: {
+    //     content: {
+    //       versionKey: 0,
+    //     },
+    //   },
+    // }
+    // if (resourceListToReview.length > 0) {
+    //   for await (const element of resourceListToReview) {
+    //     this.loaderService.changeLoad.next(true)
+    //     updateContentReq.request.content.versionKey = element.versionKey
+    //     const updateContentRes =
+    //       await this.editorService.updateNewContentV3(_.omit(updateContentReq, 'status'), element.identifier).toPromise().catch(_error => { })
+    //     if (updateContentRes) {
+    //       flag += 1
+    //     } else {
+    //       flag -= 1
+    //     }
+    //   }
+    //   if (flag === resourceListToReview.length) {
+    //     this.loaderService.changeLoad.next(false)
+    //   } else {
+    //     this.loaderService.changeLoad.next(false)
+    //     this.snackBar.openFromComponent(NotificationComponent, {
+    //       data: {
+    //         type: Notify.SAVE_FAIL,
+    //       },
+    //       duration: NOTIFICATION_TIME * 1000,
+    //     })
+    //   }
+    // } else {
+    //   this.snackBar.openFromComponent(NotificationComponent, {
+    //     data: {
+    //       type: Notify.SAVE_FAIL,
+    //     },
+    //     duration: NOTIFICATION_TIME * 1000,
+    //   })
+    // }
   }
 
   async changeStatusToDraft(comment: string) {
-    const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
+    //const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
+    const originalData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise()
+
     const resourceListToReview: any = []
     const moduleListToReview: any = []
+
     originalData.children.forEach((element: any) => {
       if (element.contentType === 'CourseUnit' || element.contentType === 'Collection') {
         if (element.children.length > 0) {
@@ -2380,7 +2373,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.contentService.currentContentID = this.currentCourseId
 console.log(tempUpdateContent)
       //let nodesModified = {}
-      //if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined) {
+      if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined) {
         return this.editorService.updateNewContentV3(requestBody, this.currentCourseId).pipe(
           tap(() => {
             // this.storeService.getHierarchyTreeStructure()
@@ -2433,7 +2426,7 @@ console.log(tempUpdateContent)
             // })
           })
         )
-      //} else {
+      } else {
         // Object.keys(this.contentService.upDatedContent).forEach(v => {
         //           nodesModified = {
         //             [v]: {
@@ -2476,7 +2469,7 @@ console.log(tempUpdateContent)
     //   )
     // }
 
-      //}
+      }
 
       /**--------------------end------------------ */
 

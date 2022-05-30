@@ -162,7 +162,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
       $('#cdk-drop-list-0 > mat-tree-node:nth-child(2)').removeClass('selected')
     }
     if (node.id !== this.selectedNode) {
-      this.updateSelectedNodeIdentifier()
+      this.updateSelectedNodeIdentifier(node)
 
       this.action.emit({ type: 'editContent', identifier: node.identifier, nodeClicked: true })
       this.selectedNode = node.id
@@ -174,7 +174,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  async updateSelectedNodeIdentifier() {
+  async updateSelectedNodeIdentifier(node: any) {
     const updatedContent = this.editorStore.upDatedContent || {}
     if (Object.keys(updatedContent).length > 0) {
       let tempUpdateContent = this.editorStore.upDatedContent[this.contentId]
@@ -211,58 +211,73 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
           },
         }
 
-        if (Object.keys(tempUpdateContent).length !== 1) {
-          this.editorService.updateContentV3(requestBody, this.contentId).subscribe(async () => {
-            this.store.changedHierarchy = {}
-            Object.keys(this.editorStore.upDatedContent).forEach(id => {
-              this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
-              // this.editorService.readContentV2(id).subscribe(resData => {
-              //   this.editorStore.resetVersionKey(resData.versionKey, resData.identifier)
-              // })
-            })
-            this.editorStore.upDatedContent = {}
-
-            const tempRequset: NSApiRequest.IContentUpdateV3 = {
-              request: {
-                data: {
-                  nodesModified: this.editorStore.getNodeModifyData(),
-                  hierarchy: this.store.getTreeHierarchy(),
+        if (node.category === "Collection") {
+              const tempRequset: NSApiRequest.IContentUpdateV3 = {
+                request: {
+                  data: {
+                    nodesModified: this.editorStore.getNodeModifyData(),
+                    hierarchy: this.store.getTreeHierarchy(),
+                  },
                 },
-              },
-            }
-            await this.editorService.updateContentV4(tempRequset).subscribe(() => {
-              this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-                this.editorStore.resetOriginalMetaWithHierarchy(data)
+              }
+              await this.editorService.updateContentV4(tempRequset).subscribe(() => {
+                this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                  this.editorStore.resetOriginalMetaWithHierarchy(data)
+                })
+              })
+        } else {
+          if (Object.keys(tempUpdateContent).length !== 1) {
+            this.editorService.updateContentV3(requestBody, this.contentId).subscribe(async () => {
+              this.store.changedHierarchy = {}
+              Object.keys(this.editorStore.upDatedContent).forEach(id => {
+                this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
+                // this.editorService.readContentV2(id).subscribe(resData => {
+                //   this.editorStore.resetVersionKey(resData.versionKey, resData.identifier)
+                // })
+              })
+              this.editorStore.upDatedContent = {}
+
+              const tempRequset: NSApiRequest.IContentUpdateV3 = {
+                request: {
+                  data: {
+                    nodesModified: this.editorStore.getNodeModifyData(),
+                    hierarchy: this.store.getTreeHierarchy(),
+                  },
+                },
+              }
+              await this.editorService.updateContentV4(tempRequset).subscribe(() => {
+                this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                  this.editorStore.resetOriginalMetaWithHierarchy(data)
+                })
               })
             })
-          })
-        } else if (Object.keys(tempUpdateContent).length === 1 && !tempUpdateContent.hasOwnProperty('versionKey')) {
-          this.editorService.updateContentV3(requestBody, this.contentId).subscribe(async () => {
-            this.store.changedHierarchy = {}
-            Object.keys(this.editorStore.upDatedContent).forEach(id => {
-              this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
-              // this.editorService.readContentV2(id).subscribe(resData => {
-              //   this.editorStore.resetVersionKey(resData.versionKey, resData.identifier)
-              // })
-            })
-            this.editorStore.upDatedContent = {}
+          } else if (Object.keys(tempUpdateContent).length === 1 && !tempUpdateContent.hasOwnProperty('versionKey')) {
+            this.editorService.updateContentV3(requestBody, this.contentId).subscribe(async () => {
+              this.store.changedHierarchy = {}
+              Object.keys(this.editorStore.upDatedContent).forEach(id => {
+                this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
+                // this.editorService.readContentV2(id).subscribe(resData => {
+                //   this.editorStore.resetVersionKey(resData.versionKey, resData.identifier)
+                // })
+              })
+              this.editorStore.upDatedContent = {}
 
-            const tempRequset: NSApiRequest.IContentUpdateV3 = {
-              request: {
-                data: {
-                  nodesModified: this.editorStore.getNodeModifyData(),
-                  hierarchy: this.store.getTreeHierarchy(),
+              const tempRequset: NSApiRequest.IContentUpdateV3 = {
+                request: {
+                  data: {
+                    nodesModified: this.editorStore.getNodeModifyData(),
+                    hierarchy: this.store.getTreeHierarchy(),
+                  },
                 },
-              },
-            }
-            await this.editorService.updateContentV4(tempRequset).subscribe(() => {
-              this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-                this.editorStore.resetOriginalMetaWithHierarchy(data)
+              }
+              await this.editorService.updateContentV4(tempRequset).subscribe(() => {
+                this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                  this.editorStore.resetOriginalMetaWithHierarchy(data)
+                })
               })
             })
-          })
+          }
         }
-
       }
     }
 

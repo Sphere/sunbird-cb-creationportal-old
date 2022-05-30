@@ -907,6 +907,8 @@ export class CollectionStoreService {
       const errorMsg: string[] = []
       const lexId = this.uniqueIdMap.get(v) as string
       const content = this.contentService.getUpdatedMeta(lexId)
+          // tslint:disable-next-line:no-console
+      console.log(content.status)
       // const url = this.router.url
       // const id = url.split('/')
       if (content.name === '') {
@@ -936,7 +938,7 @@ export class CollectionStoreService {
       // if (content.mimeType === 'text/x-url') {
       //   errorMsg.push('Course artifactUrl entered is not valid')
       // }
-      if (content.publisherDetails && content.publisherDetails.length === 0 && content.parent === undefined) {
+      if (content.publisherDetails && content.publisherDetails.length === 0 && content.parent === undefined && content.prevStatus !== "Processing") {
         errorMsg.push('Course publisher details cannot be empty')
       }
       if (content.trackContacts && content.trackContacts.length === 0 && content.parent === undefined) {
