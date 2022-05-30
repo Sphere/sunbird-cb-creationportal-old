@@ -163,19 +163,20 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (node.id !== this.selectedNode) {
 
-      this.updateSelectedNodeIdentifier()
+      this.updateSelectedNodeIdentifier(node)
 
       this.action.emit({ type: 'editContent', identifier: node.identifier, nodeClicked: true })
       this.selectedNode = node.id
       this.editorStore.currentContent = node.identifier
       this.store.currentSelectedNode = node.id
+         this.preserveExpandedNodes()
       this.contentId = node.identifier
       this.editorStore.changeActiveCont.next(node.identifier)
 
     }
   }
 
-  updateSelectedNodeIdentifier() {
+  async updateSelectedNodeIdentifier(node: any) {
     const updatedContent = this.editorStore.upDatedContent || {}
     if (Object.keys(updatedContent).length > 0) {
       let tempUpdateContent = this.editorStore.upDatedContent[this.contentId]
@@ -183,6 +184,12 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
         this.triggerSave()
         return
       }
+      // else {
+      //   console.log(this.contentId)
+      //   let key
+      //  key = await this.editorService.readcontentV3(this.contentId).toPromise()
+      //   tempUpdateContent.versionKey = key.versionKey
+      // }
       const contentType = tempUpdateContent.category
 
       if (tempUpdateContent) {
@@ -206,6 +213,22 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
           },
         }
 
+if (node.category === 'Collection') {
+            const tempRequset: NSApiRequest.IContentUpdateV3 = {
+              request: {
+                data: {
+                  nodesModified: this.editorStore.getNodeModifyData(),
+                  hierarchy: this.store.getTreeHierarchy(),
+                },
+              },
+            }
+            await this.editorService.updateContentV4(tempRequset).subscribe(() => {
+              this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                this.editorStore.resetOriginalMetaWithHierarchy(data)
+              })
+            })
+} else {
+
         if (Object.keys(tempUpdateContent).length !== 1) {
           this.editorService.updateContentV3(requestBody, this.contentId).subscribe(async () => {
             this.store.changedHierarchy = {}
@@ -220,7 +243,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
             const tempRequset: NSApiRequest.IContentUpdateV3 = {
               request: {
                 data: {
-                  nodesModified: {},
+                  nodesModified: this.editorStore.getNodeModifyData(),
                   hierarchy: this.store.getTreeHierarchy(),
                 },
               },
@@ -245,7 +268,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
             const tempRequset: NSApiRequest.IContentUpdateV3 = {
               request: {
                 data: {
-                  nodesModified: {},
+                  nodesModified: this.editorStore.getNodeModifyData(),
                   hierarchy: this.store.getTreeHierarchy(),
                 },
               },
@@ -257,11 +280,10 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
             })
           })
         }
-
       }
     }
-
   }
+}
 
   closeSidenav() {
     this.closeEvent.emit(true)
@@ -428,7 +450,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
         const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
           request: {
             data: {
-              nodesModified: {},
+              nodesModified: this.editorStore.getNodeModifyData(),
               hierarchy: this.store.getTreeHierarchy(),
             },
           },
@@ -601,7 +623,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
-          nodesModified: {},
+          nodesModified: this.editorStore.getNodeModifyData(),
           hierarchy: this.store.getTreeHierarchy(),
           // hierarchy: this.store.changedHierarchy,
         },

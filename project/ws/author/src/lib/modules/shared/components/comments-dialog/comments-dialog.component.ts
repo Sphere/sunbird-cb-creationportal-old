@@ -56,6 +56,7 @@ export class CommentsDialogComponent implements OnInit {
     }
   }
   ngOnInit() {
+    
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
     this.contentMeta = this.data
     // let flag = 0
@@ -81,7 +82,7 @@ export class CommentsDialogComponent implements OnInit {
         } else {
           this.courseEdited = false
         }
-      }, error => {
+      },         error => {
         if (error) {
           this.courseEdited = false
         }
@@ -90,10 +91,12 @@ export class CommentsDialogComponent implements OnInit {
     for (const element of this.contentMeta.children) {
       if (element.status === 'Live') {
         flag += 1
+      } else {
+         flag -= 1
       }
-      if (element.children) {
-        flag += 1
-      }
+      // if (element.children) {
+      //   flag += 1
+      // }
     }
 
     if (flag === this.contentMeta.children.length) {

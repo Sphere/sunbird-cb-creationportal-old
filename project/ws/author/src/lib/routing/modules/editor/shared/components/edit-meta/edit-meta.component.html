@@ -32,7 +32,7 @@
             </mat-form-field>
           </div>
         </div> -->
-        <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('complexityLevel', 'show')"
+        <div class="margin-top-xs margin-left-xl flex-1" 
           [ngClass]="{ disable: checkCondition('complexityLevel', 'disabled') }">
           <label>
             <div class="margin-top-xs flex flex-middle"
@@ -79,7 +79,7 @@
             </mat-form-field>
           </div>
         </div> -->
-        <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('visibility', 'show')"
+        <div class="margin-top-xs margin-left-xl flex-1" 
           [ngClass]="{ disable: checkCondition('visibility', 'disabled') }">
           <label>
             <div class="margin-top-xs flex flex-middle">
@@ -112,12 +112,12 @@
         Intended For
       </ng-template>
       <div class="margin-top-xl margin-right-l">
-        <p class="mat-h5 margin-top-s margin-left-xl" *ngIf="checkCondition('audience', 'show')">
+        <p class="mat-h5 margin-top-s margin-left-xl">
           * Provide meta details. Depending on the content type, some properties are enabled or
           disabled.
         </p>
         <div class="showInpoup">
-          <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('audience', 'show')"
+          <div class="margin-top-xs margin-left-xl flex-1"
             [ngClass]="{ disable: checkCondition('audience', 'disabled') }">
             <label>
               <div class="margin-top-xs flex flex-middle">
@@ -370,7 +370,7 @@
       </div> -->
       <div class="margin-top-xl margin-right-l">
         <div class="">
-          <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('trackContacts', 'show')"
+          <div class="margin-top-xs margin-left-xl flex-1" 
             [ngClass]="{ disable: checkCondition('trackContacts', 'disabled') }">
             <label>
               <div class="margin-top-xs flex flex-middle">
@@ -416,7 +416,7 @@
         </div>
       </div>
 
-      <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('publisherDetails', 'show')"
+      <div class="margin-top-xs margin-left-xl flex-1" 
         [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
         <!--Show in popup--> <label>
           <div class="margin-top-xs flex flex-middle">
@@ -459,7 +459,7 @@
       </div>
 
       <div class="margin-right-l">
-        <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('keywords', 'show')"
+        <div class="margin-top-xs margin-left-xl flex-1" 
           [ngClass]="{ disable: checkCondition('keywords', 'disabled') }">
           <label>
             <div class="margin-top-xs flex flex-middle">
@@ -527,7 +527,7 @@
       </ng-template>
       <div class="margin-top-xl margin-right-l">
         <div class="">
-          <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('creatorContacts', 'show')"
+          <div class="margin-top-xs margin-left-xl flex-1" 
             [ngClass]="{ disable: checkCondition('creatorContacts', 'disabled') }">
             <label>
               <div class="margin-top-xs flex flex-middle">
@@ -568,7 +568,7 @@
             </div>
           </div>
           <!--Show in popup -->
-          <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('creatorDetails', 'show')"
+          <div class="margin-top-xs margin-left-xl flex-1" 
             [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
             <label>
               <div class="margin-top-xs flex flex-middle">
@@ -640,7 +640,8 @@
 
 
         <div class="margin-top-s">
-          <div class="margin-top-xs" *ngIf="checkCondition('name', 'show')"
+          {{isEditEnabled}} {{checkCondition('name', 'show')}}
+          <div class="margin-top-xs"
             [ngClass]="{ disable: checkCondition('name', 'disabled') }">
             <p class="font-weight-bold margin-remove-bottom"
               i18n="Title label|Label which explains the user to enter title"
@@ -679,7 +680,7 @@
           </div>
         </div> -->
 
-        <div class="margin-top-s" *ngIf="checkCondition('subTitle', 'show')"
+        <div class="margin-top-s"
           [ngClass]="{ disable: checkCondition('subTitle', 'disabled') }">
           <p class="font-weight-bold margin-remove-bottom"
             [ngClass]="{ required: true }">
@@ -736,7 +737,7 @@
               </div>
             </div> -->
 
-            <div class="margin-top-xs margin-left-l" *ngIf="checkCondition('appIcon', 'show')"
+            <div class="margin-top-xs margin-left-l" 
               [ngClass]="{ disable: checkCondition('appIcon', 'disabled') }">
               <!-- <label>
                 <div class="margin-top-xs flex flex-middle"
@@ -818,7 +819,7 @@
                     </mat-error>
                   </mat-form-field>
                 </div>
-                <div *ngIf="checkCondition('duration', 'show')"
+                <div 
                   [ngClass]="{ disable: checkCondition('duration', 'disabled') }">
                   <p class="font-weight-bold margin-remove-bottom"
                     [ngClass]="{ required: checkCondition('duration', 'required') }">
@@ -895,7 +896,7 @@
             </div> -->
 
             <div class="margin-top-s">
-              <div *ngIf="checkCondition('description', 'show')"
+              <div 
                 [ngClass]="{ disable: checkCondition('description', 'disabled') }">
                 <mat-label class="font-weight-bold"
                   i18n="Subtitle label|Label which explains the user to enter Subtitle"
@@ -938,7 +939,7 @@
               </div>
             </div> -->
 
-            <div class="margin-top-s" *ngIf="checkCondition('instructions', 'show')"
+            <div class="margin-top-s" 
               [ngClass]="{ disable: checkCondition('instructions', 'disabled') }">
               <label>
                 <div class="margin-top-xs flex flex-middle">
@@ -1046,7 +1047,7 @@
 
 
 
-          <div class="margin-top-xs margin-left-xl flex-1" *ngIf="checkCondition('sourceName', 'show')"
+          <div class="margin-top-xs margin-left-xl flex-1" 
             [ngClass]="{ disable: checkCondition('sourceName', 'disabled') }">
             <label [ngClass]="{ required: true }">
               <b i18n>Provider/Source</b>
@@ -1065,7 +1066,7 @@
           </div>
         </div>
 
-    <!--     <div class="">
+        <div class="">
           <div class="margin-top-m margin-left-xl flex-1" *ngIf="checkCondition('catalogPaths', 'show')"
             [ngClass]="{ disable: checkCondition('catalogPaths', 'disabled') }">
             <div class="margin-top-s flex flex-middle">
@@ -1113,7 +1114,7 @@
               0 Catalog Selected
             </p>
           </div>
-        </div> -->
+        </div>
         <!-- <div class="flex flex-end margin-top-l margin-bottom-l margin-right-l">
             <button mat-raised-button type="button"
               class="text-white ws-mat-primary-background text-white margin-right-m" (click)="data.emit('save')">

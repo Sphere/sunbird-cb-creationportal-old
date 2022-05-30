@@ -20,6 +20,7 @@
           <span class="dot"></span>
           <span class="line"></span>
         </div>
+
         <button *ngIf="node.expandable" mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
           <mat-icon class="mat-icon-rtl-mirror" [class.ws-mat-warn-text]="invalidIds.includes(node.id)"
             [class.ws-mat-primary-text]="!invalidIds.includes(node.id)">

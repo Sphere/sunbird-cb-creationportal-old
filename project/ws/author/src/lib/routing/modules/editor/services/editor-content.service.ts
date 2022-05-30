@@ -8,7 +8,9 @@ import { IFormMeta } from './../../../../interface/form'
 import { AuthInitService } from './../../../../services/init.service'
 import { EditorService } from './editor.service'
 import { IAssessmentDetails } from '../routing/modules/iap-assessment/interface/iap-assessment.interface'
-import { isArray } from 'lodash'
+// import { isArray } from 'lodash'
+import * as _ from 'lodash'
+
 @Injectable()
 export class EditorContentService {
   originalContent: { [key: string]: NSContent.IContentMeta } = {}
@@ -17,6 +19,8 @@ export class EditorContentService {
   public currentContent!: string
   public parentContent!: string
   public isSubmitted = false
+  public currentContentData!: any
+  public currentContentID!: string
   public changeActiveCont = new BehaviorSubject<string>('')
   public onContentChange = new BehaviorSubject<string>('')
 
@@ -115,13 +119,63 @@ export class EditorContentService {
     for (const prop of propNames) {
       const propName = prop
       // tslint:disable-next-line: max-line-length
-      if (obj[propName] === null || obj[propName] === undefined || obj[propName] === '' || (isArray(obj[propName]) && obj[propName].length === 0)) {
+      if (obj[propName] === null || obj[propName] === undefined || obj[propName] === '' || (_.isArray(obj[propName]) && obj[propName].length === 0)) {
         delete obj[propName]
       }
     }
     return obj
   }
 
+  getNodeModifyData() {
+    const nodesModify: any = {}
+    const parentData = this.getOriginalMeta(this.parentContent)
+    // console.log(parentData)
+    //console.log(this.upDatedContent)
+    // console.log((Object.keys(this.upDatedContent)[0]))
+    //const id = Object.keys(this.upDatedContent)[this.currentContent]
+    const id = this.currentContentID
+    //const data = this.cleanProperties(this.upDatedContent[id])
+    const data = this.currentContentData
+    // if (data && data.duration === 0 || data && data.duration) {
+    //   // tslint:disable-next-line:max-line-length
+    //   data.duration = _.isNumber(data.duration) ? data.duration.toString() : data.duration
+    // }
+    if (parentData) {
+      nodesModify[parentData.identifier] = {
+        isNew: false,
+        root: true,
+        objectType: 'Content',
+        contentType: 'Course',
+        metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : null,
+      }
+      parentData.children.forEach((element: any) => {
+
+        if (element.contentType === 'Collection' || element.contentType === "CourseUnit") {
+          nodesModify[element.identifier] = {
+            isNew: false,
+            root: (element.identifier === parentData.identifier) ? true : false,
+            objectType: 'Content',
+            contentType: "Course",
+            metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : null,
+          }
+        }
+        if (element.children && element.children.length > 0) {
+          parentData.children.forEach((subEle: any) => {
+            if (subEle.contentType === 'Collection' || element.contentType === "CourseUnit") {
+              nodesModify[subEle.identifier] = {
+                isNew: false,
+                root: (subEle.identifier === parentData.identifier) ? true : false,
+                objectType: 'Content',
+                contentType: "Course",
+                metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
+              }
+            }
+          })
+        }
+      })
+    }
+    return nodesModify
+  }
   resetStatus() {
     let isDraftPresent
     Object.keys(this.originalContent).map(v => {

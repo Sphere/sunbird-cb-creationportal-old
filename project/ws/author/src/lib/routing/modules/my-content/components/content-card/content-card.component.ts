@@ -21,8 +21,8 @@ export class ContentCardComponent implements OnInit {
   @Output() action = new EventEmitter<any>()
   isBaseContent: Boolean = true
   constructor(private accessService: AccessControlService,
-    private authInitService: AuthInitService,
-    private router: Router) { }
+              private authInitService: AuthInitService,
+              private router: Router) { }
 
   ngOnInit() {
     if ((this.router.url).includes('published')) {

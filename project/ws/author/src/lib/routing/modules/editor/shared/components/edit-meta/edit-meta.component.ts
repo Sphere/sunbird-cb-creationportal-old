@@ -378,6 +378,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
           ? <any>this.convertToISODate(contentMeta.expiryDate)
           : ''
     }
+      this.contentService.currentContentData = this.contentMeta
+      this.contentService.currentContentID = this.contentMeta.identifier
 
     this.assignFields()
     this.setDuration(contentMeta.duration || '0')

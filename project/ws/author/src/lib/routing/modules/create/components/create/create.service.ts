@@ -65,7 +65,7 @@ export class CreateService {
   }
 
   createV2(meta: {
-    mimeType: string; contentType: string; locale: string, name: string,
+    mimeType: string; contentType: string; locale: string, name: any,
     primaryCategory: string, purpose?: string
   }): Observable<string> {
     let randomNumber = ''
@@ -84,8 +84,8 @@ export class CreateService {
           description: '',
           framework: environment.framework,
           mimeType: meta.mimeType,
-          name: meta.name,
-          purpose: (meta.purpose) ? meta.purpose : '',
+          name: meta.name.courseName,
+          purpose: (meta.name.courseIntroduction) ? meta.name.courseIntroduction : '',
           // organisation: [environment.organisation],
           organisation: [
             (this.configSvc.userProfile && this.configSvc.userProfile.departmentName) ? this.configSvc.userProfile.departmentName : '',

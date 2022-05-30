@@ -49,8 +49,7 @@ export class CreateComponent implements OnInit, OnDestroy {
     private accessControlSvc: AccessControlService,
     private authInitService: AuthInitService,
     private dialog: MatDialog,
-    private formBuilder: FormBuilder,
-  ) { }
+    private formBuilder: FormBuilder) { }
 
   ngOnInit() {
     this.authInitService.creationEntity.forEach(v => {
@@ -95,9 +94,10 @@ export class CreateComponent implements OnInit, OnDestroy {
     }
   }
 
-createBtn() {
-  this.router.navigateByUrl('/author/create')
-}
+  createBtn() {
+    //this.router.navigateByUrl('/author/create')
+    location.href = '/author/create'
+  }
   ngOnDestroy() {
     this.loaderService.changeLoad.next(false)
   }
@@ -157,7 +157,6 @@ createBtn() {
     const _name = this.createCourseForm.get('name')
     const _purpose = this.createCourseForm.get('purpose')
     if (this.content && _name && _name.value && _purpose && _purpose.value) {
-
       this.svc
         .createV2({
           name: _name.value,

@@ -252,6 +252,7 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
         this.expandedNodes.add(v.id)
       }
     })
+       //this.store.expendedNode = this.expandedNodes
   }
 
   expandNodesById(ids?: number[]) {

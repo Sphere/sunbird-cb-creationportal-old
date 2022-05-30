@@ -39,6 +39,7 @@ export class EditorService {
   accessPath: string[] = []
   newCreatedLexid!: string
   someDataObservable!: Observable<any>
+  resourseID!: any
   constructor(
     private apiService: ApiService,
     private accessService: AccessControlService,
@@ -112,7 +113,7 @@ export class EditorService {
           primaryCategory: meta.primaryCategory,
           license: 'CC BY 4.0',
           ownershipType: ['createdFor'],
-          purpose: (meta.purpose) ? meta.purpose : '',
+          purpose: (meta.description) ? meta.description : '',
         },
       },
     }
@@ -124,6 +125,7 @@ export class EditorService {
       )
       .pipe(
         map((data: any) => {
+          this.resourseID = data.result.identifier
           return data.result.identifier
         }),
       )
@@ -174,6 +176,42 @@ export class EditorService {
     return this.someDataObservable
   }
 
+  createAndReadModule(
+    requestPayload: any,
+    parentId: any
+  ): Observable<any> {
+    return this.createModule(requestPayload).pipe(mergeMap(data => this.getModuleContent(parentId, data)))
+  }
+  getModuleContent(id: string, moduleId: any): Observable<NSContent.IContentMeta> {
+    return this.apiService.get<NSContent.IContentMeta>(
+      `/apis/proxies/v8/action/content/v3/hierarchy/${id}?mode=edit`
+    )
+    .pipe(
+      map((data: any) => {
+        const tempReturnData = data.result.content.children.filter((v: NSContent.IContentMeta) => v.identifier === moduleId)
+        this.newCreatedLexid = tempReturnData[0].identifier
+        return tempReturnData[0]
+      })
+    )
+  }
+  createModule(meta: any) {
+    return this.apiService.patch<null>(
+      `/apis/proxies/v8/action/content/v3/hierarchy/update`,
+      meta,
+    )
+    // .pipe(
+    //   map((data: any) => {
+    //     return data.result
+    //   })
+    //   )
+    .pipe(
+      map((data: any) => {
+        const temp = Object.keys(data.result.identifiers).filter((v: any) => !v.includes('do_'))
+        return data.result.identifiers[temp[0]]
+      })
+    )
+  }
+
   createAndReadContentV2(
     meta: NSApiRequest.ICreateMetaRequestGeneralV2,
   ): Observable<NSContent.IContentMeta> {
@@ -209,6 +247,15 @@ export class EditorService {
     return this.apiService.post<any>(REJECT_CONTENT + id, requestPayload)
   }
 
+  resourceToModule(meta: any): Observable<null> {
+    return this.http.patch<null>(
+      // `${AUTHORING_BASE}content/v3/update/${id}`,
+      `/apis/proxies/v8/action/content/v3/hierarchy/add`,
+      meta,
+    )
+  }
+
+
   updateContentV3(meta: NSApiRequest.IContentUpdateV2, id: string): Observable<null> {
     return this.apiService.patch<null>(
       // `${AUTHORING_BASE}content/v3/update/${id}`,
@@ -232,6 +279,18 @@ export class EditorService {
     )
   }
 
+updateContentV6(meta: NSApiRequest.IContentUpdateV3, check: boolean): Observable<null> {
+  if(check === false) {
+        return this.apiService.patch<null>(
+      `/apis/proxies/v8/action/content/v3/hierarchy/update`,
+      meta,
+    )
+  } else {
+    //window.location.reload()
+    return this.someDataObservable
+  }
+
+  }
   updateContentWithFewFields(requestBody: any, identifier: string): Observable<any> {
     return this.apiService.patch<any>(
       `/apis/proxies/v8/action/content/v3/update/${identifier}`,

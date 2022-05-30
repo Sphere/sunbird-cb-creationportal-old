@@ -240,6 +240,7 @@ export namespace NSContent {
     developer: string
     license: string
     competencies: string
+    prevState: string
     attributions: string[]
     copyright: string[]
     creator: string
@@ -383,9 +384,9 @@ export namespace NSContent {
     creatorIDs: string[]
     draftImage: string
     topics: string[]
-    prevStatus: string,
-    reviewStatus: string,
-    streamingUrl: string[],
+    prevStatus: string
+    reviewStatus: string
+    streamingUrl: string[]
     entryPoint: string[]
   }
 
@@ -522,7 +523,13 @@ export namespace NSContent {
     visibility: string
     compatibilityLevel: string
   }
-
+  export enum EPrimaryCategory {
+    PROGRAM = 'Program',
+    MODULE = 'Course Unit',
+    COURSE = 'Course',
+    RESOURCE = 'Learning Resource',
+    ASSESSMENT = 'Practice Question Set',
+  }
   export interface IDependentContent {
     identifier: string
     name: string

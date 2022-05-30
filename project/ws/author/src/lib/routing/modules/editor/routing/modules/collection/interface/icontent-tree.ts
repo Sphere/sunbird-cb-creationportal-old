@@ -18,9 +18,11 @@ export interface IContentNode {
   editable: boolean
   children?: IContentNode[]
   category: string
+  primaryCategory: string
   contentType?: string
   childLoaded: boolean
   parentId?: number
+  name: string
 }
 
 /** Flat node with expandable and level information

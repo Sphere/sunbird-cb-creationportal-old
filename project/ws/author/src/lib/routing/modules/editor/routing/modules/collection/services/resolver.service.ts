@@ -62,8 +62,11 @@ export class CollectionResolverService {
         id: this.uniqueId,
         identifier: currContent.identifier,
         category: this.getCategory(currContent),
+        primaryCategory: this.getCategory(currContent),
         childLoaded: !this.lazyLoad.has(this.getCategory(currContent)),
         children: [],
+        contentType: this.getCategory(currContent),
+        name: currContent.name,
       }
       map.set(currContent.identifier, currContent)
       uniqueIdMap.set(treeStructure.id, currContent.identifier)

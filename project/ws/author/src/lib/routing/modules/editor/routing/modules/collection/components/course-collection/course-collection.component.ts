@@ -131,6 +131,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       (data: any) => {
         if (data) {
           this.save()
+          this.update()
         }
       })
     this.initService.editCourseMessage.subscribe(
@@ -327,7 +328,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         param === 'web' ? 'link' : '',
 
       )
-
+  
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: isDone ? Notify.SUCCESS : Notify.FAIL,
@@ -338,12 +339,16 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       if (isDone) {
         const newCreatedLexid = this.editorService.newCreatedLexid
-        const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
-        this.storeService.currentSelectedNode = newCreatedNode
-        this.storeService.selectedNodeChange.next(newCreatedNode)
+   
+        if (newCreatedLexid) {
+          const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
+          this.storeService.currentSelectedNode = newCreatedNode
+          this.storeService.selectedNodeChange.next(newCreatedNode)
+        }
         this.currentContent = this.editorService.newCreatedLexid
         // update the id
         this.contentService.currentContent = newCreatedLexid
+        this.loaderService.changeLoad.next(false)
       }
       this.showAddchapter = false
       this.loaderService.changeLoad.next(false)
@@ -359,14 +364,15 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   async tempSave() {
     if (this.contentService.getUpdatedMeta(this.currentCourseId)) {
-      this.versionKey = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
-
+      
+      this.versionKey = await this.editorService.readcontentV3(this.editorService.newCreatedLexid || this.currentCourseId).toPromise()
     }
 
-    //this.loaderService.changeLoad.next(true)
+    this.loaderService.changeLoad.next(true)
     this.triggerSave().subscribe(
       () => {
-        //this.loaderService.changeLoad.next(false)
+        
+        this.loaderService.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
             type: Notify.SAVE_SUCCESS,
@@ -417,6 +423,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   async save(nextAction?: string) {
+    if(nextAction === undefined) {
+       this.update()
+    }
     const updatedContent = this.contentService.upDatedContent || {}
     if (this.viewMode === 'assessment') {
       this.triggerQuizSave = true
@@ -978,7 +987,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             const tempRequset: NSApiRequest.IContentUpdateV3 = {
               request: {
                 data: {
-                  nodesModified: {},
+                  //nodesModified: {},
+                  nodesModified: this.contentService.getNodeModifyData(),
                   hierarchy: this.storeService.getTreeHierarchy(),
                 },
               },
@@ -1047,7 +1057,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         const tempRequset: NSApiRequest.IContentUpdateV3 = {
           request: {
             data: {
-              nodesModified: {},
+              nodesModified: this.contentService.getNodeModifyData(),
               hierarchy: this.storeService.getTreeHierarchy(),
             },
           },
@@ -1143,7 +1153,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         const tempRequset: NSApiRequest.IContentUpdateV3 = {
           request: {
             data: {
-              nodesModified: {},
+              nodesModified: this.contentService.getNodeModifyData(),
               hierarchy: this.storeService.getTreeHierarchy(),
             },
           },
@@ -1247,6 +1257,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   async editPublishCourse() {
     const originalData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise()
+
     const resourceListToReview: any = []
     const tempData = {
       identifier: originalData.identifier,
@@ -1256,8 +1267,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     resourceListToReview.push(tempData)
 
     originalData.children.forEach((element: any) => {
+
       if (element.contentType === 'CourseUnit' || element.contentType === 'Collection') {
-        if (element.children.length > 0) {
+        if (element.children && element.children.length > 0) {
           element.children.forEach((subElement: any) => {
             const tempChildData = {
               identifier: subElement.identifier,
@@ -1390,7 +1402,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         const tempRequset: NSApiRequest.IContentUpdateV3 = {
           request: {
             data: {
-              nodesModified: {},
+              nodesModified: this.contentService.getNodeModifyData(),
               hierarchy: this.storeService.getTreeHierarchy(),
             },
           },
@@ -2266,28 +2278,22 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
 
     // console.log('parentNodeId  ', this.parentNodeId, 'currentParentId  ', this.currentParentId)
-    const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-      request: {
-        data: {
-          nodesModified: {},
-          hierarchy: this.storeService.changedHierarchy,
-        },
-      },
-    }
+
 
     // console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2, this.storeService.changedHierarchy)
 
     // if (Object.keys(this.storeService.changedHierarchy).length === 0) {
     // if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.contentService.currentContent]) {
+
     if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.currentCourseId]) {
       let tempUpdateContent = this.contentService.upDatedContent[this.currentCourseId]
       let requestBody: NSApiRequest.IContentUpdateV2
 
-      if (tempUpdateContent.category === 'CourseUnit') {
+      if (tempUpdateContent.category === 'CourseUnit' || tempUpdateContent.category === 'Collection') {
         tempUpdateContent.visibility = 'Parent'
-        tempUpdateContent.versionKey = this.versionID.versionKey
+        tempUpdateContent.versionKey = this.versionID === undefined ? this.versionKey.versionKey : this.versionID.versionKey
       } else {
-        tempUpdateContent.versionKey = this.versionID.versionKey
+        tempUpdateContent.versionKey = this.versionID === undefined ? this.versionKey.versionKey : this.versionID.versionKey
       }
 
       requestBody = {
@@ -2358,62 +2364,107 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         requestBody.request.content.topics = tempTopicData
       }
 
-      let nodesModified = {}
+      this.contentService.currentContentData = requestBody.request.content
+      this.contentService.currentContentID = this.currentCourseId
 
-      return this.editorService.updateNewContentV3(requestBody, this.currentCourseId).pipe(
-        tap(() => {
-          // this.storeService.getHierarchyTreeStructure()
-          Object.keys(this.contentService.upDatedContent).forEach(v => {
-            nodesModified = {
-              [v]: {
-                isNew: false,
-                objectType: "Content",
-                root: this.storeService.parentNode.includes(v),
-                metadata: _.omit(requestBody.request.content, ['versionKey', 'status'])
-              }
-            }
-          })
-          // modifydata(data) {
-          //   let filtered = {}
-          //   for (const key in data) {
-          //     if (key !== 'visibility' && key !== 'versionKey') {
-          //       filtered[key] = data[key]
-          //     }
-          //     console.log(filtered)
-          //     return filtered
-          //   }
-          // }
-          this.storeService.changedHierarchy = {}
-          Object.keys(this.contentService.upDatedContent).forEach(id => {
-            this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
-            // this.editorService.readContentV2(id).subscribe(resData => {
-            //   this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
+      //let nodesModified = {}
+      if (tempUpdateContent.category === 'Resource') {
+        return this.editorService.updateNewContentV3(requestBody, this.currentCourseId).pipe(
+          tap(() => {
+            // this.storeService.getHierarchyTreeStructure()
+            // Object.keys(this.contentService.upDatedContent).forEach(v => {
+            //   nodesModified = {
+            //     [v]: {
+            //       isNew: false,
+            //       objectType: "Content",
+            //       root: this.storeService.parentNode.includes(v),
+            //       metadata: _.omit(requestBody.request.content, ['versionKey', 'status'])
+            //     }
+            //   }
             // })
-          })
-          this.contentService.upDatedContent = {}
-        }),
-        tap(async () => {
-          const tempRequset: NSApiRequest.IContentUpdateV3 = {
-            request: {
-              data: {
-                nodesModified: this.versionKey.category === "CourseUnit" ? nodesModified : {},
-                hierarchy: this.storeService.getTreeHierarchy(),
-              },
-            },
-          }
-          await this.editorService.updateContentV4(tempRequset).subscribe(() => {
-            this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+            // modifydata(data) {
+            //   let filtered = {}
+            //   for (const key in data) {
+            //     if (key !== 'visibility' && key !== 'versionKey') {
+            //       filtered[key] = data[key]
+            //     }
+            //     console.log(filtered)
+            //     return filtered
+            //   }
+            // }
+            this.storeService.changedHierarchy = {}
+            Object.keys(this.contentService.upDatedContent).forEach(id => {
+              this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
+              // this.editorService.readContentV2(id).subscribe(resData => {
+              //   this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
+              // })
+            })
+            this.contentService.upDatedContent = {}
+          }),
+          tap(async () => {
+            // const tempRequset: NSApiRequest.IContentUpdateV3 = {
+            //   request: {
+            //     data: {
+            //       nodesModified: this.contentService.getNodeModifyData(),
+            //       hierarchy: this.storeService.getTreeHierarchy(),
+            //     },
+            //   },
+            // }
+            //await this.editorService.updateContentV4(tempRequset).subscribe(() => {
+            await this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
               this.contentService.resetOriginalMetaWithHierarchy(data)
               // tslint:disable-next-line: align
             })
+            //})
+            // await this.contentSvc.fetchAuthoringContentHierarchy(this.currentCourseId).subscribe((data) => {
+            //   console.log('datatata =======  ', data)
+            // })
           })
-          // await this.contentSvc.fetchAuthoringContentHierarchy(this.currentCourseId).subscribe((data) => {
-          //   console.log('datatata =======  ', data)
-          // })
-        })
+        )
+      } else {
+        // Object.keys(this.contentService.upDatedContent).forEach(v => {
+        //           nodesModified = {
+        //             [v]: {
+        //               isNew: false,
+        //               objectType: "Content",
+        //               root: this.storeService.parentNode.includes(v),
+        //               metadata: _.omit(requestBody.request.content, ['versionKey', 'status', 'isIframeSupported'])
+        //             }
+        //           }
+        //         })
+        //           console.log(nodesModified)
+        //           console.log((Object.keys(nodesModified)[0]))
+        //           console.log(nodesModified[Object.keys(nodesModified)[0]])
+        //           Object.keys(this.contentService.getNodeModifyData()).forEach((ele: any) => {
+        //             console.log(ele)
+        //             if(ele === Object.keys(nodesModified)[0]) {
+
+        //             }
+        //           })
+            const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+      request: {
+        data: {
+          nodesModified: this.contentService.getNodeModifyData(),
+          hierarchy: this.storeService.getTreeHierarchy(),
+        },
+      },
+    }
+            if (this.storeService.createdModuleUpdate === false) {
+      return this.editorService.updateContentV4(requestBodyV2).pipe(
+        tap(() => {
+          this.storeService.changedHierarchy = {}
+          Object.keys(this.contentService.upDatedContent).forEach(async id => {
+            this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
+          })
+          this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+            this.contentService.resetOriginalMetaWithHierarchy(data)
+          })
+          this.contentService.upDatedContent = {}
+        }),
       )
+    }
 
-
+      }
 
       /**--------------------end------------------ */
 
@@ -2437,20 +2488,65 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
     // }
 
-    // console.log('updateContentV4  COURSE COLL')
-    return this.editorService.updateContentV4(requestBodyV2).pipe(
-      tap(() => {
-        this.storeService.changedHierarchy = {}
-        Object.keys(this.contentService.upDatedContent).forEach(async id => {
-          this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
-        })
-        this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
-          this.contentService.resetOriginalMetaWithHierarchy(data)
-        })
-        this.contentService.upDatedContent = {}
-      }),
-    )
 
+    // console.log('updateContentV4  COURSE COLL')
+const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+      request: {
+        data: {
+          nodesModified: this.contentService.getNodeModifyData(),
+          hierarchy: this.storeService.getTreeHierarchy(),
+        },
+      },
+    }
+
+            //if (this.storeService.createdModuleUpdate === false) {
+      return this.editorService.updateContentV6(requestBodyV2, this.storeService.createdModuleUpdate).pipe(
+        tap(() => {
+
+          this.storeService.changedHierarchy = {}
+          Object.keys(this.contentService.upDatedContent).forEach(async id => {
+            this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
+          })
+          // this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+          //   this.contentService.resetOriginalMetaWithHierarchy(data)
+          // })
+          this.contentService.upDatedContent = {}
+        }),
+      )
+      //     return this.editorService.readcontentV3(this.contentService.parentContent).pipe(
+      //   tap(() => {
+      //     console.log("ll")
+      //     this.storeService.changedHierarchy = {}
+      //     Object.keys(this.contentService.upDatedContent).forEach(async id => {
+      //       this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
+      //     })
+      //     this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+      //       this.contentService.resetOriginalMetaWithHierarchy(data)
+      //     })
+      //     this.contentService.upDatedContent = {}
+      //   })
+      // )
+    
+  }
+  update(){
+    const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+      request: {
+        data: {
+          nodesModified: this.contentService.getNodeModifyData(),
+          hierarchy: this.storeService.getTreeHierarchy(),
+        },
+      },
+    }
+
+      return this.editorService.updateContentV6(requestBodyV2, this.storeService.createdModuleUpdate).pipe(
+        tap(() => {
+          this.storeService.changedHierarchy = {}
+          Object.keys(this.contentService.upDatedContent).forEach(async id => {
+            this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
+          })
+          this.contentService.upDatedContent = {}
+        }),
+      )
   }
   getMessage(type: 'success' | 'failure') {
     if (type === 'success') {
@@ -2482,6 +2578,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
+
     // const nodeClicked = event.nodeClicked
     this.contentService.changeActiveCont.next(event.identifier)
     switch (event.type) {
@@ -2492,7 +2589,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         if (event.nodeClicked === false) {
           this.tempSave()
         }
-
+        this.update()
         // const url = this.router.url
         // const id = url.split('/')
         //  this.editorService.contentRead(id[3])

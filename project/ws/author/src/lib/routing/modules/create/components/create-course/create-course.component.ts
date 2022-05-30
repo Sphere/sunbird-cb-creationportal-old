@@ -126,7 +126,7 @@ export class CreateCourseComponent implements OnInit {
     if (this.content && this.courseData.courseName) {
       this.svc
         .createV2({
-          name: this.courseData.courseName,
+          name: this.courseData,
           contentType: this.content.contentType,
           mimeType: this.content.mimeType,
           locale: this.language,
