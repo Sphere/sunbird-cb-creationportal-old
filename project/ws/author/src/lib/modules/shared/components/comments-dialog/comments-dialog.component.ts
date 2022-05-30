@@ -73,20 +73,20 @@ export class CommentsDialogComponent implements OnInit {
     //     }
     //   }
     // }
-    const url = this.router.url
-    const id = url.split('/')
-    this.editorService.contentRead(id[3])
-      .subscribe((res: any) => {
-        if (res.params.status === 'successful') {
-          this.courseEdited = true
-        } else {
-          this.courseEdited = false
-        }
-      },         error => {
-        if (error) {
-          this.courseEdited = false
-        }
-      })
+    // const url = this.router.url
+    // const id = url.split('/')
+    // this.editorService.contentRead(id[3])
+    //   .subscribe((res: any) => {
+    //     if (res.params.status === 'successful') {
+    //       this.courseEdited = true
+    //     } else {
+    //       this.courseEdited = false
+    //     }
+    //   },         error => {
+    //     if (error) {
+    //       this.courseEdited = false
+    //     }
+    //   })
     let flag = 0
     for (const element of this.contentMeta.children) {
       if (element.status === 'Live') {
