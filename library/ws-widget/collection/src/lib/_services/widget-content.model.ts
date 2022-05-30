@@ -251,6 +251,14 @@ export namespace NsContent {
     MODULE = 'Collection',
     RESOURCE = 'Resource',
   }
+  export enum EPrimaryCategory {
+    PROGRAM = 'Program',
+    MODULE = 'Course Unit',
+    COURSE = 'Course',
+    RESOURCE = 'Learning Resource',
+    ASSESSMENT = 'Practice Question Set',
+  }
+
   export enum EMiscPlayerSupportedCollectionTypes {
     PLAYLIST = 'Playlist',
   }
