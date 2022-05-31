@@ -137,6 +137,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.initService.editCourseMessage.subscribe(
       (data: any) => {
         if (data) {
+          console.log(data)
           this.editPublishCourse()
         }
       })
@@ -908,7 +909,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     const resourceListToReview: any = []
     const moduleListToReview: any = []
     const updatedMeta = this.contentService.getUpdatedMeta(this.currentParentId)
+    console.log(updatedMeta)
     const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
+    console.log(originalData)
     if (contentActionTaken === 'acceptConent' || contentActionTaken === 'publishResources') {
       if (originalData && originalData.children && originalData.children.length > 0) {
         for (const element of originalData.children) {
@@ -944,7 +947,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             resourceListToReview.push(tempData)
           }
         }
-
+console.log(resourceListToReview)
         if (originalData.reviewStatus === 'InReview' && originalData.status === 'Review') {
           this.reviewerApproved(originalData, resourceListToReview)
         } else if (originalData.reviewStatus === 'Reviewed' && originalData.status === 'Review') {
@@ -1255,80 +1258,80 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   // }
 
   async editPublishCourse() {
+console.log("hhh")
+    //this.changeStatusToDraft('Content Edit')
 
-    this.changeStatusToDraft('Content Edit')
+    const originalData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise()
 
-    // const originalData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise()
+    const resourceListToReview: any = []
+    const tempData = {
+      identifier: originalData.identifier,
+      status: originalData.status,
+      versionKey: originalData.versionKey,
+    }
+    resourceListToReview.push(tempData)
 
-    // const resourceListToReview: any = []
-    // const tempData = {
-    //   identifier: originalData.identifier,
-    //   status: originalData.status,
-    //   versionKey: originalData.versionKey,
-    // }
-    // resourceListToReview.push(tempData)
+    originalData.children.forEach((element: any) => {
 
-    // originalData.children.forEach((element: any) => {
-
-    //   if (element.contentType === 'CourseUnit' || element.contentType === 'Collection') {
-    //     if (element.children && element.children.length > 0) {
-    //       element.children.forEach((subElement: any) => {
-    //         const tempChildData = {
-    //           identifier: subElement.identifier,
-    //           status: subElement.status,
-    //           versionKey: subElement.versionKey,
-    //         }
-    //         resourceListToReview.push(tempChildData)
-    //       })
-    //     }
-    //   } else {
-    //     const tempData = {
-    //       identifier: element.identifier,
-    //       status: element.status,
-    //       versionKey: element.versionKey,
-    //     }
-    //     resourceListToReview.push(tempData)
-    //   }
-    // })
-    // let flag = 0
-    // const updateContentReq: any = {
-    //   request: {
-    //     content: {
-    //       versionKey: 0,
-    //     },
-    //   },
-    // }
-    // if (resourceListToReview.length > 0) {
-    //   for await (const element of resourceListToReview) {
-    //     this.loaderService.changeLoad.next(true)
-    //     updateContentReq.request.content.versionKey = element.versionKey
-    //     const updateContentRes =
-    //       await this.editorService.updateNewContentV3(_.omit(updateContentReq, 'status'), element.identifier).toPromise().catch(_error => { })
-    //     if (updateContentRes) {
-    //       flag += 1
-    //     } else {
-    //       flag -= 1
-    //     }
-    //   }
-    //   if (flag === resourceListToReview.length) {
-    //     this.loaderService.changeLoad.next(false)
-    //   } else {
-    //     this.loaderService.changeLoad.next(false)
-    //     this.snackBar.openFromComponent(NotificationComponent, {
-    //       data: {
-    //         type: Notify.SAVE_FAIL,
-    //       },
-    //       duration: NOTIFICATION_TIME * 1000,
-    //     })
-    //   }
-    // } else {
-    //   this.snackBar.openFromComponent(NotificationComponent, {
-    //     data: {
-    //       type: Notify.SAVE_FAIL,
-    //     },
-    //     duration: NOTIFICATION_TIME * 1000,
-    //   })
-    // }
+      if (element.contentType === 'CourseUnit' || element.contentType === 'Collection') {
+        if (element.children && element.children.length > 0) {
+          element.children.forEach((subElement: any) => {
+            const tempChildData = {
+              identifier: subElement.identifier,
+              status: subElement.status,
+              versionKey: subElement.versionKey,
+            }
+            resourceListToReview.push(tempChildData)
+          })
+        }
+      } else {
+        const tempData = {
+          identifier: element.identifier,
+          status: element.status,
+          versionKey: element.versionKey,
+        }
+        resourceListToReview.push(tempData)
+      }
+    })
+    let flag = 0
+    const updateContentReq: any = {
+      request: {
+        content: {
+          versionKey: 0,
+        },
+      },
+    }
+    if (resourceListToReview.length > 0) {
+      for await (const element of resourceListToReview) {
+        this.loaderService.changeLoad.next(true)
+        updateContentReq.request.content.versionKey = element.versionKey
+        const updateContentRes =
+          await this.editorService.updateNewContentV3(_.omit(updateContentReq, 'status'), element.identifier).toPromise().catch(_error => { })
+        if (updateContentRes) {
+          flag += 1
+        } else {
+          flag -= 1
+        }
+      }
+      if (flag === resourceListToReview.length) {
+        this.loaderService.changeLoad.next(false)
+      } else {
+        this.loaderService.changeLoad.next(false)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.SAVE_FAIL,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      }
+    } else {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.SAVE_FAIL,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    }
   }
 
   async changeStatusToDraft(comment: string) {
@@ -1337,8 +1340,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
     const resourceListToReview: any = []
     const moduleListToReview: any = []
-
+debugger
     originalData.children.forEach((element: any) => {
+      console.log(element.contentType)
       if (element.contentType === 'CourseUnit' || element.contentType === 'Collection') {
         if (element.children.length > 0) {
           element.children.forEach((subElement: any) => {
@@ -1386,6 +1390,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           },
         },
       }
+      console.log(resourceListToReview)
       for await (const element of resourceListToReview) {
         this.loaderService.changeLoad.next(true)
         updateContentReq.request.content.versionKey = element.versionKey
@@ -2371,7 +2376,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       this.contentService.currentContentData = requestBody.request.content
       this.contentService.currentContentID = this.currentCourseId
-console.log(tempUpdateContent)
+
       //let nodesModified = {}
       if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined) {
         return this.editorService.updateNewContentV3(requestBody, this.currentCourseId).pipe(
@@ -2595,8 +2600,8 @@ const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
         if (event.nodeClicked === false) {
           this.tempSave()
         }
-         this.save()
-        this.update()
+         //this.save()
+        //this.update()
         // const url = this.router.url
         // const id = url.split('/')
         //  this.editorService.contentRead(id[3])

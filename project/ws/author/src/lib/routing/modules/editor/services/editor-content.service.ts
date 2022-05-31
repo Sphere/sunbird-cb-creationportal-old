@@ -134,8 +134,8 @@ export class EditorContentService {
     // console.log((Object.keys(this.upDatedContent)[0]))
     // const id = Object.keys(this.upDatedContent)[this.currentContent]
     const id = this.currentContentID
-    const data = this.cleanProperties(this.upDatedContent[id])
-    // nst data = this.currentContentData
+    let data = this.cleanProperties(this.upDatedContent[id])
+      data = this.currentContentData
     if (data && data.duration === 0 || data && data.duration) {
       // tslint:disable-next-line:max-line-length
       data.duration = _.isNumber(data.duration) ? data.duration.toString() : data.duration
@@ -149,25 +149,24 @@ export class EditorContentService {
          metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
       }
       parentData.children.forEach((element: any) => {
-
-        if (element.contentType === 'Collection' || element.contentType === 'CourseUnit') {
+        if ((element.contentType === 'Collection' || element.contentType === 'CourseUnit') && element.identifier === id) {
           nodesModify[element.identifier] = {
             isNew: false,
-            root: (element.identifier === parentData.identifier) ? true : false,
+            root:  false,
             // objectType: 'Content',
             // contentType: 'Course',
-             metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
+             metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category','versionKey']) : undefined,
           }
         }
         if (element.children && element.children.length > 0) {
           parentData.children.forEach((subEle: any) => {
-            if (subEle.contentType === 'Collection' || element.contentType === 'CourseUnit') {
+            if ((subEle.contentType === 'Collection' || element.contentType === 'CourseUnit') && subEle.identifier === id) {
               nodesModify[subEle.identifier] = {
                 isNew: false,
-                root: (subEle.identifier === parentData.identifier) ? true : false,
+                root:  false,
                 // objectType: 'Content',
                 // contentType: 'Course',
-                metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
+                metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category','versionKey']) : undefined,
               }
             }
           })

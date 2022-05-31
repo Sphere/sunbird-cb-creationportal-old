@@ -419,7 +419,7 @@ export class CollectionStoreService {
 
       if (meta.primaryCategory === 'Course Unit') {
         content = await this.editorService.createAndReadModule(this.getModuleRequest(requestBody),
-                                                               parentData.identifier).toPromise()
+          parentData.identifier).toPromise()
         this.createdModuleUpdate = true
       } else {
         content = await this.editorService.createAndReadContentV2(requestBody).toPromise()
@@ -907,8 +907,8 @@ export class CollectionStoreService {
       const errorMsg: string[] = []
       const lexId = this.uniqueIdMap.get(v) as string
       const content = this.contentService.getUpdatedMeta(lexId)
-          // tslint:disable-next-line:no-console
-      console.log(content.status)
+      // tslint:disable-next-line:no-console
+      console.log(content)
       // const url = this.router.url
       // const id = url.split('/')
       if (content.name === '') {
@@ -939,10 +939,10 @@ export class CollectionStoreService {
       //   errorMsg.push('Course artifactUrl entered is not valid')
       // }
       // tslint:disable-next-line:max-line-length
-      if (content.publisherDetails && content.publisherDetails.length === 0 && content.parent === undefined && content.prevStatus !== "Processing") {
+      if (content.publisherDetails && content.publisherDetails.length === 0 && content.parent === undefined && content.contentType === "Course") {
         errorMsg.push('Course publisher details cannot be empty')
       }
-      if (content.trackContacts && content.trackContacts.length === 0 && content.parent === undefined) {
+      if (content.trackContacts && content.trackContacts.length === 0 && content.parent === undefined && content.contentType === "Course") {
         errorMsg.push('Course reviewer details cannot be empty')
       }
 
@@ -989,17 +989,21 @@ export class CollectionStoreService {
   }
 
   getTreeHierarchy() {
+    console.log(this.hierarchyTree)
+    this.hierarchyTree = {}
     const newParentNode = this.flatNodeMap.get(this.currentParentNode) as IContentNode
+    console.log(newParentNode)
     this.hierarchyTree[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),
       contentType: newParentNode.category,
       children: (newParentNode.children) ? newParentNode.children.map(v => {
+        console.log(v)
         const child = v.identifier
         if (v.primaryCategory) {
           this.hierarchyTree[v.identifier] = {
             root: false,
-            contentType: v.contentType === 'Resource' ? undefined : v.contentType,
-            primaryCategory: v.primaryCategory === 'Resource' ? undefined : v.primaryCategory,
+            contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
+            primaryCategory: v.primaryCategory === 'Resource' ? undefined : 'Course Unit',
             name: v.name,
             children: [],
           }
@@ -1010,18 +1014,20 @@ export class CollectionStoreService {
     if (newParentNode.children && newParentNode.children.length > 0) {
       newParentNode.children.forEach(element => {
         if (element.children && element.children.length > 0) {
+          console.log(element)
           this.hierarchyTree[element.identifier] = {
             root: this.parentNode.includes(element.identifier),
             // contentType: element.contentType,
-            primaryCategory: element.primaryCategory,
-            contentType: element.contentType,
+            primaryCategory: element.primaryCategory === "Collection" ? "Course Unit" : undefined,
+            contentType: element.contentType === "Collection" ? "CourseUnit" : undefined,
             children: element.children.map(v => {
+
               const child = v.identifier
               if (v.category) {
                 this.hierarchyTree[v.identifier] = {
                   root: false,
-                  contentType: v.contentType === 'Resource' ? undefined : v.contentType,
-                  primaryCategory: v.primaryCategory === 'Resource' ? undefined : v.primaryCategory,
+                  contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
+                  primaryCategory: v.primaryCategory === 'Resource' ? undefined : 'Course Unit',
                   name: v.name,
                   children: [],
                 }
@@ -1033,15 +1039,15 @@ export class CollectionStoreService {
             if (subElement.children && subElement.children.length > 0) {
               this.hierarchyTree[subElement.identifier] = {
                 root: this.parentNode.includes(subElement.identifier),
-                contentType: subElement.contentType,
-                primaryCategory: subElement.primaryCategory,
+                contentType: subElement.contentType === "Collection" ? "CourseUnit" : undefined,
+                primaryCategory: subElement.primaryCategory === "Collection" ? "Course Unit" : undefined,
                 children: subElement.children.map(v => {
                   const child = v.identifier
                   if (v.primaryCategory) {
                     this.hierarchyTree[v.identifier] = {
                       root: false,
-                      contentType: v.contentType === 'Resource' ? undefined : v.contentType,
-                      primaryCategory: v.primaryCategory === 'Resource' ? undefined : v.primaryCategory,
+                      contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
+                      primaryCategory: v.primaryCategory === 'Resource' ? undefined : 'Course Unit',
                       name: v.name,
                       children: [],
                     }

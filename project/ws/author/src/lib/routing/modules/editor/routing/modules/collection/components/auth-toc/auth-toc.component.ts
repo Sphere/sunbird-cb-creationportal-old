@@ -162,7 +162,8 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
       $('#cdk-drop-list-0 > mat-tree-node:nth-child(2)').removeClass('selected')
     }
     if (node.id !== this.selectedNode) {
-      this.updateSelectedNodeIdentifier(node)
+      console.log(node)
+      //this.updateSelectedNodeIdentifier(node)
 
       this.action.emit({ type: 'editContent', identifier: node.identifier, nodeClicked: true })
       this.selectedNode = node.id
@@ -210,21 +211,9 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
             content: tempUpdateContent,
           },
         }
-
+        console.log(contentType)
         if (node.category === "Collection") {
-              const tempRequset: NSApiRequest.IContentUpdateV3 = {
-                request: {
-                  data: {
-                    nodesModified: this.editorStore.getNodeModifyData(),
-                    hierarchy: this.store.getTreeHierarchy(),
-                  },
-                },
-              }
-              await this.editorService.updateContentV4(tempRequset).subscribe(() => {
-                this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-                  this.editorStore.resetOriginalMetaWithHierarchy(data)
-                })
-              })
+
         } else {
           if (Object.keys(tempUpdateContent).length !== 1) {
             this.editorService.updateContentV3(requestBody, this.contentId).subscribe(async () => {
