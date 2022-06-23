@@ -1008,15 +1008,12 @@ export class CollectionStoreService {
   }
 
   getTreeHierarchy() {
-    console.log(this.hierarchyTree)
     this.hierarchyTree = {}
     const newParentNode = this.flatNodeMap.get(this.currentParentNode) as IContentNode
-    console.log(newParentNode)
     this.hierarchyTree[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),
       contentType: newParentNode.category,
       children: (newParentNode.children) ? newParentNode.children.map(v => {
-        console.log(v)
         const child = v.identifier
         if (v.primaryCategory) {
           this.hierarchyTree[v.identifier] = {
@@ -1033,7 +1030,6 @@ export class CollectionStoreService {
     if (newParentNode.children && newParentNode.children.length > 0) {
       newParentNode.children.forEach(element => {
         if (element.children && element.children.length > 0) {
-          console.log(element)
           this.hierarchyTree[element.identifier] = {
             root: this.parentNode.includes(element.identifier),
             // contentType: element.contentType,

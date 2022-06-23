@@ -363,7 +363,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.contentMeta.creatorContacts = JSON.parse(this.contentMeta.creatorContacts)
     }
     if (this.contentMeta.reviewer && typeof this.contentMeta.reviewer === 'string') {
-      console.log(JSON.parse(this.contentMeta.reviewer))
       this.contentMeta.trackContacts = JSON.parse(this.contentMeta.reviewer)
     }
     if (this.contentMeta.creatorDetails && typeof this.contentMeta.creatorDetails === 'string') {

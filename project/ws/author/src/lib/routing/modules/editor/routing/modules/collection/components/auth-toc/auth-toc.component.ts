@@ -162,7 +162,6 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
       $('#cdk-drop-list-0 > mat-tree-node:nth-child(2)').removeClass('selected')
     }
     if (node.id !== this.selectedNode) {
-      console.log(node)
       //this.updateSelectedNodeIdentifier(node)
 
       this.action.emit({ type: 'editContent', identifier: node.identifier, nodeClicked: true })
@@ -211,7 +210,6 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
             content: tempUpdateContent,
           },
         }
-        console.log(contentType)
         if (node.category === "Collection") {
 
         } else {
