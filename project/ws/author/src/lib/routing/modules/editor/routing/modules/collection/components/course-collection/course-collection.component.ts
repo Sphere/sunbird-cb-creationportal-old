@@ -947,7 +947,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             resourceListToReview.push(tempData)
           }
         }
-console.log(resourceListToReview)
+
         if (originalData.reviewStatus === 'InReview' && originalData.status === 'Review') {
           this.reviewerApproved(originalData, resourceListToReview)
         } else if (originalData.reviewStatus === 'Reviewed' && originalData.status === 'Review') {
@@ -1258,11 +1258,9 @@ console.log(resourceListToReview)
   // }
 
   async editPublishCourse() {
-console.log("hhh")
     //this.changeStatusToDraft('Content Edit')
 
     const originalData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise()
-
     const resourceListToReview: any = []
     const tempData = {
       identifier: originalData.identifier,
@@ -1340,9 +1338,7 @@ console.log("hhh")
 
     const resourceListToReview: any = []
     const moduleListToReview: any = []
-debugger
     originalData.children.forEach((element: any) => {
-      console.log(element.contentType)
       if (element.contentType === 'CourseUnit' || element.contentType === 'Collection') {
         if (element.children.length > 0) {
           element.children.forEach((subElement: any) => {
@@ -1390,7 +1386,7 @@ debugger
           },
         },
       }
-      console.log(resourceListToReview)
+
       for await (const element of resourceListToReview) {
         this.loaderService.changeLoad.next(true)
         updateContentReq.request.content.versionKey = element.versionKey
@@ -2410,7 +2406,8 @@ debugger
               // })
             })
             this.contentService.upDatedContent = {}
-          }),
+          })
+          ,
           tap(async () => {
             const tempRequset: NSApiRequest.IContentUpdateV3 = {
               request: {
@@ -2420,6 +2417,7 @@ debugger
                 },
               },
             }
+
             await this.editorService.updateContentV4(tempRequset).subscribe(() => {
              this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
               this.contentService.resetOriginalMetaWithHierarchy(data)
@@ -2499,7 +2497,7 @@ debugger
     // }
 
 
-    // console.log('updateContentV4  COURSE COLL')
+     //console.log('updateContentV4  COURSE COLL')
 const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
@@ -2539,7 +2537,7 @@ const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       // )
     
   }
-  update(){
+ async update(){
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
@@ -2549,15 +2547,12 @@ const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       },
     }
 
-      return this.editorService.updateContentV4(requestBodyV2).pipe(
-        tap(() => {
-          this.storeService.changedHierarchy = {}
-          Object.keys(this.contentService.upDatedContent).forEach(async id => {
-            this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
-          })
-          this.contentService.upDatedContent = {}
-        }),
-      )
+            await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+             this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+              this.contentService.resetOriginalMetaWithHierarchy(data)
+              // tslint:disable-next-line: align
+            })
+            })
   }
   getMessage(type: 'success' | 'failure') {
     if (type === 'success') {
@@ -2589,7 +2584,6 @@ const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
   }
 
   subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
-
     // const nodeClicked = event.nodeClicked
     this.contentService.changeActiveCont.next(event.identifier)
     switch (event.type) {
@@ -2598,7 +2592,8 @@ const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
         break
       case 'editContent':
         if (event.nodeClicked === false) {
-          this.tempSave()
+          //this.tempSave()
+          //this.update()
         }
          //this.save()
         //this.update()
