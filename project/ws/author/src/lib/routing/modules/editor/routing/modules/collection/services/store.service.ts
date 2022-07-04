@@ -423,25 +423,6 @@ export class CollectionStoreService {
         this.createdModuleUpdate = true
       } else {
         content = await this.editorService.createAndReadContentV2(requestBody).toPromise()
-             await this.contentService.setOriginalMeta(content)
-      //console.log(data)
-      //if(data) {
-          const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-      request: {
-        data: {
-          nodesModified: this.contentService.getNodeModifyData(),
-          hierarchy: this.getTreeHierarchy(),
-        },
-      },
-    }
-
-            await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-             this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
-              this.contentService.resetOriginalMetaWithHierarchy(data)
-              // tslint:disable-next-line: align
-            })
-            })
-          //}
       }
 
       // if (content) {

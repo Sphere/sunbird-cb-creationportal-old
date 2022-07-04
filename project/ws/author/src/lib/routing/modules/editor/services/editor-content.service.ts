@@ -160,7 +160,7 @@ export class EditorContentService {
         }
         if (element.children && element.children.length > 0) {
           parentData.children.forEach((subEle: any) => {
-            if ((subEle.contentType === 'Collection' || element.contentType === 'CourseUnit') && subEle.identifier === id) {
+            if ((subEle.contentType === 'Collection' || subEle.contentType === 'CourseUnit') && subEle.identifier === id) {
               nodesModify[subEle.identifier] = {
                 isNew: false,
                 root:  false,

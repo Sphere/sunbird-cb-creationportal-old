@@ -88,6 +88,7 @@ export class EditorService {
   }
 
   createV2(meta: NSApiRequest.ICreateMetaRequestGeneralV2): Observable<string> {
+  console.log("ee")
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {
@@ -120,7 +121,8 @@ export class EditorService {
     return this.http
       .post<NSApiRequest.ICreateMetaRequestV2>(
         // tslint:disable-next-line:max-line-length
-        `${AUTHORING_BASE}content/v3/create`,
+        //`${AUTHORING_BASE}content/v3/create`,
+        'apis/proxies/v8/action/content/v3/create',
         requestBody,
       )
       .pipe(

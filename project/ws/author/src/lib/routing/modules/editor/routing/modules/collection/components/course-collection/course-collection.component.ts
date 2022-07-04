@@ -134,13 +134,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.update()
         }
       })
-    this.initService.editCourseMessage.subscribe(
-      (data: any) => {
-        if (data) {
-          console.log(data)
-          this.editPublishCourse()
-        }
-      })
+    // this.initService.editCourseMessage.subscribe(
+    //   (data: any) => {
+    //     if (data) {
+    //       console.log(data)
+    //       this.editPublishCourse()
+    //     }
+    //   })
   }
 
   ngOnInit() {
@@ -2407,27 +2407,27 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             })
             this.contentService.upDatedContent = {}
           })
-          ,
-          tap(async () => {
-            const tempRequset: NSApiRequest.IContentUpdateV3 = {
-              request: {
-                data: {
-                  nodesModified: this.contentService.getNodeModifyData(),
-                  hierarchy: this.storeService.getTreeHierarchy(),
-                },
-              },
-            }
+          // ,
+          // tap(async () => {
+          //   const tempRequset: NSApiRequest.IContentUpdateV3 = {
+          //     request: {
+          //       data: {
+          //         nodesModified: this.contentService.getNodeModifyData(),
+          //         hierarchy: this.storeService.getTreeHierarchy(),
+          //       },
+          //     },
+          //   }
 
-            await this.editorService.updateContentV4(tempRequset).subscribe(() => {
-             this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
-              this.contentService.resetOriginalMetaWithHierarchy(data)
-              // tslint:disable-next-line: align
-            })
-            })
-            // await this.contentSvc.fetchAuthoringContentHierarchy(this.currentCourseId).subscribe((data) => {
-            //   console.log('datatata =======  ', data)
-            // })
-          })
+          //   await this.editorService.updateContentV4(tempRequset).subscribe(() => {
+          //    this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+          //     this.contentService.resetOriginalMetaWithHierarchy(data)
+          //     // tslint:disable-next-line: align
+          //   })
+          //   })
+          //   // await this.contentSvc.fetchAuthoringContentHierarchy(this.currentCourseId).subscribe((data) => {
+          //   //   console.log('datatata =======  ', data)
+          //   // })
+          // })
         )
       } else {
         // Object.keys(this.contentService.upDatedContent).forEach(v => {
