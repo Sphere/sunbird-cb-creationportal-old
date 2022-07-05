@@ -484,16 +484,16 @@ export class FileUploadComponent implements OnInit, OnChanges {
       const contenUpdateRes: any =
         await this.editorService.updateContentV3(requestBody, this.contentService.currentContent).toPromise().catch(_error => { })
       if (contenUpdateRes && contenUpdateRes.params && contenUpdateRes.params.status === 'successful') {
-        const updateHierarchyReq: NSApiRequest.IContentUpdateV3 = {
-          request: {
-            data: {
-              nodesModified: this.contentService.getNodeModifyData(),
-              hierarchy: this.storeService.getTreeHierarchy(),
-            },
-          },
-        }
-        const updateHierarchyRes: any = await this.editorService.updateContentV4(updateHierarchyReq).toPromise().catch(_error => { })
-        if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
+        // const updateHierarchyReq: NSApiRequest.IContentUpdateV3 = {
+        //   request: {
+        //     data: {
+        //       nodesModified: this.contentService.getNodeModifyData(),
+        //       hierarchy: this.storeService.getTreeHierarchy(),
+        //     },
+        //   },
+        // }
+        // const updateHierarchyRes: any = await this.editorService.updateContentV4(updateHierarchyReq).toPromise().catch(_error => { })
+        // if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
           const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
           if (hierarchyData) {
             this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
@@ -501,9 +501,9 @@ export class FileUploadComponent implements OnInit, OnChanges {
           } else {
             this.errorMessage()
           }
-        } else {
-          this.errorMessage()
-        }
+        // } else {
+        //   this.errorMessage()
+        // }
       } else {
         this.errorMessage()
       }
