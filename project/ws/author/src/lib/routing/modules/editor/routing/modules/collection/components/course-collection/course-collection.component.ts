@@ -130,8 +130,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.initService.uploadMessage.subscribe(
       (data: any) => {
         if (data) {
-          this.save()
-          this.update()
+          this.save('upload')
+          //this.update()
         }
       })
     // this.initService.editCourseMessage.subscribe(
@@ -2682,7 +2682,7 @@ const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
         break
 
       case 'save':
-        this.save()
+        this.save('save')
         break
 
       case 'saveAndNext':
