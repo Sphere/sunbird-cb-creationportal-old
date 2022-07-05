@@ -88,7 +88,6 @@ export class EditorService {
   }
 
   createV2(meta: NSApiRequest.ICreateMetaRequestGeneralV2): Observable<string> {
-  console.log("ee")
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {
