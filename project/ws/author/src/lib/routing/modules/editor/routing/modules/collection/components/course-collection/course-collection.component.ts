@@ -2379,7 +2379,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       //let nodesModified = {}
 
       if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined || tempUpdateContent.category ==='Course') {
-        return this.editorService.updateNewContentV3(_.omit(requestBody, ['versionKey', 'status']), this.currentCourseId).pipe(
+        return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
           tap(() => {
             // this.storeService.getHierarchyTreeStructure()
             // Object.keys(this.contentService.upDatedContent).forEach(v => {
