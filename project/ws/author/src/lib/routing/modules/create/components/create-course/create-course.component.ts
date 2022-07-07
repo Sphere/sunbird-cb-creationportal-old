@@ -145,7 +145,7 @@ export class CreateCourseComponent implements OnInit {
                   type: 'course',
                   identifier: this.identifier.identifier,
                 },
-              ],z
+              ],
             },
           }
           return this.svc.createForum(request)
@@ -160,7 +160,8 @@ export class CreateCourseComponent implements OnInit {
         },
       },
     }
-            const result = await this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier).toPromise().catch((_error:any) => { })
+    // tslint:disable-next-line:max-line-length
+    const result = await this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier).toPromise().catch((_error:any) => { })
 
             if(result) {
                           this.loaderService.changeLoad.next(false)
