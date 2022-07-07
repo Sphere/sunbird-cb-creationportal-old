@@ -140,13 +140,14 @@ export class EditorContentService {
       // tslint:disable-next-line:max-line-length
       data.duration = _.isNumber(data.duration) ? data.duration.toString() : data.duration
     }
+
     if (parentData) {
       nodesModify[parentData.identifier] = {
         isNew: false,
         root: true,
         objectType: 'Content',
         contentType: 'Course',
-         metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
+         // metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
       }
       parentData.children.forEach((element: any) => {
         if ((element.contentType === 'Collection' || element.contentType === 'CourseUnit') && element.identifier === id) {

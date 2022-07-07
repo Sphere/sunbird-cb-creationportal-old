@@ -12,6 +12,7 @@ import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 import { IprDialogComponent } from '@ws/author/src/lib/modules/shared/components/ipr-dialog/ipr-dialog.component'
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { mergeMap } from 'rxjs/operators'
 
 @Component({
@@ -38,6 +39,7 @@ export class CreateCourseComponent implements OnInit {
     private dialog: MatDialog,
     private authInitService: AuthInitService,
     private accessControlSvc: AccessControlService,
+    private editorService: EditorService,
     private formBuilder: FormBuilder) { }
   createCourseForm!: FormGroup
   ngOnInit() {
@@ -134,30 +136,44 @@ export class CreateCourseComponent implements OnInit {
           ...(this.content.additionalMeta || {}),
 
         }).pipe(mergeMap((id: string) => {
+
           this.identifier = id
           const request = {
             category: {
               context: [
                 {
                   type: 'course',
-                  identifier: id,
+                  identifier: this.identifier.identifier,
                 },
-              ],
+              ],z
             },
           }
           return this.svc.createForum(request)
         }))
         .subscribe(
-          () => {
-            this.loaderService.changeLoad.next(false)
+          async (data:any) => {
+
+             const updateContentReq: any = {
+      request: {
+        content: {
+          versionKey: this.identifier.versionKey,
+        },
+      },
+    }
+            const result = await this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier).toPromise().catch((_error:any) => { })
+
+            if(result) {
+                          this.loaderService.changeLoad.next(false)
             this.snackBar.openFromComponent(NotificationComponent, {
               data: {
                 type: Notify.CONTENT_CREATE_SUCCESS,
               },
               duration: NOTIFICATION_TIME * 1000,
             })
-            this.router.navigateByUrl(`/author/editor/${this.identifier
+            this.router.navigateByUrl(`/author/editor/${this.identifier.identifier
               }`)
+            }
+
           },
           error => {
             if (error.status === 409) {

@@ -104,7 +104,7 @@ export class CreateService {
       )
       .pipe(
         map((data: any) => {
-          return data.result.identifier
+          return data.result
         }),
       )
   }

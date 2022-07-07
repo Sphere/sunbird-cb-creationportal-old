@@ -89,7 +89,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   checkCreator = false
   versionKey: any
   versionID: any
-
+  resourseSelected = ''
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -300,6 +300,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   async setContentType(param: string, filetype?: string) {
+
+    this.resourseSelected = param
     if (filetype) {
       this.storeService.uploadFileType.next(filetype)
     }
@@ -423,7 +425,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   async save(nextAction?: string) {
-    if(nextAction === undefined) {
+    if(this.resourseSelected !== '') {
        this.update()
     }
     const updatedContent = this.contentService.upDatedContent || {}
@@ -996,6 +998,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               },
             }
             if (updatedMeta.status === 'Draft') {
+              console.log("1")
               this.editorService.updateContentV4(tempRequset).subscribe(() => {
                 this.finalSaveAndRedirect(updatedMeta)
                 // this.sendModuleToReviewOrPublish(moduleListToReview, updatedMeta)
@@ -1056,17 +1059,17 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         //     duration: NOTIFICATION_TIME * 1000,
         //   })
         // }
-        const tempRequset: NSApiRequest.IContentUpdateV3 = {
-          request: {
-            data: {
-              nodesModified: this.contentService.getNodeModifyData(),
-              hierarchy: this.storeService.getTreeHierarchy(),
-            },
-          },
-        }
-        let result = await this.editorService.updateHierarchyForReviwer(tempRequset).toPromise().catch(_error => { })
+        // const tempRequset: NSApiRequest.IContentUpdateV3 = {
+        //   request: {
+        //     data: {
+        //       nodesModified: this.contentService.getNodeModifyData(),
+        //       hierarchy: this.storeService.getTreeHierarchy(),
+        //     },
+        //   },
+        // }
+        // let result = await this.editorService.updateHierarchyForReviwer(tempRequset).toPromise().catch(_error => { })
 
-        if (result.params.status === 'successful') {
+        //if (result.params.status === 'successful') {
           this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
             /* tslint:disable-next-line */
             console.log(data)
@@ -1074,7 +1077,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             this.initService.publishData(data)
             // tslint:disable-next-line: align
           })
-        }
+        //}
         this.loaderService.changeLoad.next(false)
 
       } else {
@@ -1152,16 +1155,16 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       }
       if (flag === resourceList.length) {
         requestPayload.request.content.versionKey = metaData.versionKey
-        const tempRequset: NSApiRequest.IContentUpdateV3 = {
-          request: {
-            data: {
-              nodesModified: this.contentService.getNodeModifyData(),
-              hierarchy: this.storeService.getTreeHierarchy(),
-            },
-          },
-        }
-        const updateHierarchyRes = await this.editorService.updateHierarchyForReviwer(tempRequset).toPromise().catch(_error => { })
-        if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
+        // const tempRequset: NSApiRequest.IContentUpdateV3 = {
+        //   request: {
+        //     data: {
+        //       nodesModified: this.contentService.getNodeModifyData(),
+        //       hierarchy: this.storeService.getTreeHierarchy(),
+        //     },
+        //   },
+        // }
+        // const updateHierarchyRes = await this.editorService.updateHierarchyForReviwer(tempRequset).toPromise().catch(_error => { })
+        // if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
           const parentMetaRes =
             await this.editorService.updateContentForReviwer(requestPayload, metaData.identifier).toPromise().catch(_error => { })
           if (parentMetaRes && parentMetaRes.params && parentMetaRes.params.status === 'successful') {
@@ -1174,15 +1177,15 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             })
             await this.sendEmailNotification('sendForPublish')
             this.router.navigate(['author', 'cbp'])
-          } else {
-            this.loaderService.changeLoad.next(false)
-            this.snackBar.openFromComponent(NotificationComponent, {
-              data: {
-                type: Notify.SAVE_FAIL,
-              },
-              duration: NOTIFICATION_TIME * 1000,
-            })
-          }
+          // } else {
+          //   this.loaderService.changeLoad.next(false)
+          //   this.snackBar.openFromComponent(NotificationComponent, {
+          //     data: {
+          //       type: Notify.SAVE_FAIL,
+          //     },
+          //     duration: NOTIFICATION_TIME * 1000,
+          //   })
+          // }
         } else {
           this.loaderService.changeLoad.next(false)
           this.snackBar.openFromComponent(NotificationComponent, {
@@ -2374,8 +2377,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.contentService.currentContentID = this.currentCourseId
 
       //let nodesModified = {}
-      if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined) {
-        return this.editorService.updateNewContentV3(requestBody, this.currentCourseId).pipe(
+
+      if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined || tempUpdateContent.category ==='Course') {
+        return this.editorService.updateNewContentV3(_.omit(requestBody, ['versionKey', 'status']), this.currentCourseId).pipe(
           tap(() => {
             // this.storeService.getHierarchyTreeStructure()
             // Object.keys(this.contentService.upDatedContent).forEach(v => {
@@ -2406,7 +2410,22 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               // })
             })
             this.contentService.upDatedContent = {}
+      // .pipe(
+      //   tap(() => {
+
+      //     this.storeService.changedHierarchy = {}
+      //     Object.keys(this.contentService.upDatedContent).forEach(async id => {
+      //       this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
+      //     })
+      //     this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+      //       this.contentService.resetOriginalMetaWithHierarchy(data)
+      //     })
+      //     this.contentService.upDatedContent = {}
+      //   }),
+      // )
+
           })
+
           // ,
           // tap(async () => {
           //   const tempRequset: NSApiRequest.IContentUpdateV3 = {
@@ -2429,6 +2448,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           //   // })
           // })
         )
+
       } else {
         // Object.keys(this.contentService.upDatedContent).forEach(v => {
         //           nodesModified = {
@@ -2538,6 +2558,7 @@ const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
     
   }
  async update(){
+  this.resourseSelected = ''
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
@@ -2694,6 +2715,7 @@ const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
         break
 
       case 'push':
+
         if (this.getAction() === 'publish') {
           const dialogRefForPublish = this.dialog.open(ConfirmDialogComponent, {
             width: '70%',
