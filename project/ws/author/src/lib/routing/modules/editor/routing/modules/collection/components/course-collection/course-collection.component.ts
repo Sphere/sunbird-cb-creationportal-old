@@ -1763,9 +1763,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       },
     )
   }
-  preview(id: string) {
+  async preview(id: string) {
     const updatedContent = this.contentService.upDatedContent || {}
     let isContentUpdated = false
+            this.versionID = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
+        this.versionKey = await this.contentService.getUpdatedMeta(this.currentCourseId)
+        
     _.each(updatedContent, i => { if (Object.keys(i).length > 0) { isContentUpdated = true } })
 
     // const saveCall =
