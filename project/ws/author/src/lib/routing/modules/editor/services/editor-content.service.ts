@@ -156,6 +156,7 @@ export class EditorContentService {
             root:  false,
             // objectType: 'Content',
             // contentType: 'Course',
+            // tslint:disable-next-line:max-line-length
              metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey','resourceType']) : undefined,
           }
         }
@@ -167,6 +168,7 @@ export class EditorContentService {
                 root:  false,
                 // objectType: 'Content',
                 // contentType: 'Course',
+                // tslint:disable-next-line:max-line-length
                 metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey','resourceType']) : undefined,
               }
             }
