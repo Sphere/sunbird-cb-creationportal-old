@@ -156,7 +156,7 @@ export class EditorContentService {
             root:  false,
             // objectType: 'Content',
             // contentType: 'Course',
-             metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category','versionKey']) : undefined,
+             metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey','resourceType']) : undefined,
           }
         }
         if (element.children && element.children.length > 0) {
@@ -167,7 +167,7 @@ export class EditorContentService {
                 root:  false,
                 // objectType: 'Content',
                 // contentType: 'Course',
-                metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category','versionKey']) : undefined,
+                metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey','resourceType']) : undefined,
               }
             }
           })

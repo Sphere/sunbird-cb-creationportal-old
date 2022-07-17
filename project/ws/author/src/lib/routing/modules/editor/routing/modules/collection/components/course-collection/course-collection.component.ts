@@ -444,7 +444,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     ) {
       this.isChanged = true
       this.loaderService.changeLoad.next(true)
-      if (this.contentService.getUpdatedMeta(this.currentCourseId)) {
+      if (this.contentService.getUpdatedMeta(this.currentCourseId).contentType !== "CourseUnit") {
         this.versionID = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
         this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
       }
@@ -911,9 +911,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     const resourceListToReview: any = []
     const moduleListToReview: any = []
     const updatedMeta = this.contentService.getUpdatedMeta(this.currentParentId)
-    console.log(updatedMeta)
     const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
-    console.log(originalData)
     if (contentActionTaken === 'acceptConent' || contentActionTaken === 'publishResources') {
       if (originalData && originalData.children && originalData.children.length > 0) {
         for (const element of originalData.children) {
@@ -998,7 +996,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               },
             }
             if (updatedMeta.status === 'Draft') {
-              console.log("1")
               this.editorService.updateContentV4(tempRequset).subscribe(() => {
                 this.finalSaveAndRedirect(updatedMeta)
                 // this.sendModuleToReviewOrPublish(moduleListToReview, updatedMeta)
@@ -2264,7 +2261,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   // }
 
   triggerSave() {
-
     const nodesModified: any = {}
     let isRootPresent = false
 
@@ -2570,7 +2566,6 @@ const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
         },
       },
     }
-
             await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
              this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
               this.contentService.resetOriginalMetaWithHierarchy(data)
