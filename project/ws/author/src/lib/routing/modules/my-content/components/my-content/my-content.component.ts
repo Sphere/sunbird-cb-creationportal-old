@@ -168,7 +168,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         return ['Review', 'QualityReview']
       // return ['InReview', 'Reviewed', 'QualityReview']
       case 'review':
-        return ['InReview']
+        return ['Review']
       case 'published':
       case 'expiry':
         return ['Live']
