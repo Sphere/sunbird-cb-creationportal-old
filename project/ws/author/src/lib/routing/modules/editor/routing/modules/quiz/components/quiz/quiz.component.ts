@@ -579,10 +579,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       // tslint:disable-next-line: prefer-template
       // timeLimit: parseInt(this.quizDuration + '', 10) || 300
       timeLimit: this.quizDuration,
-      isAssessment: this.resourceType === ASSESSMENT,
+      isAssessment: true,
       questions: array,
     }
-
+//console.log(this.resourceType, this.resourceType === ASSESSMENT)
+//console.log(quizData)
     const blob = new Blob([JSON.stringify(quizData, null, 2)], { type: 'application/json' })
     const formdata = new FormData()
     formdata.append('content', blob)
