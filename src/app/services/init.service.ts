@@ -408,13 +408,14 @@ export class InitService {
         //let redirectUrl = this.defaultRedirectUrl
         this.configSvc.userProfile = null
         if (e.status === 419) {
-          const redirectUrl = document.baseURI + 'openid/keycloak'
+          const redirectUrl = document.baseURI + `openid/keycloak`
           const state = uuid()
           const nonce = uuid()
-          const Keycloakurl = `${document.baseURI}auth/realms/sunbird/protocol/openid-connect/auth?client_id=portal&redirect_uri=${encodeURIComponent(redirectUrl)}&state=${state}&response_mode=fragment&response_type=code&scope=openid&nonce=${nonce}`
-          window.location.href = Keycloakurl
+          // tslint:disable-next-line:max-line-length
+          const keycloakurl = `${document.baseURI}auth/realms/sunbird / protocol / openid - connect / auth ? client_id = portal & redirect_uri=${encodeURIComponent(redirectUrl)}& state=${state}& response_mode=fragment & response_type=code & scope=openid & nonce=${nonce} `
+          window.location.href = keycloakurl
         }
-        //window.location.href = `${redirectUrl}apis/reset`
+        //window.location.href = `${ redirectUrl } apis / reset`
         // throw new Error('Invalid user')
       }
     } else {
@@ -451,7 +452,7 @@ export class InitService {
   //           middleName: userData.personalDetails.middlename,
   //           departmentName: _.get(userData, 'employmentDetails.departmentName'),
   //           // tslint:disable-next-line: max-line-length
-  //           userName: `${userData.personalDetails.firstname
+  //           userName: `${ userData.personalDetails.firstname
   //                        ? userData.personalDetails.firstname : ''}${userData.personalDetails.surname
   //                                    ? userData.personalDetails.surname : ''}`,
   //           profileImage: userData && userData.photo,
