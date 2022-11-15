@@ -404,10 +404,17 @@ export class InitService {
         this.configSvc.userRoles = new Set((details.roles || []).map((v: string) => v.toLowerCase()))
         this.configSvc.isActive = details.isActive
         return details
-      } catch (e) {
-        let redirectUrl = this.defaultRedirectUrl
+      } catch (e: any) {
+        //let redirectUrl = this.defaultRedirectUrl
         this.configSvc.userProfile = null
-        window.location.href = `${redirectUrl}apis/reset`
+        if (e.status === 419) {
+          const redirectUrl = document.baseURI + 'openid/keycloak'
+          const state = uuid()
+          const nonce = uuid()
+          const Keycloakurl = `${document.baseURI}auth/realms/sunbird/protocol/openid-connect/auth?client_id=portal&redirect_uri=${encodeURIComponent(redirectUrl)}&state=${state}&response_mode=fragment&response_type=code&scope=openid&nonce=${nonce}`
+          window.location.href = Keycloakurl
+        }
+        //window.location.href = `${redirectUrl}apis/reset`
         // throw new Error('Invalid user')
       }
     } else {
@@ -476,14 +483,14 @@ export class InitService {
   //   // this.configSvc.userRoles = new Set(userRoles)
   //   // return details
   // }
-  private get defaultRedirectUrl(): string {
-    try {
-      const baseUrl = document.baseURI
-      return baseUrl || location.origin
-    } catch (error) {
-      return location.origin
-    }
-  }
+  // private get defaultRedirectUrl(): string {
+  //   try {
+  //     const baseUrl = document.baseURI
+  //     return baseUrl || location.origin
+  //   } catch (error) {
+  //     return location.origin
+  //   }
+  // }
   private async fetchInstanceConfig(): Promise<NsInstanceConfig.IConfig> {
     // TODO: use the rootOrg and org to fetch the instance
     const publicConfig = await this.http
