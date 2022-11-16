@@ -77,7 +77,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
   filetype!: string | null
   acceptType!: string | '.mp3,.mp4,.pdf,.zip,.m4v'
   entryPoint: any
-
+  bucket: string = ''
   @Input() isCreatorEnable = true
 
   constructor(
@@ -494,13 +494,13 @@ export class FileUploadComponent implements OnInit, OnChanges {
         // }
         // const updateHierarchyRes: any = await this.editorService.updateContentV4(updateHierarchyReq).toPromise().catch(_error => { })
         // if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
-          const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
-          if (hierarchyData) {
-            this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
-            this.upload()
-          } else {
-            this.errorMessage()
-          }
+        const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
+        if (hierarchyData) {
+          this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
+          this.upload()
+        } else {
+          this.errorMessage()
+        }
         // } else {
         //   this.errorMessage()
         // }
@@ -608,8 +608,13 @@ export class FileUploadComponent implements OnInit, OnChanges {
   // }
 
   generateUrl(oldUrl: string) {
+    // @ts-ignore: Unreachable code error
+    console.log(window["env"]["azureBucket"])
+    // @ts-ignore: Unreachable code error
+    this.bucket = window["env"]["azureBucket"]
     const chunk = oldUrl.split('/')
-    const newChunk = environment.azureHost.split('/')
+    //const newChunk = environment.azureHost.split('/')
+    const newChunk = this.bucket
     const newLink = []
     for (let i = 0; i < chunk.length; i += 1) {
       if (i === 2) {
