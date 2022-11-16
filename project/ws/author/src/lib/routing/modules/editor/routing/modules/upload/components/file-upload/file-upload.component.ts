@@ -609,6 +609,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
 
   generateUrl(oldUrl: string) {
     // @ts-ignore: Unreachable code error
+    // tslint:disable-next-line:no-console
     console.log(window["env"]["azureBucket"])
     // @ts-ignore: Unreachable code error
     this.bucket = window["env"]["azureBucket"]

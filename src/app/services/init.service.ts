@@ -408,6 +408,7 @@ export class InitService {
         //let redirectUrl = this.defaultRedirectUrl
         this.configSvc.userProfile = null
         if (e.status === 419) {
+          // @ts-ignore: Unreachable code error
           const redirectUrl = document.baseURI + `openid/keycloak`
           const state = uuid()
           const nonce = uuid()
