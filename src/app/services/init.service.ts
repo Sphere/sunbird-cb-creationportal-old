@@ -414,7 +414,6 @@ export class InitService {
         //   const redirectUrl = `${url1}${url2}`
         //   const state = uuid()
         //   //const nonce = uuid()
-        //   // tslint:disable-next-line:max-line-length
         //   const keycloakurl = `${document.baseURI}auth/realms/sunbird/protocol/openid-connect/auth?client_id=portal&state=${state}&redirect_uri=${encodeURIComponent(redirectUrl)}&auth_callback=1&scope=openid&response_type=code`
         //   window.location.href = keycloakurl
         // }
