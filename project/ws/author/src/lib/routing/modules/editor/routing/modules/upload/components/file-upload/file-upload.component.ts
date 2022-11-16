@@ -607,27 +607,31 @@ export class FileUploadComponent implements OnInit, OnChanges {
   //     )
   // }
 
-  generateUrl(oldUrl: string) {
+  generateUrl(oldUrl: any) {
     // @ts-ignore: Unreachable code error
     // tslint:disable-next-line:no-console
     console.log(window["env"]["azureBucket"])
     // @ts-ignore: Unreachable code error
     this.bucket = window["env"]["azureBucket"]
-    const chunk = oldUrl.split('/')
-    //const newChunk = environment.azureHost.split('/')
-    const newChunk = this.bucket
-    const newLink = []
-    for (let i = 0; i < chunk.length; i += 1) {
-      if (i === 2) {
-        newLink.push(newChunk[i])
-      } else if (i === 3) {
-        newLink.push(environment.azureBucket)
-      } else {
-        newLink.push(chunk[i])
-      }
+    if (oldUrl.includes(this.bucket)) {
+      return oldUrl
     }
-    const newUrl = newLink.join('/')
-    return newUrl
+    // const chunk = oldUrl.split('/')
+    //const newChunk = environment.azureHost.split('/')
+    // const newChunk = this.bucket
+    // const newLink = []
+    // for (let i = 0; i < chunk.length; i += 1) {
+    //   if (i === 2) {
+    //     newLink.push(newChunk[i])
+    //   } else if (i === 3) {
+    //     //newLink.push(environment.azureBucket)
+    //     newLink.push(environment.azureBucket)
+    //   } else {
+    //     newLink.push(chunk[i])
+    //   }
+    // }
+    // const newUrl = newLink.join('/')
+    // return newUrl
   }
 
   upload() {
