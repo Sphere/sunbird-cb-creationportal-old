@@ -408,8 +408,10 @@ export class InitService {
         //let redirectUrl = this.defaultRedirectUrl
         this.configSvc.userProfile = null
         if (e.status === 419) {
+          let url1 = document.baseURI
+          let url2 = `openid/keycloak`
           // @ts-ignore: Unreachable code error
-          const redirectUrl = document.baseURI + `openid/keycloak`
+          const redirectUrl = `${url1}${url2}`
           const state = uuid()
           const nonce = uuid()
           // tslint:disable-next-line:max-line-length
