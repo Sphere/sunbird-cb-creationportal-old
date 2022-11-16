@@ -409,13 +409,13 @@ export class InitService {
         this.configSvc.userProfile = null
         if (e.status === 419) {
           let url1 = document.baseURI
-          let url2 = `openid/keycloak`
+          let url2 = `protected/v8/resource/?q=/author/cbp/me`
           // @ts-ignore: Unreachable code error
           const redirectUrl = `${url1}${url2}`
           const state = uuid()
-          const nonce = uuid()
+          //const nonce = uuid()
           // tslint:disable-next-line:max-line-length
-          const keycloakurl = `${document.baseURI}auth/realms/sunbird/protocol/openid-connect/auth?client_id=portal&redirect_uri=${encodeURIComponent(redirectUrl)}&state=${state}&response_mode=fragment&response_type=code&scope=openid&nonce=${nonce}`
+          const keycloakurl = `${document.baseURI}auth/realms/sunbird/protocol/openid-connect/auth?client_id=portal&state=${state}&redirect_uri=${encodeURIComponent(redirectUrl)}&auth_callback=1&scope=openid&response_type=code`
           window.location.href = keycloakurl
         }
         //window.location.href = `${ redirectUrl } apis / reset`
