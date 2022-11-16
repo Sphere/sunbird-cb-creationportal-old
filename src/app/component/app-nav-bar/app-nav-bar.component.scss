@@ -66,6 +66,7 @@
   max-width: 100%;
   width: 150px;
   max-height: 60px;
+  filter: brightness(3);
 
   @include breakpoint-xs {
     max-width: 80px;
@@ -257,3 +258,7 @@
 
 // @media
 // 760px
+
+::ng-deep .theme-igot.day-mode .mat-toolbar.mat-primary{
+  background-color: #1C5D95 !important;
+}

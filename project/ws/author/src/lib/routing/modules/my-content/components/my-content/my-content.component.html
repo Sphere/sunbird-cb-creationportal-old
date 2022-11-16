@@ -8,16 +8,16 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
 </div> -->
 
 <mat-drawer-container class="example-container">
-  <mat-drawer mode="side" class="width-240" opened>
+  <mat-drawer mode="side" class="width-240" style="top: 26px;" opened>
 
-    <div *ngIf="allowAuthorContentCreate"
+    <!-- <div *ngIf="allowAuthorContentCreate"
       class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l padding-remove-left create-button">
       <button mat-button class="font-weight-bold margin-remove-bottom mat-h3 ws-mat-primary-text ws-mat-primary-border"
         [routerLink]="'/author/create'" id="ws-auth-root-home-btn-create" name="ws-auth-root-home-btn-create">
         <ng-container i18n>Create Content</ng-container>
         <mat-icon class="ws-mat-primary-text margin-left-m margin-bottom-xxs">create</mat-icon>
       </button>
-    </div>
+    </div> -->
 
     <ng-container *ngIf="isNewDesign">
       <mat-accordion expanded *ngIf="allowAuthor">
@@ -87,7 +87,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
     </ng-container>
     <ng-container *ngIf="!isNewDesign">
       <mat-accordion expanded *ngIf="allowAuthor">
-        <mat-expansion-panel [expanded]="true" class="no-shadow">
+        <mat-expansion-panel [expanded]="true" class="no-shadow" hideToggle>
           <mat-expansion-panel-header>
             <mat-panel-title>
               <span class="font-weight-500" i18n>My Content</span>
@@ -98,29 +98,40 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             <!-- <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'all' }" i18n>All</a>
             </mat-list-item> -->
-            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+
+            <!-- <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'draft' }" i18n>Draft</a>
-            </mat-list-item>
-            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+            </mat-list-item> -->
+
+            <!-- <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'inreview' }" i18n>Sent for review</a>
-            </mat-list-item>
-            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+            </mat-list-item> -->
+
+            <!-- <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'reviewed' }" i18n>Under publish</a>
-            </mat-list-item>
-            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+            </mat-list-item> -->
+            <!-- <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'processing' }" i18n>Under processing</a>
-            </mat-list-item>
-            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+            </mat-list-item> -->
+
+            <!-- <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'published' }" i18n>Published</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'unpublished' }" i18n>Retired</a>
-            </mat-list-item>
-            <mat-list-item *ngIf="allowExpiry" mat-button role="listitem" [routerLinkActive]="['active']">
+            </mat-list-item> -->
+            <!-- <mat-list-item *ngIf="allowExpiry" mat-button role="listitem" [routerLinkActive]="['active']">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'expiry' }" i18n>Expiring</a>
             </mat-list-item>
             <mat-list-item *ngIf="allowRestore" mat-button role="listitem" [routerLinkActive]="['active']">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'deleted' }" i18n>Deleted</a>
+            </mat-list-item> -->
+
+            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+              <a i18n>Courses to Review</a>
+            </mat-list-item>
+            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+              <a i18n>Courses to Publish</a>
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
@@ -190,22 +201,45 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
 
 
       <mat-sidenav-content class="sidenav-content">
+        <nav mat-tab-nav-bar class="mat-nav-container">
+          <a style="top:16px;" mat-tab-link *ngFor="let link of links"
+            (click)="navigateContents(link);activeLink = link" [active]="activeLink == link">
+            {{link}} </a>
+
+          <span fxFlex style="flex: 1 1 auto;"></span>
+
+          <div *ngIf="allowAuthorContentCreate"
+            class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l padding-remove-left create-button">
+            <button mat-button class="btn-create" [routerLink]="'/author/create'" id="ws-auth-root-home-btn-create"
+              name="ws-auth-root-home-btn-create">
+              <!-- <mat-icon class="ws-mat-primary-text margin-left-m margin-bottom-xxs">add
+              </mat-icon> -->
+              <ng-container i18n>Create a new course</ng-container>
+
+            </button>
+          </div>
+
+        </nav>
+
         <div class="outer-flex">
           <div class="content-box">
             <nav class="flex flex-middle flex-wrap p-4 ws-mat-primary-text">
-              <div class="mat-subheading-2 margin-remove-bottom">
+              <!-- <div class="mat-subheading-2 margin-remove-bottom">
                 <a i18n>
                   My Contents
                 </a>
               </div>
-              <mat-icon class="px-1">chevron_right</mat-icon>
+              <mat-icon class="px-1">chevron_right</mat-icon> -->
+
+
+
               <!-- <div class="mat-subheading-2 margin-remove-bottom">
                 <a routerLink="/author/my-content" [queryParams]="{ status: 'all' }" i18n>
                   All
                 </a>
               </div>
               <mat-icon class="px-1" *ngIf="status !== 'all'">chevron_right</mat-icon> -->
-              <div class="mat-subheading-2 margin-remove-bottom">
+              <!-- <div class="mat-subheading-2 margin-remove-bottom">
                 <a routerLink="/author/my-content" *ngIf="status === 'draft'" [queryParams]="{ status: 'draft' }"
                   i18n>Draft</a>
                 <a routerLink="/author/my-content" *ngIf="status === 'inreview'" [queryParams]="{ status: 'inreview' }"
@@ -222,7 +256,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   i18n>Expiring</a>
                 <a routerLink="/author/my-content" *ngIf="status === 'deleted'" [queryParams]="{ status: 'deleted' }"
                   i18n>Deleted</a>
-              </div>
+              </div> -->
             </nav>
             <div class="flex flex-wrapped flex-between margin-horizontal-s margin-top-xs">
               <div>

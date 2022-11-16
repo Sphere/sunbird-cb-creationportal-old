@@ -109,6 +109,20 @@
   padding: 0 $size-m $size-l;
   box-sizing: border-box;
   min-height: calc(100vh);
+
+  .mat-nav-container {
+    margin-top: 10px;
+
+  }
+  .btn-create {
+    width: 14vw;
+    border-radius: 22px;
+    background-color: #1C5D95 !important;
+    color: white;
+    font-family: serif;
+     position: relative;
+    //bottom: 8px;
+  }
 }
 
 .grid {
@@ -195,3 +209,10 @@ ws-auth-content-card-v2 {
     background-color: #f5f5f5
   }
 }
+
+::ng-deep .theme-igot.day-mode .ws-mat-primary-text {
+  color: white;
+}
+
+
+
