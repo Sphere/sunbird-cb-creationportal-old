@@ -185,21 +185,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.navigateContents(status)
   }
 
-  // onClickPublishCourse(status: string) {
-  //   this.link = status
-  //   this.activeLink = status
-  //   this.isSelectedColor = false
-  //   this.isSelectedReviewCourse = false
-  //   this.isSelectedPublishCourse = true
-  //   this.navigateContents(status)
-  // }
-
 
 
   navigateContents(data: string): void {
-    console.log(data)
-    //swicth case
-
     switch (data) {
       case 'Draft':
         this.link = 'Draft'
@@ -233,8 +221,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.activeLink = 'Retired'
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'unpublished' } })
         break
-
-
     }
 
   }
