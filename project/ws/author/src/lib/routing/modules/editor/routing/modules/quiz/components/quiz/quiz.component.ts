@@ -41,7 +41,7 @@ import { CONTENT_BASE_WEBHOST } from '@ws/author/src/lib/constants/apiEndpoints'
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
 import { FormGroup } from '@angular/forms'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
-import { environment } from '../../../../../../../../../../../../../src/environments/environment'
+// import { environment } from '../../../../../../../../../../../../../src/environments/environment'
 
 @Component({
   selector: 'ws-auth-quiz',
@@ -73,6 +73,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   questionsArr: any[] = []
   quizConfig!: any
   quizData!: any
+  bucket: string = ''
   /**
    * reviwer and publisher cannot add or delete or edit quizs but can rearrange them
    */
@@ -416,21 +417,26 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     return of({})
   }
 
-  generateUrl(oldUrl: string) {
-    const chunk = oldUrl.split('/')
-    const newChunk = environment.azureHost.split('/')
-    const newLink = []
-    for (let i = 0; i < chunk.length; i += 1) {
-      if (i === 2) {
-        newLink.push(newChunk[i])
-      } else if (i === 3) {
-        newLink.push(environment.azureBucket)
-      } else {
-        newLink.push(chunk[i])
-      }
+  generateUrl(oldUrl: any) {
+    // @ts-ignore: Unreachable code error
+    let bucket = window["env"]["azureBucket"]
+    if (oldUrl.includes(bucket)) {
+      return oldUrl
     }
-    const newUrl = newLink.join('/')
-    return newUrl
+    // const chunk = oldUrl.split('/')
+    // const newChunk = environment.azureHost.split('/')
+    // const newLink = []
+    // for (let i = 0; i < chunk.length; i += 1) {
+    //   if (i === 2) {
+    //     newLink.push(newChunk[i])
+    //   } else if (i === 3) {
+    //     newLink.push(environment.azureBucket)
+    //   } else {
+    //     newLink.push(chunk[i])
+    //   }
+    // }
+    // const newUrl = newLink.join('/')
+    // return newUrl
   }
 
   // wrapperForTriggerSave() {
@@ -582,8 +588,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       isAssessment: true,
       questions: array,
     }
-//console.log(this.resourceType, this.resourceType === ASSESSMENT)
-//console.log(quizData)
+    //console.log(this.resourceType, this.resourceType === ASSESSMENT)
+    //console.log(quizData)
     const blob = new Blob([JSON.stringify(quizData, null, 2)], { type: 'application/json' })
     const formdata = new FormData()
     formdata.append('content', blob)
