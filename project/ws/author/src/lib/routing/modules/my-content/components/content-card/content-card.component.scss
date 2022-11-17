@@ -8,8 +8,8 @@ $action-btn-size: 2.5 * $size-m; // 40px
 }
 
 mat-card {
-  width: 100%;
-  height: auto;
+  width: 96%;
+  height: 90%;
   box-sizing: border-box;
 }
 
@@ -107,4 +107,13 @@ mat-card-actions {
 
 .border-bottom {
   border-bottom: 1px solid lightgrey;
+}
+.course-status-text {
+     font-family: sans-serif !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    font-size: 12px !important;
+    line-height: 17px !important;
+    letter-spacing: -0.02em;
+    color: #969696;
 }
