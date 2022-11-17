@@ -42,37 +42,37 @@
 <!-- <div class="margin-top-xl"> -->
 <div *ngIf="allowAuthorContentCreate"
   class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l padding-remove-left create-button">
-  <button mat-button class="font-weight-bold margin-remove-bottom mat-h3 ws-mat-primary-text ws-mat-primary-border" (click)="createBtn()" 
-    id="ws-auth-root-home-btn-create" name="ws-auth-root-home-btn-create">Create Content
+  <button mat-button class="font-weight-bold margin-remove-bottom mat-h3 ws-mat-primary-text ws-mat-primary-border"
+    (click)="createBtn()" id="ws-auth-root-home-btn-create" name="ws-auth-root-home-btn-create">Create Content
     <mat-icon class="ws-mat-primary-text margin-left-m margin-bottom-xxs">create</mat-icon>
   </button>
 </div>
 <mat-drawer-container class="example-container" *ngIf="!error">
-  <mat-drawer mode="side" opened>
-    <!-- <mat-accordion expanded *ngIf="allowAuthor">
+  <!-- <mat-drawer mode="side" opened> -->
+  <!-- <mat-accordion expanded *ngIf="allowAuthor">
           <mat-expansion-panel [expanded]="true" class="no-shadow">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 <span class="font-weight-500" i18n>Create Content</span>
               </mat-panel-title>
             </mat-expansion-panel-header> -->
-    <!-- <mat-list role="list">
+  <!-- <mat-list role="list">
               <mat-list-item mat-button role="listitem">
                 <a routerLink="/author/my-content" [queryParams]="{ status: 'draft' }" i18n>Draft</a>
               </mat-list-item>
               </mat-list> -->
-    <!-- <ws-auth-entity-card [entity]="resourceEntity" [expanded]="true" (step)="contentClicked($event)">
+  <!-- <ws-auth-entity-card [entity]="resourceEntity" [expanded]="true" (step)="contentClicked($event)">
               </ws-auth-entity-card> -->
-    <!-- </div> -->
-    <!-- <div class="flex-3"> -->
-    <!-- <ng-container *ngFor="let createEntity of entity; let i = index">
+  <!-- </div> -->
+  <!-- <div class="flex-3"> -->
+  <!-- <ng-container *ngFor="let createEntity of entity; let i = index">
                 <ws-auth-entity-card [entity]="createEntity" (step)="contentClicked($event)"></ws-auth-entity-card>
                 <mat-divider *ngIf="i % 2 !== 0"></mat-divider>
               </ng-container>
             </mat-expansion-panel>
         </mat-accordion> -->
 
-    <ng-container *ngIf="isNewDesign">
+  <!-- <ng-container *ngIf="isNewDesign">
       <mat-accordion expanded *ngIf="allowAuthor">
         <mat-expansion-panel [expanded]="true" class="no-shadow">
           <mat-expansion-panel-header>
@@ -144,9 +144,9 @@
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
-      </mat-accordion>
-      <!-- allowAuthor -->
-      <mat-accordion *ngIf="allowReview || allowPublish">
+      </mat-accordion> -->
+  <!-- allowAuthor -->
+  <!-- <mat-accordion *ngIf="allowReview || allowPublish">
         <mat-expansion-panel [expanded]="false" class="no-shadow">
           <mat-expansion-panel-header>
             <mat-panel-title>
@@ -166,12 +166,12 @@
           </mat-list>
         </mat-expansion-panel>
       </mat-accordion>
-    </ng-container>
-  </mat-drawer>
+    </ng-container> -->
+  <!-- </mat-drawer> -->
   <mat-drawer-content>
     <div class="card-holder margin-top-l">
 
-      <div class="flex flex-col md:flex-row pl-5 justify-between">
+      <div class="flex flex-col md:flex-row pl-12 justify-between">
         <h3 class="mat-h3">
           <!-- Choose your starting point from the below available options -->
           <ws-author-create-course [content]="content"></ws-author-create-course>

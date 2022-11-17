@@ -1,27 +1,32 @@
-<div class="page-container">
+<div class="page-container create-course-container">
 
-  <h1 class="mat-h1 margin-remove-bottom">Create a course</h1>
-  <p>Lets just add a few details about your course</p>
+  <h1 class="mat-h1 margin-remove-bottom heading-text">Welcome, Lets start by introducing your course!</h1>
+  <p class="desc-text">You can update your course name, details and thumbnails at anytime</p>
   <!-- <label>Hi, Lets start with a name</label> -->
   <!-- <br /> -->
   <form [formGroup]="createCourseForm">
-    <div class="margin-top-s">
-      <p class="required margin-remove-bottom">
+    <div class="margin-top-s first-row-container">
+      <!-- <p class="required margin-remove-bottom">
         Hi, Lets start with a name
-      </p>
-      <mat-form-field appearance="outline" class="margin-top-xs">
+      </p> -->
+      <mat-form-field appearance="outline" class="margin-top-xs field-width">
         <input matInput #courseName formControlName="courseName" maxlength="100" i18n-placeholder
           placeholder="Course name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="margin-top-xs field-width">
+        <input matInput #courseName formControlName="courseName" maxlength="100" i18n-placeholder
+          placeholder="Summary" />
       </mat-form-field>
     </div>
 
 
     <div>
-      <p class="required margin-remove-bottom" i18n="Course Introduction" i18n>
-        Add an Introduction</p>
+      <!-- <p class="required margin-remove-bottom" i18n="Course Introduction" i18n>
+        Add an Introduction</p> -->
       <mat-form-field appearance="outline" class="">
         <textarea #courseIntroduction maxlength="2000" matInput rows="3" formControlName="courseIntroduction"
-          i18n-placeholder placeholder="Course Introduction">
+          i18n-placeholder placeholder="Description">
           </textarea>
         <!-- <mat-hint align="end">{{ description.value.length }} / 2000</mat-hint>
         <mat-error i18n>Description is mandatory
@@ -38,7 +43,7 @@
 
       <div class="flex flex-middle margin-top-xs padding-top-l">
         <mat-checkbox [checked]="iprAccepted" (change)="iprChecked()"></mat-checkbox>
-        <p class="margin-left-xs margin-remove-bottom">
+        <p class="margin-left-xs margin-remove-bottom cons-text">
           I have read and agree to the
           <span class="ws-mat-primary-text font-weight-500 cursor-pointer" (click)="showIpr()">IPR Declaration</span>
         </p>
@@ -48,12 +53,12 @@
 
       <div class="flex flex-between margin-top-l margin-bottom-l margin-right-l">
 
-        <button mat-raised-button (click)="navigateTo('features')" class="
-          text-white ws-mat-primary-background  mat-button-base">Back</button>
+        <!-- <button mat-raised-button (click)="navigateTo('features')" class="
+          text-white ws-mat-primary-background  mat-button-base">Back</button> -->
 
         <button mat-raised-button (click)="onSubmit(createCourseForm)" class="
-          text-white ws-mat-primary-background  mat-button-base"
-          [disabled]="createCourseForm?.invalid || !iprAccepted">Next</button>
+          text-white ws-mat-primary-background  mat-button-base save-btn-mt"
+          [disabled]="createCourseForm?.invalid || !iprAccepted"> Save and Next</button>
       </div>
     </section>
   </form>
