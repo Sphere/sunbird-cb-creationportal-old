@@ -3,12 +3,13 @@ import { map } from 'rxjs/operators'
 import { ValueService } from '@ws-widget/utils/src/public-api'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'ws-auth-root-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-    // tslint:disable-next-line
+  // tslint:disable-next-line
   encapsulation: ViewEncapsulation.None,
 })
 export class AuthHomeComponent implements OnInit, OnDestroy {
@@ -26,7 +27,8 @@ export class AuthHomeComponent implements OnInit, OnDestroy {
   private defaultSideNavBarOpenedSubscription: any
   mode$ = this.isLtMedium$.pipe(map(isMedium => (isMedium ? 'over' : 'side')))
   public screenSizeIsLtMedium = false
-  constructor(private valueSvc: ValueService, private accessService: AccessControlService) { }
+  constructor(private valueSvc: ValueService, private accessService: AccessControlService,
+    private router: Router) { }
 
   ngOnInit() {
     this.allowAuthor = this.canShow('author')
@@ -41,6 +43,7 @@ export class AuthHomeComponent implements OnInit, OnDestroy {
       this.screenSizeIsLtMedium = isLtMedium
     })
     this.isNewDesign = this.accessService.authoringConfig.newDesign
+    this.router.navigate(['/author/my-content'], { queryParams: { status: 'draft' } })
   }
   ngOnDestroy() {
     if (this.defaultSideNavBarOpenedSubscription) {

@@ -8,6 +8,7 @@
   width: 120px;
   height: 60px;
   margin-top: 10px;
+  filter: brightness(3) ;
 
   @include breakpoint-xs {
     max-width: 80px;
@@ -31,4 +32,16 @@
 .custom {
   height: 80px;
   border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+
+.white-icon {
+  color: white !important;
+}
+.border-btn {
+  border: 1px solid white;
+  border-radius: 16px;
+}
+
+::ng-deep .theme-igot.day-mode .mat-toolbar.mat-primary{
+  background-color: #1C5D95 !important;
 }
