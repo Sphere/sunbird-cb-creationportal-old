@@ -160,7 +160,6 @@ export class EditorService {
     )
   }
   contentRead(id: string): Observable<any> {
-
     const res = this.apiService.get<any>(
       `/apis/proxies/v8/action/content/v3/hierarchy/${id}.img`
     )
@@ -177,6 +176,13 @@ export class EditorService {
     return this.someDataObservable
   }
 
+  createBatch(data: any): Observable<any> {
+    return this.http
+      .post<any>(
+        `/apis/proxies/v8/learner/course/v1/batch/create`,
+        data,
+      )
+  }
   createAndReadModule(
     requestPayload: any,
     parentId: any
