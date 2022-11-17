@@ -6,18 +6,18 @@
     <a routerLink="/author/cbp/me" i18n-matTooltip matTooltip="Home" class="logo-dim">
       <img [src]="appIcon" alt="Application Logo" class="app-logo" />
     </a>
-    <h3 class="mt-name margin-left-l">{{courseNameHeader}}</h3>
+    <h3 class="mt-name margin-left-l white-icon">{{courseNameHeader}}</h3>
 
     <span class="spacer width-1-1"></span>
 
-    <mat-icon i18n-matTooltip matTooltip="Course Settings" class="margin-right-l cursor-pointer"
+    <mat-icon i18n-matTooltip matTooltip="Course Settings" class="margin-right-l cursor-pointer white-icon"
       (click)="showCourseSettings()">
       settings</mat-icon>
 
     <div *ngFor="let button of requiredConfig || []" class="button-grid cursor-pointer"
       (click)="action.next(button.event)">
-      <button mat-raised-button class=" header-btn text-white ws-mat-primary-background mat-button-base margin-right-l">
-        <!-- <mat-icon class="text-white small-icon ws-mat-primary-text">{{ button.icon }}</mat-icon> -->
+      <button mat-raised-button
+        class=" header-btn text-white ws-mat-primary-background mat-button-base margin-right-l white-icon border-btn">
         {{ button.title }}
       </button>
 

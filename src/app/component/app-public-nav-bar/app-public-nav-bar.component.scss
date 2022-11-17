@@ -4,6 +4,7 @@
   max-width: 100px;
   max-height: 30px;
   min-width: 32px;
+  filter: brightness(3);
 
   @include breakpoint-xs {
     max-width: 80px;
