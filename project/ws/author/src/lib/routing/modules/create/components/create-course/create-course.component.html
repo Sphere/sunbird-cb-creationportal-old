@@ -4,35 +4,85 @@
   <p class="desc-text">You can update your course name, details and thumbnails at anytime</p>
   <!-- <label>Hi, Lets start with a name</label> -->
   <!-- <br /> -->
-  <form [formGroup]="createCourseForm">
-    <div class="margin-top-s first-row-container">
-      <!-- <p class="required margin-remove-bottom">
+  <form [formGroup]="createCourseForm" style="margin-top: -1rem;">
+    <div>
+      <div class="margin-top-s first-row-container">
+        <!-- <p class="required margin-remove-bottom">
         Hi, Lets start with a name
       </p> -->
-      <mat-form-field appearance="outline" class="margin-top-xs field-width">
-        <input matInput #courseName formControlName="courseName" maxlength="100" i18n-placeholder
-          placeholder="Course name" />
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="margin-top-xs field-width name-field ">
+          <input matInput #courseName formControlName="courseName" maxlength="100" i18n-placeholder
+            placeholder="Course name" />
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="margin-top-xs field-width">
-        <input matInput #courseName formControlName="courseName" maxlength="100" i18n-placeholder
-          placeholder="Summary" />
-      </mat-form-field>
-    </div>
+        <mat-form-field appearance="outline" class="margin-top-xs field-width name-field ">
+          <input matInput #courseName formControlName="courseName" maxlength="100" i18n-placeholder
+            placeholder="Summary" />
+        </mat-form-field>
+      </div>
 
 
-    <div>
-      <!-- <p class="required margin-remove-bottom" i18n="Course Introduction" i18n>
+      <div>
+        <!-- <p class="required margin-remove-bottom" i18n="Course Introduction" i18n>
         Add an Introduction</p> -->
-      <mat-form-field appearance="outline" class="">
-        <textarea #courseIntroduction maxlength="2000" matInput rows="3" formControlName="courseIntroduction"
-          i18n-placeholder placeholder="Description">
+        <mat-form-field appearance="outline" class="desc-field">
+          <textarea #courseIntroduction maxlength="2000" matInput rows="2" formControlName="courseIntroduction"
+            i18n-placeholder placeholder="Description">
           </textarea>
-        <!-- <mat-hint align="end">{{ description.value.length }} / 2000</mat-hint>
+          <!-- <mat-hint align="end">{{ description.value.length }} / 2000</mat-hint>
         <mat-error i18n>Description is mandatory
         </mat-error> -->
-      </mat-form-field>
+        </mat-form-field>
+      </div>
+      <!-- thumbnail -->
+      <div class="">
+        <label>
+          <div class="flex flex-middle thumbnail-container">
+            <p class="font-weight-bold margin-remove-bottom" [ngClass]="{ required: true }">
+              <span i18n class="thumbnail-text">Course Thumbnail : </span>
+            </p>
+            <!-- <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('appIcon')">info
+            </mat-icon> -->
+          </div>
+          <!-- <span i18n *ngIf="infoType === 'appIcon'">
+            <ul>
+              <li>
+                Maximum file size - 1 MB </li>
+              <li>Resolution for thumbnail - 760 px * 400 px </li>
+
+            </ul>
+          </span> -->
+        </label>
+        <div class="thumnail-wrapper">
+
+          <div>
+            <img class="image max-width" height="144" width="256" [src]="" />
+
+            <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadThumbnail.click()">
+              <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
+              <input type="file" #uploadThumbnail style="display: none;" [accept]="imageTypes.toString()" />
+            </div>
+          </div>
+          <div style="margin-left:-45px ;">
+            <span>
+              <ul class="ul-list">
+                <li class="thumbnail-info">Maximum file size: 1 MB</li>
+                <li class="thumbnail-info">Resolution: 760 px * 400 px</li>
+                <li class="thumbnail-info">Thumbnail Ratio: 256(w)X 150(h)</li>
+                <li class="thumbnail-info">Files allowed: JPG, PNG</li>
+              </ul>
+              <p class="note-thumbnail-text"> Note: Learner will see this image <br>for your course</p>
+            </span>
+          </div>
+
+
+        </div>
+
+      </div>
+
+
     </div>
+
 
 
 
@@ -61,6 +111,7 @@
           [disabled]="createCourseForm?.invalid || !iprAccepted"> Save and Next</button>
       </div>
     </section>
+
   </form>
 
 

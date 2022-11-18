@@ -2,7 +2,7 @@
     margin-top: -0.5em;
 }
 .fix-bottom {
-    bottom: 0;
+    bottom: -23px;
     position: absolute;
 }
 
@@ -289,7 +289,7 @@
 
    .create-course-container{
       width: 45vw;
-      margin-top: 18px;
+      margin-top: 7px;
    }
 
   .heading-text {
@@ -310,6 +310,7 @@
   }
   .field-width {
     width: 48%;
+
   }
 
   .cons-text {
@@ -324,4 +325,47 @@
     font-size: 14px;
     font-family: sans-serif !important;
   }
+  .name-field {
+    font-size: 14px  !important;
+  }
+  .desc-field {
+    font-size: 12px !important;
+  }
+
+  .thumbnail-container {
+    margin-top: -13px;
+  }
+  .thumbnail-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: 808080;
+    color: #808080;
+    font-family: sans-serif;
+  }
+
+  .thumnail-wrapper {
+    display: flex;
+    flex-direction: row;
+  }
+  .ul-list {
+    text-decoration: none;
+    list-style: none;
+  }
+  .thumbnail-info {
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    font-family: sans-serif  !important;
+    line-height: 1.8px  !important;
+    color: #000000  !important;
+  }
+.note-thumbnail-text {
+    margin-left: 41px  !important;
+    margin-bottom: -2px;
+    font-size: 12px;
+    font-family: sans-serif;
+    line-height: 16.8px;
+    color: #8B8B8B;
+}
+
+
 

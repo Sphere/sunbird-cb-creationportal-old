@@ -14,6 +14,7 @@ import { AccessControlService } from '@ws/author/src/lib/modules/shared/services
 import { IprDialogComponent } from '@ws/author/src/lib/modules/shared/components/ipr-dialog/ipr-dialog.component'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { mergeMap } from 'rxjs/operators'
+import { IMAGE_SUPPORT_TYPES } from '../../../../../constants/upload'
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -30,6 +31,8 @@ export class CreateCourseComponent implements OnInit {
   courseData: any
   iprAccepted = false
   identifier: any
+  infoType: string = ''
+  imageTypes = IMAGE_SUPPORT_TYPES
   constructor(
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
@@ -151,28 +154,28 @@ export class CreateCourseComponent implements OnInit {
           return this.svc.createForum(request)
         }))
         .subscribe(
-          async (data:any) => {
+          async (data: any) => {
 
-             const updateContentReq: any = {
-      request: {
-        content: {
-          versionKey: this.identifier.versionKey,
-        },
-      },
-    }
-    // tslint:disable-next-line:max-line-length
-    const result = await this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier).toPromise().catch((_error:any) => { })
-
-            if(data && result) {
-                          this.loaderService.changeLoad.next(false)
-            this.snackBar.openFromComponent(NotificationComponent, {
-              data: {
-                type: Notify.CONTENT_CREATE_SUCCESS,
+            const updateContentReq: any = {
+              request: {
+                content: {
+                  versionKey: this.identifier.versionKey,
+                },
               },
-              duration: NOTIFICATION_TIME * 1000,
-            })
-            this.router.navigateByUrl(`/author/editor/${this.identifier.identifier
-              }`)
+            }
+            // tslint:disable-next-line:max-line-length
+            const result = await this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier).toPromise().catch((_error: any) => { })
+
+            if (data && result) {
+              this.loaderService.changeLoad.next(false)
+              this.snackBar.openFromComponent(NotificationComponent, {
+                data: {
+                  type: Notify.CONTENT_CREATE_SUCCESS,
+                },
+                duration: NOTIFICATION_TIME * 1000,
+              })
+              this.router.navigateByUrl(`/author/editor/${this.identifier.identifier
+                }`)
             }
 
           },
@@ -216,6 +219,10 @@ export class CreateCourseComponent implements OnInit {
 
   iprChecked() {
     this.iprAccepted = !this.iprAccepted
+  }
+
+  showInfo(type: string) {
+    this.infoType = this.infoType === type ? '' : type
   }
 
   onSubmit(form: any) {
