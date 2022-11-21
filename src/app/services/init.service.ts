@@ -405,8 +405,20 @@ export class InitService {
         this.configSvc.isActive = details.isActive
         return details
       } catch (e) {
+        //let redirectUrl = this.defaultRedirectUrl
         this.configSvc.userProfile = null
-        throw new Error('Invalid user')
+        // if (e.status === 419) {
+        //   let url1 = document.baseURI.replace('https', 'http')
+        //   let url2 = `protected/v8/resource/?q=/author/cbp/me`
+        //   // @ts-ignore: Unreachable code error
+        //   const redirectUrl = `${url1}${url2}`
+        //   const state = uuid()
+        //   //const nonce = uuid()
+        //   const keycloakurl = `${document.baseURI}auth/realms/sunbird/protocol/openid-connect/auth?client_id=portal&state=${state}&redirect_uri=${encodeURIComponent(redirectUrl)}&auth_callback=1&scope=openid&response_type=code`
+        //   window.location.href = keycloakurl
+        // }
+        //window.location.href = `${ redirectUrl } apis / reset`
+        // throw new Error('Invalid user')
       }
     } else {
       return { group: [], profileDetailsStatus: true, roles: new Set(['Public']), tncStatus: true, isActive: true }
@@ -442,7 +454,7 @@ export class InitService {
   //           middleName: userData.personalDetails.middlename,
   //           departmentName: _.get(userData, 'employmentDetails.departmentName'),
   //           // tslint:disable-next-line: max-line-length
-  //           userName: `${userData.personalDetails.firstname
+  //           userName: `${ userData.personalDetails.firstname
   //                        ? userData.personalDetails.firstname : ''}${userData.personalDetails.surname
   //                                    ? userData.personalDetails.surname : ''}`,
   //           profileImage: userData && userData.photo,
@@ -474,7 +486,14 @@ export class InitService {
   //   // this.configSvc.userRoles = new Set(userRoles)
   //   // return details
   // }
-
+  // private get defaultRedirectUrl(): string {
+  //   try {
+  //     const baseUrl = document.baseURI
+  //     return baseUrl || location.origin
+  //   } catch (error) {
+  //     return location.origin
+  //   }
+  // }
   private async fetchInstanceConfig(): Promise<NsInstanceConfig.IConfig> {
     // TODO: use the rootOrg and org to fetch the instance
     const publicConfig = await this.http

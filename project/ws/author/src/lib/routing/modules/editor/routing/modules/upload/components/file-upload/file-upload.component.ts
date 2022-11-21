@@ -77,7 +77,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
   filetype!: string | null
   acceptType!: string | '.mp3,.mp4,.pdf,.zip,.m4v'
   entryPoint: any
-
+  bucket: string = ''
   @Input() isCreatorEnable = true
 
   constructor(
@@ -494,13 +494,13 @@ export class FileUploadComponent implements OnInit, OnChanges {
         // }
         // const updateHierarchyRes: any = await this.editorService.updateContentV4(updateHierarchyReq).toPromise().catch(_error => { })
         // if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
-          const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
-          if (hierarchyData) {
-            this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
-            this.upload()
-          } else {
-            this.errorMessage()
-          }
+        const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
+        if (hierarchyData) {
+          this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
+          this.upload()
+        } else {
+          this.errorMessage()
+        }
         // } else {
         //   this.errorMessage()
         // }
@@ -607,21 +607,31 @@ export class FileUploadComponent implements OnInit, OnChanges {
   //     )
   // }
 
-  generateUrl(oldUrl: string) {
-    const chunk = oldUrl.split('/')
-    const newChunk = environment.azureHost.split('/')
-    const newLink = []
-    for (let i = 0; i < chunk.length; i += 1) {
-      if (i === 2) {
-        newLink.push(newChunk[i])
-      } else if (i === 3) {
-        newLink.push(environment.azureBucket)
-      } else {
-        newLink.push(chunk[i])
-      }
+  generateUrl(oldUrl: any) {
+    // @ts-ignore: Unreachable code error
+    // tslint:disable-next-line:no-console
+    console.log(window["env"]["azureBucket"])
+    // @ts-ignore: Unreachable code error
+    this.bucket = window["env"]["azureBucket"]
+    if (oldUrl.includes(this.bucket)) {
+      return oldUrl
     }
-    const newUrl = newLink.join('/')
-    return newUrl
+    // const chunk = oldUrl.split('/')
+    //const newChunk = environment.azureHost.split('/')
+    // const newChunk = this.bucket
+    // const newLink = []
+    // for (let i = 0; i < chunk.length; i += 1) {
+    //   if (i === 2) {
+    //     newLink.push(newChunk[i])
+    //   } else if (i === 3) {
+    //     //newLink.push(environment.azureBucket)
+    //     newLink.push(environment.azureBucket)
+    //   } else {
+    //     newLink.push(chunk[i])
+    //   }
+    // }
+    // const newUrl = newLink.join('/')
+    // return newUrl
   }
 
   upload() {

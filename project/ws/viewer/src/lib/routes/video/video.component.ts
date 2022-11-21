@@ -12,7 +12,7 @@ import { ValueService } from '@ws-widget/utils'
 import { ActivatedRoute } from '@angular/router'
 import { ViewerUtilService } from '../../viewer-util.service'
 import { Platform } from '@angular/cdk/platform'
-import { environment } from '../../../../../../../src/environments/environment'
+//import { environment } from '../../../../../../../src/environments/environment'
 
 @Component({
   selector: 'viewer-video',
@@ -149,21 +149,27 @@ export class VideoComponent implements OnInit, OnDestroy {
     }
   }
 
-  generateUrl(oldUrl: string) {
-    const chunk = oldUrl.split('/')
-    const newChunk = environment.azureHost.split('/')
-    const newLink = []
-    for (let i = 0; i < chunk.length; i += 1) {
-      if (i === 2) {
-        newLink.push(newChunk[i])
-      } else if (i === 3) {
-        newLink.push(environment.azureBucket)
-      } else {
-        newLink.push(chunk[i])
-      }
+  generateUrl(oldUrl: any) {
+    // @ts-ignore: Unreachable code error
+    let bucket = window["env"]["azureBucket"]
+    if (oldUrl.includes(bucket)) {
+      return oldUrl
     }
-    const newUrl = newLink.join('/')
-    return newUrl
+
+    // const chunk = oldUrl.split('/')
+    // const newChunk = environment.azureHost.split('/')
+    // const newLink = []
+    // for (let i = 0; i < chunk.length; i += 1) {
+    //   if (i === 2) {
+    //     newLink.push(newChunk[i])
+    //   } else if (i === 3) {
+    //     newLink.push(environment.azureBucket)
+    //   } else {
+    //     newLink.push(chunk[i])
+    //   }
+    // }
+    // const newUrl = newLink.join('/')
+    // return newUrl
   }
 
   ngOnDestroy() {

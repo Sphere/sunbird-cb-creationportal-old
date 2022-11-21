@@ -10,7 +10,7 @@ export const environment: IEnvironment = {
   channelId: '0131397178949058560',
   // karmYogi: 'https://igot-sunbird.idc.tarento.com/',
   karmYogi: 'https://cbp-sphere.aastrika.org/',
-  azureHost: 'https://sunbirdcontent.s3-ap-south-1.amazonaws.com',
+  azureHost: 'https://sunbirdcontent-stage.s3-ap-south-1.amazonaws.com',
   azureBucket: 'content',
   azureOldHost: 'https://staas-bbs1.cloud.gov.in',
   azureOldBuket: 'igot',

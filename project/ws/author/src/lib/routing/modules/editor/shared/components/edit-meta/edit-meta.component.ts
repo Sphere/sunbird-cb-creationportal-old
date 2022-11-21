@@ -49,7 +49,7 @@ import { NSApiRequest } from '../../../../../../interface/apiRequest'
 
 // import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
 // import { NSApiResponse } from '../../../../../../interface/apiResponse'
-import { environment } from '../../../../../../../../../../../src/environments/environment'
+//import { environment } from '../../../../../../../../../../../src/environments/environment'
 import { HttpClient } from '@angular/common/http'
 @Component({
   selector: 'ws-auth-edit-meta',
@@ -109,6 +109,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   public sideNavBarOpened = false
   gatingEnabled!: FormControl
   issueCertification!: FormControl
+  bucket: string = ''
 
   @ViewChild('creatorContactsView', { static: false }) creatorContactsView!: ElementRef
   @ViewChild('trackContactsView', { static: false }) trackContactsView!: ElementRef
@@ -379,8 +380,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
           ? <any>this.convertToISODate(contentMeta.expiryDate)
           : ''
     }
-      this.contentService.currentContentData = this.contentMeta
-      this.contentService.currentContentID = this.contentMeta.identifier
+    this.contentService.currentContentData = this.contentMeta
+    this.contentService.currentContentID = this.contentMeta.identifier
 
     this.assignFields()
     this.setDuration(contentMeta.duration || '0')
@@ -1254,20 +1255,28 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   generateUrl(oldUrl: any) {
-    const chunk = oldUrl.split('/')
-    const newChunk = environment.azureHost.split('/')
-    const newLink = []
-    for (let i = 0; i < chunk.length; i += 1) {
-      if (i === 2) {
-        newLink.push(newChunk[i])
-      } else if (i === 3) {
-        newLink.push(environment.azureBucket)
-      } else {
-        newLink.push(chunk[i])
-      }
+    //const chunk = oldUrl.split('/')
+    //const newChunk = environment.azureHost.split('/')
+    // @ts-ignore: Unreachable code error
+    this.bucket = window["env"]["azureBucket"]
+    if (oldUrl.includes(this.bucket)) {
+      return oldUrl
     }
-    const newUrl = newLink.join('/')
-    return newUrl
+    // const newChunk = this.bucket
+    // const newLink = []
+    // for (let i = 0; i < chunk.length; i += 1) {
+    //   console.log(i)
+    //   if (i === 2) {
+    //     newLink.push(newChunk[i])
+    //   } else if (i === 3) {
+    //     newLink.push(environment.azureBucket)
+    //   } else {
+    //     newLink.push(chunk[i])
+    //   }
+    // }
+    // const newUrl = newLink.join('/')
+    // console.log(newUrl)
+    // return newUrl
   }
 
   showError(meta: string) {

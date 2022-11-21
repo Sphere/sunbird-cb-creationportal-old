@@ -6,7 +6,7 @@ import { NSQuiz } from '../../plugins/quiz/quiz.model'
 import { ActivatedRoute } from '@angular/router'
 import { WsEvents, EventService } from '@ws-widget/utils'
 import { ViewerUtilService } from '../../viewer-util.service'
-import { environment } from '../../../../../../../src/environments/environment'
+//import { environment } from '../../../../../../../src/environments/environment'
 // import { take } from 'rxjs/operators'
 
 @Component({
@@ -71,8 +71,8 @@ export class QuizComponent implements OnInit, OnDestroy {
       this.activatedRoute.snapshot.queryParams.collectionType
       && this.quizData) {
       await this.contentSvc.continueLearning(this.quizData.identifier,
-                                             this.activatedRoute.snapshot.queryParams.collectionId,
-                                             this.activatedRoute.snapshot.queryParams.collectionType,
+        this.activatedRoute.snapshot.queryParams.collectionId,
+        this.activatedRoute.snapshot.queryParams.collectionType,
       )
     } else if (this.quizData) {
       await this.contentSvc.continueLearning(this.quizData.identifier)
@@ -183,21 +183,26 @@ export class QuizComponent implements OnInit, OnDestroy {
   //   return
   // }
 
-  generateUrl(oldUrl: string) {
-    const chunk = oldUrl.split('/')
-    const newChunk = environment.azureHost.split('/')
-    const newLink = []
-    for (let i = 0; i < chunk.length; i += 1) {
-      if (i === 2) {
-        newLink.push(newChunk[i])
-      } else if (i === 3) {
-        newLink.push(environment.azureBucket)
-      } else {
-        newLink.push(chunk[i])
-      }
+  generateUrl(oldUrl: any) {
+    // @ts-ignore: Unreachable code error
+    let bucket = window["env"]["azureBucket"]
+    if (oldUrl.includes(bucket)) {
+      return oldUrl
     }
-    const newUrl = newLink.join('/')
-    return newUrl
+    // const chunk = oldUrl.split('/')
+    // const newChunk = environment.azureHost.split('/')
+    // const newLink = []
+    // for (let i = 0; i < chunk.length; i += 1) {
+    //   if (i === 2) {
+    //     newLink.push(newChunk[i])
+    //   } else if (i === 3) {
+    //     newLink.push(environment.azureBucket)
+    //   } else {
+    //     newLink.push(chunk[i])
+    //   }
+    // }
+    // const newUrl = newLink.join('/')
+    // return newUrl
   }
 
 }
