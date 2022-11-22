@@ -388,6 +388,7 @@ export namespace NSContent {
     reviewStatus: string
     streamingUrl: string[]
     entryPoint: string[]
+    langName: string
   }
 
   export interface IOrganisations {

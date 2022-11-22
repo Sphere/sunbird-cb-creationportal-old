@@ -105,6 +105,7 @@ export class EditorService {
           framework: environment.framework,
           mimeType: meta.mimeType,
           name: meta.name,
+          instructions: '',
           // organisation: [environment.organisation],
           organisation: [
             (this.configSvc.userProfile && this.configSvc.userProfile.departmentName) ? this.configSvc.userProfile.departmentName : '',

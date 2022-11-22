@@ -68,6 +68,7 @@ export class CreateService {
     mimeType: string; contentType: string; locale: string, name: any,
     primaryCategory: string, purpose?: string
   }): Observable<string> {
+    console.log('meta', meta)
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {
@@ -81,10 +82,11 @@ export class CreateService {
           createdBy: this.accessService.userId,
           createdFor: [(this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId) ? this.configSvc.userProfile.rootOrgId : ''],
           creator: this.accessService.userName,
-          description: '',
+          description: meta.name.courseSummary,
           framework: environment.framework,
           mimeType: meta.mimeType,
           name: meta.name.courseName,
+          instructions: meta.name.courseDescription,
           purpose: (meta.name.courseIntroduction) ? meta.name.courseIntroduction : '',
           // organisation: [environment.organisation],
           organisation: [

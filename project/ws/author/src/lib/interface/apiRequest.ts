@@ -89,6 +89,7 @@ export namespace NSApiRequest {
         license: string
         ownershipType: string[]
         purpose?: string
+        instructions: string
       }
     }
   }

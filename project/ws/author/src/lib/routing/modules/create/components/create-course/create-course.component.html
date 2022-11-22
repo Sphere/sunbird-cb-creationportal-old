@@ -16,7 +16,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="margin-top-xs field-width name-field ">
-          <input matInput #courseName formControlName="courseName" maxlength="100" i18n-placeholder
+          <input matInput #courseSummary formControlName="courseSummary" maxlength="100" i18n-placeholder
             placeholder="Summary" />
         </mat-form-field>
       </div>
@@ -26,7 +26,7 @@
         <!-- <p class="required margin-remove-bottom" i18n="Course Introduction" i18n>
         Add an Introduction</p> -->
         <mat-form-field appearance="outline" class="desc-field">
-          <textarea #courseIntroduction maxlength="2000" matInput rows="2" formControlName="courseIntroduction"
+          <textarea #courseIntroduction maxlength="2000" matInput rows="4" formControlName="courseDescription"
             i18n-placeholder placeholder="Description">
           </textarea>
           <!-- <mat-hint align="end">{{ description.value.length }} / 2000</mat-hint>
@@ -35,32 +35,27 @@
         </mat-form-field>
       </div>
       <!-- thumbnail -->
-      <div class="">
+      <!-- <div class="">
         <label>
           <div class="flex flex-middle thumbnail-container">
             <p class="font-weight-bold margin-remove-bottom" [ngClass]="{ required: true }">
               <span i18n class="thumbnail-text">Course Thumbnail : </span>
             </p>
-            <!-- <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('appIcon')">info
-            </mat-icon> -->
-          </div>
-          <!-- <span i18n *ngIf="infoType === 'appIcon'">
-            <ul>
-              <li>
-                Maximum file size - 1 MB </li>
-              <li>Resolution for thumbnail - 760 px * 400 px </li>
 
-            </ul>
-          </span> -->
+          </div>
+
         </label>
         <div class="thumnail-wrapper">
 
           <div>
-            <img class="image max-width" height="144" width="256" [src]="" />
+            <img class="image max-width" height="144" width="256" [src]="createCourseForm.controls.appIcon.value"
+              (error)="changeToDefaultImg($event)" />
 
             <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadThumbnail.click()">
               <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
-              <input type="file" #uploadThumbnail style="display: none;" [accept]="imageTypes.toString()" />
+              <input type="file" #uploadThumbnail
+                (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null" style="display: none;"
+                [accept]="imageTypes.toString()" />
             </div>
           </div>
           <div style="margin-left:-45px ;">
@@ -78,7 +73,7 @@
 
         </div>
 
-      </div>
+      </div> -->
 
 
     </div>
@@ -92,7 +87,7 @@
       </mat-checkbox> -->
 
       <div class="flex flex-middle margin-top-xs padding-top-l">
-        <mat-checkbox [checked]="iprAccepted" (change)="iprChecked()"></mat-checkbox>
+        <mat-checkbox [checked]="iprAccepted" (change)="iprChecked();"></mat-checkbox>
         <p class="margin-left-xs margin-remove-bottom cons-text">
           I have read and agree to the
           <span class="ws-mat-primary-text font-weight-500 cursor-pointer" (click)="showIpr()">IPR Declaration</span>

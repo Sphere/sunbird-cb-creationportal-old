@@ -110,6 +110,20 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   gatingEnabled!: FormControl
   issueCertification!: FormControl
   bucket: string = ''
+  certificateList: any[] = [
+    'Yes', 'No'
+  ]
+  languageList: any[] = [
+    {
+      "name": 'English',
+      "value": 'en'
+    },
+    {
+      "name": 'Hindi',
+      "value": 'hn'
+    }
+  ]
+  isAddCerticate: boolean = false;
 
   @ViewChild('creatorContactsView', { static: false }) creatorContactsView!: ElementRef
   @ViewChild('trackContactsView', { static: false }) trackContactsView!: ElementRef
@@ -323,6 +337,16 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     // )
   }
 
+
+  changeCertificate(event: any): void {
+    if (event == 'Yes') {
+      this.isAddCerticate = true
+    }
+    else {
+      this.isAddCerticate = false
+    }
+  }
+
   optionSelected(keyword: string) {
     this.keywordsCtrl.setValue(' ')
     // this.keywordsSearch.nativeElement.blur()
@@ -487,6 +511,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         }
         this.contentForm.controls.sourceName.setValue(this.contentMeta.sourceName)
+        this.contentForm.controls.langName.setValue(this.contentMeta.langName)
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
           this.contentForm.controls[v].markAsTouched()
@@ -623,6 +648,9 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
             if (!currentMeta.sourceName) {
               currentMeta.sourceName = parentData.sourceName !== '' ? parentData.sourceName : currentMeta.sourceName
+            }
+            if (!currentMeta.langName) {
+              currentMeta.langName = parentData.langName !== '' ? parentData.langName : currentMeta.langName
             }
           }
         }
@@ -1254,6 +1282,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       : ''
   }
 
+
   generateUrl(oldUrl: any) {
     //const chunk = oldUrl.split('/')
     //const newChunk = environment.azureHost.split('/')
@@ -1495,6 +1524,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       instructions: [],
       versionKey: '',  // (new Date()).getTime()
       purpose: '',
+      langName: ''
     })
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
