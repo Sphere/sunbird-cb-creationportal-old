@@ -294,14 +294,15 @@ ul li {
 .form-edit-int {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  gap: 4%;
+  //justify-content: space-between;
   font-size: 12px;
   //margin-top: -15px;
 }
 .form-edit-int-cert{
   display: flex;
   flex-direction: row;
-  gap: 10%;
+  gap: 4%;
   margin-top: -15px;
   font-size: 12px;
 }
@@ -366,9 +367,21 @@ ul li {
     justify-content: space-between;
   }
   .thumbnail-info {
-    font-size: 13px !important;
+    font-size: 10px !important;
     font-weight: 400 !important;
     font-family: sans-serif  !important;
     line-height: 1.8px  !important;
     color: #000000  !important;
   }
+  .note-thumbnail-text {
+    margin-left: 41px  !important;
+    margin-bottom: -2px;
+    font-size: 12px;
+    font-family: sans-serif;
+    line-height: 16.8px;
+    color: #8B8B8B;
+}
+
+.sidenav-content {
+  width: 76vw;
+}
