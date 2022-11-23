@@ -84,7 +84,8 @@ export class ContentCardComponent implements OnInit {
           this.data.status === 'InReview' ||
           this.data.status === 'Unpublished' ||
           this.data.status === 'Reviewed' ||
-          this.data.status === 'QualityReview'
+          this.data.status === 'QualityReview' ||
+          this.data.status === 'Draft'
         ) {
           returnValue = this.accessService.hasAccess({ ...this.data, status: 'Draft' })
         }
