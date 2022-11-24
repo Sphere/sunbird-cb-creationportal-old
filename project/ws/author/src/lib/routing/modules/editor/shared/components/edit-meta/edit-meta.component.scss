@@ -309,6 +309,9 @@ ul li {
 .field-edit-width {
    width: 45%;
 }
+.field-title-width {
+  width: 42%;
+}
 
 .save-btn-mt {
     width: 15%;
@@ -341,7 +344,7 @@ ul li {
   }
 
   .course-title {
-    font-size: 24px;
+    font-size: 12px;
     font-family: sans-serif;
     line-height: 26.8px;
   }
@@ -392,3 +395,49 @@ ul li {
     color: #808080;
     font-family: sans-serif;
   }
+  .crs-title-text {
+    display: flex;
+    flex-direction: row;
+    max-height: 48px;
+  }
+  .edit-title {
+    padding-left: 5px;
+    padding-top: 15px;
+  }
+  // .disabledData {
+  //   width: 20%;
+  // }
+
+// :host ::ng-deep .mat-form-field .disabledData {
+// border: none !important;
+
+// }
+
+//  :host ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline  {
+//   border: none;
+// }
+
+::ng-deep .disabledData .mat-form-field-outline  {
+  display: none !important;
+  height: 20px  !important;
+}
+
+.full-view-container {
+  margin-top: 4px !important;
+}
+
+.disabledDataContainer {
+    font-size: 15px;
+    font-family: sans-serif;
+    font-weight: 400;
+}
+
+
+
+
+
+
+
+
+
+
