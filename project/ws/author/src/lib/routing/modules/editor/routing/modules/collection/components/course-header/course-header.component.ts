@@ -23,8 +23,8 @@ export class CourseHeaderComponent implements OnInit {
   requiredConfig: IActionButton[] = []
 
   constructor(private configSvc: ConfigurationsService, private domSanitizer: DomSanitizer,
-              private headerService: HeaderServiceService,
-              private store: CollectionStoreService) {
+    private headerService: HeaderServiceService,
+    private store: CollectionStoreService) {
     this.headerService.showCourseHeader.subscribe(data => {
       this.courseNameHeader = data
     })
@@ -39,6 +39,7 @@ export class CourseHeaderComponent implements OnInit {
     }
 
     if (this.buttonConfig) {
+      console.log('buttonClicked')
       this.buttonConfig.buttons.forEach(button => {
         if (button.event === 'save' || button.event === 'push' || button.title === 'saveAndNext') {
           this.requiredConfig.push(button)

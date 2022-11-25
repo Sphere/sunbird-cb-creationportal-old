@@ -665,7 +665,9 @@
             [ngClass]="{ 'mat-form-field-invalid': showError('sourceName') }">
             <mat-select formControlName="sourceName" (ngModelChange)="changeCertificate($event)" i18n-placeholder
               placeholder="Issue Certificate">
-              <mat-option *ngFor="let sourceName of certificateList" [value]="sourceName">
+              <mat-option value="undefined" selected disabled>Issue Certificate</mat-option>
+              <mat-option *ngFor="let sourceName of certificateList" [value]="
+                sourceName">
                 {{ sourceName }}</mat-option>
             </mat-select>
             <mat-error *ngIf="showError('sourceName')" i18n>Source is mandatory </mat-error>
@@ -784,7 +786,7 @@
 
         <section class="width-1-3 fix-bottom">
           <div class="flex flex-between  margin-bottom-l margin-right-l">
-            <button mat-raised-button (click)="onSubmit(createCourseForm)" class="
+            <button mat-raised-button type="submit" (click)="data.emit('save'); isSubmitPressed = true" class="
                   text-white ws-mat-primary-background  mat-button-base save-btn-bottom"> Save and Next</button>
           </div>
         </section>
