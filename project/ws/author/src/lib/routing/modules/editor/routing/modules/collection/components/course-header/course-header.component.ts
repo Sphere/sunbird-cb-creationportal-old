@@ -40,6 +40,7 @@ export class CourseHeaderComponent implements OnInit {
     }
 
     if (this.buttonConfig) {
+      console.log('buttonClicked')
       this.buttonConfig.buttons.forEach(button => {
         if (button.event === 'save' || button.event === 'push' || button.title === 'saveAndNext') {
           this.requiredConfig.push(button)

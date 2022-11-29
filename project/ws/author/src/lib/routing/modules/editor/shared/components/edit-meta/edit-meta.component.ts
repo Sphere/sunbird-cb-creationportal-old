@@ -125,6 +125,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   ]
   isAddCerticate: boolean = false;
+  isEnableTitle: boolean = true
 
   @ViewChild('creatorContactsView', { static: false }) creatorContactsView!: ElementRef
   @ViewChild('trackContactsView', { static: false }) trackContactsView!: ElementRef
@@ -163,7 +164,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     private authInitService: AuthInitService,
     private accessService: AccessControlService,
     // private apiService: ApiService,
-    private http: HttpClient
+    private http: HttpClient,
   ) { }
 
   ngAfterViewInit() {
@@ -343,6 +344,11 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     //   distinctUntilChanged(),
     //   switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
     // )
+  }
+
+
+  enableClick(): void {
+    this.isEnableTitle = false
   }
 
 
