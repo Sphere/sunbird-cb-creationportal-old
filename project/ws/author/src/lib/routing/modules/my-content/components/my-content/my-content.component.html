@@ -87,11 +87,12 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
     </ng-container>
     <ng-container *ngIf="!isNewDesign">
       <mat-accordion expanded *ngIf="allowAuthor">
-        <mat-expansion-panel [expanded]="true" class="no-shadow" hideToggle>
+        <mat-expansion-panel [expanded]="true" [disabled]="isDisabled" style="cursor:pointer" class="no-shadow"
+          hideToggle>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <span class="font-weight-500 head-content-title" [ngClass]="{'head-content-title':isSelectedColor }"
-                i18n>My Content</span>
+              <span class="font-weight-500 head-content-title" (click)="onClickReviewCourse('Draft')"
+                [ngClass]="{'head-content-title':isSelectedColor }" i18n>My Content</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <!-- Shown when logged in as admin-->
