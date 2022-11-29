@@ -1,4 +1,5 @@
-<ws-author-course-header [buttonConfig]="actionButton" (action)="action($event)" (subAction)="subAction($event)">
+<ws-author-course-header [isModelHeaderView]="isModelHeaderView" [buttonConfig]="actionButton" (action)="action($event)"
+  (subAction)="subAction($event)">
 </ws-author-course-header>
 
 <mat-drawer-container autosize="true" id="auth-toc" class="example-container">
@@ -134,19 +135,22 @@
       <ws-auth-file-upload [isCollectionEditor]="true" *ngIf="!showAddchapter && viewMode === 'upload'"
         [isSubmitPressed]="isSubmitPressed" (data)="action($event)" [isCreatorEnable]="checkCreator">
       </ws-auth-file-upload>
-      <ws-auth-quiz [isCollectionEditor]="true" *ngIf="!showAddchapter && viewMode === 'assessment'"
-        [isSubmitPressed]="isSubmitPressed" (data)="action($event)" [isCreatorEnable]="checkCreator"></ws-auth-quiz>
+      <ws-auth-quiz [isCollectionEditor]="true"
+        *ngIf="!showAddchapter && viewMode === 'assessment' && !isModelHeaderView" [isSubmitPressed]="isSubmitPressed"
+        (data)="action($event)" [isCreatorEnable]="checkCreator"></ws-auth-quiz>
 
       <ws-auth-web-module-editor *ngIf="!showAddchapter && viewMode === 'webmodule'" (data)="action($event)">
       </ws-auth-web-module-editor>
 
       <ws-auth-edit-meta [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" (data)="action($event)"
-        *ngIf="!showAddchapter && viewMode === 'meta'"></ws-auth-edit-meta>
+        *ngIf="!showAddchapter && viewMode === 'meta'" (courseEditFormSubmit)="courseEditFormSubmit($event)">
+      </ws-auth-edit-meta>
 
       <!--  [class.hidden]="viewMode !== 'meta'" -->
 
       <ws-auth-edit-meta [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" (data)="action($event)"
-        *ngIf="!showAddchapter && viewMode !== 'meta'"></ws-auth-edit-meta>
+        *ngIf="!showAddchapter && viewMode !== 'meta'" (courseEditFormSubmit)="courseEditFormSubmit($event)">
+      </ws-auth-edit-meta>
 
 
     </mat-sidenav-container>

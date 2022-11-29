@@ -59,6 +59,7 @@ import { HttpClient } from '@angular/common/http'
 export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   contentMeta!: NSContent.IContentMeta
   @Output() data = new EventEmitter<string>()
+  @Output() courseEditFormSubmit = new EventEmitter<boolean>()
   @Input() isSubmitPressed = false
   @Input() nextAction = 'done'
   @Input() stage = 1
@@ -140,6 +141,13 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   filteredOptions$: Observable<string[]> = of([])
   saveParent: any
+
+  //UI variables
+  isModelOrResourcePageEnabled: boolean = false;
+  showAddModuleForm: boolean = false;
+  moduleName: string = 'undefined title';
+  isSaveModuleFormEnable: boolean = false;
+  moduleButtonName: string = 'Create';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -1674,6 +1682,17 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     } catch {
       return []
     }
+  }
+
+  onSubmit() {
+    this.isModelOrResourcePageEnabled = true
+    this.courseEditFormSubmit.emit(true)
+  }
+
+  moduleCreate(name: string) {
+    this.moduleName = name
+    this.isSaveModuleFormEnable = true
+    this.moduleButtonName = 'Save'
   }
 
 }

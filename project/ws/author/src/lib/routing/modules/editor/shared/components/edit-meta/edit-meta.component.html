@@ -1,4 +1,134 @@
-<form [formGroup]="contentForm" class="width-2-3">
+<div class="main-model" *ngIf="isModelOrResourcePageEnabled">
+  <mat-grid-list cols="4" rowHeight="100vh">
+    <mat-grid-tile [colspan]="1">
+
+      <mat-drawer-container [class.drawer-opened]="drawer.opened">
+        <mat-drawer #drawer class="drawer" mode="side" opened="false">
+
+        </mat-drawer>
+        <!--module & resources left canvas header-->
+        <mat-toolbar class="model header">
+          <span class="course-title">{{'CourseName'}}</span>
+          <mat-icon class="material-icons margin-left-m text-medium brand-color" style="padding-top: 5px;">
+            edit</mat-icon>
+          <span class="margin-left-s text-small">(0h 0m)</span>
+        </mat-toolbar>
+        <!--module & resources left canvas-->
+        <div class="model-text model-left-content" *ngIf="!showAddModuleForm">
+          <span>Modules and Resources will be visible here once you start adding them.</span>
+        </div>
+        <!--module left canvas creation-->
+        <div class="model-left-create-content" *ngIf="showAddModuleForm">
+          <div class="module-card thumnail-row">
+            <div class="module-text">
+              <span class="margin-right-s">{{moduleName}}</span>
+              <button *ngIf="isSaveModuleFormEnable" mat-raised-button
+                class="model-button-width secondary-button-outline mat-button-base save-btn-bottom"
+                style="margin-top:0.3rem"> Add
+                Resource</button>
+            </div>
+            <div>
+              <mat-icon class="material-icons text-medium brand-color margin-left-m" style="text-align: end;"
+                *ngIf="isSaveModuleFormEnable">
+                delete_outline
+              </mat-icon>
+              <mat-icon class="material-icons text-medium brand-color" *ngIf="isSaveModuleFormEnable">content_copy
+              </mat-icon>
+            </div>
+          </div>
+        </div>
+        <!--module & resource left footer-->
+        <div class="model-button">
+          <button mat-raised-button
+            class=" margin-left-l model-button-width secondary-button mat-button-base save-btn-bottom"
+            (click)="showAddModuleForm = !showAddModuleForm"> Add
+            Module</button>
+          <button mat-raised-button
+            class=" margin-left-m model-button-width secondary-button mat-button-base save-btn-bottom"> Add
+            Resource</button>
+        </div>
+      </mat-drawer-container>
+    </mat-grid-tile>
+    <mat-grid-tile [colspan]="3">
+      <mat-drawer-container [class.drawer-opened]="drawer.opened" class="margin-left-m example-container">
+        <mat-drawer #drawer class="drawer" mode="side" opened="false">
+
+        </mat-drawer>
+        <!--module right canvas header-->
+        <mat-toolbar class="model header">
+          <div style="text-align: end;width: 100%;" class="preview-icon">
+            <mat-icon [ngClass]="showAddModuleForm ? 'brand-color' : ''" class="margin-right-s material-icons"
+              style="font-size: small;">remove_red_eye</mat-icon>
+            <span style="font-size: small;" [ngClass]="showAddModuleForm ? 'brand-color' : ''">Preview</span>
+            <button mat-raised-button [ngClass]="showAddModuleForm ? 'ws-mat-primary-background' : 'secondary-button'"
+              class="width-20 margin-left-s mat-button-base save-btn-bottom">
+              Go toCourse Settings ></button>
+          </div>
+        </mat-toolbar>
+        <!--module & resource right canvas create page-->
+        <div class="model-right-content" *ngIf="!showAddModuleForm">
+          <span class="course-sub-title">Add one of the following to start :</span>
+          <div style="background-color: #FBF3E2;">
+            <img src="/assets/instances/eagle/creation-page/module-page.png" [alt]="model"
+              style="width: 100%;height:200px;">
+          </div>
+          <div class="model-right-footer">
+            <button mat-raised-button
+              class="width-45 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
+              (click)="showAddModuleForm = !showAddModuleForm">
+              Module</button>
+            <span class="margin-left-l">or</span>
+            <button mat-raised-button
+              class="margin-left-l width-45 text-white ws-mat-primary-background  mat-button-base save-btn-bottom">
+              Resource</button>
+            <div class="margin-top-s">
+              <span style="padding:2vh">Note:</span>
+              <ul style="margin: 0px;">
+                <li style="margin: 0px;">You can add resources under Modules or you can add resources directly under the
+                  course.</li>
+                <li style="margin: 0px;">A course needs a minimum of two resources to be created</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!--module right canvas right create page-->
+        <div class="model-right-content" *ngIf="showAddModuleForm">
+          <div>
+            <span class="course-sub-title" *ngIf="!isSaveModuleFormEnable">{{moduleName}}</span>
+            <span class="course-sub-title" *ngIf="isSaveModuleFormEnable">Module Details</span>
+          </div>
+          <div><input name="moduleName" type="text" matInput #module class="module-input margin-top-s"
+              placeholder="Name of the Module" autocomplete="off" />
+          </div>
+          <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
+            <span style="color:#808080">Module Thumbnail</span>
+          </div>
+          <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
+            <div>
+              <img class="image max-width" height="144" width="256" src="/assets/instances/eagle/app_logos/default.png">
+              <div class="add mat-elevation-z4 mat-app-background">
+                <mat-icon class="add-icon mat-icon material-icons mat-icon-no-color" role="img" aria-hidden="true">add
+                </mat-icon>
+                <input style="display: none;" type="file">
+              </div>
+            </div>
+            <div>
+              Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
+            </div>
+          </div>
+          <div *ngIf="isSaveModuleFormEnable"><span style="color:#808080">Note: Learners will see this image for this
+              module</span></div>
+          <div><button mat-raised-button
+              class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
+              (click)="moduleCreate(module.value)">
+              {{moduleButtonName}}</button></div>
+        </div>
+      </mat-drawer-container>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
+
+<form [formGroup]="contentForm" class="width-2-3" *ngIf="!isModelOrResourcePageEnabled">
   <mat-sidenav class="padding-s width-300" position="end" [fixedInViewport]="true" [(opened)]="sideNavBarOpened">
     <div class="flex header-bg">
       <h2 class="margin-left-l margin-top-l">Course Settings</h2>

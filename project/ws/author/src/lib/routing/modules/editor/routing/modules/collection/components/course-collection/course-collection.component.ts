@@ -91,6 +91,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   versionKey: any
   versionID: any
   resourseSelected = ''
+  isModelHeaderView: boolean = false;
+
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -2975,4 +2977,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   jsonVerify(s: string) { try { JSON.parse(s); return true } catch (e) { return false } }
+
+  courseEditFormSubmit(e: boolean) {
+    this.isModelHeaderView = e
+  }
 }

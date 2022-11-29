@@ -1,5 +1,5 @@
 <mat-toolbar [color]="primaryNavbarBackground?.color" [ngStyle]="primaryNavbarBackground?.styles"
-  class="mat-elevation-z3 custom mobile">
+  class="mat-elevation-z3 custom mobile" *ngIf="!isModelHeaderView">
 
   <ng-container *ngIf="courseNameHeader">
     <!-- <a routerLink="/page/home" i18n-matTooltip matTooltip="Home" class="logo-dim"> -->
@@ -27,14 +27,21 @@
     <!-- <button  mat-raised-button i18n class="header-btn text-white ws-mat-primary-background mat-button-base" (click)="headerService.saveCourseContent()">
           Save</button> -->
 
-
   </ng-container>
-
-
 
   <span class="header-spacer"></span>
 
+</mat-toolbar>
 
-
-
+<!--Model Header-->
+<mat-toolbar [color]="primaryNavbarBackground?.color" [ngStyle]="primaryNavbarBackground?.styles"
+  class="mat-elevation-z3 custom mobile" *ngIf="isModelHeaderView">
+  <a routerLink="/author/cbp/me" i18n-matTooltip matTooltip="Home" class="logo-dim">
+    <img [src]="appIcon" alt="Application Logo" class="app-logo" />
+  </a>
+  <span class="spacer width-1-1"></span>
+  <mat-icon class="material-icons white-icon margin-right-l">arrow_back</mat-icon>
+  <span class="text-style margin-right-l">Back to Course Details</span>
+  <span class="text-style margin-right-l">Exit and save in drafts</span>
+  <mat-icon class="material-icons white-icon">arrow_forward</mat-icon>
 </mat-toolbar>

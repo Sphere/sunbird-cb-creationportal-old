@@ -19,12 +19,13 @@ export class CourseHeaderComponent implements OnInit {
   @Input() buttonConfig: IActionButtonConfig | null = null
   @Output() action = new EventEmitter<string>()
   @Output() subAction = new EventEmitter<{ type: string; identifier: string; nodeClicked?: boolean }>()
+  @Input() isModelHeaderView: boolean = false;
 
   requiredConfig: IActionButton[] = []
 
   constructor(private configSvc: ConfigurationsService, private domSanitizer: DomSanitizer,
-              private headerService: HeaderServiceService,
-              private store: CollectionStoreService) {
+    private headerService: HeaderServiceService,
+    private store: CollectionStoreService) {
     this.headerService.showCourseHeader.subscribe(data => {
       this.courseNameHeader = data
     })
