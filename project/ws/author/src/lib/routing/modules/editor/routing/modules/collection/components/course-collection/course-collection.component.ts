@@ -91,6 +91,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   versionKey: any
   versionID: any
   resourseSelected = ''
+  showResource: boolean = false
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -2702,6 +2703,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   action(type: string) {      // recheck
+    console.log('saveType', type)
     switch (type) {
       case 'next':
         this.viewMode = 'meta'
@@ -2722,6 +2724,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       case 'save':
         this.save('save')
+        this.showResource = true
         break
 
       case 'saveAndNext':
