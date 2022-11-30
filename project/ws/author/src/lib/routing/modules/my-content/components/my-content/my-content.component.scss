@@ -250,6 +250,10 @@ ws-auth-content-card-v2 {
 ::ng-deep .theme-igot.day-mode .ws-mat-primary-text {
   color: white;
 }
+
+ ::ng-deep .theme-igot.day-mode .mat-expansion-panel-header[aria-disabled=true] {
+    color: black !important;
+}
 .filter-icons {
   margin-bottom: 8px;
 }

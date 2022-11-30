@@ -92,6 +92,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
   isSelectedReviewCourse: boolean = false;
   isSelectedPublishCourse: boolean = false;
   link: string = ''
+  isDisabled: boolean = true
 
 
   //background: ThemePalette = undefined;
@@ -180,6 +181,11 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedColor = false
       this.isSelectedReviewCourse = false
       this.isSelectedPublishCourse = true
+    }
+    else if (status == 'Draft') {
+      this.isSelectedColor = true
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
     }
 
     this.navigateContents(status)
