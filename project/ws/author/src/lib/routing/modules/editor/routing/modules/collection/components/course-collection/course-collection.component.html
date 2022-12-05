@@ -135,8 +135,10 @@
       <ws-auth-file-upload [isCollectionEditor]="true" *ngIf="!showAddchapter && viewMode === 'upload'"
         [isSubmitPressed]="isSubmitPressed" (data)="action($event)" [isCreatorEnable]="checkCreator">
       </ws-auth-file-upload>
-      <ws-auth-quiz [isCollectionEditor]="true"
+      <!-- <ws-auth-quiz [isCollectionEditor]="true"
         *ngIf="!showAddchapter && viewMode === 'assessment' && !isModelHeaderView" [isSubmitPressed]="isSubmitPressed"
+        (data)="action($event)" [isCreatorEnable]="checkCreator"></ws-auth-quiz> -->
+      <ws-auth-quiz [isCollectionEditor]="true" *ngIf="false" [isSubmitPressed]="isSubmitPressed"
         (data)="action($event)" [isCreatorEnable]="checkCreator"></ws-auth-quiz>
 
       <ws-auth-web-module-editor *ngIf="!showAddchapter && viewMode === 'webmodule'" (data)="action($event)">
@@ -153,10 +155,7 @@
         *ngIf="!showAddchapter && viewMode !== 'meta' && showResource == true"
         (courseEditFormSubmit)="courseEditFormSubmit($event)">
       </ws-auth-edit-meta>
-
-      <ws-author-resource-module *ngIf="showResource == false"></ws-author-resource-module>
-
-
+      <ws-author-module-creation></ws-author-module-creation>
     </mat-sidenav-container>
   </mat-drawer-content>
 </mat-drawer-container>

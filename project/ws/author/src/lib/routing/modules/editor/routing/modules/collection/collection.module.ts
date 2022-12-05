@@ -25,8 +25,9 @@ import {
   MatIconModule,
   MatButtonModule,
   MatTooltipModule,
-} from '@angular/material';
+} from '@angular/material'
 import { ResourceModuleComponent } from './components/collection/resource-module/resource-module.component'
+import { ModuleCreationComponent } from './components/collection/module-creation/module-creation.component'
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { ResourceModuleComponent } from './components/collection/resource-module
     AuthTocComponent,
     CourseHeaderComponent,
     ResourceModuleComponent,
+    ModuleCreationComponent
   ],
   imports: [
     CommonModule,
@@ -59,4 +61,4 @@ import { ResourceModuleComponent } from './components/collection/resource-module
     WebPageModule,
   ],
 })
-export class CollectionModule {}
+export class CollectionModule { }

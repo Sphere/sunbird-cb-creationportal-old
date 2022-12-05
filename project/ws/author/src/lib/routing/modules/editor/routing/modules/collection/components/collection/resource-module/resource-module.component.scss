@@ -41,23 +41,25 @@
 }
 .container-wrapper {
   padding: 3% !important;
-  height: 66vh;
+  max-height: 66vh;
+  overflow-y: scroll;
 }
 .main-header {
-    font-size: 24px !important;
-    font-weight: 400 !important;
-    font-family: sans-serif !important;
-    letter-spacing: -2 !important;
-    letter-spacing: -1px !important;
-    line-height: 28.8px !important;
-    color: #000000 !important;
+  font-size: 24px !important;
+  font-weight: 400 !important;
+  font-family: sans-serif !important;
+  letter-spacing: -2 !important;
+  letter-spacing: -1px !important;
+  line-height: 28.8px !important;
+  color: #000000 !important;
 }
+
 .learner-heading {
-   font-size: 15px;
-    color: #000000;
-    font-family: sans-serif;
-    font-weight: 400;
-    line-height: 24px;
+  font-size: 15px;
+  color: #000000;
+  font-family: sans-serif;
+  font-weight: 400;
+  line-height: 24px;
 }
 
 .list-boxes {
@@ -263,3 +265,35 @@ cursor: pointer;
     line-height: 1.8px  !important;
     color: #000000  !important;
   }
+
+.thumnail-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.max-width {
+  max-width: 256px;
+  max-height: 150px;
+}
+
+.add {
+  height: 48px;
+  width: 48px;
+  background-color: #0074b6 !important;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  right: 9.5rem;
+  bottom: 4rem;
+  cursor: pointer;
+}
+
+.add-icon {
+  color: white !important;
+  position: relative;
+  top: 10px;
+  left: 9px;
+  width: 30px;
+  height: 30px;
+  font-size: 30px;
+}

@@ -123,7 +123,22 @@
                                         </ul>
                                       </span> -->
               </label>
-              <div class="thumnail-wrapper">
+              <div class="thumnail-row margin-top-xs">
+                <div>
+                  <img class="image max-width" height="144" width="256"
+                    src="/assets/instances/eagle/app_logos/default.png">
+                  <div class="add mat-elevation-z4 mat-app-background">
+                    <mat-icon class="add-icon mat-icon material-icons mat-icon-no-color" role="img" aria-hidden="true">
+                      add
+                    </mat-icon>
+                    <input style="display: none;" type="file">
+                  </div>
+                </div>
+                <div>
+                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
+                </div>
+              </div>
+              <!-- <div class="thumnail-wrapper">
                 <div class="thumnail-row">
 
 
@@ -136,15 +151,15 @@
                         (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null"
                         style="display: none;" [accept]="imageTypes.toString()" />
 
-                    </div>
-                    <!-- <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadThumbnail.click()">
+                    </div> -->
+              <!-- <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadThumbnail.click()">
                       <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
                       <input type="file" #uploadThumbnail
                         (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null"
                         style="display: none;" [accept]="imageTypes.toString()" />
                     </div> -->
-                  </div>
-                  <!-- <div style="margin-left:-45px ;">
+              <!-- </div> -->
+              <!-- <div style="margin-left:-45px ;">
                     <span>
                       <ul class="ul-list">
                         <li class="thumbnail-info">Maximum file size: 1 MB</li>
@@ -155,13 +170,16 @@
                       <p class="note-thumbnail-text"> Note: Learner will see this image <br>for your course</p>
                     </span>
                   </div> -->
-                </div>
+              <!-- </div>
 
 
-              </div>
+              </div> -->
 
             </div>
-
+            <div>
+              <button mat-raised-button
+                class="margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom">Save</button>
+            </div>
 
 
           </form>

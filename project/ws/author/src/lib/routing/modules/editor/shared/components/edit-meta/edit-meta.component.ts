@@ -144,8 +144,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   saveParent: any
 
   //UI variables
-  isModelOrResourcePageEnabled: boolean = false;
-  showAddModuleForm: boolean = false;
   moduleName: string = 'undefined title';
   isSaveModuleFormEnable: boolean = false;
   moduleButtonName: string = 'Create';
@@ -1691,7 +1689,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onSubmit() {
-    this.isModelOrResourcePageEnabled = true
     this.courseEditFormSubmit.emit(true)
   }
 
