@@ -8,6 +8,11 @@ import { NotificationComponent } from '@ws/author/src/lib/modules/shared/compone
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
 import { LoaderService } from '../../../../../../../../../services/loader.service'
+import { NSApiRequest } from '../../../../../../../../../interface/apiRequest'
+import { AccessControlService } from '../../../../../../../../../modules/shared/services/access-control.service'
+import { UploadService } from '../../../../../../shared/services/upload.service'
+import { AUTHORING_BASE, CONTENT_BASE_STATIC } from '@ws/author/src/lib/constants/apiEndpoints'
+import { HttpClient } from '@angular/common/http'
 
 @Component({
   selector: 'ws-author-module-creation',
@@ -67,11 +72,15 @@ export class ModuleCreationComponent implements OnInit {
   independentResourceNames: any = [];
   independentResourceCount: number = 0;
   imageTypes = IMAGE_SUPPORT_TYPES
+  bucket: string = ''
 
   constructor(public dialog: MatDialog,
     private configSvc: ConfigurationsService,
     private snackBar: MatSnackBar,
-    private loader: LoaderService,) {
+    private loader: LoaderService,
+    private accessService: AccessControlService,
+    private uploadService: UploadService,
+    private http: HttpClient,) {
     this.resourceForm = new FormGroup({
       resourceName: new FormControl(''),
       resourceLinks: new FormControl(''),
@@ -194,9 +203,61 @@ export class ModuleCreationComponent implements OnInit {
           for (let i = 0; i < 16; i++) {
             randomNumber += Math.floor(Math.random() * 10)
           }
+
+          const requestBody: NSApiRequest.ICreateImageMetaRequestV2 = {
+            request: {
+              content: {
+                code: randomNumber,
+                contentType: 'Asset',
+                createdBy: this.accessService.userId,
+                creator: this.accessService.userName,
+                mimeType: 'image/jpeg',
+                mediaType: 'image',
+                name: fileName,
+                language: ['English'],
+                license: 'CC BY 4.0',
+                primaryCategory: 'Asset',
+              },
+            },
+          }
+
+          this.http
+            .post<NSApiRequest.ICreateMetaRequest>(
+              `${AUTHORING_BASE}content/v3/create`,
+              requestBody,
+            )
+            .subscribe(
+              (meta: any) => {
+                // return data.result.identifier
+                this.uploadService
+                  .upload(formdata, {
+                    contentId: meta.result.identifier,
+                    contentType: CONTENT_BASE_STATIC,
+                  })
+
+                  .subscribe(
+                    data => {
+                      if (data && data.name !== 'Error') {
+                        this.loader.changeLoad.next(false)
+                        this.moduleForm.controls.appIcon.setValue(data.artifactUrl)
+                        this.moduleForm.controls.thumbnail.setValue(data.artifactUrl)
+                      }
+                    })
+              })
         }
       }
     })
+  }
+
+  generateUrl(oldUrl: any) {
+    //const chunk = oldUrl.split('/')
+    //const newChunk = environment.azureHost.split('/')
+    // @ts-ignore: Unreachable code error
+    this.bucket = window["env"]["azureBucket"]
+    if (oldUrl.includes(this.bucket)) {
+      return oldUrl
+    }
+
   }
 
 }

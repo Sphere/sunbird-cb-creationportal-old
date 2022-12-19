@@ -82,8 +82,7 @@
         <div class="model-right-content" *ngIf="!showAddModuleForm">
           <span class="course-sub-title">Add one of the following to start :</span>
           <div style="background-color: #FBF3E2;">
-            <img src="/assets/instances/eagle/creation-page/module-page.png" [alt]="model"
-              style="width: 100%;height:200px;">
+            <img src="cbp-assets/images/module-page.png" [alt]="model" style="width: 100%;height:200px;">
           </div>
           <div class="model-right-footer">
             <button mat-raised-button
@@ -101,7 +100,7 @@
                   course.</li>
                 <li style="margin: 0px;">A course needs a minimum of two resources to be created</li>
               </ul>
-              <form [formGroup]="moduleForm" class="resource-details-form">
+              <form [formGroup]="moduleForm" class="resource-details-form" *ngIf="false">
                 <div class="thumnail-row margin-top-xs">
                   <div>
                     <img class="image max-width" height="144" width="256" [src]="moduleForm.controls.appIcon.value"
