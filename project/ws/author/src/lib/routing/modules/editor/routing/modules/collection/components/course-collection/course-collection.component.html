@@ -132,8 +132,8 @@
         [isSubmitPressed]="isSubmitPressed" (data)="action($event)" [isCreatorEnable]="checkCreator">
       </ws-auth-url-upload>
 
-      <ws-auth-file-upload [isCollectionEditor]="true" *ngIf="!showAddchapter && viewMode === 'upload'"
-        [isSubmitPressed]="isSubmitPressed" (data)="action($event)" [isCreatorEnable]="checkCreator">
+      <ws-auth-file-upload [isCollectionEditor]="true" *ngIf="false" [isSubmitPressed]="isSubmitPressed"
+        (data)="action($event)" [isCreatorEnable]="checkCreator">
       </ws-auth-file-upload>
       <!-- <ws-auth-quiz [isCollectionEditor]="true"
         *ngIf="!showAddchapter && viewMode === 'assessment' && !isModelHeaderView" [isSubmitPressed]="isSubmitPressed"

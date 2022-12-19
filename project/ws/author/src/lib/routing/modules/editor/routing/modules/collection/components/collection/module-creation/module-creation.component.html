@@ -101,6 +101,27 @@
                   course.</li>
                 <li style="margin: 0px;">A course needs a minimum of two resources to be created</li>
               </ul>
+              <form [formGroup]="moduleForm" class="resource-details-form">
+                <div class="thumnail-row margin-top-xs">
+                  <div>
+                    <img class="image max-width" height="144" width="256" [src]="moduleForm.controls.appIcon.value"
+                      (error)="changeToDefaultImg($event)" />
+                    <div class="add mat-elevation-z4 mat-app-background" (click)="uploadThumbnail.click()">
+                      <mat-icon class="add-icon mat-icon material-icons mat-icon-no-color" role="img"
+                        aria-hidden="true">
+                        add
+                      </mat-icon>
+                      <input type="file" #uploadThumbnail
+                        (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null"
+                        style="display: none;" [accept]="imageTypes.toString()" />
+                    </div>
+                  </div>
+                  <div>
+                    dddddd Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
+                  </div>
+                </div>
+              </form>
+
             </div>
           </div>
         </div>
