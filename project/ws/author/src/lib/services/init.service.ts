@@ -29,6 +29,9 @@ export class AuthInitService {
   private editCourseContent = new Subject<any>()
   public editCourseMessage = this.editCourseContent.asObservable()
 
+  private saveContent = new Subject<any>()
+  public saveContentMessage = this.saveContent.asObservable()
+
   authConfig!: IFormMeta
   authMetaV2!: { [key: string]: IMetaUnit<any> }
   ordinals: any
@@ -57,5 +60,8 @@ export class AuthInitService {
   }
   editCourse(message: any) {
     this.editCourseContent.next(message)
+  }
+  saveData(message: any) {
+    this.saveContent.next(message)
   }
 }

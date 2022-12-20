@@ -92,10 +92,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
   isSelectedReviewCourse: boolean = false;
   isSelectedPublishCourse: boolean = false;
   link: string = ''
-  isDisabled: boolean = true
-
-
-  //background: ThemePalette = undefined;
   @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<
     any
   >
@@ -619,15 +615,11 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
     switch (this.status) {
       case 'published':
-        // if (this.accessService.hasRole(['content_creator'])) {
-        //   requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
-        // }
-        // else
-        //   if (this.accessService.hasRole(['content_reviewer'])) {
-        //     requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
-        //   } else
-
-        if (this.accessService.hasRole(['content_publisher'])) {
+        if (this.accessService.hasRole(['content_creator'])) {
+          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+        } else if (this.accessService.hasRole(['content_reviewer'])) {
+          requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+        } else if (this.accessService.hasRole(['content_publisher'])) {
           requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
         }
 

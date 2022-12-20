@@ -405,20 +405,20 @@ export class InitService {
         this.configSvc.isActive = details.isActive
         return details
       } catch (e) {
-        //let redirectUrl = this.defaultRedirectUrl
+        // let redirectUrl = this.defaultRedirectUrl
         this.configSvc.userProfile = null
         // if (e.status === 419) {
-        //   let url1 = document.baseURI.replace('https', 'http')
-        //   let url2 = `protected/v8/resource/?q=/author/cbp/me`
-        //   // @ts-ignore: Unreachable code error
-        //   const redirectUrl = `${url1}${url2}`
+        //   //@ts-ignore: Unreachable code error
+        //   let url = window["env"]["sitePath"].replace('https', 'http')
+        //   let redirectUrl = `${url}protected/v8/resource/?q=/author/cbp/me`
         //   const state = uuid()
-        //   //const nonce = uuid()
-        //   const keycloakurl = `${document.baseURI}auth/realms/sunbird/protocol/openid-connect/auth?client_id=portal&state=${state}&redirect_uri=${encodeURIComponent(redirectUrl)}&auth_callback=1&scope=openid&response_type=code`
+        //   // @ts-ignore: Unreachable code error
+        //   // tslint:disable-next-line:max-line-length
+        //   const keycloakurl = `${window["env"]["azureHost"]}/auth/realms/sunbird/protocol/openid-connect/auth?client_id=portal&state=${state}&redirect_uri=${encodeURIComponent(redirectUrl)}&auth_callback=1&scope=openid&response_type=code`
         //   window.location.href = keycloakurl
         // }
-        //window.location.href = `${ redirectUrl } apis / reset`
-        // throw new Error('Invalid user')
+        // window.location.href = `${ redirectUrl } apis / reset`
+        throw new Error('Invalid user')
       }
     } else {
       return { group: [], profileDetailsStatus: true, roles: new Set(['Public']), tncStatus: true, isActive: true }

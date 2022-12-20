@@ -42,7 +42,6 @@ import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
 import { FormGroup } from '@angular/forms'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 // import { environment } from '../../../../../../../../../../../../../src/environments/environment'
-
 @Component({
   selector: 'ws-auth-quiz',
   templateUrl: './quiz.component.html',
@@ -80,6 +79,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   canEditJson = true
   mediumScreenSize = false
   quizDuration!: number
+  assessmentDuration: any
+  passPercentage: any
   mediumSizeBreakpoint$ = this.breakpointObserver
     .observe([Breakpoints.XSmall, Breakpoints.Small])
     .pipe(map((res: BreakpointState) => res.matches))
@@ -106,10 +107,19 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     private uploadService: UploadService,
     private editorService: EditorService,
     private notificationSvc: NotificationService,
-    private authInitService: AuthInitService,
+    private initService: AuthInitService,
     private quizResolverSvc: QuizResolverService,
     private accessControl: AccessControlService,
-  ) { }
+  ) {
+
+    this.initService.uploadMessage.subscribe(
+      (data: any) => {
+        if (data !== 'save') {
+          this.save()
+        }
+      })
+
+  }
 
   ngOnDestroy() {
     this.cdr.detach()
@@ -216,7 +226,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     this.showSettingButtons = true
 
     this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
-      this.allLanguages = this.authInitService.ordinals.subTitles
+      this.allLanguages = this.initService.ordinals.subTitles
       this.loaderService.changeLoadState(true)
       this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
       this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
@@ -236,13 +246,16 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
             if (quizContent.mimeType === 'application/json') {
               const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
                 this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({} as any))
-
               fileData.subscribe(jsonResponse => {
-                // console.log('jsonResponse ', jsonResponse)
+                //console.log('jsonResponse ', jsonResponse)
                 if (jsonResponse && Object.keys(jsonResponse).length > 1) {
                   if (v.contents && v.contents.length) {
                     if (jsonResponse) {
                       v.contents[0].data = jsonResponse
+                      this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
+                      this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
+                      this.assessmentDuration = (jsonResponse.assessmentDuration) / 60
+                      this.passPercentage = jsonResponse.passPercentage
                     }
                     this.allContents.push(v.contents[0].content)
                     if (v.contents[0].data) {
@@ -256,7 +269,10 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                           // need to arrange
                           this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
                           this.resourceType = quizContent.categoryType || 'Assessment'
-                          this.quizDuration = quizContent.duration || '300'
+                          // this.timeLimit = quizContent.duration || '300'
+                          // this.passPercentage = '50'
+                          // this.quizStoreSvc.assessmentDuration = jsonResponse.timeLimit
+                          // this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
                           this.questionsArr =
                             this.quizStoreSvc.collectiveQuiz[id] || []
                           this.contentLoaded = true
@@ -285,6 +301,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                     this.quizStoreSvc.collectiveQuiz[id] = []
                   }
                 } else {
+                  this.assessmentDuration = ''
+                  this.passPercentage = ''
                   this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
                   this.resourceType = quizContent.categoryType || 'Assessment'
                   this.quizDuration = quizContent.duration || '300'
@@ -317,11 +335,24 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       }
     })
   }
+  addTodo(event: any, field: string) {
+    const meta: any = {}
+    if (field === 'passPercentage') {
+      meta['passPercentage'] = event
+      this.quizStoreSvc.hasChanged = true
+    } else {
+      meta['assessmentDuration'] = event
+      this.quizStoreSvc.hasChanged = true
+    }
+    this.metaContentService.setUpdatedMeta(meta, this.currentId, true)
+  }
 
   ngOnChanges() {
     // if (this.callSave) {
     //   this.save()
     // }
+    this.assessmentDuration = ''
+    this.passPercentage = ''
   }
   customStepper(step: number) {
     if (step === 1) {
@@ -478,6 +509,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       this.quizDuration !== this.metaContentService.upDatedContent[this.currentId].duration
 
     const doUploadJson = this.quizStoreSvc.hasChanged || hasTimeChanged
+
     if (!(this.metaContentService.getUpdatedMeta(this.currentId) || {}).duration) {
       this.metaContentService.setUpdatedMeta({ duration: this.quizDuration } as any, this.currentId)
     }
@@ -584,7 +616,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     const quizData = {
       // tslint:disable-next-line: prefer-template
       // timeLimit: parseInt(this.quizDuration + '', 10) || 300
-      timeLimit: this.quizDuration,
+      assessmentDuration: (this.metaContentService.getUpdatedMeta(this.currentId).assessmentDuration) * 60 || '300',
+      passPercentage: this.metaContentService.getUpdatedMeta(this.currentId).passPercentage || '50',
       isAssessment: true,
       questions: array,
     }
@@ -593,7 +626,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     const blob = new Blob([JSON.stringify(quizData, null, 2)], { type: 'application/json' })
     const formdata = new FormData()
     formdata.append('content', blob)
-
     return this.uploadService.encodedUploadAWS(formdata, fileName, {
       contentId: this.currentId,
       contentType: CONTENT_BASE_WEBHOST,

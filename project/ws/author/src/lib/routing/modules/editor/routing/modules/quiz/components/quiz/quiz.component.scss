@@ -8,6 +8,13 @@
   width: 65%;
 }
 
+label.starlabel::after {
+  content: "*";
+  color: red;
+}
+label.starlabel {
+      font-size: small;
+}
 .margin-left {
   margin-left: 120px;
   @media only screen and(max-width: 930px) {

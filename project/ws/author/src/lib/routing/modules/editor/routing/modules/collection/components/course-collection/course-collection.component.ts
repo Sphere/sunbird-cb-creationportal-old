@@ -1,5 +1,5 @@
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
-import { Component, OnDestroy, OnInit } from '@angular/core'
+import { Component, OnDestroy, OnInit, Input } from '@angular/core'
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 import { MatDialog, MatSnackBar } from '@angular/material'
 import { ActivatedRoute, Router } from '@angular/router'
@@ -93,7 +93,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   resourseSelected = ''
   isModelHeaderView: boolean = false;
   showResource: boolean = false;
-
+  clickedNext: boolean = false;
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -135,7 +135,15 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       (data: any) => {
         if (data) {
           this.save('upload')
-          //this.update()
+        }
+      })
+    this.initService.saveContentMessage.subscribe(
+      (data: any) => {
+        console.log(data)
+        if (data) {
+          this.viewMode = ''
+          this.clickedNext = true
+          this.save()
         }
       })
     // this.initService.editCourseMessage.subscribe(
@@ -195,7 +203,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         this.viewMode = 'meta'
       }
     })
-
     if (this.activateRoute.parent && this.activateRoute.parent.parent) {
       this.routerSubscription = this.activateRoute.parent.parent.data.subscribe(data => {
 
@@ -455,7 +462,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       this.triggerSave().subscribe(
         () => {
-
           if (nextAction) {
             this.action(nextAction)
           }
@@ -509,7 +515,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       )
     } else {
       if (nextAction) {
-        this.update()
         this.action(nextAction)
       } else {
         this.snackBar.openFromComponent(NotificationComponent, {
@@ -1113,7 +1118,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
         /* tslint:disable-next-line */
         console.log(data)
-        if (data) {
+        if (data && data.lastPublishedBy === undefined) {
           let obj = {
             "request": {
               "courseId": this.contentService.parentContent,

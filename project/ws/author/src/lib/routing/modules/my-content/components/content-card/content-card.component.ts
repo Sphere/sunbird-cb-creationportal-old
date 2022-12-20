@@ -42,10 +42,8 @@ export class ContentCardComponent implements OnInit {
       )
       : this.ordinals.subTitles
     this.userId = this.accessService.userId
-
     this.getCourseStatusName()
   }
-
 
   getCourseStatusName(): void {
     if (this.data.status == 'Draft') {

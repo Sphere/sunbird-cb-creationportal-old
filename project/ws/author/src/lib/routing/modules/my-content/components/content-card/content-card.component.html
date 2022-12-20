@@ -24,13 +24,13 @@
       </a>
     </mat-card-content>
     <mat-card-actions>
-      <span class="course-status-text">{{ CourseStatusName | uppercase
-        }}</span>
+      <span class="course-status-text">{{ CourseStatusName | uppercase }}</span>
+      <!-- <span class="ws-mat-primary-text uppercase font-weight-500">{{ data.contentType }}</span> -->
       <p class="mat-h5 margin-remove font-weight-bold">
         {{ data.locale | uppercase }}
       </p>
       <button *ngIf="!forExpiry && !forDelete && (showMenuItem('edit')||showMenuItem('delete')||showMenuItem('moveToInReview')||
-       showMenuItem('publish')||showMenuItem('unpublish')||showMenuItem('review')||showMenuItem('moveToDraft'))"
+             showMenuItem('publish')||showMenuItem('unpublish')||showMenuItem('review')||showMenuItem('moveToDraft'))"
         mat-icon-button [matMenuTriggerFor]="moreMenu">
         <mat-icon>more_vert</mat-icon>
       </button>
@@ -135,27 +135,11 @@
       data.contentType !== 'Knowledge Board' ? ['/author/editor/' + data.identifier + '/collection'] : []
     " [queryParamsHandling]="data.contentType === 'Knowledge Board' ? 'preserve' : ''">
     <mat-icon>edit</mat-icon>
-    <span i18n>Edit Course Details</span>
+    <span i18n>Edit</span>
   </a>
   <a *ngIf="showMenuItem('delete')" mat-menu-item (click)="takeAction('delete')">
     <mat-icon>delete</mat-icon>
     <span i18n>Delete </span>
-  </a>
-  <a *ngIf="showMenuItem('moveToDraft')" mat-menu-item (click)="takeAction('moveToDraft')">
-    <mat-icon>send</mat-icon>
-    <span i18n>Send for Review </span>
-  </a>
-  <a *ngIf="showMenuItem('moveToDraft')" mat-menu-item (click)="takeAction('moveToDraft')">
-    <mat-icon>remove_red_eye</mat-icon>
-    <span i18n>Preview</span>
-  </a>
-  <a *ngIf="showMenuItem('moveToDraft')" mat-menu-item (click)="takeAction('moveToDraft')">
-    <mat-icon></mat-icon>
-    <span i18n>Activity Log</span>
-  </a>
-  <a *ngIf="showMenuItem('moveToDraft')" mat-menu-item (click)="takeAction('moveToDraft')">
-    <mat-icon>content_copy</mat-icon>
-    <span i18n>Make a copy</span>
   </a>
   <a *ngIf="showMenuItem('publish')" mat-menu-item (click)="takeAction('publish')">
     <mat-icon>publish</mat-icon>
@@ -165,33 +149,19 @@
     <mat-icon>reply</mat-icon>
     <!-- <span i18n>Unpublish content</span> -->
     <span i18n>Retire content</span>
-
-  </a>
-  <a *ngIf="showMenuItem('unpublish')" mat-menu-item (click)="takeAction('unpublish')">
-    <mat-icon>content_copy</mat-icon>
-    <!-- <span i18n>Unpublish content</span> -->
-    <span i18n>Make a Copy</span>
-
-  </a>
-  <a *ngIf="showMenuItem('unpublish')" mat-menu-item (click)="takeAction('unpublish')">
-    <mat-icon>link</mat-icon>
-    <!-- <span i18n>Unpublish content</span> -->
-    <span i18n>Link a Course</span>
-
   </a>
   <a *ngIf="showMenuItem('review')" mat-menu-item (click)="takeAction('review')">
     <mat-icon>rate_review</mat-icon>
     <span i18n>Review</span>
   </a>
-  <!-- <a *ngIf="showMenuItem('moveToDraft')" mat-menu-item (click)="takeAction('moveToDraft')">
+  <a *ngIf="showMenuItem('moveToDraft')" mat-menu-item (click)="takeAction('moveToDraft')">
     <mat-icon>reply</mat-icon>
     <span i18n>Recall content to draft</span>
-  </a> -->
+  </a>
   <a *ngIf="showMenuItem('moveToInReview')" mat-menu-item (click)="takeAction('moveToInReview')">
     <mat-icon>reply</mat-icon>
     <span i18n>Send content to previous state</span>
   </a>
-
   <!-- <ng-container>
     <a *ngIf="showMenuItem('lang')" mat-menu-item [matMenuTriggerFor]="langMenu">
       <mat-icon>translate</mat-icon>
