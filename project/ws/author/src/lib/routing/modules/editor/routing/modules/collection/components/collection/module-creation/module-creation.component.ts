@@ -13,11 +13,22 @@ import { AccessControlService } from '../../../../../../../../../modules/shared/
 import { UploadService } from '../../../../../../shared/services/upload.service'
 import { AUTHORING_BASE, CONTENT_BASE_STATIC } from '@ws/author/src/lib/constants/apiEndpoints'
 import { HttpClient } from '@angular/common/http'
+import { CollectionStoreService } from '../../../services/store.service'
+import { EditorService } from '../../../../../../services/editor.service'
+import { EditorContentService } from '../../../../../../services/editor-content.service'
+import { ActivatedRoute } from '@angular/router'
+import { Subscription } from 'rxjs'
+import { NSContent } from '@ws/author/src/lib/interface/content'
+import { CollectionResolverService } from '../../../services/resolver.service'
+import { IContentNode } from '../../../interface/icontent-tree'
+import _ from 'lodash'
+import { HeaderServiceService } from '../../../../../../../../../../../../../../src/app/services/header-service.service'
 
 @Component({
   selector: 'ws-author-module-creation',
   templateUrl: './module-creation.component.html',
-  styleUrls: ['./module-creation.component.scss']
+  styleUrls: ['./module-creation.component.scss'],
+  providers: [CollectionStoreService],
 })
 export class ModuleCreationComponent implements OnInit {
   contentList: any[] = [
@@ -73,6 +84,16 @@ export class ModuleCreationComponent implements OnInit {
   independentResourceCount: number = 0;
   imageTypes = IMAGE_SUPPORT_TYPES
   bucket: string = ''
+  currentContent!: string
+  currentCourseId!: string
+  viewMode!: string
+  routerSubscription: Subscription | null = null
+  courseName: any
+  currentParentId!: string
+  checkCreator: boolean = false;
+  showAddchapter: boolean = false;
+  versionID: any
+  versionKey: any
 
   constructor(public dialog: MatDialog,
     private configSvc: ConfigurationsService,
@@ -80,18 +101,26 @@ export class ModuleCreationComponent implements OnInit {
     private loader: LoaderService,
     private accessService: AccessControlService,
     private uploadService: UploadService,
-    private http: HttpClient,) {
+    private http: HttpClient,
+    private storeService: CollectionStoreService,
+    private editorService: EditorService,
+    private contentService: EditorContentService,
+    private activateRoute: ActivatedRoute,
+    private resolverService: CollectionResolverService,
+    private headerService: HeaderServiceService,) {
     this.resourceForm = new FormGroup({
       resourceName: new FormControl(''),
       resourceLinks: new FormControl(''),
       appIcon: new FormControl('')
     })
     this.moduleForm = new FormGroup({
-      appIcon: new FormControl('')
+      topicName: new FormControl(''),
+      topicDescription: new FormControl(null),
     })
   }
 
   ngOnInit() {
+    this.routerValuesCall()
   }
 
   moduleCreate(name: string) {
@@ -99,6 +128,7 @@ export class ModuleCreationComponent implements OnInit {
       this.moduleName = name
       this.isSaveModuleFormEnable = true
       this.moduleButtonName = 'Save'
+      this.setContentType('collection')
     } else if (this.moduleButtonName == 'Save') {
       this.isResourceTypeEnabled = true
     }
@@ -139,6 +169,7 @@ export class ModuleCreationComponent implements OnInit {
 
   addIndependentResource() {
     this.showAddModuleForm = true
+    this.isResourceTypeEnabled = true
     this.independentResourceCount = this.independentResourceCount + 1
     this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
   }
@@ -258,6 +289,149 @@ export class ModuleCreationComponent implements OnInit {
       return oldUrl
     }
 
+  }
+
+  async setContentType(param: string) {
+    let couseCreated
+    if (this.moduleForm && this.moduleForm.value) {
+      couseCreated = param
+      const asSibling = false
+
+      const node = {
+        id: this.storeService.currentParentNode,
+        identifier: this.storeService.parentNode[0],
+        editable: true,
+        category: 'Course',
+        childLoaded: true,
+        expandable: true,
+        level: 1,
+      }
+
+      const parentNode = node
+      this.loader.changeLoad.next(true)
+      const isDone = await this.storeService.createChildOrSibling(
+        couseCreated,
+        parentNode,
+        asSibling ? node.id : undefined,
+        'below',
+        this.moduleForm.value,
+        param === 'web' ? 'link' : '',
+
+      )
+
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: isDone ? Notify.SUCCESS : Notify.FAIL,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+
+      })
+
+      if (isDone) {
+        const newCreatedLexid = this.editorService.newCreatedLexid
+
+        if (newCreatedLexid) {
+          const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
+          this.storeService.currentSelectedNode = newCreatedNode
+          this.storeService.selectedNodeChange.next(newCreatedNode)
+        }
+        // update the id
+        this.contentService.currentContent = newCreatedLexid
+        this.loader.changeLoad.next(false)
+      }
+    }
+  }
+
+  routerValuesCall() {
+    this.contentService.changeActiveCont.subscribe(data => {
+      this.currentContent = data
+      this.currentCourseId = data
+      if (this.contentService.getUpdatedMeta(data).contentType !== 'Resource') {
+        this.viewMode = 'meta'
+      }
+    })
+
+    if (this.activateRoute.parent && this.activateRoute.parent.parent) {
+      this.routerSubscription = this.activateRoute.parent.parent.data.subscribe(data => {
+        this.courseName = data.contents[0].content.name
+        const contentDataMap = new Map<string, NSContent.IContentMeta>()
+
+        data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
+          this.storeService.parentNode.push(v.content.identifier)
+          this.resolverService.buildTreeAndMap(
+            v.content,
+            contentDataMap,
+            this.storeService.flatNodeMap,
+            this.storeService.uniqueIdMap,
+            this.storeService.lexIdMap,
+          )
+        })
+        contentDataMap.forEach(content => this.contentService.setOriginalMeta(content))
+        const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
+
+        this.currentParentId = this.currentContent
+        this.storeService.treeStructureChange.next(
+          this.storeService.flatNodeMap.get(currentNode) as IContentNode,
+        )
+        this.storeService.currentParentNode = currentNode
+        this.storeService.currentSelectedNode = currentNode
+        let newCreatedNode = 0
+        const newCreatedLexid = this.editorService.newCreatedLexid
+        if (newCreatedLexid) {
+          newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
+          this.storeService.selectedNodeChange.next(newCreatedNode)
+        }
+
+        if (data.contents[0] && data.contents[0].content && data.contents[0].content.children[0] &&
+          data.contents[0].content.children[0].identifier) {
+          this.subAction({ type: 'editContent', identifier: data.contents[0].content.children[0].identifier, nodeClicked: true })
+          this.storeService.selectedNodeChange.next(data.contents[0].content.children[0].identifier)
+        }
+      })
+
+      this.activateRoute.parent.url.subscribe(data => {
+        const urlParam = data[0].path
+        if (urlParam === 'collection') {
+          this.headerService.showCreatorHeader(this.courseName)
+        }
+
+      })
+    }
+  }
+
+  subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
+    // const nodeClicked = event.nodeClicked
+    this.contentService.changeActiveCont.next(event.identifier)
+
+    switch (event.type) {
+      case 'editMeta':
+        this.viewMode = 'meta'
+        break
+      case 'editContent':
+        const content = this.contentService.getUpdatedMeta(event.identifier)
+        const isCreator = (this.configSvc.userProfile
+          && this.configSvc.userProfile.userId === content.createdBy)
+          ? true : false
+        this.checkCreator = isCreator
+
+        if (['application/pdf', 'application/x-mpegURL', 'application/vnd.ekstep.html-archive', 'audio/mpeg', 'video/mp4'].includes(content.mimeType)) {
+          this.viewMode = 'upload'
+          // } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === 'link') {
+        } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === '') {
+          this.viewMode = 'curate'
+        } else if (content.mimeType === 'application/html') {
+          this.viewMode = 'upload'
+        } else if (content.mimeType === 'application/quiz' || content.mimeType === 'application/json') {
+          this.viewMode = 'assessment'
+        } else if (content.mimeType === 'application/web-module') {
+          this.viewMode = 'webmodule'
+        } else {
+          this.viewMode = 'meta'
+        }
+        break
+      case 'showAddChapter':
+        this.showAddchapter = false
+    }
   }
 
 }
