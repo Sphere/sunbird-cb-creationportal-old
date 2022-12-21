@@ -16,6 +16,8 @@ export class QuizStoreService {
   currentId = ''
   errorLog: { [key: number]: { [key: string]: string } } = {}
   hasChanged = false
+  assessmentDuration = ''
+  passPercentage = ''
 
   constructor() { }
 

@@ -349,7 +349,9 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isEnableTitle = false
   }
 
-
+  clickedNext() {
+    this.authInitService.saveData('saved')
+  }
   changeCertificate(event: any): void {
     if (event == 'Yes') {
       this.isAddCerticate = true

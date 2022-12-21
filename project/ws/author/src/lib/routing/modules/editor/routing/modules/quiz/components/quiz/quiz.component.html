@@ -1,4 +1,4 @@
-<div class="margin-top-xl margin-l-l margin-r-l" [hidden]="previewMode">
+<div class="margin-l-l margin-r-l" [hidden]="previewMode">
   <!-- <div class="flex margin-left-xl flex-middle margin-bottom-xl flex-wrap">
     <div class="flex flex-middle">
       <p class="ws-mat-primary-text font-weight-bold title margin-right-xs" i18n>CONTENT CREATION</p>
@@ -70,8 +70,8 @@
       </mat-menu>
     </div>
   </div>
-  <div class="mat-app-background mb-10">
-    <div class="margin-top-xl margin-right-xl" *ngIf="currentStep === 2">
+  <div class="mat-app-background">
+    <div class="margin-right-xl" *ngIf="currentStep === 2">
       <ng-container *ngIf="contentLoaded">
         <div class="flex justify-between">
           <button (click)="sideNavBar.toggle()" mat-icon-button>
@@ -94,7 +94,17 @@
                             </mat-card-title> -->
               <ws-auth-question-editor *ngIf="questionsArr.length && canEditJson" [submitPressed]="canValidate">
               </ws-auth-question-editor>
-              <div class="flex justify-between px-1 pt-6 pb-6" *ngIf="questionsArr && canEditJson">
+              <mat-form-field appearance="outline" style="padding: 5px 15px 0px 25px">
+                <label class="starlabel">Pass Percentage</label>
+                <input matInput placeholder="Enter pass percentage" min="10" [(ngModel)]="passPercentage"
+                  (change)="addTodo(passPercentage, 'passPercentage')" type="number" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <label class="starlabel">Assessment Duration (Minutes)</label>
+                <input matInput type="number" class="form-control" placeholder="Enter duration" min="10"
+                  [(ngModel)]="assessmentDuration" (change)="addTodo(assessmentDuration, 'assessmentDuration')" />
+              </mat-form-field>
+              <div class="flex justify-between px-1 pb-3" *ngIf="questionsArr && canEditJson">
                 <button class=" ws-mat-primary-background mat-elevation-z6 margin-left-s" (click)="changeQuiz(-1)"
                   [disabled]="selectedQuizIndex === 0"
                   [ngClass]="{'opacity-25 cursor-disable':selectedQuizIndex === (0)}" mat-button i18n-aria-label
@@ -120,12 +130,13 @@
         </mat-sidenav-container>
       </ng-container>
     </div>
-    <div class="margin-top-xl margin-left-xl margin-right-xl" *ngIf="currentStep === 3">
+    <div class="margin-left-xl margin-right-xl" *ngIf="currentStep === 3">
       <ws-auth-edit-meta [nextAction]="'publish'" [isSubmitPressed]="submitPressed" (data)="action($event)">
       </ws-auth-edit-meta>
     </div>
   </div>
-  <button (click)="action('save')" style="float: right;margin-right: 35px;" mat-raised-button  color="accent" [ngClass]="{ disable: !isCreatorEnable }">
+  <button (click)="action('save')" style="float: right;margin-right: 35px;" mat-raised-button color="accent"
+    id="assessmentSave" [ngClass]="{ disable: !isCreatorEnable  || !(assessmentDuration && passPercentage)}">
     <ng-container i18n>Save</ng-container>
   </button>
   <!--

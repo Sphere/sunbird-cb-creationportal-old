@@ -10,7 +10,7 @@
   [fetchStatus]="catalogFetchStatus" isRoot="true">
 </ws-widget-tree-catalog-menu> -->
 <div>
-
+  <span class="login-pf-text">Logged in as {{this.givenName}} </span>
   <a href="javascript:void(0)" mat-icon-button i18n-aria-label title="option" class="new-margin"
     #rootTrigger="matMenuTrigger" [matMenuTriggerFor]="settingsMenu" role="link">
     <span class="flex flex-column flex-middle">
@@ -18,9 +18,7 @@
       </ws-widget-avatar-photo>
     </span>
   </a>
-  <span class="login-pf-text">Logged in as {{this.givenName}} </span>
 </div>
-
 <!-- <ws-widget-tree-catalog-menu #rootMenu [rootTrigger]="rootTrigger" [catalogItems]="catalogItems | slice: 0:10"
   [fetchStatus]="catalogFetchStatus" isRoot="true">
 </ws-widget-tree-catalog-menu> -->

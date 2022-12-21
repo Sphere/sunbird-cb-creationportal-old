@@ -145,17 +145,15 @@
       </ws-auth-web-module-editor>
 
       <ws-auth-edit-meta [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" (data)="action($event)"
-        *ngIf="!showAddchapter && viewMode === 'meta' && showResource == true"
-        (courseEditFormSubmit)="courseEditFormSubmit($event)">
+        *ngIf="!showAddchapter && viewMode === 'meta'">
       </ws-auth-edit-meta>
-
       <!--  [class.hidden]="viewMode !== 'meta'" -->
 
-      <ws-auth-edit-meta [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" (data)="action($event)"
+      <!-- <ws-auth-edit-meta [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" (data)="action($event)"
         *ngIf="!showAddchapter && viewMode !== 'meta' && showResource == true"
         (courseEditFormSubmit)="courseEditFormSubmit($event)">
-      </ws-auth-edit-meta>
-      <ws-author-module-creation></ws-author-module-creation>
+      </ws-auth-edit-meta> -->
+      <ws-author-module-creation *ngIf="clickedNext"></ws-author-module-creation>
     </mat-sidenav-container>
   </mat-drawer-content>
 </mat-drawer-container>

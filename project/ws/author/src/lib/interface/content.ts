@@ -289,6 +289,7 @@ export namespace NSContent {
     references: IExternalReference[]
     isStandAlone: boolean
     passPercentage: number
+    assessmentDuration: number
     isContentEditingDisabled: boolean
     isMetaEditingDisabled: boolean
     publicationId: string
