@@ -1,7 +1,6 @@
 .font-weight-300 {
   font-weight: 300;
 }
-
 .space-around {
   justify-content: space-around;
 }
@@ -463,7 +462,14 @@ ul li {
 }
 
 .disabledDataContainer {
-    font-size: 15px;
-    font-family: sans-serif;
     font-weight: 400;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-size: 24px;
+}
+.save-next{
+    color: white !important;
+    border-radius: 17px;
+    font-size: 14px;
+    font-family: sans-serif !important;
 }
