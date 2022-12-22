@@ -1,5 +1,5 @@
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
-import { Component, OnDestroy, OnInit, Input } from '@angular/core'
+import { Component, OnDestroy, OnInit } from '@angular/core'
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 import { MatDialog, MatSnackBar } from '@angular/material'
 import { ActivatedRoute, Router } from '@angular/router'
