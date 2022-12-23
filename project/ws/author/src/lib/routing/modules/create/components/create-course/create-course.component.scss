@@ -2,7 +2,7 @@
     margin-top: -0.5em;
 }
 .fix-bottom {
-    bottom: -23px;
+    // bottom: -23px;
     position: absolute;
 }
 
@@ -366,6 +366,9 @@
     line-height: 16.8px;
     color: #8B8B8B;
 }
-
-
-
+.grayBackground{
+    background-color: #d3d3d3 !important;
+}
+.mat-raised-button[disabled]{
+  background-color: #d3d3d3 !important;
+}
