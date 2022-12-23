@@ -91,7 +91,8 @@
               Module</button>
             <span class="margin-left-l">or</span>
             <button mat-raised-button
-              class="margin-left-l width-45 text-white ws-mat-primary-background  mat-button-base save-btn-bottom">
+              class="margin-left-l width-45 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
+              (click)="addIndependentResource()">
               Resource</button>
             <div class="margin-top-s">
               <span style="padding:2vh">Note:</span>
@@ -217,7 +218,7 @@
               <div class="thumnail-row margin-top-xs" *ngIf="!isLinkFieldEnabled">
                 <div>
                   <img class="image max-width" height="144" width="256"
-                    src="/assets/instances/eagle/app_logos/default-white-background.png">
+                    src="cbp-assets/images/default-white-background.png">
                   <div class="pdf">
                     <img class="pdf-img" src="{{resourceImg}}">
                     <input style="display: none;" type="file">

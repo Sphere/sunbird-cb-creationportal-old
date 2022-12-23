@@ -109,16 +109,16 @@ export class ModuleCreationComponent implements OnInit {
       this.isLinkFieldEnabled = true
     } else if (name == 'PDF') {
       this.isLinkFieldEnabled = false
-      this.resourceImg = '/assets/pfds/pdf-icon.svg'
+      this.resourceImg = 'cbp-assets/images/pdf-icon.svg'
     } else if (name == 'Audio') {
       this.isLinkFieldEnabled = false
-      this.resourceImg = '/assets/pfds/pdf-icon.svg'
+      this.resourceImg = 'cbp-assets/images/pdf-icon.svg'
     } else if (name == 'Vedio') {
       this.isLinkFieldEnabled = false
-      this.resourceImg = '/assets/pfds/vedio-img.svg'
+      this.resourceImg = 'cbp-assets/images/vedio-img.svg'
     } else if (name == 'SCORM') {
       this.isLinkFieldEnabled = false
-      this.resourceImg = '/assets/pfds/SCROM-img.svg'
+      this.resourceImg = 'cbp-assets/images/SCROM-img.svg'
     }
     this.addResource()
     this.isLinkPageEnabled = true
@@ -139,6 +139,7 @@ export class ModuleCreationComponent implements OnInit {
 
   addIndependentResource() {
     this.showAddModuleForm = true
+    this.isResourceTypeEnabled = true
     this.independentResourceCount = this.independentResourceCount + 1
     this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
   }
