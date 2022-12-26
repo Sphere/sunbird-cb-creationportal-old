@@ -94,6 +94,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   isModelHeaderView: boolean = false;
   showResource: boolean = false;
   clickedNext: boolean = false;
+  createModule: any
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -144,6 +145,17 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.viewMode = ''
           this.clickedNext = true
           this.save()
+        }
+      })
+    this.initService.createModuleMessage.subscribe(
+      (data: any) => {
+        console.log(data)
+        if (data) {
+          this.createModule = data
+          this.setContentType(data['type'])
+          // this.viewMode = ''
+          // this.clickedNext = true
+          //this.save()
         }
       })
     // this.initService.editCourseMessage.subscribe(
@@ -330,7 +342,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         expandable: true,
         level: 1,
       }
-
+      console.log(node)
+      console.log(this.createTopicForm.value)
+      const newData = {
+        topicDescription: this.createModule.description,
+        topicName: this.createModule.name
+      }
       const parentNode = node
       this.loaderService.changeLoad.next(true)
       const isDone = await this.storeService.createChildOrSibling(
@@ -338,7 +355,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         parentNode,
         asSibling ? node.id : undefined,
         'below',
-        this.createTopicForm.value,
+        newData,
         param === 'web' ? 'link' : '',
 
       )
@@ -368,7 +385,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.loaderService.changeLoad.next(false)
       this.subAction({ type: 'editContent', identifier: this.editorService.newCreatedLexid, nodeClicked: false })
       this.createTopicForm.reset()
-      this.save()
+      //this.save()
     }
   }
 

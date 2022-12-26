@@ -419,7 +419,7 @@ export class CollectionStoreService {
 
       if (meta.primaryCategory === 'Course Unit') {
         content = await this.editorService.createAndReadModule(this.getModuleRequest(requestBody),
-                                                               parentData.identifier).toPromise()
+          parentData.identifier).toPromise()
         this.createdModuleUpdate = true
       } else {
         content = await this.editorService.createAndReadContentV2(requestBody).toPromise()

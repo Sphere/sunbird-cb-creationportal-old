@@ -6,30 +6,24 @@
 
         <!--module & resources left canvas header-->
         <mat-toolbar class="model header">
-          <span class="course-title">{{courseName}}</span>
+          <span class="course-title">{{courseData?.name}}</span>
           <mat-icon class="material-icons margin-left-m text-medium brand-color" style="padding-top: 5px;">
             edit</mat-icon>
-          <span class="margin-left-s text-small">(0h 0m)</span>
+          <span class="margin-left-s text-small">{{courseData?.duration | date:'h:mm:ss'}}</span>
         </mat-toolbar>
-
-        <!--module & resources left canvas-->
-        <div class="model-text model-left-content" *ngIf="!showAddModuleForm">
-          <span>Modules and Resources will be visible here once you start adding them.</span>
-        </div>
-
-        <!--module left canvas creation-->
-        <div class="model-left-create-content" *ngIf="showAddModuleForm">
-          <div class="module-container" *ngFor="let module of moduleNames">
-            <div class="mod-heading">
-              <h2 class="module-text" style="margin: 0px !important;">{{module.name}}</h2>
+        <div class="model-left-create-content">
+          <div class="module-container" *ngFor="let module of courseData?.children">
+            <div class="mod-heading" *ngIf="module.primaryCategory === 'Course Unit'">
+              <h2 class="module-text" style="margin: 0px !important;">{{module.name !== '' ? module.name : "no title1"}}
+              </h2>
               <span fxFlex style="flex: 1 1 auto;"></span>
               <span style="display:flex;flex-direction: row;">
                 <mat-icon class="icons-list">delete</mat-icon>
                 <mat-icon class="icons-list">content_copy</mat-icon>
               </span>
             </div>
-            <div *ngIf="isOnClickOfResourceTypeEnabled">
-              <div *ngFor="let resource of resourceNames" class="heading-resource">
+            <div *ngIf="module?.children?.length > 0">
+              <div *ngFor="let resource of module.children" class="heading-resource">
                 <mat-icon class="cursor-pointer">more_vert</mat-icon> <span
                   class="resourse-text">{{resource.name}}</span>
                 <span fxFlex style="flex: 1 1 auto;"></span>
@@ -39,27 +33,69 @@
                 </span>
               </div>
             </div>
-
+            <div *ngIf="module.primaryCategory !== 'Course Unit'" class="heading-resource">
+              <mat-icon class="cursor-pointer">more_vert</mat-icon> <span class="resourse-text">{{module.name}}</span>
+              <span fxFlex style="flex: 1 1 auto;"></span>
+              <span style="display:flex;flex-direction: row;">
+                <mat-icon class="icons-list">delete</mat-icon>
+                <mat-icon class="icons-list">content_copy</mat-icon>
+              </span>
+            </div>
             <button *ngIf="isSaveModuleFormEnable" mat-raised-button [disabled]="!isOnClickOfResourceTypeEnabled"
-              class="with-19 secondary-button-outline mat-button-base save-btn-bottom"
+              class="secondary-button-outline mat-button-base save-btn-bottom"
               style="margin:0.4rem;color: #0074b6 !important;" (click)="addResource()"> Add Resource</button>
-
           </div>
-          <div *ngFor="let resource of independentResourceNames" class="heading-resource">
-            <mat-icon class="cursor-pointer">more_vert</mat-icon> <span class="resourse-text">{{resource.name}}</span>
-            <span fxFlex style="flex: 1 1 auto;"></span>
-            <span style="display:flex;flex-direction: row;">
-              <mat-icon class="icons-list">delete</mat-icon>
-              <mat-icon class="icons-list">content_copy</mat-icon>
-            </span>
+
+          <!--module & resources left canvas-->
+          <div class="model-text model-left-content" *ngIf="!showAddModuleForm">
+            <span>Modules and Resources will be visible here once you start adding them.</span>
+          </div>
+          <!-- <ws-author-auth-toc></ws-author-auth-toc> -->
+          <!--module left canvas creation-->
+          <div class="model-left-create-content" *ngIf="showAddModuleForm">
+            <div class="module-container" *ngFor="let module of moduleNames">
+              <div class="mod-heading">
+                <h2 class="module-text" style="margin: 0px !important;">{{module.name !== '' ? module.name : "no
+                  title2"}}
+                </h2>
+                <span fxFlex style="flex: 1 1 auto;"></span>
+                <span style="display:flex;flex-direction: row;">
+                  <mat-icon class="icons-list">delete</mat-icon>
+                  <mat-icon class="icons-list">content_copy</mat-icon>
+                </span>
+              </div>
+              <div *ngIf="isOnClickOfResourceTypeEnabled">
+                <div *ngFor="let resource of resourceNames" class="heading-resource">
+                  <mat-icon class="cursor-pointer">more_vert</mat-icon> <span
+                    class="resourse-text">{{resource.name}}</span>
+                  <span fxFlex style="flex: 1 1 auto;"></span>
+                  <span style="display:flex;flex-direction: row;">
+                    <mat-icon class="icons-list">delete</mat-icon>
+                    <mat-icon class="icons-list">content_copy</mat-icon>
+                  </span>
+                </div>
+              </div>
+
+              <button *ngIf="isSaveModuleFormEnable" mat-raised-button [disabled]="!isOnClickOfResourceTypeEnabled"
+                class="secondary-button-outline mat-button-base save-btn-bottom"
+                style="margin:0.4rem;color: #0074b6 !important;" (click)="addResource()"> Add Resource</button>
+
+            </div>
+            <div *ngFor="let resource of independentResourceNames" class="heading-resource">
+              <mat-icon class="cursor-pointer">more_vert</mat-icon> <span class="resourse-text">{{resource.name}}</span>
+              <span fxFlex style="flex: 1 1 auto;"></span>
+              <span style="display:flex;flex-direction: row;">
+                <mat-icon class="icons-list">delete</mat-icon>
+                <mat-icon class="icons-list">content_copy</mat-icon>
+              </span>
+            </div>
           </div>
         </div>
-
         <!--module & resource left footer-->
         <div class="model-button">
-          <button mat-raised-button class=" margin-left-l with-19 secondary-button mat-button-base save-btn-bottom"
+          <button mat-raised-button class=" margin-left-l secondary-button mat-button-base save-btn-bottom"
             (click)="addModule()"> Add Module</button>
-          <button mat-raised-button class=" margin-left-m with-19 secondary-button mat-button-base save-btn-bottom"
+          <button mat-raised-button class=" margin-left-m secondary-button mat-button-base save-btn-bottom"
             (click)="addIndependentResource()">Add Resource</button>
         </div>
       </mat-drawer-container>
@@ -69,12 +105,13 @@
         <!--module right canvas header-->
         <mat-toolbar class="model header">
           <div style="text-align:end;width: 100%;" class="preview-icon">
-            <mat-icon [ngClass]="showAddModuleForm ? 'brand-color' : ''" class="margin-right-s material-icons"
-              style="font-size: small;">remove_red_eye</mat-icon>
-            <span style="font-size: small;" [ngClass]="showAddModuleForm ? 'brand-color' : ''">Preview</span>
+            <mat-icon [ngClass]="showAddModuleForm ? 'brand-color' : ''" class="margin-right-s material-icons" style="font-size: small;margin-right: 3px !important;
+    vertical-align: bottom;cursor: pointer;color: #1C5D95;">remove_red_eye</mat-icon>
+            <span style="font-size: small;cursor: pointer;color:#1C5D95"
+              [ngClass]="showAddModuleForm ? 'brand-color' : ''">Preview</span>
             <button mat-raised-button [ngClass]="showAddModuleForm ? 'ws-mat-primary-background' : 'secondary-button'"
               class="width-20 margin-left-s mat-button-base save-btn-bottom">
-              Go toCourse Settings ></button>
+              Go to Course Settings ></button>
           </div>
         </mat-toolbar>
 
@@ -130,34 +167,47 @@
         <div class="model-right-content"
           *ngIf="showAddModuleForm && !isResourceTypeEnabled && !isOnClickOfResourceTypeEnabled">
           <div>
-            <span class="course-sub-title" *ngIf="!isSaveModuleFormEnable">{{moduleName}}</span>
+            <span class="course-sub-title" *ngIf="!isSaveModuleFormEnable">Create Course</span>
             <span class="course-sub-title" *ngIf="isSaveModuleFormEnable">Module Details</span>
           </div>
-          <div><input name="moduleName" type="text" matInput #module class="module-input margin-top-s"
-              placeholder="Name of the Module" autocomplete="off" />
+          <div>
+            <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
+              class="module-input margin-top-s" placeholder="Name of the Module" autocomplete="off" />
+          </div>
+          <div>
+            <mat-form-field appearance="outline" class="margin-top-xs">
+              <textarea matInput i18n-placeholder placeholder="Short Description"
+                [(ngModel)]="topicDescription"></textarea>
+            </mat-form-field>
           </div>
           <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
             <span style="color:#808080">Module Thumbnail</span>
           </div>
           <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
             <div>
-              <img class="image max-width" height="144" width="256" src="/assets/instances/eagle/app_logos/default.png">
-              <div class="add mat-elevation-z4 mat-app-background">
-                <mat-icon class="add-icon mat-icon material-icons mat-icon-no-color" role="img" aria-hidden="true">add
-                </mat-icon>
-                <input style="display: none;" type="file">
+              <img class="image max-width" [src]="courseData.thumbnail" (error)="changeToDefaultImg($event)">
+              <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadThumbnail.click()">
+                <!-- <mat-icon class="add-icon mat-icon material-icons mat-icon-no-color" role="img" aria-hidden="true">add
+                </mat-icon> -->
+                <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
+                <input #uploadThumbnail (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null"
+                  style="display: none;" [accept]="imageTypes.toString()" type="file">
               </div>
             </div>
             <div>
               Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
             </div>
           </div>
-          <div *ngIf="isSaveModuleFormEnable"><span style="color:#808080">Note: Learners will see this image for this
-              module</span></div>
-          <div><button mat-raised-button
+          <div *ngIf="isSaveModuleFormEnable">
+            <span style="color:#808080">Note: Learners will see this image for this
+              module</span>
+          </div>
+          <div>
+            <button mat-raised-button
               class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
-              (click)="moduleCreate(module.value)">
-              {{moduleButtonName}}</button></div>
+              (click)="moduleCreate(module.value, moduleName, topicDescription)">
+              {{moduleButtonName}}</button>
+          </div>
         </div>
 
         <!--Resource types page -->

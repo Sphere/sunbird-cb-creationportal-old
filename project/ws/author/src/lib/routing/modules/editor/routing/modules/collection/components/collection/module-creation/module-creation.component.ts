@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, AfterViewInit } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { ConfigurationsService, ImageCropComponent } from '@ws-widget/utils'
@@ -13,13 +13,15 @@ import { AccessControlService } from '../../../../../../../../../modules/shared/
 import { UploadService } from '../../../../../../shared/services/upload.service'
 import { AUTHORING_BASE, CONTENT_BASE_STATIC } from '@ws/author/src/lib/constants/apiEndpoints'
 import { HttpClient } from '@angular/common/http'
-
+import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+import { EditorContentService } from 'project/ws/author/src/lib/routing/modules/editor/services/editor-content.service'
 @Component({
   selector: 'ws-author-module-creation',
   templateUrl: './module-creation.component.html',
   styleUrls: ['./module-creation.component.scss']
 })
-export class ModuleCreationComponent implements OnInit {
+export class ModuleCreationComponent implements OnInit, AfterViewInit {
   contentList: any[] = [
     {
       name: 'Link',
@@ -67,20 +69,26 @@ export class ModuleCreationComponent implements OnInit {
   resourceImg: string = '';
   isLinkFieldEnabled: boolean = false;
   moduleName: string = '';
+  topicDescription: string = ''
   resourceNames: any = [];
   resourceCount: number = 0;
   independentResourceNames: any = [];
   independentResourceCount: number = 0;
   imageTypes = IMAGE_SUPPORT_TYPES
   bucket: string = ''
-
+  courseData: any
   constructor(public dialog: MatDialog,
     private configSvc: ConfigurationsService,
     private snackBar: MatSnackBar,
     private loader: LoaderService,
     private accessService: AccessControlService,
     private uploadService: UploadService,
-    private http: HttpClient,) {
+    private http: HttpClient,
+    private initService: AuthInitService,
+    private editorService: EditorService,
+    private editorStore: EditorContentService,
+
+  ) {
     this.resourceForm = new FormGroup({
       resourceName: new FormControl(''),
       resourceLinks: new FormControl(''),
@@ -93,12 +101,33 @@ export class ModuleCreationComponent implements OnInit {
 
   ngOnInit() {
   }
+  ngAfterViewInit() {
+    console.log('dd')
+    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+      console.log(data)
+      this.courseData = data
+      this.isSaveModuleFormEnable = true
+      this.showAddModuleForm = true
+      this.moduleName = data.name
+      this.topicDescription = data.description
 
-  moduleCreate(name: string) {
+      //this.isResourceTypeEnabled = true
+      console.log(this.isSaveModuleFormEnable)
+      //this.editorStore.resetOriginalMetaWithHierarchy(data)
+    })
+  }
+
+  moduleCreate(name: string, input1: string, input2: string) {
+    console.log(input1, input2)
+    let obj: any = {}
     if (this.moduleButtonName == 'Create') {
+      obj["type"] = 'collection'
+      obj["name"] = input1
+      obj["description"] = input2
       this.moduleName = name
       this.isSaveModuleFormEnable = true
       this.moduleButtonName = 'Save'
+      this.initService.createModuleUnit(obj)
     } else if (this.moduleButtonName == 'Save') {
       this.isResourceTypeEnabled = true
     }
@@ -129,7 +158,7 @@ export class ModuleCreationComponent implements OnInit {
   addModule() {
     this.showAddModuleForm = true
     this.moduleNames.push({ name: 'Create Course' })
-    this.moduleName = 'Create Course'
+    this.moduleName = ''
   }
 
   addResource() {
@@ -240,8 +269,9 @@ export class ModuleCreationComponent implements OnInit {
                     data => {
                       if (data && data.name !== 'Error') {
                         this.loader.changeLoad.next(false)
-                        this.moduleForm.controls.appIcon.setValue(data.artifactUrl)
-                        this.moduleForm.controls.thumbnail.setValue(data.artifactUrl)
+                        //this.moduleForm.controls.appIcon.setValue(data.artifactUrl)
+                        this.courseData.thumbnail = data.artifactUrl
+                        this.initService.uploadData('thumbnail')
                       }
                     })
               })

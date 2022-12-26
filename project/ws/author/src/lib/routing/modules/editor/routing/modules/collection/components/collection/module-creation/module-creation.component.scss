@@ -119,6 +119,17 @@
   font-size: 14px;
   font-family: sans-serif !important;
 }
+.photo {
+  height: 48px;
+  width: 48px;
+  background: #f2f2f2;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  left: -30px;
+  bottom: 13px;
+  cursor: pointer;
+}
 
 .model-button{
   padding: 1vh 0vh 1vh 0vh;
@@ -135,9 +146,9 @@
   width: 100%;
 }
 
-.preview-icon{
-  color: #808080;
-}
+// .preview-icon{
+//   color: #808080;
+// }
 
 .model-right-content{
   background-color: #F7FBFE;
@@ -147,6 +158,16 @@
   margin-top: 1.5vh;
   border: 1px solid #ccc;
 }
+
+.photo-icon {
+  position: relative;
+  top: 10px;
+  left: 9px;
+  width: 30px;
+  height: 30px;
+  font-size: 30px;
+}
+
 
 .course-sub-title{
   font-size: 20px;
