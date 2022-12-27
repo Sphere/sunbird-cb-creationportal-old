@@ -11,7 +11,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core'
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms'
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatAutocompleteSelectedEvent } from '@angular/material'
 import { MatChipInputEvent } from '@angular/material/chips'
 import { MatDialog } from '@angular/material/dialog'
@@ -82,7 +82,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   regionCtrl!: FormControl
   accessPathsCtrl!: FormControl
   keywordsCtrl!: FormControl
-  contentForm!: FormGroup
   selectedSkills: string[] = []
   canUpdate = true
   ordinals!: any
@@ -163,6 +162,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     private accessService: AccessControlService,
     // private apiService: ApiService,
     private http: HttpClient,
+
   ) { }
 
   ngAfterViewInit() {
@@ -172,8 +172,9 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       // tslint:disable-next-line: align
     }, 100)
   }
-
+  contentForm!: FormGroup
   ngOnInit() {
+
     this.isSiemens = this.accessService.rootOrg.toLowerCase() === 'siemens'
     this.ordinals = this.authInitService.ordinals
     this.audienceList = this.ordinals.audience
@@ -1519,7 +1520,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       sampleCertificates: [],
       skills: [],
       softwareRequirements: [],
-      sourceName: [],
+      sourceName: new FormControl('', [Validators.required]),
       creatorLogo: [],
       creatorPosterImage: [],
       creatorThumbnail: [],
@@ -1538,7 +1539,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       instructions: [],
       versionKey: '',  // (new Date()).getTime()
       purpose: '',
-      langName: ''
+      langName: '',
+      cneName: new FormControl('', [Validators.required])
     })
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {

@@ -54,7 +54,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 Review</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
-              <a [ngClass]="{'head-content-title':isSelectedPublishCourse }" style="cursor: pointer"
+              <a [ngClass]="{'head-content-title':isSelectedToPublishCourse }" style="cursor: pointer"
                 (click)="onClickReviewCourse('Published')" i18n>Courses to
                 Publish</a>
             </mat-list-item>
@@ -140,21 +140,21 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <a routerLink="/author/my-content" [queryParams]="{ status: 'deleted' }" i18n>Deleted</a>
             </mat-list-item> -->
 
-            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+            <mat-list-item *ngIf="allowReview" mat-button role="listitem" [routerLinkActive]="['active']">
               <a [ngClass]="{'head-content-title':isSelectedReviewCourse }" style="cursor: pointer"
                 (click)="onClickReviewCourse('Sent for review')" i18n>Courses to
                 Review</a>
             </mat-list-item>
-            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
-              <a [ngClass]="{'head-content-title':isSelectedPublishCourse }" style="cursor: pointer"
-                (click)="onClickReviewCourse('Published')" i18n>Courses to
+            <mat-list-item *ngIf="allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
+              <a [ngClass]="{'head-content-title':isSelectedToPublishCourse }" style="cursor: pointer"
+                (click)="onClickReviewCourse('Courses to publish')" i18n>Courses to
                 Publish</a>
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
       </mat-accordion>
       <!-- allowAuthor -->
-      <mat-accordion *ngIf="allowReview || allowPublish">
+      <!-- <mat-accordion *ngIf="allowReview || allowPublish">
         <mat-expansion-panel [expanded]="false" class="no-shadow">
           <mat-expansion-panel-header>
             <mat-panel-title>
@@ -169,11 +169,11 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <a routerLink="/author/my-content" [queryParams]="{ status: 'review' }" i18n>Review</a>
             </mat-list-item>
             <mat-list-item role="listitem" *ngIf="allowPublish" [routerLinkActive]="['active']">
-              <a routerLink="/author/my-content" [queryParams]="{ status: 'publish' }" i18n>Publish</a>
+              <a routerLink="/author/my-content" [queryParams]="{ status: 'reviewed' }" i18n>Publish</a>
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
-      </mat-accordion>
+      </mat-accordion> -->
     </ng-container>
   </mat-drawer>
   <mat-drawer-content>

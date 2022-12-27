@@ -1,51 +1,58 @@
 <mat-dialog-content
   *ngIf="contentMeta && contentMeta.reviewStatus === 'Reviewed' && courseEdited === false && contentMeta.status !== 'Draft'">
-  <h2 class="text-bold">List of Resources</h2>
-  <h4 class="text-bold">Note: All the resources have to be Live before publishing CBP</h4>
+  <h2 class="text-bold">Publishing Course: {{contentMeta.name}}</h2>
+  <p class="publish-course-note">Note: All the resources have to be Live before publishing CBP</p>
   <div style="min-height: 260px;">
     <table>
       <thead>
-        <th>Name</th>
-        <th>Status</th>
+        <th class="p-4">Resource</th>
+        <th class="p-4">Status</th>
       </thead>
       <tbody *ngFor="let course of contentMeta.children">
         <tr>
-          <td *ngIf="course.children">
+          <td class="p-4" *ngIf="course.children">
             <span>{{course.name}}</span>
             <table>
               <thead>
-                <th>Children Name</th>
-                <th>Children Status</th>
+                <th class="p-4">Children Name</th>
+                <th class="p-4">Children Status</th>
               </thead>
               <tbody>
                 <tr *ngFor="let sub of course.children">
-                  <td>{{sub.name}}</td>
-                  <td>{{sub.status}}</td>
+                  <td class="p-4">{{sub.name}}</td>
+                  <td class="p-4">{{sub.status}}</td>
                 </tr>
               </tbody>
             </table>
           </td>
-          <td *ngIf="!course.children">{{course.name}}</td>
-          <td *ngIf="course.children && course.status === 'Draft'">&nbsp;</td>
-          <td *ngIf="!course.children">{{course.status}}</td>
+          <td class="p-4" *ngIf="!course.children">{{course.name}}</td>
+          <td class="p-4" *ngIf="course.children && course.status === 'Draft'">&nbsp;</td>
+          <td class="p-4" *ngIf="!course.children">{{course.status}}</td>
         </tr>
       </tbody>
     </table>
   </div>
-  <div class="margin-top-s">
+  <div class="margin-top-s margin-bottom-s">
     <div style="float: left;">
-      <button mat-raised-button i18n id="refresh" (click)="refreshCourse()">Refresh</button>
+      <button class="save-btn-mt send-to-creator-link" (click)="click('publishResources')" color="#1C5D95" i18n>
+        Send to Creator's Draft
+      </button>
     </div>
     <div style="float: right;">
-      <button class="margin-left-s" style="margin-right: 10px;" (click)="click('publishResources')" mat-raised-button
-        color="primary" i18n *ngIf="!showPublishCBPBtn">
+      <button mat-raised-button i18n class="refresh-button" id="refresh" (click)="refreshCourse()">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button class="margin-left-s
+          text-white ws-mat-primary-background  mat-button-base save-btn-mt publish-button"
+        (click)="click('publishResources')" mat-raised-button i18n [disabled]="showPublishCBPBtn">
         Publish Resources
       </button>
-      <button class="margin-left-s" style="margin-right: 10px;" (click)="publishCourse()" mat-raised-button
-        color="primary" i18n *ngIf="showPublishCBPBtn">
-        Publish CBP
+      <button class="margin-left-s
+          text-white ws-mat-primary-background  mat-button-base save-btn-mt publish-button" style="margin-right: 10px;"
+        (click)="publishCourse()" mat-raised-button i18n [disabled]="!showPublishCBPBtn">
+        Publish Course
       </button>
-      <button mat-dialog-close mat-raised-button i18n>Cancel</button>
+      <!-- <button mat-dialog-close mat-raised-button i18n>Cancel</button> -->
     </div>
   </div>
 </mat-dialog-content>
