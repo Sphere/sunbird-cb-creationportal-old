@@ -77,6 +77,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   imageTypes = IMAGE_SUPPORT_TYPES
   bucket: string = ''
   courseData: any
+  isAssessmentOrQuizEnabled!: boolean
+  assessmentOrQuizForm!: FormGroup
+  questionTypes: any = ['MCQ', 'Fill in the blanks', 'Match the following']
+
   constructor(public dialog: MatDialog,
     private configSvc: ConfigurationsService,
     private snackBar: MatSnackBar,
@@ -97,6 +101,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.moduleForm = new FormGroup({
       appIcon: new FormControl('')
     })
+
+    this.assessmentOrQuizForm = new FormGroup({
+      resourceName: new FormControl(''),
+    })
   }
 
   ngOnInit() {
@@ -107,7 +115,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       console.log(data)
       this.courseData = data
       this.isSaveModuleFormEnable = true
-      this.showAddModuleForm = true
+      //this.showAddModuleForm = true
       this.moduleName = data.name
       this.topicDescription = data.description
 
@@ -136,18 +144,26 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   createResourseContent(name: string): void {
     if (name == 'Link') {
       this.isLinkFieldEnabled = true
+      this.isAssessmentOrQuizEnabled = false
     } else if (name == 'PDF') {
       this.isLinkFieldEnabled = false
+      this.isAssessmentOrQuizEnabled = false
       this.resourceImg = 'cbp-assets/images/pdf-icon.svg'
     } else if (name == 'Audio') {
       this.isLinkFieldEnabled = false
+      this.isAssessmentOrQuizEnabled = false
       this.resourceImg = 'cbp-assets/images/pdf-icon.svg'
     } else if (name == 'Vedio') {
       this.isLinkFieldEnabled = false
+      this.isAssessmentOrQuizEnabled = false
       this.resourceImg = 'cbp-assets/images/vedio-img.svg'
     } else if (name == 'SCORM') {
       this.isLinkFieldEnabled = false
+      this.isAssessmentOrQuizEnabled = false
       this.resourceImg = 'cbp-assets/images/SCROM-img.svg'
+    } else if (name == 'Assessment') {
+      this.isLinkFieldEnabled = false
+      this.isAssessmentOrQuizEnabled = true
     }
     this.addResource()
     this.isLinkPageEnabled = true

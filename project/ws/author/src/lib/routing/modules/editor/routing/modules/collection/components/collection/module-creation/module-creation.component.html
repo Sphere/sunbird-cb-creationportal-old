@@ -250,7 +250,7 @@
             <span class="course-sub-title">Resource Details</span>
           </div>
           <div>
-            <form [formGroup]="resourceForm" class="resource-details-form">
+            <form [formGroup]="resourceForm" class="resource-details-form" *ngIf="!isAssessmentOrQuizEnabled">
               <mat-form-field appearance="outline" class="margin-top-xs field-width">
                 <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
@@ -306,6 +306,42 @@
               <div><button mat-raised-button
                   class="margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
                   (click)="resourceTypeSave()">Save</button></div>
+            </form>
+            <form [formGroup]="assessmentOrQuizForm" class="resource-details-form" *ngIf="isAssessmentOrQuizEnabled">
+              <div style="display:flex; flex-direction:row">
+                <mat-form-field appearance="outline" class="margin-right-l field-width">
+                  <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
+                    placeholder="Name of the resource" />
+                </mat-form-field>
+                <span class="duration-text">Duration :</span>
+                <mat-form-field appearance="outline" class="width-55" style="margin-right:13px;">
+                  <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
+                    (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" step="1" />
+                </mat-form-field>
+                <div class="margin-top-s padding-small">:</div>
+
+                <mat-form-field appearance="outline" class="width-55">
+                  <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
+                    (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" max="59" step="1" />
+                </mat-form-field>
+
+                <span class="duration-text margin-left-l">Pass% :</span>
+                <mat-form-field appearance="outline" class="width-55" style="margin-right:13px;">
+                  <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
+                    (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" step="1" />
+                </mat-form-field>
+              </div>
+              <div style="display:flex; flex-direction:row">
+                <mat-icon class="material-icons brand-color">add_circle</mat-icon>
+                <span>Add An Image for this Assessment (Optional)</span>
+              </div>
+              <span>Questions</span>
+              <!-- <mat-form-field appearance="outline" class="margin-top-s field-edit-width">
+                <mat-select formControlName="sourceName" i18n-placeholder placeholder="Match the following">
+                  <mat-option *ngFor="let type of questionTypes">
+                    {{ type }}</mat-option>
+                </mat-select>
+              </mat-form-field> -->
             </form>
           </div>
         </div>
