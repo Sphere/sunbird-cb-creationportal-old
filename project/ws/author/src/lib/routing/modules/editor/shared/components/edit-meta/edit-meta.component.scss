@@ -473,3 +473,6 @@ ul li {
     font-size: 14px;
     font-family: sans-serif !important;
 }
+.mat-raised-button[disabled]{
+  background-color: #d3d3d3 !important;
+}

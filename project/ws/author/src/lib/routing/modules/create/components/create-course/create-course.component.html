@@ -13,11 +13,13 @@
         <mat-form-field appearance="outline" class="margin-top-xs field-width name-field ">
           <input matInput #courseName formControlName="courseName" maxlength="100" i18n-placeholder
             placeholder="Course name" />
+          <mat-hint class="mt-hint">0/50</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="margin-top-xs field-width name-field ">
           <input matInput #courseSummary formControlName="courseSummary" maxlength="100" i18n-placeholder
             placeholder="Summary" />
+          <mat-hint class="mt-hint">0/300 (In a few words, describe your course)</mat-hint>
         </mat-form-field>
       </div>
 
@@ -32,6 +34,7 @@
           <!-- <mat-hint align="end">{{ description.value.length }} / 2000</mat-hint>
         <mat-error i18n>Description is mandatory
         </mat-error> -->
+          <mat-hint class="mt-hint">In 1-4 Paragraphs, summarise your course</mat-hint>
         </mat-form-field>
       </div>
       <!-- thumbnail -->
@@ -86,9 +89,9 @@
         I have read and agree to the <a>IPR Declaration</a>
       </mat-checkbox> -->
 
-      <div class="flex flex-middle margin-top-xs padding-top-l">
+      <div class="flex flex-middle margin-top-xs">
         <mat-checkbox [checked]="iprAccepted" (change)="iprChecked();"></mat-checkbox>
-        <p class="margin-left-xs margin-remove-bottom cons-text">
+        <p class="margin-left-xs read-and-agree-top-margin margin-remove-bottom cons-text">
           I have read and agree to the
           <span class="ws-mat-primary-text font-weight-500 cursor-pointer" (click)="showIpr()">IPR Declaration</span>
         </p>

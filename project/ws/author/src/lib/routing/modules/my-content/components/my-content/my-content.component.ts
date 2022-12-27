@@ -86,11 +86,13 @@ export class MyContentComponent implements OnInit, OnDestroy {
   isAdmin = false
   currentAction: 'author' | 'reviewer' | 'expiry' | 'deleted' = 'author'
   listview = true
-  links = ['Draft', 'Sent for review', 'Published', 'Retired'];
+  links = ['Draft', 'Sent for review', 'Courses to publish', 'Published Courses', 'Retired'];
   activeLink = this.links[0];
   isSelectedColor: boolean = true
   isSelectedReviewCourse: boolean = false;
   isSelectedPublishCourse: boolean = false;
+  isSelectedToPublishCourse: boolean = false;
+
   link: string = ''
   @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<
     any
@@ -162,6 +164,14 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.allowExpiry = this.accessService.authoringConfig.allowExpiry
     this.allowReview = this.canShow('review') && this.accessService.authoringConfig.allowReview
     this.allowPublish = this.canShow('publish') && this.accessService.authoringConfig.allowPublish
+    if (this.allowPublish) {
+      this.link = 'Courses to publish'
+      this.activeLink = 'Courses to publish'
+      this.isSelectedColor = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedToPublishCourse = true
+    }
   }
 
 
@@ -172,16 +182,28 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedColor = false
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = true
+      this.isSelectedToPublishCourse = false
+
+    }
+    else if (status == 'Courses to publish') {
+      this.isSelectedColor = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedToPublishCourse = true
     }
     else if (status == 'Published') {
       this.isSelectedColor = false
       this.isSelectedReviewCourse = false
       this.isSelectedPublishCourse = true
+      this.isSelectedToPublishCourse = false
+
     }
     else if (status == 'Draft') {
       this.isSelectedColor = true
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
+      this.isSelectedToPublishCourse = false
+
     }
 
     this.navigateContents(status)
@@ -190,12 +212,14 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
 
   navigateContents(data: string): void {
+    console.log('here', data)
     switch (data) {
       case 'Draft':
         this.link = 'Draft'
         this.activeLink = 'Draft'
         this.isSelectedColor = true
         this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
         this.isSelectedReviewCourse = false
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'draft' } })
         break
@@ -205,18 +229,32 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.activeLink = 'Sent for review'
         this.isSelectedColor = false
         this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
         this.isSelectedReviewCourse = true
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'inreview' } })
         break
 
-      case 'Published':
-        this.link = 'Published'
-        this.activeLink = 'Published'
+      case 'Courses to publish':
+        this.link = 'Courses to publish'
+        this.activeLink = 'Courses to publish'
+        this.isSelectedColor = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = true
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'reviewed' } })
+        break
+
+      case 'Published Courses':
+        this.link = 'Published Courses'
+        this.activeLink = 'Published Courses'
         this.isSelectedColor = false
         this.isSelectedReviewCourse = false
         this.isSelectedPublishCourse = true
+        this.isSelectedToPublishCourse = false
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'published' } })
         break
+
+
 
       case 'Retired':
         this.link = 'Retired'

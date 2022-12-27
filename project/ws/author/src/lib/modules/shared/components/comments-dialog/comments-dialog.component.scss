@@ -24,11 +24,40 @@
   font-weight: bold !important;
 }
 table {
-  border: 1px solid #990000; 
+  border: 1px solid #990000;
   border-collapse: collapse;
   width: 100%;
 }
 th, td {
     border: solid 1px lightgrey;
     text-align: center;
+}
+.publish-button{
+  border-radius: 30px !important;
+  color: white  !important;
+  font-family: sans-serif !important;
+}
+.publish-button[disabled]{
+  background-color: #d3d3d3 !important;
+  color: darkgrey !important;
+}
+.send-to-creator-link{
+  color:#1C5D95 !important;
+  background-color: white !important;
+  font-size: 16px !important;
+  border: none !important;
+}
+.publish-course-note{
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  color: #808080 !important;
+}
+.refresh-button{
+    background: none !important ;
+    color: #1C5D95 !important;
+    border: 1px solid !important;
+    border-radius: 21px !important;
+    max-width: 32px !important;
+    height: 32px !important;
 }
