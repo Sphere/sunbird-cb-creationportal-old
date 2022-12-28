@@ -1540,7 +1540,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       versionKey: '',  // (new Date()).getTime()
       purpose: '',
       langName: '',
-      cneName: new FormControl('', [Validators.required])
+      // cneName: new FormControl('', [Validators.required])
     })
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
