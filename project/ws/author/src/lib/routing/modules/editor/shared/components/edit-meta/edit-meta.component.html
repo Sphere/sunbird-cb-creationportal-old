@@ -716,7 +716,7 @@
 
           <mat-form-field appearance="outline" class="margin-top-s field-edit-width"
             [ngClass]="{ 'mat-form-field-invalid': showError('sourceName') }">
-            <mat-select formControlName="cneName" i18n-placeholder placeholder="(Optional) CNE points">
+            <mat-select formControlName="sourceName" i18n-placeholder placeholder="(Optional) CNE points">
               <mat-option *ngFor="let sourceName of ordinals.sourceName" [value]="sourceName">
                 {{ sourceName }}</mat-option>
             </mat-select>
