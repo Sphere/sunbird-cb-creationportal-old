@@ -43,10 +43,13 @@ export class AuthHomeComponent implements OnInit, OnDestroy {
       this.screenSizeIsLtMedium = isLtMedium
     })
     this.isNewDesign = this.accessService.authoringConfig.newDesign
+    // console.log(this.accessService, this.allowPublish, this.allowAuthorContentCreate, this.allowReview)
     if (this.allowPublish) {
       this.router.navigate(['/author/my-content'], { queryParams: { status: 'reviewed' } })
-    } else {
+    } else if (this.allowAuthorContentCreate) {
       this.router.navigate(['/author/my-content'], { queryParams: { status: 'draft' } })
+    } else {
+      this.router.navigate(['/author/my-content'], { queryParams: { status: 'inreview' } })
     }
   }
   ngOnDestroy() {

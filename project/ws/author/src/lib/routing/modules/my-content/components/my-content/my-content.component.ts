@@ -156,7 +156,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.setAction()
       this.fetchContent(false)
     })
-
+    // 'Draft', 'Sent for review', 'Courses to publish', 'Published Courses', 'Retired'
     this.allowAuthor = this.canShow('author')
     this.allowAuthorContentCreate = this.canShow('author_create')
     this.allowRedo = this.accessService.authoringConfig.allowRedo
@@ -166,11 +166,30 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.allowPublish = this.canShow('publish') && this.accessService.authoringConfig.allowPublish
     if (this.allowPublish) {
       this.link = 'Courses to publish'
-      this.activeLink = 'Courses to publish'
+      this.links = ['Courses to publish', 'Published Courses']
+      this.activeLink = this.links[0]
       this.isSelectedColor = false
       this.isSelectedReviewCourse = false
       this.isSelectedPublishCourse = false
       this.isSelectedToPublishCourse = true
+
+    } else if (this.allowReview) {
+      this.link = 'Sent for review'
+      this.links = ['Sent for review']
+      this.activeLink = this.links[0]
+      this.isSelectedColor = false
+      this.isSelectedReviewCourse = true
+      this.isSelectedPublishCourse = false
+      this.isSelectedToPublishCourse = true
+    }
+    else if (this.allowAuthorContentCreate) {
+      this.link = 'Draft'
+      this.links = ['Draft', 'Published Courses']
+      this.activeLink = 'Draft'
+      this.isSelectedColor = true
+      this.isSelectedReviewCourse = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedToPublishCourse = false
     }
   }
 
@@ -212,7 +231,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
 
   navigateContents(data: string): void {
-    console.log('here', data)
     switch (data) {
       case 'Draft':
         this.link = 'Draft'
