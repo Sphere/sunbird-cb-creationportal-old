@@ -112,9 +112,10 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <a routerLink="/author/my-content" [queryParams]="{ status: 'all' }" i18n>All</a>
             </mat-list-item> -->
 
-            <!-- <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
-              <a routerLink="/author/my-content" [queryParams]="{ status: 'draft' }" i18n>Draft</a>
-            </mat-list-item> -->
+            <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
+              <a [ngClass]="{'head-content-title':isSelectedColor }" style="cursor: pointer"
+                (click)="onClickReviewCourse('Draft')" i18n>Drafts</a>
+            </mat-list-item>
 
             <!-- <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'inreview' }" i18n>Sent for review</a>
@@ -145,10 +146,15 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 (click)="onClickReviewCourse('Sent for review')" i18n>Courses to
                 Review</a>
             </mat-list-item>
+
             <mat-list-item *ngIf="allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
               <a [ngClass]="{'head-content-title':isSelectedToPublishCourse }" style="cursor: pointer"
                 (click)="onClickReviewCourse('Courses to publish')" i18n>Courses to
                 Publish</a>
+            </mat-list-item>
+            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+              <a [ngClass]="{'head-content-title':isSelectedPublishCourse }" style="cursor: pointer"
+                (click)="onClickReviewCourse('Published Courses')" i18n>Published</a>
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
