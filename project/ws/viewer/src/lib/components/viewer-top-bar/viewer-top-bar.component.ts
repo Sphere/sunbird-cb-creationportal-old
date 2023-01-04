@@ -56,7 +56,7 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     // }
     if (this.configSvc.instanceConfig) {
       this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        `/cbp-assets/icons/logo.png`
+        `/assets/instances/eagle/app_logos/aastar-logo.svg`
         // this.configSvc.instanceConfig.logos.app,
       )
     }

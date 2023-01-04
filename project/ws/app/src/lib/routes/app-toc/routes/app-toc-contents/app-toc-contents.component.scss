@@ -67,7 +67,7 @@ $border-color: #d8d8d8;
       padding-bottom: $size-s;
     }
     .content-card {
-      padding: $size-s 0;
+      padding: 0 0;
       border-bottom: 1px solid $border-color;
     }
     @include breakpoint-lt-m {

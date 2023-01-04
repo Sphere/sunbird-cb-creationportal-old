@@ -1,7 +1,8 @@
 <div class="contents-container">
   <div class="main-container">
     <ng-container *ngIf="content?.children?.length; else noChildren">
-      <div class="toc-section" role="contentinfo">
+      <div class="toc-section" role="contentinfo"
+        *ngIf="!contextPath || contextPath !== 'Collection' &&  content?.children[0]?.category === 'Collection'">
         <h2 class="margin-remove">Table of contents</h2>
         <!-- <a href="javascript:void(0)" role="button" class="expandButton"
           *ngIf="!contextPath || contextPath !== 'Collection'" (click)="expandAll = !expandAll" mat-button>

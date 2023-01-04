@@ -25,7 +25,7 @@
 
 <ng-container>
   <div role="main" class="toc-body" *ngIf="!errorCode; else tocError">
-    <nav mat-tab-nav-bar class="toc-links mt-8 mat-app-background">
+    <nav mat-tab-nav-bar class="toc-links mat-app-background">
       <a mat-tab-link [routerLink]="'./overview'" routerLinkActive="ws-mat-primary-text link-active" i18n>Overview</a>
       <a mat-tab-link *ngIf="content?.resourceType === 'Certification'" [routerLink]="'./certification'"
         routerLinkActive="ws-mat-primary-text link-active">
@@ -42,7 +42,7 @@
       <a mat-tab-link [routerLink]="'./details'" [queryParams]="{id: content.identifier}"
         routerLinkActive="ws-mat-primary-text link-active" i18n>Cohorts</a> -->
 
-      <a mat-tab-link [routerLink]="'./license'" routerLinkActive="ws-mat-primary-text link-active" i18n>License</a>
+      <!-- <a mat-tab-link [routerLink]="'./license'" routerLinkActive="ws-mat-primary-text link-active" i18n>License</a> -->
     </nav>
     <router-outlet></router-outlet>
     <ng-container>
