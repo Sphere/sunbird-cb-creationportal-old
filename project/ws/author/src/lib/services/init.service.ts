@@ -35,6 +35,9 @@ export class AuthInitService {
   private createModule = new Subject<any>()
   public createModuleMessage = this.createModule.asObservable()
 
+  private review = new Subject<any>()
+  public reviewProcess = this.review.asObservable()
+
   authConfig!: IFormMeta
   authMetaV2!: { [key: string]: IMetaUnit<any> }
   ordinals: any
@@ -69,5 +72,9 @@ export class AuthInitService {
   }
   createModuleUnit(message: any) {
     this.createModule.next(message)
+  }
+
+  reviewCall(type: string) {
+    this.review.next(type)
   }
 }

@@ -40,10 +40,10 @@
   <!-- <ws-widget-btn-fullscreen [widgetType]="'actionButton'" [widgetSubType]="'actionButtonFullscreen'"
     [widgetData]="{ fsContainer: frameReference }"></ws-widget-btn-fullscreen> -->
   <span class="spacer width-1-1"></span>
-  <mat-icon class="material-icons white-icon margin-right-l">arrow_back</mat-icon>
-  <span class="text-style margin-right-l">Back to Course Details</span>
-  <span class="text-style margin-right-l">Exit and save in drafts</span>
-  <mat-icon class="material-icons white-icon">arrow_forward</mat-icon>
+  <mat-icon class="material-icons white-icon margin-right-l pointer" routerLink="/author/home">arrow_back</mat-icon>
+  <span class="text-style margin-right-l pointer" routerLink="/author/home">Back to Dashboard</span>
+  <span class="text-style margin-right-l pointer" (click)="finishReview('push')">Finish Review</span>
+  <mat-icon class="material-icons white-icon pointer">arrow_forward</mat-icon>
   <!-- </a> -->
   <!--   <a href="javascript:void(0)" mat-icon-button *ngIf="isTypeOfCollection" role="link" class="width-auto"
     [ngClass]="{'xsmall': !logo}" (click)="toggleSideBar()" accesskey="M">

@@ -5,6 +5,7 @@ import { ConfigurationsService, NsPage, ValueService } from '@ws-widget/utils'
 import { Subscription } from 'rxjs'
 import { ViewerDataService } from '../../viewer-data.service'
 import { NsContent } from '@ws-widget/collection/src/lib/_services/widget-content.model'
+import { AuthInitService } from '../../../../../author/src/lib/services/init.service'
 
 @Component({
   selector: 'viewer-viewer-top-bar',
@@ -38,7 +39,8 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     // private logger: LoggerService,
     private configSvc: ConfigurationsService,
     private viewerDataSvc: ViewerDataService,
-    private valueSvc: ValueService
+    private valueSvc: ValueService,
+    private initService: AuthInitService
   ) {
     this.valueSvc.isXSmall$.subscribe(isXSmall => {
       this.logo = !isXSmall
@@ -111,5 +113,9 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
       window.history.back()
     }
 
+  }
+
+  finishReview(type: string) {
+    this.initService.reviewCall(type)
   }
 }

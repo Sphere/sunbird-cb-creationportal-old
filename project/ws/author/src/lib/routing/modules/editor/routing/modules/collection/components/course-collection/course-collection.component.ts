@@ -158,6 +158,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           //this.save()
         }
       })
+    this.initService.reviewProcess.subscribe(
+      (data: any) => {
+        if (data) {
+          this.action(data)
+        }
+      })
     // this.initService.editCourseMessage.subscribe(
     //   (data: any) => {
     //     if (data) {

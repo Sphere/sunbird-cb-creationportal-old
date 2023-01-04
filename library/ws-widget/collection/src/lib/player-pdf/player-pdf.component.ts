@@ -296,6 +296,10 @@ export class PlayerPdfComponent extends WidgetBaseComponent
       this.current.push(pageNumStr)
     }
     const viewport = page.getViewport({ scale: this.zoom.value })
+    viewport.height = 338.4000000000001
+    viewport.width = 478.40000000000015
+    viewport.scale = 0.40000000000000013
+
     this.pdfContainer.nativeElement.width = viewport.width
     this.pdfContainer.nativeElement.height = viewport.height
     this.lastRenderTask = new pdfjsViewer.PDFPageView({
