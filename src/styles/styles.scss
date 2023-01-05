@@ -569,6 +569,11 @@ h3.shepherd-title {
     border: 0.7rem solid gray;
   }
 }
+.cdk-overlay-container{
+  .mat-dialog-container{
+    border-radius: 30px;
+  }
+}
 
 @media only screen and(max-width: 585px) {
   #bannerColors {
