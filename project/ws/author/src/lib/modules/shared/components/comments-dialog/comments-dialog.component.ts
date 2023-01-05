@@ -20,6 +20,7 @@ export class CommentsDialogComponent implements OnInit {
   showNewFlow = false
   showPublishCBPBtn = false
   courseEdited: any
+  isModule: boolean = false
   constructor(
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<CommentsDialogComponent>,
@@ -31,7 +32,6 @@ export class CommentsDialogComponent implements OnInit {
     this.authInitService.publishMessage.subscribe(
       async (result: any) => {
         /* tslint:disable-next-line */
-        console.log(result)
         if (result) {
           await this.updateUI(result)
         }
@@ -56,23 +56,19 @@ export class CommentsDialogComponent implements OnInit {
     }
   }
   ngOnInit() {
-    
+
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
     this.contentMeta = this.data
-    // let flag = 0
-    // let count = 0
-    // for (const element of this.contentMeta.children) {
-    //   if (element.status === 'Live') {
-    //     flag += 1
-    //   }
-    //   if (element.children) {
-    //     for (const elem of element.children) {
-    //       if (elem.status === 'Live') {
-    //         count += 1
-    //       }
-    //     }
-    //   }
-    // }
+    // to check if the course is having topics
+    for (const element of this.contentMeta.children) {
+      if (element.children) {
+        for (const elem of element.children) {
+          if (elem) {
+            this.isModule = true
+          }
+        }
+      }
+    }
     const url = this.router.url
     const id = url.split('/')
     this.editorService.contentRead(id[3])
@@ -82,30 +78,47 @@ export class CommentsDialogComponent implements OnInit {
         } else {
           this.courseEdited = false
         }
-      },         error => {
+      }, error => {
         if (error) {
           this.courseEdited = false
         }
       })
+
+
+
     let flag = 0
     for (const element of this.contentMeta.children) {
       if (element.status === 'Live') {
         flag += 1
-      } else {
-         flag -= 1
       }
-      // if (element.children) {
-      //   flag += 1
-      // }
+      if (element.children) {
+        flag += 1
+      }
     }
 
     if (flag === this.contentMeta.children.length) {
       this.showPublishCBPBtn = true
     }
+    // let flag = 0
+    // for (const element of this.contentMeta.children) {
+    //   if (element.status === 'Live') {
+    //     flag += 1
+    //   } else {
+    //     flag -= 1
+    //   }
+    //   // if (element.children) {
+    //   //   flag += 1
+    //   // }
+    // }
+
+    // if (flag === this.contentMeta.children.length) {
+    //   this.showPublishCBPBtn = true
+    // }
+    const nonWhitespaceRegExp: RegExp = new RegExp("\\S")
 
     this.commentsForm = this.formBuilder.group({
-      comments: ['', [Validators.required]],
-      action: ['', [Validators.required]],
+      comments: ['', [Validators.required, Validators.pattern(nonWhitespaceRegExp)]],
+      // action: ['', [Validators.required]],
     })
     this.history = (this.contentMeta.comments || []).reverse()
   }
@@ -126,14 +139,13 @@ export class CommentsDialogComponent implements OnInit {
   submitData() {
     if (
       this.commentsForm.controls.comments.value &&
-      ((!['Draft', 'Live'].includes(this.contentMeta.status) &&
-        this.commentsForm.controls.action.value) ||
+      ((!['Draft', 'Live'].includes(this.contentMeta.status)) ||
         ['Draft', 'Live'].includes(this.contentMeta.status))
     ) {
       this.dialogRef.close(this.commentsForm)
     } else {
       this.commentsForm.controls['comments'].markAsTouched()
-      this.commentsForm.controls['action'].markAsTouched()
+      // this.commentsForm.controls['action'].markAsTouched()
     }
   }
   refreshCourse() {
@@ -141,20 +153,23 @@ export class CommentsDialogComponent implements OnInit {
     const id = url.split('/')
     this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
       this.contentMeta = res
-    })
-    let flag = 0
-    for (const element of this.contentMeta.children) {
-      if (element.status === 'Live') {
-        flag += 1
+      let flag = 0
+      for (const element of this.contentMeta.children) {
+        if (element.status === 'Live') {
+          flag += 1
+        }
+        if (element.children) {
+          flag += 1
+        }
       }
-      if (element.children) {
-        flag += 1
-      }
-    }
+      setTimeout(() => {
+        if (flag === this.contentMeta.children.length) {
+          this.showPublishCBPBtn = true
+        }
+      }, 500)
 
-    if (flag === this.contentMeta.children.length) {
-      this.showPublishCBPBtn = true
-    }
+    })
+
     // else {
     //   //this.refreshCourse()
     // }
@@ -197,6 +212,9 @@ export class CommentsDialogComponent implements OnInit {
 
   publishCourse() {
     this.authInitService.changeMessage('PublishCBP')
+  }
+  moveCourseToDraft() {
+    this.authInitService.changeMessage('MoveCourseToDraft')
   }
 
   click(action: string) {

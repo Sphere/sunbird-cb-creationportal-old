@@ -37,6 +37,7 @@ import { ConfigurationsService } from '../../../../../../../../../../../../../li
 /* tslint:disable */
 import _ from 'lodash'
 import moment from 'moment'
+import { SuccessDialogComponent } from '../../../../../../../../modules/shared/components/success-dialog/success-dialog.component'
 // import { VariableAst } from '@angular/compiler'
 
 @Component({
@@ -94,6 +95,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   isModelHeaderView: boolean = false;
   showResource: boolean = false;
   clickedNext: boolean = false;
+  isMoveCourseToDraft: boolean = false;
   createModule: any
   constructor(
     private contentService: EditorContentService,
@@ -129,6 +131,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         }
         if (data === 'PublishCBP') {
           this.PublishCBP()
+        }
+        if (data === 'MoveCourseToDraft') {
+          this.isMoveCourseToDraft = true
+          this.changeStatusToDraft('Content Rejected')
         }
       })
 
@@ -633,11 +639,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         // })
         dialogRef.afterClosed().subscribe((d) => {
           // this.finalCall(contentAction)
-          if (this.getAction() === 'sendForReview' && d.value.action === 'reject') {
-            contentAction = 'rejectContent'
-            this.finalCall(contentAction)
-          } else {
-            this.finalCall(contentAction)
+          if (d) {
+            if (this.getAction() === 'sendForReview' && d.value.action === 'reject') {
+              contentAction = 'rejectContent'
+              this.finalCall(contentAction)
+            } else {
+              this.finalCall(contentAction)
+            }
           }
         })
       }
@@ -1156,8 +1164,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         // this.initService.publishData(data)
         // tslint:disable-next-line: align
       })
+
       await this.sendEmailNotification('publishCompleted')
-      this.router.navigate(['author', 'cbp'])
+      this.dialog.open(SuccessDialogComponent, {
+        width: '450px',
+        height: '300x',
+        data: { 'message': 'Course is Live', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important' },
+      })
     } else {
       this.loaderService.changeLoad.next(false)
       this.snackBar.openFromComponent(NotificationComponent, {
@@ -1218,7 +1231,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             duration: NOTIFICATION_TIME * 1000,
           })
           await this.sendEmailNotification('sendForPublish')
-          this.router.navigate(['author', 'cbp'])
+          this.dialog.open(SuccessDialogComponent, {
+            width: '450px',
+            height: '300x',
+            data: { 'message': 'Course Accepted and sent to Publisher', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important' },
+          })
+          // this.router.navigate(['author', 'cbp'])
           // } else {
           //   this.loaderService.changeLoad.next(false)
           //   this.snackBar.openFromComponent(NotificationComponent, {
@@ -1380,7 +1398,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   async changeStatusToDraft(comment: string) {
     //const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
     const originalData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise()
-
+    this.dialog.closeAll()
     const resourceListToReview: any = []
     const moduleListToReview: any = []
     originalData.children.forEach((element: any) => {
@@ -1478,7 +1496,15 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               } else if (originalData.reviewStatus === 'Reviewed' && originalData.status === 'Review') {
                 await this.sendEmailNotification('publishFailed')
               }
-              this.router.navigate(['author', 'cbp'])
+              this.dialog.open(SuccessDialogComponent, {
+                width: '450px',
+                height: '300x',
+                data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important' },
+              })
+              if (!this.isMoveCourseToDraft) {
+                this.router.navigate(['author', 'cbp'])
+              }
+              this.isMoveCourseToDraft = false
             } else {
               this.loaderService.changeLoad.next(false)
               this.snackBar.openFromComponent(NotificationComponent, {
@@ -1543,8 +1569,17 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               },
               duration: NOTIFICATION_TIME * 1000,
             })
-            this.router.navigate(['author', 'cbp'])
+            this.dialog.open(SuccessDialogComponent, {
+              width: '450px',
+              height: '300x',
+              data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important' },
+            })
+            if (!this.isMoveCourseToDraft) {
+              this.router.navigate(['author', 'cbp'])
+            }
+            this.isMoveCourseToDraft = false
           } else {
+
             this.loaderService.changeLoad.next(false)
             this.snackBar.openFromComponent(NotificationComponent, {
               data: {
@@ -2940,6 +2975,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   async sendEmailNotification(actionType: string) {
     const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
+    console.log('originalData', originalData)
     const emailReqPayload = {
       contentState: actionType,
       contentLink: `${environment.cbpPortal}author/editor/${originalData.identifier}/collection`,
