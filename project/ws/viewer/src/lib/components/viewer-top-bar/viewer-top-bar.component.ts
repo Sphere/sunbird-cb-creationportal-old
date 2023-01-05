@@ -1,11 +1,10 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core'
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { ConfigurationsService, NsPage, ValueService } from '@ws-widget/utils'
 import { Subscription } from 'rxjs'
 import { ViewerDataService } from '../../viewer-data.service'
 import { NsContent } from '@ws-widget/collection/src/lib/_services/widget-content.model'
-import { AuthInitService } from '../../../../../author/src/lib/services/init.service'
 
 @Component({
   selector: 'viewer-viewer-top-bar',
@@ -40,7 +39,7 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     private configSvc: ConfigurationsService,
     private viewerDataSvc: ViewerDataService,
     private valueSvc: ValueService,
-    private initService: AuthInitService
+    private router: Router,
   ) {
     this.valueSvc.isXSmall$.subscribe(isXSmall => {
       this.logo = !isXSmall
@@ -115,7 +114,9 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
 
   }
 
-  finishReview(type: string) {
-    this.initService.reviewCall(type)
+  sendForReview() {
+    sessionStorage.setItem('isReviewClicked', 'true')
+    this.router.navigateByUrl(`/author/editor/${this.activatedRoute.snapshot.queryParams.collectionId}`)
+    console.log(this.activatedRoute.snapshot.queryParams.collectionId)
   }
 }
