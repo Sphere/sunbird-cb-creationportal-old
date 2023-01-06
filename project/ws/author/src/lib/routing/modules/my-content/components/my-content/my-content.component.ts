@@ -175,7 +175,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
     } else if (this.allowReview) {
       this.link = 'Sent for review'
-      this.links = ['Sent for review']
+      this.links = ['Sent for review', 'Published Courses']
       this.activeLink = this.links[0]
       this.isSelectedColor = false
       this.isSelectedReviewCourse = true
