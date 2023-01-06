@@ -16,6 +16,7 @@ import { HttpClient } from '@angular/common/http'
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { EditorContentService } from 'project/ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 @Component({
   selector: 'ws-author-module-creation',
   templateUrl: './module-creation.component.html',
@@ -68,8 +69,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   moduleForm!: FormGroup
   resourceImg: string = '';
   isLinkFieldEnabled: boolean = false;
+  openinnewtab: boolean = false
   moduleName: string = '';
   topicDescription: string = ''
+  thumbnail: any
   resourceNames: any = [];
   resourceCount: number = 0;
   independentResourceNames: any = [];
@@ -80,7 +83,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   isAssessmentOrQuizEnabled!: boolean
   assessmentOrQuizForm!: FormGroup
   questionTypes: any = ['MCQ', 'Fill in the blanks', 'Match the following']
-
+  hours = 0
+  minutes = 1
+  resourceType: string = ''
   constructor(public dialog: MatDialog,
     private configSvc: ConfigurationsService,
     private snackBar: MatSnackBar,
@@ -96,7 +101,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.resourceForm = new FormGroup({
       resourceName: new FormControl(''),
       resourceLinks: new FormControl(''),
-      appIcon: new FormControl('')
+      appIcon: new FormControl(''),
+      openinnewtab: new FormControl(false),
+      duration: new FormControl('')
     })
     this.moduleForm = new FormGroup({
       appIcon: new FormControl('')
@@ -115,10 +122,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       console.log(data)
       this.courseData = data
       this.isSaveModuleFormEnable = true
-      //this.showAddModuleForm = true
+      this.showAddModuleForm = true
       this.moduleName = data.name
       this.topicDescription = data.description
-
+      this.thumbnail = data.thumbnail
       //this.isResourceTypeEnabled = true
       console.log(this.isSaveModuleFormEnable)
       //this.editorStore.resetOriginalMetaWithHierarchy(data)
@@ -140,8 +147,33 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.isResourceTypeEnabled = true
     }
   }
+  timeToSeconds() {
+    let total = 0
+    //total += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
+    total += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
+    total += this.hours ? this.hours * 60 * 60 : 0
+    console.log(total)
+    this.resourceForm.controls.duration.setValue(total)
+  }
 
+  resourceTypeSave() {
+    console.log(this.resourceForm)
+    console.log(this.resourceType)
+    const rBody: any = {
+      name: this.resourceForm.value.resourceName,
+      artifactUrl: this.resourceForm.value.resourceLinks,
+      // mimeType: meta.mimeType,
+      mimeType: "text/x-url",
+      contentType: "Resource",
+      primaryCategory: 'Learning Resource',
+      ownershipType: ['createdFor'],
+    }
+    console.log(rBody)
+    let content = this.editorService.createAndReadContentV2(rBody).toPromise()
+    console.log(content)
+  }
   createResourseContent(name: string): void {
+    this.resourceType = name
     if (name == 'Link') {
       this.isLinkFieldEnabled = true
       this.isAssessmentOrQuizEnabled = false
@@ -193,6 +225,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     $event.target.src = this.configSvc.instanceConfig
       ? this.configSvc.instanceConfig.logos.defaultContent
       : ''
+  }
+  editContent(content: any) {
+    console.log(content)
+    this.moduleName = content.name
+    this.topicDescription = content.description
+    this.thumbnail = content.thumbnail
   }
 
   uploadAppIcon(file: File) {
@@ -287,7 +325,24 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                         this.loader.changeLoad.next(false)
                         //this.moduleForm.controls.appIcon.setValue(data.artifactUrl)
                         this.courseData.thumbnail = data.artifactUrl
-                        this.initService.uploadData('thumbnail')
+                        let meta: any = {}
+                        let requestBody: any
+                        // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
+                        //   console.log(resData)
+                        // })
+
+                        meta["appIcon"] = data.artifactUrl
+                        meta["thumbnail"] = data.content_url
+                        meta["versionKey"] = this.courseData.versionKey
+                        console.log(meta)
+                        requestBody = {
+                          request: {
+                            content: meta
+                          }
+                        }
+                        // this.editorStore.setUpdatedMeta(meta, this.courseData.identifier)
+                        //this.initService.uploadData('thumbnail')
+                        this.editorService.updateNewContentV3(requestBody, this.courseData.identifier).toPromise().catch(_error => { })
                       }
                     })
               })
