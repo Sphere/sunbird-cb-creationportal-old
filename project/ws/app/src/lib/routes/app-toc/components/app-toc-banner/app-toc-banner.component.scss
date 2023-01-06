@@ -46,7 +46,7 @@
 
 .header-synopsis {
   height: 100%;
-  padding: 38px 64px 32px 12rem;
+  padding: 29px 10rem 0px 10rem;
   background: #fbf5f2;
   box-sizing: border-box;
 
@@ -98,7 +98,6 @@
   }
 
   .header-meta-banner {
-    height: 180px;
     overflow: hidden;
   }
 
@@ -231,12 +230,12 @@
   }
 }
 
-.info-msg {
-  // font: 14px/20px Poppins-Regular;
-  mat-icon {
-    // color: #fff !important;
-  }
-}
+// .info-msg {
+//   // font: 14px/20px Poppins-Regular;
+//   mat-icon {
+//     // color: #fff !important;
+//   }
+// }
 
 .sticky-banner {
   z-index: 999;
@@ -269,4 +268,11 @@
     width: 22px;
     margin-top: 1px;
     opacity: .65;
+}
+
+.certificate-button{
+  color: #1c5d95 !important;
+  border: 1px solid #1c5d95;
+  border-radius: 7rem;
+  background-color: #fbf5f2 !important;
 }

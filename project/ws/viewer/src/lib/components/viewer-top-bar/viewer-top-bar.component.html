@@ -1,12 +1,12 @@
 <mat-toolbar [color]="pageNavbar.color" [ngStyle]="pageNavbar?.styles"
-  class="mat-primary mat-elevation-z3 viewer-navbar">
-  <ws-widget-btn-page-back-nav *ngIf="!isPreview" [widgetData]="{
+  class="mat-primary mat-elevation-z3 viewer-navbar" style="margin-bottom: 1.5rem;">
+  <!-- <ws-widget-btn-page-back-nav *ngIf="!isPreview" [widgetData]="{
       url: isTypeOfCollection
         ? collectionType === 'Playlist'
           ? '/app/playlist/me/' + collectionId
           : (forPreview ? '/author' : '/app') + '/toc/' + collectionId + '/overview'
         : (forPreview ? '/author' : '/app') + '/toc/' + resourceId + '/overview'
-    }"></ws-widget-btn-page-back-nav>
+    }"></ws-widget-btn-page-back-nav> -->
   <!-- <mat-toolbar [color]="pageNavbar.color" [ngStyle]="pageNavbar?.styles" class="mat-primary mat-elevation-z3">
   <ws-widget-btn-page-back *ngIf="!forChannel" [widgetData]="{
       url: isTypeOfCollection
@@ -17,17 +17,17 @@
     }"></ws-widget-btn-page-back>
   <mat-icon style="cursor: pointer;" (click)="back()" *ngIf="forChannel">arrow_back</mat-icon> -->
   <a *ngIf="logo" i18n-matTooltip matTooltip="Home" mat-button routerLink="/author/home">
-    <img [src]="appIcon" alt="Application Logo" width="60" height="60" />
+    <img [src]="appIcon" alt="Application Logo" width="150" class="logo-style" />
   </a>
-<!--   <a mat-icon-button class="width-auto" [routerLink]="prevResourceUrl" *ngIf="isTypeOfCollection"
+  <!--   <a mat-icon-button class="width-auto" [routerLink]="prevResourceUrl" *ngIf="isTypeOfCollection"
     [disabled]="!prevResourceUrl" queryParamsHandling="preserve" accesskey="<">
     <mat-icon>skip_previous</mat-icon><span *ngIf="logo">PREV</span>
   </a> -->
-  <h1 *ngIf="logo" class="width-expand text-center text-truncate">
+  <!-- <h1 *ngIf="logo" class="width-expand text-center text-truncate">
     {{ resourceName }}
-  </h1>
+  </h1> -->
   <!-- [disabled]="!nextResourceUrl" -->
-<!--   <a mat-icon-button class="width-auto mr-10" [routerLink]="nextResourceUrl"
+  <!--   <a mat-icon-button class="width-auto mr-10" [routerLink]="nextResourceUrl"
     *ngIf="isTypeOfCollection && nextResourceUrl" queryParamsHandling="preserve" accesskey=">">
     <span *ngIf="logo">NEXT</span>
     <mat-icon>skip_next</mat-icon>
@@ -37,10 +37,15 @@
     <span *ngIf="logo" class="finish">FINISH</span>
   </a>
   <!-- <a mat-icon-button> -->
-  <ws-widget-btn-fullscreen [widgetType]="'actionButton'" [widgetSubType]="'actionButtonFullscreen'"
-    [widgetData]="{ fsContainer: frameReference }"></ws-widget-btn-fullscreen>
+  <!-- <ws-widget-btn-fullscreen [widgetType]="'actionButton'" [widgetSubType]="'actionButtonFullscreen'"
+    [widgetData]="{ fsContainer: frameReference }"></ws-widget-btn-fullscreen> -->
+  <span class="spacer width-1-1"></span>
+  <mat-icon class="material-icons white-icon margin-right-l pointer" routerLink="/author/home">arrow_back</mat-icon>
+  <span class="text-style margin-right-l pointer" routerLink="/author/home">Back to Dashboard</span>
+  <span class="text-style margin-right-l pointer" (click)="sendForReview()">Finish Review</span>
+  <mat-icon class="material-icons white-icon pointer" (click)="sendForReview()">arrow_forward</mat-icon>
   <!-- </a> -->
-<!--   <a href="javascript:void(0)" mat-icon-button *ngIf="isTypeOfCollection" role="link" class="width-auto"
+  <!--   <a href="javascript:void(0)" mat-icon-button *ngIf="isTypeOfCollection" role="link" class="width-auto"
     [ngClass]="{'xsmall': !logo}" (click)="toggleSideBar()" accesskey="M">
     <mat-icon>menu</mat-icon>
   </a> -->

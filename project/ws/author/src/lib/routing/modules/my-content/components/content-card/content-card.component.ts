@@ -110,6 +110,12 @@ export class ContentCardComponent implements OnInit {
           returnValue = this.accessService.hasAccess(this.data)
         }
         break
+      case 'preview':
+        // if (this.data.status === 'Review' || this.data.status === 'QualityReview') {
+        if (this.data.reviewStatus === 'InReview' && this.data.status === 'Review') {
+          returnValue = this.accessService.hasAccess(this.data)
+        }
+        break
       case 'lang':
         returnValue = this.accessService.hasAccess({ ...this.data, status: 'Draft' })
         break

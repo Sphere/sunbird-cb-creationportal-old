@@ -63,6 +63,8 @@ export class PlayerPdfComponent extends WidgetBaseComponent
   private runnerSubs: Subscription | null = null
   private routerSubs: Subscription | null = null
   public isInFullScreen = false
+  zoomType: string | null = null;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
@@ -76,6 +78,7 @@ export class PlayerPdfComponent extends WidgetBaseComponent
   }
 
   changeScale(val: 'zoomin' | 'zoomout') {
+    this.zoomType = val
     const currentZoom = this.zoom.value
     const step = 0.1
     if (val === 'zoomin') {
@@ -296,6 +299,11 @@ export class PlayerPdfComponent extends WidgetBaseComponent
       this.current.push(pageNumStr)
     }
     const viewport = page.getViewport({ scale: this.zoom.value })
+    if (this.zoomType != 'zoomin' && this.zoomType != 'zoomout' && (viewport.height > 700) && (viewport.width > 700)) {
+      viewport.height = 338.4000000000001
+      viewport.width = 478.40000000000015
+      viewport.scale = 0.40000000000000013
+    }
     this.pdfContainer.nativeElement.width = viewport.width
     this.pdfContainer.nativeElement.height = viewport.height
     this.lastRenderTask = new pdfjsViewer.PDFPageView({
