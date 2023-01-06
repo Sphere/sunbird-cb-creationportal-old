@@ -219,7 +219,7 @@
       </button>
     </div>
 
-    <div class="children-container" *ngIf="viewChildren">
+    <div *ngIf="viewChildren">
       <ws-app-toc-content-card [forPreview]="forPreview" [content]="child" [expandAll]="expandAll" [rootId]="rootId"
         [rootContentType]="rootContentType" *ngFor="let child of content?.children; trackBy: contentTrackBy">
       </ws-app-toc-content-card>
@@ -274,17 +274,35 @@
         </button>
       </div>
     </div> -->
-
     <img class="card-thumbnail ws-mat-primary-lite-background" [src]="content?.appIcon" alt="Thumbnail"
       (click)="viewChildren = !viewChildren" [wsUtilsDefaultThumbnail]="defaultThumbnail" />
     <div class="flex flex-between width-expand">
       <a [routerLink]="resourceLink.url" [queryParams]="resourceLink.queryParams">
         <div class="text-truncate cursor-pointer 2" (click)="viewChildren = !viewChildren">
           <h2 class="margin-remove text-truncate">{{ content?.name }}</h2>
-          <div>
-            <span class="mat-body-strong">{{ content?.displayContentType }}</span>
+          <div class="flex items-center">
+            <ng-container *ngIf="content?.mimeType">
+              <div class="pr-1" [ngSwitch]="content?.mimeType | lowercase">
+                <div *ngSwitchCase="'application/pdf'">
+                  <img src="cbp-assets/images/pdf-icon.png">
+                </div>
+                <div *ngSwitchCase="'application/x-mpegURL' || 'video/mp4' || 'audio/mpeg'">
+                  <img src="cbp-assets/images/video-icon.png">
+                </div>
+                <div *ngSwitchCase="'application/html' || 'application/vnd.ekstep.html-archive'">
+                  <img src="cbp-assets/images/video-icon.png">
+                </div>
+                <div
+                  *ngSwitchCase="'video/x-youtube' || 'text/x-url' || 'application/web-module'|| 'application/quiz' || 'application/json'">
+                  <img src="cbp-assets/images/link-icon.png">
+                </div>
+                <div *ngSwitchDefault><img src="cbp-assets/images/link-icon.png"></div>
+              </div>
+
+            </ng-container>
             <span>
-              <ng-container *ngIf="content?.displayContentType">&nbsp;&nbsp;|&nbsp;&nbsp;</ng-container>
+              <ng-container *ngIf=" content?.displayContentType">&nbsp;&nbsp;|&nbsp;&nbsp;
+              </ng-container>
               {{ content?.duration | pipeDurationTransform: 'hms' }}
             </span>
           </div>

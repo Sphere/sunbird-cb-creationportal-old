@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core'
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { ConfigurationsService, NsPage, ValueService } from '@ws-widget/utils'
 import { Subscription } from 'rxjs'
 import { ViewerDataService } from '../../viewer-data.service'
@@ -38,7 +38,8 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     // private logger: LoggerService,
     private configSvc: ConfigurationsService,
     private viewerDataSvc: ViewerDataService,
-    private valueSvc: ValueService
+    private valueSvc: ValueService,
+    private router: Router,
   ) {
     this.valueSvc.isXSmall$.subscribe(isXSmall => {
       this.logo = !isXSmall
@@ -56,7 +57,7 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     // }
     if (this.configSvc.instanceConfig) {
       this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        `/cbp-assets/icons/logo.png`
+        `/assets/instances/eagle/app_logos/aastar-logo.svg`
         // this.configSvc.instanceConfig.logos.app,
       )
     }
@@ -111,5 +112,11 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
       window.history.back()
     }
 
+  }
+
+  sendForReview() {
+    sessionStorage.setItem('isReviewClicked', 'true')
+    this.router.navigateByUrl(`/author/editor/${this.activatedRoute.snapshot.queryParams.collectionId}`)
+    console.log(this.activatedRoute.snapshot.queryParams.collectionId)
   }
 }

@@ -1,6 +1,5 @@
 <ng-container *ngIf="!isFetching; else Loading">
-  <mat-divider *ngIf="collection" class="margin-bottom-xs"></mat-divider>
-  <div *ngIf="collection" class="flex flex-middle">
+  <div *ngIf="false" class="flex flex-middle">
     <div i18n class="padding-left-m" *ngIf="tocMode === 'TREE'">Structure</div>
     <div i18n class="padding-left-m" *ngIf="tocMode === 'FLAT'">Queue</div>
     <span class="spacer"></span>
@@ -10,7 +9,6 @@
         </span></mat-slide-toggle>
     </div>
   </div>
-  <mat-divider class="margin-top-xs"></mat-divider>
   <section *ngIf="!collection">
     <div *ngIf="errorWidgetData?.widgetData?.errorType" [wsResolverWidget]="errorWidgetData"></div>
   </section>
@@ -29,11 +27,11 @@
       <ng-container *ngTemplateOutlet="TocContentCard; context: { $implicit: content }"></ng-container>
     </mat-list-item>
   </mat-list>
-    <div class="flex">
+  <div class="flex" *ngIf="false">
     <span role="button" matRipple class="margin-left-xs mt-2 width-9-10">
       <h2 class="text-truncate margin-remove">Course Content</h2>
     </span>
-<!--     <button class="width-9-10" mat-icon-button (click)="minimizenav()">
+    <!--     <button class="width-9-10" mat-icon-button (click)="minimizenav()">
       <mat-icon class="">arrow_back_ios</mat-icon>
     </button> -->
   </div>
@@ -51,20 +49,20 @@
 
       <mat-nested-tree-node *matTreeNodeDef="let node; when: hasNestedChild">
         <li>
-          <div class="mat-tree-node" [ngClass]="{ 'mat-toolbar': pathSet.has(node.identifier) }">
-            <ws-widget-display-content-type-icon class="flex" [displayContentType]="node?.type">
-            </ws-widget-display-content-type-icon>
+          <div [ngClass]="{ 'mat-toolbar': pathSet.has(node.identifier) }" class="module-border">
+            <!-- <ws-widget-display-content-type-icon class="flex" [displayContentType]="node?.type">
+            </ws-widget-display-content-type-icon> -->
             <span role="button" [ngClass]="{ 'content-active': pathSet.has(node.identifier) }" matRipple
               matTreeNodeToggle class="flat-list-content-title width-expand margin-left-xs">
               <h3 class="text-truncate margin-remove">{{ node.title }}</h3>
             </span>
-            <div class="content-duration flex flex-center">
-              <h3 class="mat-caption margin-remove width-max-content">
+            <div class="content-duration">
+              <h3 class="mat-caption margin-remove width-max-content bold">
                 {{ node.duration | pipeDurationTransform: 'hms' }}
               </h3>
             </div>
           </div>
-          <ul [hidden]="!nestedTreeControl.isExpanded(node)">
+          <ul style="margin-left: -3rem;" [hidden]="!nestedTreeControl.isExpanded(node)">
             <ng-container matTreeNodeOutlet></ng-container>
           </ul>
         </li>
@@ -130,8 +128,9 @@
 <ng-template let-content #TocContentList>
   <!-- <div class="resource-container margin-left-xl"> -->
   <div class="resource-container">
-    <img i18n-alt alt="thumbnail" class="viewer-toc-thumbnail align-self-start margin-auto mat-app-background" [src]="content.thumbnailUrl" [wsUtilsDefaultThumbnail]="defaultThumbnail" />
-   <!--  <ws-widget-display-content-type-icon class="flex margin-left-xs" [displayContentType]="content?.type">
+    <img i18n-alt alt="thumbnail" class="viewer-toc-thumbnail align-self-start margin-auto mat-app-background"
+      [src]="content.thumbnailUrl" [wsUtilsDefaultThumbnail]="defaultThumbnail" />
+    <!--  <ws-widget-display-content-type-icon class="flex margin-left-xs" [displayContentType]="content?.type">
     </ws-widget-display-content-type-icon> -->
     <div class="resource-meta width-expand">
       <a [ngClass]="{ 'content-active': pathSet.has(content.identifier) }" [routerLink]="content.viewerUrl"
@@ -143,8 +142,9 @@
           {{ content?.title }}
         </h1>
       </a>
-      <span class="margin-left-xs" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
-      <span class="margin-left-xs" *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
+      <span class="bold" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms'
+        }}</span>
+      <span class="bold" *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
     </div>
   </div>
 </ng-template>

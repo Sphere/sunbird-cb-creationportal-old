@@ -59,6 +59,7 @@ import { TncPublicResolverService } from './services/tnc-public-resolver.service
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { PublicReleaseModule } from './routes/public/public-release/public-about.module'
 import { AppTocResolverService } from '@ws/author'
+import { AuthInitService } from '../../project/ws/author/src/lib/services/init.service'
 // import { ServiceWorkerModule } from '@angular/service-worker'
 // import { environment } from '../environments/environment'
 
@@ -175,6 +176,7 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     { provide: OverlayContainer, useClass: FullscreenOverlayContainer },
     { provide: HAMMER_GESTURE_CONFIG, useClass: HammerConfig },
     { provide: ErrorHandler, useClass: GlobalErrorHandlingService },
+    AuthInitService
   ],
 })
 export class AppModule { }

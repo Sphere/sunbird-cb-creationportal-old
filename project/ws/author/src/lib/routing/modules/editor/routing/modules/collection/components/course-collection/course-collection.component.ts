@@ -211,6 +211,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.mediumScreen = isLtMedium
       this.sideBarOpened = !isLtMedium
     })
+    if (sessionStorage.getItem('isReviewClicked')) {
+      sessionStorage.removeItem('isReviewClicked')
+      this.action('push')
+    }
   }
 
   routerValuesCall() {
@@ -256,8 +260,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
         if (data.contents[0] && data.contents[0].content && data.contents[0].content.children[0] &&
           data.contents[0].content.children[0].identifier) {
-          this.subAction({ type: 'editContent', identifier: data.contents[0].content.children[0].identifier, nodeClicked: true })
-          this.storeService.selectedNodeChange.next(data.contents[0].content.children[0].identifier)
+          // this.subAction({ type: 'editContent', identifier: data.contents[0].content.children[0].identifier, nodeClicked: true })
+          // this.storeService.selectedNodeChange.next(data.contents[0].content.children[0].identifier)
+          this.subAction({
+            type: 'editContent', identifier: data.contents[0].content.identifier, nodeClicked: true
+          })
+          this.storeService.selectedNodeChange.next(data.contents[0].content.identifier)
         }
 
         // this.storeService.selectedNodeChange.subscribe(node => {
