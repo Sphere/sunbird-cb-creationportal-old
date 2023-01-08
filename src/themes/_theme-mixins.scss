@@ -983,12 +983,12 @@
     }
 
     .mat-chip.mat-standard-chip {
-      color: $colorAccent !important;
-      background: $dark-text !important;
+      color: $colorAccent ;
+      background: $dark-text;
 
       mat-icon {
-        color: $colorAccent !important;
-        opacity: 1 !important;
+        color: $colorAccent;
+        opacity: 1;
       }
     }
   }

@@ -19,6 +19,7 @@ import { UploadService } from './services/upload.service'
 import { BaseComponent } from './components/editor/base/base.component'
 import { EditMetaV2Component } from './components/editor/edit-meta-v2/edit-meta-v2.component'
 import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal.component'
+import { CourseSettingsComponent } from './components/course-settings/course-settings.component'
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal.
     BaseComponent,
     EditMetaV2Component,
     ConfirmModalComponent,
+    CourseSettingsComponent
   ],
   imports: [
     CommonModule,
@@ -55,6 +57,7 @@ import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal.
     AuthEditorActionButtonsComponent,
     AuthPickerComponent,
     ConfirmModalComponent,
+    CourseSettingsComponent
   ],
   entryComponents: [AuthPickerComponent],
   providers: [UploadService],

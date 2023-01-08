@@ -79,6 +79,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   courseData: any
   isAssessmentOrQuizEnabled!: boolean
   assessmentOrQuizForm!: FormGroup
+  isSettingsPage: boolean = false
   questionTypes: any = ['MCQ', 'Fill in the blanks', 'Match the following']
 
   constructor(public dialog: MatDialog,
@@ -108,6 +109,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.isSettingsPage = false
   }
   ngAfterViewInit() {
     console.log('dd')

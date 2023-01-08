@@ -205,6 +205,8 @@ export namespace NSContent {
     idealScreenSize: string
     sourceShortName: string
     sourceName: string
+    trackContactsCtrl: string
+    publisherDetailsCtrl: string
     sourceUrl: string
     playgroundInstructions: string
     registrationInstructions: string
