@@ -16,11 +16,24 @@ import { HttpClient } from '@angular/common/http'
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { EditorContentService } from 'project/ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+import { CollectionStoreService } from '../../../services/store.service'
+import { ActivatedRoute } from '@angular/router'
+import { NSContent } from '@ws/author/src/lib/interface/content'
+import { CollectionResolverService } from '../../../services/resolver.service'
+import { IContentNode } from '../../../interface/icontent-tree'
+import { HeaderServiceService } from '../../../../../../../../../../../../../../src/app/services/header-service.service'
+import { isNumber } from 'lodash'
+import { tap } from 'rxjs/operators'
+/* tslint:disable */
+import _ from 'lodash'
+import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
+import { IFormMeta } from '../../../../../../../../../interface/form'
 
 @Component({
   selector: 'ws-author-module-creation',
   templateUrl: './module-creation.component.html',
-  styleUrls: ['./module-creation.component.scss']
+  styleUrls: ['./module-creation.component.scss'],
+  providers: [CollectionStoreService, CollectionResolverService],
 })
 export class ModuleCreationComponent implements OnInit, AfterViewInit {
   contentList: any[] = [
@@ -86,6 +99,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   hours = 0
   minutes = 1
   resourceType: string = ''
+  resourseSelected: string = ''
+  currentContent!: string
+  currentCourseId!: string
+  viewMode!: string
+  courseName: any
+  currentParentId!: string
+  versionID: any
+  versionKey: any
+
   constructor(public dialog: MatDialog,
     private configSvc: ConfigurationsService,
     private snackBar: MatSnackBar,
@@ -96,7 +118,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     private initService: AuthInitService,
     private editorService: EditorService,
     private editorStore: EditorContentService,
-
+    private storeService: CollectionStoreService,
+    private activateRoute: ActivatedRoute,
+    private resolverService: CollectionResolverService,
+    private headerService: HeaderServiceService,
+    private loaderService: LoaderService,
   ) {
     this.resourceForm = new FormGroup({
       resourceName: new FormControl(''),
@@ -105,6 +131,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       openinnewtab: new FormControl(false),
       duration: new FormControl('')
     })
+
     this.moduleForm = new FormGroup({
       appIcon: new FormControl('')
     })
@@ -115,6 +142,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.routerValuesCall()
   }
   ngAfterViewInit() {
     console.log('dd')
@@ -156,27 +184,78 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.resourceForm.controls.duration.setValue(total)
   }
 
-  resourceTypeSave() {
-    console.log(this.resourceForm)
-    console.log(this.resourceType)
-    const rBody: any = {
-      name: this.resourceForm.value.resourceName,
-      artifactUrl: this.resourceForm.value.resourceLinks,
-      // mimeType: meta.mimeType,
-      mimeType: "text/x-url",
-      contentType: "Resource",
-      primaryCategory: 'Learning Resource',
-      ownershipType: ['createdFor'],
+  async resourceTypeSave() {
+    var res = this.resourceForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+    if (res !== null) {
+      const rBody: any = {
+        name: this.resourceForm.value.resourceName,
+        artifactUrl: this.resourceForm.value.resourceLinks,
+        versionKey: this.versionKey.versionKey
+      }
+      await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+      this.save()
     }
-    console.log(rBody)
-    let content = this.editorService.createAndReadContentV2(rBody).toPromise()
-    console.log(content)
   }
-  createResourseContent(name: string): void {
+  async createResourseContent(name: string): Promise<void> {
     this.resourceType = name
     if (name == 'Link') {
       this.isLinkFieldEnabled = true
       this.isAssessmentOrQuizEnabled = false
+      this.independentResourceCount = this.independentResourceCount + 1
+      this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
+
+      this.resourseSelected = 'web'
+      let couseCreated = 'web'
+      const asSibling = false
+      const node = {
+        id: this.storeService.currentParentNode,
+        identifier: this.storeService.parentNode[0],
+        editable: true,
+        category: 'Course',
+        childLoaded: true,
+        expandable: true,
+        level: 1,
+      }
+
+
+      const newData = {
+        topicDescription: '',
+        topicName: 'Resource 1'
+      }
+      const parentNode = node
+      this.loaderService.changeLoad.next(true)
+      const isDone = await this.storeService.createChildOrSibling(
+        couseCreated,
+        parentNode,
+        asSibling ? node.id : undefined,
+        'below',
+        newData,
+        couseCreated === 'web' ? 'link' : '',
+      )
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: isDone ? Notify.SUCCESS : Notify.FAIL,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+
+      })
+
+      if (isDone) {
+        const newCreatedLexid = this.editorService.newCreatedLexid
+
+        if (newCreatedLexid) {
+          const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
+          this.storeService.currentSelectedNode = newCreatedNode
+          this.storeService.selectedNodeChange.next(newCreatedNode)
+        }
+        this.currentContent = this.editorService.newCreatedLexid
+        // update the id
+        this.editorStore.currentContent = newCreatedLexid
+        this.loaderService.changeLoad.next(false)
+      }
+      this.loaderService.changeLoad.next(false)
+      this.subAction({ type: 'editContent', identifier: this.editorService.newCreatedLexid, nodeClicked: false })
+      this.save()
     } else if (name == 'PDF') {
       this.isLinkFieldEnabled = false
       this.isAssessmentOrQuizEnabled = false
@@ -197,7 +276,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.isLinkFieldEnabled = false
       this.isAssessmentOrQuizEnabled = true
     }
-    this.addResource()
+    //this.addResource()
     this.isLinkPageEnabled = true
     this.isResourceTypeEnabled = false
     this.isOnClickOfResourceTypeEnabled = true
@@ -217,8 +296,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   addIndependentResource() {
     this.showAddModuleForm = true
     this.isResourceTypeEnabled = true
-    this.independentResourceCount = this.independentResourceCount + 1
-    this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
+    // this.independentResourceCount = this.independentResourceCount + 1
+    // this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
   }
 
   changeToDefaultImg($event: any) {
@@ -362,4 +441,323 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   }
 
+  routerValuesCall() {
+    this.editorStore.changeActiveCont.subscribe(data => {
+      this.currentContent = data
+      this.currentCourseId = data
+      if (this.editorStore.getUpdatedMeta(data).contentType !== 'Resource') {
+        this.viewMode = 'meta'
+      }
+    })
+
+    if (this.activateRoute.parent && this.activateRoute.parent.parent) {
+      this.activateRoute.parent.parent.data.subscribe(data => {
+
+        this.courseName = data.contents[0].content.name
+
+        const contentDataMap = new Map<string, NSContent.IContentMeta>()
+        data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
+          this.storeService.parentNode.push(v.content.identifier)
+          this.resolverService.buildTreeAndMap(
+            v.content,
+            contentDataMap,
+            this.storeService.flatNodeMap,
+            this.storeService.uniqueIdMap,
+            this.storeService.lexIdMap,
+          )
+        })
+        contentDataMap.forEach(content => this.editorStore.setOriginalMeta(content))
+        const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
+        this.currentParentId = this.currentContent
+        this.storeService.treeStructureChange.next(
+          this.storeService.flatNodeMap.get(currentNode) as IContentNode,
+        )
+        this.storeService.currentParentNode = currentNode
+        this.storeService.currentSelectedNode = currentNode
+        let newCreatedNode = 0
+        const newCreatedLexid = this.editorService.newCreatedLexid
+        if (newCreatedLexid) {
+          newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
+          this.storeService.selectedNodeChange.next(newCreatedNode)
+        }
+        if (data.contents[0] && data.contents[0].content && data.contents[0].content.children[0] &&
+          data.contents[0].content.children[0].identifier) {
+          this.storeService.selectedNodeChange.next(data.contents[0].content.children[0].identifier)
+        }
+      })
+
+      this.activateRoute.parent.url.subscribe(data => {
+        const urlParam = data[0].path
+        if (urlParam === 'collection') {
+          this.headerService.showCreatorHeader(this.courseName)
+        }
+
+      })
+    }
+  }
+
+  async save() {
+    if (this.resourseSelected !== '') {
+      this.update()
+    }
+    const updatedContent = this.editorStore.upDatedContent || {}
+
+    if (
+      (Object.keys(updatedContent).length &&
+        (Object.values(updatedContent).length && JSON.stringify(Object.values(updatedContent)[0]) !== '{}')) ||
+      Object.keys(this.storeService.changedHierarchy).length
+    ) {
+      this.loaderService.changeLoad.next(true)
+      if (this.editorStore.getUpdatedMeta(this.currentCourseId).contentType !== "CourseUnit") {
+        this.versionID = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
+        this.versionKey = this.editorStore.getUpdatedMeta(this.currentCourseId)
+      }
+      this.triggerSave().subscribe(
+        () => {
+          // if (nextAction) {
+          //   this.action(nextAction)
+          // }
+          this.loaderService.changeLoad.next(false)
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: Notify.SAVE_SUCCESS,
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+        },
+        (error: any) => {
+          if (error.status === 409) {
+            const errorMap = new Map<string, NSContent.IContentMeta>()
+            Object.keys(this.editorStore.originalContent).forEach(v =>
+              errorMap.set(v, this.editorStore.originalContent[v]),
+            )
+            const dialog = this.dialog.open(ErrorParserComponent, {
+              width: '80vw',
+              height: '90vh',
+              data: {
+                errorFromBackendData: error.error,
+                dataMapping: errorMap,
+              },
+            })
+            dialog.afterClosed().subscribe(v => {
+              if (v) {
+                if (typeof v === 'string') {
+                  this.storeService.selectedNodeChange.next(
+                    (this.storeService.lexIdMap.get(v) as number[])[0],
+                  )
+                  this.editorStore.changeActiveCont.next(v)
+                } else {
+                  this.storeService.selectedNodeChange.next(v)
+                  this.editorStore.changeActiveCont.next(
+                    this.storeService.uniqueIdMap.get(v) as string,
+                  )
+                }
+              }
+            })
+          }
+          this.loaderService.changeLoad.next(false)
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: Notify.SAVE_FAIL,
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+        })
+    }
+  }
+
+  async update() {
+    this.resourseSelected = ''
+    const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+      request: {
+        data: {
+          nodesModified: this.editorStore.getNodeModifyData(),
+          hierarchy: this.storeService.getTreeHierarchy(),
+        },
+      },
+    }
+    await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+      this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+        this.editorStore.resetOriginalMetaWithHierarchy(data)
+        // tslint:disable-next-line: align
+      })
+    })
+  }
+
+  triggerSave() {
+    const nodesModified: any = {}
+    let isRootPresent = false
+    Object.keys(this.editorStore.upDatedContent).forEach(v => {
+      if (!isRootPresent) {
+        isRootPresent = this.storeService.parentNode.includes(v)
+      }
+      nodesModified[v] = {
+        isNew: false,
+        root: this.storeService.parentNode.includes(v),
+        metadata: this.editorStore.upDatedContent[v],
+      }
+    })
+    if (!isRootPresent) {
+      nodesModified[this.currentParentId] = {
+        isNew: false,
+        root: true,
+        metadata: {},
+      }
+    }
+    if (Object.keys(this.editorStore.upDatedContent).length > 0 && nodesModified[this.currentCourseId]) {
+      let tempUpdateContent = this.editorStore.upDatedContent[this.currentCourseId]
+      let requestBody: NSApiRequest.IContentUpdateV2
+
+      if (tempUpdateContent.category === 'CourseUnit' || tempUpdateContent.category === 'Collection') {
+        tempUpdateContent.visibility = 'Parent'
+      } else {
+        tempUpdateContent.versionKey = this.versionID === undefined ? this.versionKey.versionKey : this.versionID.versionKey
+      }
+
+      requestBody = {
+        request: {
+          content: tempUpdateContent,
+        }
+      }
+      requestBody.request.content = this.editorStore.cleanProperties(requestBody.request.content)
+      if (requestBody.request.content.duration === 0 || requestBody.request.content.duration) {
+        // tslint:disable-next-line:max-line-length
+        requestBody.request.content.duration =
+          isNumber(requestBody.request.content.duration) ?
+            requestBody.request.content.duration.toString() : requestBody.request.content.duration
+      }
+
+      if (requestBody.request.content.category) {
+        delete requestBody.request.content.category
+      }
+
+      if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
+        requestBody.request.content.reviewer = JSON.stringify(requestBody.request.content.trackContacts)
+        requestBody.request.content.reviewerIDs = []
+        const tempTrackRecords: string[] = []
+        requestBody.request.content.trackContacts.forEach(element => {
+          tempTrackRecords.push(element.id)
+        })
+        requestBody.request.content.reviewerIDs = tempTrackRecords
+        delete requestBody.request.content.trackContacts
+      }
+
+      if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
+        requestBody.request.content.reviewer = JSON.stringify(requestBody.request.content.trackContacts)
+        requestBody.request.content.reviewerIDs = []
+        const tempTrackRecords: string[] = []
+        requestBody.request.content.trackContacts.forEach(element => {
+          tempTrackRecords.push(element.id)
+        })
+        requestBody.request.content.reviewerIDs = tempTrackRecords
+        delete requestBody.request.content.trackContacts
+      }
+
+      if (requestBody.request.content.publisherDetails && requestBody.request.content.publisherDetails.length > 0) {
+        requestBody.request.content.publisherIDs = []
+        const tempPublisherRecords: string[] = []
+        requestBody.request.content.publisherDetails.forEach(element => {
+          tempPublisherRecords.push(element.id)
+        })
+        requestBody.request.content.publisherIDs = tempPublisherRecords
+      }
+      if (requestBody.request.content.creatorContacts && requestBody.request.content.creatorContacts.length > 0) {
+        requestBody.request.content.creatorIDs = []
+        const tempCreatorsRecords: string[] = []
+        requestBody.request.content.creatorContacts.forEach(element => {
+          tempCreatorsRecords.push(element.id)
+        })
+        requestBody.request.content.creatorIDs = tempCreatorsRecords
+      }
+      if (requestBody.request.content.catalogPaths && requestBody.request.content.catalogPaths.length > 0) {
+        requestBody.request.content.topics = []
+        const tempTopicData: string[] = []
+        requestBody.request.content.catalogPaths.forEach((element: any) => {
+          tempTopicData.push(element.identifier)
+        })
+        requestBody.request.content.topics = tempTopicData
+      }
+
+      this.editorStore.currentContentData = requestBody.request.content
+      this.editorStore.currentContentID = this.currentCourseId
+
+      if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined || tempUpdateContent.category === 'Course') {
+        return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
+          tap(() => {
+            this.storeService.changedHierarchy = {}
+            Object.keys(this.editorStore.upDatedContent).forEach(id => {
+              this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
+              // this.editorService.readContentV2(id).subscribe(resData => {
+              //   this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
+              // })
+            })
+            this.editorStore.upDatedContent = {}
+          })
+        )
+      } else {
+      }
+    }
+    //console.log('updateContentV4  COURSE COLL')
+    const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+      request: {
+        data: {
+          nodesModified: this.editorStore.getNodeModifyData(),
+          hierarchy: this.storeService.getTreeHierarchy(),
+        },
+      },
+    }
+
+    return this.editorService.updateContentV4(requestBodyV2).pipe(
+      tap(() => {
+
+        this.storeService.changedHierarchy = {}
+        Object.keys(this.editorStore.upDatedContent).forEach(async id => {
+          this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
+        })
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.editorStore.resetOriginalMetaWithHierarchy(data)
+        })
+        this.editorStore.upDatedContent = {}
+      }),
+    )
+
+  }
+
+  subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
+    this.editorStore.changeActiveCont.next(event.identifier)
+    switch (event.type) {
+      case 'editContent':
+        if (event.nodeClicked === false) {
+        }
+        const content = this.editorStore.getUpdatedMeta(event.identifier)
+        console.log(content)
+        // const isCreator = (this.configSvc.userProfile
+        //   && this.configSvc.userProfile.userId === content.createdBy)
+        //   ? true : false
+        // this.checkCreator = isCreator
+        if (['application/pdf', 'application/x-mpegURL', 'application/vnd.ekstep.html-archive', 'audio/mpeg', 'video/mp4'].includes(content.mimeType)) {
+          this.viewMode = 'upload'
+          // } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === 'link') {
+        } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === '') {
+          this.viewMode = 'curate'
+        } else if (content.mimeType === 'application/html') {
+          this.viewMode = 'upload'
+        } else if (content.mimeType === 'application/quiz' || content.mimeType === 'application/json') {
+          this.viewMode = 'assessment'
+        } else if (content.mimeType === 'application/web-module') {
+          this.viewMode = 'webmodule'
+        } else {
+          this.viewMode = 'meta'
+        }
+        break
+    }
+  }
+
+  action(type: string) {
+    switch (type) {
+      case 'save':
+        this.save('save')
+        break
+    }
+  }
 }
