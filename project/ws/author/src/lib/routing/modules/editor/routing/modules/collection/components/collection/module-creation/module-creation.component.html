@@ -195,7 +195,11 @@
               module</span>
           </div>
           <div>
-            <button mat-raised-button
+            <button mat-raised-button *ngIf="moduleButtonName === 'Create'"
+              class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
+              (click)="moduleCreate(module.value, moduleName, topicDescription)">
+              {{moduleButtonName}}</button>
+            <button mat-raised-button *ngIf="moduleButtonName === 'Save'"
               class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
               (click)="moduleCreate(module.value, moduleName, topicDescription)">
               {{moduleButtonName}}</button>

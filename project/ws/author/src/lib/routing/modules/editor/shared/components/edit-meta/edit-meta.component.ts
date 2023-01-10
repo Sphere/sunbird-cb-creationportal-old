@@ -108,7 +108,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   isEditEnabled = false
   public sideNavBarOpened = false
   gatingEnabled!: FormControl
-  issueCertification!: FormControl
+  //issueCertification!: FormControl
   bucket: string = ''
   certificateList: any[] = [
     'Yes', 'No'
@@ -120,7 +120,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     },
     {
       "name": 'Hindi',
-      "value": 'hn'
+      "value": 'hi'
     }
   ]
   isAddCerticate: boolean = false;
@@ -525,8 +525,11 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             )
           }
         }
+        console.log(this.contentMeta.issueCertification)
+        this.contentForm.controls.isIframeSupported.setValue(this.contentMeta.isIframeSupported)
         this.contentForm.controls.sourceName.setValue(this.contentMeta.sourceName)
-        this.contentForm.controls.langName.setValue(this.contentMeta.langName)
+        this.contentForm.controls.langName.setValue(this.contentMeta.language[0])
+        this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification === undefined ? false : this.contentMeta.issueCertification)
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
           this.contentForm.controls[v].markAsTouched()
@@ -642,6 +645,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             //  if (!currentMeta.posterImage) {
             //   currentMeta.posterImage = parentData.posterImage !== '' ? parentData.posterImage : currentMeta.posterImage
             //  }
+            currentMeta.cneName = ''
             if (!currentMeta.subTitle) {
               currentMeta.subTitle = parentData.subTitle !== '' ? parentData.subTitle : currentMeta.subTitle
               currentMeta.purpose = parentData.subTitle !== '' ? parentData.subTitle : currentMeta.subTitle
@@ -666,6 +670,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             }
             if (!currentMeta.langName) {
               currentMeta.langName = parentData.langName !== '' ? parentData.langName : currentMeta.langName
+
+
             }
           }
         }
@@ -738,6 +744,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
       }
     } catch (ex) {
+      console.log(ex)
       this.snackBar.open('Please Save Parent first and refresh page.')
       if (ex) {
         // this.saveParent = true
@@ -1540,7 +1547,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       versionKey: '',  // (new Date()).getTime()
       purpose: '',
       langName: '',
-      // cneName: new FormControl('', [Validators.required])
+      cneName: ' ',
     })
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {

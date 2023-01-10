@@ -247,7 +247,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         console.log((this.storeService.lexIdMap.get(this.currentContent) as number[]))
         const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
         console.log(currentNode)
-        debugger
         this.currentParentId = this.currentContent
         this.storeService.treeStructureChange.next(
           this.storeService.flatNodeMap.get(currentNode) as IContentNode,

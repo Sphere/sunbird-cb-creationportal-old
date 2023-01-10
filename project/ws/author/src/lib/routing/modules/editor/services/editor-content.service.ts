@@ -129,13 +129,14 @@ export class EditorContentService {
   getNodeModifyData() {
     const nodesModify: any = {}
     const parentData = this.getOriginalMeta(this.parentContent)
-    // console.log(parentData)
+    console.log(parentData)
     // console.log(this.upDatedContent)
     // console.log((Object.keys(this.upDatedContent)[0]))
     // const id = Object.keys(this.upDatedContent)[this.currentContent]
     const id = this.currentContentID
+    console.log(this.upDatedContent[id])
     let data = this.cleanProperties(this.upDatedContent[id])
-      data = this.currentContentData
+    data = this.currentContentData
     if (data && data.duration === 0 || data && data.duration) {
       // tslint:disable-next-line:max-line-length
       data.duration = _.isNumber(data.duration) ? data.duration.toString() : data.duration
@@ -147,17 +148,19 @@ export class EditorContentService {
         root: true,
         objectType: 'Content',
         contentType: 'Course',
-         // metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
+        // metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
       }
       parentData.children.forEach((element: any) => {
+        console.log(element.identifier)
+        console.log(id)
         if ((element.contentType === 'Collection' || element.contentType === 'CourseUnit') && element.identifier === id) {
           nodesModify[element.identifier] = {
             isNew: false,
-            root:  false,
+            root: false,
             // objectType: 'Content',
             // contentType: 'Course',
             // tslint:disable-next-line:max-line-length
-             metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey','resourceType']) : undefined,
+            metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey', 'resourceType']) : undefined,
           }
         }
         if (element.children && element.children.length > 0) {
@@ -165,11 +168,11 @@ export class EditorContentService {
             if ((subEle.contentType === 'Collection' || subEle.contentType === 'CourseUnit') && subEle.identifier === id) {
               nodesModify[subEle.identifier] = {
                 isNew: false,
-                root:  false,
+                root: false,
                 // objectType: 'Content',
                 // contentType: 'Course',
                 // tslint:disable-next-line:max-line-length
-                metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey','resourceType']) : undefined,
+                metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey', 'resourceType']) : undefined,
               }
             }
           })

@@ -293,17 +293,17 @@ ul li {
 .form-edit-int {
   display: flex;
   flex-direction: row;
-  gap: 4%;
+  gap: 5%;
   //justify-content: space-between;
-  font-size: 12px;
+  //font-size: 12px;
   //margin-top: -15px;
 }
 .form-edit-int-cert{
   display: flex;
   flex-direction: row;
-  gap: 4%;
-  margin-top: -15px;
-  font-size: 12px;
+  gap: 5%;
+  // margin-top: -15px;
+  // font-size: 12px;
 }
 .field-edit-width {
    width: 45%;
@@ -329,7 +329,7 @@ ul li {
     font-size: 14px;
     font-family: sans-serif !important;
    // height: 14%;
-    margin-top: 29px;
+    margin-top: 10px;
     color: #1C5D95 !important;
     border: 1px solid;
   }
@@ -364,8 +364,8 @@ ul li {
     color: #000000  !important;
   }
   .note-thumbnail-text {
-    margin-left: 41px  !important;
-    margin-bottom: -2px;
+    // margin-left: 41px  !important;
+    // margin-bottom: -2px;
     font-size: 12px;
     font-family: sans-serif;
     line-height: 16.8px;

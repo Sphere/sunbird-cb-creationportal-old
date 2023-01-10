@@ -166,6 +166,8 @@ export namespace NSContent {
   // }
 
   export interface IContentMeta {
+    issueCertification: any
+    cneName: string
     accessPaths: string[]
     identifier: string
     transcoding: any

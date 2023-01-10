@@ -106,7 +106,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   currentParentId!: string
   versionID: any
   versionKey: any
-
+  content: any
   constructor(public dialog: MatDialog,
     private configSvc: ConfigurationsService,
     private snackBar: MatSnackBar,
@@ -306,6 +306,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   editContent(content: any) {
     console.log(content)
+    this.moduleButtonName = 'Save'
+    this.content = content
     this.moduleName = content.name
     this.topicDescription = content.description
     this.thumbnail = content.thumbnail
@@ -402,7 +404,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                       if (data && data.name !== 'Error') {
                         this.loader.changeLoad.next(false)
                         //this.moduleForm.controls.appIcon.setValue(data.artifactUrl)
-                        this.courseData.thumbnail = data.artifactUrl
+                        //this.courseData.thumbnail = data.artifactUrl
                         let meta: any = {}
                         let requestBody: any
                         // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
@@ -411,16 +413,27 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
                         meta["appIcon"] = data.artifactUrl
                         meta["thumbnail"] = data.content_url
+                        this.thumbnail = data.content_url
                         meta["versionKey"] = this.courseData.versionKey
+                        this.editorStore.currentContentID = this.content.identifier
+                        this.editorStore.setUpdatedMeta(meta, data.identifier)
                         console.log(meta)
                         requestBody = {
                           request: {
                             content: meta
                           }
                         }
+
                         // this.editorStore.setUpdatedMeta(meta, this.courseData.identifier)
                         //this.initService.uploadData('thumbnail')
-                        this.editorService.updateNewContentV3(requestBody, this.courseData.identifier).toPromise().catch(_error => { })
+                        this.editorService.updateNewContentV3(requestBody, data.identifier).subscribe(
+                          (info: any) => {
+                            console.log(info)
+                            if (info) {
+                              this.update()
+                            }
+                          })
+
                       }
                     })
               })
