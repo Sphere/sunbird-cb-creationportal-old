@@ -27,7 +27,6 @@ import { tap } from 'rxjs/operators'
 /* tslint:disable */
 import _ from 'lodash'
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
-import { IFormMeta } from '../../../../../../../../../interface/form'
 
 @Component({
   selector: 'ws-author-module-creation',
@@ -514,9 +513,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
       this.triggerSave().subscribe(
         () => {
-          // if (nextAction) {
-          //   this.action(nextAction)
-          // }
           this.loaderService.changeLoad.next(false)
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
@@ -753,11 +749,4 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
 
-  action(type: string) {
-    switch (type) {
-      case 'save':
-        this.save('save')
-        break
-    }
-  }
 }
