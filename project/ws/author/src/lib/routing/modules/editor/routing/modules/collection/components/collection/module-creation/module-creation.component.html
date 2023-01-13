@@ -1,5 +1,5 @@
 <div class="main-model">
-  <mat-grid-list cols="4" rowHeight="100vh">
+  <mat-grid-list *ngIf="!isSettingsPage" cols="4" rowHeight="100vh">
     <mat-grid-tile [colspan]="1">
       <mat-drawer-container [class.drawer-opened]="drawer.opened">
         <mat-drawer #drawer class="drawer" mode="side" opened="false"></mat-drawer>
@@ -121,8 +121,14 @@
     vertical-align: bottom;cursor: pointer;color: #1C5D95;">remove_red_eye</mat-icon>
             <span style="font-size: small;cursor: pointer;color:#1C5D95"
               [ngClass]="showAddModuleForm ? 'brand-color' : ''">Preview</span>
+            <!-- [ngClass]="showAddModuleForm ? 'ws-mat-primary-background' : 'secondary-button'" -->
+            <!-- <button mat-raised-button (click)="isSettingsPage=true"
+              [ngClass]="showAddModuleForm ? 'ws-mat-primary-background' : 'secondary-button'"
+              class="ws-mat-primary-background width-20 margin-left-s mat-button-base save-btn-bottom">
+              Go to Course Settings ></button> -->
             <button mat-raised-button [ngClass]="showAddModuleForm ? 'ws-mat-primary-background' : 'secondary-button'"
-              class="width-20 margin-left-s mat-button-base save-btn-bottom">
+              class="width-20 margin-left-s mat-button-base save-btn-bottom"
+              (click)="showAddModuleForm?isSettingsPage=true:''">
               Go to Course Settings ></button>
           </div>
         </mat-toolbar>
@@ -344,4 +350,5 @@
       </mat-drawer-container>
     </mat-grid-tile>
   </mat-grid-list>
+  <ws-auth-course-settings (data)="action($event)" *ngIf=" isSettingsPage"></ws-auth-course-settings>
 </div>

@@ -469,7 +469,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   async save(nextAction?: string) {
-
     if (this.resourseSelected !== '') {
       this.update()
     }
@@ -565,6 +564,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   get validationCheck(): boolean {
     const currentNodeId = this.storeService.lexIdMap.get(this.currentParentId) as number[]
     let returnValue = this.storeService.validationCheck(currentNodeId[0])
+    console.log("here")
 
     // console.log('returnvalue ', returnValue)
 
@@ -599,6 +599,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   takeAction(contentAction?: string) {
+
     this.isSubmitPressed = true
     // const needSave = Object.keys(this.contentService.upDatedContent || {}).length
 
@@ -617,6 +618,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     // console.log('this.validationCheck', this.validationCheck)
 
     if (this.validationCheck) {
+      console.log('validationCheck', contentAction)
 
       this.editorService.readcontentV3(this.contentService.parentContent).subscribe((resData: any) => {
         if (resData && Object.keys(resData).length > 0) {
@@ -654,8 +656,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           if (d) {
             if (this.getAction() === 'sendForReview' && d.value.action === 'reject') {
               contentAction = 'rejectContent'
+              console.log("rejectContent")
               this.finalCall(contentAction)
             } else {
+              console.log("contentAction", contentAction)
               this.finalCall(contentAction)
             }
           }
@@ -955,6 +959,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
 
   async finalCall(contentActionTaken: any) {
+    console.log("finalCall")
     let flag = 0
     const resourceListToReview: any = []
     const moduleListToReview: any = []
@@ -2775,7 +2780,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   action(type: string) {      // recheck
-    console.log('saveType', type)
     switch (type) {
       case 'next':
         this.viewMode = 'meta'
@@ -2820,6 +2824,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             }
           })
         } else {
+
           this.takeAction('acceptConent')
         }
         break
