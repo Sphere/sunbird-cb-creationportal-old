@@ -207,6 +207,9 @@ export namespace NSContent {
     sourceName: string
     trackContactsCtrl: string
     publisherDetailsCtrl: string
+    gatingEnabled: boolean
+    activateLink: string
+    previewLinkFormControl: string
     sourceUrl: string
     playgroundInstructions: string
     registrationInstructions: string

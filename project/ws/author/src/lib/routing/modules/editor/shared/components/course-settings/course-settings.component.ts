@@ -64,7 +64,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   @Input() nextAction = 'done'
   @Input() stage = 1
   @Input() type = ''
-
   location = CONTENT_BASE_STATIC
   selectable = true
   removable = true
@@ -75,6 +74,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   creatorContactsCtrl!: FormControl
   trackContactsCtrl!: FormControl
   activateLink!: FormControl
+  gatingEnabled!: FormControl
   previewLinkFormControl!: FormControl
   publisherDetailsCtrl!: FormControl
   editorsCtrl!: FormControl
@@ -109,7 +109,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   complexityLevelList: string[] = []
   isEditEnabled = false
   public sideNavBarOpened = false
-  gatingEnabled!: FormControl
   issueCertification!: FormControl
   bucket: string = ''
   certificateList: any[] = [
@@ -176,7 +175,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   }
   contentForm!: FormGroup
   ngOnInit() {
-
     this.isSiemens = this.accessService.rootOrg.toLowerCase() === 'siemens'
     this.ordinals = this.authInitService.ordinals
     this.audienceList = this.ordinals.audience
@@ -186,6 +184,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     this.creatorContactsCtrl = new FormControl()
     this.trackContactsCtrl = new FormControl()
     this.activateLink = new FormControl()
+    this.gatingEnabled = new FormControl()
     this.previewLinkFormControl = new FormControl()
     this.publisherDetailsCtrl = new FormControl()
     this.editorsCtrl = new FormControl()
@@ -213,6 +212,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       )
       .subscribe(
         users => {
+          console.log(users)
+
           this.employeeList = users || <string[]>[]
           this.fetchTagsStatus = 'done'
         },
@@ -227,6 +228,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         distinctUntilChanged(),
         filter(val => typeof val === 'string'),
         switchMap((value: string) => {
+          console.log(value)
+
           if (typeof value === 'string' && value) {
             this.employeeList = <any[]>[]
             this.fetchTagsStatus = 'fetching'
@@ -409,6 +412,10 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     if (this.contentMeta.reviewer && typeof this.contentMeta.reviewer === 'string') {
       this.contentMeta.trackContacts = JSON.parse(this.contentMeta.reviewer)
     }
+
+    if (this.contentMeta.gatingEnabled && typeof this.contentMeta.gatingEnabled === 'boolean') {
+      this.contentMeta.gatingEnabled = JSON.parse(this.contentMeta.gatingEnabled)
+    }
     if (this.contentMeta.creatorDetails && typeof this.contentMeta.creatorDetails === 'string') {
       this.contentMeta.creatorDetails = JSON.parse(this.contentMeta.creatorDetails)
     }
@@ -529,10 +536,15 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             )
           }
         }
+        console.log("yes content form ")
         this.contentForm.controls.sourceName.setValue(this.contentMeta.sourceName)
         this.contentForm.controls.langName.setValue(this.contentMeta.langName)
         this.contentForm.controls.trackContactsCtrl.setValue(this.contentMeta.trackContactsCtrl)
         this.contentForm.controls.publisherDetailsCtrl.setValue(this.contentMeta.publisherDetailsCtrl)
+        this.contentForm.controls.gatingEnabled.setValue(this.contentMeta.gatingEnabled)
+        this.contentForm.controls.activateLink.setValue(this.contentMeta.activateLink)
+        this.contentForm.controls.previewLinkFormControl.setValue(this.contentMeta.previewLinkFormControl)
+        this.contentForm.controls.gatingEnabled.setValue(this.contentMeta.gatingEnabled)
 
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
@@ -544,6 +556,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       } catch (ex) { }
     })
     this.canUpdate = true
+    console.log('saved', this.contentForm.controls)
     this.storeData()
     if (this.isSubmitPressed) {
       this.contentForm.markAsDirty()
@@ -621,7 +634,9 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
   storeData() {
     try {
+      console.log("cameherer")
       const originalMeta = this.contentService.getOriginalMeta(this.contentMeta.identifier)
+      // console.log("originalMeta", originalMeta, this.contentMeta.identifier)
       if (originalMeta && this.isEditEnabled) {
         const expiryDate = this.contentForm.value.expiryDate
         const currentMeta: NSContent.IContentMeta = JSON.parse(JSON.stringify(this.contentForm.value))
@@ -677,6 +692,15 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             if (!currentMeta.trackContactsCtrl) {
               currentMeta.trackContactsCtrl = parentData.trackContactsCtrl !== '' ? parentData.trackContactsCtrl : currentMeta.trackContactsCtrl
             }
+            if (!currentMeta.gatingEnabled) {
+              currentMeta.gatingEnabled = parentData.gatingEnabled !== false ? parentData.gatingEnabled : currentMeta.gatingEnabled
+            }
+            if (!currentMeta.activateLink) {
+              currentMeta.activateLink = parentData.activateLink !== '' ? parentData.activateLink : currentMeta.activateLink
+            }
+            if (!currentMeta.previewLinkFormControl) {
+              currentMeta.previewLinkFormControl = parentData.previewLinkFormControl !== '' ? parentData.previewLinkFormControl : currentMeta.previewLinkFormControl
+            }
             if (!currentMeta.langName) {
               currentMeta.langName = parentData.langName !== '' ? parentData.langName : currentMeta.langName
             }
@@ -699,6 +723,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             .split('.')[0]
             }+0000`
         }
+        console.log("currentMeta", currentMeta)
         Object.keys(currentMeta).map(v => {
           if (
             v !== 'versionKey' && v !== 'visibility' &&
@@ -719,34 +744,26 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
                   ][0].value,
                 ),
               )
+
             }
           } else if (v === 'versionKey') {
+            console.log("versionKey")
             meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
           } else if (v === 'visibility') {
+            console.log("visibility")
             // if (currentMeta['contentType'] === 'CourseUnit' && currentMeta[v] !== 'Parent') {
             //   // console.log('%c COURSE UNIT ', 'color: #f5ec3d', meta[v],  currentMeta[v])
             //   meta[v as keyof NSContent.IContentMeta] = 'Default'
             // }
           }
-
-          // else if(v === 'visibility') {
-          //   console.log('VISIBILITY ', currentMeta['contentType'])
-          //   if(currentMeta['contentType'] === 'Resource' && originalMeta['depth'] === 2 && currentMeta[v] !== 'Parent') {
-          //     console.log('%c RESOURCE DEPTH 2 ', 'color: #d9388b', meta[v], currentMeta[v])
-          //       meta[v as keyof NSContent.IContentMeta] = 'Parent'
-          //   } else if(currentMeta['contentType'] === 'Resource' && originalMeta['depth'] === 1) {
-          //     console.log('%c RESOURCE DEPTH 1 ', 'color: #38d9c9')
-          //   } else if(currentMeta['contentType'] === 'CourseUnit' && currentMeta[v] !== 'Parent') {
-          //     console.log('%c COURSE UNIT ', 'color: #f5ec3d', meta[v],  currentMeta[v])
-          //       meta[v as keyof NSContent.IContentMeta] = 'Parent'
-          //   }
-          // }
         })
 
         if (this.stage >= 1 && !this.type) {
           delete meta.artifactUrl
         }
+        console.log("originalMeta", meta)
 
+        // console.log('meta', meta, this.contentMeta.identifier)
         this.contentService.setUpdatedMeta(meta, this.contentMeta.identifier)
 
       }
@@ -770,6 +787,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   // }
 
   updateContentService(meta: string, value: any, event = false) {
+    console.log("updateContentService")
     this.contentForm.controls[meta].setValue(value, { events: event })
     this.contentService.setUpdatedMeta({ [meta]: value } as any, this.contentMeta.identifier)
   }
@@ -828,11 +846,22 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         this.contentForm.controls.creatorDetails.value,
       )
     }
+    console.log(this.contentForm.controls.creatorDetails)
+
     // Reset the input value
     if (input) {
       input.value = ''
     }
   }
+  updateMyValue(event: any) {
+    if (event) {
+      console.log(event.checked)
+      this.contentForm.controls.gatingEnabled.setValue(
+        event.checked
+      )
+    }
+  }
+
 
   removeCreatorDetails(keyword: any): void {
     const index = this.contentForm.controls.creatorDetails.value.indexOf(keyword)
@@ -843,6 +872,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   addToFormControl(event: MatAutocompleteSelectedEvent, fieldName: string): void {
+    console.log("addToFormControl")
     const value = (event.option.value || '').trim()
     if (value && this.contentForm.controls[fieldName].value.indexOf(value) === -1) {
       this.contentForm.controls[fieldName].value.push(value)
@@ -1157,6 +1187,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
                         this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
                         this.canUpdate = true
                         // this.data.emit('save')
+                        console.log("emai save")
                         this.storeData()
                         this.authInitService.uploadData('thumbnail')
                         // this.contentForm.controls.posterImage.setValue(data.artifactURL)
@@ -1281,6 +1312,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
                   this.contentForm.controls.creatorThumbnail.setValue(data.result.artifactUrl)
                   this.contentForm.controls.creatorPosterImage.setValue(data.result.artifactUrl)
                   this.canUpdate = true
+                  console.log("dialog")
                   this.storeData()
                   this.snackBar.openFromComponent(NotificationComponent, {
                     data: {
@@ -1466,6 +1498,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   createForm() {
+    console.log("creating form")
     this.contentForm = this.formBuilder.group({
       accessPaths: [],
       accessibility: [],
@@ -1511,7 +1544,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       name: [],
       nodeType: [],
       org: [],
-      gatingEnabled: true,
+      gatingEnabled: [],
       issueCertification: false,
       creatorDetails: [],
       // passPercentage: [],
@@ -1555,11 +1588,15 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       langName: '',
       trackContactsCtrl: new FormControl('', [Validators.required]),
       publisherDetailsCtrl: new FormControl('', [Validators.required]),
+      activateLink: new FormControl(),
+      previewLinkFormControl: new FormControl(),
+
       // cneName: new FormControl('', [Validators.required])
     })
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       if (this.canUpdate) {
+        console.log("yes here with canUpdate", this.contentForm.value)
         this.storeData()
         // this.contentForm.controls.publisherDetails.setValue(
         //   this.contentForm.controls.publisherDetails.value

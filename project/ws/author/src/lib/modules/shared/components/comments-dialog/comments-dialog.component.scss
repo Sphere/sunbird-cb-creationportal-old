@@ -111,3 +111,14 @@ th {
 .borderRed{
   border: 1px solid red !important;
 }
+.sendToReview{
+  top: 5px;
+  position: relative;
+  border-radius: 30px;
+  background-color: none;
+  border: 1px solid #1C5D95;
+  color: #1C5D95;
+  background: none;
+  padding: 4px 8px 4px 8px !important;
+  cursor: pointer !important;
+}

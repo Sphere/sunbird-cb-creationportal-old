@@ -132,7 +132,7 @@
         <div class="margin-top-xl margin-right-l">
           <div class="margin-top-xs margin-left-l">
             <div class="flex flex-middle margin-top-xs">
-              <mat-checkbox></mat-checkbox>
+              <mat-checkbox (change)="updateMyValue($event)" [formControl]="gatingEnabled"></mat-checkbox>
               <p class="margin-left-xs read-and-agree-top-margin margin-remove-bottom cons-text">
                 Enable Step-by-Step Learning
               </p>
@@ -141,7 +141,7 @@
 
           </div>
         </div>
-        <div class="margin-top-l margin-right-l">
+        <!-- <div class="margin-top-l margin-right-l">
           <div class="margin-top-xs margin-left-l">
             <div class="flex flex-middle margin-top-xs">
               <mat-checkbox class="example-margin" [formControl]="activateLink">Activate preview link</mat-checkbox>
@@ -152,15 +152,16 @@
           <div class="margin-top-xs margin-left-l">
             <div class="flex flex-middle margin-top-xs">
               <mat-form-field appearance="outline" class="margin-top-xs width-90">
-                <input matInput i18n-placeholder [formControl]="previewLinkFormControl"
-                  placeholder="www.previewlink.com" #previewLink />
+                <input (change)="updateMyValue($event.target.value)" matInput i18n-placeholder
+                  formControlName="previewLinkFormControl" [formControl]="previewLinkFormControl"
+                  placeholder="www.previewlink.com" />
                 <mat-icon matSuffix><span class="material-icons" style="color: #808080;">
                     file_copy
                   </span></mat-icon>
               </mat-form-field>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
 
       <div class="flex-row-item">
@@ -261,8 +262,9 @@
   <div class="margin-top-xl margin-right-l">
     <div class="grid"></div>
     <div class="flex flex-end margin-top-l margin-bottom-l margin-right-l">
-      <button mat-raised-button type="button" class="settingsButton text-white ws-mat-primary-background text-white"
-        (click)="data.emit('save'); isSubmitPressed = true">
+      <button [disabled]="checkCondition('publisherDetails', 'disabled')||checkCondition('trackContacts', 'disabled')
+" mat-raised-button type="button" class="settingsButton text-white ws-mat-primary-background text-white"
+        (click)="data.emit('save'); isSubmitPressed = true;">
         <span class="text-white" i18n>
           Finish and send for review
         </span>

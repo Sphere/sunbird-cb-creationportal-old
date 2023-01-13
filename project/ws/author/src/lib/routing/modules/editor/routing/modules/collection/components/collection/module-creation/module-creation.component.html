@@ -354,5 +354,5 @@
       </mat-drawer-container>
     </mat-grid-tile>
   </mat-grid-list>
-  <ws-auth-course-settings *ngIf="isSettingsPage"></ws-auth-course-settings>
+  <ws-auth-course-settings (data)="action($event)" *ngIf=" isSettingsPage"></ws-auth-course-settings>
 </div>
