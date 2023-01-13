@@ -140,6 +140,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
     this.initService.uploadMessage.subscribe(
       (data: any) => {
+        console.log('ll;;;')
         if (data) {
           this.save('upload')
         }
@@ -243,8 +244,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           )
         })
         contentDataMap.forEach(content => this.contentService.setOriginalMeta(content))
+        console.log((this.storeService.lexIdMap.get(this.currentContent) as number[]))
         const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
-
+        console.log(currentNode)
+        debugger
         this.currentParentId = this.currentContent
         this.storeService.treeStructureChange.next(
           this.storeService.flatNodeMap.get(currentNode) as IContentNode,
@@ -467,11 +470,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   async save(nextAction?: string) {
-    console.log("here")
     if (this.resourseSelected !== '') {
       this.update()
     }
     const updatedContent = this.contentService.upDatedContent || {}
+    console.log(updatedContent)
     if (this.viewMode === 'assessment') {
       this.triggerQuizSave = true
     } else
@@ -2728,6 +2731,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         //        }
         //      })
         const content = this.contentService.getUpdatedMeta(event.identifier)
+        console.log(content)
         const isCreator = (this._configurationsService.userProfile
           && this._configurationsService.userProfile.userId === content.createdBy)
           ? true : false
@@ -2744,7 +2748,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         // } else if (content.mimeType === 'application/web-module') {
         //   this.viewMode = 'webmodule'
         // }
-
+        console.log(content.mimeType)
         if (['application/pdf', 'application/x-mpegURL', 'application/vnd.ekstep.html-archive', 'audio/mpeg', 'video/mp4'].includes(content.mimeType)) {
           this.viewMode = 'upload'
           // } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === 'link') {
