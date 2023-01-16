@@ -389,11 +389,11 @@
 }
 
 .upload-file-name{
-  left: 5rem;
-    top: 14.5rem;
-    position: absolute;
-    display: flex;
-    flex-direction: row;
+  left: 1.5rem;
+  bottom: 7rem;
+  position: relative;
+  display: flex;
+  flex-direction: row;
 }
 
 .uploaded-img{
@@ -403,7 +403,7 @@
 
 .text-wrap{
   white-space: nowrap;
-  width: 10rem;
+  width: 11rem;
   overflow: hidden;
   text-overflow: ellipsis;
 }
