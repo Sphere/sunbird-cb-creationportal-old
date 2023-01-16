@@ -414,7 +414,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     if (this.contentMeta.gatingEnabled && typeof this.contentMeta.gatingEnabled === 'boolean') {
-      this.contentMeta.gatingEnabled = JSON.parse(this.contentMeta.gatingEnabled)
+      this.contentMeta.gatingEnabled = this.contentMeta.gatingEnabled
     }
     if (this.contentMeta.creatorDetails && typeof this.contentMeta.creatorDetails === 'string') {
       this.contentMeta.creatorDetails = JSON.parse(this.contentMeta.creatorDetails)

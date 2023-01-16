@@ -1,5 +1,5 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core'
-import { FormControl, FormGroup } from '@angular/forms'
+import { Component, OnInit, AfterViewInit, ViewChild, TemplateRef } from '@angular/core'
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 // import { ConfigurationsService,  } from '@ws-widget/utils'
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '@ws/author/src/lib/constants/upload'
@@ -11,7 +11,7 @@ import { LoaderService } from '../../../../../../../../../services/loader.servic
 import { NSApiRequest } from '../../../../../../../../../interface/apiRequest'
 import { AccessControlService } from '../../../../../../../../../modules/shared/services/access-control.service'
 import { UploadService } from '../../../../../../shared/services/upload.service'
-import { AUTHORING_BASE, CONTENT_BASE_STATIC } from '@ws/author/src/lib/constants/apiEndpoints'
+import { AUTHORING_BASE } from '@ws/author/src/lib/constants/apiEndpoints'
 import { HttpClient } from '@angular/common/http'
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
@@ -25,7 +25,7 @@ import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/compo
 import * as _ from 'lodash'
 import { Router } from '@angular/router'
 import { environment } from '../../../../../../../../../../../../../.././src/environments/environment'
-import { ConfigurationsService, ImageCropComponent } from '../../../../../../../../../../../../../.././library/ws-widget/utils/src/public-api'
+import { ConfigurationsService, ImageCropComponent, ValueService } from '../../../../../../../../../../../../../.././library/ws-widget/utils/src/public-api'
 import { SuccessDialogComponent } from '../../../../../../../../.././modules/shared/components/success-dialog/success-dialog.component'
 import { CollectionStoreService } from '../../../services/store.service'
 import { ActivatedRoute } from '@angular/router'
@@ -35,6 +35,14 @@ import { IContentNode } from '../../../interface/icontent-tree'
 import { isNumber } from 'lodash'
 /* tslint:disable */
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
+import { IFormMeta } from '../../../../../../../../../interface/form'
+import { VIDEO_MAX_SIZE } from '@ws/author/src/lib/constants/upload'
+import {
+  CONTENT_BASE_STATIC,
+  CONTENT_BASE_STREAM,
+  CONTENT_BASE_WEBHOST,
+} from '@ws/author/src/lib/constants/apiEndpoints'
+import { ProfanityService } from '../../../../upload/services/profanity.service'
 
 @Component({
   selector: 'ws-author-module-creation',
@@ -44,40 +52,50 @@ import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/componen
 
 })
 export class ModuleCreationComponent implements OnInit, AfterViewInit {
+  @ViewChild('guideline', { static: false }) guideline!: TemplateRef<HTMLElement>
+  @ViewChild('errorFile', { static: false }) errorFile!: TemplateRef<HTMLElement>
+  @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>
+
   contents: NSContent.IContentMeta[] = []
 
   contentList: any[] = [
     {
       name: 'Link',
-      icon: 'link'
-
+      icon: 'link',
+      type: 'web'
     },
     {
       name: 'PDF',
-      icon: 'picture_as_pdf'
+      icon: 'picture_as_pdf',
+      type: 'upload'
     },
     {
       name: 'Audio',
-      icon: 'music_note'
+      icon: 'music_note',
+      type: 'upload'
     },
     {
       name: 'Video',
-      icon: 'videocam'
+      icon: 'videocam',
+      type: 'upload'
     },
     {
       name: 'SCORM',
-      icon: 'cloud_upload'
+      icon: 'cloud_upload',
+      type: 'upload'
     }
   ]
 
   accessList: any[] = [
     {
       name: 'Assessment',
-      icon: 'assessment'
+      icon: 'assessment',
+      type: 'assessment'
     },
     {
       name: 'Quiz',
-      icon: 'smartphone'
+      icon: 'smartphone',
+      type: ''
     }
   ]
 
@@ -88,10 +106,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   isResourceTypeEnabled: boolean = false
   isLinkPageEnabled: boolean = false
   isOnClickOfResourceTypeEnabled: boolean = false;
-  resourceForm: FormGroup
+  resourceLinkForm: FormGroup
+  resourcePdfForm: FormGroup
   moduleForm!: FormGroup
   resourceImg: string = '';
-  isLinkFieldEnabled: boolean = false;
+  isLinkEnabled: boolean = false;
   openinnewtab: boolean = false
   moduleName: string = '';
   topicDescription: string = ''
@@ -127,12 +146,36 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   resourseSelected: string = ''
   viewMode!: string
   content: any
+  canUpdate: boolean = true;
+  isPdfOrAudioOrVedioEnabled!: boolean
+  acceptType!: string | '.mp3,.mp4,.pdf,.zip,.m4v'
+  fileUploadCondition = {
+    fileName: false,
+    eval: false,
+    externalReference: false,
+    iframe: false,
+    isSubmitPressed: false,
+    preview: false,
+    url: '',
+  }
+  isMobile: boolean = false
+  iprAccepted: boolean = false
+  file!: File | null
+  mimeType: string = ''
+  fileUploadForm!: FormGroup
+  errorFileList: string[] = []
+  fileList: string[] = []
+  duration!: string
+  entryPoint: any
+  uploadText!: string
+  uploadFileName: string = '';
+  uploadIcon!: string
 
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
     private router: Router,
-
+    private profanityService: ProfanityService,
     // private configSvc: ConfigurationsService,
     private snackBar: MatSnackBar,
     private loader: LoaderService,
@@ -148,12 +191,35 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     private resolverService: CollectionResolverService,
     private headerService: HeaderServiceService,
     private loaderService: LoaderService,
+    private valueSvc: ValueService,
+    private formBuilder: FormBuilder,
   ) {
-    this.resourceForm = new FormGroup({
+    this.resourceLinkForm = new FormGroup({
       resourceName: new FormControl(''),
       resourceLinks: new FormControl(''),
       appIcon: new FormControl(''),
+      thumbnail: new FormControl(''),
       openinnewtab: new FormControl(false),
+      duration: new FormControl('')
+    })
+
+    this.fileUploadForm = this.formBuilder.group({
+      artifactUrl: [],
+      isExternal: [],
+      mimeType: [],
+      size: [],
+      duration: [],
+      downloadUrl: [],
+      transcoding: [],
+      versionKey: [],
+      streamingUrl: [],
+      entryPoint: [],
+    })
+
+    this.resourcePdfForm = new FormGroup({
+      resourceName: new FormControl(''),
+      appIcon: new FormControl(''),
+      thumbnail: new FormControl(''),
       duration: new FormControl('')
     })
 
@@ -525,9 +591,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         requestBody.request.content.reviewerIDs = tempTrackRecords
         delete requestBody.request.content.trackContacts
       }
-      if (requestBody.request.content.gatingEnabled && requestBody.request.content.gatingEnabled.length > 0) {
 
-        requestBody.request.content.gatingEnabled = JSON.stringify(requestBody.request.content.gatingEnabled)
+      if (requestBody.request.content.gatingEnabled && requestBody.request.content.gatingEnabled) {
+
+        requestBody.request.content.gatingEnabled = requestBody.request.content.gatingEnabled
         delete requestBody.request.content.gatingEnabled
       }
 
@@ -1450,101 +1517,77 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //total += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
     total += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
     total += this.hours ? this.hours * 60 * 60 : 0
-    console.log(total)
-    this.resourceForm.controls.duration.setValue(total)
+    return total
   }
 
-  async resourceTypeSave() {
-    var res = this.resourceForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+  async resourceLinkSave() {
+    this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
+
+    let iframeSupported
+    if (this.resourceLinkForm.value.openinnewtab)
+      iframeSupported = 'Yes'
+    else
+      iframeSupported = 'No'
+
+    var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
     if (res !== null) {
       const rBody: any = {
-        name: this.resourceForm.value.resourceName,
-        artifactUrl: this.resourceForm.value.resourceLinks,
-        versionKey: this.versionKey.versionKey
+        name: this.resourceLinkForm.value.resourceName,
+        artifactUrl: this.resourceLinkForm.value.resourceLinks,
+        isIframeSupported: iframeSupported,
+        duration: this.resourceLinkForm.value.duration,
+        versionKey: this.versionKey.versionKey,
       }
       await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
       this.save()
     }
   }
-  async createResourseContent(name: string): Promise<void> {
+
+  createResourseContent(name: string, type: string) {
     this.resourceType = name
+    this.independentResourceCount = this.independentResourceCount + 1
+    this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
     if (name == 'Link') {
-      this.isLinkFieldEnabled = true
+      this.isLinkEnabled = true
+      this.isPdfOrAudioOrVedioEnabled = false
       this.isAssessmentOrQuizEnabled = false
-      this.independentResourceCount = this.independentResourceCount + 1
-      this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
-
-      this.resourseSelected = 'web'
-      let couseCreated = 'web'
-      const asSibling = false
-      const node = {
-        id: this.storeService.currentParentNode,
-        identifier: this.storeService.parentNode[0],
-        editable: true,
-        category: 'Course',
-        childLoaded: true,
-        expandable: true,
-        level: 1,
-      }
-
-
-      const newData = {
-        topicDescription: '',
-        topicName: 'Resource 1'
-      }
-      const parentNode = node
-      this.loaderService.changeLoad.next(true)
-      const isDone = await this.storeService.createChildOrSibling(
-        couseCreated,
-        parentNode,
-        asSibling ? node.id : undefined,
-        'below',
-        newData,
-        couseCreated === 'web' ? 'link' : '',
-      )
-      this.snackBar.openFromComponent(NotificationComponent, {
-        data: {
-          type: isDone ? Notify.SUCCESS : Notify.FAIL,
-        },
-        duration: NOTIFICATION_TIME * 1000,
-
-      })
-
-      if (isDone) {
-        const newCreatedLexid = this.editorService.newCreatedLexid
-
-        if (newCreatedLexid) {
-          const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
-          this.storeService.currentSelectedNode = newCreatedNode
-          this.storeService.selectedNodeChange.next(newCreatedNode)
-        }
-        this.currentContent = this.editorService.newCreatedLexid
-        // update the id
-        this.editorStore.currentContent = newCreatedLexid
-        this.loaderService.changeLoad.next(false)
-      }
-      this.loaderService.changeLoad.next(false)
-      this.subAction({ type: 'editContent', identifier: this.editorService.newCreatedLexid, nodeClicked: false })
-      this.save()
+      this.setContentType(type)
     } else if (name == 'PDF') {
-      this.isLinkFieldEnabled = false
+      this.uploadText = 'PDF'
+      this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
+      this.isPdfOrAudioOrVedioEnabled = true
       this.resourceImg = 'cbp-assets/images/pdf-icon.svg'
+      this.acceptType = '.pdf'
+      this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+      this.setContentType(type)
     } else if (name == 'Audio') {
-      this.isLinkFieldEnabled = false
+      this.uploadText = 'mp3'
+      this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
-      this.resourceImg = 'cbp-assets/images/pdf-icon.svg'
-    } else if (name == 'Vedio') {
-      this.isLinkFieldEnabled = false
+      this.isPdfOrAudioOrVedioEnabled = true
+      this.resourceImg = 'cbp-assets/images/audio.png'
+      this.acceptType = '.mp3'
+      this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+      this.setContentType(type)
+    } else if (name == 'Video') {
+      this.uploadText = 'mp4, m4v'
+      this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
+      this.isPdfOrAudioOrVedioEnabled = true
       this.resourceImg = 'cbp-assets/images/vedio-img.svg'
+      this.acceptType = '.mp4, .m4v'
+      this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+      this.setContentType(type)
     } else if (name == 'SCORM') {
-      this.isLinkFieldEnabled = false
+      this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
+      this.isPdfOrAudioOrVedioEnabled = false
       this.resourceImg = 'cbp-assets/images/SCROM-img.svg'
     } else if (name == 'Assessment') {
-      this.isLinkFieldEnabled = false
+      this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = true
+      this.isPdfOrAudioOrVedioEnabled = false
     }
     //this.addResource()
     this.isLinkPageEnabled = true
@@ -2033,5 +2076,656 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         break
     }
   }
+
+  async setContentType(type: string, filetype?: string) {
+    this.resourseSelected = type
+    if (filetype) {
+      this.storeService.uploadFileType.next(filetype)
+    }
+    let couseCreated = type
+    const asSibling = false
+    const node = {
+      id: this.storeService.currentParentNode,
+      identifier: this.storeService.parentNode[0],
+      editable: true,
+      category: 'Course',
+      childLoaded: true,
+      expandable: true,
+      level: 1,
+    }
+
+
+    const newData = {
+      topicDescription: '',
+      topicName: 'Resource 1'
+    }
+    const parentNode = node
+    this.loaderService.changeLoad.next(true)
+    const isDone = await this.storeService.createChildOrSibling(
+      couseCreated,
+      parentNode,
+      asSibling ? node.id : undefined,
+      'below',
+      newData,
+      couseCreated === 'web' ? 'link' : '',
+    )
+    this.snackBar.openFromComponent(NotificationComponent, {
+      data: {
+        type: isDone ? Notify.SUCCESS : Notify.FAIL,
+      },
+      duration: NOTIFICATION_TIME * 1000,
+
+    })
+
+    if (isDone) {
+      const newCreatedLexid = this.editorService.newCreatedLexid
+
+      if (newCreatedLexid) {
+        const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
+        this.storeService.currentSelectedNode = newCreatedNode
+        this.storeService.selectedNodeChange.next(newCreatedNode)
+      }
+      this.currentContent = this.editorService.newCreatedLexid
+      // update the id
+      this.editorStore.currentContent = newCreatedLexid
+      this.loaderService.changeLoad.next(false)
+    }
+    this.loaderService.changeLoad.next(false)
+    this.subAction({ type: 'editContent', identifier: this.editorService.newCreatedLexid, nodeClicked: false })
+    this.save()
+  }
+
+  uploadResourceAppIcon(file: File) {
+    const formdata = new FormData()
+    const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
+
+    if (
+      !(
+        IMAGE_SUPPORT_TYPES.indexOf(
+          `.${fileName
+            .toLowerCase()
+            .split('.')
+            .pop()}`,
+        ) > -1
+      )
+    ) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.INVALID_FORMAT,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+      return
+    }
+
+    if (file.size > IMAGE_MAX_SIZE) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.SIZE_ERROR,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+      return
+    }
+
+    const dialogRef = this.dialog.open(ImageCropComponent, {
+      width: '70%',
+      data: {
+        isRoundCrop: false,
+        imageFile: file,
+        width: 265,
+        height: 150,
+        isThumbnail: true,
+        imageFileName: fileName,
+      },
+    })
+
+    dialogRef.afterClosed().subscribe({
+      next: (result: File) => {
+        if (result) {
+          formdata.append('content', result, fileName)
+          this.loader.changeLoad.next(true)
+
+          let randomNumber = ''
+          // tslint:disable-next-line: no-increment-decrement
+          for (let i = 0; i < 16; i++) {
+            randomNumber += Math.floor(Math.random() * 10)
+          }
+
+          const requestBody: NSApiRequest.ICreateImageMetaRequestV2 = {
+            request: {
+              content: {
+                code: randomNumber,
+                contentType: 'Asset',
+                createdBy: this.accessService.userId,
+                creator: this.accessService.userName,
+                mimeType: 'image/jpeg',
+                mediaType: 'image',
+                name: fileName,
+                language: ['English'],
+                license: 'CC BY 4.0',
+                primaryCategory: 'Asset',
+              },
+            },
+          }
+
+          this.http
+            .post<NSApiRequest.ICreateMetaRequest>(
+              `${AUTHORING_BASE}content/v3/create`,
+              requestBody,
+            )
+            .subscribe(
+              (meta: any) => {
+                this.uploadService
+                  .upload(formdata, {
+                    contentId: meta.result.identifier,
+                    contentType: CONTENT_BASE_STATIC,
+                  })
+
+                  .subscribe(
+                    data => {
+                      if (data && data.name !== 'Error') {
+                        this.loader.changeLoad.next(false)
+                        this.canUpdate = false
+                        this.resourceLinkForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
+                        this.resourceLinkForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
+                        this.canUpdate = true
+                        // this.data.emit('save')
+                        this.updateStoreData()
+                        this.initService.uploadData('thumbnail')
+                        // this.contentForm.controls.posterImage.setValue(data.artifactURL)
+                        this.snackBar.openFromComponent(NotificationComponent, {
+                          data: {
+                            type: Notify.UPLOAD_SUCCESS,
+                          },
+                          duration: NOTIFICATION_TIME * 2000,
+                        })
+                      }
+                      else {
+                        this.loader.changeLoad.next(false)
+                        this.snackBar.open(data.message, undefined, { duration: 2000 })
+                      }
+                    },
+                    () => {
+                      this.loader.changeLoad.next(false)
+                      this.snackBar.openFromComponent(NotificationComponent, {
+                        data: {
+                          type: Notify.UPLOAD_FAIL,
+                        },
+                        duration: NOTIFICATION_TIME * 1000,
+                      })
+                    },
+                  )
+              })
+        }
+      }
+    })
+  }
+
+  updateStoreData() {
+    try {
+      const originalMeta = this.contentService.getOriginalMeta(this.editorService.newCreatedLexid)
+      const currentMeta: NSContent.IContentMeta = JSON.parse(JSON.stringify(this.resourceLinkForm.value))
+      // const exemptArray = ['application/quiz', 'application/x-mpegURL', 'audio/mpeg', 'video/mp4',
+      //   'application/vnd.ekstep.html-archive', 'application/json']
+
+      // if (exemptArray.includes(originalMeta.mimeType)) {
+      //   currentMeta.artifactUrl = originalMeta.artifactUrl
+      //   currentMeta.mimeType = originalMeta.mimeType
+      // }
+      if (!currentMeta.duration && originalMeta.duration) {
+        currentMeta.duration = originalMeta.duration
+      }
+      if (!currentMeta.appIcon && originalMeta.appIcon) {
+        currentMeta.appIcon = originalMeta.appIcon
+        currentMeta.thumbnail = originalMeta.thumbnail
+      }
+      if (currentMeta.status === 'Draft') {
+        const parentData = this.contentService.parentUpdatedMeta()
+        if (parentData && currentMeta.identifier !== parentData.identifier) {
+
+          if (!currentMeta.body) {
+            currentMeta.body = parentData.body !== '' ? parentData.body : currentMeta.body
+          }
+
+          if (!currentMeta.instructions) {
+            currentMeta.instructions = parentData.instructions !== '' ? parentData.instructions : currentMeta.instructions
+          }
+
+          if (!currentMeta.categoryType) {
+            currentMeta.categoryType = parentData.categoryType !== '' ? parentData.categoryType : currentMeta.categoryType
+          }
+          if (!currentMeta.resourceType) {
+            currentMeta.resourceType = parentData.resourceType !== '' ? parentData.resourceType : currentMeta.resourceType
+          }
+
+          if (!currentMeta.sourceName) {
+            currentMeta.sourceName = parentData.sourceName !== '' ? parentData.sourceName : currentMeta.sourceName
+          }
+        }
+      }
+      const meta = <any>{}
+      Object.keys(currentMeta).map(v => {
+        if (
+          v !== 'versionKey' && v !== 'visibility' &&
+          JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !==
+          JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta]) && v !== 'jobProfile'
+        ) {
+          if (
+            currentMeta[v as keyof NSContent.IContentMeta] ||
+            // (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
+            currentMeta[v as keyof NSContent.IContentMeta] === false) {
+            meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
+          } else {
+            meta[v as keyof NSContent.IContentMeta] = JSON.parse(
+              JSON.stringify(
+                this.initService.authConfig[v as keyof IFormMeta].defaultValue[
+                  originalMeta.contentType
+                  // tslint:disable-next-line: ter-computed-property-spacing
+                ][0].value,
+              ),
+            )
+          }
+        } else if (v === 'versionKey') {
+          meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
+        } else if (v === 'visibility') {
+        }
+      })
+
+
+      this.contentService.setUpdatedMeta(meta, this.editorService.newCreatedLexid)
+    } catch (ex) {
+      this.snackBar.open('Please Save Parent first and refresh page.')
+      if (ex) {
+
+      }
+    }
+  }
+
+  /*PDF/audio/vedio functionality start*/
+  uploadPdf(file: File) {
+    this.fileUploadCondition = {
+      fileName: false,
+      eval: false,
+      externalReference: false,
+      iframe: false,
+      isSubmitPressed: false,
+      preview: false,
+      url: '',
+    }
+    const fileName = file.name.replace(/[^A-Za-z0-9_.]/g, '')
+    if (
+      !fileName.toLowerCase().endsWith('.pdf') &&
+      !fileName.toLowerCase().endsWith('.zip') &&
+      !fileName.toLowerCase().endsWith('.mp4') &&
+      !fileName.toLowerCase().endsWith('.m4v') &&
+      !fileName.toLowerCase().endsWith('.mp3')
+    ) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.INVALID_FORMAT,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    } else if (file.size > VIDEO_MAX_SIZE) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.SIZE_ERROR,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    } else {
+      if (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v')) {
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+          width: this.isMobile ? '90vw' : '600px',
+          height: 'auto',
+          data: 'transcodeMessage',
+        })
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            this.assignFileValues(file, fileName)
+          }
+        })
+      } else if (fileName.toLowerCase().endsWith('.zip')) {
+        const dialogRef = this.dialog.open(this.guideline, {
+          width: this.isMobile ? '90vw' : '600px',
+          height: 'auto',
+        })
+        dialogRef.afterClosed().subscribe(_ => {
+          if (
+            this.fileUploadCondition.fileName &&
+            this.fileUploadCondition.iframe &&
+            this.fileUploadCondition.eval &&
+            this.fileUploadCondition.preview &&
+            this.fileUploadCondition.externalReference
+          ) {
+
+            this.assignFileValues(file, fileName)
+          }
+        })
+      } else {
+        this.assignFileValues(file, fileName)
+      }
+    }
+  }
+
+  assignFileValues(file: File, fileName: string) {
+    const currentContentData = this.contentService.originalContent[this.currentContent]
+    this.contentService.updateListOfFiles(this.currentContent, file)
+    this.contentService.updateListOfUpdatedIPR(this.currentContent, this.iprAccepted)
+
+    this.file = file
+    this.mimeType = fileName.toLowerCase().endsWith('.pdf')
+      ? 'application/pdf'
+      : (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v'))
+        ? 'video/mp4'
+        : fileName.toLowerCase().endsWith('.zip')
+          ? 'application/vnd.ekstep.html-archive'
+          : 'audio/mpeg'
+
+    if (
+      (currentContentData.status === 'Live' || currentContentData.prevStatus === 'Live')
+      && this.mimeType !== currentContentData.mimeType
+    ) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.CANNOT_CHANGE_MIME_TYPE,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+      this.fileUploadForm.controls.artifactUrl.setValue(currentContentData.artifactUrl)
+      this.mimeType = currentContentData.mimeType
+      this.iprChecked()
+    } else {
+      this.file = file
+      if (this.mimeType === 'video/mp4' || this.mimeType === 'audio/mpeg') {
+        this.getDuration()
+      } else if (this.mimeType === 'application/vnd.ekstep.html-archive') {
+        this.extractFile()
+      }
+    }
+    this.uploadFileName = fileName
+    if (this.mimeType == 'application/pdf') {
+      this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
+    } else {
+      this.uploadIcon = 'cbp-assets/images/video-icon.png'
+    }
+
+  }
+
+  iprChecked() {
+    this.iprAccepted = !this.iprAccepted
+    this.contentService.updateListOfUpdatedIPR(this.currentContent, this.iprAccepted)
+  }
+
+  extractFile() {
+    this.errorFileList = []
+    this.fileList = []
+    zip.useWebWorkers = false
+    zip.createReader(new zip.BlobReader(this.file as File), (reader: zip.ZipReader) => {
+      reader.getEntries((entry: zip.Entry[]) => {
+        entry.forEach(element => {
+          // if (element.filename.match(/[^A-Za-z0-9_.\-\/]/g)) {
+          //   this.errorFileList.push(element.filename)
+          // } else if (!element.directory) {
+          this.fileList.push(element.filename)
+          // }
+        })
+        this.processAndShowResult()
+      })
+    })
+  }
+
+  processAndShowResult() {
+    if (this.errorFileList.length) {
+      this.file = null
+      this.dialog.open(this.errorFile, {
+        width: this.isMobile ? '90vw' : '600px',
+        height: 'auto',
+      })
+      setTimeout(() => {
+        const error = document.getElementById('errorFiles')
+        if (error) {
+          for (let i = 0; i < error.children.length; i += 1) {
+            error.children[i].innerHTML = error.children[i].innerHTML.replace(
+              /[^A-Za-z0-9./]/g,
+              match => {
+                return `<i style=background-color:red;font-weight:bold>${match}</i>`
+              },
+            )
+          }
+        }
+      })
+    } else {
+      this.dialog.open(this.selectFile, {
+        width: this.isMobile ? '90vw' : '600px',
+        height: 'auto',
+      })
+    }
+  }
+
+  getDuration() {
+    const content = document.createElement(
+      this.mimeType === 'video/mp4' ? 'video' : 'audio',
+    )
+    content.preload = 'metadata'
+    content.onloadedmetadata = () => {
+      window.URL.revokeObjectURL(content.src)
+      this.duration = JSON.stringify(Math.round(content.duration))
+    }
+    content.src = URL.createObjectURL(this.file)
+  }
+
+  async resourcePdfSave() {
+    this.triggerUpload()
+    this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
+    const rBody: any = {
+      name: this.resourcePdfForm.value.resourceName,
+      appIcon: this.resourcePdfForm.value.appIcon,
+      duration: this.resourcePdfForm.value.duration,
+      versionKey: this.versionKey.versionKey,
+    }
+    await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+    this.save()
+  }
+
+  async triggerUpload() {
+    if (!this.file) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.UPLOAD_FILE,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    } else {
+      this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
+      this.storeData()
+
+      const nodesModified: any = {}
+      Object.keys(this.contentService.upDatedContent).forEach(v => {
+        nodesModified[v] = {
+          isNew: false,
+          root: this.storeService.parentNode.includes(v),
+          metadata: this.contentService.upDatedContent[v],
+        }
+      })
+      const tempUpdateContent = this.contentService.getOriginalMeta(this.currentContent)
+      let requestBody: NSApiRequest.IContentUpdateV2
+
+      if (tempUpdateContent.category === 'CourseUnit') {
+        nodesModified.visibility = 'Parent'
+      }
+
+      requestBody = {
+        request: {
+          content: nodesModified[this.contentService.currentContent].metadata,
+        },
+      }
+      requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
+
+      if (requestBody.request.content.category) {
+        delete requestBody.request.content.category
+      }
+
+      const contenUpdateRes: any =
+        await this.editorService.updateContentV3(requestBody, this.contentService.currentContent).toPromise().catch(_error => { })
+      if (contenUpdateRes && contenUpdateRes.params && contenUpdateRes.params.status === 'successful') {
+        const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
+        if (hierarchyData) {
+          this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
+          this.upload()
+        } else {
+          this.errorMessage()
+        }
+      }
+    }
+  }
+
+  upload() {
+    const formdata = new FormData()
+    formdata.append(
+      'content',
+      this.file as Blob,
+      (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''),
+    )
+    this.loaderService.changeLoad.next(true)
+    this.uploadService
+      .upload(
+        formdata,
+        {
+          contentId: this.currentContent,
+          contentType:
+            this.mimeType === 'application/pdf'
+              ? CONTENT_BASE_STATIC
+              : this.mimeType === 'application/vnd.ekstep.html-archive'
+                ? CONTENT_BASE_WEBHOST
+                : CONTENT_BASE_STREAM,
+        },
+        undefined,
+        // this.mimeType === 'application/html',
+        this.mimeType === 'application/vnd.ekstep.html-archive',
+      ).pipe(
+        tap(v => {
+          this.canUpdate = false
+          // const artifactUrl = v.result && v.result.artifactUrl ? v.result.artifactUrl : ''
+          const artifactUrl = v && v.artifactUrl ? v.artifactUrl : ''
+          if (this.mimeType === 'video/mp4' || this.mimeType === 'application/pdf' || this.mimeType === 'audio/mpeg') {
+            this.fileUploadForm.controls.artifactUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
+            this.fileUploadForm.controls.downloadUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
+          } else {
+            this.fileUploadForm.controls.artifactUrl.setValue(v ? artifactUrl : '')
+            this.fileUploadForm.controls.downloadUrl.setValue(v ? artifactUrl : '')
+          }
+          this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
+          if (this.mimeType === 'application/vnd.ekstep.html-archive' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
+            this.fileUploadForm.controls.isExternal.setValue(false)
+            this.fileUploadForm.controls['streamingUrl'].setValue(v ?
+              this.generateStreamUrl((this.fileUploadCondition.url) ? this.fileUploadCondition.url : '') : '')
+            this.fileUploadForm.controls['entryPoint'].setValue(this.entryPoint ? this.entryPoint : '')
+          }
+
+          if (this.mimeType === 'video/mp4') {
+            this.fileUploadForm.controls.transcoding.setValue({
+              lastTranscodedOn: null,
+              retryCount: 0,
+              status: 'STARTED',
+            })
+          }
+
+          this.fileUploadForm.controls.duration.setValue(this.duration)
+          this.fileUploadForm.controls.size.setValue((this.file as File).size)
+          this.canUpdate = true
+        }),
+        mergeMap(v => {
+
+          if (this.mimeType === 'application/pdf') {
+            this.profanityCheckAPICall(v.artifactUrl)
+          }
+          return of(v)
+        }),
+      )
+      .subscribe(
+        _ => {
+          this.loaderService.changeLoad.next(false)
+          this.storeData()
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: Notify.UPLOAD_SUCCESS,
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+        },
+        () => {
+          this.loaderService.changeLoad.next(false)
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: Notify.UPLOAD_FAIL,
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+        },
+      )
+  }
+
+  generateStreamUrl(fileName: string) {
+    return `${environment.azureHost}/${environment.azureBucket}/html/${this.currentContent}-snapshot/${fileName}`
+  }
+
+
+  profanityCheckAPICall(url: string) {
+    this.profanityService.startProfanity(this.currentContent, url, (this.file ? this.file.name : this.currentContent)).subscribe()
+  }
+
+  errorMessage() {
+    this.snackBar.openFromComponent(NotificationComponent, {
+      data: {
+        type: Notify.UPLOAD_FAIL,
+      },
+      duration: NOTIFICATION_TIME * 1000,
+    })
+  }
+
+  storeData() {
+    const originalMeta = this.contentService.getOriginalMeta(this.currentContent)
+    const currentMeta = this.fileUploadForm.value
+    const meta: any = {}
+    Object.keys(currentMeta).map(v => {
+      if (
+        v !== 'versionKey' &&
+        JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !==
+        JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])
+      ) {
+        if (
+          currentMeta[v] ||
+          (this.initService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
+            currentMeta[v] === false)
+        ) {
+          meta[v] = currentMeta[v]
+        } else {
+          meta[v] = JSON.parse(
+            JSON.stringify(
+              this.initService.authConfig[v as keyof IFormMeta].defaultValue[
+                originalMeta.contentType
+                // tslint:disable-next-line: ter-computed-property-spacing
+              ][0].value,
+            ),
+          )
+        }
+      } else if (v === 'versionKey') {
+        meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
+      }
+    })
+    this.contentService.setUpdatedMeta(meta, this.currentContent)
+  }
+
+  clearUploadedFile() {
+    this.contentService.removeListOfFilesAndUpdatedIPR(this.currentContent)
+    this.uploadFileName = ''
+    this.fileUploadForm.controls.artifactUrl.setValue(null)
+    this.file = null
+    this.duration = '0'
+    this.mimeType = ''
+  }
+  /*PDF/audio/vedio functionality end*/
 
 }
