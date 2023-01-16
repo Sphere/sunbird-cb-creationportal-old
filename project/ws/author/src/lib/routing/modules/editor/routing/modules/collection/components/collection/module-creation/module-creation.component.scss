@@ -381,3 +381,29 @@
   font-size: 17px;
   cursor: pointer;
 }
+
+.close-uploadIcon{
+  position: relative;
+  bottom: 9rem;
+  left: 13.5rem;
+}
+
+.upload-file-name{
+  left: 5rem;
+    top: 14.5rem;
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+}
+
+.uploaded-img{
+  width: 25px;
+  height: 25px;
+}
+
+.text-wrap{
+  white-space: nowrap;
+  width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

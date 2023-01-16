@@ -222,7 +222,7 @@
           </div>
           <div style="display:flex;">
             <div *ngFor="let list of contentList">
-              <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name)">
+              <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
                 <div class="list-boxes">
                   <mat-icon matListItemIcon>{{list.icon}}</mat-icon>
                 </div>
@@ -235,7 +235,7 @@
           </div>
           <div style="display:flex;">
             <div *ngFor="let list of accessList">
-              <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name)">
+              <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
                 <div class="list-boxes">
                   <mat-icon matListItemIcon>{{list.icon}}</mat-icon>
                 </div>
@@ -252,12 +252,13 @@
             <span class="course-sub-title">Resource Details</span>
           </div>
           <div>
-            <form [formGroup]="resourceForm" class="resource-details-form" *ngIf="!isAssessmentOrQuizEnabled">
+            <!--link form start-->
+            <form [formGroup]="resourceLinkForm" class="resource-details-form" *ngIf="isLinkEnabled">
               <mat-form-field appearance="outline" class="margin-top-xs field-width">
                 <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
               </mat-form-field>
-              <div style="display:flex; flex-direction:row" *ngIf="isLinkFieldEnabled">
+              <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">
                   <input matInput #resourceLinks formControlName="resourceLinks" maxlength="100" i18n-placeholder
                     placeholder="Link" />
@@ -267,14 +268,17 @@
               <div class="margin-bottom-s">
                 <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
               </div>
-              <div class="thumnail-row margin-top-xs" *ngIf="!isLinkFieldEnabled">
+              <div class="thumnail-row margin-top-xs">
                 <div>
                   <img class="image max-width" height="144" width="256"
                     src="cbp-assets/images/default-white-background.png">
                   <div class="pdf">
-                    <img class="pdf-img" src="{{resourceImg}}">
-                    <input style="display: none;" type="file">
-                    <button mat-raised-button
+                    <img class="pdf-img" [src]="resourceLinkForm.controls.appIcon.value"
+                      (error)="changeToDefaultImg($event)">
+                    <input #uploadResourceFile
+                      (change)="uploadResourceAppIcon($event.target.files[0]); uploadResourceFile.value = null"
+                      style="display: none;" [accept]="imageTypes.toString()" type="file" />
+                    <button (click)="uploadResourceFile.click()" mat-raised-button
                       class="pdf-button margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom">Upload
                       File</button>
                     <div class="pdf-text-1">
@@ -284,31 +288,110 @@
                       <span>Drag and drop a file here</span>
                     </div>
                   </div>
-                  <div class="margin-bottom-s">
-                    <span style="color: #808080 !important;">Note : The PDF should have high resolution</span>
-                  </div>
-                </div>
-                <div style="padding-top: 6rem;">
-                  Files allowed : PDF<br> Max.file size : 200MB
                 </div>
               </div>
               <div style="display:flex; flex-direction:row">
-                <span class="duration-text">Duration :</span>
+                <span class="duration-text">Duration:</span>
                 <mat-form-field appearance="outline" class="width-55" style="margin-right:13px;">
                   <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
-                    placeholder="hh" (keyup)="timeToSeconds()" type="number" min="0" step="1" />
+                    placeholder="hh" type="number" min="0" step="1" />
                 </mat-form-field>
                 <div class="margin-top-s padding-small">:</div>
 
                 <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
-                    placeholder="mm" (keyup)="timeToSeconds()" type="number" min="0" max="59" step="1" />
+                    placeholder="mm" type="number" min="0" max="59" step="1" />
                 </mat-form-field>
               </div>
               <div><button mat-raised-button
                   class="margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
                   (click)="resourceTypeSave()">Save</button></div>
             </form>
+            <!--link form end-->
+            <!--PDF/audio/vedio form start-->
+            <form [formGroup]="resourcePdfForm" class="resource-details-form" *ngIf="isPdfOrAudioOrVedioEnabled">
+              <mat-form-field appearance="outline" class="margin-top-xs field-width">
+                <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
+                  placeholder="Name of the resource" />
+              </mat-form-field>
+              <div class="thumnail-row margin-top-xs">
+                <div>
+                  <img class="image max-width" height="144" width="256"
+                    src="cbp-assets/images/default-white-background.png">
+                  <div *ngIf="uploadFileName != ''">
+                    <mat-icon class="material-icons margin-left-m text-medium close-uploadIcon"
+                      click="clearUploadedFile();$event.stopPropagation()">close</mat-icon>
+                    <div class="upload-file-name">
+                      <div style="flex: 0 0 auto;">
+                        <img class="uploaded-img" src="{{uploadIcon}}">
+                      </div>
+                      <div style="flex: 1 1 auto;padding:0.1rem 0 0 1em;">
+                        <p class="text-wrap">{{uploadFileName}}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="pdf" *ngIf="uploadFileName == ''">
+                    <img class="pdf-img" src="{{resourceImg}}" (error)="changeToDefaultImg($event)">
+                    <input #pdfFile (change)="uploadPdf($event.target.files[0]); pdfFile.value = null"
+                      style="display: none;" accept="{{acceptType}}" type="file" />
+                    <button (click)="pdfFile.click()" mat-raised-button
+                      class="pdf-button margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom">Upload
+                      File</button>
+                    <div class="pdf-text-1">
+                      <span>OR</span>
+                    </div>
+                    <div class="pdf-text-2">
+                      <span>Drag and drop a file here</span>
+                    </div>
+                  </div>
+                  <div class="margin-bottom-s" *ngIf="acceptType == 'pdf'">
+                    <span style="color: #808080 !important;">Note : The PDF should have high resolution</span>
+                  </div>
+                </div>
+                <div style="padding-top: 6rem;">
+                  Files allowed : {{uploadText}}<br> Max.file size : 200MB
+                </div>
+              </div>
+              <div class="thumnail-row margin-top-xs">
+                <div>
+                  <img class="image max-width" height="144" width="256"
+                    src="cbp-assets/images/default-white-background.png">
+                  <div class="pdf">
+                    <img class="pdf-img" [src]="resourceLinkForm.controls.appIcon.value"
+                      (error)="changeToDefaultImg($event)">
+                    <input #uploadResourceFile
+                      (change)="uploadResourceAppIcon($event.target.files[0]); uploadResourceFile.value = null"
+                      style="display: none;" [accept]="imageTypes.toString()" type="file" />
+                    <button (click)="uploadResourceFile.click()" mat-raised-button
+                      class="pdf-button margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom">Upload
+                      File</button>
+                    <div class="pdf-text-1">
+                      <span>OR</span>
+                    </div>
+                    <div class="pdf-text-2">
+                      <span>Drag and drop a file here</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex; flex-direction:row">
+                <span class="duration-text">Duration:</span>
+                <mat-form-field appearance="outline" class="width-55" style="margin-right:13px;">
+                  <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
+                    placeholder="hh" type="number" min="0" step="1" />
+                </mat-form-field>
+                <div class="margin-top-s padding-small">:</div>
+
+                <mat-form-field appearance="outline" class="width-55">
+                  <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
+                    placeholder="mm" type="number" min="0" max="59" step="1" />
+                </mat-form-field>
+              </div>
+              <div><button mat-raised-button
+                  class="margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+                  (click)="resourcePdfSave()">Save</button></div>
+            </form>
+            <!--PDF form end-->
             <form [formGroup]="assessmentOrQuizForm" class="resource-details-form" *ngIf="isAssessmentOrQuizEnabled">
               <div style="display:flex; flex-direction:row">
                 <mat-form-field appearance="outline" class="margin-right-l field-width">
