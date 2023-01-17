@@ -525,7 +525,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             )
           }
         }
-        console.log(this.contentMeta.issueCertification)
         this.contentForm.controls.isIframeSupported.setValue(this.contentMeta.isIframeSupported)
         this.contentForm.controls.sourceName.setValue(this.contentMeta.sourceName)
         this.contentForm.controls.langName.setValue(this.contentMeta.language[0])
@@ -704,14 +703,17 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
               currentMeta[v as keyof NSContent.IContentMeta] === false) {
               meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
             } else {
-              meta[v as keyof NSContent.IContentMeta] = JSON.parse(
-                JSON.stringify(
-                  this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                    originalMeta.contentType
-                    // tslint:disable-next-line: ter-computed-property-spacing
-                  ][0].value,
-                ),
-              )
+              if (this.authInitService.authConfig[v as keyof IFormMeta] && this.authInitService.authConfig[v as keyof IFormMeta].defaultValue) {
+                meta[v as keyof NSContent.IContentMeta] = JSON.parse(
+                  JSON.stringify(
+                    this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
+                      originalMeta.contentType
+                      // tslint:disable-next-line: ter-computed-property-spacing
+                    ][0].value,
+                  ),
+                )
+              }
+
             }
           } else if (v === 'versionKey') {
             meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
