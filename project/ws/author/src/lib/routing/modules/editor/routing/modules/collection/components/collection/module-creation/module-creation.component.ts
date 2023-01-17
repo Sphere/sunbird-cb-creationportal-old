@@ -326,6 +326,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   action(type: string) {      // recheck
+    /* tslint:disable-next-line */
+    /* tslint:disable-next-line */
+
     console.log('came here', type)
     switch (type) {
       case 'next':
@@ -469,6 +472,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
+          /* tslint:disable-next-line */
+
           console.log("push save")
           // this.isSettingsPage = false
           this.action("push")
@@ -514,6 +519,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       )
     } else {
       if (nextAction) {
+        /* tslint:disable-next-line */
         console.log("nextAction")
         if (this.isSettingsPage) {
           this.action("push")
@@ -534,6 +540,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   triggerSaves() {
     const nodesModified: any = {}
     let isRootPresent = false
+    /* tslint:disable-next-line */
     console.log(this.contentService.upDatedContent)
     Object.keys(this.contentService.upDatedContent).forEach(v => {
       if (!isRootPresent) {
@@ -568,6 +575,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           content: tempUpdateContent,
         }
       }
+      /* tslint:disable-next-line */
+
       console.log("requestBody", requestBody.request.content.trackContacts)
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
 
@@ -627,6 +636,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.contentService.currentContentID = this.currentCourseId
 
       //let nodesModified = {}
+      /* tslint:disable-next-line */
+
       console.log("requestBody", requestBody)
 
       if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined || tempUpdateContent.category === 'Course') {
@@ -672,6 +683,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   }
   async updates() {
+    /* tslint:disable-next-line */
+
     console.log("update")
     this.resourseSelected = ''
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
@@ -775,6 +788,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         })
       }
       if (contentAction === 'publishResources') {
+        /* tslint:disable-next-line */
+
         console.log("here", this.getAction())
 
         this.finalCall(contentAction)
@@ -895,6 +910,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }
       }
     } else {
+      /* tslint:disable-next-line */
+
       console.log("yes here")
       // this.changeStatusToDraft('Content Rejected')
     }
@@ -1377,6 +1394,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         //if (result.params.status === 'successful') {
         this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
           /* tslint:disable-next-line */
+          /* tslint:disable-next-line */
+
           console.log(data)
           this.contentService.resetOriginalMetaWithHierarchy(data)
           this.initService.publishData(data)
@@ -1482,8 +1501,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   ngAfterViewInit() {
+    /* tslint:disable-next-line */
+
     console.log('dd')
     this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+      /* tslint:disable-next-line */
+
       console.log(data)
       this.courseData = data
       this.isSaveModuleFormEnable = true
@@ -1492,12 +1515,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.topicDescription = data.description
       this.thumbnail = data.thumbnail
       //this.isResourceTypeEnabled = true
+      /* tslint:disable-next-line */
+
       console.log(this.isSaveModuleFormEnable)
       //this.editorStore.resetOriginalMetaWithHierarchy(data)
     })
   }
 
   moduleCreate(name: string, input1: string, input2: string) {
+    /* tslint:disable-next-line */
+
     console.log(input1, input2)
     let obj: any = {}
     if (this.moduleButtonName == 'Create') {
@@ -1623,6 +1650,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       : ''
   }
   editContent(content: any) {
+    /* tslint:disable-next-line */
+
     console.log(content)
     this.moduleButtonName = 'Save'
     this.content = content
@@ -1735,6 +1764,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                         meta["versionKey"] = this.courseData.versionKey
                         this.editorStore.currentContentID = this.content.identifier
                         this.editorStore.setUpdatedMeta(meta, data.identifier)
+                        /* tslint:disable-next-line */
+
                         console.log(meta)
                         requestBody = {
                           request: {
@@ -1746,6 +1777,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                         //this.initService.uploadData('thumbnail')
                         this.editorService.updateNewContentV3(requestBody, data.identifier).subscribe(
                           (info: any) => {
+                            /* tslint:disable-next-line */
+
                             console.log(info)
                             if (info) {
                               this.update()
@@ -2058,6 +2091,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         if (event.nodeClicked === false) {
         }
         const content = this.editorStore.getUpdatedMeta(event.identifier)
+        /* tslint:disable-next-line */
+
         console.log(content)
         // const isCreator = (this.configSvc.userProfile
         //   && this.configSvc.userProfile.userId === content.createdBy)
@@ -2382,6 +2417,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       })
     } else {
       if (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v')) {
+        /* tslint:disable-next-line */
+
         console.log("yes here")
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
           width: this.isMobile ? '90vw' : '600px',
@@ -2411,6 +2448,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           }
         })
       } else {
+        /* tslint:disable-next-line */
+
         console.log("yes else", file, fileName)
 
         this.assignFileValues(file, fileName)
@@ -2454,6 +2493,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
     }
     this.uploadFileName = fileName
+    /* tslint:disable-next-line */
+
     console.log("this.uploadFileName", this.mimeType)
     if (this.mimeType == 'application/pdf') {
       this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
