@@ -38,6 +38,12 @@ export interface ISearchContent {
   category: string
   categoryType: string
   versionDate: string
+  icon: string
+  backgroundColor: string
+  color: string
+  message: string
+  paddings: any
+
 }
 
 export interface ISearchResult {
