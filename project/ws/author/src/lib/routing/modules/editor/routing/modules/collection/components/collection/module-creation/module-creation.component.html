@@ -392,6 +392,7 @@
                   (click)="resourcePdfSave()">Save</button></div>
             </form>
             <!--PDF form end-->
+            <!--assessment/quiz form start-->
             <form [formGroup]="assessmentOrQuizForm" class="resource-details-form" *ngIf="isAssessmentOrQuizEnabled">
               <div style="display:flex; flex-direction:row">
                 <mat-form-field appearance="outline" class="margin-right-l field-width">
@@ -416,18 +417,25 @@
                     (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" step="1" />
                 </mat-form-field>
               </div>
-              <div style="display:flex; flex-direction:row">
+              <div style="display:flex; flex-direction:row" class="mb-3">
                 <mat-icon class="material-icons brand-color">add_circle</mat-icon>
                 <span>Add An Image for this Assessment (Optional)</span>
               </div>
-              <span>Questions</span>
-              <!-- <mat-form-field appearance="outline" class="margin-top-s field-edit-width">
-                <mat-select formControlName="sourceName" i18n-placeholder placeholder="Match the following">
-                  <mat-option *ngFor="let type of questionTypes">
-                    {{ type }}</mat-option>
-                </mat-select>
-              </mat-form-field> -->
+              <span class="mb-3 sub-title">Questions</span>
+              <div>
+                <mat-form-field class="w-5/12" appearance="outline" i18n-aria-label aria-label="Select question type">
+                  <mat-select formControlName="questionType" placeholder="Question Type">
+                    <mat-option value="mcq-sca" i18n="MCQ| acronym for multiple choice question">MCQ</mat-option>
+                    <mat-option value="fitb" i18n>Fill in the Blanks</mat-option>
+                    <mat-option value="mtf" i18n>Match the Following</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <button *ngIf="isSaveModuleFormEnable" mat-raised-button
+                  class="secondary-button-outline mat-button-base save-btn-bottom"
+                  style="margin:0.4rem;color: #0074b6 !important;" (click)="addQuestion()"> Add Question</button>
+              </div>
             </form>
+            <!--assessment/quiz form end-->
           </div>
         </div>
       </mat-drawer-container>

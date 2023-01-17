@@ -43,6 +43,8 @@ import {
   CONTENT_BASE_WEBHOST,
 } from '@ws/author/src/lib/constants/apiEndpoints'
 import { ProfanityService } from '../../../../upload/services/profanity.service'
+import { IQuizQuestionType } from '../../../../quiz/interface/quiz-interface'
+import { QUIZ_QUESTION_TYPE } from '../../../../quiz/constants/quiz-constants'
 
 @Component({
   selector: 'ws-author-module-creation',
@@ -170,6 +172,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   uploadText!: string
   uploadFileName: string = '';
   uploadIcon!: string
+  questionType: IQuizQuestionType['fillInTheBlanks'] |
+    IQuizQuestionType['matchTheFollowing'] |
+    IQuizQuestionType['multipleChoiceQuestionSingleCorrectAnswer'] |
+    IQuizQuestionType['multipleChoiceQuestionMultipleCorrectAnswer'] = QUIZ_QUESTION_TYPE['multipleChoiceQuestionSingleCorrectAnswer']
 
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
@@ -229,6 +235,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     this.assessmentOrQuizForm = new FormGroup({
       resourceName: new FormControl(''),
+      duration: new FormControl(''),
+      questionType: new FormControl('')
     })
   }
 
@@ -2728,4 +2736,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   /*PDF/audio/vedio functionality end*/
 
+  /*Assessment functionality start*/
+  addQuestion() {
+    alert(this.assessmentOrQuizForm.value.questionType)
+  }
+  /*Assessment functionality end*/
 }
