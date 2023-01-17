@@ -327,8 +327,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   action(type: string) {      // recheck
     /* tslint:disable-next-line */
-    /* tslint:disable-next-line */
-
     console.log('came here', type)
     switch (type) {
       case 'next':
@@ -1394,8 +1392,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         //if (result.params.status === 'successful') {
         this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
           /* tslint:disable-next-line */
-          /* tslint:disable-next-line */
-
           console.log(data)
           this.contentService.resetOriginalMetaWithHierarchy(data)
           this.initService.publishData(data)
