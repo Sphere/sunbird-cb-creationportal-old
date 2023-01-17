@@ -42,6 +42,7 @@
 /*end-common css*/
 
 .main-model{
+  font-size: 13px !important;
   margin: 5vh 8vh 0vh 8vh;
 }
 
@@ -406,6 +407,14 @@
   width: 11rem;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.sub-title{
+  font-size: 15px;
+  line-height: 24px;
+  color: #000000;
+  font-family: sans-serif;
+  letter-spacing: -0.02em;
 }
 .op100 {
   opacity: 1;
