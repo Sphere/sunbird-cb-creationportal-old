@@ -42,6 +42,7 @@ export interface ISearchContent {
   backgroundColor: string
   color: string
   message: string
+  paddings: any
 
 }
 
