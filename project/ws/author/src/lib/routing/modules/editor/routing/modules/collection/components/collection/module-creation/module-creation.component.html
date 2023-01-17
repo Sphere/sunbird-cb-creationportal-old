@@ -305,7 +305,7 @@
               </div>
               <div><button mat-raised-button
                   class="margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-                  (click)="resourceTypeSave()">Save</button></div>
+                  (click)="resourceLinkSave()">Save</button></div>
             </form>
             <!--link form end-->
             <!--PDF/audio/vedio form start-->
@@ -320,7 +320,7 @@
                     src="cbp-assets/images/default-white-background.png">
                   <div *ngIf="uploadFileName != ''">
                     <mat-icon class="material-icons margin-left-m text-medium close-uploadIcon"
-                      click="clearUploadedFile();$event.stopPropagation()">close</mat-icon>
+                      (click)="clearUploadedFile();$event.stopPropagation()">close</mat-icon>
                     <div class="upload-file-name">
                       <div style="flex: 0 0 auto;">
                         <img class="uploaded-img" src="{{uploadIcon}}">
