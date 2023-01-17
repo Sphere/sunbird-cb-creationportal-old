@@ -1588,10 +1588,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.setContentType(type)
     } else if (name == 'SCORM') {
+      this.uploadText = '.zip'
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
-      this.isPdfOrAudioOrVedioEnabled = false
+      this.isPdfOrAudioOrVedioEnabled = true
       this.resourceImg = 'cbp-assets/images/SCROM-img.svg'
+      this.acceptType = '.zip'
+      this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+      this.setContentType(type)
     } else if (name == 'Assessment') {
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = true
@@ -2349,7 +2353,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
     }
   }
-
+  closeDialog() {
+    this.dialog.closeAll()
+  }
   /*PDF/audio/vedio functionality start*/
   uploadPdf(file: File) {
     this.fileUploadCondition = {
@@ -2384,6 +2390,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       })
     } else {
       if (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v')) {
+        console.log("yes here")
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
           width: this.isMobile ? '90vw' : '600px',
           height: 'auto',
@@ -2412,6 +2419,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           }
         })
       } else {
+        console.log("yes else", file, fileName)
+
         this.assignFileValues(file, fileName)
       }
     }
@@ -2453,11 +2462,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
     }
     this.uploadFileName = fileName
+    console.log("this.uploadFileName", this.mimeType)
     if (this.mimeType == 'application/pdf') {
       this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
+    } else if (this.mimeType == 'application/vnd.ekstep.html-archive') {
+      this.uploadIcon = 'cbp-assets/images/SCROM-img.svg'
     } else {
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
     }
+
 
   }
 
@@ -2511,7 +2524,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       })
     }
   }
-
+  selectEntryPoint(file: any) {
+    this.entryPoint = '/' + `${file}`
+  }
   getDuration() {
     const content = document.createElement(
       this.mimeType === 'video/mp4' ? 'video' : 'audio',
