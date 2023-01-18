@@ -61,7 +61,7 @@
 
 
 <mat-dialog-content
-  *ngIf="contentMeta && contentMeta.reviewStatus !== 'Reviewed' || courseEdited === true || contentMeta.status === 'Draft'">
+  *ngIf="(contentMeta && contentMeta.reviewStatus !== 'Reviewed' || courseEdited === true) && contentMeta.status === 'Review'">
   <div class="row">
     <div style="float: left;">
       <h2 mat-dialog-title i18n>Reviewing Course : {{contentMeta.name}}</h2>
@@ -107,8 +107,8 @@
   </form>
 </mat-dialog-content>
 
-<!-- <mat-dialog-content
-  *ngIf="contentMeta && contentMeta.reviewStatus !== 'Reviewed' || courseEdited === true || contentMeta.status === 'Draft'">
+<mat-dialog-content
+  *ngIf="(contentMeta && contentMeta.reviewStatus !== 'Reviewed' || courseEdited === true ||contentMeta.status !== 'Review') && contentMeta.status === 'Draft'">
   <h2 mat-dialog-title i18n>Send for review</h2>
   <form [formGroup]="commentsForm">
     <mat-form-field appearance="none" class="width-1-1 comment-field"
@@ -139,4 +139,4 @@
     </div>
   </form>
 
-</mat-dialog-content> -->
+</mat-dialog-content>

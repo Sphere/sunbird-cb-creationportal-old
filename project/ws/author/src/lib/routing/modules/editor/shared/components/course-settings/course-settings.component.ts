@@ -73,6 +73,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   fileUploadForm!: FormGroup
   creatorContactsCtrl!: FormControl
   trackContactsCtrl!: FormControl
+  publisherDetails!: FormControl
+  trackContacts!: FormControl
   activateLink!: FormControl
   gatingEnabled!: FormControl
   previewLinkFormControl!: FormControl
@@ -1557,7 +1559,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       preRequisites: [],
       projectCode: [],
       publicationId: [],
-      publisherDetails: [],
+      publisherDetails: new FormControl('', [Validators.required]),
       references: [],
       region: [],
       registrationInstructions: [],
@@ -1577,7 +1579,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       subTitles: [],
       systemRequirements: [],
       thumbnail: [],
-      trackContacts: [],
+      trackContacts: new FormControl('', [Validators.required]),
       transcoding: [],
       unit: [],
       verifiers: [],
@@ -1586,8 +1588,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       versionKey: '',  // (new Date()).getTime()
       purpose: '',
       langName: '',
-      trackContactsCtrl: new FormControl('', [Validators.required]),
-      publisherDetailsCtrl: new FormControl('', [Validators.required]),
+      trackContactsCtrl: '',
+      publisherDetailsCtrl: '',
       activateLink: new FormControl(),
       previewLinkFormControl: new FormControl(),
 
