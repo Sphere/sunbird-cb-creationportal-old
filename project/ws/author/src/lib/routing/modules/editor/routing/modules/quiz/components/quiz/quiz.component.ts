@@ -615,7 +615,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       this.metaContentService.getUpdatedMeta(this.currentId).duration : '300'
     const quizData = {
       // tslint:disable-next-line: prefer-template
-      // timeLimit: parseInt(this.quizDuration + '', 10) || 300
+      //timeLimit: parseInt(this.quizDuration + '', 10) || 300
+      timeLimit: (this.metaContentService.getUpdatedMeta(this.currentId).assessmentDuration) * 60 || '300',
       assessmentDuration: (this.metaContentService.getUpdatedMeta(this.currentId).assessmentDuration) * 60 || '300',
       passPercentage: this.metaContentService.getUpdatedMeta(this.currentId).passPercentage || '50',
       isAssessment: true,

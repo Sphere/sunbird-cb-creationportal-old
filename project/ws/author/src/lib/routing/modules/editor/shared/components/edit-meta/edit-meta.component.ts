@@ -64,6 +64,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() nextAction = 'done'
   @Input() stage = 1
   @Input() type = ''
+  clickedBtnNext: boolean = false
 
   location = CONTENT_BASE_STATIC
   selectable = true
@@ -351,7 +352,10 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   clickedNext() {
+
     this.authInitService.saveData('saved')
+    this.clickedBtnNext = true
+
   }
   changeCertificate(event: any): void {
     if (event == 'Yes') {
