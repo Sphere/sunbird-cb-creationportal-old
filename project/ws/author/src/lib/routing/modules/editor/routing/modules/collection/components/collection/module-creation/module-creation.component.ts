@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, TemplateRef } from '@angular/core'
+import { Component, OnInit, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 // import { ConfigurationsService,  } from '@ws-widget/utils'
@@ -57,7 +57,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   @ViewChild('guideline', { static: false }) guideline!: TemplateRef<HTMLElement>
   @ViewChild('errorFile', { static: false }) errorFile!: TemplateRef<HTMLElement>
   @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>
-
+  @Output() data = new EventEmitter<any>()
   contents: NSContent.IContentMeta[] = []
 
   contentList: any[] = [
@@ -480,9 +480,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           })
           /* tslint:disable-next-line */
 
-          console.log("push save")
           // this.isSettingsPage = false
-          this.action("push")
+          if (this.isSettingsPage) {
+            console.log("push save")
+
+            this.action("push")
+          }
+
         },
         (error: any) => {
           if (error.status === 409) {
@@ -2582,6 +2586,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     const rBody: any = {
       name: this.resourcePdfForm.value.resourceName,
       appIcon: this.resourcePdfForm.value.appIcon,
+      thumbnail: this.resourcePdfForm.value.appIcon,
       duration: this.resourcePdfForm.value.duration,
       versionKey: this.versionKey.versionKey,
     }
@@ -2632,6 +2637,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       if (contenUpdateRes && contenUpdateRes.params && contenUpdateRes.params.status === 'successful') {
         const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
         if (hierarchyData) {
+          console.log("hierarchy data")
           this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
           this.upload()
         } else {
@@ -2642,6 +2648,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   upload() {
+    console.log("uploading content")
     const formdata = new FormData()
     formdata.append(
       'content',
@@ -2706,7 +2713,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       )
       .subscribe(
         _ => {
-          this.loaderService.changeLoad.next(false)
+          // this.loaderService.changeLoad.next(false)
           this.storeData()
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
@@ -2714,6 +2721,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
+          console.log("yes emit save")
+          this.data.emit('save')
+
+          this.action('save')
         },
         () => {
           this.loaderService.changeLoad.next(false)
@@ -2775,6 +2786,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
       }
     })
+    console.log("meta: " + this.currentContent)
     this.contentService.setUpdatedMeta(meta, this.currentContent)
   }
 
