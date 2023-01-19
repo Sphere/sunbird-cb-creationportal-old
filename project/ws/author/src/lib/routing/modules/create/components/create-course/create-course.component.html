@@ -13,13 +13,14 @@
         <mat-form-field appearance="outline" class="margin-top-xs field-width name-field ">
           <input matInput #courseName formControlName="courseName" maxlength="100" i18n-placeholder
             placeholder="Course name" />
-          <mat-hint class="mt-hint">0/50</mat-hint>
+          <mat-hint class="mt-hint">{{ courseName.value.length }}/50</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="margin-top-xs field-width name-field ">
           <input matInput #courseSummary formControlName="courseSummary" maxlength="100" i18n-placeholder
             placeholder="Summary" />
-          <mat-hint class="mt-hint">0/300 (In a few words, describe your course)</mat-hint>
+          <mat-hint class="mt-hint">{{ courseSummary.value.length }}/300 (In a few words, describe your
+            course)</mat-hint>
         </mat-form-field>
       </div>
 

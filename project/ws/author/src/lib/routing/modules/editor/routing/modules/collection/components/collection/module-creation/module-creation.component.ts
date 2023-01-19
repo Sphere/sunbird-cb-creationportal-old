@@ -151,6 +151,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   canUpdate: boolean = true;
   isPdfOrAudioOrVedioEnabled!: boolean
   acceptType!: string | '.mp3,.mp4,.pdf,.zip,.m4v'
+  addResourceModule: any = {}
   fileUploadCondition = {
     fileName: false,
     eval: false,
@@ -1514,12 +1515,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       console.log(data)
       this.content = data
       this.courseData = data
-      this.moduleButtonName = 'Save'
+      //this.moduleButtonName = 'Save'
       this.isSaveModuleFormEnable = true
-      this.showAddModuleForm = true
-      this.moduleName = data.name
-      this.topicDescription = data.description
-      this.thumbnail = data.thumbnail
+      this.showAddModuleForm = false
+      //this.moduleName = data.name
+      //this.topicDescription = data.description
+      //this.thumbnail = data.thumbnail
       //this.isResourceTypeEnabled = true
       /* tslint:disable-next-line */
 
@@ -1644,13 +1645,22 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   addModule() {
     this.showAddModuleForm = true
-    this.moduleNames.push({ name: 'Create Course' })
-    this.moduleName = ''
+    this.moduleButtonName = 'Create'
+    // this.moduleNames.push({ name: 'Create Course' })
+    // this.moduleName = ''
   }
 
+  addResModule(modID: string, courseID: string) {
+    console.log(modID, courseID)
+    this.addResourceModule["module"] = true
+    this.addResourceModule["modID"] = modID
+    this.addResourceModule["courseID"] = courseID
+    this.addIndependentResource()
+  }
   addResource() {
-    this.resourceCount = this.resourceCount + 1
-    this.resourceNames.push({ name: 'Resource ' + this.resourceCount })
+    this.addIndependentResource()
+    // this.resourceCount = this.resourceCount + 1
+    // this.resourceNames.push({ name: 'Resource ' + this.resourceCount })
   }
 
   addIndependentResource() {
@@ -1667,6 +1677,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   editContent(content: any) {
     /* tslint:disable-next-line */
+    this.showAddModuleForm = true
     console.log(content)
     this.moduleButtonName = 'Save'
     this.content = content
@@ -2173,7 +2184,21 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     if (isDone) {
       const newCreatedLexid = this.editorService.newCreatedLexid
-
+      if (this.addResourceModule["module"] === true) {
+        let request: any
+        request = {
+          request: {
+            rootId: this.addResourceModule["courseID"],
+            unitId: this.addResourceModule["modID"],
+            children: [this.editorService.resourseID],
+          },
+        }
+        //if (this.parentNode[0] !== dropNode.identifier) {
+        const result = await this.editorService.resourceToModule(request).toPromise()
+        // tslint:disable-next-line:no-console
+        console.log(result)
+        //}
+      }
       if (newCreatedLexid) {
         const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
         this.storeService.currentSelectedNode = newCreatedNode

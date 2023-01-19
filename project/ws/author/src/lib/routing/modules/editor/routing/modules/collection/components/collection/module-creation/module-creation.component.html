@@ -48,9 +48,10 @@
                 <mat-icon class="icons-list">content_copy</mat-icon>
               </span>
             </div>
-            <button *ngIf="isSaveModuleFormEnable" mat-raised-button [disabled]="!isOnClickOfResourceTypeEnabled"
+            <button *ngIf="module.primaryCategory === 'Course Unit'" mat-raised-button
               class="secondary-button-outline mat-button-base save-btn-bottom"
-              style="margin:0.4rem;color: #0074b6 !important;" (click)="addResource()"> Add Resource</button>
+              style="margin:0.4rem;color: #0074b6 !important;"
+              (click)="addResModule(module.identifier, courseData.identifier)">Add Resource</button>
           </div>
 
           <!--module & resources left canvas-->
@@ -166,7 +167,9 @@
           *ngIf="showAddModuleForm && !isResourceTypeEnabled && !isOnClickOfResourceTypeEnabled">
           <div>
             <span class="course-sub-title" *ngIf="!isSaveModuleFormEnable">Create Course</span>
-            <span class="course-sub-title" *ngIf="content.contentType === 'Course'">Module Details</span>
+            <span class="course-sub-title" *ngIf="content.contentType === 'Course'">Course
+              Details</span>
+            <span class="course-sub-title" *ngIf="content.contentType === 'CourseUnit'">Module Details</span>
             <span class="course-sub-title" *ngIf="content.contentType === 'Resource'">Resource Details</span>
           </div>
           <div>
