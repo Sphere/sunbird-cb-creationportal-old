@@ -2638,12 +2638,18 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   async resourcePdfSave() {
+    let iframeSupported
+    if (this.resourceLinkForm.value.openinnewtab)
+      iframeSupported = 'Yes'
+    else
+      iframeSupported = 'No'
     this.triggerUpload()
     this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
     const rBody: any = {
       name: this.resourcePdfForm.value.resourceName,
       appIcon: this.resourcePdfForm.value.appIcon,
       thumbnail: this.resourcePdfForm.value.thumbnail,
+      isIframeSupported: iframeSupported,
       duration: this.resourcePdfForm.value.duration,
       versionKey: this.versionKey.versionKey,
     }
@@ -2705,7 +2711,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   upload() {
-    console.log("uploading content")
     const formdata = new FormData()
     formdata.append(
       'content',
