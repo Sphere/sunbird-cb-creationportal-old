@@ -159,6 +159,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         if (data) {
           this.createModule = data
           this.setContentType(data['type'])
+          this.showAddchapter = false
           // this.viewMode = ''
           // this.clickedNext = true
           //this.save()

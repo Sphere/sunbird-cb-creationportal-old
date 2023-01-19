@@ -637,8 +637,8 @@
     <div id="edit-meta" class="margin-left-xl full-view-container">
 
       <div class="form-edit-container">
-        <div class="course-title crs-title-text">
-          <mat-form-field appearance="outline" class="disabledData"
+        <div class="course-title crs-title-text form-edit-int">
+          <mat-form-field appearance="outline" class="disabledData  field-edit-width"
             [ngClass]="{ 'mat-form-field-invalid': showError('name') }">
             <input matInput #name class="disabledDataContainer" formControlName="name" maxlength="250" i18n-placeholder
               placeholder="Enter a Descriptive title" [required]="checkCondition('name', 'required') ? true : null"
