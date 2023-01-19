@@ -1516,7 +1516,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       /* tslint:disable-next-line */
 
       console.log(data)
+      this.content = data
       this.courseData = data
+      this.moduleButtonName = 'Save'
       this.isSaveModuleFormEnable = true
       this.showAddModuleForm = true
       this.moduleName = data.name
@@ -1555,6 +1557,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     return total
   }
 
+  async saveDetails(name: string, input1: string, src: string) {
+    const rBody: any = {
+      name: name,
+      appIcon: src,
+      description: input1,
+      //versionKey: this.versionKey.versionKey,
+    }
+    await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+    this.save()
+  }
   async resourceLinkSave() {
     this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
 
@@ -1659,7 +1671,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   editContent(content: any) {
     /* tslint:disable-next-line */
-
     console.log(content)
     this.moduleButtonName = 'Save'
     this.content = content

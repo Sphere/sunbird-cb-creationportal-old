@@ -140,15 +140,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
     this.initService.uploadMessage.subscribe(
       (data: any) => {
-        console.log('ll;;;')
         if (data) {
           this.save('upload')
         }
       })
     this.initService.saveContentMessage.subscribe(
       (data: any) => {
-        console.log(data)
         if (data) {
+          this.showAddchapter = true
           this.viewMode = ''
           this.clickedNext = true
           this.save()

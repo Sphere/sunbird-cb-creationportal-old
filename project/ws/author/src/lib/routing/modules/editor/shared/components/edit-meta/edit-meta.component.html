@@ -1,4 +1,4 @@
-<form [formGroup]="contentForm" class="width-2-3">
+<form [formGroup]="contentForm" class="width-2-3" *ngIf="!clickedBtnNext">
   <mat-sidenav class="padding-s width-300" position="end" [fixedInViewport]="true" [(opened)]="sideNavBarOpened">
     <div class="flex header-bg">
       <h2 class="margin-left-l margin-top-l">Course Settings</h2>
@@ -869,9 +869,9 @@
         <section class="width-1-3 fix-bottom">
           <div class="flex flex-between  margin-bottom-l margin-right-l">
             <button [disabled]="contentForm?.invalid" mat-raised-button type="submit"
-              (click)="isSubmitPressed = true; clickedNext()" class="
-                  text-white save-next ws-mat-primary-background  mat-button-base save-btn-bottom"> Save and
-              Next</button>
+              (click)="isSubmitPressed = true; clickedNext()"
+              class="text-white save-next ws-mat-primary-background  mat-button-base save-btn-bottom">Save and
+              Next</button> {{clickedBtnNext}}
           </div>
         </section>
 

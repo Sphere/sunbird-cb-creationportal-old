@@ -26,13 +26,8 @@
 
   </mat-drawer> -->
   <mat-drawer-content>
-
-
-
     <mat-sidenav-container class="nav-container">
-
-
-      <form [formGroup]="createTopicForm" *ngIf="showAddchapter" class="margin-left-l">
+      <!-- <form [formGroup]="createTopicForm" *ngIf="showAddchapter" class="margin-left-l">
         <div class="margin-top-s">
           <h1>Build your course by adding Topics</h1>
           <p>Add your content, quizzes, discussions and publish</p>
@@ -62,32 +57,6 @@
             <mat-icon class="white-icon">add</mat-icon> Add Topic/Resource
           </button>
 
-
-
-          <!-- <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="setContentType('collection')">
-              <mat-icon>book</mat-icon>
-              <span>Topic</span>
-            </button>
-            <button mat-menu-item (click)="setContentType('assessment')">
-              <mat-icon>check_circle</mat-icon>
-              <span>Add Assessment</span>
-            </button>
-            <button mat-menu-item (click)="setContentType('web')">
-              <mat-icon>link</mat-icon>
-              <span>Attach a link</span>
-            </button>
-            <button mat-menu-item (click)="setContentType('upload')">
-              <mat-icon>cloud_upload</mat-icon>
-              <span>Upload content</span>
-            </button>
-            <button mat-menu-item (click)="setContentType('webModule')">
-              <mat-icon>insert_drive_file</mat-icon>
-              <span>Web Page</span>
-            </button>
-
-          </mat-menu> -->
-
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="setContentType('collection')">
               <mat-icon>book</mat-icon>
@@ -105,10 +74,7 @@
               <mat-icon>cloud_upload</mat-icon>
               <span>Upload scorm</span>
             </button>
-            <!-- <button mat-menu-item (click)="setContentType('webModule')">
-              <mat-icon>insert_drive_file</mat-icon>
-              <span>Web Page</span>
-            </button> -->
+
             <button mat-menu-item (click)="setContentType('upload', 'pdf')">
               <mat-icon>picture_as_pdf</mat-icon>
               <span>Upload PDF</span>
@@ -121,13 +87,9 @@
               <mat-icon>videocam</mat-icon>
               <span>Upload Video</span>
             </button>
-
-
           </mat-menu>
-
         </div>
-
-      </form>
+      </form> -->
       <ws-auth-url-upload [isCollectionEditor]="true" *ngIf="!showAddchapter && viewMode === 'curate'"
         [isSubmitPressed]="isSubmitPressed" (data)="action($event)" [isCreatorEnable]="checkCreator">
       </ws-auth-url-upload>
