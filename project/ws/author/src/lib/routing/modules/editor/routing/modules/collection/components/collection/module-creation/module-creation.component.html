@@ -121,7 +121,8 @@
             <mat-icon [ngClass]="showAddModuleForm ? 'brand-color' : ''" class="margin-right-s material-icons" style="font-size: small;margin-right: 3px !important;
     vertical-align: bottom;cursor: pointer;color: #1C5D95;">remove_red_eye</mat-icon>
             <span style="font-size: small;cursor: pointer;color:#1C5D95"
-              [ngClass]="showAddModuleForm ? 'brand-color' : ''">Preview</span>
+              [ngClass]="showAddModuleForm ? 'brand-color' : ''"
+              [routerLink]="'/author/toc/' + content?.identifier + '/contents'">Preview</span>
             <!-- [ngClass]="showAddModuleForm ? 'ws-mat-primary-background' : 'secondary-button'" -->
             <!-- <button mat-raised-button (click)="isSettingsPage=true"
               [ngClass]="showAddModuleForm ? 'ws-mat-primary-background' : 'secondary-button'"
