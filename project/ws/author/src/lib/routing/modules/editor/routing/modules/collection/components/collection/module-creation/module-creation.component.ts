@@ -45,12 +45,16 @@ import {
 import { ProfanityService } from '../../../../upload/services/profanity.service'
 import { IQuizQuestionType } from '../../../../quiz/interface/quiz-interface'
 import { QUIZ_QUESTION_TYPE } from '../../../../quiz/constants/quiz-constants'
+import { QuizStoreService } from '../../../../quiz/services/store.service'
+import { QuizResolverService } from '../../../../quiz/services/resolver.service'
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
+import { map } from 'rxjs/operators'
 
 @Component({
   selector: 'ws-author-module-creation',
   templateUrl: './module-creation.component.html',
   styleUrls: ['./module-creation.component.scss'],
-  providers: [CollectionStoreService, CollectionResolverService],
+  providers: [CollectionStoreService, CollectionResolverService, QuizResolverService],
 
 })
 export class ModuleCreationComponent implements OnInit, AfterViewInit {
@@ -176,6 +180,26 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     IQuizQuestionType['matchTheFollowing'] |
     IQuizQuestionType['multipleChoiceQuestionSingleCorrectAnswer'] |
     IQuizQuestionType['multipleChoiceQuestionMultipleCorrectAnswer'] = QUIZ_QUESTION_TYPE['multipleChoiceQuestionSingleCorrectAnswer']
+  data: any
+  assessmentDuration!: any
+  passPercentage: any
+  allContents: NSContent.IContentMeta[] = []
+  activeContentSubscription?: Subscription
+  allLanguages: any
+  quizConfig: any
+  mediumSizeBreakpoint$ = this.breakpointObserver
+    .observe([Breakpoints.XSmall, Breakpoints.Small])
+    .pipe(map((res: BreakpointState) => res.matches))
+  sideNavBarOpened!: boolean
+  mediumScreenSize!: boolean
+  showContent!: boolean
+  canEditJson!: boolean
+  questionsArr: any[] = [];
+  contentLoaded!: boolean
+  currentId!: string
+  quizDuration: any
+  activeIndexSubscription?: Subscription
+  selectedQuizIndex!: number
 
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
@@ -199,6 +223,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     private loaderService: LoaderService,
     private valueSvc: ValueService,
     private formBuilder: FormBuilder,
+    private quizStoreSvc: QuizStoreService,
+    private quizResolverSvc: QuizResolverService,
+    private breakpointObserver: BreakpointObserver,
+
   ) {
     this.resourceLinkForm = new FormGroup({
       resourceName: new FormControl(''),
@@ -245,6 +273,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.routerValuesCalls()
 
   }
+
+  ngOnDestroy() {
+    if (this.activeIndexSubscription) {
+      this.activeIndexSubscription.unsubscribe()
+    }
+    if (this.activeContentSubscription) {
+      this.activeContentSubscription.unsubscribe()
+    }
+  }
+
   routerValuesCalls() {
     this.contentService.changeActiveCont.subscribe(data => {
       this.currentContent = data
@@ -1600,6 +1638,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = true
       this.isPdfOrAudioOrVedioEnabled = false
+      this.setContentType(type)
+      this.getassessment()
     }
     //this.addResource()
     this.isLinkPageEnabled = true
@@ -2752,8 +2792,122 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   /*PDF/audio/vedio functionality end*/
 
   /*Assessment functionality start*/
+  getassessment() {
+
+    this.activeContentSubscription = this.contentService.changeActiveCont.subscribe(id => {
+      this.allLanguages = this.initService.ordinals.subTitles
+      this.loaderService.changeLoadState(true)
+      this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
+      this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
+        this.sideNavBarOpened = !isLtMedium
+        this.mediumScreenSize = isLtMedium
+        if (isLtMedium) {
+          this.showContent = false
+        } else {
+          this.showContent = true
+        }
+      })
+
+      if (this.activateRoute.parent && this.activateRoute.parent.parent) {
+        this.activateRoute.parent.parent.data.subscribe(v => {
+          this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(newData => {
+            const quizContent = this.contentService.getOriginalMeta(this.contentService.currentContent)
+            if (quizContent.mimeType === 'application/json') {
+              const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
+                this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({} as any))
+              fileData.subscribe(jsonResponse => {
+                if (jsonResponse && Object.keys(jsonResponse).length > 1) {
+                  if (v.contents && v.contents.length) {
+                    if (jsonResponse) {
+                      v.contents[0].data = jsonResponse
+                      this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
+                      this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
+                      this.assessmentDuration = (jsonResponse.assessmentDuration) / 60
+                      this.passPercentage = jsonResponse.passPercentage
+                    }
+                    this.allContents.push(v.contents[0].content)
+                    if (v.contents[0].data) {
+                      this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data.questions
+                    } else if (newData[0] && newData[0].data && newData[0].data.questions) {
+                      this.quizStoreSvc.collectiveQuiz[id] = newData[0].data.questions
+                    } else {
+                      this.quizResolverSvc.getUpdatedData(id).subscribe(updatedData => {
+                        if (updatedData && updatedData[0]) {
+                          this.quizStoreSvc.collectiveQuiz[id] = updatedData[0].data.questions
+                          // need to arrange
+                          this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+                          this.resourceType = quizContent.categoryType || 'Assessment'
+                          this.questionsArr =
+                            this.quizStoreSvc.collectiveQuiz[id] || []
+                          this.contentLoaded = true
+                          this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
+                          this.currentId = id
+                          this.quizStoreSvc.currentId = id
+                          this.quizStoreSvc.changeQuiz(0)
+                        }
+                      })
+                      this.quizStoreSvc.collectiveQuiz[id] = []
+                    }
+                    this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+                    this.resourceType = quizContent.categoryType || 'Assessment'
+                    this.quizDuration = quizContent.duration || '300'
+                    this.questionsArr =
+                      this.quizStoreSvc.collectiveQuiz[id] || []
+                    this.contentLoaded = true
+                  }
+                  if (!this.quizStoreSvc.collectiveQuiz[id]) {
+                    this.quizStoreSvc.collectiveQuiz[id] = []
+                  }
+                } else {
+                  this.assessmentDuration = ''
+                  this.passPercentage = ''
+                  this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+                  this.resourceType = quizContent.categoryType || 'Assessment'
+                  this.quizDuration = quizContent.duration || '300'
+                  this.questionsArr =
+                    this.quizStoreSvc.collectiveQuiz[id] || []
+                  console.log("quiz 3")
+                  this.contentLoaded = true
+                  if (!this.quizStoreSvc.collectiveQuiz[id]) {
+                    this.quizStoreSvc.collectiveQuiz[id] = []
+                  }
+                }
+              })
+            }
+          })
+        })
+        // selected quiz index
+        this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
+          this.selectedQuizIndex = index
+        })
+        // active lex id
+        if (!this.quizStoreSvc.collectiveQuiz[id]) {
+          this.quizStoreSvc.collectiveQuiz[id] = []
+        }
+        this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
+        console.log("quiz 4")
+        this.currentId = id
+        this.quizStoreSvc.currentId = id
+        this.quizStoreSvc.changeQuiz(0)
+      }
+    })
+  }
+
   addQuestion() {
     alert(this.assessmentOrQuizForm.value.questionType)
+    this.quizStoreSvc.addQuestion(this.questionType)
+    this.data = this.quizStoreSvc.collectiveQuiz[this.currentContent]
+  }
+
+  editAssessment(index: number, event: any) {
+    event.stopPropagation()
+    const confirmDelete = this.dialog.open(ConfirmDialogComponent, {
+      width: '500px',
+      data: {
+        type: 'editAssessment',
+        index: index + 1,
+      },
+    })
   }
   /*Assessment functionality end*/
 }

@@ -541,3 +541,31 @@ ul li {
   pointer-events: none;
   cursor: none;
 }
+
+.questionlist.cdk-drop-list-dragging .custom:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.new-display {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.custom-placeholder {
+  border: dotted 3px #999;
+  min-height: 85px;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  opacity: 0;
+}
+
+.custom {
+  padding: 20px 10px;
+  height: 55px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: grab;
+}
+
