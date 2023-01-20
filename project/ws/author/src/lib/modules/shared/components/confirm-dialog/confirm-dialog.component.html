@@ -49,7 +49,7 @@
       </ng-container>
     </h3>
   </div>
-  <div mat-dialog-actions class="flex-row-reverse" *ngIf="!data.type === 'editAssessment'">
+  <div mat-dialog-actions class="flex-row-reverse" *ngIf="data.type !== 'editAssessment'">
     <button i18n mat-raised-button color="primary" [mat-dialog-close]="true">Yes</button>
     <button i18n mat-raised-button mat-dialog-close cdkFocusInitial>No</button>
   </div>

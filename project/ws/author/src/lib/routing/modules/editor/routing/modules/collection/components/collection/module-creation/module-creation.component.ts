@@ -181,7 +181,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     IQuizQuestionType['matchTheFollowing'] |
     IQuizQuestionType['multipleChoiceQuestionSingleCorrectAnswer'] |
     IQuizQuestionType['multipleChoiceQuestionMultipleCorrectAnswer'] = QUIZ_QUESTION_TYPE['multipleChoiceQuestionSingleCorrectAnswer']
-  data: any
+  assessmentData: any
   assessmentDuration!: any
   passPercentage: any
   allContents: NSContent.IContentMeta[] = []
@@ -3001,9 +3001,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addQuestion() {
-    alert(this.assessmentOrQuizForm.value.questionType)
     this.quizStoreSvc.addQuestion(this.questionType)
-    this.data = this.quizStoreSvc.collectiveQuiz[this.currentContent]
+    this.assessmentData = this.quizStoreSvc.collectiveQuiz[this.currentContent]
   }
 
   editAssessment(index: number, event: any) {
@@ -3015,6 +3014,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         index: index + 1,
       },
     })
+    console.log(confirmDelete)
   }
   /*Assessment functionality end*/
 }

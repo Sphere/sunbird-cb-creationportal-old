@@ -443,7 +443,7 @@
                 <div class="px-3 custom-placeholder border border-solid" *cdkDragPlaceholder></div>
                 <div>
                   <mat-card id="{{ 'quiz-' + i }}" class="custom w-full mt-2" cdkDrag cdkDragBoundary=" .questionlist"
-                    *ngFor="let quesObj of data; let i = index" (click)="selectEntity(i)">
+                    *ngFor="let quesObj of assessmentData; let i = index" (click)="selectEntity(i)">
                     <div class="w-full flex items-center justify-between">
                       <span class="px-2">
                         <span i18n>Quiz</span>-{{ i + 1 }} :
