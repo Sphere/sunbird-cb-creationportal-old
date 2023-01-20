@@ -83,7 +83,10 @@
                     <mat-icon class="material-icons margin-left-m text-medium brand-color"
                       (click)="editContent(resource)">
                       edit</mat-icon>
-                    <mat-icon class="icons-list">delete</mat-icon>
+                    <mat-icon (click)="takeActions('delete', resource, $event.type)"
+                      class="icons-list">delete</mat-icon>
+
+                    <!-- <mat-icon class="icons-list">delete</mat-icon> -->
                     <mat-icon class="icons-list">content_copy</mat-icon>
                   </span>
                 </div>
@@ -187,14 +190,15 @@
             <span style="color:#808080">Module Thumbnail</span>
           </div>
           <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
-            <div>
-              <img class="image max-width" [src]="thumbnail" (error)="changeToDefaultImg($event)">
+            <div class="margin-top-xs">
+              <img class="image max-width" height="150" width="256" [src]="thumbnail"
+                (error)="changeToDefaultImg($event)" />
+
               <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadThumbnail.click()">
-                <!-- <mat-icon class="add-icon mat-icon material-icons mat-icon-no-color" role="img" aria-hidden="true">add
-                </mat-icon> -->
                 <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
-                <input #uploadThumbnail (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null"
-                  style="display: none;" [accept]="imageTypes.toString()" type="file">
+                <input type="file" #uploadThumbnail
+                  (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null" style="display: none;"
+                  [accept]="imageTypes.toString()" />
               </div>
             </div>
             <div>
@@ -273,26 +277,22 @@
               <div class="margin-bottom-s">
                 <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
               </div>
-              <div class="thumnail-row margin-top-xs">
+              <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
+                <span style="color:#808080">Resource Thumbnail</span>
+              </div>
+              <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
                 <div>
-                  <img class="image max-width" height="144" width="256"
-                    src="cbp-assets/images/default-white-background.png">
-                  <div class="pdf">
-                    <img class="pdf-img" [src]="resourceLinkForm.controls.appIcon.value"
-                      (error)="changeToDefaultImg($event)">
+                  <img class="image max-width" [src]="resourceLinkForm.controls.appIcon.value"
+                    (error)="changeToDefaultImg($event)">
+                  <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadResourceFile.click()">
+                    <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
                     <input #uploadResourceFile
                       (change)="uploadResourceAppIcon($event.target.files[0]); uploadResourceFile.value = null"
-                      style="display: none;" [accept]="imageTypes.toString()" type="file" />
-                    <button (click)="uploadResourceFile.click()" mat-raised-button
-                      class="pdf-button margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom">Upload
-                      File</button>
-                    <div class="pdf-text-1">
-                      <span>OR</span>
-                    </div>
-                    <div class="pdf-text-2">
-                      <span>Drag and drop a file here</span>
-                    </div>
+                      style="display: none;" [accept]="imageTypes.toString()" type="file">
                   </div>
+                </div>
+                <div>
+                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
                 </div>
               </div>
               <div style="display:flex; flex-direction:row">
@@ -319,6 +319,9 @@
                 <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
               </mat-form-field>
+              <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
+                <span style="color:#808080">Resource file</span>
+              </div>
               <div class="thumnail-row margin-top-xs">
                 <div>
                   <img class="image max-width" height="144" width="256"
@@ -343,10 +346,10 @@
                       class="pdf-button margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom">Upload
                       File</button>
                     <div class="pdf-text-1">
-                      <span>OR</span>
+                      <!-- <span>OR</span> -->
                     </div>
                     <div class="pdf-text-2">
-                      <span>Drag and drop a file here</span>
+                      <!-- <span>Drag and drop a file here</span> -->
                     </div>
                   </div>
                   <div class="margin-bottom-s" *ngIf="acceptType == 'pdf'">
@@ -357,7 +360,25 @@
                   Files allowed : {{uploadText}}<br> Max.file size : 200MB
                 </div>
               </div>
-              <div class="thumnail-row margin-top-xs">
+              <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
+                <span style="color:#808080">Resource Thumbnail</span>
+              </div>
+              <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
+                <div>
+                  <img class="image max-width" [src]="resourceLinkForm.controls.appIcon.value"
+                    (error)="changeToDefaultImg($event)">
+                  <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadResourceFile.click()">
+                    <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
+                    <input #uploadResourceFile
+                      (change)="uploadResourceAppIcon($event.target.files[0]); uploadResourceFile.value = null"
+                      style="display: none;" [accept]="imageTypes.toString()" type="file">
+                  </div>
+                </div>
+                <div>
+                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
+                </div>
+              </div>
+              <!-- <div class="thumnail-row margin-top-xs">
                 <div>
                   <img class="image max-width" height="144" width="256"
                     src="cbp-assets/images/default-white-background.png">
@@ -378,7 +399,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <div style="display:flex; flex-direction:row">
                 <span class="duration-text">Duration:</span>
                 <mat-form-field appearance="outline" class="width-55" style="margin-right:13px;">
