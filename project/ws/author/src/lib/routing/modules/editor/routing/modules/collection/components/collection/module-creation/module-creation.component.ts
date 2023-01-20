@@ -146,8 +146,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   versionID: any
   isSubmitPressed = false
   isMoveCourseToDraft: boolean = false;
+  gatingEnabled!: FormControl
   hours = 0
   minutes = 1
+  seconds = 0
   resourceType: string = ''
   resourseSelected: string = ''
   viewMode!: string
@@ -234,7 +236,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       resourceLinks: new FormControl(''),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
-      openinnewtab: new FormControl(false),
+      isIframeSupported: new FormControl(false),
       duration: new FormControl('')
     })
 
@@ -286,6 +288,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   routerValuesCalls() {
     this.contentService.changeActiveCont.subscribe(data => {
+      console.log(data)
       this.currentContent = data
       this.currentCourseId = data
       if (this.contentService.getUpdatedMeta(data).contentType !== 'Resource') {
@@ -1546,12 +1549,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   ngAfterViewInit() {
-    /* tslint:disable-next-line */
-
-    console.log('dd')
     this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
       /* tslint:disable-next-line */
-
       console.log(data)
       this.courseData = data
       //this.moduleButtonName = 'Save'
@@ -1562,7 +1561,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.thumbnail = data.thumbnail
       //this.isResourceTypeEnabled = true
       /* tslint:disable-next-line */
-
       console.log(this.isSaveModuleFormEnable)
       //this.editorStore.resetOriginalMetaWithHierarchy(data)
     })
@@ -1597,7 +1595,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
 
     let iframeSupported
-    if (this.resourceLinkForm.value.openinnewtab)
+    if (this.resourceLinkForm.value.isIframeSupported)
       iframeSupported = 'Yes'
     else
       iframeSupported = 'No'
@@ -1708,6 +1706,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   editContent(content: any) {
     /* tslint:disable-next-line */
+    console.log(content)
     this.showAddModuleForm = true
     this.moduleButtonName = 'Save'
     this.content = content
@@ -1818,8 +1817,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                         meta["thumbnail"] = data.content_url
                         this.thumbnail = data.content_url
                         meta["versionKey"] = this.courseData.versionKey
+                        this.editorStore.currentContentData = meta
+                        console.log(this.content)
                         this.editorStore.currentContentID = this.content.identifier
-                        this.editorStore.setUpdatedMeta(meta, data.identifier)
+                        this.editorStore.setUpdatedMeta(meta, this.content.identifier || data.identifier)
                         /* tslint:disable-next-line */
 
                         console.log(meta)
@@ -1829,9 +1830,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                           }
                         }
 
-                        // this.editorStore.setUpdatedMeta(meta, this.courseData.identifier)
+                        this.editorStore.setUpdatedMeta(meta, this.content.identifier)
                         //this.initService.uploadData('thumbnail')
-                        this.editorService.updateNewContentV3(requestBody, data.identifier).subscribe(
+                        this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
                           (info: any) => {
                             /* tslint:disable-next-line */
 
@@ -2475,7 +2476,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           }
         })
 
-
+        console.log(meta)
         this.contentService.setUpdatedMeta(meta, this.editorService.newCreatedLexid)
 
       }
@@ -3007,7 +3008,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   editAssessment(index: number, event: any) {
     event.stopPropagation()
-    const confirmDelete = this.dialog.open(ConfirmDialogComponent, {
+    //const confirmDelete =
+    this.dialog.open(ConfirmDialogComponent, {
       width: '500px',
       data: {
         type: 'editAssessment',

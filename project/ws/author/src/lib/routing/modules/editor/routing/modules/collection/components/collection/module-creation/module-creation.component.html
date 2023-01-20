@@ -168,10 +168,10 @@
           *ngIf="showAddModuleForm && !isResourceTypeEnabled && !isOnClickOfResourceTypeEnabled">
           <div>
             <span class="course-sub-title" *ngIf="!isSaveModuleFormEnable">Create Course</span>
-            <span class="course-sub-title" *ngIf="content.contentType === 'Course'">Course
+            <span class="course-sub-title" *ngIf="content?.contentType === 'Course'">Course
               Details</span>
-            <span class="course-sub-title" *ngIf="content.contentType === 'CourseUnit'">Module Details</span>
-            <span class="course-sub-title" *ngIf="content.contentType === 'Resource'">Resource Details</span>
+            <span class="course-sub-title" *ngIf="content?.contentType === 'CourseUnit'">Module Details</span>
+            <span class="course-sub-title" *ngIf="content?.contentType === 'Resource'">Resource Details</span>
           </div>
           <div>
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
@@ -268,7 +268,7 @@
                   <input matInput #resourceLinks formControlName="resourceLinks" maxlength="100" i18n-placeholder
                     placeholder="Link" />
                 </mat-form-field>
-                <mat-checkbox class="check-text" formControlName="openinnewtab">Open link in new tab</mat-checkbox>
+                <!-- <mat-checkbox class="check-text" formControlName="openinnewtab">Open link in new tab</mat-checkbox> -->
               </div>
               <div class="margin-bottom-s">
                 <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
