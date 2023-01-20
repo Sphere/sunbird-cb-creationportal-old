@@ -31,7 +31,7 @@ import { CollectionStoreService } from '../../../services/store.service'
 import { ActivatedRoute } from '@angular/router'
 import { NSContent } from '@ws/author/src/lib/interface/content'
 import { CollectionResolverService } from '../../../services/resolver.service'
-import { IContentNode } from '../../../interface/icontent-tree'
+import { IContentNode, IContentTreeNode } from '../../../interface/icontent-tree'
 import { isNumber } from 'lodash'
 /* tslint:disable */
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
@@ -45,6 +45,7 @@ import {
 import { ProfanityService } from '../../../../upload/services/profanity.service'
 import { IQuizQuestionType } from '../../../../quiz/interface/quiz-interface'
 import { QUIZ_QUESTION_TYPE } from '../../../../quiz/constants/quiz-constants'
+import { FlatTreeControl } from '@angular/cdk/tree'
 
 @Component({
   selector: 'ws-author-module-creation',
@@ -59,6 +60,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>
   @Output() data = new EventEmitter<any>()
   contents: NSContent.IContentMeta[] = []
+  @Output() actions = new EventEmitter<{ action: string; type?: string }>()
+  treeControl!: FlatTreeControl<IContentTreeNode>
+  expandedNodes = new Set<number>()
 
   contentList: any[] = [
     {
@@ -100,7 +104,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       type: ''
     }
   ]
-
+  parentHierarchy: number[] = []
   showAddModuleForm: boolean = false
   moduleNames: any = [];
   isSaveModuleFormEnable: boolean = false
@@ -177,7 +181,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     IQuizQuestionType['matchTheFollowing'] |
     IQuizQuestionType['multipleChoiceQuestionSingleCorrectAnswer'] |
     IQuizQuestionType['multipleChoiceQuestionMultipleCorrectAnswer'] = QUIZ_QUESTION_TYPE['multipleChoiceQuestionSingleCorrectAnswer']
-
+  parentNodeId!: number
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -242,6 +246,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.parentNodeId = this.storeService.currentParentNode
+    this.treeControl = new FlatTreeControl<IContentTreeNode>(
+      node => node.level,
+      node => node.expandable,
+    )
     this.isSettingsPage = false
     this.routerValuesCalls()
 
@@ -1875,7 +1884,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       })
     }
   }
-
+  click(actions: string, type?: string) {
+    this.actions.emit({ actions, type })
+  }
   async save() {
     if (this.resourseSelected !== '') {
       this.update()
@@ -2857,7 +2868,80 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.mimeType = ''
   }
   /*PDF/audio/vedio functionality end*/
+  takeActions(action: string, node: IContentTreeNode, type?: string) {
+    console.log("action", action, node, type)
+    switch (action) {
+      case 'editMeta':
+      case 'editContent':
 
+      case 'delete':
+        this.delete(node)
+        break
+
+
+
+      default:
+        break
+    }
+  }
+  delete(node: IContentTreeNode) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '500px',
+      height: '175px',
+      data: 'deleteTreeNode',
+    })
+    this.preserveExpandedNodes()
+    dialogRef.afterClosed().subscribe(confirm => {
+      if (confirm) {
+        this.parentHierarchy = []
+        let currNode: IContentTreeNode | null = node
+        while (currNode) {
+          if (currNode && currNode.parentId) {
+            this.parentHierarchy.push(currNode.parentId)
+          }
+          currNode = this.getParentNode(currNode)
+        }
+        this.storeService.deleteNode(node.id)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.SUCCESS,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      }
+    })
+  }
+  /*
+   Get the parent node of a node
+    */
+  getParentNode(node: IContentTreeNode): IContentTreeNode | null {
+    const currentLevel = node.level
+
+    if (currentLevel < 1) {
+      return null
+    }
+
+    const startIndex = this.treeControl.dataNodes.indexOf(node) - 1
+
+    for (let i = startIndex; i >= 0; i = i - 1) {
+      const currentNode = this.treeControl.dataNodes[i]
+
+      if (currentNode.level < currentLevel) {
+        return currentNode
+      }
+    }
+    return null
+  }
+  preserveExpandedNodes() {
+    this.expandedNodes = new Set<number>()
+    console.log("this.expandedNodes", this.treeControl)
+    this.treeControl.dataNodes.forEach(v => {
+      if (this.treeControl.isExpandable(v) && this.treeControl.isExpanded(v)) {
+        this.expandedNodes.add(v.id)
+      }
+    })
+    // this.store.expendedNode = this.expandedNodes
+  }
   /*Assessment functionality start*/
   addQuestion() {
     alert(this.assessmentOrQuizForm.value.questionType)
