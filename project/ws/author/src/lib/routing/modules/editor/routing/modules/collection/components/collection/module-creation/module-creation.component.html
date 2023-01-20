@@ -48,9 +48,10 @@
                 <mat-icon class="icons-list">content_copy</mat-icon>
               </span>
             </div>
-            <button *ngIf="isSaveModuleFormEnable" mat-raised-button [disabled]="!isOnClickOfResourceTypeEnabled"
+            <button *ngIf="module.primaryCategory === 'Course Unit'" mat-raised-button
               class="secondary-button-outline mat-button-base save-btn-bottom"
-              style="margin:0.4rem;color: #0074b6 !important;" (click)="addResource()"> Add Resource</button>
+              style="margin:0.4rem;color: #0074b6 !important;"
+              (click)="addResModule(module.identifier, courseData.identifier)">Add Resource</button>
           </div>
 
           <!--module & resources left canvas-->
@@ -120,7 +121,8 @@
             <mat-icon [ngClass]="showAddModuleForm ? 'brand-color' : ''" class="margin-right-s material-icons" style="font-size: small;margin-right: 3px !important;
     vertical-align: bottom;cursor: pointer;color: #1C5D95;">remove_red_eye</mat-icon>
             <span style="font-size: small;cursor: pointer;color:#1C5D95"
-              [ngClass]="showAddModuleForm ? 'brand-color' : ''">Preview</span>
+              [ngClass]="showAddModuleForm ? 'brand-color' : ''"
+              [routerLink]="'/author/toc/' + currentContent + '/contents'">Preview</span>
             <!-- [ngClass]="showAddModuleForm ? 'ws-mat-primary-background' : 'secondary-button'" -->
             <!-- <button mat-raised-button (click)="isSettingsPage=true"
               [ngClass]="showAddModuleForm ? 'ws-mat-primary-background' : 'secondary-button'"
@@ -166,7 +168,10 @@
           *ngIf="showAddModuleForm && !isResourceTypeEnabled && !isOnClickOfResourceTypeEnabled">
           <div>
             <span class="course-sub-title" *ngIf="!isSaveModuleFormEnable">Create Course</span>
-            <span class="course-sub-title" *ngIf="isSaveModuleFormEnable">Module Details</span>
+            <span class="course-sub-title" *ngIf="content.contentType === 'Course'">Course
+              Details</span>
+            <span class="course-sub-title" *ngIf="content.contentType === 'CourseUnit'">Module Details</span>
+            <span class="course-sub-title" *ngIf="content.contentType === 'Resource'">Resource Details</span>
           </div>
           <div>
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
@@ -203,11 +208,11 @@
           <div>
             <button mat-raised-button *ngIf="moduleButtonName === 'Create'"
               class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
-              (click)="moduleCreate(module.value, moduleName, topicDescription)">
+              (click)="moduleCreate(module.value, topicDescription, thumbnail)">
               {{moduleButtonName}}</button>
             <button mat-raised-button *ngIf="moduleButtonName === 'Save'"
               class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
-              (click)="moduleCreate(module.value, moduleName, topicDescription)">
+              (click)="saveDetails(module.value, topicDescription, thumbnail)">
               {{moduleButtonName}}</button>
           </div>
         </div>
@@ -392,7 +397,6 @@
                   (click)="resourcePdfSave()">Save</button></div>
             </form>
             <!--PDF form end-->
-            <!--assessment/quiz form start-->
             <form [formGroup]="assessmentOrQuizForm" class="resource-details-form" *ngIf="isAssessmentOrQuizEnabled">
               <div style="display:flex; flex-direction:row">
                 <mat-form-field appearance="outline" class="margin-right-l field-width">
@@ -417,7 +421,7 @@
                     (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" step="1" />
                 </mat-form-field>
               </div>
-              <div style="display:flex; flex-direction:row" class="mb-3">
+              <div style="display:flex; flex-direction:row">
                 <mat-icon class="material-icons brand-color">add_circle</mat-icon>
                 <span>Add An Image for this Assessment (Optional)</span>
               </div>
@@ -465,7 +469,6 @@
 
               </div>
             </form>
-            <!--assessment/quiz form end-->
           </div>
         </div>
         <ng-template #guideline>

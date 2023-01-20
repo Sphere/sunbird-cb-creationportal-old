@@ -34,8 +34,8 @@
                   {{ author.name }}
                   <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                 </mat-chip>
-                <input formControlName="trackContactsCtrl" i18n-placeholder placeholder="Search by mail"
-                  #trackContactsView [formControl]="trackContactsCtrl" [matChipInputFor]="reviewerChipList"
+                <input formControlName="trackContacts" i18n-placeholder placeholder="Search by mail" #trackContactsView
+                  [formControl]="trackContactsCtrl" [matChipInputFor]="reviewerChipList"
                   [matAutocomplete]="reivewerAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                   [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
               </mat-chip-list>
@@ -70,7 +70,7 @@
                   {{ author.name }}
                   <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                 </mat-chip>
-                <input formControlName="publisherDetailsCtrl" i18n-placeholder placeholder="Search by mail"
+                <input formControlName="publisherDetails" i18n-placeholder placeholder="Search by mail"
                   #publisherDetailsView [formControl]="publisherDetailsCtrl" [matChipInputFor]="publisherChipList"
                   [matAutocomplete]="publisherAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                   [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
@@ -261,8 +261,8 @@
   <div class="margin-top-xl margin-right-l">
     <div class="grid"></div>
     <div class="flex flex-end margin-top-l margin-bottom-l margin-right-l">
-      <button [disabled]="checkCondition('publisherDetails', 'disabled')||checkCondition('trackContacts', 'disabled')
-" mat-raised-button type="button" class="settingsButton text-white ws-mat-primary-background text-white"
+      <button [disabled]="!contentForm.valid" mat-raised-button type="button"
+        class="settingsButton text-white ws-mat-primary-background text-white"
         (click)="data.emit('save'); isSubmitPressed = true;">
         <span class="text-white" i18n>
           Finish and send for review

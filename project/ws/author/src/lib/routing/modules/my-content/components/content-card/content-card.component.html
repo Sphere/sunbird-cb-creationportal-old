@@ -48,15 +48,15 @@
 
 <div class="d-flex" *ngIf="changeView">
   <div class="item1">
-    <!-- <a [ngClass]="{
+    <a [ngClass]="{
       pointer: data.contentType !== 'Knowledge Board',
       cursor: data.contentType === 'Knowledge Board'
     }" [routerLink]="
       data.contentType !== 'Knowledge Board' ? ['/author/editor/' + data.identifier + '/collection'] : []
     " [queryParamsHandling]="data.contentType === 'Knowledge Board' ? 'preserve' : ''">
-    </a> -->
-    <img class="" role="link" [src]="data.appIcon" (error)="changeToDefaultImg($event)" [alt]="data.name" />
-    <!--<img class="" role="link" [src]="data.appIcon" (error)="changeToDefaultImg($event)" [alt]="data.name" /> -->
+      <img class="" role="link" [src]="data.appIcon" (error)="changeToDefaultImg($event)" [alt]="data.name" />
+      <!--<img class="" role="link" [src]="data.appIcon" (error)="changeToDefaultImg($event)" [alt]="data.name" /> -->
+    </a>
   </div>
   <!--<div class="item1" *ngIf="pageName">
     <a [ngClass]="{
@@ -68,13 +68,13 @@
   </div> -->
   <div class="item2">
     <div *ngIf="!pageName">
-      <!-- <a [ngClass]="{
+      <a [ngClass]="{
         pointer: data.contentType !== 'Knowledge Board',
         cursor: data.contentType === 'Knowledge Board'
       }" [routerLink]="(data | pipeContentRoute: true).url" [title]="data.name" aria-label="Content"
         i18n-aria-label="Content | Click to view">
-      </a> -->
-      <span class="font-weight-500">{{ data.name || 'Untitled Content' }} </span>
+        <span class="font-weight-500">{{ data.name || 'Untitled Content' }} </span>
+      </a>
     </div>
     <div *ngIf="pageName">
       <a [ngClass]="{
