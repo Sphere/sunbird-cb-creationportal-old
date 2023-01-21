@@ -185,9 +185,15 @@
               <textarea matInput i18n-placeholder placeholder="Description" [(ngModel)]="topicDescription"></textarea>
             </mat-form-field>
           </div>
-          <div style="display:flex; flex-direction:row">
-            <mat-checkbox [checked]="isNewTab" style="margin-left: 0px;" class="check-text">Open link
+          <div>
+            <mat-checkbox [(ngModel)]="isNewTab" [checked]="isNewTab" style="margin-left: 0px;" class="check-text">Open
+              link
               in new tab</mat-checkbox>
+          </div>
+          <div>
+            <mat-checkbox [(ngModel)]="isGating" [checked]="isGating" style="margin-left: 0px;"
+              class="check-text">Gating
+              Enabled</mat-checkbox>
           </div>
           <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
             <span style="color:#808080">Module Thumbnail</span>
@@ -288,6 +294,7 @@
                   <input matInput #resourceLinks formControlName="resourceLinks" maxlength="100" i18n-placeholder
                     placeholder="Link" />
                 </mat-form-field>
+                <mat-checkbox class="check-text" formControlName="isgatingEnabled">Gating Enabled</mat-checkbox>
                 <mat-checkbox class="check-text" formControlName="isIframeSupported">Open link in new tab</mat-checkbox>
               </div>
               <div class="margin-bottom-s">
@@ -376,7 +383,10 @@
                   Files allowed : {{uploadText}}<br> Max.file size : 200MB
                 </div>
               </div>
+              <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isgatingEnabled">Gating
+                Enabled</mat-checkbox>
               <div style="display:flex; flex-direction:row" *ngIf="acceptType == '.zip'">
+
                 <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isIframeSupported">Open link
                   in new tab</mat-checkbox>
               </div>
@@ -467,6 +477,12 @@
                 <mat-icon class="material-icons brand-color">add_circle</mat-icon>
                 <span>Add An Image for this Assessment (Optional)</span>
               </div>
+              <div>
+                <mat-checkbox style="margin-left: 2px;" class="check-text margin-top-m margin-bottom-m"
+                  formControlName="isgatingEnabled">Gating
+                  Enabled</mat-checkbox>
+              </div>
+
               <span class="mb-3 sub-title">Questions</span>
               <div>
                 <mat-form-field class="w-5/12" appearance="outline" i18n-aria-label aria-label="Select question type">

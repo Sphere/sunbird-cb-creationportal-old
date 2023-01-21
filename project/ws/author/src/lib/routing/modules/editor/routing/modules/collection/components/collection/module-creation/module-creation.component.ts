@@ -124,6 +124,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   openinnewtab: boolean = false
   moduleName: string = '';
   isNewTab: any = '';
+  isGating: any = '';
   topicDescription: string = ''
   thumbnail: any
   resourceNames: any = [];
@@ -243,6 +244,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
+      isgatingEnabled: new FormControl(true),
       duration: new FormControl('')
     })
 
@@ -264,6 +266,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
+      isgatingEnabled: new FormControl(true),
       duration: new FormControl('')
     })
 
@@ -274,7 +277,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.assessmentOrQuizForm = new FormGroup({
       resourceName: new FormControl(''),
       duration: new FormControl(''),
-      questionType: new FormControl('')
+      questionType: new FormControl(''),
+      isgatingEnabled: new FormControl(true),
     })
   }
 
@@ -1624,6 +1628,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         name: this.resourceLinkForm.value.resourceName,
         artifactUrl: this.resourceLinkForm.value.resourceLinks,
         isIframeSupported: iframeSupported,
+        gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
         duration: this.resourceLinkForm.value.duration,
         versionKey: this.versionKey.versionKey,
       }
@@ -1733,6 +1738,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.thumbnail = content.thumbnail
     this.setDuration(content.duration)
     this.isNewTab = content.isIframeSupported == 'Yes' ? true : false
+    this.isGating = content.gatingEnabled
+    this.duration = content.duration
   }
 
   uploadAppIcon(file: File) {
@@ -1878,11 +1885,23 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
     //   console.log(resData)
     // })
+
+    let iframeSupported
+    if (this.isNewTab)
+      iframeSupported = 'Yes'
+    else
+      iframeSupported = 'No'
+
     meta["appIcon"] = thumbnail
     meta["thumbnail"] = thumbnail
     meta["versionKey"] = this.courseData.versionKey
     meta["instructions"] = topicDescription
     meta["name"] = name
+    meta["duration"] = this.timeToSeconds().toString()
+    meta["instructions"] = topicDescription
+    meta["gatingEnabled"] = this.isGating
+    meta["isIframeSupported"] = iframeSupported
+
     this.editorStore.currentContentData = meta
     console.log(this.content)
     this.editorStore.currentContentID = this.content.identifier
@@ -2751,6 +2770,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       iframeSupported = 'Yes'
     else
       iframeSupported = 'No'
+
     console.log("this.resourcePdfForm", this.resourcePdfForm)
     this.triggerUpload()
     this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
@@ -2760,6 +2780,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       appIcon: this.resourcePdfForm.value.appIcon,
       thumbnail: this.resourcePdfForm.value.thumbnail,
       isIframeSupported: iframeSupported,
+      gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
       duration: this.resourcePdfForm.value.duration,
       versionKey: this.versionKey.versionKey,
     }
