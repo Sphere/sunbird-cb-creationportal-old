@@ -31,7 +31,7 @@ import { CollectionStoreService } from '../../../services/store.service'
 import { ActivatedRoute } from '@angular/router'
 import { NSContent } from '@ws/author/src/lib/interface/content'
 import { CollectionResolverService } from '../../../services/resolver.service'
-import { IContentNode } from '../../../interface/icontent-tree'
+import { IContentNode, IContentTreeNode } from '../../../interface/icontent-tree'
 import { isNumber } from 'lodash'
 /* tslint:disable */
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
@@ -45,6 +45,7 @@ import {
 import { ProfanityService } from '../../../../upload/services/profanity.service'
 import { IQuizQuestionType } from '../../../../quiz/interface/quiz-interface'
 import { QUIZ_QUESTION_TYPE } from '../../../../quiz/constants/quiz-constants'
+import { FlatTreeControl } from '@angular/cdk/tree'
 import { QuizStoreService } from '../../../../quiz/services/store.service'
 import { QuizResolverService } from '../../../../quiz/services/resolver.service'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
@@ -63,6 +64,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>
   @Output() data = new EventEmitter<any>()
   contents: NSContent.IContentMeta[] = []
+  @Output() actions = new EventEmitter<{ action: string; type?: string }>()
+  treeControl!: FlatTreeControl<IContentTreeNode>
+  expandedNodes = new Set<number>()
 
   contentList: any[] = [
     {
@@ -104,7 +108,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       type: ''
     }
   ]
-
+  parentHierarchy: number[] = []
   showAddModuleForm: boolean = false
   moduleNames: any = [];
   isSaveModuleFormEnable: boolean = false
@@ -119,6 +123,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   isLinkEnabled: boolean = false;
   openinnewtab: boolean = false
   moduleName: string = '';
+  isNewTab: any = '';
+  isGating: any = '';
   topicDescription: string = ''
   thumbnail: any
   resourceNames: any = [];
@@ -183,6 +189,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     IQuizQuestionType['matchTheFollowing'] |
     IQuizQuestionType['multipleChoiceQuestionSingleCorrectAnswer'] |
     IQuizQuestionType['multipleChoiceQuestionMultipleCorrectAnswer'] = QUIZ_QUESTION_TYPE['multipleChoiceQuestionSingleCorrectAnswer']
+  parentNodeId!: number
   assessmentData: any
   assessmentDuration!: any
   passPercentage: any
@@ -236,7 +243,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       resourceLinks: new FormControl(''),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
-      isIframeSupported: new FormControl(false),
+      isIframeSupported: new FormControl(''),
+      isgatingEnabled: new FormControl(true),
       duration: new FormControl('')
     })
 
@@ -257,6 +265,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       resourceName: new FormControl(''),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
+      isIframeSupported: new FormControl(''),
+      isgatingEnabled: new FormControl(true),
       duration: new FormControl('')
     })
 
@@ -267,11 +277,17 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.assessmentOrQuizForm = new FormGroup({
       resourceName: new FormControl(''),
       duration: new FormControl(''),
-      questionType: new FormControl('')
+      questionType: new FormControl(''),
+      isgatingEnabled: new FormControl(true),
     })
   }
 
   ngOnInit() {
+    this.parentNodeId = this.storeService.currentParentNode
+    this.treeControl = new FlatTreeControl<IContentTreeNode>(
+      node => node.level,
+      node => node.expandable,
+    )
     this.isSettingsPage = false
     this.routerValuesCalls()
 
@@ -1590,7 +1606,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     total += this.hours ? this.hours * 60 * 60 : 0
     return total
   }
-
+  private setDuration(seconds: any) {
+    const minutes = seconds > 59 ? Math.floor(seconds / 60) : 0
+    const second = seconds % 60
+    this.hours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
+    this.minutes = minutes ? minutes % 60 : 0
+    this.seconds = second || 0
+  }
   async resourceLinkSave() {
     this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
 
@@ -1606,6 +1628,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         name: this.resourceLinkForm.value.resourceName,
         artifactUrl: this.resourceLinkForm.value.resourceLinks,
         isIframeSupported: iframeSupported,
+        gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
         duration: this.resourceLinkForm.value.duration,
         versionKey: this.versionKey.versionKey,
       }
@@ -1711,8 +1734,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.moduleButtonName = 'Save'
     this.content = content
     this.moduleName = content.name
-    this.topicDescription = content.description
+    this.topicDescription = content.instructions
     this.thumbnail = content.thumbnail
+    this.setDuration(content.duration)
+    this.isNewTab = content.isIframeSupported == 'Yes' ? true : false
+    this.isGating = content.gatingEnabled
+    this.duration = content.duration
   }
 
   uploadAppIcon(file: File) {
@@ -1832,22 +1859,70 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
                         this.editorStore.setUpdatedMeta(meta, this.content.identifier)
                         //this.initService.uploadData('thumbnail')
-                        this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
-                          (info: any) => {
-                            /* tslint:disable-next-line */
-
-                            console.log('info', info)
-                            if (info) {
-                              this.update()
-                            }
-                          })
-
+                        if (this.content.contentType === 'Resource') {
+                          this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
+                            (info: any) => {
+                              /* tslint:disable-next-line */
+                              console.log('info', info)
+                              if (info) {
+                                this.update()
+                              }
+                            })
+                        } else {
+                          this.update()
+                        }
                       }
                     })
               })
         }
       }
     })
+  }
+
+  saveDetails(name: string, topicDescription: string, thumbnail: string) {
+    let meta: any = {}
+    let requestBody: any
+    // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
+    //   console.log(resData)
+    // })
+
+    let iframeSupported
+    if (this.isNewTab)
+      iframeSupported = 'Yes'
+    else
+      iframeSupported = 'No'
+
+    meta["appIcon"] = thumbnail
+    meta["thumbnail"] = thumbnail
+    meta["versionKey"] = this.courseData.versionKey
+    meta["instructions"] = topicDescription
+    meta["name"] = name
+    meta["duration"] = this.timeToSeconds().toString()
+    meta["instructions"] = topicDescription
+    meta["gatingEnabled"] = this.isGating
+    meta["isIframeSupported"] = iframeSupported
+
+    this.editorStore.currentContentData = meta
+    console.log(this.content)
+    this.editorStore.currentContentID = this.content.identifier
+    requestBody = {
+      request: {
+        content: meta
+      }
+    }
+
+    if (this.content.contentType === 'Resource') {
+      this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
+        (info: any) => {
+          /* tslint:disable-next-line */
+          console.log('info', info)
+          if (info) {
+            this.update()
+          }
+        })
+    } else {
+      this.update()
+    }
   }
 
   generateUrl(oldUrl: any) {
@@ -1916,7 +1991,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       })
     }
   }
-
+  click(action: any, type?: string) {
+    this.actions.emit({ action, type })
+  }
   async save() {
     if (this.resourseSelected !== '') {
       this.update()
@@ -1996,6 +2073,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
     await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
       this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+        this.courseData = data
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.SUCCESS
+          },
+          duration: NOTIFICATION_TIME * 500,
+
+        })
         this.editorStore.resetOriginalMetaWithHierarchy(data)
         // tslint:disable-next-line: align
       })
@@ -2679,18 +2764,23 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   async resourcePdfSave() {
+    this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
     let iframeSupported
-    if (this.resourceLinkForm.value.openinnewtab)
+    if (this.resourcePdfForm.value.isIframeSupported)
       iframeSupported = 'Yes'
     else
       iframeSupported = 'No'
+
+    console.log("this.resourcePdfForm", this.resourcePdfForm)
     this.triggerUpload()
     this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
+    this.duration = this.resourcePdfForm.value.duration
     const rBody: any = {
       name: this.resourcePdfForm.value.resourceName,
       appIcon: this.resourcePdfForm.value.appIcon,
       thumbnail: this.resourcePdfForm.value.thumbnail,
       isIframeSupported: iframeSupported,
+      gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
       duration: this.resourcePdfForm.value.duration,
       versionKey: this.versionKey.versionKey,
     }
@@ -2792,6 +2882,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             this.fileUploadForm.controls['streamingUrl'].setValue(v ?
               this.generateStreamUrl((this.fileUploadCondition.url) ? this.fileUploadCondition.url : '') : '')
             this.fileUploadForm.controls['entryPoint'].setValue(this.entryPoint ? this.entryPoint : '')
+            this.fileUploadForm.controls.duration.setValue(this.duration)
           }
 
           if (this.mimeType === 'video/mp4') {
@@ -2898,7 +2989,80 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.mimeType = ''
   }
   /*PDF/audio/vedio functionality end*/
+  takeActions(action: string, node: IContentTreeNode, type?: string) {
+    console.log("action", action, node, type)
+    switch (action) {
+      case 'editMeta':
+      case 'editContent':
 
+      case 'delete':
+        this.delete(node)
+        break
+
+
+
+      default:
+        break
+    }
+  }
+  delete(node: IContentTreeNode) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '500px',
+      height: '175px',
+      data: 'deleteTreeNode',
+    })
+    this.preserveExpandedNodes()
+    dialogRef.afterClosed().subscribe(confirm => {
+      if (confirm) {
+        this.parentHierarchy = []
+        let currNode: IContentTreeNode | null = node
+        while (currNode) {
+          if (currNode && currNode.parentId) {
+            this.parentHierarchy.push(currNode.parentId)
+          }
+          currNode = this.getParentNode(currNode)
+        }
+        this.storeService.deleteNode(node.id)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.SUCCESS,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      }
+    })
+  }
+  /*
+   Get the parent node of a node
+    */
+  getParentNode(node: IContentTreeNode): IContentTreeNode | null {
+    const currentLevel = node.level
+
+    if (currentLevel < 1) {
+      return null
+    }
+
+    const startIndex = this.treeControl.dataNodes.indexOf(node) - 1
+
+    for (let i = startIndex; i >= 0; i = i - 1) {
+      const currentNode = this.treeControl.dataNodes[i]
+
+      if (currentNode.level < currentLevel) {
+        return currentNode
+      }
+    }
+    return null
+  }
+  preserveExpandedNodes() {
+    this.expandedNodes = new Set<number>()
+    console.log("this.expandedNodes", this.treeControl)
+    this.treeControl.dataNodes.forEach(v => {
+      if (this.treeControl.isExpandable(v) && this.treeControl.isExpanded(v)) {
+        this.expandedNodes.add(v.id)
+      }
+    })
+    // this.store.expendedNode = this.expandedNodes
+  }
   /*Assessment functionality start*/
   getassessment() {
 
