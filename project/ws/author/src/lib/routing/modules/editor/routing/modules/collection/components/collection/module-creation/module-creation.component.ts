@@ -46,12 +46,16 @@ import { ProfanityService } from '../../../../upload/services/profanity.service'
 import { IQuizQuestionType } from '../../../../quiz/interface/quiz-interface'
 import { QUIZ_QUESTION_TYPE } from '../../../../quiz/constants/quiz-constants'
 import { FlatTreeControl } from '@angular/cdk/tree'
+import { QuizStoreService } from '../../../../quiz/services/store.service'
+import { QuizResolverService } from '../../../../quiz/services/resolver.service'
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
+import { map } from 'rxjs/operators'
 
 @Component({
   selector: 'ws-author-module-creation',
   templateUrl: './module-creation.component.html',
   styleUrls: ['./module-creation.component.scss'],
-  providers: [CollectionStoreService, CollectionResolverService],
+  providers: [CollectionStoreService, CollectionResolverService, QuizResolverService],
 
 })
 export class ModuleCreationComponent implements OnInit, AfterViewInit {
@@ -119,6 +123,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   isLinkEnabled: boolean = false;
   openinnewtab: boolean = false
   moduleName: string = '';
+  isNewTab: any = '';
   topicDescription: string = ''
   thumbnail: any
   resourceNames: any = [];
@@ -146,8 +151,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   versionID: any
   isSubmitPressed = false
   isMoveCourseToDraft: boolean = false;
+  gatingEnabled!: FormControl
   hours = 0
   minutes = 1
+  seconds = 0
   resourceType: string = ''
   resourseSelected: string = ''
   viewMode!: string
@@ -182,6 +189,27 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     IQuizQuestionType['multipleChoiceQuestionSingleCorrectAnswer'] |
     IQuizQuestionType['multipleChoiceQuestionMultipleCorrectAnswer'] = QUIZ_QUESTION_TYPE['multipleChoiceQuestionSingleCorrectAnswer']
   parentNodeId!: number
+  assessmentData: any
+  assessmentDuration!: any
+  passPercentage: any
+  allContents: NSContent.IContentMeta[] = []
+  activeContentSubscription?: Subscription
+  allLanguages: any
+  quizConfig: any
+  mediumSizeBreakpoint$ = this.breakpointObserver
+    .observe([Breakpoints.XSmall, Breakpoints.Small])
+    .pipe(map((res: BreakpointState) => res.matches))
+  sideNavBarOpened!: boolean
+  mediumScreenSize!: boolean
+  showContent!: boolean
+  canEditJson!: boolean
+  questionsArr: any[] = [];
+  contentLoaded!: boolean
+  currentId!: string
+  quizDuration: any
+  activeIndexSubscription?: Subscription
+  selectedQuizIndex!: number
+
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -204,13 +232,17 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     private loaderService: LoaderService,
     private valueSvc: ValueService,
     private formBuilder: FormBuilder,
+    private quizStoreSvc: QuizStoreService,
+    private quizResolverSvc: QuizResolverService,
+    private breakpointObserver: BreakpointObserver,
+
   ) {
     this.resourceLinkForm = new FormGroup({
       resourceName: new FormControl(''),
       resourceLinks: new FormControl(''),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
-      openinnewtab: new FormControl(false),
+      isIframeSupported: new FormControl(''),
       duration: new FormControl('')
     })
 
@@ -231,6 +263,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       resourceName: new FormControl(''),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
+      isIframeSupported: new FormControl(''),
       duration: new FormControl('')
     })
 
@@ -255,8 +288,19 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.routerValuesCalls()
 
   }
+
+  ngOnDestroy() {
+    if (this.activeIndexSubscription) {
+      this.activeIndexSubscription.unsubscribe()
+    }
+    if (this.activeContentSubscription) {
+      this.activeContentSubscription.unsubscribe()
+    }
+  }
+
   routerValuesCalls() {
     this.contentService.changeActiveCont.subscribe(data => {
+      console.log(data)
       this.currentContent = data
       this.currentCourseId = data
       if (this.contentService.getUpdatedMeta(data).contentType !== 'Resource') {
@@ -1517,12 +1561,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   ngAfterViewInit() {
-    /* tslint:disable-next-line */
-
-    console.log('dd')
     this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
       /* tslint:disable-next-line */
-
       console.log(data)
       this.courseData = data
       //this.moduleButtonName = 'Save'
@@ -1533,7 +1573,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.thumbnail = data.thumbnail
       //this.isResourceTypeEnabled = true
       /* tslint:disable-next-line */
-
       console.log(this.isSaveModuleFormEnable)
       //this.editorStore.resetOriginalMetaWithHierarchy(data)
     })
@@ -1563,12 +1602,18 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     total += this.hours ? this.hours * 60 * 60 : 0
     return total
   }
-
+  private setDuration(seconds: any) {
+    const minutes = seconds > 59 ? Math.floor(seconds / 60) : 0
+    const second = seconds % 60
+    this.hours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
+    this.minutes = minutes ? minutes % 60 : 0
+    this.seconds = second || 0
+  }
   async resourceLinkSave() {
     this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
 
     let iframeSupported
-    if (this.resourceLinkForm.value.openinnewtab)
+    if (this.resourceLinkForm.value.isIframeSupported)
       iframeSupported = 'Yes'
     else
       iframeSupported = 'No'
@@ -1636,6 +1681,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = true
       this.isPdfOrAudioOrVedioEnabled = false
+      this.setContentType(type)
+      this.getassessment()
     }
     //this.addResource()
     this.isLinkPageEnabled = true
@@ -1677,12 +1724,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   editContent(content: any) {
     /* tslint:disable-next-line */
+    console.log(content)
     this.showAddModuleForm = true
     this.moduleButtonName = 'Save'
     this.content = content
     this.moduleName = content.name
     this.topicDescription = content.description
     this.thumbnail = content.thumbnail
+    this.setDuration(content.duration)
+    this.isNewTab = content.isIframeSupported == 'Yes' ? true : false
   }
 
   uploadAppIcon(file: File) {
@@ -1787,8 +1837,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                         meta["thumbnail"] = data.content_url
                         this.thumbnail = data.content_url
                         meta["versionKey"] = this.courseData.versionKey
+                        this.editorStore.currentContentData = meta
+                        console.log(this.content)
                         this.editorStore.currentContentID = this.content.identifier
-                        this.editorStore.setUpdatedMeta(meta, data.identifier)
+                        this.editorStore.setUpdatedMeta(meta, this.content.identifier || data.identifier)
                         /* tslint:disable-next-line */
 
                         console.log(meta)
@@ -1798,9 +1850,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                           }
                         }
 
-                        // this.editorStore.setUpdatedMeta(meta, this.courseData.identifier)
+                        this.editorStore.setUpdatedMeta(meta, this.content.identifier)
                         //this.initService.uploadData('thumbnail')
-                        this.editorService.updateNewContentV3(requestBody, data.identifier).subscribe(
+                        this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
                           (info: any) => {
                             /* tslint:disable-next-line */
 
@@ -2446,7 +2498,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           }
         })
 
-
+        console.log(meta)
         this.contentService.setUpdatedMeta(meta, this.editorService.newCreatedLexid)
 
       }
@@ -2649,13 +2701,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   async resourcePdfSave() {
+    this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
     let iframeSupported
-    if (this.resourceLinkForm.value.openinnewtab)
+    if (this.resourcePdfForm.value.isIframeSupported)
       iframeSupported = 'Yes'
     else
       iframeSupported = 'No'
+    console.log("this.resourcePdfForm", this.resourcePdfForm)
     this.triggerUpload()
     this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
+    this.duration = this.resourcePdfForm.value.duration
     const rBody: any = {
       name: this.resourcePdfForm.value.resourceName,
       appIcon: this.resourcePdfForm.value.appIcon,
@@ -2762,6 +2817,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             this.fileUploadForm.controls['streamingUrl'].setValue(v ?
               this.generateStreamUrl((this.fileUploadCondition.url) ? this.fileUploadCondition.url : '') : '')
             this.fileUploadForm.controls['entryPoint'].setValue(this.entryPoint ? this.entryPoint : '')
+            this.fileUploadForm.controls.duration.setValue(this.duration)
           }
 
           if (this.mimeType === 'video/mp4') {
@@ -2943,8 +2999,123 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     // this.store.expendedNode = this.expandedNodes
   }
   /*Assessment functionality start*/
+  getassessment() {
+
+    this.activeContentSubscription = this.contentService.changeActiveCont.subscribe(id => {
+      this.allLanguages = this.initService.ordinals.subTitles
+      this.loaderService.changeLoadState(true)
+      this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
+      this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
+        this.sideNavBarOpened = !isLtMedium
+        this.mediumScreenSize = isLtMedium
+        if (isLtMedium) {
+          this.showContent = false
+        } else {
+          this.showContent = true
+        }
+      })
+
+      if (this.activateRoute.parent && this.activateRoute.parent.parent) {
+        this.activateRoute.parent.parent.data.subscribe(v => {
+          this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(newData => {
+            const quizContent = this.contentService.getOriginalMeta(this.contentService.currentContent)
+            if (quizContent.mimeType === 'application/json') {
+              const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
+                this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({} as any))
+              fileData.subscribe(jsonResponse => {
+                if (jsonResponse && Object.keys(jsonResponse).length > 1) {
+                  if (v.contents && v.contents.length) {
+                    if (jsonResponse) {
+                      v.contents[0].data = jsonResponse
+                      this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
+                      this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
+                      this.assessmentDuration = (jsonResponse.assessmentDuration) / 60
+                      this.passPercentage = jsonResponse.passPercentage
+                    }
+                    this.allContents.push(v.contents[0].content)
+                    if (v.contents[0].data) {
+                      this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data.questions
+                    } else if (newData[0] && newData[0].data && newData[0].data.questions) {
+                      this.quizStoreSvc.collectiveQuiz[id] = newData[0].data.questions
+                    } else {
+                      this.quizResolverSvc.getUpdatedData(id).subscribe(updatedData => {
+                        if (updatedData && updatedData[0]) {
+                          this.quizStoreSvc.collectiveQuiz[id] = updatedData[0].data.questions
+                          // need to arrange
+                          this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+                          this.resourceType = quizContent.categoryType || 'Assessment'
+                          this.questionsArr =
+                            this.quizStoreSvc.collectiveQuiz[id] || []
+                          this.contentLoaded = true
+                          this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
+                          this.currentId = id
+                          this.quizStoreSvc.currentId = id
+                          this.quizStoreSvc.changeQuiz(0)
+                        }
+                      })
+                      this.quizStoreSvc.collectiveQuiz[id] = []
+                    }
+                    this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+                    this.resourceType = quizContent.categoryType || 'Assessment'
+                    this.quizDuration = quizContent.duration || '300'
+                    this.questionsArr =
+                      this.quizStoreSvc.collectiveQuiz[id] || []
+                    this.contentLoaded = true
+                  }
+                  if (!this.quizStoreSvc.collectiveQuiz[id]) {
+                    this.quizStoreSvc.collectiveQuiz[id] = []
+                  }
+                } else {
+                  this.assessmentDuration = ''
+                  this.passPercentage = ''
+                  this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+                  this.resourceType = quizContent.categoryType || 'Assessment'
+                  this.quizDuration = quizContent.duration || '300'
+                  this.questionsArr =
+                    this.quizStoreSvc.collectiveQuiz[id] || []
+                  console.log("quiz 3")
+                  this.contentLoaded = true
+                  if (!this.quizStoreSvc.collectiveQuiz[id]) {
+                    this.quizStoreSvc.collectiveQuiz[id] = []
+                  }
+                }
+              })
+            }
+          })
+        })
+        // selected quiz index
+        this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
+          this.selectedQuizIndex = index
+        })
+        // active lex id
+        if (!this.quizStoreSvc.collectiveQuiz[id]) {
+          this.quizStoreSvc.collectiveQuiz[id] = []
+        }
+        this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
+        console.log("quiz 4")
+        this.currentId = id
+        this.quizStoreSvc.currentId = id
+        this.quizStoreSvc.changeQuiz(0)
+      }
+    })
+  }
+
   addQuestion() {
-    alert(this.assessmentOrQuizForm.value.questionType)
+    this.quizStoreSvc.addQuestion(this.questionType)
+    this.assessmentData = this.quizStoreSvc.collectiveQuiz[this.currentContent]
+  }
+
+  editAssessment(index: number, event: any) {
+    event.stopPropagation()
+    //const confirmDelete =
+    this.dialog.open(ConfirmDialogComponent, {
+      width: '500px',
+      data: {
+        type: 'editAssessment',
+        index: index + 1,
+      },
+    })
+    // console.log(confirmDelete)
   }
   /*Assessment functionality end*/
 }

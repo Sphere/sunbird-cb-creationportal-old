@@ -167,14 +167,14 @@
         </div>
 
         <!--module right canvas right create page-->
-        <div class="model-right-content"
+        <div class="model-right-content scroll-bar"
           *ngIf="showAddModuleForm && !isResourceTypeEnabled && !isOnClickOfResourceTypeEnabled">
           <div>
             <span class="course-sub-title" *ngIf="!isSaveModuleFormEnable">Create Course</span>
-            <span class="course-sub-title" *ngIf="content.contentType === 'Course'">Course
+            <span class="course-sub-title" *ngIf="content?.contentType === 'Course'">Course
               Details</span>
-            <span class="course-sub-title" *ngIf="content.contentType === 'CourseUnit'">Module Details</span>
-            <span class="course-sub-title" *ngIf="content.contentType === 'Resource'">Resource Details</span>
+            <span class="course-sub-title" *ngIf="content?.contentType === 'CourseUnit'">Module Details</span>
+            <span class="course-sub-title" *ngIf="content?.contentType === 'Resource'">Resource Details</span>
           </div>
           <div>
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
@@ -185,6 +185,10 @@
               <textarea matInput i18n-placeholder placeholder="Short Description"
                 [(ngModel)]="topicDescription"></textarea>
             </mat-form-field>
+          </div>
+          <div style="display:flex; flex-direction:row">
+            <mat-checkbox [checked]="isNewTab" style="margin-left: 0px;" class="check-text">Open link
+              in new tab</mat-checkbox>
           </div>
           <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
             <span style="color:#808080">Module Thumbnail</span>
@@ -208,6 +212,19 @@
           <div *ngIf="isSaveModuleFormEnable">
             <span style="color:#808080">Note: Learners will see this image for this
               module</span>
+          </div>
+          <div style="display:flex; flex-direction:row">
+            <span class="duration-text">Duration:</span>
+            <mat-form-field appearance="outline" class="width-55" style="margin-right:13px;">
+              <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
+                placeholder="hh" type="number" min="0" step="1" />
+            </mat-form-field>
+            <div class="margin-top-s padding-small">:</div>
+
+            <mat-form-field appearance="outline" class="width-55">
+              <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
+                placeholder="mm" type="number" min="0" max="59" step="1" />
+            </mat-form-field>
           </div>
           <div>
             <button mat-raised-button *ngIf="moduleButtonName === 'Create'"
@@ -272,7 +289,7 @@
                   <input matInput #resourceLinks formControlName="resourceLinks" maxlength="100" i18n-placeholder
                     placeholder="Link" />
                 </mat-form-field>
-                <mat-checkbox class="check-text" formControlName="openinnewtab">Open link in new tab</mat-checkbox>
+                <mat-checkbox class="check-text" formControlName="isIframeSupported">Open link in new tab</mat-checkbox>
               </div>
               <div class="margin-bottom-s">
                 <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
@@ -356,10 +373,15 @@
                     <span style="color: #808080 !important;">Note : The PDF should have high resolution</span>
                   </div>
                 </div>
-                <div style="padding-top: 6rem;">
+                <div>
                   Files allowed : {{uploadText}}<br> Max.file size : 200MB
                 </div>
               </div>
+              <div style="display:flex; flex-direction:row" *ngIf="acceptType == '.zip'">
+                <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isIframeSupported">Open link
+                  in new tab</mat-checkbox>
+              </div>
+
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource Thumbnail</span>
               </div>
@@ -446,13 +468,49 @@
                 <mat-icon class="material-icons brand-color">add_circle</mat-icon>
                 <span>Add An Image for this Assessment (Optional)</span>
               </div>
-              <span>Questions</span>
-              <!-- <mat-form-field appearance="outline" class="margin-top-s field-edit-width">
-                <mat-select formControlName="sourceName" i18n-placeholder placeholder="Match the following">
-                  <mat-option *ngFor="let type of questionTypes">
-                    {{ type }}</mat-option>
-                </mat-select>
-              </mat-form-field> -->
+              <span class="mb-3 sub-title">Questions</span>
+              <div>
+                <mat-form-field class="w-5/12" appearance="outline" i18n-aria-label aria-label="Select question type">
+                  <mat-select formControlName="questionType" placeholder="Question Type">
+                    <mat-option value="mcq-mca" i18n="MCQ| acronym for multiple choice question">MCQ</mat-option>
+                    <mat-option value="fitb" i18n>Fill in the Blanks</mat-option>
+                    <mat-option value="mtf" i18n>Match the Following</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <button *ngIf="isSaveModuleFormEnable" mat-raised-button
+                  class="secondary-button-outline mat-button-base save-btn-bottom"
+                  style="margin:0.4rem;color: #0074b6 !important;" (click)="addQuestion()"> Add Question</button>
+              </div>
+              <div>
+                <div class="questionlist m-1 new-display" cdkDropList (cdkDropListDropped)="drop($event)"></div>
+                <div class="px-3 custom-placeholder border border-solid" *cdkDragPlaceholder></div>
+                <div>
+                  <mat-card id="{{ 'quiz-' + i }}" class="custom w-full mt-2" cdkDrag cdkDragBoundary=" .questionlist"
+                    *ngFor="let quesObj of assessmentData; let i = index" (click)="selectEntity(i)">
+                    <div class="w-full flex items-center justify-between">
+                      <span class="px-2">
+                        <span i18n>Quiz</span>-{{ i + 1 }} :
+                        <span i18n="MCQ| acronym for multiple choice question"
+                          *ngIf="quesObj.questionType === 'mcq-mca' || quesObj.questionType === 'mcq-sca'">MCQ</span>
+                        <span i18n="FITB| acronym for fill in the blanks"
+                          *ngIf="quesObj.questionType === 'fitb'">FITB</span>
+                        <span i18n="MTF| acronym for match the Following"
+                          *ngIf="quesObj.questionType === 'mtf'">MTF</span>
+                      </span>
+                      <button class="float-right" (click)="editAssessment(i, $event)" mat-button i18n-matTooltip
+                        matTooltip="Delete this quiz" aria-label="edit this quiz" i18n-aria-label>
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                      <button class="float-right" (click)="removeEntity(i, $event)" mat-button i18n-matTooltip
+                        matTooltip="Delete this quiz" aria-label="delete this quiz" i18n-aria-label>
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </mat-card>
+                </div>
+
+
+              </div>
             </form>
           </div>
         </div>
