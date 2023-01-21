@@ -45,7 +45,15 @@
         <span i18n> Are you sure you want to delete the audio file attached for this page ?</span>
       </ng-container>
       <ng-container *ngIf="data.type === 'editAssessment'">
-        <span i18n> mcq questions here </span>
+        <form [formGroup]="quizForm">
+          <span i18n> MCQ: Question </span><br>
+          <mat-form-field appearance="outline">
+            <input matInput formControlName="question" maxlength="100" i18n-placeholder
+              placeholder="Question Statement" />
+          </mat-form-field><br>
+          <span i18n> Options </span><br>
+          <span>Note : Check the box for the correct answer only</span>
+        </form>
       </ng-container>
     </h3>
   </div>

@@ -1,5 +1,14 @@
-import { Component, OnInit, Inject } from '@angular/core'
-import { MAT_DIALOG_DATA } from '@angular/material'
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout'
+import { Component, OnInit, Inject, EventEmitter, Output } from '@angular/core'
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms'
+import { MatSnackBar, MAT_DIALOG_DATA } from '@angular/material'
+import { Observable, Subscription } from 'rxjs'
+import { debounceTime, map } from 'rxjs/operators'
+import { McqQuiz, Option } from '../../../../routing/modules/editor/routing/modules/quiz/components/quiz-class'
+import { QuizStoreService } from '../../../../routing/modules/editor/routing/modules/quiz/services/store.service'
+import { NotificationComponent } from '../notification/notification.component'
+import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+import { NOTIFICATION_TIME } from '../../../../constants/constant'
 
 @Component({
   selector: 'ws-auth-confirm-dialog',
@@ -7,12 +16,137 @@ import { MAT_DIALOG_DATA } from '@angular/material'
   styleUrls: ['./confirm-dialog.component.scss'],
 })
 export class ConfirmDialogComponent implements OnInit {
+  @Output() value = new EventEmitter<any>()
+  quizForm!: FormGroup
+  smallScreen: Observable<boolean> = this.breakpointObserver
+    .observe('(max-width:600px)')
+    .pipe(map((res: BreakpointState) => res.matches))
+  isSmallScreen = false
+  activeIndexSubscription?: Subscription
+  contentLoaded!: boolean
+  index!: number
+  selectedQuiz?: McqQuiz
+  mcqOptions: any = {}
+  formBuilder: any
+  selectedCount: number
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-  ) { }
-
-  ngOnInit() {
+    private breakpointObserver: BreakpointObserver,
+    private quizStoreSvc: QuizStoreService,
+    private snackBar: MatSnackBar,
+  ) {
+    this.quizForm = new FormGroup({
+      question: new FormControl(''),
+    })
   }
 
+  ngOnInit() {
+    if (this.data.type === 'editAssessment') {
+      this.smallScreen.subscribe(v => this.isSmallScreen = v)
+      this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
+        this.contentLoaded = false
+        this.index = index
+        const val = this.quizStoreSvc.getQuiz(index)
+        this.selectedQuiz =
+          val && (val.questionType === 'mcq-sca' || val.questionType === 'mcq-mca')
+            ? new McqQuiz(val)
+            : undefined
+        if (val && (val.questionType === 'mcq-sca' || val.questionType === 'mcq-mca')) {
+          this.setUp()
+          this.contentLoaded = true
+        }
+      })
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.activeIndexSubscription) {
+      this.activeIndexSubscription.unsubscribe()
+    }
+  }
+
+  /*assessment functionality start*/
+  setUp() {
+    if (this.selectedQuiz && this.selectedQuiz.options) {
+      if (this.mcqOptions) {
+        this.mcqOptions = this.quizStoreSvc.getQuizConfig('mcq-sca')
+      }
+      this.createForm()
+      for (let i = 0; i < this.mcqOptions.minOptions; i = i + 1) {
+        if (this.selectedQuiz.options.length < this.mcqOptions.minOptions) {
+          this.addOption()
+        }
+      }
+      this.assignForm()
+      this.selectedCount = 0
+      this.selectedQuiz.options.forEach(op => {
+        if (op.isCorrect) {
+          this.selectedCount = this.selectedCount + 1
+        }
+      })
+    }
+  }
+
+  assignForm() {
+    const newData = this.quizStoreSvc.getQuiz(this.index)
+    if (newData && newData.isInValid) {
+      // this.quizForm.markAllAsTouched()
+      Object.keys(this.quizForm.controls).map(v => {
+        const optionsArr = this.quizForm.controls[v] as FormArray
+        optionsArr.controls.map((d: any) => {
+          Object.keys(d.controls).map(e => {
+            if (e === 'text') {
+              d.controls[e].markAsDirty()
+              d.controls[e].markAsTouched()
+            }
+          })
+        })
+      })
+    }
+  }
+
+  createForm() {
+    this.quizForm = this.formBuilder.group({
+      options: this.formBuilder.array([]),
+    })
+    if (this.selectedQuiz && this.selectedQuiz.options.length) {
+      this.selectedQuiz.options.forEach(v => {
+        this.createOptionControl(v)
+      })
+    }
+    this.quizForm.valueChanges.pipe(debounceTime(100)).subscribe(() => {
+      this.value.emit(JSON.parse(JSON.stringify(this.quizForm.value)))
+    })
+  }
+
+  createOptionControl(optionObj: Option) {
+    const noWhiteSpace = new RegExp('\\S')
+    const newControl = this.formBuilder.group({
+      text: [optionObj.text || '', [Validators.required, Validators.pattern(noWhiteSpace)]],
+      isCorrect: [optionObj.isCorrect || false],
+      hint: [optionObj.hint || ''],
+    })
+    const optionsArr = this.quizForm.controls['options'] as FormArray
+    optionsArr.push(newControl)
+  }
+
+  addOption() {
+    if (this.selectedQuiz) {
+      const optionsLen = this.selectedQuiz.options.length
+      if (optionsLen < this.mcqOptions.maxOptions) {
+        const newOption = new Option({ isCorrect: false })
+        this.createOptionControl(newOption)
+        this.selectedQuiz.options.push(newOption)
+      } else {
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.MAX_OPTIONS_REACHED,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      }
+    }
+  }
+  /*assessment functionality end*/
 }

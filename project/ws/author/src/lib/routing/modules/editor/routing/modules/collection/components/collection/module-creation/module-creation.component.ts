@@ -3016,7 +3016,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         index: index + 1,
       },
     })
-    console.log(confirmDelete)
   }
   /*Assessment functionality end*/
 }
