@@ -1729,7 +1729,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.moduleButtonName = 'Save'
     this.content = content
     this.moduleName = content.name
-    this.topicDescription = content.description
+    this.topicDescription = content.instructions
     this.thumbnail = content.thumbnail
     this.setDuration(content.duration)
     this.isNewTab = content.isIframeSupported == 'Yes' ? true : false
@@ -1852,22 +1852,58 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
                         this.editorStore.setUpdatedMeta(meta, this.content.identifier)
                         //this.initService.uploadData('thumbnail')
-                        this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
-                          (info: any) => {
-                            /* tslint:disable-next-line */
-
-                            console.log('info', info)
-                            if (info) {
-                              this.update()
-                            }
-                          })
-
+                        if (this.content.contentType === 'Resource') {
+                          this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
+                            (info: any) => {
+                              /* tslint:disable-next-line */
+                              console.log('info', info)
+                              if (info) {
+                                this.update()
+                              }
+                            })
+                        } else {
+                          this.update()
+                        }
                       }
                     })
               })
         }
       }
     })
+  }
+
+  saveDetails(name: string, topicDescription: string, thumbnail: string) {
+    let meta: any = {}
+    let requestBody: any
+    // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
+    //   console.log(resData)
+    // })
+    meta["appIcon"] = thumbnail
+    meta["thumbnail"] = thumbnail
+    meta["versionKey"] = this.courseData.versionKey
+    meta["instructions"] = topicDescription
+    meta["name"] = name
+    this.editorStore.currentContentData = meta
+    console.log(this.content)
+    this.editorStore.currentContentID = this.content.identifier
+    requestBody = {
+      request: {
+        content: meta
+      }
+    }
+
+    if (this.content.contentType === 'Resource') {
+      this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
+        (info: any) => {
+          /* tslint:disable-next-line */
+          console.log('info', info)
+          if (info) {
+            this.update()
+          }
+        })
+    } else {
+      this.update()
+    }
   }
 
   generateUrl(oldUrl: any) {
@@ -2018,6 +2054,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
     await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
       this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+        this.courseData = data
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.SUCCESS
+          },
+          duration: NOTIFICATION_TIME * 500,
+
+        })
         this.editorStore.resetOriginalMetaWithHierarchy(data)
         // tslint:disable-next-line: align
       })
