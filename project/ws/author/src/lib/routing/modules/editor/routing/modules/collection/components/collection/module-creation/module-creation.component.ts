@@ -3001,7 +3001,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.mimeType = ''
   }
   /*PDF/audio/vedio functionality end*/
-  takeActions(action: string, node: IContentTreeNode, type?: string) {
+  takeActions(action: string, node: IContentTreeNode) {
     switch (action) {
       case 'editMeta':
       case 'editContent':
