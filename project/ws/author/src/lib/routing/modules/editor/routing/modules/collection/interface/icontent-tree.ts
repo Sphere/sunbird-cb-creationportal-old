@@ -41,6 +41,7 @@ export interface IContentNode {
  * @param { number } level - Depth of the node inside the hierarchy
  */
 export interface IContentTreeNode {
+  parent?: any
   id: number
   identifier: string
   editable: boolean

@@ -304,7 +304,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   routerValuesCalls() {
     this.contentService.changeActiveCont.subscribe(data => {
-      console.log(data)
       this.currentContent = data
       this.currentCourseId = data
       if (this.contentService.getUpdatedMeta(data).contentType !== 'Resource') {
@@ -1572,9 +1571,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.moduleButtonName = 'Save'
       this.isSaveModuleFormEnable = true
       this.showAddModuleForm = false
-      //this.moduleName = data.name
-      //this.topicDescription = data.description
-      //this.thumbnail = data.thumbnail
+      this.moduleName = data.name
+      this.topicDescription = data.description
+      this.thumbnail = data.thumbnail
       //this.isResourceTypeEnabled = true
       /* tslint:disable-next-line */
       console.log(this.isSaveModuleFormEnable)
@@ -1614,7 +1613,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.seconds = second || 0
   }
   async resourceLinkSave() {
-    this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
+    //this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
 
     let iframeSupported
     if (this.resourceLinkForm.value.isIframeSupported)
@@ -1703,7 +1702,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addResModule(modID: string, courseID: string) {
-    console.log(modID, courseID)
     this.addResourceModule["module"] = true
     this.addResourceModule["modID"] = modID
     this.addResourceModule["courseID"] = courseID
@@ -1731,6 +1729,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     /* tslint:disable-next-line */
     console.log(content)
     this.showAddModuleForm = true
+    this.isLinkEnabled = false
     this.moduleButtonName = 'Save'
     this.content = content
     this.moduleName = content.name
@@ -1845,7 +1844,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                         this.thumbnail = data.content_url
                         meta["versionKey"] = this.courseData.versionKey
                         this.editorStore.currentContentData = meta
-                        console.log(this.content)
+
                         this.editorStore.currentContentID = this.content.identifier
                         this.editorStore.setUpdatedMeta(meta, this.content.identifier || data.identifier)
                         /* tslint:disable-next-line */
@@ -1879,7 +1878,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
   }
 
-  saveDetails(name: string, topicDescription: string, thumbnail: string) {
+  saveDetails(name: string, topicDescription: string, thumbnail: string, isNewTab: any, isGating: string) {
     let meta: any = {}
     let requestBody: any
     // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
@@ -1887,7 +1886,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     // })
 
     let iframeSupported
-    if (this.isNewTab)
+    if (isNewTab)
       iframeSupported = 'Yes'
     else
       iframeSupported = 'No'
@@ -1899,11 +1898,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     meta["name"] = name
     meta["duration"] = this.timeToSeconds().toString()
     meta["instructions"] = topicDescription
-    meta["gatingEnabled"] = this.isGating
+    meta["gatingEnabled"] = isGating
     meta["isIframeSupported"] = iframeSupported
 
     this.editorStore.currentContentData = meta
-    console.log(this.content)
     this.editorStore.currentContentID = this.content.identifier
     requestBody = {
       request: {
@@ -2234,7 +2232,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }
         const content = this.editorStore.getUpdatedMeta(event.identifier)
         /* tslint:disable-next-line */
-
         console.log(content)
         // const isCreator = (this.configSvc.userProfile
         //   && this.configSvc.userProfile.userId === content.createdBy)
@@ -2313,6 +2310,24 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         const result = await this.editorService.resourceToModule(request).toPromise()
         // tslint:disable-next-line:no-console
         console.log(result)
+        const hierarchyData = this.storeService.getTreeHierarchy()
+        // hierarchyData[meta.name] = {
+        //   root: false,
+        //   contentType: meta.contentType,
+        //   primaryCategory: meta.primaryCategory,
+        //   children: [],
+        // }
+        Object.keys(hierarchyData).forEach((ele: any) => {
+          if (ele === this.addResourceModule["modID"]) {
+            hierarchyData[ele].children.push(this.editorService.resourseID)
+          }
+          // if (hierarchyData[ele].root) {
+          //   hierarchyData[ele].children.push(meta.name)
+          // }
+        })
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.courseData = data
+        })
         //}
       }
       if (newCreatedLexid) {
@@ -2327,7 +2342,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
     this.loaderService.changeLoad.next(false)
     this.subAction({ type: 'editContent', identifier: this.editorService.newCreatedLexid, nodeClicked: false })
-    this.save()
+    //this.save()
+  }
+  copyToClipboard(module: any) {
+    /* tslint:disable-next-line */
+    navigator.clipboard.writeText(module).then().catch(e => console.log(e))
   }
 
   uploadResourceAppIcon(file: File) {
@@ -2560,10 +2579,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             // }
           }
         })
-
-        console.log(meta)
         this.contentService.setUpdatedMeta(meta, this.editorService.newCreatedLexid)
-
       }
     } catch (ex) {
       this.snackBar.open('Please Save Parent first and refresh page.')
@@ -2608,9 +2624,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       })
     } else {
       if (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v')) {
-        /* tslint:disable-next-line */
-
-        console.log("yes here")
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
           width: this.isMobile ? '90vw' : '600px',
           height: 'auto',
@@ -2771,7 +2784,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     else
       iframeSupported = 'No'
 
-    console.log("this.resourcePdfForm", this.resourcePdfForm)
     this.triggerUpload()
     this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
     this.duration = this.resourcePdfForm.value.duration
@@ -2990,7 +3002,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   /*PDF/audio/vedio functionality end*/
   takeActions(action: string, node: IContentTreeNode, type?: string) {
-    console.log("action", action, node, type)
     switch (action) {
       case 'editMeta':
       case 'editContent':
@@ -2999,35 +3010,54 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.delete(node)
         break
 
-
-
       default:
         break
     }
   }
+
   delete(node: IContentTreeNode) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '500px',
       height: '175px',
       data: 'deleteTreeNode',
     })
-    this.preserveExpandedNodes()
+    //this.preserveExpandedNodes()
     dialogRef.afterClosed().subscribe(confirm => {
       if (confirm) {
         this.parentHierarchy = []
-        let currNode: IContentTreeNode | null = node
-        while (currNode) {
-          if (currNode && currNode.parentId) {
-            this.parentHierarchy.push(currNode.parentId)
+        const hierarchyData = this.storeService.getTreeHierarchy()
+        Object.keys(hierarchyData).forEach(async (ele: any) => {
+          if (ele === node.identifier) {
+            delete hierarchyData[ele]
           }
-          currNode = this.getParentNode(currNode)
-        }
-        this.storeService.deleteNode(node.id)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.SUCCESS,
-          },
-          duration: NOTIFICATION_TIME * 1000,
+          if (ele === node.parent) {
+            const index = hierarchyData[ele]["children"].indexOf(node.identifier)
+            if (index > -1) {
+              hierarchyData[ele]["children"].splice(index, 1)
+              const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+                request: {
+                  data: {
+                    nodesModified: this.editorStore.getNodeModifyData(),
+                    hierarchy: hierarchyData,
+                  },
+                },
+              }
+              await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+                this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                  this.courseData = data
+                  this.snackBar.openFromComponent(NotificationComponent, {
+                    data: {
+                      type: Notify.SUCCESS
+                    },
+                    duration: NOTIFICATION_TIME * 500,
+
+                  })
+                  this.editorStore.resetOriginalMetaWithHierarchy(data)
+                  // tslint:disable-next-line: align
+                })
+              })
+            }
+          }
         })
       }
     })
@@ -3055,7 +3085,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   preserveExpandedNodes() {
     this.expandedNodes = new Set<number>()
-    console.log("this.expandedNodes", this.treeControl)
     this.treeControl.dataNodes.forEach(v => {
       if (this.treeControl.isExpandable(v) && this.treeControl.isExpanded(v)) {
         this.expandedNodes.add(v.id)
@@ -3138,7 +3167,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   this.quizDuration = quizContent.duration || '300'
                   this.questionsArr =
                     this.quizStoreSvc.collectiveQuiz[id] || []
-                  console.log("quiz 3")
                   this.contentLoaded = true
                   if (!this.quizStoreSvc.collectiveQuiz[id]) {
                     this.quizStoreSvc.collectiveQuiz[id] = []
@@ -3157,7 +3185,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.quizStoreSvc.collectiveQuiz[id] = []
         }
         this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
-        console.log("quiz 4")
         this.currentId = id
         this.quizStoreSvc.currentId = id
         this.quizStoreSvc.changeQuiz(0)
