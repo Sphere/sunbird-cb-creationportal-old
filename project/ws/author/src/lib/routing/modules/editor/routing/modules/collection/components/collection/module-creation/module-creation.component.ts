@@ -1614,8 +1614,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.seconds = second || 0
   }
   async resourceLinkSave() {
-    //this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
-
+    this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
+    this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
     let iframeSupported
     if (this.resourceLinkForm.value.isIframeSupported)
       iframeSupported = 'Yes'
