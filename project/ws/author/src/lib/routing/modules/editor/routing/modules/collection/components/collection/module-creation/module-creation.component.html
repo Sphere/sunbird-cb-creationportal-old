@@ -21,7 +21,8 @@
                 <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)=" editContent(module)">
                   edit</mat-icon>
                 <mat-icon class="icons-list">delete</mat-icon>
-                <mat-icon class="icons-list">content_copy</mat-icon>
+                <mat-icon class="icons-list" (click)="copyToClipboard(module)"
+                  matTooltip="Copy To Clipboard">content_copy</mat-icon>
               </span>
             </div>
             <div *ngIf="module?.children?.length > 0">
@@ -33,8 +34,9 @@
                   <mat-icon class="material-icons margin-left-m text-medium brand-color"
                     (click)="editContent(resource)">
                     edit</mat-icon>
-                  <mat-icon class="icons-list">delete</mat-icon>
-                  <mat-icon class="icons-list">content_copy</mat-icon>
+                  <mat-icon class="icons-list" (click)="takeActions('delete', module, $event.type)">delete</mat-icon>
+                  <mat-icon class="icons-list" (click)="copyToClipboard(module)"
+                    matTooltip="Copy To Clipboard">content_copy</mat-icon>
                 </span>
               </div>
             </div>
@@ -45,7 +47,8 @@
                 <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)="editContent(module)">
                   edit</mat-icon>
                 <mat-icon (click)="takeActions('delete', module, $event.type)" class="icons-list">delete</mat-icon>
-                <mat-icon class="icons-list">content_copy</mat-icon>
+                <mat-icon class="icons-list" (click)="copyToClipboard(module)"
+                  matTooltip="Copy To Clipboard">content_copy</mat-icon>
               </span>
             </div>
             <button *ngIf="module.primaryCategory === 'Course Unit'" mat-raised-button
@@ -70,8 +73,9 @@
                 <span style="display:flex;flex-direction: row;">
                   <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)="editContent(module)">
                     edit</mat-icon>
-                  <mat-icon class="icons-list">delete</mat-icon>
-                  <mat-icon class="icons-list">content_copy</mat-icon>
+                  <mat-icon class="icons-list" (click)="takeActions('delete', module, $event.type)">delete</mat-icon>
+                  <mat-icon class="icons-list" (click)="copyToClipboard(module)"
+                    matTooltip="Copy To Clipboard">content_copy</mat-icon>
                 </span>
               </div>
               <div *ngIf="isOnClickOfResourceTypeEnabled">
@@ -87,7 +91,8 @@
                     </mat-icon>
 
                     <!-- <mat-icon class="icons-list">delete</mat-icon> -->
-                    <mat-icon class="icons-list">content_copy</mat-icon>
+                    <mat-icon class="icons-list" (click)="copyToClipboard(module)"
+                      matTooltip="Copy To Clipboard">content_copy</mat-icon>
                   </span>
                 </div>
               </div>
@@ -97,14 +102,15 @@
                 style="margin:0.4rem;color: #0074b6 !important;" (click)="addResource()"> Add Resource</button>
 
             </div>
-            <div *ngFor="let resource of independentResourceNames" class="heading-resource">
+            <!-- <div *ngFor="let resource of independentResourceNames" class="heading-resource">
               <mat-icon class="cursor-pointer">more_vert</mat-icon> <span class="resourse-text">{{resource.name}}</span>
               <span fxFlex style="flex: 1 1 auto;"></span>
               <span style="display:flex;flex-direction: row;">
-                <mat-icon class="icons-list">delete</mat-icon>
-                <mat-icon class="icons-list">content_copy</mat-icon>
+                <mat-icon class="icons-list" (click)="takeActions('delete', module, $event.type)">delete</mat-icon>
+                <mat-icon class="icons-list" (click)="copyToClipboard(module)"
+                  matTooltip="Copy To Clipboard">content_copy</mat-icon>
               </span>
-            </div>
+            </div> -->
           </div>
         </div>
         <!--module & resource left footer-->
@@ -238,7 +244,7 @@
               {{moduleButtonName}}</button>
             <button mat-raised-button *ngIf="moduleButtonName === 'Save'"
               class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
-              (click)="saveDetails(module.value, topicDescription, thumbnail)">
+              (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating)">
               {{moduleButtonName}}</button>
           </div>
         </div>

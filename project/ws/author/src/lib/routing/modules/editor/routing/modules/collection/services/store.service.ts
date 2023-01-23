@@ -733,6 +733,7 @@ export class CollectionStoreService {
         })
       }
     }
+    console.log(this.changedHierarchy)
     this.treeStructureChange.next(this.treeStructureChange.value)
   }
 
@@ -991,6 +992,7 @@ export class CollectionStoreService {
   getTreeHierarchy() {
     this.hierarchyTree = {}
     const newParentNode = this.flatNodeMap.get(this.currentParentNode) as IContentNode
+    console.log(newParentNode)
     this.hierarchyTree[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),
       contentType: newParentNode.category,
