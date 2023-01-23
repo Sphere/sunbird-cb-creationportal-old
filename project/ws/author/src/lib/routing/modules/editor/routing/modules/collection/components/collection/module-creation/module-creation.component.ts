@@ -109,6 +109,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       type: ''
     }
   ]
+  isFalse: boolean = false
   parentHierarchy: number[] = []
   showAddModuleForm: boolean = false
   showSettingsPage: boolean = false
@@ -2067,13 +2068,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   backNavigation(): void {
     if (this.isSettingsPage) {
-      // console.log("true")
       this.isSettingsPage = false
-    } else if (this.isSubmitPressed) {
-      // console.log("false")
-
+    } else {
+      this.initService.changeMessage('backToCourseDetailsPage')
     }
-    // this.backNavigate.back()
+    if (this.isFalse) {
+      this.backNavigate.back()
+    }
+
   }
   async update() {
     this.resourseSelected = ''
