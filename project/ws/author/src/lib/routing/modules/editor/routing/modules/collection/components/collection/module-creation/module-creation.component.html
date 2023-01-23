@@ -1,4 +1,5 @@
 <div class="main-model">
+  <mat-icon class="cursor-pointer margin-top-m margin-left-m" (click)="backNavigation()">arrow_back</mat-icon>
   <mat-grid-list *ngIf="!isSettingsPage" cols="4" rowHeight="100vh">
     <mat-grid-tile [colspan]="1">
       <mat-drawer-container [class.drawer-opened]="drawer.opened">
@@ -137,9 +138,9 @@
               [ngClass]="showAddModuleForm ? 'ws-mat-primary-background' : 'secondary-button'"
               class="ws-mat-primary-background width-20 margin-left-s mat-button-base save-btn-bottom">
               Go to Course Settings ></button> -->
-            <button mat-raised-button [ngClass]="showAddModuleForm ? 'ws-mat-primary-background' : 'secondary-button'"
+            <button mat-raised-button [ngClass]="showSettingsPage ? 'ws-mat-primary-background' : 'secondary-button'"
               class="width-20 margin-left-s mat-button-base save-btn-bottom"
-              (click)="showAddModuleForm?isSettingsPage=true:''">
+              (click)="showSettingsPage?isSettingsPage=true:''">
               Go to Course Settings ></button>
           </div>
         </mat-toolbar>

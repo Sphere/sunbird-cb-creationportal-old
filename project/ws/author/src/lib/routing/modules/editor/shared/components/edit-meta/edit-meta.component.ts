@@ -30,6 +30,7 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
 import { Observable, of, Subscription } from 'rxjs'
 // import { InterestService } from '../../../../../../../../../app/src/lib/routes/profile/routes/interest/services/interest.service'
 import { UploadService } from '../../services/upload.service'
+import { BackNavigateService } from '../../services/backNavigate.service'
 import { CatalogSelectComponent } from '../catalog-select/catalog-select.component'
 import { IFormMeta } from './../../../../../../interface/form'
 import { AccessControlService } from './../../../../../../modules/shared/services/access-control.service'
@@ -151,6 +152,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private formBuilder: FormBuilder,
     private uploadService: UploadService,
+    private backNavigate: BackNavigateService,
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
     private editorService: EditorService,
@@ -345,7 +347,9 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     //   switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
     // )
   }
-
+  backNavigation(): void {
+    this.backNavigate.back()
+  }
 
   enableClick(): void {
     this.isEnableTitle = false

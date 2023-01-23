@@ -110,6 +110,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   ]
   parentHierarchy: number[] = []
   showAddModuleForm: boolean = false
+  showSettingsPage: boolean = false
   moduleNames: any = [];
   isSaveModuleFormEnable: boolean = false
   moduleButtonName: string = 'Create';
@@ -1566,11 +1567,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
       /* tslint:disable-next-line */
-      console.log(data)
+      console.log("data", data.children.length)
       this.courseData = data
       //this.moduleButtonName = 'Save'
       this.isSaveModuleFormEnable = true
-      this.showAddModuleForm = false
+      this.showAddModuleForm = true
+      if (this.courseData && this.courseData.children.length >= 2) {
+        this.showSettingsPage = true
+      }
       this.moduleName = data.name
       this.topicDescription = data.description
       this.thumbnail = data.thumbnail
@@ -2073,6 +2077,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
       this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
         this.courseData = data
+        if (this.courseData && this.courseData.children.length >= 2) {
+          this.showSettingsPage = true
+        } else {
+          this.showSettingsPage = false
+        }
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
             type: Notify.SUCCESS
@@ -3047,6 +3056,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
                 this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
                   this.courseData = data
+                  if (this.courseData && this.courseData.children.length >= 2) {
+                    this.showSettingsPage = true
+                  } else {
+                    this.showSettingsPage = false
+                  }
                   this.snackBar.openFromComponent(NotificationComponent, {
                     data: {
                       type: Notify.SUCCESS
