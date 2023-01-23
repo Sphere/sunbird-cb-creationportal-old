@@ -1623,6 +1623,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       iframeSupported = 'No'
 
     var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+    this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
     if (res !== null) {
       const rBody: any = {
         name: this.resourceLinkForm.value.resourceName,
@@ -2788,6 +2789,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.triggerUpload()
     this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
     this.duration = this.resourcePdfForm.value.duration
+    this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
     const rBody: any = {
       name: this.resourcePdfForm.value.resourceName,
       appIcon: this.resourcePdfForm.value.appIcon,
