@@ -3200,7 +3200,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.assessmentData = this.quizStoreSvc.collectiveQuiz[this.currentContent]
   }
 
-  editAssessment(index: number, event: any) {
+  editAssessment(index: number, event: any, data: any) {
     event.stopPropagation()
     //const confirmDelete =
     let dialogRefForPublish = this.dialog.open(ConfirmDialogComponent, {
@@ -3208,7 +3208,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       data: {
         type: 'editAssessment',
         index: index + 1,
-        currentContent: this.currentContent
+        currentContent: this.currentContent,
+        data: data
       },
     })
     dialogRefForPublish.componentInstance.onFormChange.subscribe((result: any) => {

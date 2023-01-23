@@ -1,5 +1,5 @@
 <div class="margin-m">
-  <div mat-dialog-content>
+  <div mat-dialog-content class="scroll">
     <h3>
       <ng-container i18n *ngIf="data === 'delete'">
         Are you sure you want to delete it?
@@ -44,18 +44,20 @@
       <ng-container *ngIf="data === 'deleteAudio'">
         <span i18n> Are you sure you want to delete the audio file attached for this page ?</span>
       </ng-container>
-      <ng-container *ngIf="data.type === 'editAssessment'">
-        <form [formGroup]="questionForm">
+    </h3>
+    <ng-container *ngIf="data.type === 'editAssessment'">
+      <div *ngIf="this.data.data.questionType == 'mcq-sca'">
+        <div [formGroup]="questionForm">
           <span i18n> MCQ: Question </span><br>
           <mat-form-field appearance="outline">
             <input matInput formControlName="question" maxlength="100" i18n-placeholder
               placeholder="Question Statement" />
           </mat-form-field><br>
-        </form>
+        </div>
         <span i18n> Options </span><br>
         <span>Note : Check the box for the correct answer only</span><br>
         <form [formGroup]="quizForm">
-          <mat-card *ngFor="let option of selectedQuiz.options; let i = index" class="custom w-full" cdkDrag
+          <mat-card *ngFor="let option of selectedQuiz.options; let i = index" class="edit-card custom w-full" cdkDrag
             cdkDragBoundary=".optionlist" formArrayName="options">
             <div class="flex w-full justify-between" [formGroupName]="i">
               <div class="flex romanN text-center items-center pl-4">{{ i + 1}}.</div>
@@ -70,11 +72,92 @@
                   <input matInput formControlName="text" i18n-aria-label aria-label="Enter answer" />
                 </mat-form-field>
               </div>
+              <div class="cursor-auto item2 item-spacing">
+                <button class="float-right" mat-button i18n-matTooltip matTooltip="Delete this quiz"
+                  aria-label="delete this quiz" i18n-aria-label>
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
             </div>
           </mat-card>
         </form>
-      </ng-container>
-    </h3>
+        <div style="display:flex; flex-direction:row">
+          <mat-icon class="material-icons brand-color">add_circle</mat-icon>
+          <span>Add Option</span>
+        </div>
+        <div>
+          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+            style="margin:0.4rem;color: #0074b6 !important;">Save</button>
+          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+            style="margin:0.4rem;color: #0074b6 !important;">Discard</button>
+        </div>
+      </div>
+      <div *ngIf="this.data.data.questionType == 'fitb'">
+        <span i18n> Fill in the blanks:</span><br>
+        <div style="display:flex; flex-direction:row">
+          <mat-form-field appearance="outline">
+            <input matInput maxlength="100" i18n-placeholder placeholder="Question Statement" />
+          </mat-form-field>
+          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+            style="margin:0.4rem;color: #0074b6 !important;height: 2rem;">Add blank</button>
+        </div>
+
+        <span i18n> Answers </span><br>
+        <span>Note : You will be able to add answers once you start adding blanks</span>
+        <mat-card class="edit-card custom w-full" cdkDrag>
+          <div class="cursor-auto item2 item-spacing">
+            <mat-form-field class="w-full myfield" appearance="outline">
+              <input matInput i18n-aria-label aria-label="Type Here" />
+            </mat-form-field>
+          </div>
+          <div class="cursor-auto item2 item-spacing">
+            <button class="float-right" mat-button i18n-matTooltip matTooltip="Delete this quiz"
+              aria-label="delete this quiz" i18n-aria-label>
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-card>
+        <div>
+          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+            style="margin:0.4rem;color: #0074b6 !important;">Save</button>
+          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+            style="margin:0.4rem;color: #0074b6 !important;">Discard</button>
+        </div>
+      </div>
+      <div *ngIf="this.data.data.questionType == 'mtf'">
+        <span i18n> Match the following: </span><br>
+        <mat-form-field appearance="outline">
+          <input matInput maxlength="100" i18n-placeholder placeholder="Question Statement" />
+        </mat-form-field><br>
+        <span i18n>Options</span><br>
+        <div style="display:flex; flex-direction:row">
+          <mat-form-field appearance="outline">
+            <input matInput maxlength="100" i18n-placeholder placeholder="Type Option" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <input matInput maxlength="100" i18n-placeholder placeholder="Type Match" />
+          </mat-form-field>
+        </div>
+        <div style="display:flex; flex-direction:row">
+          <mat-form-field appearance="outline">
+            <input matInput maxlength="100" i18n-placeholder placeholder="Type Option" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <input matInput maxlength="100" i18n-placeholder placeholder="Type Match" />
+          </mat-form-field>
+        </div>
+        <div style="display:flex; flex-direction:row">
+          <mat-icon class="material-icons brand-color">add_circle</mat-icon>
+          <span>Add Option</span>
+        </div>
+        <div>
+          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+            style="margin:0.4rem;color: #0074b6 !important;">Save</button>
+          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+            style="margin:0.4rem;color: #0074b6 !important;">Discard</button>
+        </div>
+      </div>
+    </ng-container>
   </div>
   <div mat-dialog-actions class="flex-row-reverse" *ngIf="data.type !== 'editAssessment'">
     <button i18n mat-raised-button color="primary" [mat-dialog-close]="true">Yes</button>

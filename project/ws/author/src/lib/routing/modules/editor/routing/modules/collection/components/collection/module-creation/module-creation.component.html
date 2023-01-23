@@ -21,8 +21,8 @@
                 <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)=" editContent(module)">
                   edit</mat-icon>
                 <mat-icon class="icons-list">delete</mat-icon>
-                <mat-icon class="icons-list" (click)="copyToClipboard(module)"
-                  matTooltip="Copy To Clipboard">content_copy</mat-icon>
+                <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
+                  content_copy</mat-icon>
               </span>
             </div>
             <div *ngIf="module?.children?.length > 0">
@@ -35,8 +35,8 @@
                     (click)="editContent(resource)">
                     edit</mat-icon>
                   <mat-icon class="icons-list" (click)="takeActions('delete', module, $event.type)">delete</mat-icon>
-                  <mat-icon class="icons-list" (click)="copyToClipboard(module)"
-                    matTooltip="Copy To Clipboard">content_copy</mat-icon>
+                  <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
+                    content_copy</mat-icon>
                 </span>
               </div>
             </div>
@@ -47,8 +47,8 @@
                 <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)="editContent(module)">
                   edit</mat-icon>
                 <mat-icon (click)="takeActions('delete', module, $event.type)" class="icons-list">delete</mat-icon>
-                <mat-icon class="icons-list" (click)="copyToClipboard(module)"
-                  matTooltip="Copy To Clipboard">content_copy</mat-icon>
+                <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
+                  content_copy</mat-icon>
               </span>
             </div>
             <button *ngIf="module.primaryCategory === 'Course Unit'" mat-raised-button
@@ -74,8 +74,8 @@
                   <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)="editContent(module)">
                     edit</mat-icon>
                   <mat-icon class="icons-list" (click)="takeActions('delete', module, $event.type)">delete</mat-icon>
-                  <mat-icon class="icons-list" (click)="copyToClipboard(module)"
-                    matTooltip="Copy To Clipboard">content_copy</mat-icon>
+                  <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
+                    content_copy</mat-icon>
                 </span>
               </div>
               <div *ngIf="isOnClickOfResourceTypeEnabled">
@@ -91,8 +91,8 @@
                     </mat-icon>
 
                     <!-- <mat-icon class="icons-list">delete</mat-icon> -->
-                    <mat-icon class="icons-list" (click)="copyToClipboard(module)"
-                      matTooltip="Copy To Clipboard">content_copy</mat-icon>
+                    <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
+                      content_copy</mat-icon>
                   </span>
                 </div>
               </div>
@@ -520,7 +520,7 @@
                         <span i18n="MTF| acronym for match the Following"
                           *ngIf="quesObj.questionType === 'mtf'">MTF</span>
                       </span>
-                      <button class="float-right" (click)="editAssessment(i, $event)" mat-button i18n-matTooltip
+                      <button class="float-right" (click)="editAssessment(i, $event,quesObj)" mat-button i18n-matTooltip
                         matTooltip="Delete this quiz" aria-label="edit this quiz" i18n-aria-label>
                         <mat-icon>edit</mat-icon>
                       </button>

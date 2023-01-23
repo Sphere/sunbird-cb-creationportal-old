@@ -45,20 +45,26 @@ export class ConfirmDialogComponent implements OnInit {
 
   ngOnInit() {
     if (this.data.type === 'editAssessment') {
-      this.smallScreen.subscribe(v => this.isSmallScreen = v)
-      this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
-        this.contentLoaded = false
-        this.index = index
-        const val = this.quizStoreSvc.getQuiz(index)
-        this.selectedQuiz =
-          val && (val.questionType === 'mcq-sca' || val.questionType === 'mcq-mca')
-            ? new McqQuiz(val)
-            : undefined
-        if (val && (val.questionType === 'mcq-sca' || val.questionType === 'mcq-mca')) {
-          this.setUp()
-          this.contentLoaded = true
-        }
-      })
+      if (this.data.data.questionType == 'mcq-sca') {
+        this.smallScreen.subscribe(v => this.isSmallScreen = v)
+        this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
+          this.contentLoaded = false
+          this.index = index
+          const val = this.quizStoreSvc.getQuiz(index)
+          this.selectedQuiz =
+            val && (val.questionType === 'mcq-sca' || val.questionType === 'mcq-mca')
+              ? new McqQuiz(val)
+              : undefined
+          if (val && (val.questionType === 'mcq-sca' || val.questionType === 'mcq-mca')) {
+            this.setUp()
+            this.contentLoaded = true
+          }
+        })
+      } else if (this.data.data.questionType == 'fitb') {
+
+      } else if (this.data.data.questionType == 'mtf') {
+
+      }
     }
   }
 
