@@ -50,6 +50,7 @@ import { QuizStoreService } from '../../../../quiz/services/store.service'
 import { QuizResolverService } from '../../../../quiz/services/resolver.service'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
 import { map } from 'rxjs/operators'
+import { BackNavigateService } from '../../../../../../shared/services/backNavigate.service'
 
 @Component({
   selector: 'ws-author-module-creation',
@@ -228,6 +229,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     private editorStore: EditorContentService,
     private storeService: CollectionStoreService,
     private _configurationsService: ConfigurationsService,
+    private backNavigate: BackNavigateService,
 
     private resolverService: CollectionResolverService,
     private headerService: HeaderServiceService,
@@ -2063,7 +2065,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         })
     }
   }
+  backNavigation(): void {
+    if (this.isSettingsPage) {
+      console.log("true")
+      this.isSettingsPage = false
+    } else if (this.isSubmitPressed) {
+      console.log("false")
 
+    }
+    // this.backNavigate.back()
+  }
   async update() {
     this.resourseSelected = ''
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
