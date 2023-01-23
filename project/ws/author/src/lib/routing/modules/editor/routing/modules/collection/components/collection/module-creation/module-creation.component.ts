@@ -2067,10 +2067,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   backNavigation(): void {
     if (this.isSettingsPage) {
-      console.log("true")
+      // console.log("true")
       this.isSettingsPage = false
     } else if (this.isSubmitPressed) {
-      console.log("false")
+      // console.log("false")
 
     }
     // this.backNavigate.back()
