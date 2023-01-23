@@ -45,14 +45,33 @@
         <span i18n> Are you sure you want to delete the audio file attached for this page ?</span>
       </ng-container>
       <ng-container *ngIf="data.type === 'editAssessment'">
-        <form [formGroup]="quizForm">
+        <form [formGroup]="questionForm">
           <span i18n> MCQ: Question </span><br>
           <mat-form-field appearance="outline">
             <input matInput formControlName="question" maxlength="100" i18n-placeholder
               placeholder="Question Statement" />
           </mat-form-field><br>
-          <span i18n> Options </span><br>
-          <span>Note : Check the box for the correct answer only</span>
+        </form>
+        <span i18n> Options </span><br>
+        <span>Note : Check the box for the correct answer only</span><br>
+        <form [formGroup]="quizForm">
+          <mat-card *ngFor="let option of selectedQuiz.options; let i = index" class="custom w-full" cdkDrag
+            cdkDragBoundary=".optionlist" formArrayName="options">
+            <div class="flex w-full justify-between" [formGroupName]="i">
+              <div class="flex romanN text-center items-center pl-4">{{ i + 1}}.</div>
+              <div class="flex items-center item1 px-3">
+                <div class="w-2/5"></div>
+                <mat-checkbox formControlName="isCorrect" (change)="onSelected($event)" i18n-matTooltip
+                  matTooltipPosition="below" matTooltip="Check for correct answer" i18n-aria-label
+                  aria-label="Check for correct answer"></mat-checkbox>
+              </div>
+              <div class="cursor-auto item2 item-spacing">
+                <mat-form-field class="w-full myfield" appearance="outline">
+                  <input matInput formControlName="text" i18n-aria-label aria-label="Enter answer" />
+                </mat-form-field>
+              </div>
+            </div>
+          </mat-card>
         </form>
       </ng-container>
     </h3>

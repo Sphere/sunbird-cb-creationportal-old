@@ -210,6 +210,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   quizDuration: any
   activeIndexSubscription?: Subscription
   selectedQuizIndex!: number
+  quizIndex!: number
 
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
@@ -3166,20 +3167,69 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addQuestion() {
-    this.quizStoreSvc.addQuestion(this.questionType)
+    this.quizStoreSvc.addQuestion(this.assessmentOrQuizForm.value.questionType)
     this.assessmentData = this.quizStoreSvc.collectiveQuiz[this.currentContent]
   }
 
   editAssessment(index: number, event: any) {
     event.stopPropagation()
     //const confirmDelete =
-    this.dialog.open(ConfirmDialogComponent, {
+    let dialogRefForPublish = this.dialog.open(ConfirmDialogComponent, {
       width: '500px',
       data: {
         type: 'editAssessment',
         index: index + 1,
+        currentContent: this.currentContent
       },
     })
+    dialogRefForPublish.componentInstance.onFormChange.subscribe((result: any) => {
+      this.updateSelectedQuiz(result)
+      console.log('dialog data', result)
+    })
+
+    dialogRefForPublish.componentInstance.onFormQuestion.subscribe((result: any) => {
+      this.updateSelectedQuiz(result.question, 'question')
+    })
+
+    dialogRefForPublish.afterClosed().subscribe(result => {
+      console.log(result)
+    })
+  }
+
+  updateSelectedQuiz(options: any, type?: string) {
+    this.quizIndex = 0
+    const quizData = JSON.parse(JSON.stringify(this.quizStoreSvc.getQuiz(this.quizIndex)))
+    let updatedVal: any = {}
+    if (type === 'question') {
+      updatedVal = quizData
+      updatedVal.question = options
+    } else {
+      updatedVal = {
+        ...quizData,
+        ...options,
+      }
+      for (let i = 0; i < updatedVal.options.length; i = i + 1) {
+        updatedVal.options[i] = { ...quizData.options[i], ...options.options[i] }
+      }
+    }
+    this.quizStoreSvc.updateQuiz(this.quizIndex, updatedVal)
+    if (updatedVal.isInValid) {
+      this.validateNdShowError()
+    }
+  }
+
+  validateNdShowError(showError?: boolean) {
+    const errorType = this.quizStoreSvc.validateQuiz(this.quizIndex)
+    if (showError) {
+      if (errorType) {
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: errorType,
+          },
+          duration: NOTIFICATION_TIME * 500,
+        })
+      }
+    }
   }
   /*Assessment functionality end*/
 }

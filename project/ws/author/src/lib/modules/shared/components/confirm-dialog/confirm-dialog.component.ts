@@ -1,6 +1,6 @@
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout'
 import { Component, OnInit, Inject, EventEmitter, Output } from '@angular/core'
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms'
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar, MAT_DIALOG_DATA } from '@angular/material'
 import { Observable, Subscription } from 'rxjs'
 import { debounceTime, map } from 'rxjs/operators'
@@ -9,6 +9,7 @@ import { QuizStoreService } from '../../../../routing/modules/editor/routing/mod
 import { NotificationComponent } from '../notification/notification.component'
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 import { NOTIFICATION_TIME } from '../../../../constants/constant'
+import { MatSnackBarRef } from '@angular/material/snack-bar'
 
 @Component({
   selector: 'ws-auth-confirm-dialog',
@@ -17,7 +18,10 @@ import { NOTIFICATION_TIME } from '../../../../constants/constant'
 })
 export class ConfirmDialogComponent implements OnInit {
   @Output() value = new EventEmitter<any>()
+  @Output() onFormChange = new EventEmitter();
+  @Output() onFormQuestion = new EventEmitter();
   quizForm!: FormGroup
+  questionForm!: FormGroup
   smallScreen: Observable<boolean> = this.breakpointObserver
     .observe('(max-width:600px)')
     .pipe(map((res: BreakpointState) => res.matches))
@@ -27,18 +31,16 @@ export class ConfirmDialogComponent implements OnInit {
   index!: number
   selectedQuiz?: McqQuiz
   mcqOptions: any = {}
-  formBuilder: any
-  selectedCount: number
+  selectedCount!: number
+  snackbarRef?: MatSnackBarRef<NotificationComponent>
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private breakpointObserver: BreakpointObserver,
     private quizStoreSvc: QuizStoreService,
     private snackBar: MatSnackBar,
+    private formBuilder: FormBuilder,
   ) {
-    this.quizForm = new FormGroup({
-      question: new FormControl(''),
-    })
   }
 
   ngOnInit() {
@@ -107,6 +109,10 @@ export class ConfirmDialogComponent implements OnInit {
   }
 
   createForm() {
+    this.questionForm = this.formBuilder.group({
+      question: [],
+    })
+
     this.quizForm = this.formBuilder.group({
       options: this.formBuilder.array([]),
     })
@@ -116,7 +122,12 @@ export class ConfirmDialogComponent implements OnInit {
       })
     }
     this.quizForm.valueChanges.pipe(debounceTime(100)).subscribe(() => {
+      this.onFormChange.emit(JSON.parse(JSON.stringify(this.quizForm.value)))
       this.value.emit(JSON.parse(JSON.stringify(this.quizForm.value)))
+    })
+
+    this.questionForm.valueChanges.pipe(debounceTime(100)).subscribe(() => {
+      this.onFormQuestion.emit(JSON.parse(JSON.stringify(this.questionForm.value)))
     })
   }
 
@@ -145,6 +156,26 @@ export class ConfirmDialogComponent implements OnInit {
           },
           duration: NOTIFICATION_TIME * 1000,
         })
+      }
+    }
+  }
+
+  onSelected($event: any) {
+    this.selectedCount = $event.checked ? this.selectedCount + 1 : this.selectedCount - 1
+    if (
+      this.selectedQuiz &&
+      this.selectedQuiz.options &&
+      this.selectedCount === this.selectedQuiz.options.length
+    ) {
+      this.snackbarRef = this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.MCQ_ALL_OPTIONS_CORRECT,
+        },
+        duration: NOTIFICATION_TIME * 500,
+      })
+    } else {
+      if (this.snackbarRef) {
+        this.snackbarRef.dismiss()
       }
     }
   }

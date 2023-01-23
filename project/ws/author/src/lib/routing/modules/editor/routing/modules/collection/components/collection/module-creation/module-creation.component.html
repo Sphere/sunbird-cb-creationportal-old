@@ -83,8 +83,8 @@
                     <mat-icon class="material-icons margin-left-m text-medium brand-color"
                       (click)="editContent(resource)">
                       edit</mat-icon>
-                    <mat-icon (click)="takeActions('delete', resource, $event.type)"
-                      class="icons-list">delete</mat-icon>
+                    <mat-icon (click)="takeActions('delete', resource, $event.type)" class="icons-list">delete
+                    </mat-icon>
 
                     <!-- <mat-icon class="icons-list">delete</mat-icon> -->
                     <mat-icon class="icons-list">content_copy</mat-icon>
@@ -191,8 +191,8 @@
               in new tab</mat-checkbox>
           </div>
           <div>
-            <mat-checkbox [(ngModel)]="isGating" [checked]="isGating" style="margin-left: 0px;"
-              class="check-text">Gating
+            <mat-checkbox [(ngModel)]="isGating" [checked]="isGating" style="margin-left: 0px;" class="check-text">
+              Gating
               Enabled</mat-checkbox>
           </div>
           <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
@@ -485,9 +485,11 @@
 
               <span class="mb-3 sub-title">Questions</span>
               <div>
-                <mat-form-field class="w-5/12" appearance="outline" i18n-aria-label aria-label="Select question type">
+                <mat-form-field class="w-8/12 myfield" appearance="outline" i18n-aria-label
+                  aria-label="Select question type">
                   <mat-select formControlName="questionType" placeholder="Question Type">
-                    <mat-option value="mcq-mca" i18n="MCQ| acronym for multiple choice question">MCQ</mat-option>
+                    <mat-option value="mcq-sca" i18n="MCQ| acronym for multiple choice question">MCQ</mat-option>
+
                     <mat-option value="fitb" i18n>Fill in the Blanks</mat-option>
                     <mat-option value="mtf" i18n>Match the Following</mat-option>
                   </mat-select>
@@ -504,7 +506,7 @@
                     *ngFor="let quesObj of assessmentData; let i = index" (click)="selectEntity(i)">
                     <div class="w-full flex items-center justify-between">
                       <span class="px-2">
-                        <span i18n>Quiz</span>-{{ i + 1 }} :
+                        <span i18n>{{ i + 1 }} :</span>
                         <span i18n="MCQ| acronym for multiple choice question"
                           *ngIf="quesObj.questionType === 'mcq-mca' || quesObj.questionType === 'mcq-sca'">MCQ</span>
                         <span i18n="FITB| acronym for fill in the blanks"
