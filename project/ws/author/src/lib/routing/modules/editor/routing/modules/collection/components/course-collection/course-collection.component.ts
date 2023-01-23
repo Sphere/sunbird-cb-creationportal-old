@@ -136,6 +136,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.isMoveCourseToDraft = true
           this.changeStatusToDraft('Content Rejected')
         }
+        if (data === 'backToCourseDetailsPage') {
+          this.showAddchapter = false
+          this.viewMode = 'meta'
+          this.clickedNext = false
+        }
       })
 
     this.initService.uploadMessage.subscribe(
