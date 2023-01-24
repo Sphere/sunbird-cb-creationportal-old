@@ -1712,9 +1712,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addModule() {
-    this.showAddModuleForm = true
-    this.isResourceTypeEnabled = false
-    this.isOnClickOfResourceTypeEnabled = false
     this.moduleButtonName = 'Create'
     // this.moduleNames.push({ name: 'Create Course' })
     // this.moduleName = ''
