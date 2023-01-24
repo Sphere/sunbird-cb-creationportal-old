@@ -2308,13 +2308,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       newData,
       couseCreated === 'web' ? 'link' : '',
     )
-    this.snackBar.openFromComponent(NotificationComponent, {
-      data: {
-        type: isDone ? Notify.SUCCESS : Notify.FAIL,
-      },
-      duration: NOTIFICATION_TIME * 1000,
+    // this.snackBar.openFromComponent(NotificationComponent, {
+    //   data: {
+    //     type: isDone ? Notify.SUCCESS : Notify.FAIL,
+    //   },
+    //   duration: NOTIFICATION_TIME * 1000,
 
-    })
+    // })
 
     if (isDone) {
       const newCreatedLexid = this.editorService.newCreatedLexid
@@ -2679,6 +2679,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
         this.assignFileValues(file, fileName)
       }
+      this.triggerUpload()
     }
   }
 
@@ -2805,7 +2806,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     else
       iframeSupported = 'No'
 
-    this.triggerUpload()
     this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
     this.duration = this.resourcePdfForm.value.duration
     this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
