@@ -194,6 +194,54 @@
               <textarea matInput i18n-placeholder placeholder="Description" [(ngModel)]="topicDescription"></textarea>
             </mat-form-field>
           </div>
+          <!-- is link enabled -->
+          <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled">
+            <mat-form-field appearance="outline" class="margin-top-xs field-width">
+              <input matInput #resourceLinks formControlName="resourceLinks" maxlength="100" i18n-placeholder
+                placeholder="Link" />
+            </mat-form-field>
+            <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
+
+          </div>
+          <!-- is pdf/video/audio/zip -->
+          <div class="thumnail-row margin-top-xs" *ngIf="isPdfOrAudioOrVedioEnabled">
+            <div>
+              <img class="image max-width" height="144" width="256"
+                src="cbp-assets/images/default-white-background.png">
+              <div *ngIf="uploadFileName != ''">
+                <mat-icon class="material-icons margin-left-m text-medium close-uploadIcon"
+                  (click)="clearUploadedFile();$event.stopPropagation()">close</mat-icon>
+                <div class="upload-file-name">
+                  <div style="flex: 0 0 auto;">
+                    <img class="uploaded-img" src="{{uploadIcon}}">
+                  </div>
+                  <div style="flex: 1 1 auto;padding:0.1rem 0 0 1em;">
+                    <p class="text-wrap">{{uploadFileName}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="pdf" *ngIf="uploadFileName == ''">
+                <img class="pdf-img" src="{{resourceImg}}" (error)="changeToDefaultImg($event)">
+                <input #pdfFile (change)="uploadPdf($event.target.files[0]); pdfFile.value = null"
+                  style="display: none;" accept="{{acceptType}}" type="file" />
+                <button (click)="pdfFile.click()" mat-raised-button
+                  class="pdf-button margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom">Upload
+                  File</button>
+                <div class="pdf-text-1">
+                  <!-- <span>OR</span> -->
+                </div>
+                <div class="pdf-text-2">
+                  <!-- <span>Drag and drop a file here</span> -->
+                </div>
+              </div>
+              <div class="margin-bottom-s" *ngIf="acceptType == 'pdf'">
+                <span style="color: #808080 !important;">Note : The PDF should have high resolution</span>
+              </div>
+            </div>
+            <div>
+              Files allowed : {{uploadText}}<br> Max.file size : 200MB
+            </div>
+          </div>
           <div>
             <mat-checkbox [(ngModel)]="isNewTab" [checked]="isNewTab" style="margin-left: 0px;" class="check-text">Open
               link
@@ -205,7 +253,7 @@
               Enabled</mat-checkbox>
           </div>
           <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
-            <span style="color:#808080">Module Thumbnail</span>
+            <span style="color:#808080">Resource Thumbnail</span>
           </div>
           <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
             <div class="margin-top-xs">

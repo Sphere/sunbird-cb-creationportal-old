@@ -1751,6 +1751,61 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.isNewTab = content.isIframeSupported == 'Yes' ? true : false
     this.isGating = content.gatingEnabled
     this.duration = content.duration
+
+    if (content.mimeType == 'Link') {
+      this.isLinkEnabled = true
+      this.isPdfOrAudioOrVedioEnabled = false
+      this.isAssessmentOrQuizEnabled = false
+    } else if (content.mimeType == 'application/pdf') {
+      this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
+      this.uploadFileName = content.downloadUrl ? content.downloadUrl.split('_')[4] : ''
+      this.uploadText = 'PDF'
+      this.isLinkEnabled = false
+      this.isAssessmentOrQuizEnabled = false
+      this.isPdfOrAudioOrVedioEnabled = true
+      this.resourceImg = 'cbp-assets/images/pdf-icon.svg'
+      this.acceptType = '.pdf'
+      this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
+    } else if (content.mimeType == 'audio/mpeg') {
+      this.uploadFileName = content.downloadUrl.split('_')[4]
+      this.uploadIcon = 'cbp-assets/images/video-icon.png'
+      this.uploadText = 'mp3'
+      this.isLinkEnabled = false
+      this.isAssessmentOrQuizEnabled = false
+      this.isPdfOrAudioOrVedioEnabled = true
+      this.resourceImg = 'cbp-assets/images/audio.png'
+      this.acceptType = '.mp3'
+      this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+    } else if (content.mimeType === 'video/mp4') {
+      this.uploadFileName = content.downloadUrl.split('_')[4]
+      this.uploadIcon = 'cbp-assets/images/video-icon.png'
+      this.uploadText = 'mp4, m4v'
+      this.isLinkEnabled = false
+      this.isAssessmentOrQuizEnabled = false
+      this.isPdfOrAudioOrVedioEnabled = true
+      this.resourceImg = 'cbp-assets/images/vedio-img.svg'
+      this.acceptType = '.mp4, .m4v'
+      this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+    } else if (content.mimeType === 'application/vnd.ekstep.html-archive') {
+      this.uploadFileName = content.downloadUrl.split('_')[4]
+      this.uploadIcon = 'cbp-assets/images/SCROM-img.svg'
+      this.uploadText = '.zip'
+      this.isLinkEnabled = false
+      this.isAssessmentOrQuizEnabled = false
+      this.isPdfOrAudioOrVedioEnabled = true
+      this.resourceImg = 'cbp-assets/images/SCROM-img.svg'
+      this.acceptType = '.zip'
+      this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+    }
+    // else if (name == 'Assessment') {
+    //   this.isLinkEnabled = false
+    //   this.isAssessmentOrQuizEnabled = true
+    //   this.isPdfOrAudioOrVedioEnabled = false
+    //   // this.setContentType(type)
+    //   // this.getassessment()
+    // }
+
   }
 
   uploadAppIcon(file: File) {
@@ -1909,7 +1964,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     meta["instructions"] = topicDescription
     meta["name"] = name
     meta["duration"] = this.timeToSeconds().toString()
-    meta["instructions"] = topicDescription
     meta["gatingEnabled"] = isGating
     meta["isIframeSupported"] = iframeSupported
 
@@ -2703,6 +2757,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         duration: NOTIFICATION_TIME * 1000,
       })
       this.fileUploadForm.controls.artifactUrl.setValue(currentContentData.artifactUrl)
+      console.log("this.fileUploadForm.controls.artifactUrl", this.fileUploadForm.controls.artifactUrl)
       this.mimeType = currentContentData.mimeType
       this.iprChecked()
     } else {
@@ -2801,6 +2856,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     else
       iframeSupported = 'No'
 
+    this.triggerUpload()
     this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
     this.duration = this.resourcePdfForm.value.duration
     this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
@@ -2871,6 +2927,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   upload() {
+
+    console.log("update heres")
     const formdata = new FormData()
     formdata.append(
       'content',
@@ -2898,6 +2956,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.canUpdate = false
           // const artifactUrl = v.result && v.result.artifactUrl ? v.result.artifactUrl : ''
           const artifactUrl = v && v.artifactUrl ? v.artifactUrl : ''
+          console.log("this.mimeType", this.mimeType)
           if (this.mimeType === 'video/mp4' || this.mimeType === 'application/pdf' || this.mimeType === 'audio/mpeg') {
             this.fileUploadForm.controls.artifactUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
             this.fileUploadForm.controls.downloadUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
