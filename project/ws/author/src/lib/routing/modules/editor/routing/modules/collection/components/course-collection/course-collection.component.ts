@@ -142,6 +142,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.clickedNext = false
         }
       })
+    this.initService.publishMessage.subscribe(
+      (data: any) => {
+        if (data === 'backToCourseDetailsPage') {
+          this.showAddchapter = false
+          this.viewMode = 'meta'
+          this.clickedNext = false
+        }
+      })
 
     this.initService.uploadMessage.subscribe(
       (data: any) => {
