@@ -2679,6 +2679,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
         this.assignFileValues(file, fileName)
       }
+      this.triggerUpload()
     }
   }
 
@@ -2805,7 +2806,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     else
       iframeSupported = 'No'
 
-    this.triggerUpload()
     this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
     this.duration = this.resourcePdfForm.value.duration
     this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)

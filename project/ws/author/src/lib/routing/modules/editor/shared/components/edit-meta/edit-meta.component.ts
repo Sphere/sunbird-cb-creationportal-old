@@ -147,7 +147,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   moduleName: string = 'undefined title';
   isSaveModuleFormEnable: boolean = false;
   moduleButtonName: string = 'Create';
-  fieldActive: boolean
+  fieldActive!: boolean
 
   constructor(
     private formBuilder: FormBuilder,
