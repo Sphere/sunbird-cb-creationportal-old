@@ -50,7 +50,6 @@ import { QuizStoreService } from '../../../../quiz/services/store.service'
 import { QuizResolverService } from '../../../../quiz/services/resolver.service'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
 import { map } from 'rxjs/operators'
-import { BackNavigateService } from '../../../../../../shared/services/backNavigate.service'
 
 @Component({
   selector: 'ws-author-module-creation',
@@ -231,8 +230,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     private editorStore: EditorContentService,
     private storeService: CollectionStoreService,
     private _configurationsService: ConfigurationsService,
-    private backNavigate: BackNavigateService,
-
     private resolverService: CollectionResolverService,
     private headerService: HeaderServiceService,
     private loaderService: LoaderService,
@@ -285,6 +282,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       questionType: new FormControl(''),
       isgatingEnabled: new FormControl(true),
     })
+    this.initService.currentMessage.subscribe(
+      (data: any) => {
+        if (this.isSettingsPage && data) {
+          this.isSettingsPage = false
+        } else if (!this.isSettingsPage && data) {
+          this.initService.publishData('backToCourseDetailsPage')
+        } else {
+          this.router.navigateByUrl('/author/home')
+        }
+      })
   }
 
   ngOnInit() {
@@ -295,6 +302,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     )
     this.isSettingsPage = false
     this.routerValuesCalls()
+
 
   }
 
@@ -2066,17 +2074,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           })
         })
     }
-  }
-  backNavigation(): void {
-    if (this.isSettingsPage) {
-      this.isSettingsPage = false
-    } else {
-      this.initService.changeMessage('backToCourseDetailsPage')
-    }
-    if (this.isFalse) {
-      this.backNavigate.back()
-    }
-
   }
   async update() {
     this.resourseSelected = ''

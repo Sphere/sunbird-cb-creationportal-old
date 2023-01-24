@@ -1,8 +1,5 @@
 <form [formGroup]="contentForm" class="width-2-3" *ngIf="!clickedBtnNext">
 
-  <mat-icon class="cursor-pointer margin-top-m margin-left-m" (click)="backNavigation()">arrow_back</mat-icon>
-
-
   <mat-sidenav class="padding-s width-300" position="end" [fixedInViewport]="true" [(opened)]="sideNavBarOpened">
     <div class="flex header-bg">
       <h2 class="margin-left-l margin-top-l">Course Settings</h2>

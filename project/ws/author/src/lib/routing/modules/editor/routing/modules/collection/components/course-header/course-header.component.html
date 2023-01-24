@@ -13,6 +13,12 @@
     <!-- <mat-icon i18n-matTooltip matTooltip="Course Settings" class="margin-right-l cursor-pointer white-icon"
       (click)="showCourseSettings()">
       settings</mat-icon> -->
+    <div style="display: flex; flex-direction: row;">
+      <mat-icon style="color: #FAFAFA; margin-top: 4px;" class="cursor-pointer margin-left-m"
+        (click)="backNavigation()">arrow_back</mat-icon>
+      <span style="font-size: 16px;" class="mt-name margin-left-s white-icon">Back to Course Builder</span>
+    </div>
+
 
     <div *ngFor="let button of requiredConfig || []" class="button-grid cursor-pointer"
       (click)="action.next(button.event)">

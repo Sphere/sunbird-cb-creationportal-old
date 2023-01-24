@@ -30,7 +30,6 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
 import { Observable, of, Subscription } from 'rxjs'
 // import { InterestService } from '../../../../../../../../../app/src/lib/routes/profile/routes/interest/services/interest.service'
 import { UploadService } from '../../services/upload.service'
-import { BackNavigateService } from '../../services/backNavigate.service'
 import { CatalogSelectComponent } from '../catalog-select/catalog-select.component'
 import { IFormMeta } from './../../../../../../interface/form'
 import { AccessControlService } from './../../../../../../modules/shared/services/access-control.service'
@@ -45,7 +44,7 @@ import {
   switchMap,
   map,
 } from 'rxjs/operators'
-
+import { Router } from '@angular/router'
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
 
 // import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
@@ -153,7 +152,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private formBuilder: FormBuilder,
     private uploadService: UploadService,
-    private backNavigate: BackNavigateService,
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
     private editorService: EditorService,
@@ -166,8 +164,21 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     private accessService: AccessControlService,
     // private apiService: ApiService,
     private http: HttpClient,
-
-  ) { }
+    private router: Router,
+  ) {
+    this.authInitService.currentMessage.subscribe(
+      (data: any) => {
+        if (!this.clickedBtnNext && data) {
+          this.router.navigateByUrl('/author/home')
+        }
+      })
+    this.authInitService.publishMessage.subscribe(
+      (data: any) => {
+        if (data === 'backToCourseDetailsPage') {
+          this.clickedBtnNext = false
+        }
+      })
+  }
 
   ngAfterViewInit() {
     this.ref.detach()
@@ -347,9 +358,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     //   distinctUntilChanged(),
     //   switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
     // )
-  }
-  backNavigation(): void {
-    this.backNavigate.back()
   }
 
   enableClick(): void {
