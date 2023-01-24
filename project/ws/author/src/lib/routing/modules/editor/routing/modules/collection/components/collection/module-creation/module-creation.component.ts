@@ -1713,6 +1713,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   addModule() {
     this.showAddModuleForm = true
+    this.isResourceTypeEnabled = false
+    this.isOnClickOfResourceTypeEnabled = false
     this.moduleButtonName = 'Create'
     // this.moduleNames.push({ name: 'Create Course' })
     // this.moduleName = ''
@@ -1724,17 +1726,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.addResourceModule["courseID"] = courseID
     this.addIndependentResource()
   }
-  addResource() {
-    this.addIndependentResource()
-    // this.resourceCount = this.resourceCount + 1
-    // this.resourceNames.push({ name: 'Resource ' + this.resourceCount })
-  }
 
   addIndependentResource() {
     this.showAddModuleForm = true
     this.isResourceTypeEnabled = true
-    // this.independentResourceCount = this.independentResourceCount + 1
-    // this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
   }
 
   changeToDefaultImg($event: any) {

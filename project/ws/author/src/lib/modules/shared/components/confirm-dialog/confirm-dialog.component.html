@@ -1,5 +1,5 @@
 <div class="margin-m">
-  <div mat-dialog-content class="scroll">
+  <div mat-dialog-content>
     <h3>
       <ng-container i18n *ngIf="data === 'delete'">
         Are you sure you want to delete it?
@@ -45,6 +45,8 @@
         <span i18n> Are you sure you want to delete the audio file attached for this page ?</span>
       </ng-container>
     </h3>
+  </div>
+  <div mat-dialog-content [ngClass]="data.type === 'editAssessment' ? 'scroll' : ''">
     <ng-container *ngIf="data.type === 'editAssessment'">
       <div *ngIf="this.data.data.questionType == 'mcq-sca'">
         <div [formGroup]="questionForm">
