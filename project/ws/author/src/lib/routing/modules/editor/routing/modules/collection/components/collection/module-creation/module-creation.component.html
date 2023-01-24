@@ -194,13 +194,14 @@
             </mat-form-field>
           </div>
           <!-- is link enabled -->
-          <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled">
+          <div *ngIf="isLinkEnabled">
             <mat-form-field appearance="outline" class="margin-top-xs field-width">
-              <input matInput #resourceLinks formControlName="resourceLinks" maxlength="100" i18n-placeholder
+              <input matInput #resourceLinks [(ngModel)]="editResourceLinks" maxlength="100" i18n-placeholder
                 placeholder="Link" />
             </mat-form-field>
+          </div>
+          <div *ngIf="isLinkEnabled" class="margin-bottom-s">
             <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
-
           </div>
           <!-- is pdf/video/audio/zip -->
           <div class="thumnail-row margin-top-xs" *ngIf="isPdfOrAudioOrVedioEnabled">
