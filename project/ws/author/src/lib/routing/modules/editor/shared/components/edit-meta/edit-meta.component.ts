@@ -148,6 +148,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   moduleName: string = 'undefined title';
   isSaveModuleFormEnable: boolean = false;
   moduleButtonName: string = 'Create';
+  fieldActive: boolean
 
   constructor(
     private formBuilder: FormBuilder,
@@ -353,6 +354,11 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   enableClick(): void {
     this.isEnableTitle = false
+    this.fieldActive = true
+  }
+
+  onFocusOutName() {
+    this.fieldActive = false
   }
 
   clickedNext() {

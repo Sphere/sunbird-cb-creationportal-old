@@ -2311,13 +2311,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       newData,
       couseCreated === 'web' ? 'link' : '',
     )
-    this.snackBar.openFromComponent(NotificationComponent, {
-      data: {
-        type: isDone ? Notify.SUCCESS : Notify.FAIL,
-      },
-      duration: NOTIFICATION_TIME * 1000,
+    // this.snackBar.openFromComponent(NotificationComponent, {
+    //   data: {
+    //     type: isDone ? Notify.SUCCESS : Notify.FAIL,
+    //   },
+    //   duration: NOTIFICATION_TIME * 1000,
 
-    })
+    // })
 
     if (isDone) {
       const newCreatedLexid = this.editorService.newCreatedLexid

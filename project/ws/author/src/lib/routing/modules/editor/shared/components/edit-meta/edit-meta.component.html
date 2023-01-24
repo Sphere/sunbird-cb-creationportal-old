@@ -643,16 +643,18 @@
       <div class="form-edit-container">
         <div class="course-title crs-title-text form-edit-int">
           <mat-form-field appearance="outline" class="disabledData  field-edit-width"
-            [ngClass]="{ 'mat-form-field-invalid': showError('name') }">
-            <input matInput #name class="disabledDataContainer" formControlName="name" maxlength="250" i18n-placeholder
+            [ngClass]="{ 'mat-form-field-invalid': showError('name') }" style="width:auto">
+            <input matInput #name class="text-ellipsis disabledDataContainer" formControlName="name" maxlength="250"
+              i18n-placeholder matTooltip="{{this.contentForm.controls.name.value}}"
               placeholder="Enter a Descriptive title" [required]="checkCondition('name', 'required') ? true : null"
-              readonly [readOnly]="isEnableTitle" autofocus />
+              readonly [readOnly]="isEnableTitle" autofocus (focusout)="onFocusOutName()" />
             <!-- <mat-hint align="end">{{ name.value.length }} / 250</mat-hint> -->
             <mat-error *ngIf="showError('name')" i18n="Name Error|Explains name is required">
               Title is mandatory
             </mat-error>
           </mat-form-field>
-          <mat-icon class="edit-title cursor-pointer" (click)="enableClick();name.focus()">edit</mat-icon>
+          <mat-icon class="edit-title cursor-pointer" [ngClass]="{ 'active': fieldActive }"
+            (click)="enableClick();name.focus()">edit</mat-icon>
         </div>
         <div class="form-edit-int">
           <mat-form-field appearance="fill" class="margin-top-xs  field-edit-width"
@@ -759,8 +761,8 @@
                   [ngClass]="{ 'mat-form-field-invalid': showError('duration') }">
                   <input matInput class="numberInput" [(ngModel)]="seconds" [ngModelOptions]="{ standalone: true }"
                     (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" max="59" step="1" />
-                  <mat-error *ngIf="showError('duration')"
-                    i18n="Duration Error|Explains Duration is mandatory field">Duration is
+                  <mat-error *ngIf="showError('duration')" i18n="Duration Error|Explains Duration is mandatory field">
+                    Duration is
                     mandatory
                   </mat-error>
                 </mat-form-field>
