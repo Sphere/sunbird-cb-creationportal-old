@@ -213,7 +213,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   activeIndexSubscription?: Subscription
   selectedQuizIndex!: number
   quizIndex!: number
-
+  editResourceLinks: string = ''
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -1744,7 +1744,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   editContent(content: any) {
     /* tslint:disable-next-line */
-    console.log(content)
+    console.log('current content', content)
     this.showAddModuleForm = true
     this.isLinkEnabled = false
     this.moduleButtonName = 'Save'
@@ -1757,13 +1757,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.isGating = content.gatingEnabled
     this.duration = content.duration
 
-    if (content.mimeType == 'Link') {
+    if (content.mimeType == 'text/x-url') {
       this.isLinkEnabled = true
       this.isPdfOrAudioOrVedioEnabled = false
       this.isAssessmentOrQuizEnabled = false
+      this.editResourceLinks = content.artifactUrl ? content.artifactUrl : ''
+      console.log("link content", this.isLinkEnabled, this.editResourceLinks)
+      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType == 'application/pdf') {
       this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
-      this.uploadFileName = content.downloadUrl ? content.downloadUrl.split('_')[4] : ''
+      this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadText = 'PDF'
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
@@ -1773,7 +1776,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType == 'audio/mpeg') {
-      this.uploadFileName = content.downloadUrl.split('_')[4]
+      this.uploadFileName = content.artifactUrl.split('_')[4]
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
       this.uploadText = 'mp3'
       this.isLinkEnabled = false
@@ -1782,8 +1785,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/audio.png'
       this.acceptType = '.mp3'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'video/mp4') {
-      this.uploadFileName = content.downloadUrl.split('_')[4]
+      this.uploadFileName = content.artifactUrl.split('_')[4]
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
       this.uploadText = 'mp4, m4v'
       this.isLinkEnabled = false
@@ -1792,8 +1796,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/vedio-img.svg'
       this.acceptType = '.mp4, .m4v'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'application/vnd.ekstep.html-archive') {
-      this.uploadFileName = content.downloadUrl.split('_')[4]
+      this.uploadFileName = content.artifactUrl.split('_')[4]
       this.uploadIcon = 'cbp-assets/images/SCROM-img.svg'
       this.uploadText = '.zip'
       this.isLinkEnabled = false
@@ -1802,6 +1807,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/SCROM-img.svg'
       this.acceptType = '.zip'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     }
     // else if (name == 'Assessment') {
     //   this.isLinkEnabled = false
@@ -1950,7 +1956,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
   }
 
-  saveDetails(name: string, topicDescription: string, thumbnail: string, isNewTab: any, isGating: string) {
+  async saveDetails(name: string, topicDescription: string, thumbnail: string, isNewTab: any, isGating: string) {
     let meta: any = {}
     let requestBody: any
     // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
@@ -1971,7 +1977,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     meta["duration"] = this.timeToSeconds().toString()
     meta["gatingEnabled"] = isGating
     meta["isIframeSupported"] = iframeSupported
-
+    var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+    if (res !== null) {
+      meta["artifactUrl"] = this.editResourceLinks
+    }
     this.editorStore.currentContentData = meta
     this.editorStore.currentContentID = this.content.identifier
     requestBody = {
@@ -2707,6 +2716,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
             this.assignFileValues(file, fileName)
+            this.triggerUpload()
           }
         })
       } else if (fileName.toLowerCase().endsWith('.zip')) {
@@ -2724,6 +2734,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           ) {
 
             this.assignFileValues(file, fileName)
+            this.triggerUpload()
           }
         })
       } else {
@@ -2832,9 +2843,20 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }
       })
     } else {
-      this.dialog.open(this.selectFile, {
+      const dialogRef = this.dialog.open(this.selectFile, {
         width: this.isMobile ? '90vw' : '600px',
         height: 'auto',
+      })
+      dialogRef.afterClosed().subscribe(_ => {
+        if (
+          this.fileUploadCondition.fileName &&
+          this.fileUploadCondition.iframe &&
+          this.fileUploadCondition.eval &&
+          this.fileUploadCondition.preview &&
+          this.fileUploadCondition.externalReference
+        ) {
+          this.triggerUpload()
+        }
       })
     }
   }

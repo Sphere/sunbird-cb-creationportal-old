@@ -151,8 +151,6 @@ export class EditorContentService {
         // metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
       }
       parentData.children.forEach((element: any) => {
-        console.log(element.identifier)
-        console.log(id)
         if ((element.contentType === 'Collection' || element.contentType === 'CourseUnit') && element.identifier === id) {
           nodesModify[element.identifier] = {
             isNew: false,
