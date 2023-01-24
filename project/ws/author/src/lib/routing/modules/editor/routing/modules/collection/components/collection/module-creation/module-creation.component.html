@@ -41,7 +41,9 @@
               </div>
             </div>
             <div *ngIf="module.primaryCategory !== 'Course Unit'" class="heading-resource">
-              <mat-icon class="cursor-pointer">more_vert</mat-icon> <span class="resourse-text">{{module.name}}</span>
+              <mat-icon class="cursor-pointer">more_vert</mat-icon> <span title="{{module.name}}"
+                class="resourse-text">{{ (module.name.length>12)? (module.name | slice:0:12)+'...':(module.name)
+                }}</span>
               <span fxFlex style="flex: 1 1 auto;"></span>
               <span style="display:flex;flex-direction: row;">
                 <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)="editContent(module)">
