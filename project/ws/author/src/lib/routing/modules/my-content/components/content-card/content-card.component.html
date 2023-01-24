@@ -137,10 +137,10 @@
     <mat-icon>edit</mat-icon>
     <span i18n>Edit</span>
   </a>
-  <a *ngIf="showMenuItem('delete')" mat-menu-item (click)="takeAction('delete')">
+  <!-- <a *ngIf="showMenuItem('delete')" mat-menu-item (click)="takeAction('delete')">
     <mat-icon>delete</mat-icon>
     <span i18n>Delete </span>
-  </a>
+  </a> -->
   <a *ngIf="showMenuItem('publish')" mat-menu-item (click)="takeAction('publish')">
     <mat-icon>publish</mat-icon>
     <span i18n>Publish</span>
@@ -159,7 +159,8 @@
     <mat-icon>remove_red_eye</mat-icon>
     <span i18n>Preview</span>
   </a>
-  <a *ngIf="showMenuItem('moveToDraft')" mat-menu-item (click)="takeAction('moveToDraft')">
+  <a *ngIf="showMenuItem('moveToDraft') && this.data.status == 'Live'" mat-menu-item
+    (click)="takeAction('moveToDraft')">
     <mat-icon>reply</mat-icon>
     <span i18n>Recall content to draft</span>
   </a>
