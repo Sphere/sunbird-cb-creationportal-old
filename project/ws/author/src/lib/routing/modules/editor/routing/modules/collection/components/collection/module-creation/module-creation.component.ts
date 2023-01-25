@@ -1649,6 +1649,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
     this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+
     if (res !== null) {
       const rBody: any = {
         name: this.resourceLinkForm.value.resourceName,
@@ -1723,7 +1724,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addModule() {
-    this.showAddModuleForm = true
+    this.showAddModuleForm = false
     this.moduleButtonName = 'Create'
     this.moduleCreate('Create Module', 'Create Module', '')
     // this.moduleNames.push({ name: 'Create Course' })
@@ -1734,7 +1735,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.addResourceModule["module"] = true
     this.addResourceModule["modID"] = modID
     this.addResourceModule["courseID"] = courseID
-    this.addIndependentResource()
+    //this.addIndependentResource()
+    this.showAddModuleForm = true
+    this.isResourceTypeEnabled = true
   }
   addResource() {
     this.addIndependentResource()
@@ -1743,12 +1746,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addIndependentResource() {
-    this.addResourceModule = {}
-    //if (this.addResourceModule["module"] !== true) {
     this.addResourceModule["module"] = false
-    this.addResourceModule["modID"] = this.courseData.parent
+    this.addResourceModule["modID"] = this.courseData.identifier
     this.addResourceModule["courseID"] = this.courseData.identifier
-    //}
     this.showAddModuleForm = true
     this.isResourceTypeEnabled = true
     // this.independentResourceCount = this.independentResourceCount + 1
@@ -2335,6 +2335,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         const content = this.editorStore.getUpdatedMeta(event.identifier)
         /* tslint:disable-next-line */
         console.log(content)
+        if (content.contentType === 'Resource') {
+          this.resourceLinkForm.controls.resourceName.setValue(content.name)
+        }
         // const isCreator = (this.configSvc.userProfile
         //   && this.configSvc.userProfile.userId === content.createdBy)
         //   ? true : false
@@ -2444,7 +2447,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         })
         //}
       } else {
-        const hierarchyData = this.storeService.getTreeHierarchy()
+        //const hierarchyData = this.storeService.getTreeHierarchy()
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.courseData = data
+        })
+        const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
         Object.keys(hierarchyData).forEach((ele: any) => {
           console.log(ele)
           if (ele === this.addResourceModule["courseID"]) {
