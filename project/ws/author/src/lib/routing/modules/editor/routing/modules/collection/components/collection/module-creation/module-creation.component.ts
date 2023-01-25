@@ -294,6 +294,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.router.navigateByUrl('/author/home')
         }
       })
+    this.initService.updateResourceMessage.subscribe(
+      (data: any) => {
+        if (data) {
+          this.ngAfterViewInit()
+        }
+      })
   }
 
   ngOnInit() {
@@ -1587,7 +1593,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.isSaveModuleFormEnable = true
       //this.showAddModuleForm = true
       this.isSaveModuleFormEnable = true
-      this.showAddModuleForm = true
+      //this.showAddModuleForm = true
       if (this.courseData && this.courseData.children.length >= 2) {
         this.showSettingsPage = true
       }
@@ -1719,6 +1725,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   addModule() {
     this.showAddModuleForm = true
     this.moduleButtonName = 'Create'
+    this.moduleCreate('Create Module', 'Create Module', '')
     // this.moduleNames.push({ name: 'Create Course' })
     // this.moduleName = ''
   }
@@ -1736,6 +1743,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addIndependentResource() {
+    this.addResourceModule = {}
+    //if (this.addResourceModule["module"] !== true) {
+    this.addResourceModule["module"] = false
+    this.addResourceModule["modID"] = this.courseData.parent
+    this.addResourceModule["courseID"] = this.courseData.identifier
+    //}
     this.showAddModuleForm = true
     this.isResourceTypeEnabled = true
     // this.independentResourceCount = this.independentResourceCount + 1
@@ -2399,25 +2412,64 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         const result = await this.editorService.resourceToModule(request).toPromise()
         // tslint:disable-next-line:no-console
         console.log(result)
-        const hierarchyData = this.storeService.getTreeHierarchy()
-        // hierarchyData[meta.name] = {
-        //   root: false,
-        //   contentType: meta.contentType,
-        //   primaryCategory: meta.primaryCategory,
-        //   children: [],
-        // }
+
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.courseData = data
+        })
+        const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+        console.log(hierarchyData)
+        hierarchyData[this.editorService.resourseID] = {
+          root: false,
+          name: 'Resource 1',
+          children: [],
+        }
         Object.keys(hierarchyData).forEach((ele: any) => {
           if (ele === this.addResourceModule["modID"]) {
             hierarchyData[ele].children.push(this.editorService.resourseID)
           }
-          // if (hierarchyData[ele].root) {
-          //   hierarchyData[ele].children.push(meta.name)
-          // }
         })
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-          this.courseData = data
+        console.log(hierarchyData)
+        const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+          request: {
+            data: {
+              nodesModified: this.editorStore.getNodeModifyData(),
+              hierarchy: hierarchyData,
+            },
+          },
+        }
+        await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+          this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+            this.courseData = data
+          })
         })
         //}
+      } else {
+        const hierarchyData = this.storeService.getTreeHierarchy()
+        Object.keys(hierarchyData).forEach((ele: any) => {
+          console.log(ele)
+          if (ele === this.addResourceModule["courseID"]) {
+            hierarchyData[this.editorService.resourseID] = {
+              root: false,
+              name: 'Resource 1',
+              children: [],
+            }
+            hierarchyData[ele].children.push(this.editorService.resourseID)
+          }
+        })
+        console.log(hierarchyData)
+        const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+          request: {
+            data: {
+              nodesModified: this.editorStore.getNodeModifyData(),
+              hierarchy: hierarchyData,
+            },
+          },
+        }
+        await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+          this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+            this.courseData = data
+          })
+        })
       }
       if (newCreatedLexid) {
         const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
@@ -3130,6 +3182,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
     //this.preserveExpandedNodes()
     dialogRef.afterClosed().subscribe(confirm => {
+      this.loader.changeLoad.next(true)
       if (confirm) {
         this.parentHierarchy = []
         const hierarchyData = this.storeService.getTreeHierarchy()
@@ -3164,6 +3217,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                     duration: NOTIFICATION_TIME * 500,
 
                   })
+                  this.loader.changeLoad.next(false)
                   this.editorStore.resetOriginalMetaWithHierarchy(data)
                   // tslint:disable-next-line: align
                 })

@@ -172,7 +172,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         if (data) {
           this.createModule = data
           this.setContentType(data['type'])
-          this.showAddchapter = false
+          this.showAddchapter = true
           // this.viewMode = ''
           // this.clickedNext = true
           //this.save()
@@ -410,7 +410,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         this.contentService.currentContent = newCreatedLexid
         this.loaderService.changeLoad.next(false)
       }
-      this.showAddchapter = false
+      this.showAddchapter = true
       this.loaderService.changeLoad.next(false)
       this.subAction({ type: 'editContent', identifier: this.editorService.newCreatedLexid, nodeClicked: false })
       this.createTopicForm.reset()
@@ -2712,7 +2712,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
+  async subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
     // const nodeClicked = event.nodeClicked
     this.contentService.changeActiveCont.next(event.identifier)
     switch (event.type) {
@@ -2743,7 +2743,37 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         //        }
         //      })
         const content = this.contentService.getUpdatedMeta(event.identifier)
-        console.log(content)
+        if (this.createModule) {
+          const hierarchyData = this.storeService.getTreeHierarchy()
+          Object.keys(hierarchyData).forEach((ele: any) => {
+            if (ele === content.parent) {
+              hierarchyData[content.identifier] = {
+                root: false,
+                contentType: "CourseUnit",
+                primaryCategory: "Course Unit",
+                children: [],
+              }
+              hierarchyData[ele].children.push(content.identifier)
+            }
+          })
+          console.log(hierarchyData)
+          const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+            request: {
+              data: {
+                nodesModified: this.contentService.getNodeModifyData(),
+                hierarchy: hierarchyData,
+              },
+            },
+          }
+          await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+            this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+              console.log(data)
+              this.showAddchapter = true
+              this.initService.updateResources('update')
+
+            })
+          })
+        }
         const isCreator = (this._configurationsService.userProfile
           && this._configurationsService.userProfile.userId === content.createdBy)
           ? true : false

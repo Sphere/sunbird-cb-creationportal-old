@@ -733,7 +733,6 @@ export class CollectionStoreService {
         })
       }
     }
-    console.log(this.changedHierarchy)
     this.treeStructureChange.next(this.treeStructureChange.value)
   }
 
@@ -989,10 +988,84 @@ export class CollectionStoreService {
     }
   }
 
+  getNewTreeHierarchy(content: any) {
+    this.hierarchyTree = {}
+    const newParentNode = content
+    this.hierarchyTree[newParentNode.identifier] = {
+      root: this.parentNode.includes(newParentNode.identifier),
+      contentType: newParentNode.category,
+      // @ts-ignore: Unreachable code error
+      children: (newParentNode.children) ? newParentNode.children.map(v => {
+        const child = v.identifier
+        if (v.primaryCategory) {
+          this.hierarchyTree[v.identifier] = {
+            root: false,
+            contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
+            primaryCategory: v.primaryCategory === 'Resource' ? undefined : 'Course Unit',
+            name: v.primaryCategory === 'Resource' ? v.name : undefined,
+            children: [],
+          }
+        }
+        return child
+      }) : [],
+    }
+    if (newParentNode.children && newParentNode.children.length > 0) {
+      // @ts-ignore: Unreachable code error
+      newParentNode.children.forEach(element => {
+        if (element.children && element.children.length > 0) {
+          this.hierarchyTree[element.identifier] = {
+            root: this.parentNode.includes(element.identifier),
+            // contentType: element.contentType,
+            primaryCategory: element.primaryCategory === 'Resource' ? undefined : 'Course Unit',
+            contentType: element.contentType === 'Resource' ? undefined : 'CourseUnit',
+            // @ts-ignore: Unreachable code error
+            children: element.children.map(v => {
+              const child = v.identifier
+              if (v.primaryCategory) {
+                this.hierarchyTree[v.identifier] = {
+                  root: false,
+                  contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
+                  primaryCategory: v.primaryCategory === 'Resource' ? undefined : 'Course Unit',
+                  name: v.primaryCategory === 'Resource' ? v.name : undefined,
+                  children: [],
+                }
+              }
+              return child
+            }),
+          }
+          // @ts-ignore: Unreachable code error
+          element.children.forEach(subElement => {
+            if (subElement.children && subElement.children.length > 0) {
+              this.hierarchyTree[subElement.identifier] = {
+                root: this.parentNode.includes(subElement.identifier),
+                contentType: subElement.contentType === 'Resource' ? undefined : 'CourseUnit',
+                primaryCategory: subElement.primaryCategory === 'Resource' ? undefined : 'Course Unit',
+                // @ts-ignore: Unreachable code error
+                children: subElement.children.map(v => {
+                  const child = v.identifier
+                  if (v.primaryCategory) {
+                    this.hierarchyTree[v.identifier] = {
+                      root: false,
+                      contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
+                      primaryCategory: v.primaryCategory === 'Resource' ? undefined : 'Course Unit',
+                      name: v.primaryCategory === 'Resource' ? v.name : undefined,
+                      children: [],
+                    }
+                  }
+                  return child
+                }),
+              }
+            }
+          })
+        }
+      })
+    }
+    return this.hierarchyTree
+  }
+
   getTreeHierarchy() {
     this.hierarchyTree = {}
     const newParentNode = this.flatNodeMap.get(this.currentParentNode) as IContentNode
-    console.log(newParentNode)
     this.hierarchyTree[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),
       contentType: newParentNode.category,
