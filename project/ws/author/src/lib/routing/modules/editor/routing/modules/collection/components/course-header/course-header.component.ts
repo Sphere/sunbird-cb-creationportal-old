@@ -23,7 +23,7 @@ export class CourseHeaderComponent implements OnInit {
   @Input() isModelHeaderView: boolean = false;
 
   requiredConfig: IActionButton[] = []
-
+  backNav: boolean = false
   constructor(private configSvc: ConfigurationsService, private domSanitizer: DomSanitizer,
     private headerService: HeaderServiceService,
     private initService: AuthInitService,
@@ -45,7 +45,12 @@ export class CourseHeaderComponent implements OnInit {
       console.log('buttonClicked')
       this.buttonConfig.buttons.forEach(button => {
         if (button.event === 'save' || button.event === 'push' || button.title === 'saveAndNext') {
-          this.requiredConfig.push(button)
+          if (button.title === 'Review' || button.title == 'Publish') {
+            this.backNav = false
+            this.requiredConfig.push(button)
+          } else {
+            this.backNav = true
+          }
         }
       })
     }
