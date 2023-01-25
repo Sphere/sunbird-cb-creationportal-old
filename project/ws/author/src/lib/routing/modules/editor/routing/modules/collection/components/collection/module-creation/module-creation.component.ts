@@ -1584,6 +1584,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       console.log("data", data.children.length)
       this.courseData = data
       //this.moduleButtonName = 'Save'
+      //this.isSaveModuleFormEnable = true
+      //this.showAddModuleForm = true
       this.isSaveModuleFormEnable = true
       this.showAddModuleForm = true
       if (this.courseData && this.courseData.children.length >= 2) {
