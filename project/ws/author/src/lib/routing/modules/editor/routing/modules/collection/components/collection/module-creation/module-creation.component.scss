@@ -556,6 +556,10 @@ ul li {
   display: flex;
   flex-direction: column-reverse;
 }
+.zip-upload-agree[disabled]{
+  background-color: #d3d3d3 !important;
+  color: #999 !important;
+}
 
 .custom-placeholder {
   border: dotted 3px #999;
