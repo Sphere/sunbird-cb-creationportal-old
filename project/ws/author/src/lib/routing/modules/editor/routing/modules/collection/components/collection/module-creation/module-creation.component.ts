@@ -242,6 +242,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   ) {
     this.resourceLinkForm = new FormGroup({
       resourceName: new FormControl(''),
+      instructions: new FormControl(''),
       resourceLinks: new FormControl(''),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
@@ -265,6 +266,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     this.resourcePdfForm = new FormGroup({
       resourceName: new FormControl(''),
+      instructions: new FormControl(''),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
@@ -1642,6 +1644,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     if (res !== null) {
       const rBody: any = {
         name: this.resourceLinkForm.value.resourceName,
+        instructions: this.resourceLinkForm.value.instructions,
         artifactUrl: this.resourceLinkForm.value.resourceLinks,
         isIframeSupported: iframeSupported,
         gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
@@ -1798,7 +1801,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'application/vnd.ekstep.html-archive') {
-      this.uploadFileName = content.artifactUrl.split('_')[4]
+      console.log("content.mimeType", content.artifactUrl.split('_')[7])
+      this.uploadFileName = content.artifactUrl.split('_')[7]
       this.uploadIcon = 'cbp-assets/images/SCROM-img.svg'
       this.uploadText = '.zip'
       this.isLinkEnabled = false
@@ -2734,7 +2738,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           ) {
 
             this.assignFileValues(file, fileName)
-            this.triggerUpload()
+            // this.triggerUpload()
           }
         })
       } else {
@@ -2889,6 +2893,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
     const rBody: any = {
       name: this.resourcePdfForm.value.resourceName,
+      instructions: this.resourcePdfForm.value.instructions,
       appIcon: this.resourcePdfForm.value.appIcon,
       thumbnail: this.resourcePdfForm.value.thumbnail,
       isIframeSupported: iframeSupported,
@@ -2954,8 +2959,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   upload() {
-
-    console.log("update heres")
     const formdata = new FormData()
     formdata.append(
       'content',

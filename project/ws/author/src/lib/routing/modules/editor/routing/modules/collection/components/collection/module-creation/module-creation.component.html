@@ -346,6 +346,10 @@
                 <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
               </mat-form-field>
+              <mat-form-field appearance="outline" class="margin-top-xs field-width">
+                <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
+                  placeholder="Description of the resource" />
+              </mat-form-field>
               <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">
                   <input matInput #resourceLinks formControlName="resourceLinks" maxlength="100" i18n-placeholder
@@ -398,6 +402,10 @@
               <mat-form-field appearance="outline" class="margin-top-xs field-width">
                 <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="margin-top-xs field-width">
+                <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
+                  placeholder="Description of the resource" />
               </mat-form-field>
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource file</span>
