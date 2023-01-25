@@ -629,21 +629,26 @@
               </div>
             </div>
           </div>
-          <div class="flex justify-center">
-            <button type="button" mat-raised-button class="margin-top-m ws-mat-primary-background" (click)="fileUploadCondition.isSubmitPressed = true;
+          <div class="flex justify-center ">
+            <button type="button" [disabled]="!fileUploadCondition.fileName ||
+                !fileUploadCondition.iframe ||
+                !fileUploadCondition.eval ||
+                !fileUploadCondition.preview ||
+                !fileUploadCondition.externalReference" mat-raised-button
+              class="margin-top-m ws-mat-primary-background zip-upload-agree" (click)="fileUploadCondition.isSubmitPressed = true;
                 fileUploadCondition.fileName &&
                 fileUploadCondition.iframe &&
                 fileUploadCondition.eval &&
                 fileUploadCondition.preview &&
                 fileUploadCondition.externalReference ? closeDialog() : null">
-              <div class="flex flex-middle justify-center">
+              <div class="flex flex-middle justify-center ">
                 <p class="margin-remove-bottom agree-text" i18n>I Agree</p>
               </div>
             </button>
           </div>
         </ng-template>
         <ng-template #selectFile>
-          <div class="margin-top-m margin-bottom-m">
+          <div class="margin-top-m margin-bottom-m" style="max-height: 400px;">
             <div style="position: relative;">
               <h3 class="mat-h3 font-weight-bold margin-remove-bottom" i18n>
                 Select the entry file
@@ -652,7 +657,7 @@
                 <mat-icon aria-label="Next" role="button">close</mat-icon>
               </button>
             </div>
-            <div style="max-height: 400px" class="mt-4">
+            <div class="mt-4">
               <mat-radio-group aria-labelledby="example-radio-group-label"
                 class="flex flex-1 flex-column example-radio-group" [(ngModel)]="fileUploadCondition.url">
                 <mat-radio-button class="example-radio-button" *ngFor="let file of fileList" [value]="file"
@@ -661,15 +666,16 @@
                 </mat-radio-button>
               </mat-radio-group>
             </div>
+            <div class="flex justify-center padding-bottom-m">
+              <button type="button" mat-raised-button color="primary" class="margin-top-m ws-mat-primary-background"
+                (click)="closeDialog()">
+                <div class="flex flex-middle justify-center">
+                  <p class="margin-remove-bottom agree-text" i18n>Done</p>
+                </div>
+              </button>
+            </div>
           </div>
-          <div class="flex justify-center">
-            <button type="button" mat-raised-button color="primary" class="margin-top-m ws-mat-primary-background"
-              (click)="closeDialog()">
-              <div class="flex flex-middle justify-center">
-                <p class="margin-remove-bottom agree-text" i18n>Done</p>
-              </div>
-            </button>
-          </div>
+
         </ng-template>
         <ng-template #errorFile>
           <div class="margin-top-m margin-bottom-m">

@@ -1803,8 +1803,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'application/vnd.ekstep.html-archive') {
-      console.log("content.mimeType", content.artifactUrl.split('_')[7])
-      this.uploadFileName = content.artifactUrl.split('_')[7]
+      this.uploadFileName = content.streamingUrl.split('/')[6]
       this.uploadIcon = 'cbp-assets/images/SCROM-img.svg'
       this.uploadText = '.zip'
       this.isLinkEnabled = false
