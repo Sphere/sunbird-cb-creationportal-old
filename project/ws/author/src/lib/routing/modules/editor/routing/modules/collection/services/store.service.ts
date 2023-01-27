@@ -914,23 +914,25 @@ export class CollectionStoreService {
       if (content.name === '') {
         errorMsg.push('Course title cannot be empty')
       }
-      if (content.description === '' && content.status === 'Draft') {
-        errorMsg.push('Course description/summary cannot be empty')
-      }
-      if (content.purpose === '') {
-        errorMsg.push('Course subtitle cannot be empty')
-      }
+      // if (content.description === '' && content.status === 'Draft') {
+      //   errorMsg.push('Course description/summary cannot be empty')
+      // }
+      console.log(content.purpose)
+      console.log(content.contentType)
+      // if (content.purpose === '') {
+      //   errorMsg.push('Course subtitle cannot be empty')
+      // }
       if (content.instructions === '') {
-        errorMsg.push('Course long description cannot be empty')
+        errorMsg.push('Course description cannot be empty')
       }
       /*Workaround*/
       // && content.parent != id[3]
       if (content.thumbnail === undefined && content.status === 'Draft') {
         errorMsg.push('Course thumbnail cannot be empty')
       }
-      if (content.sourceName === undefined && content.status === 'Draft' && content.parent !== undefined) {
-        errorMsg.push('Course provider/source cannot be empty')
-      }
+      // if (content.sourceName === undefined && content.status === 'Draft') {
+      //   errorMsg.push('Course provider/source cannot be empty')
+      // }
       if (content.mimeType === 'text/x-url' && content.artifactUrl === '') {
         errorMsg.push('Course artifactUrl cannot be empty')
       }

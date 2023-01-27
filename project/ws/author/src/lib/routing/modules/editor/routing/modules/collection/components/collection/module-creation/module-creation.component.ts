@@ -519,7 +519,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   async saves(nextAction?: string) {
     if (this.resourseSelected !== '') {
 
-      this.updates()
+      this.update()
     }
     const updatedContent = this.contentService.upDatedContent || {}
     if (this.viewMode === 'assessment') {
@@ -1763,7 +1763,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   editContent(content: any) {
     /* tslint:disable-next-line */
     console.log('current content', content)
+    //this.isResourceTypeEnabled = true
     this.showAddModuleForm = true
+    //this.isOnClickOfResourceTypeEnabled = true
     this.isLinkEnabled = false
     this.moduleButtonName = 'Save'
     this.content = content
@@ -1960,7 +1962,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                               /* tslint:disable-next-line */
                               console.log('info', info)
                               if (info) {
-                                this.update()
+                                //this.update()
                               }
                             })
                         } else {
@@ -2006,7 +2008,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         content: meta
       }
     }
-
+    console.log(this.content)
+    this.contentService.setUpdatedMeta(meta, this.content.identifier)
     if (this.content.contentType === 'Resource') {
       this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
         (info: any) => {
@@ -2158,11 +2161,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   async update() {
     this.resourseSelected = ''
+    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+      this.courseData = data
+    })
+    const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
           nodesModified: this.editorStore.getNodeModifyData(),
-          hierarchy: this.storeService.getTreeHierarchy(),
+          hierarchy: hierarchyData,
         },
       },
     }
