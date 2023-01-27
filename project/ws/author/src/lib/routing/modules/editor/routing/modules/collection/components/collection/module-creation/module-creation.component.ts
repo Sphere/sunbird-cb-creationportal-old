@@ -1654,6 +1654,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       const rBody: any = {
         name: this.resourceLinkForm.value.resourceName,
         instructions: this.resourceLinkForm.value.instructions,
+        description: this.resourceLinkForm.value.instructions,
         artifactUrl: this.resourceLinkForm.value.resourceLinks,
         isIframeSupported: iframeSupported,
         gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
@@ -1993,6 +1994,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     meta["thumbnail"] = thumbnail
     meta["versionKey"] = this.courseData.versionKey
     meta["instructions"] = topicDescription
+    meta["description"] = topicDescription
     meta["name"] = name
     meta["duration"] = this.timeToSeconds().toString()
     meta["gatingEnabled"] = isGating
@@ -2674,6 +2676,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             if (!currentMeta.instructions) {
               currentMeta.instructions = parentData.instructions !== '' ? parentData.instructions : currentMeta.instructions
             }
+            if (!currentMeta.description) {
+              currentMeta.description = parentData.description !== '' ? parentData.description : currentMeta.description
+            }
 
             if (!currentMeta.categoryType) {
               currentMeta.categoryType = parentData.categoryType !== '' ? parentData.categoryType : currentMeta.categoryType
@@ -2962,6 +2967,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     const rBody: any = {
       name: this.resourcePdfForm.value.resourceName,
       instructions: this.resourcePdfForm.value.instructions,
+      description: this.resourcePdfForm.value.instructions,
       appIcon: this.resourcePdfForm.value.appIcon,
       thumbnail: this.resourcePdfForm.value.thumbnail,
       isIframeSupported: iframeSupported,
