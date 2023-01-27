@@ -413,7 +413,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   action(type: string) {      // recheck
     /* tslint:disable-next-line */
-    console.log('came here', type)
     switch (type) {
       case 'next':
         this.viewMode = 'meta'
@@ -518,7 +517,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   async saves(nextAction?: string) {
     if (this.resourseSelected !== '') {
-
       this.update()
     }
     const updatedContent = this.contentService.upDatedContent || {}
@@ -663,7 +661,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
       /* tslint:disable-next-line */
 
-      console.log("requestBody", requestBody.request.content.trackContacts)
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
 
       if (requestBody.request.content.duration === 0 || requestBody.request.content.duration) {
@@ -720,7 +717,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
       this.contentService.currentContentData = requestBody.request.content
       this.contentService.currentContentID = this.currentCourseId
-
       //let nodesModified = {}
       /* tslint:disable-next-line */
 
@@ -980,11 +976,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             }
             if (updatedMeta.status === 'Draft') {
               this.editorService.updateContentV4(tempRequset).subscribe(() => {
-                // this.finalSaveAndRedirect(updatedMeta)
+                this.dialog.closeAll()
+                this.finalSaveAndRedirect(updatedMeta)
                 // this.sendModuleToReviewOrPublish(moduleListToReview, updatedMeta)
               })
             } else {
-              // this.finalSaveAndRedirect(updatedMeta)
+              this.finalSaveAndRedirect(updatedMeta)
             }
           } else if (resourceListToReview.length === flag) {
             this.dialog.closeAll()
@@ -3016,7 +3013,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       if (requestBody.request.content.category) {
         delete requestBody.request.content.category
       }
-
       const contenUpdateRes: any =
         await this.editorService.updateContentV3(requestBody, this.contentService.currentContent).toPromise().catch(_error => { })
       if (contenUpdateRes && contenUpdateRes.params && contenUpdateRes.params.status === 'successful') {
