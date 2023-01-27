@@ -213,7 +213,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   activeIndexSubscription?: Subscription
   selectedQuizIndex!: number
   quizIndex!: number
-
+  editResourceLinks: string = ''
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -242,6 +242,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   ) {
     this.resourceLinkForm = new FormGroup({
       resourceName: new FormControl(''),
+      instructions: new FormControl(''),
       resourceLinks: new FormControl(''),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
@@ -265,6 +266,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     this.resourcePdfForm = new FormGroup({
       resourceName: new FormControl(''),
+      instructions: new FormControl(''),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
@@ -290,6 +292,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.initService.publishData('backToCourseDetailsPage')
         } else {
           this.router.navigateByUrl('/author/home')
+        }
+      })
+    this.initService.updateResourceMessage.subscribe(
+      (data: any) => {
+        if (data) {
+          this.ngAfterViewInit()
         }
       })
   }
@@ -511,7 +519,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   async saves(nextAction?: string) {
     if (this.resourseSelected !== '') {
 
-      this.updates()
+      this.update()
     }
     const updatedContent = this.contentService.upDatedContent || {}
     if (this.viewMode === 'assessment') {
@@ -1582,8 +1590,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       console.log("data", data.children.length)
       this.courseData = data
       //this.moduleButtonName = 'Save'
+      //this.isSaveModuleFormEnable = true
+      //this.showAddModuleForm = true
       this.isSaveModuleFormEnable = true
-      this.showAddModuleForm = true
+      //this.showAddModuleForm = true
       if (this.courseData && this.courseData.children.length >= 2) {
         this.showSettingsPage = true
       }
@@ -1639,9 +1649,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
     this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+
     if (res !== null) {
       const rBody: any = {
         name: this.resourceLinkForm.value.resourceName,
+        instructions: this.resourceLinkForm.value.instructions,
+        description: this.resourceLinkForm.value.instructions,
         artifactUrl: this.resourceLinkForm.value.resourceLinks,
         isIframeSupported: iframeSupported,
         gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
@@ -1712,7 +1725,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addModule() {
+    this.showAddModuleForm = false
     this.moduleButtonName = 'Create'
+    this.moduleCreate('Create Module', 'Create Module', '')
     // this.moduleNames.push({ name: 'Create Course' })
     // this.moduleName = ''
   }
@@ -1721,10 +1736,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.addResourceModule["module"] = true
     this.addResourceModule["modID"] = modID
     this.addResourceModule["courseID"] = courseID
-    this.addIndependentResource()
+    //this.addIndependentResource()
+    this.showAddModuleForm = true
+    this.isResourceTypeEnabled = true
   }
 
   addIndependentResource() {
+    this.addResourceModule["module"] = false
+    this.addResourceModule["modID"] = this.courseData.identifier
+    this.addResourceModule["courseID"] = this.courseData.identifier
     this.showAddModuleForm = true
     this.isResourceTypeEnabled = true
   }
@@ -1736,8 +1756,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   editContent(content: any) {
     /* tslint:disable-next-line */
-    console.log(content)
+    console.log('current content', content)
+    //this.isResourceTypeEnabled = true
     this.showAddModuleForm = true
+    //this.isOnClickOfResourceTypeEnabled = true
     this.isLinkEnabled = false
     this.moduleButtonName = 'Save'
     this.content = content
@@ -1749,13 +1771,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.isGating = content.gatingEnabled
     this.duration = content.duration
 
-    if (content.mimeType == 'Link') {
+    if (content.mimeType == 'text/x-url') {
       this.isLinkEnabled = true
       this.isPdfOrAudioOrVedioEnabled = false
       this.isAssessmentOrQuizEnabled = false
+      this.editResourceLinks = content.artifactUrl ? content.artifactUrl : ''
+      console.log("link content", this.isLinkEnabled, this.editResourceLinks)
+      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType == 'application/pdf') {
       this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
-      this.uploadFileName = content.downloadUrl ? content.downloadUrl.split('_')[4] : ''
+      this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadText = 'PDF'
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
@@ -1765,7 +1790,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType == 'audio/mpeg') {
-      this.uploadFileName = content.downloadUrl.split('_')[4]
+      this.uploadFileName = content.artifactUrl.split('_')[4]
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
       this.uploadText = 'mp3'
       this.isLinkEnabled = false
@@ -1774,8 +1799,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/audio.png'
       this.acceptType = '.mp3'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'video/mp4') {
-      this.uploadFileName = content.downloadUrl.split('_')[4]
+      this.uploadFileName = content.artifactUrl.split('_')[4]
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
       this.uploadText = 'mp4, m4v'
       this.isLinkEnabled = false
@@ -1784,8 +1810,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/vedio-img.svg'
       this.acceptType = '.mp4, .m4v'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'application/vnd.ekstep.html-archive') {
-      this.uploadFileName = content.downloadUrl.split('_')[4]
+      this.uploadFileName = content.streamingUrl.split('/')[6]
       this.uploadIcon = 'cbp-assets/images/SCROM-img.svg'
       this.uploadText = '.zip'
       this.isLinkEnabled = false
@@ -1794,6 +1821,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/SCROM-img.svg'
       this.acceptType = '.zip'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     }
     // else if (name == 'Assessment') {
     //   this.isLinkEnabled = false
@@ -1928,7 +1956,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                               /* tslint:disable-next-line */
                               console.log('info', info)
                               if (info) {
-                                this.update()
+                                //this.update()
                               }
                             })
                         } else {
@@ -1942,7 +1970,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
   }
 
-  saveDetails(name: string, topicDescription: string, thumbnail: string, isNewTab: any, isGating: string) {
+  async saveDetails(name: string, topicDescription: string, thumbnail: string, isNewTab: any, isGating: string) {
     let meta: any = {}
     let requestBody: any
     // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
@@ -1959,11 +1987,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     meta["thumbnail"] = thumbnail
     meta["versionKey"] = this.courseData.versionKey
     meta["instructions"] = topicDescription
+    meta["description"] = topicDescription
     meta["name"] = name
     meta["duration"] = this.timeToSeconds().toString()
     meta["gatingEnabled"] = isGating
     meta["isIframeSupported"] = iframeSupported
-
+    var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+    if (res !== null) {
+      meta["artifactUrl"] = this.editResourceLinks
+    }
     this.editorStore.currentContentData = meta
     this.editorStore.currentContentID = this.content.identifier
     requestBody = {
@@ -1971,7 +2003,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         content: meta
       }
     }
-
+    console.log(this.content)
+    this.contentService.setUpdatedMeta(meta, this.content.identifier)
     if (this.content.contentType === 'Resource') {
       this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
         (info: any) => {
@@ -2123,11 +2156,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   async update() {
     this.resourseSelected = ''
+    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+      this.courseData = data
+    })
+    const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
           nodesModified: this.editorStore.getNodeModifyData(),
-          hierarchy: this.storeService.getTreeHierarchy(),
+          hierarchy: hierarchyData,
         },
       },
     }
@@ -2300,6 +2338,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         const content = this.editorStore.getUpdatedMeta(event.identifier)
         /* tslint:disable-next-line */
         console.log(content)
+        if (content.contentType === 'Resource') {
+          this.resourceLinkForm.controls.resourceName.setValue(content.name)
+        }
         // const isCreator = (this.configSvc.userProfile
         //   && this.configSvc.userProfile.userId === content.createdBy)
         //   ? true : false
@@ -2377,25 +2418,68 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         const result = await this.editorService.resourceToModule(request).toPromise()
         // tslint:disable-next-line:no-console
         console.log(result)
-        const hierarchyData = this.storeService.getTreeHierarchy()
-        // hierarchyData[meta.name] = {
-        //   root: false,
-        //   contentType: meta.contentType,
-        //   primaryCategory: meta.primaryCategory,
-        //   children: [],
-        // }
+
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.courseData = data
+        })
+        const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+        console.log(hierarchyData)
+        hierarchyData[this.editorService.resourseID] = {
+          root: false,
+          name: 'Resource 1',
+          children: [],
+        }
         Object.keys(hierarchyData).forEach((ele: any) => {
           if (ele === this.addResourceModule["modID"]) {
             hierarchyData[ele].children.push(this.editorService.resourseID)
           }
-          // if (hierarchyData[ele].root) {
-          //   hierarchyData[ele].children.push(meta.name)
-          // }
         })
+        console.log(hierarchyData)
+        const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+          request: {
+            data: {
+              nodesModified: this.editorStore.getNodeModifyData(),
+              hierarchy: hierarchyData,
+            },
+          },
+        }
+        await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+          this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+            this.courseData = data
+          })
+        })
+        //}
+      } else {
+        //const hierarchyData = this.storeService.getTreeHierarchy()
         this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
           this.courseData = data
         })
-        //}
+        const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+        Object.keys(hierarchyData).forEach((ele: any) => {
+          console.log(ele)
+          if (ele === this.addResourceModule["courseID"]) {
+            hierarchyData[this.editorService.resourseID] = {
+              root: false,
+              name: 'Resource 1',
+              children: [],
+            }
+            hierarchyData[ele].children.push(this.editorService.resourseID)
+          }
+        })
+        console.log(hierarchyData)
+        const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+          request: {
+            data: {
+              nodesModified: this.editorStore.getNodeModifyData(),
+              hierarchy: hierarchyData,
+            },
+          },
+        }
+        await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+          this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+            this.courseData = data
+          })
+        })
       }
       if (newCreatedLexid) {
         const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
@@ -2585,6 +2669,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             if (!currentMeta.instructions) {
               currentMeta.instructions = parentData.instructions !== '' ? parentData.instructions : currentMeta.instructions
             }
+            if (!currentMeta.description) {
+              currentMeta.description = parentData.description !== '' ? parentData.description : currentMeta.description
+            }
 
             if (!currentMeta.categoryType) {
               currentMeta.categoryType = parentData.categoryType !== '' ? parentData.categoryType : currentMeta.categoryType
@@ -2699,6 +2786,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
             this.assignFileValues(file, fileName)
+            this.triggerUpload()
           }
         })
       } else if (fileName.toLowerCase().endsWith('.zip')) {
@@ -2716,6 +2804,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           ) {
 
             this.assignFileValues(file, fileName)
+            // this.triggerUpload()
           }
         })
       } else {
@@ -2824,9 +2913,20 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }
       })
     } else {
-      this.dialog.open(this.selectFile, {
+      const dialogRef = this.dialog.open(this.selectFile, {
         width: this.isMobile ? '90vw' : '600px',
         height: 'auto',
+      })
+      dialogRef.afterClosed().subscribe(_ => {
+        if (
+          this.fileUploadCondition.fileName &&
+          this.fileUploadCondition.iframe &&
+          this.fileUploadCondition.eval &&
+          this.fileUploadCondition.preview &&
+          this.fileUploadCondition.externalReference
+        ) {
+          this.triggerUpload()
+        }
       })
     }
   }
@@ -2859,6 +2959,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
     const rBody: any = {
       name: this.resourcePdfForm.value.resourceName,
+      instructions: this.resourcePdfForm.value.instructions,
+      description: this.resourcePdfForm.value.instructions,
       appIcon: this.resourcePdfForm.value.appIcon,
       thumbnail: this.resourcePdfForm.value.thumbnail,
       isIframeSupported: iframeSupported,
@@ -2924,8 +3026,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   upload() {
-
-    console.log("update heres")
     const formdata = new FormData()
     formdata.append(
       'content',
@@ -3096,6 +3196,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
     //this.preserveExpandedNodes()
     dialogRef.afterClosed().subscribe(confirm => {
+      this.loader.changeLoad.next(true)
       if (confirm) {
         this.parentHierarchy = []
         const hierarchyData = this.storeService.getTreeHierarchy()
@@ -3130,6 +3231,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                     duration: NOTIFICATION_TIME * 500,
 
                   })
+                  this.loader.changeLoad.next(false)
                   this.editorStore.resetOriginalMetaWithHierarchy(data)
                   // tslint:disable-next-line: align
                 })

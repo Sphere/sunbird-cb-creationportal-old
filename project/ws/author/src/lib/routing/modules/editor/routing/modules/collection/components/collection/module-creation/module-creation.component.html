@@ -20,7 +20,7 @@
               <span style="display:flex;flex-direction: row;">
                 <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)=" editContent(module)">
                   edit</mat-icon>
-                <mat-icon class="icons-list">delete</mat-icon>
+                <mat-icon class="icons-list" (click)="takeActions('delete', module, $event.type)">delete</mat-icon>
                 <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
                   content_copy</mat-icon>
               </span>
@@ -134,7 +134,7 @@
     vertical-align: bottom;cursor: pointer;color: #1C5D95;">remove_red_eye</mat-icon>
             <span style="font-size: small;cursor: pointer;color:#1C5D95"
               [ngClass]="showAddModuleForm ? 'brand-color' : ''"
-              [routerLink]="'/author/toc/' + currentContent + '/contents'">Preview</span>
+              [routerLink]="'/author/toc/' + courseData?.identifier + '/contents'">Preview</span>
             <!-- [ngClass]="showAddModuleForm ? 'ws-mat-primary-background' : 'secondary-button'" -->
             <!-- <button mat-raised-button (click)="isSettingsPage=true"
               [ngClass]="showAddModuleForm ? 'ws-mat-primary-background' : 'secondary-button'"
@@ -195,13 +195,14 @@
             </mat-form-field>
           </div>
           <!-- is link enabled -->
-          <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled">
+          <div *ngIf="isLinkEnabled">
             <mat-form-field appearance="outline" class="margin-top-xs field-width">
-              <input matInput #resourceLinks formControlName="resourceLinks" maxlength="100" i18n-placeholder
+              <input matInput #resourceLinks [(ngModel)]="editResourceLinks" maxlength="100" i18n-placeholder
                 placeholder="Link" />
             </mat-form-field>
+          </div>
+          <div *ngIf="isLinkEnabled" class="margin-bottom-s">
             <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
-
           </div>
           <!-- is pdf/video/audio/zip -->
           <div class="thumnail-row margin-top-xs" *ngIf="isPdfOrAudioOrVedioEnabled">
@@ -253,7 +254,7 @@
               Enabled</mat-checkbox>
           </div>
           <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
-            <span style="color:#808080">Resource Thumbnail</span>
+            <span style="color:#808080">Module Thumbnail</span>
           </div>
           <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
             <div class="margin-top-xs">
@@ -346,6 +347,10 @@
                 <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
               </mat-form-field>
+              <mat-form-field appearance="outline" class="margin-top-xs field-width">
+                <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
+                  placeholder="Description of the resource" />
+              </mat-form-field>
               <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">
                   <input matInput #resourceLinks formControlName="resourceLinks" maxlength="100" i18n-placeholder
@@ -398,6 +403,10 @@
               <mat-form-field appearance="outline" class="margin-top-xs field-width">
                 <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="margin-top-xs field-width">
+                <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
+                  placeholder="Description of the resource" />
               </mat-form-field>
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource file</span>
@@ -670,21 +679,26 @@
               </div>
             </div>
           </div>
-          <div class="flex justify-center">
-            <button type="button" mat-raised-button class="margin-top-m ws-mat-primary-background" (click)="fileUploadCondition.isSubmitPressed = true;
+          <div class="flex justify-center ">
+            <button type="button" [disabled]="!fileUploadCondition.fileName ||
+                !fileUploadCondition.iframe ||
+                !fileUploadCondition.eval ||
+                !fileUploadCondition.preview ||
+                !fileUploadCondition.externalReference" mat-raised-button
+              class="margin-top-m ws-mat-primary-background zip-upload-agree" (click)="fileUploadCondition.isSubmitPressed = true;
                 fileUploadCondition.fileName &&
                 fileUploadCondition.iframe &&
                 fileUploadCondition.eval &&
                 fileUploadCondition.preview &&
                 fileUploadCondition.externalReference ? closeDialog() : null">
-              <div class="flex flex-middle justify-center">
+              <div class="flex flex-middle justify-center ">
                 <p class="margin-remove-bottom agree-text" i18n>I Agree</p>
               </div>
             </button>
           </div>
         </ng-template>
         <ng-template #selectFile>
-          <div class="margin-top-m margin-bottom-m">
+          <div class="margin-top-m margin-bottom-m" style="max-height: 400px;">
             <div style="position: relative;">
               <h3 class="mat-h3 font-weight-bold margin-remove-bottom" i18n>
                 Select the entry file
@@ -693,7 +707,7 @@
                 <mat-icon aria-label="Next" role="button">close</mat-icon>
               </button>
             </div>
-            <div style="max-height: 400px" class="mt-4">
+            <div class="mt-4">
               <mat-radio-group aria-labelledby="example-radio-group-label"
                 class="flex flex-1 flex-column example-radio-group" [(ngModel)]="fileUploadCondition.url">
                 <mat-radio-button class="example-radio-button" *ngFor="let file of fileList" [value]="file"
@@ -702,15 +716,16 @@
                 </mat-radio-button>
               </mat-radio-group>
             </div>
+            <div class="flex justify-center padding-bottom-m">
+              <button type="button" mat-raised-button color="primary" class="margin-top-m ws-mat-primary-background"
+                (click)="closeDialog()">
+                <div class="flex flex-middle justify-center">
+                  <p class="margin-remove-bottom agree-text" i18n>Done</p>
+                </div>
+              </button>
+            </div>
           </div>
-          <div class="flex justify-center">
-            <button type="button" mat-raised-button color="primary" class="margin-top-m ws-mat-primary-background"
-              (click)="closeDialog()">
-              <div class="flex flex-middle justify-center">
-                <p class="margin-remove-bottom agree-text" i18n>Done</p>
-              </div>
-            </button>
-          </div>
+
         </ng-template>
         <ng-template #errorFile>
           <div class="margin-top-m margin-bottom-m">

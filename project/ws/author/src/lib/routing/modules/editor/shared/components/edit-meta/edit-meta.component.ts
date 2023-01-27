@@ -547,7 +547,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             )
           }
         }
-        this.contentForm.controls.isIframeSupported.setValue(this.contentMeta.isIframeSupported)
+        //this.contentForm.controls.isIframeSupported.setValue(this.contentMeta.isIframeSupported)
         this.contentForm.controls.sourceName.setValue(this.contentMeta.sourceName)
         this.contentForm.controls.langName.setValue(this.contentMeta.language[0])
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification === undefined ? false : this.contentMeta.issueCertification)
