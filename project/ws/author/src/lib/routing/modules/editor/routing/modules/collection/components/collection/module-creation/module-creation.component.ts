@@ -156,7 +156,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   isMoveCourseToDraft: boolean = false;
   gatingEnabled!: FormControl
   hours = 0
-  minutes = 1
+  minutes = 0
   seconds = 0
   resourceType: string = ''
   resourseSelected: string = ''
@@ -214,6 +214,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   selectedQuizIndex!: number
   quizIndex!: number
   editResourceLinks: string = ''
+
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -1660,6 +1661,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
       await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
       this.saves()
+      this.clearForm()
     }
   }
 
@@ -1737,11 +1739,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.showAddModuleForm = true
     this.isResourceTypeEnabled = true
   }
-  addResource() {
-    this.addIndependentResource()
-    // this.resourceCount = this.resourceCount + 1
-    // this.resourceNames.push({ name: 'Resource ' + this.resourceCount })
-  }
 
   addIndependentResource() {
     this.addResourceModule["module"] = false
@@ -1749,8 +1746,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.addResourceModule["courseID"] = this.courseData.identifier
     this.showAddModuleForm = true
     this.isResourceTypeEnabled = true
-    // this.independentResourceCount = this.independentResourceCount + 1
-    // this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
   }
 
   changeToDefaultImg($event: any) {
@@ -1758,11 +1753,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       ? this._configurationsService.instanceConfig.logos.defaultContent
       : ''
   }
+
   editContent(content: any) {
     /* tslint:disable-next-line */
     console.log('current content', content)
     //this.isResourceTypeEnabled = true
     this.showAddModuleForm = true
+    this.isResourceTypeEnabled = false
+    this.isOnClickOfResourceTypeEnabled = false
     //this.isOnClickOfResourceTypeEnabled = true
     this.isLinkEnabled = false
     this.moduleButtonName = 'Save'
@@ -2973,7 +2971,38 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       versionKey: this.versionKey.versionKey,
     }
     await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+    this.update()
     this.save()
+    this.clearForm()
+  }
+
+  clearForm() {
+    this.resourcePdfForm.setValue({
+      resourceName: '',
+      instructions: '',
+      appIcon: '',
+      thumbnail: '',
+      isIframeSupported: '',
+      isgatingEnabled: '',
+      duration: ''
+    })
+
+    this.resourceLinkForm.setValue({
+      resourceName: '',
+      instructions: '',
+      resourceLinks: '',
+      appIcon: '',
+      thumbnail: '',
+      isIframeSupported: '',
+      isgatingEnabled: '',
+      duration: ''
+    })
+
+    this.fileUploadForm.reset()
+
+    this.clearUploadedFile()
+    this.hours = 0
+    this.minutes = 0
   }
 
   async triggerUpload() {
