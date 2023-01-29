@@ -100,7 +100,7 @@
       <!-- <ws-auth-quiz [isCollectionEditor]="true"
         *ngIf="!showAddchapter && viewMode === 'assessment' && !isModelHeaderView" [isSubmitPressed]="isSubmitPressed"
         (data)="action($event)" [isCreatorEnable]="checkCreator"></ws-auth-quiz> -->
-      <ws-auth-quiz [isCollectionEditor]="true" *ngIf="false" [isSubmitPressed]="isSubmitPressed"
+      <ws-auth-quiz [isCollectionEditor]="true" *ngIf="viewMode === 'assessment'" [isSubmitPressed]="isSubmitPressed"
         (data)="action($event)" [isCreatorEnable]="checkCreator"></ws-auth-quiz>
 
       <ws-auth-web-module-editor *ngIf="!showAddchapter && viewMode === 'webmodule'" (data)="action($event)">

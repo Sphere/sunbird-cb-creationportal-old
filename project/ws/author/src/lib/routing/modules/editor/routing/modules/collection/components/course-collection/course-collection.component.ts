@@ -168,11 +168,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
     this.initService.createModuleMessage.subscribe(
       (data: any) => {
-        console.log(data)
         if (data) {
           this.createModule = data
           this.setContentType(data['type'])
           this.showAddchapter = true
+          if (data['type'] === "assessment") {
+            this.clickedNext = false
+          }
           // this.viewMode = ''
           // this.clickedNext = true
           //this.save()
@@ -371,8 +373,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         expandable: true,
         level: 1,
       }
-      console.log(node)
-      console.log(this.createTopicForm.value)
+
       const newData = {
         topicDescription: this.createModule.description,
         topicName: this.createModule.name
