@@ -76,7 +76,7 @@ export namespace NSApiRequest {
       content: {
         name: string
         code: string
-        description: string
+        // description: string
         createdBy: string
         organisation: string[]
         createdFor: string[]
