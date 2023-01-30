@@ -2997,6 +2997,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
     this.update()
     this.save()
+    // this.loaderService.changeLoad.next(true)
     this.clearForm()
   }
 
@@ -3225,7 +3226,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   clearUploadedFile() {
     this.contentService.removeListOfFilesAndUpdatedIPR(this.currentContent)
     this.uploadFileName = ''
-    this.fileUploadForm.controls.artifactUrl.setValue(null)
+    // this.fileUploadForm.controls.artifactUrl.setValue(null)
     this.file = null
     this.duration = '0'
     this.mimeType = ''
