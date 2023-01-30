@@ -1624,7 +1624,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   timeToSeconds() {
     let total = 0
-    //total += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
+    total += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
     total += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
     total += this.hours ? this.hours * 60 * 60 : 0
     return total
@@ -3015,6 +3015,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.clearUploadedFile()
     this.hours = 0
     this.minutes = 0
+    this.seconds = 0
   }
 
   async triggerUpload() {
