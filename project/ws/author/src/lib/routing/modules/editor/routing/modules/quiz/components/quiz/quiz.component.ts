@@ -224,7 +224,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     this.showSettingButtons = true
-
     this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
       this.allLanguages = this.initService.ordinals.subTitles
       this.loaderService.changeLoadState(true)
@@ -441,6 +440,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     // return this.editorService
     //   .updateContent(requestBody)
     //   .pipe(tap(() => this.metaContentService.resetOriginalMeta(meta, id)))
+    /* tslint:disable-next-line */
+    console.log(meta, id)
     if (meta && id) {
       this.metaContentService.setUpdatedMeta(meta, id)
       this.data.emit('save')
@@ -518,8 +519,10 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       : of({} as any)
       // ).pipe(map(v => v.result))
     ).pipe(mergeMap(v => {
+      /* tslint:disable-next-line */
+      console.log(v)
       // tslint:disable-next-line: no-parameter-reassignment
-      v = v[0].result
+      v = v[0].result || v[0]
       this.showNotification(Notify.SAVE_SUCCESS)
       const updatedMeta = this.metaContentService.upDatedContent[this.currentId] || {}
       // const check = this.resourceType === ASSESSMENT ? v.length && v[1] && v[1].code : true
@@ -539,6 +542,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         //   this.snackBar.open('Error Occured! Please refresh the page.')
         // })
         // this.metaContentService.setUpdatedMeta(updatedMeta, this.currentId)
+        /* tslint:disable-next-line */
+        console.log(updatedMeta, this.currentId)
+
         return this.triggerSave(updatedMeta, this.currentId)
       }
       return EMPTY

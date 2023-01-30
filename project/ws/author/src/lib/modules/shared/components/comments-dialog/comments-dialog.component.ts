@@ -124,13 +124,13 @@ export class CommentsDialogComponent implements OnInit {
   }
 
   showError(formControl: AbstractControl) {
-    if (formControl.invalid) {
+    if (formControl.invalid && !formControl.pristine) {
       if (this.isSubmitPressed) {
         return true
       }
-      if (formControl && formControl.touched) {
-        return true
-      }
+      // if (formControl && formControl.touched) {
+      //   return true
+      // }
       return false
     }
     return false

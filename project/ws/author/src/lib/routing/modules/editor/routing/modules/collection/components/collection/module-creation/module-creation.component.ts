@@ -414,7 +414,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   action(type: string) {      // recheck
     /* tslint:disable-next-line */
-    console.log('came here', type)
     switch (type) {
       case 'next':
         this.viewMode = 'meta'
@@ -519,7 +518,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   async saves(nextAction?: string) {
     if (this.resourseSelected !== '') {
-
       this.update()
     }
     const updatedContent = this.contentService.upDatedContent || {}
@@ -664,7 +662,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
       /* tslint:disable-next-line */
 
-      console.log("requestBody", requestBody.request.content.trackContacts)
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
 
       if (requestBody.request.content.duration === 0 || requestBody.request.content.duration) {
@@ -721,7 +718,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
       this.contentService.currentContentData = requestBody.request.content
       this.contentService.currentContentID = this.currentCourseId
-
       //let nodesModified = {}
       /* tslint:disable-next-line */
 
@@ -981,11 +977,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             }
             if (updatedMeta.status === 'Draft') {
               this.editorService.updateContentV4(tempRequset).subscribe(() => {
-                // this.finalSaveAndRedirect(updatedMeta)
+                this.dialog.closeAll()
+                this.finalSaveAndRedirect(updatedMeta)
                 // this.sendModuleToReviewOrPublish(moduleListToReview, updatedMeta)
               })
             } else {
-              // this.finalSaveAndRedirect(updatedMeta)
+              this.finalSaveAndRedirect(updatedMeta)
             }
           } else if (resourceListToReview.length === flag) {
             this.dialog.closeAll()
@@ -1717,8 +1714,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = true
       this.isPdfOrAudioOrVedioEnabled = false
-      this.setContentType(type)
-      this.getassessment()
+      let obj: any = {}
+      obj["type"] = 'assessment'
+      obj["name"] = 'assessment'
+      obj["description"] = 'assessment'
+      this.initService.createModuleUnit(obj)
+      //this.setContentType(type)
+      //this.getassessment()
     }
     //this.addResource()
     this.isLinkPageEnabled = true
@@ -1760,6 +1762,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   editContent(content: any) {
     /* tslint:disable-next-line */
     console.log('current content', content)
+    // if (content.mimeType === "application/json") {
+    //   let obj: any = {}
+    //   obj["type"] = 'assessment'
+    //   obj["name"] = 'assessment'
+    //   obj["description"] = 'assessment'
+    //   this.initService.createModuleUnit(obj)
+    // }
     //this.isResourceTypeEnabled = true
     this.showAddModuleForm = true
     this.isResourceTypeEnabled = false
@@ -2008,7 +2017,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         content: meta
       }
     }
-    console.log(this.content)
+
     this.contentService.setUpdatedMeta(meta, this.content.identifier)
     if (this.content.contentType === 'Resource') {
       this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
@@ -2428,7 +2437,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.courseData = data
         })
         const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
-        console.log(hierarchyData)
+
         hierarchyData[this.editorService.resourseID] = {
           root: false,
           name: 'Resource 1',
@@ -2439,7 +2448,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             hierarchyData[ele].children.push(this.editorService.resourseID)
           }
         })
-        console.log(hierarchyData)
+
         const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
           request: {
             data: {
@@ -2461,7 +2470,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         })
         const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
         Object.keys(hierarchyData).forEach((ele: any) => {
-          console.log(ele)
+
           if (ele === this.addResourceModule["courseID"]) {
             hierarchyData[this.editorService.resourseID] = {
               root: false,
@@ -2471,7 +2480,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             hierarchyData[ele].children.push(this.editorService.resourseID)
           }
         })
-        console.log(hierarchyData)
+
         const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
           request: {
             data: {
@@ -3045,7 +3054,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       if (requestBody.request.content.category) {
         delete requestBody.request.content.category
       }
-
       const contenUpdateRes: any =
         await this.editorService.updateContentV3(requestBody, this.contentService.currentContent).toPromise().catch(_error => { })
       if (contenUpdateRes && contenUpdateRes.params && contenUpdateRes.params.status === 'successful') {
@@ -3225,6 +3233,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   delete(node: IContentTreeNode) {
+
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '500px',
       height: '175px',
@@ -3235,7 +3244,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.loader.changeLoad.next(true)
       if (confirm) {
         this.parentHierarchy = []
-        const hierarchyData = this.storeService.getTreeHierarchy()
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.courseData = data
+        })
+        const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+        //const hierarchyData = this.storeService.getTreeHierarchy()
         Object.keys(hierarchyData).forEach(async (ele: any) => {
           if (ele === node.identifier) {
             delete hierarchyData[ele]
@@ -3255,6 +3268,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
                 this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
                   this.courseData = data
+                  this.showAddModuleForm = false
                   if (this.courseData && this.courseData.children.length >= 2) {
                     this.showSettingsPage = true
                   } else {

@@ -44,6 +44,7 @@ import {
   switchMap,
   map,
 } from 'rxjs/operators'
+import { Router } from '@angular/router'
 
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
 
@@ -165,6 +166,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     private accessService: AccessControlService,
     // private apiService: ApiService,
     private http: HttpClient,
+    private router: Router
 
   ) { }
 
@@ -177,6 +179,11 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   }
   contentForm!: FormGroup
   ngOnInit() {
+    const url = this.router.url
+    const id = url.split('/')
+    this.contentService.currentContentID = id[3]
+    this.contentService.changeActiveCont.next(id[3])
+
     this.isSiemens = this.accessService.rootOrg.toLowerCase() === 'siemens'
     this.ordinals = this.authInitService.ordinals
     this.audienceList = this.ordinals.audience
@@ -353,7 +360,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     //   switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
     // )
   }
-
 
   enableClick(): void {
     this.isEnableTitle = false
