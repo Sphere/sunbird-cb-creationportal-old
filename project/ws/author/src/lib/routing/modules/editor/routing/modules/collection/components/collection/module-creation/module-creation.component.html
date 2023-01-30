@@ -280,30 +280,37 @@
           </div>
           <div style="display:flex; flex-direction:row">
             <span class="duration-text">Duration:</span>
-            <mat-form-field appearance="outline" class="width-55" style="margin-right:13px;">
+            <mat-form-field appearance="outline" class="width-55">
               <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
-                placeholder="hh" type="number" min="0" max="12" step="1" />
+                placeholder="hh" type="number" min="0" max="12" step="1"
+                onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
             </mat-form-field>
             <div class="margin-top-s padding-small">:</div>
             <mat-form-field appearance="outline" class="width-55">
               <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
-                placeholder="mm" type="number" min="0" max="59" step="1" />
+                placeholder="mm" type="number" min="0" max="59" step="1"
+                onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
             </mat-form-field>
             <div class="margin-top-s padding-small">:</div>
             <mat-form-field appearance="outline" class="width-55">
               <input matInput class="numberInput" [(ngModel)]="seconds" [ngModelOptions]="{ standalone: true }"
-                placeholder="ss" type="number" min="0" max="59" step="1" />
+                placeholder="ss" type="number" min="0" max="59" step="1"
+                onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
             </mat-form-field>
           </div>
           <div>
-            <button mat-raised-button *ngIf="moduleButtonName === 'Create'"
+            <button mat-raised-button *ngIf="moduleButtonName === 'Create' && content?.contentType !== 'Course'"
               class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
               (click)="moduleCreate(module.value, topicDescription, thumbnail)">
               {{moduleButtonName}}</button>
-            <button mat-raised-button *ngIf="moduleButtonName === 'Save'"
+            <button mat-raised-button *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'"
               class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating)">
               {{moduleButtonName}}</button>
+            <button mat-raised-button *ngIf="content?.contentType === 'Course'"
+              class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
+              (click)="saveCourseDetails()">
+              Save</button>
           </div>
         </div>
 
@@ -388,21 +395,24 @@
               </div>
               <div style="display:flex; flex-direction:row">
                 <span class="duration-text">Duration:</span>
-                <mat-form-field appearance="outline" class="width-55" style="margin-right:13px;">
+                <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
-                    placeholder="hh" type="number" min="0" step="1" />
+                    placeholder="hh" type="number" min="0" step="1"
+                    onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
                 <div class="margin-top-s padding-small">:</div>
 
                 <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
-                    placeholder="mm" type="number" min="0" max="59" step="1" />
+                    placeholder="mm" type="number" min="0" max="59" step="1"
+                    onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
                 <div class="margin-top-s padding-small">:</div>
 
                 <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="seconds" [ngModelOptions]="{ standalone: true }"
-                    placeholder="ss" type="number" min="0" max="59" step="1" />
+                    placeholder="ss" type="number" min="0" max="59" step="1"
+                    onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
               </div>
               <div><button mat-raised-button
@@ -511,15 +521,24 @@
               </div> -->
               <div style="display:flex; flex-direction:row">
                 <span class="duration-text">Duration:</span>
-                <mat-form-field appearance="outline" class="width-55" style="margin-right:13px;">
+                <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
-                    placeholder="hh" type="number" min="0" step="1" />
+                    placeholder="hh" type="number" min="0" step="1"
+                    onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
                 <div class="margin-top-s padding-small">:</div>
 
                 <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
-                    placeholder="mm" type="number" min="0" max="59" step="1" />
+                    placeholder="mm" type="number" min="0" max="59" step="1"
+                    onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
+                </mat-form-field>
+                <div class="margin-top-s padding-small">:</div>
+
+                <mat-form-field appearance="outline" class="width-55">
+                  <input matInput class="numberInput" [(ngModel)]="seconds" [ngModelOptions]="{ standalone: true }"
+                    placeholder="ss" type="number" min="0" max="59" step="1"
+                    onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
               </div>
               <div><button mat-raised-button
@@ -534,7 +553,7 @@
                     placeholder="Name of the resource" />
                 </mat-form-field>
                 <span class="duration-text">Duration :</span>
-                <mat-form-field appearance="outline" class="width-55" style="margin-right:13px;">
+                <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
                     (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" step="1" />
                 </mat-form-field>
@@ -544,9 +563,15 @@
                   <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
                     (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" max="59" step="1" />
                 </mat-form-field>
+                <div class="margin-top-s padding-small">:</div>
+
+                <mat-form-field appearance="outline" class="width-55">
+                  <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
+                    (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" max="59" step="1" />
+                </mat-form-field>
 
                 <span class="duration-text margin-left-l">Pass% :</span>
-                <mat-form-field appearance="outline" class="width-55" style="margin-right:13px;">
+                <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
                     (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" step="1" />
                 </mat-form-field>
