@@ -644,8 +644,8 @@
             <input matInput #name class="text-ellipsis disabledDataContainer" formControlName="name" maxlength="250"
               i18n-placeholder matTooltip="{{this.contentForm.controls.name.value}}"
               placeholder="Enter a Descriptive title" [required]="checkCondition('name', 'required') ? true : null"
-              readonly [readOnly]="isEnableTitle" autofocus (focusout)="onFocusOutName()" />
-            <!-- <mat-hint align="end">{{ name.value.length }} / 250</mat-hint> -->
+              readonly [readOnly]="isEnableTitle" autofocus (focusout)="onFocusOutName()" maxlength="50" />
+            <!-- <mat-hint align="end">{{ name.value.length }} / 50 </mat-hint> -->
             <mat-error *ngIf="showError('name')" i18n="Name Error|Explains name is required">
               Title is mandatory
             </mat-error>

@@ -62,7 +62,7 @@ export class CreateCourseComponent implements OnInit {
   ngOnInit() {
     this.createCourseForm = this.fb.group({
       courseName: new FormControl('', [Validators.required]),
-      courseSummary: new FormControl(''),
+      // courseSummary: new FormControl(''),
       courseDescription: new FormControl('', [Validators.required]),
       appIcon: new FormControl([])
     })
