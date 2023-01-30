@@ -333,21 +333,28 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               </div>
 
             </div>
-            <div *ngIf="cardContent" class="flex flex-wrapped flex-dynamic margin-xs">
-              <ng-template #oldDesign>
-                <div [ngClass]="listview == true ? 'full-width-field': 'margin-l'" *ngFor="let content of cardContent">
-                  <ws-auth-root-content-card [data]="content" [forExpiry]="status === 'expiry'" [changeView]="listview"
-                    [forDelete]="status === 'deleted'" [ordinals]="ordinals" (action)="action($event)">
-                  </ws-auth-root-content-card>
-                </div>
-              </ng-template>
-              <ng-container *ngIf="newDesign; else oldDesign">
-                <ws-auth-content-card-v2 (action)="action({ type: $event.action, data: $event.content })"
-                  [perspective]="currentAction" *ngFor="let content of cardContent" [content]="content">
-                </ws-auth-content-card-v2>
-              </ng-container>
+            <div style="max-height: 50vh;overflow-y: scroll;">
+              <div *ngIf="cardContent" class="flex flex-wrapped flex-dynamic margin-xs class-here">
+                <ng-template #oldDesign>
+                  <div [ngClass]="listview == true ? 'full-width-field': 'margin-l'"
+                    *ngFor="let content of cardContent">
+                    <ws-auth-root-content-card [data]="content" [forExpiry]="status === 'expiry'"
+                      [changeView]="listview" [forDelete]="status === 'deleted'" [ordinals]="ordinals"
+                      (action)="action($event)">
+                    </ws-auth-root-content-card>
+                  </div>
+                </ng-template>
+                <ng-container *ngIf="newDesign; else oldDesign">
+                  <div>
+                    <ws-auth-content-card-v2 (action)="action({ type: $event.action, data: $event.content })"
+                      [perspective]="currentAction" *ngFor="let content of cardContent" [content]="content">
+                    </ws-auth-content-card-v2>
+                  </div>
+                </ng-container>
+              </div>
             </div>
-            <div class="text-right margin-right-xxl margin-bottom-m" *ngIf="showLoadMore">
+
+            <div style="display:none" class="text-right margin-right-xxl margin-bottom-m" *ngIf="showLoadMore">
               <button mat-raised-button [color]="'primary'" (click)="loadMore()" i18n>Load More...</button>
             </div>
             <div class="flat-no-data-found margin-m" *ngIf="!fetchError && cardContent && !cardContent.length">

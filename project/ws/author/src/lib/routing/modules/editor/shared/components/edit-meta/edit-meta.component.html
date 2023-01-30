@@ -635,7 +635,7 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="sidenav-content">
-    <div id="edit-meta" class="margin-left-xl full-view-container">
+    <div id="edit-meta" class="margin-left-xl full-view-container" [ngClass]="{ disable:!isEditEnabled}">
 
       <div class="form-edit-container">
         <div class="course-title crs-title-text form-edit-int">
