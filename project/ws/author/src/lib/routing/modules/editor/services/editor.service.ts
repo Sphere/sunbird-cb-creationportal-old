@@ -101,7 +101,7 @@ export class EditorService {
           createdBy: this.accessService.userId,
           createdFor: [(this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId) ? this.configSvc.userProfile.rootOrgId : ''],
           creator: this.accessService.userName,
-          description: '',
+          // description: '',
           framework: environment.framework,
           mimeType: meta.mimeType,
           name: meta.name,
