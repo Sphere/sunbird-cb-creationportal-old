@@ -741,7 +741,8 @@
                 <mat-form-field appearance="outline" class="duration-width"
                   [ngClass]="{ 'mat-form-field-invalid': showError('duration') }">
                   <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
-                    (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" step="1" />
+                    (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" step="1"
+                    onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
                 <div class="margin-top-s padding-small">:</div>
               </div>
@@ -749,7 +750,8 @@
                 <mat-form-field appearance="outline" class="duration-width"
                   [ngClass]="{ 'mat-form-field-invalid': showError('duration') }">
                   <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
-                    (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" max="59" step="1" />
+                    (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" max="59" step="1"
+                    onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
                 <div class="margin-top-s padding-small">:</div>
               </div>
@@ -757,7 +759,8 @@
                 <mat-form-field appearance="outline" class="duration-width"
                   [ngClass]="{ 'mat-form-field-invalid': showError('duration') }">
                   <input matInput class="numberInput" [(ngModel)]="seconds" [ngModelOptions]="{ standalone: true }"
-                    (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" max="59" step="1" />
+                    (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" max="59" step="1"
+                    onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                   <mat-error *ngIf="showError('duration')" i18n="Duration Error|Explains Duration is mandatory field">
                     Duration is
                     mandatory

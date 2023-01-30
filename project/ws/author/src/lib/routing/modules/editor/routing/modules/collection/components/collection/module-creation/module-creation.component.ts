@@ -3516,4 +3516,35 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   /*Assessment functionality end*/
+
+  /*course details functionality start*/
+  async saveCourseDetails() {
+    this.loaderService.changeLoad.next(true)
+    await this.editorService.readcontentV3(this.currentCourseId).subscribe(async (resData: any) => {
+      const updateContentReq: any = {
+        request: {
+          content: {
+            versionKey: resData.versionKey,
+            name: this.moduleName,
+            appIcon: this.thumbnail,
+            gatingEnabled: this.isGating,
+            instructions: this.topicDescription,
+            thumbnail: this.thumbnail
+          },
+        },
+      }
+      await this.editorService.updateNewContentV3(updateContentReq, this.currentCourseId).toPromise().catch((_error: any) => { })
+      await this.editorService.readcontentV3(this.currentCourseId).subscribe(async (data: any) => {
+        this.courseData = data
+        this.loader.changeLoad.next(false)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.SAVE_SUCCESS,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      })
+    })
+  }
+  /*course details functionality end*/
 }
