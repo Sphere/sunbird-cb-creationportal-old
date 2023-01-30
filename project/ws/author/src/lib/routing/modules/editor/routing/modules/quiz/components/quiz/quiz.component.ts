@@ -118,7 +118,14 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
           this.save()
         }
       })
-
+    this.initService.updateAssessmentMessage.subscribe(
+      (data: any) => {
+        if (data) {
+          console.log(data)
+          this.metaContentService.currentContent = data.identifier
+          this.ngOnInit()
+        }
+      })
   }
 
   ngOnDestroy() {
@@ -224,7 +231,17 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     this.showSettingButtons = true
+    // console.log('kk', JSON.parse(sessionStorage.assessment))
+    const code = sessionStorage.getItem('assessment') || null
+    console.log(code)
+
     this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
+      console.log(id)
+      if (code) {
+        this.metaContentService.currentContent = JSON.parse(code)
+      } else {
+        this.metaContentService.currentContent = id
+      }
       this.allLanguages = this.initService.ordinals.subTitles
       this.loaderService.changeLoadState(true)
       this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
@@ -240,8 +257,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
       if (this.activateRoute.parent && this.activateRoute.parent.parent) {
         this.activateRoute.parent.parent.data.subscribe(v => {
+          console.log(v)
           this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(newData => {
+            console.log(newData)
             const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
+            console.log(this.metaContentService.currentContent)
+            console.log(quizContent)
             if (quizContent.mimeType === 'application/json') {
               const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
                 this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({} as any))
@@ -251,8 +272,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                   if (v.contents && v.contents.length) {
                     if (jsonResponse) {
                       v.contents[0].data = jsonResponse
-                      this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
-                      this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
+                      //this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
+                      //this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
                       this.assessmentDuration = (jsonResponse.assessmentDuration) / 60
                       this.passPercentage = jsonResponse.passPercentage
                     }

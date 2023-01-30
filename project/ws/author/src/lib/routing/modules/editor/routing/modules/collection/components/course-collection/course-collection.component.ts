@@ -180,11 +180,46 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           //this.save()
         }
       })
-    // this.initService.editCourseMessage.subscribe(
+    this.initService.updateAssessmentMessage.subscribe(
+      (data: any) => {
+        if (data) {
+          console.log(data)
+          this.createModule = data
+          //this.setContentType(data['type'])
+          this.showAddchapter = true
+          this.viewMode = 'assessment'
+          this.clickedNext = false
+          sessionStorage.clear()
+          // if (data['type'] === "assessment" || data.artifactUrl) {
+          //   this.clickedNext = false
+          // }
+
+          if (data.artifactUrl || data.mimeType === "application/json") {
+            sessionStorage.setItem('assessment', JSON.stringify(data.identifier))
+            //this.clickedNext = false
+            //this.redirectUser(data)
+            //this.initService.editAssessmentAction(data)
+            //this.clickedNext = false
+          }
+          //this.editPublishCourse()
+        }
+      })
+
+    // this.initService.editAssessmentMessage.subscribe(
     //   (data: any) => {
     //     if (data) {
     //       console.log(data)
-    //       this.editPublishCourse()
+    //       //this.createModule = data
+    //       //this.setContentType(data['type'])
+    //       this.showAddchapter = true
+    //       this.viewMode = 'assessment'
+    //       //this.clickedNext = false
+
+    //       if (data.artifactUrl) {
+    //         this.initService.editAssessmentAction(data)
+    //         this.clickedNext = false
+    //       }
+    //       //this.editPublishCourse()
     //     }
     //   })
   }

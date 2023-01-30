@@ -68,7 +68,7 @@ export class CreateService {
     mimeType: string; contentType: string; locale: string, name: any,
     primaryCategory: string, purpose?: string
   }): Observable<string> {
-    let description: string = meta.name.courseSummary.trim()
+    // let description: string = meta.name.courseSummary.trim()
     let instructions: string = meta.name.courseDescription.trim()
     let courseName: string = meta.name.courseName.trim()
     let randomNumber = ''
@@ -84,7 +84,7 @@ export class CreateService {
           createdBy: this.accessService.userId,
           createdFor: [(this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId) ? this.configSvc.userProfile.rootOrgId : ''],
           creator: this.accessService.userName,
-          description: description,
+          // description: description,
           framework: environment.framework,
           mimeType: meta.mimeType,
           name: courseName,
