@@ -81,6 +81,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   quizDuration!: number
   assessmentDuration: any
   passPercentage: any
+  isQuiz: string = ''
   mediumSizeBreakpoint$ = this.breakpointObserver
     .observe([Breakpoints.XSmall, Breakpoints.Small])
     .pipe(map((res: BreakpointState) => res.matches))
@@ -234,7 +235,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     // console.log('kk', JSON.parse(sessionStorage.assessment))
     const code = sessionStorage.getItem('assessment') || null
     console.log(code)
-
+    this.isQuiz = sessionStorage.getItem('quiz') || ''
     this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
       console.log(id)
       if (code) {
@@ -646,7 +647,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       timeLimit: (this.metaContentService.getUpdatedMeta(this.currentId).assessmentDuration) * 60 || '300',
       assessmentDuration: (this.metaContentService.getUpdatedMeta(this.currentId).assessmentDuration) * 60 || '300',
       passPercentage: this.metaContentService.getUpdatedMeta(this.currentId).passPercentage || '50',
-      isAssessment: true,
+      isAssessment: this.isQuiz === '' ? true : false,
       questions: array,
     }
     //console.log(this.resourceType, this.resourceType === ASSESSMENT)

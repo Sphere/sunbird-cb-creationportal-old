@@ -105,7 +105,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     {
       name: 'Quiz',
       icon: 'smartphone',
-      type: ''
+      type: 'assessment'
     }
   ]
   isFalse: boolean = false
@@ -1721,6 +1721,19 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.initService.updateAssessment(obj)
       this.setContentType(type)
       //this.getassessment()
+    } else if (name == 'Quiz') {
+      this.isLinkEnabled = false
+      this.isAssessmentOrQuizEnabled = true
+      this.isPdfOrAudioOrVedioEnabled = false
+      sessionStorage.clear()
+      let obj: any = {}
+      obj["type"] = 'assessment'
+      obj["name"] = 'quiz'
+      obj["description"] = 'quiz'
+      sessionStorage.setItem('quiz', 'true')
+      //this.initService.updateAssessment(obj)
+      this.setContentType(type)
+      //this.getassessment()
     }
     //this.addResource()
     this.isLinkPageEnabled = true
@@ -1838,7 +1851,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else {
       if (content.mimeType == "application/json") {
-        this.initService.updateAssessment(content)
+        //this.initService.updateAssessment(content)
         // this.isLinkEnabled = false
         // this.isAssessmentOrQuizEnabled = true
         // this.isPdfOrAudioOrVedioEnabled = false

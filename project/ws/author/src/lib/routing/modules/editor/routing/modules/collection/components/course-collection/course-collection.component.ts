@@ -189,7 +189,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.showAddchapter = true
           this.viewMode = 'assessment'
           this.clickedNext = false
-          sessionStorage.clear()
+          sessionStorage.removeItem('assessment')
           // if (data['type'] === "assessment" || data.artifactUrl) {
           //   this.clickedNext = false
           // }
