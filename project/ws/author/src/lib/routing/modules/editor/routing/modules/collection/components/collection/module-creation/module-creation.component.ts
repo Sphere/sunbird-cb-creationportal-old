@@ -1718,8 +1718,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       obj["type"] = 'assessment'
       obj["name"] = 'assessment'
       obj["description"] = 'assessment'
-      this.initService.createModuleUnit(obj)
-      //this.setContentType(type)
+      //this.initService.updateAssessment(obj)
+      this.setContentType(type)
       //this.getassessment()
     }
     //this.addResource()
@@ -1836,17 +1836,22 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.acceptType = '.zip'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
+    } else {
+      if (content.mimeType == "application/json") {
+        this.initService.updateAssessment(content)
+        // this.isLinkEnabled = false
+        // this.isAssessmentOrQuizEnabled = true
+        // this.isPdfOrAudioOrVedioEnabled = false
+        //this.addResourceModule["courseID"]
+        // this.setContentType(type)
+        // this.getassessment()
+      }
     }
-    // else if (name == 'Assessment') {
-    //   this.isLinkEnabled = false
-    //   this.isAssessmentOrQuizEnabled = true
-    //   this.isPdfOrAudioOrVedioEnabled = false
-    //   // this.setContentType(type)
-    //   // this.getassessment()
-    // }
-
   }
-
+  editAssessmentRes(content?: any) {
+    this.initService.updateAssessment(content)
+    //this.initService.editAssessmentAction(content)
+  }
   uploadAppIcon(file: File) {
     const formdata = new FormData()
     const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
@@ -2368,6 +2373,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.viewMode = 'upload'
         } else if (content.mimeType === 'application/quiz' || content.mimeType === 'application/json') {
           this.viewMode = 'assessment'
+          this.addResourceModule["viewMode"] = 'assessment'
+          let obj: any = {}
+          obj["type"] = 'assessment'
+          obj["name"] = 'assessment'
+          obj["description"] = 'assessment'
+          this.initService.updateAssessment(obj)
         } else if (content.mimeType === 'application/web-module') {
           this.viewMode = 'webmodule'
         } else {
@@ -2416,7 +2427,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //   duration: NOTIFICATION_TIME * 1000,
 
     // })
-
+    console.log(this.addResourceModule)
     if (isDone) {
       const newCreatedLexid = this.editorService.newCreatedLexid
       if (this.addResourceModule["module"] === true) {
@@ -2432,7 +2443,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         const result = await this.editorService.resourceToModule(request).toPromise()
         // tslint:disable-next-line:no-console
         console.log(result)
-
+        console.log(this.resourseSelected)
         this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
           this.courseData = data
         })
@@ -2440,7 +2451,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
         hierarchyData[this.editorService.resourseID] = {
           root: false,
-          name: 'Resource 1',
+          name: this.resourseSelected !== 'assessment' ? 'Resource 1' : 'Assessment',
           children: [],
         }
         Object.keys(hierarchyData).forEach((ele: any) => {
@@ -2468,13 +2479,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
           this.courseData = data
         })
+        console.log(this.resourseSelected)
         const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
         Object.keys(hierarchyData).forEach((ele: any) => {
 
           if (ele === this.addResourceModule["courseID"]) {
             hierarchyData[this.editorService.resourseID] = {
               root: false,
-              name: 'Resource 1',
+              name: this.resourseSelected !== 'assessment' ? 'Resource 1' : 'Assessment',
               children: [],
             }
             hierarchyData[ele].children.push(this.editorService.resourseID)

@@ -38,6 +38,15 @@ export class AuthInitService {
   private updateResource = new Subject<any>()
   public updateResourceMessage = this.updateResource.asObservable()
 
+  private addAssessment = new Subject<any>()
+  public updateAssessmentMessage = this.addAssessment.asObservable()
+
+  private editAssessment = new Subject<any>()
+  public editAssessmentMessage = this.editAssessment.asObservable()
+
+  private showAssessment = new Subject<any>()
+  public showAssessmentMessage = this.showAssessment.asObservable()
+
   authConfig!: IFormMeta
   authMetaV2!: { [key: string]: IMetaUnit<any> }
   ordinals: any
@@ -76,4 +85,14 @@ export class AuthInitService {
   updateResources(message: string) {
     this.updateResource.next(message)
   }
+  updateAssessment(message: any) {
+    this.addAssessment.next(message)
+  }
+  editAssessmentAction(message: any) {
+    this.editAssessment.next(message)
+  }
+  showAssessmentAction(message: any) {
+    this.showAssessment.next(message)
+  }
+
 }
