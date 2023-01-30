@@ -168,7 +168,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {
     this.authInitService.currentMessage.subscribe(
       (data: any) => {
-        if (!this.clickedBtnNext && data) {
+        if (!this.clickedBtnNext && data && data !== 'publishResources') {
           this.router.navigateByUrl('/author/home')
         }
       })
