@@ -578,8 +578,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   get validationCheck(): boolean {
     const currentNodeId = this.storeService.lexIdMap.get(this.currentParentId) as number[]
     let returnValue = this.storeService.validationCheck(currentNodeId[0])
-    console.log("here")
-
     // console.log('returnvalue ', returnValue)
 
     // returnValue = null
@@ -973,7 +971,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
 
   async finalCall(contentActionTaken: any) {
-    console.log("finalCall")
     let flag = 0
     const resourceListToReview: any = []
     const moduleListToReview: any = []
@@ -1136,7 +1133,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         //if (result.params.status === 'successful') {
         this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
           /* tslint:disable-next-line */
-          console.log(data)
           this.contentService.resetOriginalMetaWithHierarchy(data)
           this.initService.publishData(data)
           // tslint:disable-next-line: align
