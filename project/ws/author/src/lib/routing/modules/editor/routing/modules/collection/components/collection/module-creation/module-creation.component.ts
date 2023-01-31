@@ -157,7 +157,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   gatingEnabled!: FormControl
   hours = 0
   minutes = 0
-  seconds = 0
+  seconds = 59
   resourceType: string = ''
   resourseSelected: string = ''
   viewMode!: string
@@ -1661,7 +1661,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         versionKey: this.versionKey.versionKey,
       }
       await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
-      this.saves()
+      await this.saves()
       this.clearForm()
     }
   }
@@ -3020,14 +3020,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       versionKey: this.versionKey.versionKey,
     }
     await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
-    this.update()
-    this.save()
-    this.clearForm()
+    await this.update()
+    await this.save()
     this.loaderService.changeLoad.next(false)
+    this.clearForm()
   }
 
   clearForm() {
-    this.showAddModuleForm = true
+    this.showAddModuleForm = false
     this.resourcePdfForm.setValue({
       resourceName: '',
       instructions: '',
@@ -3060,7 +3060,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.thumbnail = ''
     this.hours = 0
     this.minutes = 0
-    this.seconds = 0
+    this.seconds = 59
 
   }
 
@@ -3259,7 +3259,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   clearUploadedFile() {
     this.contentService.removeListOfFilesAndUpdatedIPR(this.currentContent)
     this.uploadFileName = ''
-    this.fileUploadForm.controls.artifactUrl.setValue(null)
+    //this.fileUploadForm.controls.artifactUrl.setValue(null)
     this.file = null
     this.duration = '0'
     this.mimeType = ''
