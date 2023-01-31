@@ -3010,7 +3010,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
     this.update()
     this.save()
-    // this.loaderService.changeLoad.next(true)
+    this.loaderService.changeLoad.next(false)
     this.clearForm()
   }
 
