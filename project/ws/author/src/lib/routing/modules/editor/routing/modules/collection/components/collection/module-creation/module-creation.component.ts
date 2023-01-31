@@ -1792,7 +1792,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.moduleButtonName = 'Save'
     this.content = content
     this.moduleName = content.name
-    this.topicDescription = content.instructions
+    this.topicDescription = content.instructions.replace(/<(.|\n)*?>/g, '')
     this.thumbnail = content.thumbnail
     this.setDuration(content.duration)
     this.isNewTab = content.isIframeSupported == 'Yes' ? true : false
@@ -3022,8 +3022,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
     this.update()
     this.save()
-    this.loaderService.changeLoad.next(false)
     this.clearForm()
+    this.loaderService.changeLoad.next(false)
   }
 
   clearForm() {
@@ -3061,6 +3061,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.hours = 0
     this.minutes = 0
     this.seconds = 0
+
   }
 
   async triggerUpload() {
@@ -3258,7 +3259,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   clearUploadedFile() {
     this.contentService.removeListOfFilesAndUpdatedIPR(this.currentContent)
     this.uploadFileName = ''
-    // this.fileUploadForm.controls.artifactUrl.setValue(null)
+    this.fileUploadForm.controls.artifactUrl.setValue(null)
     this.file = null
     this.duration = '0'
     this.mimeType = ''
