@@ -168,6 +168,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
     this.initService.createModuleMessage.subscribe(
       (data: any) => {
+        console.log("data: " + JSON.stringify(data))
         if (data) {
           this.createModule = data
           this.setContentType(data['type'])

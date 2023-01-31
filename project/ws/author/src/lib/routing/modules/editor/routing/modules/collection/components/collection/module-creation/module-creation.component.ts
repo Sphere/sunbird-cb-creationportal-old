@@ -3010,7 +3010,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
     this.update()
     this.save()
-    this.loaderService.changeLoad.next(false)
     this.clearForm()
   }
 
@@ -3042,6 +3041,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.hours = 0
     this.minutes = 0
     this.seconds = 0
+    this.loaderService.changeLoad.next(false)
   }
 
   async triggerUpload() {
@@ -3239,7 +3239,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   clearUploadedFile() {
     this.contentService.removeListOfFilesAndUpdatedIPR(this.currentContent)
     this.uploadFileName = ''
-    // this.fileUploadForm.controls.artifactUrl.setValue(null)
+    this.fileUploadForm.controls.artifactUrl.setValue(null)
     this.file = null
     this.duration = '0'
     this.mimeType = ''
