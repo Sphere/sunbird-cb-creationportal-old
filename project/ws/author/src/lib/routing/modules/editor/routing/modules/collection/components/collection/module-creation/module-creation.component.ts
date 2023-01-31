@@ -1618,13 +1618,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.isSaveModuleFormEnable = true
       this.moduleButtonName = 'Save'
       this.initService.createModuleUnit(obj)
+      this.clearForm()
     } else if (this.moduleButtonName == 'Save') {
       this.isResourceTypeEnabled = true
     }
   }
   timeToSeconds() {
     let total = 0
-    total += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
+    total += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 59
     total += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
     total += this.hours ? this.hours * 60 * 60 : 0
     return total
@@ -2039,15 +2040,17 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.contentService.setUpdatedMeta(meta, this.content.identifier)
     if (this.content.contentType === 'Resource') {
       this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
-        (info: any) => {
+        async (info: any) => {
           /* tslint:disable-next-line */
           console.log('info', info)
           if (info) {
-            this.update()
+            await this.update()
+            this.clearForm()
           }
         })
     } else {
-      this.update()
+      await this.update()
+      this.clearForm()
     }
   }
 
@@ -2795,65 +2798,74 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       url: '',
     }
     const fileName = file.name.replace(/[^A-Za-z0-9_.]/g, '')
-    if (
-      !fileName.toLowerCase().endsWith('.pdf') &&
-      !fileName.toLowerCase().endsWith('.zip') &&
-      !fileName.toLowerCase().endsWith('.mp4') &&
-      !fileName.toLowerCase().endsWith('.m4v') &&
-      !fileName.toLowerCase().endsWith('.mp3')
-    ) {
+    if (fileName.toLowerCase().endsWith(this.acceptType)) {
+      if (
+        !fileName.toLowerCase().endsWith('.pdf') &&
+        !fileName.toLowerCase().endsWith('.zip') &&
+        !fileName.toLowerCase().endsWith('.mp4') &&
+        !fileName.toLowerCase().endsWith('.m4v') &&
+        !fileName.toLowerCase().endsWith('.mp3')
+      ) {
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.INVALID_FORMAT,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      } else if (file.size > VIDEO_MAX_SIZE) {
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.SIZE_ERROR,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      } else {
+        if (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v')) {
+          const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            width: this.isMobile ? '90vw' : '600px',
+            height: 'auto',
+            data: 'transcodeMessage',
+          })
+          dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+              this.assignFileValues(file, fileName)
+              this.triggerUpload()
+            }
+          })
+        } else if (fileName.toLowerCase().endsWith('.zip')) {
+          const dialogRef = this.dialog.open(this.guideline, {
+            width: this.isMobile ? '90vw' : '600px',
+            height: 'auto',
+          })
+          dialogRef.afterClosed().subscribe(_ => {
+            if (
+              this.fileUploadCondition.fileName &&
+              this.fileUploadCondition.iframe &&
+              this.fileUploadCondition.eval &&
+              this.fileUploadCondition.preview &&
+              this.fileUploadCondition.externalReference
+            ) {
+
+              this.assignFileValues(file, fileName)
+              // this.triggerUpload()
+            }
+          })
+        } else {
+          /* tslint:disable-next-line */
+
+          console.log("yes else", file, fileName)
+
+          this.assignFileValues(file, fileName)
+        }
+        this.triggerUpload()
+      }
+    } else {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_FORMAT,
         },
         duration: NOTIFICATION_TIME * 1000,
       })
-    } else if (file.size > VIDEO_MAX_SIZE) {
-      this.snackBar.openFromComponent(NotificationComponent, {
-        data: {
-          type: Notify.SIZE_ERROR,
-        },
-        duration: NOTIFICATION_TIME * 1000,
-      })
-    } else {
-      if (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v')) {
-        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-          width: this.isMobile ? '90vw' : '600px',
-          height: 'auto',
-          data: 'transcodeMessage',
-        })
-        dialogRef.afterClosed().subscribe(result => {
-          if (result) {
-            this.assignFileValues(file, fileName)
-            this.triggerUpload()
-          }
-        })
-      } else if (fileName.toLowerCase().endsWith('.zip')) {
-        const dialogRef = this.dialog.open(this.guideline, {
-          width: this.isMobile ? '90vw' : '600px',
-          height: 'auto',
-        })
-        dialogRef.afterClosed().subscribe(_ => {
-          if (
-            this.fileUploadCondition.fileName &&
-            this.fileUploadCondition.iframe &&
-            this.fileUploadCondition.eval &&
-            this.fileUploadCondition.preview &&
-            this.fileUploadCondition.externalReference
-          ) {
-
-            this.assignFileValues(file, fileName)
-            // this.triggerUpload()
-          }
-        })
-      } else {
-        /* tslint:disable-next-line */
-
-        console.log("yes else", file, fileName)
-
-        this.assignFileValues(file, fileName)
-      }
-      this.triggerUpload()
     }
   }
 
@@ -3015,6 +3027,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   clearForm() {
+    this.showAddModuleForm = true
     this.resourcePdfForm.setValue({
       resourceName: '',
       instructions: '',
@@ -3039,6 +3052,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.fileUploadForm.reset()
 
     this.clearUploadedFile()
+    this.moduleName = ''
+    this.topicDescription = ''
+    this.editResourceLinks = ''
+    this.isNewTab = false
+    this.isGating = false
+    this.thumbnail = ''
     this.hours = 0
     this.minutes = 0
     this.seconds = 0
@@ -3543,6 +3562,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           },
           duration: NOTIFICATION_TIME * 1000,
         })
+        this.clearForm()
       })
     })
   }
