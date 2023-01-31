@@ -101,7 +101,7 @@
         <mat-icon class="mr-1" *ngIf="data.totalRating == 5" color="accent">star</mat-icon>
         <mat-icon class="mr-1" *ngIf="data.totalRating && data.totalRating != 5" color="accent">
           star_half</mat-icon>
-        <mat-icon class="mr-1" *ngIf="!data.totalRating">star_border</mat-icon>
+        <!-- <mat-icon class="mr-1" *ngIf="!data.totalRating">star_border</mat-icon> -->
         {{ data.totalRating | number: '1.1-1' }}
       </span>
       <span *ngIf="data.duration" class="flex items-center ml-3 mr-2">
