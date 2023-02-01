@@ -108,6 +108,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       type: 'assessment'
     }
   ]
+  selectedEntryFile: boolean = false
+  fileUploaded: any = []
   isFalse: boolean = false
   parentHierarchy: number[] = []
   showAddModuleForm: boolean = false
@@ -2828,6 +2830,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           })
           dialogRef.afterClosed().subscribe(result => {
             if (result) {
+              this.uploadFileName = fileName
               this.assignFileValues(file, fileName)
               this.triggerUpload()
             }
@@ -2843,7 +2846,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               this.fileUploadCondition.iframe &&
               this.fileUploadCondition.eval &&
               this.fileUploadCondition.preview &&
-              this.fileUploadCondition.externalReference
+              this.fileUploadCondition.externalReference && this.fileUploadCondition.isSubmitPressed
             ) {
 
               this.assignFileValues(file, fileName)
@@ -2851,15 +2854,50 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             }
           })
         } else {
-          /* tslint:disable-next-line */
+          if (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v')) {
+            const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+              width: this.isMobile ? '90vw' : '600px',
+              height: 'auto',
+              data: 'transcodeMessage',
+            })
+            dialogRef.afterClosed().subscribe(result => {
+              if (result) {
+                this.assignFileValues(file, fileName)
+                this.triggerUpload()
+              }
+            })
+          } else if (fileName.toLowerCase().endsWith('.zip')) {
+            const dialogRef = this.dialog.open(this.guideline, {
+              width: this.isMobile ? '90vw' : '600px',
+              height: 'auto',
+            })
+            dialogRef.afterClosed().subscribe(_ => {
+              if (
+                this.fileUploadCondition.fileName &&
+                this.fileUploadCondition.iframe &&
+                this.fileUploadCondition.eval &&
+                this.fileUploadCondition.preview &&
+                this.fileUploadCondition.externalReference
+              ) {
 
-          console.log("yes else", file, fileName)
+                this.assignFileValues(file, fileName)
+                // this.triggerUpload()
+              }
+            })
+          } else {
+            /* tslint:disable-next-line */
 
-          this.assignFileValues(file, fileName)
+            this.uploadFileName = fileName
+            this.assignFileValues(file, fileName)
+            this.triggerUpload()
+          }
+          this.fileUploaded = file
+
         }
-        this.triggerUpload()
+
       }
-    } else {
+    }
+    else {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_FORMAT,
@@ -2905,7 +2943,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.extractFile()
       }
     }
-    this.uploadFileName = fileName
+
     /* tslint:disable-next-line */
 
     console.log("this.uploadFileName", this.mimeType)
@@ -2974,8 +3012,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.fileUploadCondition.iframe &&
           this.fileUploadCondition.eval &&
           this.fileUploadCondition.preview &&
-          this.fileUploadCondition.externalReference
+          this.fileUploadCondition.externalReference &&
+          this.fileUploadCondition.url && this.selectedEntryFile
         ) {
+          const fileName = this.fileUploaded.name.replace(/[^A-Za-z0-9_.]/g, '')
+          this.uploadFileName = fileName
+          // this.assignFileValues(this.fileUploaded, fileName)
           this.triggerUpload()
         }
       })
