@@ -184,7 +184,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     }
     else if (this.allowAuthorContentCreate) {
       this.link = 'Draft'
-      this.links = ['Draft', 'Published Courses']
+      this.links = ['Draft', 'Published Courses', 'Retired']
       this.activeLink = 'Draft'
       this.isSelectedColor = true
       this.isSelectedReviewCourse = false
