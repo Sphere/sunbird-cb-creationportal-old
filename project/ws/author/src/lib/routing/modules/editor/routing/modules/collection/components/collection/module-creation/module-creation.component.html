@@ -546,8 +546,8 @@
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
               </div>
-              <div><button mat-raised-button
-                  class="margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+              <div><button [disabled]="uploadFileName == ''" mat-raised-button
+                  class="margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom resourcePdfSave"
                   (click)="resourcePdfSave()">Save</button></div>
             </form>
             <!--PDF form end-->
@@ -760,7 +760,7 @@
             </div>
             <div class="flex justify-center padding-bottom-m">
               <button type="button" mat-raised-button color="primary" class="margin-top-m ws-mat-primary-background"
-                (click)="closeDialog()">
+                (click)="closeDialog(); selectedEntryFile=true">
                 <div class="flex flex-middle justify-center">
                   <p class="margin-remove-bottom agree-text" i18n>Done</p>
                 </div>

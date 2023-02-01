@@ -108,6 +108,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       type: 'assessment'
     }
   ]
+  selectedEntryFile: boolean = false
+  fileUploaded: any = []
   isFalse: boolean = false
   parentHierarchy: number[] = []
   showAddModuleForm: boolean = false
@@ -605,7 +607,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     } else {
       if (nextAction) {
         /* tslint:disable-next-line */
-        console.log("nextAction")
+        // console.log("nextAction")
         if (this.isSettingsPage) {
           this.action("push")
         } else {
@@ -2204,6 +2206,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         },
       },
     }
+    this.loaderService.changeLoad.next(true)
     await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
       this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
         this.courseData = data
@@ -2212,6 +2215,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         } else {
           this.showSettingsPage = false
         }
+        this.loaderService.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
             type: Notify.SUCCESS
@@ -2828,6 +2832,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           })
           dialogRef.afterClosed().subscribe(result => {
             if (result) {
+              this.uploadFileName = fileName
               this.assignFileValues(file, fileName)
               this.triggerUpload()
             }
@@ -2843,23 +2848,23 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               this.fileUploadCondition.iframe &&
               this.fileUploadCondition.eval &&
               this.fileUploadCondition.preview &&
-              this.fileUploadCondition.externalReference
+              this.fileUploadCondition.externalReference && this.fileUploadCondition.isSubmitPressed
             ) {
 
               this.assignFileValues(file, fileName)
+              this.fileUploaded = file
               // this.triggerUpload()
             }
           })
         } else {
-          /* tslint:disable-next-line */
-
-          console.log("yes else", file, fileName)
-
+          this.uploadFileName = fileName
+          this.fileUploaded = file
           this.assignFileValues(file, fileName)
+          this.triggerUpload()
         }
-        this.triggerUpload()
       }
-    } else {
+    }
+    else {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_FORMAT,
@@ -2905,7 +2910,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.extractFile()
       }
     }
-    this.uploadFileName = fileName
+
     /* tslint:disable-next-line */
 
     console.log("this.uploadFileName", this.mimeType)
@@ -2974,8 +2979,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.fileUploadCondition.iframe &&
           this.fileUploadCondition.eval &&
           this.fileUploadCondition.preview &&
-          this.fileUploadCondition.externalReference
+          this.fileUploadCondition.externalReference &&
+          this.fileUploadCondition.url && this.selectedEntryFile
         ) {
+          const fileName = this.fileUploaded.name.replace(/[^A-Za-z0-9_.]/g, '')
+          this.uploadFileName = fileName
+          // this.assignFileValues(this.fileUploaded, fileName)
           this.triggerUpload()
         }
       })
@@ -3022,7 +3031,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
     await this.update()
     await this.save()
-    this.loaderService.changeLoad.next(false)
+    // this.loaderService.changeLoad.next(false)
     this.clearForm()
   }
 
