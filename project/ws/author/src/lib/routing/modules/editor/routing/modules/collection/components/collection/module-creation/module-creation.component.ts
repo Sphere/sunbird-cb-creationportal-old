@@ -607,7 +607,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     } else {
       if (nextAction) {
         /* tslint:disable-next-line */
-        console.log("nextAction")
+        // console.log("nextAction")
         if (this.isSettingsPage) {
           this.action("push")
         } else {
@@ -2206,6 +2206,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         },
       },
     }
+    this.loaderService.changeLoad.next(true)
     await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
       this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
         this.courseData = data
@@ -2214,6 +2215,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         } else {
           this.showSettingsPage = false
         }
+        this.loaderService.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
             type: Notify.SUCCESS
@@ -2850,51 +2852,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             ) {
 
               this.assignFileValues(file, fileName)
+              this.fileUploaded = file
               // this.triggerUpload()
             }
           })
         } else {
-          if (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v')) {
-            const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-              width: this.isMobile ? '90vw' : '600px',
-              height: 'auto',
-              data: 'transcodeMessage',
-            })
-            dialogRef.afterClosed().subscribe(result => {
-              if (result) {
-                this.assignFileValues(file, fileName)
-                this.triggerUpload()
-              }
-            })
-          } else if (fileName.toLowerCase().endsWith('.zip')) {
-            const dialogRef = this.dialog.open(this.guideline, {
-              width: this.isMobile ? '90vw' : '600px',
-              height: 'auto',
-            })
-            dialogRef.afterClosed().subscribe(_ => {
-              if (
-                this.fileUploadCondition.fileName &&
-                this.fileUploadCondition.iframe &&
-                this.fileUploadCondition.eval &&
-                this.fileUploadCondition.preview &&
-                this.fileUploadCondition.externalReference
-              ) {
-
-                this.assignFileValues(file, fileName)
-                // this.triggerUpload()
-              }
-            })
-          } else {
-            /* tslint:disable-next-line */
-
-            this.uploadFileName = fileName
-            this.assignFileValues(file, fileName)
-            this.triggerUpload()
-          }
+          this.uploadFileName = fileName
           this.fileUploaded = file
-
+          this.assignFileValues(file, fileName)
+          this.triggerUpload()
         }
-
       }
     }
     else {
@@ -3064,7 +3031,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
     await this.update()
     await this.save()
-    this.loaderService.changeLoad.next(false)
+    // this.loaderService.changeLoad.next(false)
     this.clearForm()
   }
 
