@@ -244,7 +244,8 @@
             </div>
           </div>
           <div>
-            <mat-checkbox [(ngModel)]="isNewTab" [checked]="isNewTab" style="margin-left: 0px;" class="check-text">Open
+            <mat-checkbox *ngIf="acceptType == '.zip'||isLinkEnabled" [(ngModel)]="isNewTab" [checked]="isNewTab"
+              style="margin-left: 0px;" class="check-text">Open
               link
               in new tab</mat-checkbox>
           </div>
@@ -308,8 +309,14 @@
               class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
               (click)="moduleCreate(module.value, topicDescription, thumbnail)">
               {{moduleButtonName}}</button>
-            <button mat-raised-button *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'"
-              class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
+            <button [disabled]="(uploadFileName?uploadFileName == '':true)" mat-raised-button
+              *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&!isLinkEnabled"
+              class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom resourcePdfSave"
+              (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating)">
+              {{moduleButtonName}}</button>
+            <button [disabled]="isLinkEnabled?editResourceLinks.length==0:true" mat-raised-button
+              *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&isLinkEnabled"
+              class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating)">
               {{moduleButtonName}}</button>
             <button mat-raised-button *ngIf="content?.contentType === 'Course'"
@@ -420,7 +427,7 @@
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
               </div>
-              <div><button mat-raised-button
+              <div><button [disabled]="(resourceLinks?resourceLinks.value.length==0:false)" mat-raised-button
                   class="margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
                   (click)="resourceLinkSave()">Save</button></div>
             </form>
@@ -478,7 +485,7 @@
               </div>
               <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isgatingEnabled">Gating
                 Enabled</mat-checkbox>
-              <div style="display:flex; flex-direction:row" *ngIf="acceptType == '.zip'">
+              <div style="display:flex; flex-direction:row" *ngIf="acceptType == '.zip'||isLinkEnabled">
 
                 <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isIframeSupported">Open link
                   in new tab</mat-checkbox>
