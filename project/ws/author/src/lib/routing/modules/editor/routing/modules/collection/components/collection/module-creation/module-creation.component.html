@@ -378,8 +378,8 @@
               </mat-form-field>
               <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">
-                  <input matInput #resourceLinks formControlName="resourceLinks" maxlength="100" i18n-placeholder
-                    placeholder="Link" />
+                  <input matInput #resourceLinks [(ngModel)]="editResourceLinks" formControlName="resourceLinks"
+                    maxlength="100" i18n-placeholder placeholder="Link" />
                 </mat-form-field>
                 <mat-checkbox class="check-text" formControlName="isgatingEnabled">Gating Enabled</mat-checkbox>
                 <mat-checkbox class="check-text" formControlName="isIframeSupported">Open link in new tab</mat-checkbox>
@@ -427,8 +427,8 @@
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
               </div>
-              <div><button [disabled]="(resourceLinks?resourceLinks.value.length==0:false)" mat-raised-button
-                  class="margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+              <div><button [disabled]="editResourceLinks.length==0" mat-raised-button
+                  class="margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom resourcePdfSave"
                   (click)="resourceLinkSave()">Save</button></div>
             </form>
             <!--link form end-->
