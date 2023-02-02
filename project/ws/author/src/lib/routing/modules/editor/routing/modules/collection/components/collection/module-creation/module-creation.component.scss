@@ -583,3 +583,6 @@ ul li {
   cursor: grab;
 }
 
+::ng-deep .theme-igot.day-mode .ws-mat-primary-background {
+  background-color: #1c5d95 !important;
+}

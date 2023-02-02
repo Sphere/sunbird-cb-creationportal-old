@@ -1676,7 +1676,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.isLinkEnabled = true
       this.isPdfOrAudioOrVedioEnabled = false
       this.isAssessmentOrQuizEnabled = false
-      this.setContentType(type)
+      this.setContentType(type, 'url')
     } else if (name == 'PDF') {
       this.uploadText = 'PDF'
       this.isLinkEnabled = false
@@ -1685,7 +1685,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/pdf-icon.svg'
       this.acceptType = '.pdf'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
-      this.setContentType(type)
+      this.setContentType(type, 'pdf')
     } else if (name == 'Audio') {
       this.uploadText = 'mp3'
       this.isLinkEnabled = false
@@ -1694,7 +1694,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/audio.png'
       this.acceptType = '.mp3'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
-      this.setContentType(type)
+      this.setContentType(type, 'audio')
     } else if (name == 'Video') {
       this.uploadText = 'mp4, m4v'
       this.isLinkEnabled = false
@@ -1703,7 +1703,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/vedio-img.svg'
       this.acceptType = '.mp4, .m4v'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
-      this.setContentType(type)
+      this.setContentType(type, 'video')
     } else if (name == 'SCORM') {
       this.uploadText = '.zip'
       this.isLinkEnabled = false
@@ -1712,7 +1712,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/SCROM-img.svg'
       this.acceptType = '.zip'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
-      this.setContentType(type)
+      this.setContentType(type, 'zip')
     } else if (name == 'Assessment') {
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = true
@@ -1820,7 +1820,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType == 'audio/mpeg') {
-      this.uploadFileName = content.artifactUrl.split('_')[4]
+      this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
       this.uploadText = 'mp3'
       this.isLinkEnabled = false
@@ -1831,7 +1831,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'video/mp4') {
-      this.uploadFileName = content.artifactUrl.split('_')[4]
+      this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
       this.uploadText = 'mp4, m4v'
       this.isLinkEnabled = false
@@ -1842,7 +1842,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'application/vnd.ekstep.html-archive') {
-      this.uploadFileName = content.streamingUrl.split('/')[6]
+      this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/SCROM-img.svg'
       this.uploadText = '.zip'
       this.isLinkEnabled = false
@@ -2801,8 +2801,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       preview: false,
       url: '',
     }
+    let type
+    if (file.type == 'video/mp4')
+      type = '.mp4'
+    else if (file.type == 'video/m4v')
+      type = '.m4v'
+    else
+      type = this.acceptType
+
     const fileName = file.name.replace(/[^A-Za-z0-9_.]/g, '')
-    if (fileName.toLowerCase().endsWith(this.acceptType)) {
+    if (fileName.toLowerCase().endsWith(type)) {
       if (
         !fileName.toLowerCase().endsWith('.pdf') &&
         !fileName.toLowerCase().endsWith('.zip') &&
