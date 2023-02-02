@@ -334,6 +334,9 @@ export class CollectionStoreService {
       case 'zip':
         acceptMimeType = 'application/vnd.ekstep.html-archive'
         break
+      case 'url':
+        acceptMimeType = 'application/x-mpegURL'
+        break
       default:
         acceptMimeType = 'application/pdf'
     }
