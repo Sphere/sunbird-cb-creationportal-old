@@ -3297,8 +3297,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
     //this.preserveExpandedNodes()
     dialogRef.afterClosed().subscribe(confirm => {
-      this.loader.changeLoad.next(true)
       if (confirm) {
+        this.loader.changeLoad.next(true)
         this.parentHierarchy = []
         this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
           this.courseData = data
