@@ -306,22 +306,30 @@
           </div>
           <div>
             <button mat-raised-button *ngIf="moduleButtonName === 'Create' && content?.contentType !== 'Course'"
-              class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
+              class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom"
               (click)="moduleCreate(module.value, topicDescription, thumbnail)">
               {{moduleButtonName}}</button>
+            <button mat-raised-button *ngIf="content?.contentType === 'CourseUnit'"
+              class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
+              (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating)">
+              {{moduleButtonName}}</button>
             <button [disabled]="(uploadFileName?uploadFileName == '':true)" mat-raised-button
-              *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&!isLinkEnabled"
-              class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom resourcePdfSave"
+              *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course'&& !isLinkEnabled && content?.mimeType !== 'application/json'"
+              class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating)">
               {{moduleButtonName}}</button>
             <button [disabled]="isLinkEnabled?editResourceLinks.length==0:true" mat-raised-button
               *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&isLinkEnabled"
-              class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom resourcePdfSave"
+              class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
+              (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating)">
+              {{moduleButtonName}}</button>
+            <button [disabled]="content?.mimeType === 'application/json' && !content?.artifactUrl" mat-raised-button
+              *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&!isLinkEnabled &&content?.mimeType === 'application/json' && content?.artifactUrl"
+              class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating)">
               {{moduleButtonName}}</button>
             <button mat-raised-button *ngIf="content?.contentType === 'Course'"
-              class="margin-top-m width-15 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
-              (click)="saveCourseDetails()">
+              class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom" (click)="saveCourseDetails()">
               Save</button>
           </div>
         </div>

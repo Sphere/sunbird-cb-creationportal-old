@@ -523,7 +523,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.update()
     }
     const updatedContent = this.contentService.upDatedContent || {}
-    console.log(updatedContent)
+    // console.log(updatedContent)
     if (this.viewMode === 'assessment') {
       this.triggerQuizSave = true
     } else
@@ -1293,7 +1293,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-          await this.sendEmailNotification('sendForPublish')
+          // await this.sendEmailNotification('sendForPublish')
           this.dialog.open(SuccessDialogComponent, {
             width: '450px',
             height: '300x',

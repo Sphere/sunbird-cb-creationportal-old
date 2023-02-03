@@ -108,6 +108,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       type: 'assessment'
     }
   ]
+  checkCreator = false
   selectedEntryFile: boolean = false
   fileUploaded: any = []
   isFalse: boolean = false
@@ -1718,9 +1719,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.isAssessmentOrQuizEnabled = true
       this.isPdfOrAudioOrVedioEnabled = false
       let obj: any = {}
+      sessionStorage.clear()
       obj["type"] = 'assessment'
       obj["name"] = 'assessment'
       obj["description"] = 'assessment'
+      sessionStorage.setItem('assessment', 'true')
       //this.initService.updateAssessment(obj)
       this.setContentType(type)
       //this.getassessment()
@@ -1794,7 +1797,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.moduleButtonName = 'Save'
     this.content = content
     this.moduleName = content.name
-    this.topicDescription = content.instructions.replace(/<(.|\n)*?>/g, '')
+    this.topicDescription = content.instructions ? content.instructions.replace(/<(.|\n)*?>/g, '') : ''
     this.thumbnail = content.thumbnail
     this.setDuration(content.duration)
     this.isNewTab = content.isIframeSupported == 'Yes' ? true : false
@@ -2380,6 +2383,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         if (content.contentType === 'Resource') {
           this.resourceLinkForm.controls.resourceName.setValue(content.name)
         }
+        const isCreator = (this._configurationsService.userProfile
+          && this._configurationsService.userProfile.userId === content.createdBy)
+          ? true : false
+        this.checkCreator = isCreator
         // const isCreator = (this.configSvc.userProfile
         //   && this.configSvc.userProfile.userId === content.createdBy)
         //   ? true : false
@@ -3305,8 +3312,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
     //this.preserveExpandedNodes()
     dialogRef.afterClosed().subscribe(confirm => {
-      this.loader.changeLoad.next(true)
       if (confirm) {
+        this.loader.changeLoad.next(true)
         this.parentHierarchy = []
         this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
           this.courseData = data
