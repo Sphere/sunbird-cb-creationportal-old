@@ -96,7 +96,7 @@
               </ws-auth-question-editor>
               <mat-form-field appearance="outline" style="padding: 5px 15px 0px 25px">
                 <label class="starlabel">Pass Percentage</label>
-                <input matInput placeholder="Enter pass percentage" min="10" [(ngModel)]="passPercentage"
+                <input matInput placeholder="Enter pass percentage" min="10" max="100" [(ngModel)]="passPercentage"
                   (change)="addTodo(passPercentage, 'passPercentage')" type="number" />
               </mat-form-field>
               <mat-form-field appearance="outline">
@@ -121,7 +121,8 @@
             </div>
             <div class="flex items-center justify-center h-64" *ngIf="!questionsArr.length || !canEditJson">
               <div class="p-1">
-                <span i18n *ngIf="!questionsArr.length && canEditJson">No quiz found, Kindly add</span>
+                <span i18n *ngIf="!questionsArr.length && canEditJson">No {{isQuiz?'quiz':'assessment'}} found, Kindly
+                  add</span>
                 <span i18n *ngIf="!canEditJson">Reviewer or Publisher cannot add or edit Quiz</span>
                 <!-- <mat-icon class="align-middle">error</mat-icon> -->
               </div>
