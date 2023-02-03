@@ -9,7 +9,7 @@
           <span class="course-title">{{courseData?.name}}</span>
           <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)=" editContent(courseData)">
             edit</mat-icon>
-          <span class="margin-left-s text-small">{{courseData?.duration | date:'h:mm:ss'}}</span>
+          <span class="margin-left-s text-small">{{mainCourseDuration}}</span>
         </mat-toolbar>
         <div class="model-left-create-content">
           <div class="module-container" *ngFor="let module of courseData?.children">
