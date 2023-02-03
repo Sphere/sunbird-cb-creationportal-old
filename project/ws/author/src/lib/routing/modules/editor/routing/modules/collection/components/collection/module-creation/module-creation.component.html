@@ -257,7 +257,7 @@
           <div class="margin-top-s" *ngIf="content?.mimeType === 'application/json' &&  content?.artifactUrl">
             <button mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-              (click)="editAssessmentRes(content)">Edit Assessment</button>
+              (click)="editAssessmentRes(content)">Edit {{content?.assessment===true?'Assessment':'Quiz'}}</button>
           </div>
           <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
             <span style="color:#808080" *ngIf="content?.contentType === 'Course'">Course Thumbnail</span>
@@ -436,7 +436,7 @@
                 </mat-form-field>
               </div>
               <div><button [disabled]="editResourceLinks.length==0" mat-raised-button
-                  class="margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom resourcePdfSave"
+                  class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
                   (click)="resourceLinkSave()">Save</button></div>
             </form>
             <!--link form end-->
@@ -474,7 +474,7 @@
                     <input #pdfFile (change)="uploadPdf($event.target.files[0]); pdfFile.value = null"
                       style="display: none;" accept="{{acceptType}}" type="file" />
                     <button (click)="pdfFile.click()" mat-raised-button
-                      class="pdf-button margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom">Upload
+                      class="pdf-button margin-top-m width-15 text-white  mat-button-base save-btn-bottom">Upload
                       File</button>
                     <div class="pdf-text-1">
                       <!-- <span>OR</span> -->
