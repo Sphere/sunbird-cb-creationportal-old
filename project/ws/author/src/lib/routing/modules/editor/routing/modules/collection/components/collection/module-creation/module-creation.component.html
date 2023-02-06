@@ -249,15 +249,15 @@
               link
               in new tab</mat-checkbox>
           </div>
-          <div>
+          <div *ngIf="content?.mimeType !== 'application/json'">
             <mat-checkbox [(ngModel)]="isGating" [checked]="isGating" style="margin-left: 0px;" class="check-text">
               Gating
               Enabled</mat-checkbox>
           </div>
-          <div class="margin-top-s" *ngIf="content?.mimeType === 'application/json' &&  content?.artifactUrl">
+          <div class="margin-top-s" *ngIf="content?.mimeType === 'application/json'">
             <button mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-              (click)="editAssessmentRes(content)">Edit {{content?.assessment===true?'Assessment':'Quiz'}}</button>
+              (click)="editAssessmentRes(content)">Edit {{assessmentOrQuizName}}</button>
           </div>
           <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
             <span style="color:#808080" *ngIf="content?.contentType === 'Course'">Course Thumbnail</span>
@@ -284,7 +284,7 @@
             <span style="color:#808080">Note: Learners will see this image for this
               module</span>
           </div>
-          <div style="display:flex; flex-direction:row">
+          <div style="display:flex; flex-direction:row" *ngIf="content?.mimeType !== 'application/json'">
             <span class="duration-text">Duration:</span>
             <mat-form-field appearance="outline" class="width-55">
               <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
@@ -375,7 +375,8 @@
           </div>
           <div>
             <!--link form start-->
-            <form [formGroup]="resourceLinkForm" class="resource-details-form" *ngIf="isLinkEnabled">
+            <form [formGroup]="resourceLinkForm" class="resource-details-form"
+              *ngIf="isLinkEnabled||isAssessmentOrQuizEnabled">
               <mat-form-field appearance="outline" class="margin-top-xs field-width">
                 <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
@@ -384,7 +385,7 @@
                 <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
                   placeholder="Description of the resource" />
               </mat-form-field>
-              <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled">
+              <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">
                   <input matInput #resourceLinks [(ngModel)]="editResourceLinks" formControlName="resourceLinks"
                     maxlength="100" i18n-placeholder placeholder="Link" />
@@ -392,7 +393,15 @@
                 <mat-checkbox class="check-text" formControlName="isgatingEnabled">Gating Enabled</mat-checkbox>
                 <mat-checkbox class="check-text" formControlName="isIframeSupported">Open link in new tab</mat-checkbox>
               </div>
-              <div class="margin-bottom-s">
+              <div class="margin-top-s" *ngIf="isAssessmentOrQuizEnabled">
+                <button mat-raised-button
+                  class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+                  (click)="addAssessment()">Add {{resourceType==='Assessment'?'Assessment':'Quiz'}}</button>
+                <span style="color: #808080 !important;margin-left: 5px;">Note : Save the Resource Details before
+                  clicking on Add
+                  {{resourceType==='Assessment'?'Assessment':'Quiz'}}</span>
+              </div>
+              <div class="margin-bottom-s" *ngIf="!isAssessmentOrQuizEnabled">
                 <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
               </div>
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
@@ -413,7 +422,7 @@
                   Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
                 </div>
               </div>
-              <div style="display:flex; flex-direction:row">
+              <div style="display:flex; flex-direction:row" *ngIf="!isAssessmentOrQuizEnabled">
                 <span class="duration-text">Duration:</span>
                 <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
@@ -435,7 +444,7 @@
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
               </div>
-              <div><button [disabled]="editResourceLinks.length==0" mat-raised-button
+              <div><button [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
                   class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
                   (click)="resourceLinkSave()">Save</button></div>
             </form>
@@ -566,7 +575,7 @@
                   (click)="resourcePdfSave()">Save</button></div>
             </form>
             <!--PDF form end-->
-            <form [formGroup]="assessmentOrQuizForm" class="resource-details-form" *ngIf="isAssessmentOrQuizEnabled">
+            <!-- <form [formGroup]="assessmentOrQuizForm" class="resource-details-form" *ngIf="isAssessmentOrQuizEnabled">
               <div style="display:flex; flex-direction:row">
                 <mat-form-field appearance="outline" class="margin-right-l field-width">
                   <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
@@ -649,7 +658,7 @@
                   </mat-card>
                 </div>
               </div>
-            </form>
+            </form> -->
           </div>
         </div>
         <ng-template #guideline>
