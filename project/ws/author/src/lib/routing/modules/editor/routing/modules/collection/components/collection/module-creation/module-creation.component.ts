@@ -108,6 +108,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       type: 'assessment'
     }
   ]
+  checkCreator = false
   selectedEntryFile: boolean = false
   fileUploaded: any = []
   isFalse: boolean = false
@@ -147,7 +148,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   routerSubscription: Subscription | null = null
   courseName: any
   currentParentId!: string
-  checkCreator = false
   showResource: boolean = false;
   triggerQuizSave = false
   triggerUploadSave = false
@@ -185,6 +185,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   errorFileList: string[] = []
   fileList: string[] = []
   duration!: string
+  mainCourseDuration: string = ''
   entryPoint: any
   uploadText!: string
   uploadFileName: string = '';
@@ -1587,7 +1588,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
       /* tslint:disable-next-line */
-      console.log("data", data.children.length)
       this.courseData = data
       //this.moduleButtonName = 'Save'
       //this.isSaveModuleFormEnable = true
@@ -1600,6 +1600,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.moduleName = data.name
       this.topicDescription = data.description
       this.thumbnail = data.thumbnail
+
+      if (data.duration) {
+        const minutes = data.duration > 59 ? Math.floor(data.duration / 60) : 0
+        const second = data.duration % 60
+        const hour = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
+        const minute = minutes ? minutes % 60 : 0
+        const seconds = second || 0
+        this.mainCourseDuration = hour + ':' + minute + ':' + seconds
+      }
+
       //this.isResourceTypeEnabled = true
       /* tslint:disable-next-line */
       console.log(this.isSaveModuleFormEnable)
@@ -1736,9 +1746,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.isAssessmentOrQuizEnabled = true
       this.isPdfOrAudioOrVedioEnabled = false
       let obj: any = {}
+      sessionStorage.clear()
       obj["type"] = 'assessment'
       obj["name"] = 'assessment'
       obj["description"] = 'assessment'
+      sessionStorage.setItem('assessment', 'true')
       //this.initService.updateAssessment(obj)
       this.setContentType(type)
       //this.getassessment()
@@ -1812,7 +1824,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.moduleButtonName = 'Save'
     this.content = content
     this.moduleName = content.name
-    this.topicDescription = content.instructions.replace(/<(.|\n)*?>/g, '')
+    this.topicDescription = content.instructions ? content.instructions.replace(/<(.|\n)*?>/g, '') : ''
     this.thumbnail = content.thumbnail
     this.setDuration(content.duration)
     this.isNewTab = content.isIframeSupported == 'Yes' ? true : false
@@ -2407,6 +2419,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         if (content.contentType === 'Resource') {
           this.resourceLinkForm.controls.resourceName.setValue(content.name)
         }
+        const isCreator = (this._configurationsService.userProfile
+          && this._configurationsService.userProfile.userId === content.createdBy)
+          ? true : false
+        this.checkCreator = isCreator
         // const isCreator = (this.configSvc.userProfile
         //   && this.configSvc.userProfile.userId === content.createdBy)
         //   ? true : false
@@ -3332,8 +3348,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
     //this.preserveExpandedNodes()
     dialogRef.afterClosed().subscribe(confirm => {
-      this.loader.changeLoad.next(true)
       if (confirm) {
+        this.loader.changeLoad.next(true)
         this.parentHierarchy = []
         this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
           this.courseData = data

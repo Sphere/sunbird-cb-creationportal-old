@@ -76,6 +76,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * reviwer and publisher cannot add or delete or edit quizs but can rearrange them
    */
+  isEdited = false
   canEditJson = true
   mediumScreenSize = false
   quizDuration!: number
@@ -122,7 +123,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     this.initService.updateAssessmentMessage.subscribe(
       (data: any) => {
         if (data) {
-          console.log(data)
           this.metaContentService.currentContent = data.identifier
           this.ngOnInit()
         }
@@ -234,11 +234,13 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     this.showSettingButtons = true
     // console.log('kk', JSON.parse(sessionStorage.assessment))
     const code = sessionStorage.getItem('assessment') || null
-    console.log(code)
     this.isQuiz = sessionStorage.getItem('quiz') || ''
+
+
     this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
-      console.log(id)
+
       if (code) {
+        this.isEdited = true
         this.metaContentService.currentContent = JSON.parse(code)
       } else {
         this.metaContentService.currentContent = id
@@ -526,7 +528,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   wrapperForTriggerSave() {
     this.loaderService.changeLoad.next(false)
+
+    if (this.isEdited) {
+      this.currentId = this.metaContentService.parentContent
+    }
     const updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+    this.currentId = this.metaContentService.currentContent
     const hasTimeChanged =
       (this.metaContentService.upDatedContent[this.currentId] || {}).duration &&
       this.quizDuration !== this.metaContentService.upDatedContent[this.currentId].duration
