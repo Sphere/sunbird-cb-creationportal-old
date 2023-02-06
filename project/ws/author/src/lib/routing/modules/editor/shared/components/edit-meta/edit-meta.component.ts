@@ -549,7 +549,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         //this.contentForm.controls.isIframeSupported.setValue(this.contentMeta.isIframeSupported)
         this.contentForm.controls.sourceName.setValue(this.contentMeta.sourceName)
-        this.contentForm.controls.lang.setValue(this.contentMeta.language[0])
+        this.contentForm.controls.lang.setValue(this.contentMeta.lang)
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification === undefined ? false : this.contentMeta.issueCertification)
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
@@ -1118,7 +1118,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
                 mimeType: 'image/jpeg',
                 mediaType: 'image',
                 name: fileName,
-                language: ['English'],
+                lang: ['English'],
                 license: 'CC BY 4.0',
                 primaryCategory: 'Asset',
               },
