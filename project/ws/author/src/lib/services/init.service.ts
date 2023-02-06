@@ -47,6 +47,10 @@ export class AuthInitService {
   private showAssessment = new Subject<any>()
   public showAssessmentMessage = this.showAssessment.asObservable()
 
+  private isAssessmentOrQuiz = new Subject<any>()
+  public isAssessmentOrQuizMessage = this.isAssessmentOrQuiz.asObservable()
+
+
   authConfig!: IFormMeta
   authMetaV2!: { [key: string]: IMetaUnit<any> }
   ordinals: any
@@ -93,6 +97,9 @@ export class AuthInitService {
   }
   showAssessmentAction(message: any) {
     this.showAssessment.next(message)
+  }
+  isAssessmentOrQuizAction(message: any) {
+    this.isAssessmentOrQuiz.next(message)
   }
 
 }

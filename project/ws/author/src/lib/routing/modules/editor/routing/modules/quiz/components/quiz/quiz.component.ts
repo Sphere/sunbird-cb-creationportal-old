@@ -127,6 +127,14 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
           this.ngOnInit()
         }
       })
+    this.initService.isAssessmentOrQuizMessage.subscribe(
+      (data: any) => {
+        if (data == false) {
+          this.isQuiz = 'true'
+        } else {
+          this.isQuiz = 'false'
+        }
+      })
   }
 
   ngOnDestroy() {

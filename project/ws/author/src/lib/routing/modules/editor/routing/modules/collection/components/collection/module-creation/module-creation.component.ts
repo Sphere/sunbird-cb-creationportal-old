@@ -108,6 +108,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       type: 'assessment'
     }
   ]
+  assessmentOrQuizName: string = 'Quiz'
   checkCreator = false
   selectedEntryFile: boolean = false
   fileUploaded: any = []
@@ -1675,6 +1676,18 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
       await this.saves()
       this.clearForm()
+    } else {
+      const rBody: any = {
+        name: this.resourceLinkForm.value.resourceName,
+        instructions: this.resourceLinkForm.value.instructions,
+        description: this.resourceLinkForm.value.instructions,
+        isIframeSupported: iframeSupported,
+        gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
+        versionKey: this.versionKey.versionKey,
+      }
+      await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+      await this.saves()
+      // this.clearForm()
     }
   }
 
@@ -1866,6 +1879,20 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else {
       if (content.mimeType == "application/json") {
+        const fileData = ((content.artifactUrl || content.downloadUrl) ?
+          this.quizResolverSvc.getJSON(this.generateUrl(content.artifactUrl || content.downloadUrl)) : of({} as any))
+        fileData.subscribe(jsonResponse => {
+          if (jsonResponse && Object.keys(jsonResponse).length > 1) {
+            if (jsonResponse) {
+              if (jsonResponse.isAssessment) {
+                this.initService.isAssessmentOrQuizAction(jsonResponse.isAssessment)
+                if (jsonResponse.isAssessment === true) {
+                  this.assessmentOrQuizName = "Assessment"
+                }
+              }
+            }
+          }
+        })
         //this.initService.updateAssessment(content)
         // this.isLinkEnabled = false
         // this.isAssessmentOrQuizEnabled = true
@@ -1880,6 +1907,18 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.initService.updateAssessment(content)
     //this.initService.editAssessmentAction(content)
   }
+
+  addAssessment() {
+    this.viewMode = 'assessment'
+    this.addResourceModule["viewMode"] = 'assessment'
+    let obj: any = {}
+    obj["type"] = 'assessment'
+    obj["name"] = 'assessment'
+    obj["description"] = 'assessment'
+    this.initService.updateAssessment(obj)
+  }
+
+
   uploadAppIcon(file: File) {
     const formdata = new FormData()
     const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
@@ -2408,13 +2447,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         } else if (content.mimeType === 'application/html') {
           this.viewMode = 'upload'
         } else if (content.mimeType === 'application/quiz' || content.mimeType === 'application/json') {
-          this.viewMode = 'assessment'
-          this.addResourceModule["viewMode"] = 'assessment'
-          let obj: any = {}
-          obj["type"] = 'assessment'
-          obj["name"] = 'assessment'
-          obj["description"] = 'assessment'
-          this.initService.updateAssessment(obj)
+          // this.viewMode = 'assessment'
+          // this.addResourceModule["viewMode"] = 'assessment'
+          // let obj: any = {}
+          // obj["type"] = 'assessment'
+          // obj["name"] = 'assessment'
+          // obj["description"] = 'assessment'
+          // this.initService.updateAssessment(obj)
         } else if (content.mimeType === 'application/web-module') {
           this.viewMode = 'webmodule'
         } else {
