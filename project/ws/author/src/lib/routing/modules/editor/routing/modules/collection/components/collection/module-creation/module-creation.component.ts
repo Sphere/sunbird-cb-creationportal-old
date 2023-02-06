@@ -160,7 +160,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   gatingEnabled!: FormControl
   hours = 0
   minutes = 0
-  seconds = 59
+  seconds = 0
   resourceType: string = ''
   resourseSelected: string = ''
   viewMode!: string
@@ -1638,7 +1638,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   timeToSeconds() {
     let total = 0
-    total += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 59
+    total += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
     total += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
     total += this.hours ? this.hours * 60 * 60 : 0
     return total
@@ -1652,42 +1652,50 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   async resourceLinkSave() {
     this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
-    this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
-    let iframeSupported
-    if (this.resourceLinkForm.value.isIframeSupported)
-      iframeSupported = 'Yes'
-    else
-      iframeSupported = 'No'
-
-    var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
-    this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
-
-    if (res !== null) {
-      const rBody: any = {
-        name: this.resourceLinkForm.value.resourceName,
-        instructions: this.resourceLinkForm.value.instructions,
-        description: this.resourceLinkForm.value.instructions,
-        artifactUrl: this.resourceLinkForm.value.resourceLinks,
-        isIframeSupported: iframeSupported,
-        gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
-        duration: this.resourceLinkForm.value.duration,
-        versionKey: this.versionKey.versionKey,
-      }
-      await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
-      await this.saves()
-      this.clearForm()
+    if (this.resourceLinkForm.value.duration == 0) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.DURATION_CANT_BE_0,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
     } else {
-      const rBody: any = {
-        name: this.resourceLinkForm.value.resourceName,
-        instructions: this.resourceLinkForm.value.instructions,
-        description: this.resourceLinkForm.value.instructions,
-        isIframeSupported: iframeSupported,
-        gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
-        versionKey: this.versionKey.versionKey,
+      this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+      let iframeSupported
+      if (this.resourceLinkForm.value.isIframeSupported)
+        iframeSupported = 'Yes'
+      else
+        iframeSupported = 'No'
+
+      var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+      this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+
+      if (res !== null) {
+        const rBody: any = {
+          name: this.resourceLinkForm.value.resourceName,
+          instructions: this.resourceLinkForm.value.instructions,
+          description: this.resourceLinkForm.value.instructions,
+          artifactUrl: this.resourceLinkForm.value.resourceLinks,
+          isIframeSupported: iframeSupported,
+          gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
+          duration: this.resourceLinkForm.value.duration,
+          versionKey: this.versionKey.versionKey,
+        }
+        await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+        await this.saves()
+        this.clearForm()
+      } else {
+        const rBody: any = {
+          name: this.resourceLinkForm.value.resourceName,
+          instructions: this.resourceLinkForm.value.instructions,
+          description: this.resourceLinkForm.value.instructions,
+          isIframeSupported: iframeSupported,
+          gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
+          versionKey: this.versionKey.versionKey,
+        }
+        await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+        await this.saves()
       }
-      await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
-      await this.saves()
-      // this.clearForm()
     }
   }
 
@@ -1770,6 +1778,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addModule() {
+    this.clearForm()
     this.showAddModuleForm = false
     this.moduleButtonName = 'Create'
     this.moduleCreate('Create Module', 'Create Module', '')
@@ -1778,6 +1787,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addResModule(modID: string, courseID: string) {
+    this.clearForm()
     this.addResourceModule["module"] = true
     this.addResourceModule["modID"] = modID
     this.addResourceModule["courseID"] = courseID
@@ -1787,6 +1797,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addIndependentResource() {
+    this.clearForm()
     this.addResourceModule["module"] = false
     this.addResourceModule["modID"] = this.courseData.identifier
     this.addResourceModule["courseID"] = this.courseData.identifier
@@ -2064,46 +2075,55 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     // })
 
     let iframeSupported
-    if (isNewTab)
-      iframeSupported = 'Yes'
-    else
-      iframeSupported = 'No'
-
-    meta["appIcon"] = thumbnail
-    meta["thumbnail"] = thumbnail
-    meta["versionKey"] = this.courseData.versionKey
-    meta["instructions"] = topicDescription
-    meta["description"] = topicDescription
-    meta["name"] = name
-    meta["duration"] = this.timeToSeconds().toString()
-    meta["gatingEnabled"] = isGating
-    meta["isIframeSupported"] = iframeSupported
-    var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
-    if (res !== null) {
-      meta["artifactUrl"] = this.editResourceLinks
-    }
-    this.editorStore.currentContentData = meta
-    this.editorStore.currentContentID = this.content.identifier
-    requestBody = {
-      request: {
-        content: meta
-      }
-    }
-
-    this.contentService.setUpdatedMeta(meta, this.content.identifier)
-    if (this.content.contentType === 'Resource') {
-      this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
-        async (info: any) => {
-          /* tslint:disable-next-line */
-          console.log('info', info)
-          if (info) {
-            await this.update()
-            this.clearForm()
-          }
-        })
+    if (this.timeToSeconds() == 0) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.DURATION_CANT_BE_0,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
     } else {
-      await this.update()
-      this.clearForm()
+      if (isNewTab)
+        iframeSupported = 'Yes'
+      else
+        iframeSupported = 'No'
+
+      meta["appIcon"] = thumbnail
+      meta["thumbnail"] = thumbnail
+      meta["versionKey"] = this.courseData.versionKey
+      meta["instructions"] = topicDescription
+      meta["description"] = topicDescription
+      meta["name"] = name
+      meta["duration"] = this.timeToSeconds().toString()
+      meta["gatingEnabled"] = isGating
+      meta["isIframeSupported"] = iframeSupported
+      var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+      if (res !== null) {
+        meta["artifactUrl"] = this.editResourceLinks
+      }
+      this.editorStore.currentContentData = meta
+      this.editorStore.currentContentID = this.content.identifier
+      requestBody = {
+        request: {
+          content: meta
+        }
+      }
+
+      this.contentService.setUpdatedMeta(meta, this.content.identifier)
+      if (this.content.contentType === 'Resource') {
+        this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
+          async (info: any) => {
+            /* tslint:disable-next-line */
+            console.log('info', info)
+            if (info) {
+              await this.update()
+              this.clearForm()
+            }
+          })
+      } else {
+        await this.update()
+        this.clearForm()
+      }
     }
   }
 
@@ -3132,7 +3152,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.thumbnail = ''
     this.hours = 0
     this.minutes = 0
-    this.seconds = 59
+    this.seconds = 0
 
   }
 
@@ -3401,6 +3421,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
                   })
                   this.loader.changeLoad.next(false)
+                  this.clearForm()
                   this.editorStore.resetOriginalMetaWithHierarchy(data)
                   // tslint:disable-next-line: align
                 })
@@ -3611,33 +3632,43 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   /*course details functionality start*/
   async saveCourseDetails() {
-    this.loaderService.changeLoad.next(true)
-    await this.editorService.readcontentV3(this.currentCourseId).subscribe(async (resData: any) => {
-      const updateContentReq: any = {
-        request: {
-          content: {
-            versionKey: resData.versionKey,
-            name: this.moduleName,
-            appIcon: this.thumbnail,
-            gatingEnabled: this.isGating,
-            instructions: this.topicDescription,
-            thumbnail: this.thumbnail
-          },
+    alert(this.timeToSeconds())
+    if (this.timeToSeconds() == 0) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.DURATION_CANT_BE_0,
         },
-      }
-      await this.editorService.updateNewContentV3(updateContentReq, this.currentCourseId).toPromise().catch((_error: any) => { })
-      await this.editorService.readcontentV3(this.currentCourseId).subscribe(async (data: any) => {
-        this.courseData = data
-        this.loader.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.SAVE_SUCCESS,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-        this.clearForm()
+        duration: NOTIFICATION_TIME * 1000,
       })
-    })
+    } else {
+      this.loaderService.changeLoad.next(true)
+      await this.editorService.readcontentV3(this.currentCourseId).subscribe(async (resData: any) => {
+        const updateContentReq: any = {
+          request: {
+            content: {
+              versionKey: resData.versionKey,
+              name: this.moduleName,
+              appIcon: this.thumbnail,
+              gatingEnabled: this.isGating,
+              instructions: this.topicDescription,
+              thumbnail: this.thumbnail
+            },
+          },
+        }
+        await this.editorService.updateNewContentV3(updateContentReq, this.currentCourseId).toPromise().catch((_error: any) => { })
+        await this.editorService.readcontentV3(this.currentCourseId).subscribe(async (data: any) => {
+          this.courseData = data
+          this.loader.changeLoad.next(false)
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: Notify.SAVE_SUCCESS,
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+          this.clearForm()
+        })
+      })
+    }
   }
   /*course details functionality end*/
 }
