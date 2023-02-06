@@ -205,7 +205,8 @@
             <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
           </div>
           <!-- is pdf/video/audio/zip -->
-          <div class="thumnail-row margin-top-xs" *ngIf="isPdfOrAudioOrVedioEnabled">
+          <div class="thumnail-row margin-top-xs"
+            *ngIf="isPdfOrAudioOrVedioEnabled&&content?.mimeType !== 'application/json'">
             <div>
               <img class="image max-width" height="144" width="256"
                 src="cbp-assets/images/default-white-background.png">
@@ -393,14 +394,11 @@
                 <mat-checkbox class="check-text" formControlName="isgatingEnabled">Gating Enabled</mat-checkbox>
                 <mat-checkbox class="check-text" formControlName="isIframeSupported">Open link in new tab</mat-checkbox>
               </div>
-              <div class="margin-top-s" *ngIf="isAssessmentOrQuizEnabled">
-                <button mat-raised-button
-                  class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-                  (click)="addAssessment()">Add {{resourceType==='Assessment'?'Assessment':'Quiz'}}</button>
-                <span style="color: #808080 !important;margin-left: 5px;">Note : Save the Resource Details before
-                  clicking on Add
-                  {{resourceType==='Assessment'?'Assessment':'Quiz'}}</span>
-              </div>
+              <button *ngIf="isAssessmentOrQuizEnabled"
+                [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
+                class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
+                (click)="resourceLinkSave()">Save</button>
+
               <div class="margin-bottom-s" *ngIf="!isAssessmentOrQuizEnabled">
                 <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
               </div>
@@ -444,9 +442,21 @@
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
               </div>
-              <div><button [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
+              <div>
+                <div class="margin-top-s" *ngIf="isAssessmentOrQuizEnabled">
+                  <button mat-raised-button
+                    class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+                    (click)="addAssessment()">Add {{resourceType==='Assessment'?'Assessment':'Quiz'}}</button>
+                  <span style="color: #808080 !important;margin-left: 5px;">Note : Save the Resource Details before
+                    clicking on Add
+                    {{resourceType==='Assessment'?'Assessment':'Quiz'}}</span>
+                </div>
+                <button *ngIf="!isAssessmentOrQuizEnabled"
+                  [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
                   class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
-                  (click)="resourceLinkSave()">Save</button></div>
+                  (click)="resourceLinkSave()">Save</button>
+              </div>
+
             </form>
             <!--link form end-->
             <!--PDF/audio/vedio form start-->
@@ -483,7 +493,7 @@
                     <input #pdfFile (change)="uploadPdf($event.target.files[0]); pdfFile.value = null"
                       style="display: none;" accept="{{acceptType}}" type="file" />
                     <button (click)="pdfFile.click()" mat-raised-button
-                      class="pdf-button margin-top-m width-15 text-white  mat-button-base save-btn-bottom">Upload
+                      class="pdf-button margin-top-m width-15 text-white  mat-button-base save-btn-bottom uploadPdfButton">Upload
                       File</button>
                     <div class="pdf-text-1">
                       <!-- <span>OR</span> -->
@@ -571,7 +581,7 @@
                 </mat-form-field>
               </div>
               <div><button [disabled]="uploadFileName == ''" mat-raised-button
-                  class="margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom resourcePdfSave"
+                  class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
                   (click)="resourcePdfSave()">Save</button></div>
             </form>
             <!--PDF form end-->
