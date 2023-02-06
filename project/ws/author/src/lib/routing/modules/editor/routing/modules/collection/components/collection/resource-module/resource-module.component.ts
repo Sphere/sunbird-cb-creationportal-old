@@ -183,7 +183,7 @@ export class ResourceModuleComponent implements OnInit {
                 mimeType: 'image/jpeg',
                 mediaType: 'image',
                 name: fileName,
-                language: ['English'],
+                lang: ['English'],
                 license: 'CC BY 4.0',
                 primaryCategory: 'Asset',
               },

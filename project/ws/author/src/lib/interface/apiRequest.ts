@@ -142,7 +142,7 @@ export namespace NSApiRequest {
         mediaType: string
         creator?: string
         license: string
-        language: [string]
+        lang: [string]
         primaryCategory: string
       }
     }
