@@ -1621,27 +1621,18 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     /* tslint:disable-next-line */
 
     console.log(input1, input2)
-    if (this.timeToSeconds() == 0) {
-      this.snackBar.openFromComponent(NotificationComponent, {
-        data: {
-          type: Notify.DURATION_CANT_BE_0,
-        },
-        duration: NOTIFICATION_TIME * 1000,
-      })
-    } else {
-      let obj: any = {}
-      if (this.moduleButtonName == 'Create') {
-        obj["type"] = 'collection'
-        obj["name"] = input1
-        obj["description"] = input2
-        this.moduleName = name
-        this.isSaveModuleFormEnable = true
-        this.moduleButtonName = 'Save'
-        this.initService.createModuleUnit(obj)
-        this.clearForm()
-      } else if (this.moduleButtonName == 'Save') {
-        this.isResourceTypeEnabled = true
-      }
+    let obj: any = {}
+    if (this.moduleButtonName == 'Create') {
+      obj["type"] = 'collection'
+      obj["name"] = input1
+      obj["description"] = input2
+      this.moduleName = name
+      this.isSaveModuleFormEnable = true
+      this.moduleButtonName = 'Save'
+      this.initService.createModuleUnit(obj)
+      this.clearForm()
+    } else if (this.moduleButtonName == 'Save') {
+      this.isResourceTypeEnabled = true
     }
   }
   timeToSeconds() {
@@ -1775,6 +1766,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addModule() {
+    this.clearForm()
     this.showAddModuleForm = false
     this.moduleButtonName = 'Create'
     this.moduleCreate('Create Module', 'Create Module', '')
@@ -1783,6 +1775,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addResModule(modID: string, courseID: string) {
+    this.clearForm()
     this.addResourceModule["module"] = true
     this.addResourceModule["modID"] = modID
     this.addResourceModule["courseID"] = courseID
@@ -1792,6 +1785,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   addIndependentResource() {
+    this.clearForm()
     this.addResourceModule["module"] = false
     this.addResourceModule["modID"] = this.courseData.identifier
     this.addResourceModule["courseID"] = this.courseData.identifier
@@ -3389,6 +3383,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
                   })
                   this.loader.changeLoad.next(false)
+                  this.clearForm()
                   this.editorStore.resetOriginalMetaWithHierarchy(data)
                   // tslint:disable-next-line: align
                 })
