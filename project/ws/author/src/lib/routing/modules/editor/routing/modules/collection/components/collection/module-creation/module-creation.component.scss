@@ -586,7 +586,9 @@ ul li {
   box-sizing: border-box;
   cursor: grab;
 }
-
+.uploadPdfButton{
+  background-color: #1c5d95 !important;
+}
 ::ng-deep .theme-igot.day-mode .ws-mat-primary-background {
   background-color: #1c5d95 !important;
 }

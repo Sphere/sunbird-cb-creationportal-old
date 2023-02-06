@@ -476,7 +476,12 @@ ul li {
 .mat-raised-button[disabled]{
   background-color: #d3d3d3 !important;
 }
-
+.saveAndNextBtn[disabled]{
+  background-color: #d3d3d3 !important;
+}
+.saveAndNextBtn{
+  background-color: #1c5d95 !important;
+}
 .text-ellipsis{
   overflow: hidden;
   text-overflow: ellipsis;
