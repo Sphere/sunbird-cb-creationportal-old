@@ -1652,7 +1652,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   async resourceLinkSave() {
     this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
-    if (this.resourceLinkForm.value.duration == 0) {
+    if (this.resourceLinkForm.value.duration == 0 && !this.isAssessmentOrQuizEnabled) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.DURATION_CANT_BE_0,
