@@ -2804,8 +2804,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             if (!currentMeta.sourceName) {
               currentMeta.sourceName = parentData.sourceName !== '' ? parentData.sourceName : currentMeta.sourceName
             }
-            if (!currentMeta.langName) {
-              currentMeta.langName = parentData.langName !== '' ? parentData.langName : currentMeta.langName
+            if (!currentMeta.lang) {
+              currentMeta.lang = parentData.lang !== '' ? parentData.lang : currentMeta.lang
 
 
             }
@@ -3632,7 +3632,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   /*course details functionality start*/
   async saveCourseDetails() {
-    alert(this.timeToSeconds())
     if (this.timeToSeconds() == 0) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {

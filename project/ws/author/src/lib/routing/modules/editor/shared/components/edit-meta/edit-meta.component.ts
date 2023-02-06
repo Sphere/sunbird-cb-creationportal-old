@@ -549,7 +549,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         //this.contentForm.controls.isIframeSupported.setValue(this.contentMeta.isIframeSupported)
         this.contentForm.controls.sourceName.setValue(this.contentMeta.sourceName)
-        this.contentForm.controls.langName.setValue(this.contentMeta.language[0])
+        this.contentForm.controls.lang.setValue(this.contentMeta.language[0])
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification === undefined ? false : this.contentMeta.issueCertification)
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
@@ -689,8 +689,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             if (!currentMeta.sourceName) {
               currentMeta.sourceName = parentData.sourceName !== '' ? parentData.sourceName : currentMeta.sourceName
             }
-            if (!currentMeta.langName) {
-              currentMeta.langName = parentData.langName !== '' ? parentData.langName : currentMeta.langName
+            if (!currentMeta.lang) {
+              currentMeta.lang = parentData.lang !== '' ? parentData.lang : currentMeta.lang
 
 
             }
@@ -1570,7 +1570,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       instructions: new FormControl('', [Validators.required]),
       versionKey: '',  // (new Date()).getTime()
       purpose: '',
-      langName: '',
+      lang: '',
       cneName: ' ',
     })
 
