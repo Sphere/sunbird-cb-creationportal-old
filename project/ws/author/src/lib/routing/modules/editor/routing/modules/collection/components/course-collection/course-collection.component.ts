@@ -229,6 +229,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.routerValuesCall()
     this.courseId = this.storeService.parentNode[0]
     this.parentNodeId = this.storeService.currentParentNode
+
+
+    const content = this.contentService.getUpdatedMeta(this.courseId)
+    const isCreator = (this._configurationsService.userProfile
+      && this._configurationsService.userProfile.userId === content.createdBy)
+      ? true : false
+    this.checkCreator = isCreator
+    // console.log("this.parentNodeId = " + this.courseId)
     // this.expandNodesById([this.parentNodeId])
     this.createTopicForm = this.fb.group({
       topicName: new FormControl('', [Validators.required]),

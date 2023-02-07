@@ -1669,7 +1669,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
       var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
       this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
-
       if (res !== null) {
         const rBody: any = {
           name: this.resourceLinkForm.value.resourceName,
@@ -1684,6 +1683,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
         await this.saves()
         this.clearForm()
+      } else if (res == null && !this.isAssessmentOrQuizEnabled) {
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.LINK_IS_INVALID,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
       } else {
         const rBody: any = {
           name: this.resourceLinkForm.value.resourceName,
