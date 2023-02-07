@@ -2067,15 +2067,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
   }
 
-  async saveDetails(name: string, topicDescription: string, thumbnail: string, isNewTab: any, isGating: string) {
+  async saveDetails(name: string, topicDescription: string, thumbnail: string, isNewTab: any, isGating: string, content: string) {
     let meta: any = {}
     let requestBody: any
     // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
     //   console.log(resData)
     // })
-
     let iframeSupported
-    if (this.timeToSeconds() == 0) {
+    if (this.timeToSeconds() == 0 && content !== 'application/json') {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.DURATION_CANT_BE_0,
