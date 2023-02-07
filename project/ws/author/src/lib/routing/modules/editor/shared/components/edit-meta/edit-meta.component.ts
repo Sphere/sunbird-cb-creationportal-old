@@ -763,7 +763,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.stage >= 1 && !this.type) {
           delete meta.artifactUrl
         }
-        console.log(meta)
+        console.log("this.contentForm", this.contentForm)
         this.contentService.setUpdatedMeta(meta, this.contentMeta.identifier)
 
       }
@@ -1505,7 +1505,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       customClassifiers: [],
       description: [],
       dimension: [],
-      duration: [],
+      duration: new FormControl('', [Validators.required]),
       editors: [],
       equivalentCertifications: [],
       expiryDate: [],
@@ -1561,7 +1561,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       subTitle: [],
       subTitles: [],
       systemRequirements: [],
-      thumbnail: [],
+      thumbnail: new FormControl('', [Validators.required]),
       trackContacts: [],
       transcoding: [],
       unit: [],
@@ -1573,6 +1573,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       lang: '',
       cneName: ' ',
     })
+    console.log("form validation", this.contentForm)
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       if (this.canUpdate) {
