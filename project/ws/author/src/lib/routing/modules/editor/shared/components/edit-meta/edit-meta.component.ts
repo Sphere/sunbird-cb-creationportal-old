@@ -148,6 +148,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   isSaveModuleFormEnable: boolean = false;
   moduleButtonName: string = 'Create';
   fieldActive!: boolean
+  isFormValid!: boolean
 
   constructor(
     private formBuilder: FormBuilder,
@@ -371,10 +372,10 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   clickedNext() {
-
-    this.authInitService.saveData('saved')
-    this.clickedBtnNext = true
-
+    if (this.isFormValid) {
+      this.authInitService.saveData('saved')
+      this.clickedBtnNext = true
+    }
   }
   changeCertificate(event: any): void {
     if (event == 'Yes') {
@@ -1361,13 +1362,17 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       !this.contentService.isPresent(meta, this.contentMeta.identifier)
     ) {
       if (this.isSubmitPressed) {
+        this.isFormValid = false
         return true
       }
       if (this.contentForm.controls[meta] && this.contentForm.controls[meta].touched) {
+        this.isFormValid = false
         return true
       }
+      this.isFormValid = true
       return false
     }
+    this.isFormValid = true
     return false
   }
 
@@ -1488,7 +1493,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.contentForm = this.formBuilder.group({
       accessPaths: [],
       accessibility: [],
-      appIcon: [],
+      appIcon: new FormControl('', [Validators.required]),
       artifactUrl: [],
       audience: [],
       body: [],
@@ -1559,7 +1564,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       status: [],
       studyDuration: [],
       studyMaterials: [],
-      subTitle: [],
+      subTitle: new FormControl('', [Validators.required]),
       subTitles: [],
       systemRequirements: [],
       thumbnail: new FormControl('', [Validators.required]),

@@ -494,3 +494,7 @@ ul li {
 ::ng-deep .theme-igot.day-mode .ws-mat-primary-background {
   background-color: #1c5d95 !important;
 }
+
+::ng-deep .theme-igot.day-mode .mat-form-field-subscript-wrapper{
+  font-size: unset;
+}
