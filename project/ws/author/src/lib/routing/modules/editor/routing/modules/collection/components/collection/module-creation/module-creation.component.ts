@@ -1856,7 +1856,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.isNewTab = content.isIframeSupported == 'Yes' ? true : false
     this.isGating = content.gatingEnabled
     this.duration = content.duration
-
+    this.isPdfOrAudioOrVedioEnabled = false
     if (content.mimeType == 'text/x-url') {
       this.isLinkEnabled = true
       this.isPdfOrAudioOrVedioEnabled = false
