@@ -154,7 +154,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       (data: any) => {
         if ((data === 'backFromAssessmentDetails') && this.viewMode === 'assessment') {
           /* tslint:disable-next-line */
-          console.log("data: " + JSON.stringify(data))
+          console.log("course-collection: " + JSON.stringify(data))
           this.showAddchapter = true
           this.viewMode = ''
           this.clickedNext = true
