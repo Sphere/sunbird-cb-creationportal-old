@@ -166,13 +166,13 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     private http: HttpClient,
     private router: Router,
   ) {
-    // this.authInitService.isBackButtonClickedMessage.subscribe(
-    //   (data: any) => {
-    //     if (!this.clickedBtnNext && data !== 'publishResources' && data !== 'backToCourseDetailsPage') {
-    //       console.log("data: " + JSON.stringify(data))
-    //       this.router.navigateByUrl('/author/home')
-    //     }
-    //   })
+    this.authInitService.isBackButtonClickedMessage.subscribe(
+      (data: any) => {
+        if (!this.clickedBtnNext && data !== 'publishResources' && data !== 'backToCourseDetailsPage') {
+          console.log("data: " + JSON.stringify(data))
+          this.router.navigateByUrl('/author/home')
+        }
+      })
     this.authInitService.isBackButtonFromAssessmentClickedMessage.subscribe(
       (data: any) => {
         if ((data === 'backFromAssessmentDetails')) {
