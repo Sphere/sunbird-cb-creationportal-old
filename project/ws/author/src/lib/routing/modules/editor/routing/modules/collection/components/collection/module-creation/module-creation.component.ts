@@ -299,9 +299,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.isSettingsPage = false
         } else if (!this.isSettingsPage && data) {
           /* tslint:disable-next-line */
-          console.log("backToCourseDetailsPage", data)
-          this.initService.publishData('backToCourseDetailsPage')
+          // console.log("backToCourseDetailsPage", data, this.isAssessmentOrQuizEnabled, this.viewMode)
+          // if (this.viewMode == 'meta') {
+          //   console.log("yes")
+          //   this.initService.publishData('backToCourseDetailsPage')
+          // } else {
           this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
+          // }
+
         } else {
           /* tslint:disable-next-line */
           console.log("else")
