@@ -867,6 +867,7 @@
                 [content]="contentForm.controls.instructions.value || ''"
                 (value)="updateContentService('instructions', $event)">
               </ws-auth-plain-ckeditor>
+              <p *ngIf="showError('name')" i18n="Name Error|Explains name is required">field is mandatory</p>
             </div>
           </div>
         </div>
