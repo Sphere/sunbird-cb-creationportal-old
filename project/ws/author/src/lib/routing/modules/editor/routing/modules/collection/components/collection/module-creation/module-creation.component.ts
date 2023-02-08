@@ -1588,7 +1588,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() {
     this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-      /* tslint:disable-next-line */
       this.courseData = data
       //this.moduleButtonName = 'Save'
       //this.isSaveModuleFormEnable = true
@@ -2527,7 +2526,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //   duration: NOTIFICATION_TIME * 1000,
 
     // })
-    console.log(this.addResourceModule)
     if (isDone) {
       const newCreatedLexid = this.editorService.newCreatedLexid
       if (this.addResourceModule["module"] === true) {

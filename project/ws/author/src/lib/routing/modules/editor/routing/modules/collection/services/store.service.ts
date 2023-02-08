@@ -462,6 +462,7 @@ export class CollectionStoreService {
 
   getModuleRequest(meta: any) {
     const parentData = this.contentService.getOriginalMeta(this.contentService.parentContent)
+    console.log(parentData)
     const nodesModify: any = {}
     // const uuidValue = uuidv4()
     let randomNumber = ''
@@ -998,7 +999,7 @@ export class CollectionStoreService {
     const newParentNode = content
     this.hierarchyTree[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),
-      contentType: newParentNode.category,
+      contentType: newParentNode.primaryCategory,
       // @ts-ignore: Unreachable code error
       children: (newParentNode.children) ? newParentNode.children.map(v => {
         const child = v.identifier
@@ -1006,8 +1007,8 @@ export class CollectionStoreService {
           this.hierarchyTree[v.identifier] = {
             root: false,
             contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
-            primaryCategory: v.primaryCategory === 'Resource' ? undefined : 'Course Unit',
-            name: v.primaryCategory === 'Resource' ? v.name : undefined,
+            primaryCategory: v.contentType === 'Resource' ? undefined : 'Course Unit',
+            name: v.contentType === 'Resource' ? v.name : undefined,
             children: [],
           }
         }
@@ -1021,7 +1022,7 @@ export class CollectionStoreService {
           this.hierarchyTree[element.identifier] = {
             root: this.parentNode.includes(element.identifier),
             // contentType: element.contentType,
-            primaryCategory: element.primaryCategory === 'Resource' ? undefined : 'Course Unit',
+            primaryCategory: element.contentType === 'Resource' ? undefined : 'Course Unit',
             contentType: element.contentType === 'Resource' ? undefined : 'CourseUnit',
             // @ts-ignore: Unreachable code error
             children: element.children.map(v => {
@@ -1030,8 +1031,8 @@ export class CollectionStoreService {
                 this.hierarchyTree[v.identifier] = {
                   root: false,
                   contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
-                  primaryCategory: v.primaryCategory === 'Resource' ? undefined : 'Course Unit',
-                  name: v.primaryCategory === 'Resource' ? v.name : undefined,
+                  primaryCategory: v.contentType === 'Resource' ? undefined : 'Course Unit',
+                  name: v.contentType === 'Resource' ? v.name : undefined,
                   children: [],
                 }
               }
@@ -1052,8 +1053,8 @@ export class CollectionStoreService {
                     this.hierarchyTree[v.identifier] = {
                       root: false,
                       contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
-                      primaryCategory: v.primaryCategory === 'Resource' ? undefined : 'Course Unit',
-                      name: v.primaryCategory === 'Resource' ? v.name : undefined,
+                      primaryCategory: v.contentType === 'Resource' ? undefined : 'Course Unit',
+                      name: v.contentType === 'Resource' ? v.name : undefined,
                       children: [],
                     }
                   }
@@ -1080,8 +1081,8 @@ export class CollectionStoreService {
           this.hierarchyTree[v.identifier] = {
             root: false,
             contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
-            primaryCategory: v.primaryCategory === 'Resource' ? undefined : 'Course Unit',
-            name: v.primaryCategory === 'Resource' ? v.name : undefined,
+            primaryCategory: v.contentType === 'Resource' ? undefined : 'Course Unit',
+            name: v.contentType === 'Resource' ? v.name : undefined,
             children: [],
           }
         }
@@ -1094,7 +1095,7 @@ export class CollectionStoreService {
           this.hierarchyTree[element.identifier] = {
             root: this.parentNode.includes(element.identifier),
             // contentType: element.contentType,
-            primaryCategory: element.primaryCategory === 'Resource' ? undefined : 'Course Unit',
+            primaryCategory: element.contentType === 'Resource' ? undefined : 'Course Unit',
             contentType: element.contentType === 'Resource' ? undefined : 'CourseUnit',
             children: element.children.map(v => {
               const child = v.identifier
@@ -1102,8 +1103,8 @@ export class CollectionStoreService {
                 this.hierarchyTree[v.identifier] = {
                   root: false,
                   contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
-                  primaryCategory: v.primaryCategory === 'Resource' ? undefined : 'Course Unit',
-                  name: v.primaryCategory === 'Resource' ? v.name : undefined,
+                  primaryCategory: v.contentType === 'Resource' ? undefined : 'Course Unit',
+                  name: v.contentType === 'Resource' ? v.name : undefined,
                   children: [],
                 }
               }
@@ -1115,15 +1116,15 @@ export class CollectionStoreService {
               this.hierarchyTree[subElement.identifier] = {
                 root: this.parentNode.includes(subElement.identifier),
                 contentType: subElement.contentType === 'Resource' ? undefined : 'CourseUnit',
-                primaryCategory: subElement.primaryCategory === 'Resource' ? undefined : 'Course Unit',
+                primaryCategory: subElement.contentType === 'Resource' ? undefined : 'Course Unit',
                 children: subElement.children.map(v => {
                   const child = v.identifier
                   if (v.primaryCategory) {
                     this.hierarchyTree[v.identifier] = {
                       root: false,
                       contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
-                      primaryCategory: v.primaryCategory === 'Resource' ? undefined : 'Course Unit',
-                      name: v.primaryCategory === 'Resource' ? v.name : undefined,
+                      primaryCategory: v.contentType === 'Resource' ? undefined : 'Course Unit',
+                      name: v.contentType === 'Resource' ? v.name : undefined,
                       children: [],
                     }
                   }
