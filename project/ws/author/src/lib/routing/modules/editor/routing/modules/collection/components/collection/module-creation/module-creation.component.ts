@@ -289,16 +289,26 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       questionType: new FormControl(''),
       isgatingEnabled: new FormControl(true),
     })
-    this.initService.currentMessage.subscribe(
+    this.initService.isBackButtonClickedMessage.subscribe(
       (data: any) => {
-        if (this.isSettingsPage && data) {
+        /* tslint:disable-next-line */
+        console.log("this.isSettings", this.isSettingsPage)
+        if (this.showSettingsPage && this.isSettingsPage && data) {
+          /* tslint:disable-next-line */
+          console.log("isSettingsPage", data)
           this.isSettingsPage = false
         } else if (!this.isSettingsPage && data) {
+          /* tslint:disable-next-line */
+          console.log("backToCourseDetailsPage", data)
           this.initService.publishData('backToCourseDetailsPage')
+          this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
         } else {
+          /* tslint:disable-next-line */
+          console.log("else")
           this.router.navigateByUrl('/author/home')
         }
       })
+
     this.initService.updateResourceMessage.subscribe(
       (data: any) => {
         if (data) {
@@ -313,7 +323,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       node => node.level,
       node => node.expandable,
     )
-    this.isSettingsPage = false
+    // this.isSettingsPage = false
     this.routerValuesCalls()
 
 
@@ -1617,7 +1627,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.editorStore.resetOriginalMetaWithHierarchy(data)
     })
   }
-
+  setSettingsPage() {
+    this.isSettingsPage = true
+    /* tslint:disable-next-line */
+    console.log("this.settingsPage", this.isSettingsPage)
+  }
   moduleCreate(name: string, input1: string, input2: string) {
     /* tslint:disable-next-line */
 
