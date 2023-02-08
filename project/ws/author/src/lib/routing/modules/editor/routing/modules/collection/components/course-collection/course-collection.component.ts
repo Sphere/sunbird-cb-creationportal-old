@@ -68,7 +68,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   previewIdentifier: string | null = null
   viewMode = 'meta'
   mimeTypeRoute = ''
-
+  courseData: any
   mediumScreen = false
   sideBarOpened = false
   mediumSizeBreakpoint$ = this.breakpointObserver
@@ -154,7 +154,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       (data: any) => {
         if ((data === 'backFromAssessmentDetails') && this.viewMode === 'assessment') {
           /* tslint:disable-next-line */
-          console.log("data: " + JSON.stringify(data))
+          console.log("course-collection: " + JSON.stringify(data))
           this.showAddchapter = true
           this.viewMode = ''
           this.clickedNext = true
@@ -2794,9 +2794,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         //          //this.courseEdited = false
         //        }
         //      })
+        this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+          this.courseData = data
+        })
         const content = this.contentService.getUpdatedMeta(event.identifier)
         if (this.createModule) {
-          const hierarchyData = this.storeService.getTreeHierarchy()
+          //const hierarchyData = this.storeService.getTreeHierarchy()
+          const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
           Object.keys(hierarchyData).forEach((ele: any) => {
             if (ele === content.parent) {
               hierarchyData[content.identifier] = {

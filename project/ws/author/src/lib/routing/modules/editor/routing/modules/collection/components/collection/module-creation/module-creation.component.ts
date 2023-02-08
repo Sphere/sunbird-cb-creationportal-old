@@ -299,9 +299,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.isSettingsPage = false
         } else if (!this.isSettingsPage && data) {
           /* tslint:disable-next-line */
-          console.log("backToCourseDetailsPage", data)
-          this.initService.publishData('backToCourseDetailsPage')
+          // console.log("backToCourseDetailsPage", data, this.isAssessmentOrQuizEnabled, this.viewMode)
+          // if (this.viewMode == 'meta') {
+          //   console.log("yes")
+          //   this.initService.publishData('backToCourseDetailsPage')
+          // } else {
           this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
+          // }
+
         } else {
           /* tslint:disable-next-line */
           console.log("else")
@@ -1598,7 +1603,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() {
     this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-      /* tslint:disable-next-line */
       this.courseData = data
       //this.moduleButtonName = 'Save'
       //this.isSaveModuleFormEnable = true
@@ -1856,7 +1860,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.isNewTab = content.isIframeSupported == 'Yes' ? true : false
     this.isGating = content.gatingEnabled
     this.duration = content.duration
-
+    this.isPdfOrAudioOrVedioEnabled = false
     if (content.mimeType == 'text/x-url') {
       this.isLinkEnabled = true
       this.isPdfOrAudioOrVedioEnabled = false
@@ -2541,7 +2545,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //   duration: NOTIFICATION_TIME * 1000,
 
     // })
-    console.log(this.addResourceModule)
     if (isDone) {
       const newCreatedLexid = this.editorService.newCreatedLexid
       if (this.addResourceModule["module"] === true) {
