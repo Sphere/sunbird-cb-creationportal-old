@@ -382,10 +382,16 @@
                 <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
               </mat-form-field>
+              <span *ngIf="resourceLinkForm.get('resourceName').hasError('required')" class="invalid-text">This field is
+                Required</span>
+
               <mat-form-field appearance="outline" class="margin-top-xs field-width">
                 <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
                   placeholder="Description of the resource" />
               </mat-form-field>
+              <span *ngIf="resourceLinkForm.get('instructions').hasError('required')" class="invalid-text">This field is
+                Required</span>
+
               <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">
                   <input matInput #resourceLinks [(ngModel)]="editResourceLinks" formControlName="resourceLinks"
@@ -399,11 +405,17 @@
                 class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
                 (click)="resourceLinkSave()">Save</button>
 
+              <!--validation div for resource link-->
+              <span *ngIf="resourceLinkForm.get('resourceLinks').hasError('required')" class="invalid-text">This field
+                is Required</span>
+
               <div class="margin-bottom-s" *ngIf="!isAssessmentOrQuizEnabled">
                 <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
               </div>
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
-                <span style="color:#808080">Resource Thumbnail</span>
+                <span style="color:#808080">Resource Thumbnail</span><br>
+                <span *ngIf="resourceLinkForm.get('appIcon').hasError('required')" class="invalid-text">This field
+                  is Required</span>
               </div>
               <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
                 <div>
@@ -424,24 +436,30 @@
                 <span class="duration-text">Duration:</span>
                 <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
-                    placeholder="hh" type="number" min="0" step="1"
+                    (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())" placeholder="hh"
+                    type="number" min="0" step="1"
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
                 <div class="margin-top-s padding-small">:</div>
 
                 <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
-                    placeholder="mm" type="number" min="0" max="59" step="1"
+                    (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())" placeholder="mm"
+                    type="number" min="0" max="59" step="1"
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
                 <div class="margin-top-s padding-small">:</div>
 
                 <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="seconds" [ngModelOptions]="{ standalone: true }"
-                    placeholder="ss" type="number" min="0" max="59" step="1"
+                    (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())" placeholder="ss"
+                    type="number" min="0" max="59" step="1"
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
               </div>
+              <span *ngIf="resourceLinkForm.get('duration').hasError('required')" class="invalid-text">This field
+                is Required</span>
+
               <div>
                 <div class="margin-top-s" *ngIf="isAssessmentOrQuizEnabled">
                   <button mat-raised-button
@@ -465,10 +483,16 @@
                 <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
               </mat-form-field>
+              <span *ngIf="resourcePdfForm.get('resourceName').hasError('required')" class="invalid-text">This field
+                is Required</span>
+
               <mat-form-field appearance="outline" class="margin-top-xs field-width">
                 <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
                   placeholder="Description of the resource" />
               </mat-form-field>
+              <span *ngIf="resourcePdfForm.get('instructions').hasError('required')" class="invalid-text">This field
+                is Required</span>
+
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource file</span>
               </div>
@@ -519,7 +543,9 @@
               </div>
 
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
-                <span style="color:#808080">Resource Thumbnail</span>
+                <span style="color:#808080">Resource Thumbnail</span><br>
+                <span *ngIf="resourcePdfForm.get('appIcon').hasError('required')" class="invalid-text">This field
+                  is Required</span>
               </div>
               <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
                 <div>
@@ -559,27 +585,33 @@
                 </div>
               </div> -->
               <div style="display:flex; flex-direction:row">
-                <span class="duration-text">Duration:</span>
+                <span class="duration-text">Duration:</span><br>
                 <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
-                    placeholder="hh" type="number" min="0" step="1"
+                    (keyup)="this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())" placeholder="hh"
+                    type="number" min="0" step="1"
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
                 <div class="margin-top-s padding-small">:</div>
 
                 <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
-                    placeholder="mm" type="number" min="0" max="59" step="1"
+                    (keyup)="this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())" placeholder="mm"
+                    type="number" min="0" max="59" step="1"
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
                 <div class="margin-top-s padding-small">:</div>
 
                 <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="seconds" [ngModelOptions]="{ standalone: true }"
-                    placeholder="ss" type="number" min="0" max="59" step="1"
+                    (keyup)="this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())" placeholder="ss"
+                    type="number" min="0" max="59" step="1"
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
               </div>
+              <span *ngIf="resourcePdfForm.get('duration').hasError('required')" class="invalid-text">This field
+                is Required</span>
+
               <div><button [disabled]="uploadFileName == ''" mat-raised-button
                   class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
                   (click)="resourcePdfSave()">Save</button></div>
