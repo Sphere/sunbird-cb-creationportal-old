@@ -50,6 +50,11 @@ export class AuthInitService {
   private isAssessmentOrQuiz = new Subject<any>()
   public isAssessmentOrQuizMessage = this.isAssessmentOrQuiz.asObservable()
 
+  private isBackButtonClicked = new Subject<any>()
+  public isBackButtonClickedMessage = this.isBackButtonClicked.asObservable()
+
+  private isBackButtonFromAssessmentClicked = new Subject<any>()
+  public isBackButtonFromAssessmentClickedMessage = this.isBackButtonFromAssessmentClicked.asObservable()
 
   authConfig!: IFormMeta
   authMetaV2!: { [key: string]: IMetaUnit<any> }
@@ -100,6 +105,12 @@ export class AuthInitService {
   }
   isAssessmentOrQuizAction(message: any) {
     this.isAssessmentOrQuiz.next(message)
+  }
+  isBackButtonClickedAction(message: any) {
+    this.isBackButtonClicked.next(message)
+  }
+  isBackButtonClickedFromAssessmentAction(message: any) {
+    this.isBackButtonFromAssessmentClicked.next(message)
   }
 
 }

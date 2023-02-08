@@ -56,7 +56,7 @@ export class CourseHeaderComponent implements OnInit {
     }
   }
   backNavigation(): void {
-    this.initService.changeMessage('backButtonClicked')
+    this.initService.isBackButtonClickedAction('backButtonClicked')
   }
   showCourseSettings() {
     this.subAction.emit({ type: 'editContent', identifier: this.store.parentNode[0], nodeClicked: true })

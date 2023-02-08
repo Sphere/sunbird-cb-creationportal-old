@@ -144,10 +144,21 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
     this.initService.publishMessage.subscribe(
       (data: any) => {
-        if (data === 'backToCourseDetailsPage') {
+        if (data === 'backToCourseDetailsPage' && this.viewMode !== 'assessment') {
           this.showAddchapter = false
           this.viewMode = 'meta'
           this.clickedNext = false
+        }
+      })
+    this.initService.isBackButtonFromAssessmentClickedMessage.subscribe(
+      (data: any) => {
+        if ((data === 'backFromAssessmentDetails') && this.viewMode === 'assessment') {
+          /* tslint:disable-next-line */
+          console.log("course-collection: " + JSON.stringify(data))
+          this.showAddchapter = true
+          this.viewMode = ''
+          this.clickedNext = true
+          // this.save()
         }
       })
 

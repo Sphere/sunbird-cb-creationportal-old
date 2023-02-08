@@ -44,7 +44,7 @@ import {
   switchMap,
   map,
 } from 'rxjs/operators'
-import { Router } from '@angular/router'
+// import { Router } from '@angular/router'
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
 
 // import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
@@ -164,20 +164,21 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     private accessService: AccessControlService,
     // private apiService: ApiService,
     private http: HttpClient,
-    private router: Router,
+    // private router: Router,
   ) {
-    this.authInitService.currentMessage.subscribe(
-      (data: any) => {
-        if (!this.clickedBtnNext && data && data !== 'publishResources') {
-          this.router.navigateByUrl('/author/home')
-        }
-      })
-    this.authInitService.publishMessage.subscribe(
-      (data: any) => {
-        if (data === 'backToCourseDetailsPage') {
-          this.clickedBtnNext = false
-        }
-      })
+
+
+    // this.authInitService.publishMessage.subscribe(
+    //   (data: any) => {
+    //     console.log("edit-meta", data)
+    //   })
+    // this.authInitService.isBackButtonFromAssessmentClickedMessage.subscribe(
+    //   (data: any) => {
+    //     if ((data === 'backFromAssessmentDetails')) {
+    //       console.log("edit-meta", data)
+    //       this.clickedBtnNext = false
+    //     }
+    //   })
   }
 
   ngAfterViewInit() {
