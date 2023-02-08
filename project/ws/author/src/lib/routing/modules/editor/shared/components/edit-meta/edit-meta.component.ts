@@ -1740,8 +1740,4 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.moduleButtonName = 'Save'
   }
 
-  mouseEnter() {
-    alert("entered here")
-  }
-
 }
