@@ -544,7 +544,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             )
           }
         }
-        console.log("yes content form ")
         this.contentForm.controls.sourceName.setValue(this.contentMeta.sourceName)
         this.contentForm.controls.langName.setValue(this.contentMeta.lang)
         this.contentForm.controls.trackContactsCtrl.setValue(this.contentMeta.trackContactsCtrl)

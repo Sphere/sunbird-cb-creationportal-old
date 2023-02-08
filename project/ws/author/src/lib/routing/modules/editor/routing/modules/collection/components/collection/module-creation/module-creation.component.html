@@ -142,7 +142,7 @@
               Go to Course Settings ></button> -->
             <button mat-raised-button [ngClass]="showSettingsPage ? 'ws-mat-primary-background' : 'secondary-button'"
               class="width-20 margin-left-s mat-button-base save-btn-bottom"
-              (click)="showSettingsPage?isSettingsPage=true:''">
+              (click)="showSettingsPage?isSettingsPage=true:isSettingsPage=false;setSettingsPage()">
               Go to Course Settings ></button>
           </div>
         </mat-toolbar>
@@ -829,5 +829,5 @@
       </mat-drawer-container>
     </mat-grid-tile>
   </mat-grid-list>
-  <ws-auth-course-settings (data)="action($event)" *ngIf=" isSettingsPage"></ws-auth-course-settings>
+  <ws-auth-course-settings (data)="action($event)" *ngIf="isSettingsPage"></ws-auth-course-settings>
 </div>

@@ -4,9 +4,9 @@
   <div class="flex flex-around flex-wrapped">
     <div class="w-full">
       <div>
-        <mat-card [ngClass]="{'padding-remove': isLtMedium}">
+        <mat-card style="height: 450px;" [ngClass]="{'padding-remove': isLtMedium}">
           <mat-card-content>
-            <div id="fullScreenContainer"
+            <div style="height: 430px;" id="fullScreenContainer"
               [ngClass]="{ 'video-player': htmlData?.isIframeSupported.toLowerCase() != 'no' }">
               <viewer-plugin-html [htmlContent]="htmlData">
               </viewer-plugin-html>
