@@ -1648,7 +1648,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.moduleName = name
       this.isSaveModuleFormEnable = true
       this.moduleButtonName = 'Save'
-      this.initService.createModuleUnit(obj)
+      this.setContentType(obj)
+      //this.initService.createModuleUnit(obj)
       this.clearForm()
     } else if (this.moduleButtonName == 'Save') {
       this.isResourceTypeEnabled = true
@@ -2506,7 +2507,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
 
-  async setContentType(type: string, filetype?: string) {
+  async setContentType(type: any, filetype?: string) {
+    console.log(type)
     this.resourseSelected = type
     if (filetype) {
       this.storeService.uploadFileType.next(filetype)
@@ -2526,7 +2528,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     const newData = {
       topicDescription: '',
-      topicName: 'Resource 1'
+      topicName: type.type === 'Collection' ? 'Add Module' : 'Resource'
     }
     const parentNode = node
     this.loaderService.changeLoad.next(true)
@@ -2545,6 +2547,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //   duration: NOTIFICATION_TIME * 1000,
 
     // })
+    console.log(isDone)
+    console.log(this.addResourceModule)
     if (isDone) {
       const newCreatedLexid = this.editorService.newCreatedLexid
       if (this.addResourceModule["module"] === true) {
@@ -2593,36 +2597,39 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         //}
       } else {
         //const hierarchyData = this.storeService.getTreeHierarchy()
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-          this.courseData = data
-        })
-        console.log(this.resourseSelected)
-        const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
-        Object.keys(hierarchyData).forEach((ele: any) => {
+        this.courseData = []
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+          console.log('kkk', data)
+          this.courseData = await data
+          console.log(this.courseData)
+          const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+          Object.keys(hierarchyData).forEach((ele: any) => {
 
-          if (ele === this.addResourceModule["courseID"]) {
-            hierarchyData[this.editorService.resourseID] = {
-              root: false,
-              name: this.resourseSelected !== 'assessment' ? 'Resource 1' : 'Assessment',
-              children: [],
+            if (ele === this.addResourceModule["courseID"]) {
+              hierarchyData[this.editorService.resourseID] = {
+                root: false,
+                name: this.resourseSelected !== 'assessment' ? 'Resource 1' : 'Assessment',
+                children: [],
+              }
+              hierarchyData[ele].children.push(this.editorService.resourseID)
             }
-            hierarchyData[ele].children.push(this.editorService.resourseID)
-          }
-        })
+          })
 
-        const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-          request: {
-            data: {
-              nodesModified: this.editorStore.getNodeModifyData(),
-              hierarchy: hierarchyData,
+          const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+            request: {
+              data: {
+                nodesModified: this.editorStore.getNodeModifyData(),
+                hierarchy: hierarchyData,
+              },
             },
-          },
-        }
-        await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-          this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-            this.courseData = data
+          }
+          await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+              this.courseData = data
+            })
           })
         })
+
       }
       if (newCreatedLexid) {
         const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
