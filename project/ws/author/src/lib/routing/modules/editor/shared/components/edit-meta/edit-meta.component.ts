@@ -372,11 +372,15 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   clickedNext() {
-    if (this.isFormValid) {
+    if (this.contentForm.status == 'VALID') {
+      this.isFormValid = true
       this.authInitService.saveData('saved')
       this.clickedBtnNext = true
+    } else {
+      this.isFormValid = false
     }
   }
+
   changeCertificate(event: any): void {
     if (event == 'Yes') {
       this.isAddCerticate = true
@@ -1362,17 +1366,13 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       !this.contentService.isPresent(meta, this.contentMeta.identifier)
     ) {
       if (this.isSubmitPressed) {
-        this.isFormValid = false
         return true
       }
       if (this.contentForm.controls[meta] && this.contentForm.controls[meta].touched) {
-        this.isFormValid = false
         return true
       }
-      this.isFormValid = true
       return false
     }
-    this.isFormValid = true
     return false
   }
 

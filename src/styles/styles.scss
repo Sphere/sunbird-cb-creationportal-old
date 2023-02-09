@@ -601,3 +601,14 @@ h3.shepherd-title {
    justify-content: flex-start !important ;
    align-items: flex-start !important;
 }
+
+::ng-deep .theme-igot.day-mode .mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.theme-igot.day-mode .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
+.theme-igot.day-mode .mat-fab.mat-accent, .theme-igot.day-mode .mat-flat-button.mat-accent,
+.theme-igot.day-mode .mat-mini-fab.mat-accent, .theme-igot.day-mode .mat-raised-button.mat-accent {
+  background-color: #1c5d95 !important;
+}
+
+::ng-deep .theme-igot.day-mode .mat-form-field-outline-thick {
+  color: #1c5d95 !important;
+}

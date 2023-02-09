@@ -656,13 +656,13 @@
         <div class="form-edit-int">
           <mat-form-field appearance="fill" class="margin-top-xs  field-edit-width"
             [ngClass]="{ 'mat-form-field-invalid': showError('subTitle') }">
-            <mat-label>Sub Title</mat-label>
+            <mat-label>Sub Title<span style="color:#d32f2f">*</span></mat-label>
             <input matInput formControlName="subTitle" #subTitle maxlength="500" i18n-placeholder
               (keyup)="setPurposeValue(subTitle.value)" placeholder="Enter subtitle here"
               [required]="checkCondition('subTitle', 'required') ? true : null" />
             <mat-hint align="end">{{ subTitle.value.length }} / 500</mat-hint>
             <mat-error i18n="Subtitle Error|Explains Subtitle is required">
-              field is mandatory
+              This field is mandatory
             </mat-error>
           </mat-form-field>
           <mat-form-field appearance="fill" class="margin-top-s field-edit-width"
@@ -672,7 +672,7 @@
               <mat-option *ngFor="let sourceName of ordinals.sourceName" [value]="sourceName">
                 {{ sourceName }}</mat-option>
             </mat-select>
-            <mat-error i18n>field is mandatory </mat-error>
+            <mat-error i18n>This field is mandatory </mat-error>
           </mat-form-field>
         </div>
         <div class="form-edit-int">
@@ -684,7 +684,7 @@
                   <p class="font-weight-bold margin-remove-bottom" [ngClass]="{ required: true }">
                     <b i18n>Thumbnail</b>
                   </p>
-                  <mat-error *ngIf="showError('appIcon')" i18n>field is mandatory </mat-error>
+                  <mat-error *ngIf="showError('appIcon')" i18n>This field is mandatory </mat-error>
                   <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('appIcon')">info
                   </mat-icon>
                 </div>
@@ -736,6 +736,7 @@
               <span>Duration</span>
               <small> (<strong>hours</strong> :<strong> minutes</strong> :<strong> seconds</strong>)</small>
             </p>
+            <mat-error *ngIf="showError('duration')" i18n>This field is mandatory </mat-error>
             <div class="flex">
               <div class="flex">
                 <mat-form-field appearance="outline" class="duration-width"
@@ -761,10 +762,6 @@
                   <input matInput class="numberInput" [(ngModel)]="seconds" [ngModelOptions]="{ standalone: true }"
                     (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" max="59" step="1"
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
-                  <mat-error i18n="Duration Error|Explains Duration is mandatory field">
-                    Duration is
-                    mandatory
-                  </mat-error>
                 </mat-form-field>
               </div>
             </div>
@@ -867,7 +864,7 @@
                 [content]="contentForm.controls.instructions.value || ''"
                 (value)="updateContentService('instructions', $event)">
               </ws-auth-plain-ckeditor>
-              <p *ngIf="showError('name')" i18n="Name Error|Explains name is required">field is mandatory</p>
+              <mat-error *ngIf="showError('instructions')" i18n>This field is mandatory </mat-error>
             </div>
           </div>
         </div>
@@ -875,8 +872,8 @@
 
         <section class="width-1-3 fix-bottom">
           <div class="flex flex-between  margin-bottom-l margin-right-l">
-            <button [disabled]="contentForm?.invalid||contentForm.controls.duration.value==0" mat-raised-button
-              type="submit" (click)="isSubmitPressed = true; clickedNext()"
+            <button [ngClass]="{'button-disbale' : contentForm?.invalid||contentForm.controls.duration.value==0}"
+              mat-raised-button type="submit" (click)="isSubmitPressed = true; clickedNext()"
               class="text-white save-next  mat-button-base save-btn-bottom saveAndNextBtn">Save
               and Next</button>
           </div>
