@@ -54,7 +54,7 @@
               </span>
             </div>
             <button *ngIf="module.primaryCategory === 'Course Unit'" mat-raised-button
-              class="secondary-button-outline mat-button-base save-btn-bottom"
+              class="button-style secondary-button-outline mat-button-base"
               style="margin:0.4rem;color: #0074b6 !important;"
               (click)="addResModule(module.identifier, courseData.identifier)">Add Resource</button>
           </div>
@@ -100,7 +100,7 @@
               </div>
 
               <button *ngIf="isSaveModuleFormEnable" mat-raised-button [disabled]="!isOnClickOfResourceTypeEnabled"
-                class="secondary-button-outline mat-button-base save-btn-bottom"
+                class="button-style secondary-button-outline mat-button-base "
                 style="margin:0.4rem;color: #0074b6 !important;" (click)="addIndependentResource()"> Add
                 Resource</button>
 
@@ -187,19 +187,21 @@
           </div>
           <div>
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
-              class="module-input margin-top-s" placeholder="Name of the Module" autocomplete="off" />
+              class="module-input margin-top-s" placeholder="Name of the Module" autocomplete="off" /><br>
+            <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
           <div>
             <mat-form-field appearance="outline" class="margin-top-xs">
               <textarea matInput i18n-placeholder placeholder="Description" [(ngModel)]="topicDescription"></textarea>
-            </mat-form-field>
+            </mat-form-field><br>
           </div>
           <!-- is link enabled -->
           <div *ngIf="isLinkEnabled">
             <mat-form-field appearance="outline" class="margin-top-xs field-width">
               <input matInput #resourceLinks [(ngModel)]="editResourceLinks" maxlength="100" i18n-placeholder
                 placeholder="Link" />
-            </mat-form-field>
+            </mat-form-field><br>
+            <span *ngIf="editResourceLinks == ''" class="invalid-text">This field is Required</span>
           </div>
           <div *ngIf="isLinkEnabled" class="margin-bottom-s">
             <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
@@ -238,6 +240,7 @@
               </div>
               <div class="margin-bottom-s" *ngIf="acceptType == 'pdf'">
                 <span style="color: #808080 !important;">Note : The PDF should have high resolution</span>
+                <span *ngIf="resourceImg == ''" class="invalid-text">This field is Required</span>
               </div>
             </div>
             <div>
@@ -282,10 +285,10 @@
             </div>
           </div>
           <div *ngIf="isSaveModuleFormEnable">
-            <span style="color:#808080">Note: Learners will see this image for this
-              module</span>
+            <span *ngIf="thumbnail == undefined" class="invalid-text">This field is Required</span><br>
+            <span style="color:#808080">Note: Learners will see this image for this module</span>
           </div>
-          <div style="display:flex; flex-direction:row" *ngIf="content?.mimeType !== 'application/json'">
+          <div class="duration-style" *ngIf="content?.mimeType !== 'application/json'">
             <span class="duration-text">Duration:</span>
             <mat-form-field appearance="outline" class="width-55">
               <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
@@ -319,8 +322,9 @@
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
               {{moduleButtonName}}</button>
-            <button [disabled]="isLinkEnabled?editResourceLinks.length==0:true" mat-raised-button
-              *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&isLinkEnabled"
+            <button
+              [disabled]="isLinkEnabled?editResourceLinks.length==0:true || module.value == '' || thumbnail == undefined"
+              mat-raised-button *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&isLinkEnabled"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
               {{moduleButtonName}}</button>
@@ -389,8 +393,6 @@
                 <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
                   placeholder="Description of the resource" />
               </mat-form-field>
-              <span *ngIf="resourceLinkForm.get('instructions').hasError('required')" class="invalid-text">This field is
-                Required</span>
 
               <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">
@@ -432,7 +434,7 @@
                   Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
                 </div>
               </div>
-              <div style="display:flex; flex-direction:row" *ngIf="!isAssessmentOrQuizEnabled">
+              <div class="duration-style" *ngIf="!isAssessmentOrQuizEnabled">
                 <span class="duration-text">Duration:</span>
                 <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
@@ -490,8 +492,6 @@
                 <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
                   placeholder="Description of the resource" />
               </mat-form-field>
-              <span *ngIf="resourcePdfForm.get('instructions').hasError('required')" class="invalid-text">This field
-                is Required</span>
 
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource file</span>
@@ -584,7 +584,7 @@
                   </div>
                 </div>
               </div> -->
-              <div style="display:flex; flex-direction:row">
+              <div class="duration-style">
                 <span class="duration-text">Duration:</span><br>
                 <mat-form-field appearance="outline" class="width-55">
                   <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"

@@ -602,3 +602,16 @@ ul li {
 .invalid-text{
   color:red;
 }
+
+.button-style{
+  color: white !important;
+  border-radius: 17px;
+  font-size: 14px;
+  font-family: sans-serif !important;
+}
+
+.duration-style{
+  display:flex;
+  flex-direction:row;
+  height: 3rem;
+}
