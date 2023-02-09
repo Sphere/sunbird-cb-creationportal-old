@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter } from '@angular/core'
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms'
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 // import { ConfigurationsService,  } from '@ws-widget/utils'
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '@ws/author/src/lib/constants/upload'
@@ -246,14 +246,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   ) {
     this.resourceLinkForm = new FormGroup({
-      resourceName: new FormControl(''),
-      instructions: new FormControl(''),
-      resourceLinks: new FormControl(''),
-      appIcon: new FormControl(''),
+      resourceName: new FormControl('', [Validators.required]),
+      instructions: new FormControl('', [Validators.required]),
+      resourceLinks: new FormControl('', [Validators.required]),
+      appIcon: new FormControl('', [Validators.required]),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
       isgatingEnabled: new FormControl(true),
-      duration: new FormControl('')
+      duration: new FormControl('', [Validators.required])
     })
 
     this.fileUploadForm = this.formBuilder.group({
@@ -270,13 +270,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
 
     this.resourcePdfForm = new FormGroup({
-      resourceName: new FormControl(''),
-      instructions: new FormControl(''),
-      appIcon: new FormControl(''),
+      resourceName: new FormControl('', [Validators.required]),
+      instructions: new FormControl('', [Validators.required]),
+      appIcon: new FormControl('', [Validators.required]),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
       isgatingEnabled: new FormControl(true),
-      duration: new FormControl('')
+      duration: new FormControl('', [Validators.required])
     })
 
     this.moduleForm = new FormGroup({
@@ -1660,6 +1660,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     total += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
     total += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
     total += this.hours ? this.hours * 60 * 60 : 0
+    this.resourceLinkForm.controls.duration.setValue(total)
     return total
   }
   private setDuration(seconds: any) {

@@ -498,3 +498,12 @@ ul li {
 ::ng-deep .theme-igot.day-mode .mat-form-field-subscript-wrapper{
   font-size: unset;
 }
+
+::ng-deep .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline-thick{
+  color: #f44336 !important;
+}
+
+.button-disbale{
+  opacity: 0.3;
+}
+
