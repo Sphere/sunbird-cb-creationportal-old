@@ -2527,7 +2527,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     const newData = {
       topicDescription: '',
-      topicName: 'Resource 1'
+      topicName: 'Resource Title'
     }
     const parentNode = node
     this.loaderService.changeLoad.next(true)

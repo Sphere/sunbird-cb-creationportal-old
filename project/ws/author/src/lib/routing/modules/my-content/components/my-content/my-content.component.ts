@@ -947,6 +947,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
   }
 
   confirmAction(content: any) {
+    console.log("yes here")
     let message = ''
     if (content.type === 'delete') {
       message = 'delete'
@@ -1107,6 +1108,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'moveToInReview':
       case 'moveToDraft':
       case 'delete':
+        this.confirmAction(event)
+        break
       case 'unpublish':
       case 'restoreDeleted':
         this.confirmAction(event)
