@@ -35,7 +35,7 @@ import { IFormMeta } from '../../../../../../interface/form'
 import { AccessControlService } from '../../../../../../modules/shared/services/access-control.service'
 import { AuthInitService } from '../../../../../../services/init.service'
 import { LoaderService } from '../../../../../../services/loader.service'
-// import { CollectionStoreService } from './../../../routing/modules/collection/services/store.service'
+import { CollectionStoreService } from './../../../routing/modules/collection/services/store.service'
 import {
   debounceTime,
   distinctUntilChanged,
@@ -145,7 +145,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
   filteredOptions$: Observable<string[]> = of([])
   saveParent: any
-
+  courseData: any
   //UI variables
   moduleName: string = 'undefined title';
   isSaveModuleFormEnable: boolean = false;
@@ -166,11 +166,16 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     private accessService: AccessControlService,
     // private apiService: ApiService,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private storeService: CollectionStoreService,
 
   ) { }
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
+    this.editorService.readcontentV3(this.contentService.parentUpdatedMeta().identifier).subscribe(async (data: any) => {
+      this.courseData = await data
+    })
+
     this.ref.detach()
     this.timer = setInterval(() => {
       this.ref.detectChanges()
@@ -1751,7 +1756,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     }
   }
 
-  onSubmit() {
+  async onSubmit() {
+    this.storeService.parentData = await this.courseData
     this.courseEditFormSubmit.emit(true)
   }
 

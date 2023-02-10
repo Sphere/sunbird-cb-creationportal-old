@@ -985,6 +985,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             }
           }
           if (resourceListToReview.length === flag && moduleListToReview.length > 0) {
+            this.storeService.parentData = this.courseData
             const tempRequset: NSApiRequest.IContentUpdateV3 = {
               request: {
                 data: {
@@ -1631,7 +1632,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.editorStore.resetOriginalMetaWithHierarchy(data)
     })
   }
-  setSettingsPage() {
+  async setSettingsPage() {
+    await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+      this.courseData = data
+    })
     this.isSettingsPage = true
     /* tslint:disable-next-line */
     console.log("this.settingsPage", this.isSettingsPage)
@@ -1645,9 +1649,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       obj["type"] = 'collection'
       obj["name"] = input1
       obj["description"] = input2
+      this.addResourceModule = obj
       this.moduleName = name
       this.isSaveModuleFormEnable = true
       this.moduleButtonName = 'Save'
+
       this.setContentType(obj)
       //this.initService.createModuleUnit(obj)
       this.clearForm()
@@ -2509,7 +2515,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   async setContentType(type: any, filetype?: string) {
-    console.log(type)
     this.resourseSelected = type
     if (filetype) {
       this.storeService.uploadFileType.next(filetype)
@@ -2531,6 +2536,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       topicDescription: '',
       topicName: type.type === 'Collection' ? 'Add Module' : 'Resource'
     }
+    this.storeService.parentData = this.courseData
     const parentNode = node
     this.loaderService.changeLoad.next(true)
     const isDone = await this.storeService.createChildOrSibling(
@@ -2548,8 +2554,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //   duration: NOTIFICATION_TIME * 1000,
 
     // })
-    console.log(isDone)
-    console.log(this.addResourceModule)
     if (isDone) {
       const newCreatedLexid = this.editorService.newCreatedLexid
       if (this.addResourceModule["module"] === true) {
@@ -2565,47 +2569,48 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         const result = await this.editorService.resourceToModule(request).toPromise()
         // tslint:disable-next-line:no-console
         console.log(result)
-        console.log(this.resourseSelected)
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-          this.courseData = data
-        })
-        const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+          this.courseData = await data
 
-        hierarchyData[this.editorService.resourseID] = {
-          root: false,
-          name: this.resourseSelected !== 'assessment' ? 'Resource 1' : 'Assessment',
-          children: [],
-        }
-        Object.keys(hierarchyData).forEach((ele: any) => {
-          if (ele === this.addResourceModule["modID"]) {
-            hierarchyData[ele].children.push(this.editorService.resourseID)
+          const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+
+          hierarchyData[this.editorService.resourseID] = {
+            root: false,
+            name: this.resourseSelected !== 'assessment' ? 'Resource 1' : 'Assessment',
+            children: [],
           }
-        })
 
-        const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-          request: {
-            data: {
-              nodesModified: this.editorStore.getNodeModifyData(),
-              hierarchy: hierarchyData,
+          Object.keys(hierarchyData).forEach((ele: any) => {
+            if (ele === this.addResourceModule["modID"]) {
+              hierarchyData[ele].children.push(this.editorService.resourseID)
+            }
+          })
+
+          const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+            request: {
+              data: {
+                nodesModified: this.editorStore.getNodeModifyData(),
+                hierarchy: hierarchyData,
+              },
             },
-          },
-        }
-        await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-          this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-            this.courseData = data
+          }
+          await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+              this.courseData = data
+            })
           })
         })
         //}
       } else {
         //const hierarchyData = this.storeService.getTreeHierarchy()
-        this.courseData = []
+        //this.courseData = []
         this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
-          console.log('kkk', data)
-          this.courseData = await data
-          console.log(this.courseData)
-          const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
-          Object.keys(hierarchyData).forEach((ele: any) => {
 
+          this.courseData = await data
+
+          const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+
+          Object.keys(hierarchyData).forEach((ele: any) => {
             if (ele === this.addResourceModule["courseID"]) {
               hierarchyData[this.editorService.resourseID] = {
                 root: false,
