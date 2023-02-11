@@ -254,6 +254,10 @@
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Success">thumb_up</mat-icon>
   <span i18n>Link is invalid</span>
 </p>
+<p *ngIf="type === notify.REQUIRED_FIELD">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Success">thumb_up</mat-icon>
+  <span i18n>Please fill required field's</span>
+</p>
 <!-- auth role request notification -->
 <p *ngIf="type === notify.ROLE_REQUEST_SUBMIT_SUCCESS">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
