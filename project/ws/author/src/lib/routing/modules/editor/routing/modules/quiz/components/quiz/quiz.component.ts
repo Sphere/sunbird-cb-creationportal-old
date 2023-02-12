@@ -293,7 +293,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                         v.contents[0].data = jsonResponse
                         //this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
                         //this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
-                        this.assessmentDuration = (jsonResponse.assessmentDuration) / 60
+                        this.assessmentDuration = (jsonResponse.timeLimit) / 60
                         this.passPercentage = jsonResponse.passPercentage
                       }
                       this.allContents.push(v.contents[0].content)
@@ -680,7 +680,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       // tslint:disable-next-line: prefer-template
       //timeLimit: parseInt(this.quizDuration + '', 10) || 300
       timeLimit: (this.assessmentDuration) * 60 || '300',
-      assessmentDuration: (this.assessmentDuration) * 60 || '300',
+      //assessmentDuration: (this.assessmentDuration) * 60 || '300',
       passPercentage: this.passPercentage || '50',
       isAssessment: this.isQuiz === '' ? true : false,
       questions: array,
