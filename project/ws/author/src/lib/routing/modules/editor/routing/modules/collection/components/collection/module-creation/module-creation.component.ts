@@ -219,7 +219,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   selectedQuizIndex!: number
   quizIndex!: number
   editResourceLinks: string = ''
-
+  isLoading: boolean = false
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -292,6 +292,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
     this.initService.isBackButtonClickedMessage.subscribe(
       (data: any) => {
+        this.isLoading = true
         this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
           this.courseData = data
         })
@@ -301,6 +302,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           /* tslint:disable-next-line */
           console.log("isSettingsPage", data)
           this.isSettingsPage = false
+          setTimeout(() => {
+            this.isLoading = false
+          }, 500)
         } else if (!this.isSettingsPage && data) {
           /* tslint:disable-next-line */
           // console.log("backToCourseDetailsPage", data, this.isAssessmentOrQuizEnabled, this.viewMode)
@@ -309,6 +313,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           //   this.initService.publishData('backToCourseDetailsPage')
           // } else {
           this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
+          setTimeout(() => {
+            this.isLoading = false
+          }, 500)
+
           // }
 
         } else {
@@ -1967,13 +1975,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   editAssessmentRes(content?: any) {
-    // this.loaderService.changeLoad.next(true)
     this.initService.updateAssessment(content)
-    //this.initService.editAssessmentAction(content)
   }
 
   addAssessment() {
-    // this.loaderService.changeLoad.next(true)
     this.viewMode = 'assessment'
     this.addResourceModule["viewMode"] = 'assessment'
     let obj: any = {}
@@ -1981,6 +1986,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     obj["name"] = 'assessment'
     obj["description"] = 'assessment'
     this.initService.updateAssessment(obj)
+
   }
 
 

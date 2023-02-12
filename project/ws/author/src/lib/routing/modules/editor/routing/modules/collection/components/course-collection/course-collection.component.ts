@@ -97,6 +97,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   clickedNext: boolean = false;
   isMoveCourseToDraft: boolean = false;
   createModule: any
+  isLoading: boolean = false;
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -152,12 +153,17 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
     this.initService.isBackButtonFromAssessmentClickedMessage.subscribe(
       (data: any) => {
+        this.isLoading = true
         if ((data === 'backFromAssessmentDetails') && this.viewMode === 'assessment') {
           /* tslint:disable-next-line */
+
           console.log("course-collection: " + JSON.stringify(data))
           this.showAddchapter = true
           this.viewMode = ''
           this.clickedNext = true
+          setTimeout(() => {
+            this.isLoading = false
+          }, 500)
           // this.save()
         }
       })

@@ -1,4 +1,12 @@
 <div class="main-model">
+  <div class="overlay" *ngIf="isLoading">
+    <div class="loader-container">
+      <div class="loader-ripple">
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+  </div>
   <mat-grid-list *ngIf="!isSettingsPage" cols="4" rowHeight="100vh">
     <mat-grid-tile [colspan]="1">
       <mat-drawer-container [class.drawer-opened]="drawer.opened">

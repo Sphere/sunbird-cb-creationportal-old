@@ -93,7 +93,14 @@
       <ws-auth-url-upload [isCollectionEditor]="true" *ngIf="!showAddchapter && viewMode === 'curate'"
         [isSubmitPressed]="isSubmitPressed" (data)="action($event)" [isCreatorEnable]="checkCreator">
       </ws-auth-url-upload>
-
+      <div class="overlay" *ngIf="isLoading">
+        <div class="loader-container">
+          <div class="loader-ripple">
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+      </div>
       <ws-auth-file-upload [isCollectionEditor]="true" *ngIf="false" [isSubmitPressed]="isSubmitPressed"
         (data)="action($event)" [isCreatorEnable]="checkCreator">
       </ws-auth-file-upload>
