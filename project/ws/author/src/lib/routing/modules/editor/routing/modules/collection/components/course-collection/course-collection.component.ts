@@ -146,10 +146,17 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.initService.publishMessage.subscribe(
       (data: any) => {
         if (data === 'backToCourseDetailsPage' && this.viewMode !== 'assessment') {
+          this.isLoading = true
           this.showAddchapter = false
           this.viewMode = 'meta'
           this.clickedNext = false
+          setTimeout(() => {
+            this.isLoading = false
+          }, 500)
         }
+        setTimeout(() => {
+          this.isLoading = false
+        }, 500)
       })
     this.initService.isBackButtonFromAssessmentClickedMessage.subscribe(
       (data: any) => {
@@ -166,6 +173,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           }, 500)
           // this.save()
         }
+        setTimeout(() => {
+          this.isLoading = false
+        }, 500)
       })
 
     this.initService.uploadMessage.subscribe(
@@ -185,6 +195,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
     this.initService.createModuleMessage.subscribe(
       (data: any) => {
+        /* tslint:disable-next-line */
         console.log("data: " + JSON.stringify(data))
         if (data) {
           this.createModule = data
@@ -201,6 +212,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.initService.updateAssessmentMessage.subscribe(
       (data: any) => {
         if (data) {
+          /* tslint:disable-next-line */
           console.log(data)
           this.createModule = data
           //this.setContentType(data['type'])

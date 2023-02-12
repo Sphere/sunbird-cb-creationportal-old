@@ -403,12 +403,12 @@ export class CollectionStoreService {
         body: parentData.body,
         //   sourceName : parentData.sourceName,
 
-        locale:
-          // tslint:disable-next-line: ter-computed-property-spacing
-          this.contentService.originalContent[
-            (this.flatNodeMap.get(this.currentParentNode) as IContentNode).identifier
-            // tslint:disable-next-line: ter-computed-property-spacing
-          ].locale || 'en',
+        // locale:
+        //   // tslint:disable-next-line: ter-computed-property-spacing
+        //   this.contentService.originalContent[
+        //     (this.flatNodeMap.get(this.currentParentNode) as IContentNode).identifier
+        //     // tslint:disable-next-line: ter-computed-property-spacing
+        //   ].locale || 'en',
         ...(meta.additionalMeta || {}),
         // primaryCategory: meta.primaryCategory
         primaryCategory: meta.primaryCategory || 'Learning Resource',
@@ -920,7 +920,7 @@ export class CollectionStoreService {
       // const url = this.router.url
       // const id = url.split('/')
       if (content.name === '') {
-        errorMsg.push('Course title cannot be empty')
+        errorMsg.push('Title cannot be empty')
       }
       // if (content.description === '' && content.status === 'Draft') {
       //   errorMsg.push('Course description/summary cannot be empty')
@@ -931,18 +931,18 @@ export class CollectionStoreService {
       //   errorMsg.push('Course subtitle cannot be empty')
       // }
       if (content.instructions === '') {
-        errorMsg.push('Course description cannot be empty')
+        errorMsg.push('Description cannot be empty')
       }
       /*Workaround*/
       // && content.parent != id[3]
       if (content.thumbnail === undefined && content.status === 'Draft') {
-        errorMsg.push('Course thumbnail cannot be empty')
+        errorMsg.push('Thumbnail cannot be empty')
       }
       // if (content.sourceName === undefined && content.status === 'Draft') {
       //   errorMsg.push('Course provider/source cannot be empty')
       // }
       if (content.mimeType === 'text/x-url' && content.artifactUrl === '') {
-        errorMsg.push('Course artifactUrl cannot be empty')
+        errorMsg.push('ArtifactUrl cannot be empty')
       }
       // if (content.mimeType === 'text/x-url' && !(/(http(s?)):\/\//i.test(content.artifactUrl))) {
       // if (content.mimeType === 'text/x-url') {
@@ -950,10 +950,10 @@ export class CollectionStoreService {
       // }
       // tslint:disable-next-line:max-line-length
       if (content.publisherDetails && content.publisherDetails.length === 0 && content.parent === undefined && content.contentType === 'Course') {
-        errorMsg.push('Course publisher details cannot be empty')
+        errorMsg.push('Publisher details cannot be empty')
       }
       if (content.trackContacts && content.trackContacts.length === 0 && content.parent === undefined && content.contentType === 'Course') {
-        errorMsg.push('Course reviewer details cannot be empty')
+        errorMsg.push('Reviewer details cannot be empty')
       }
 
       if (!this.contentService.isValid(lexId)) {

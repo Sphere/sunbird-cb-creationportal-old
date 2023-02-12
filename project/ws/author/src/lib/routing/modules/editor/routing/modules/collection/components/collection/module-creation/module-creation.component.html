@@ -149,8 +149,7 @@
               class="ws-mat-primary-background width-20 margin-left-s mat-button-base save-btn-bottom">
               Go to Course Settings ></button> -->
             <button mat-raised-button [ngClass]="showSettingsPage ? 'ws-mat-primary-background' : 'secondary-button'"
-              class="width-20 margin-left-s mat-button-base save-btn-bottom"
-              (click)="showSettingsPage?isSettingsPage=true:isSettingsPage=false;setSettingsPage()">
+              class="width-20 margin-left-s mat-button-base save-btn-bottom" (click)="setSettingsPage()">
               Go to Course Settings ></button>
           </div>
         </mat-toolbar>
@@ -329,12 +328,12 @@
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom"
               (click)="moduleCreate(module.value, topicDescription, thumbnail)">
               {{moduleButtonName}}</button>
-            <button mat-raised-button *ngIf="content?.contentType === 'CourseUnit'"
+            <button mat-raised-button *ngIf="content?.contentType === 'CourseUnit' || isNewCourse"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
               {{moduleButtonName}}</button>
             <button [disabled]="(uploadFileName?uploadFileName == '':true)" mat-raised-button
-              *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course'&& !isLinkEnabled && content?.mimeType !== 'application/json'"
+              *ngIf="!isNewCourse && moduleButtonName === 'Save' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course'&& !isLinkEnabled && content?.mimeType !== 'application/json'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
               {{moduleButtonName}}</button>
@@ -517,7 +516,7 @@
 
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource file</span><br>
-                <span *ngIf="uploadFileName == ''" class="invalid-text">This fieldis Required</span>
+                <span *ngIf="uploadFileName == ''" class="invalid-text">This field is Required</span>
               </div>
               <div class="thumnail-row margin-top-xs">
                 <div>
@@ -567,12 +566,12 @@
 
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource Thumbnail</span><br>
-                <span *ngIf="resourceLinkForm.controls.appIcon.value == ''" class="invalid-text">This field
-                  is Required</span>
+                <span *ngIf="resourcePdfForm.controls.appIcon.value == ''" class="invalid-text">This field is
+                  Required</span>
               </div>
               <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
                 <div>
-                  <img class="image max-width" [src]="resourceLinkForm.controls.appIcon.value"
+                  <img class="image max-width" [src]="resourcePdfForm.controls.appIcon.value"
                     (error)="changeToDefaultImg($event)">
                   <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadResourceFile.click()">
                     <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>

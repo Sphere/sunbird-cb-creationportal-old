@@ -220,6 +220,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   quizIndex!: number
   editResourceLinks: string = ''
   isLoading: boolean = false
+  isNewCourse!: boolean
+
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -292,13 +294,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
     this.initService.isBackButtonClickedMessage.subscribe(
       (data: any) => {
-        this.isLoading = true
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-          this.courseData = data
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+          this.courseData = await data
         })
         /* tslint:disable-next-line */
         console.log("this.isSettings", this.isSettingsPage)
         if (this.showSettingsPage && this.isSettingsPage && data) {
+          this.isLoading = true
           /* tslint:disable-next-line */
           console.log("isSettingsPage", data)
           this.isSettingsPage = false
@@ -306,6 +308,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             this.isLoading = false
           }, 500)
         } else if (!this.isSettingsPage && data) {
+          this.isLoading = true
           /* tslint:disable-next-line */
           // console.log("backToCourseDetailsPage", data, this.isAssessmentOrQuizEnabled, this.viewMode)
           // if (this.viewMode == 'meta') {
@@ -324,12 +327,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           console.log("else")
           this.router.navigateByUrl('/author/home')
         }
+        setTimeout(() => {
+          this.isLoading = false
+        }, 500)
       })
 
     this.initService.updateResourceMessage.subscribe(
-      (data: any) => {
+      async (data: any) => {
         if (data) {
-          this.ngAfterViewInit()
+          await this.ngAfterViewInit()
         }
       })
   }
@@ -758,6 +764,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
           tap(() => {
             this.storeService.changedHierarchy = {}
+            this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
+              this.courseData = await data
+              this.contentService.resetOriginalMetaWithHierarchy(data)
+              // tslint:disable-next-line: align
+            })
             Object.keys(this.contentService.upDatedContent).forEach(id => {
               this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
             })
@@ -782,13 +793,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     return this.editorService.updateContentV4(requestBodyV2).pipe(
       tap(() => {
-
+        this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
+          this.courseData = await data
+          this.contentService.resetOriginalMetaWithHierarchy(data)
+        })
         this.storeService.changedHierarchy = {}
         Object.keys(this.contentService.upDatedContent).forEach(async id => {
           this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
-        })
-        this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
-          this.contentService.resetOriginalMetaWithHierarchy(data)
         })
         this.contentService.upDatedContent = {}
       }),
@@ -810,7 +821,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       },
     }
     await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-      this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+      this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
+        this.courseData = await data
         this.contentService.resetOriginalMetaWithHierarchy(data)
         // tslint:disable-next-line: align
       })
@@ -1615,8 +1627,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   ngAfterViewInit() {
-    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-      this.courseData = data
+    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+      this.courseData = await data
       //this.moduleButtonName = 'Save'
       //this.isSaveModuleFormEnable = true
       //this.showAddModuleForm = true
@@ -1644,11 +1656,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.editorStore.resetOriginalMetaWithHierarchy(data)
     })
   }
-  async setSettingsPage() {
-    await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-      this.courseData = data
+  setSettingsPage() {
+    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+      if (data) {
+        this.courseData = await data
+        this.isSettingsPage = true
+      }
     })
-    this.isSettingsPage = true
+
     /* tslint:disable-next-line */
     console.log("this.settingsPage", this.isSettingsPage)
   }
@@ -1668,7 +1683,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
       this.setContentType(obj)
       //this.initService.createModuleUnit(obj)
-      this.clearForm()
+      this.showAddModuleForm = true
+      this.isResourceTypeEnabled = false
+      this.isOnClickOfResourceTypeEnabled = false
+      this.isLinkEnabled = false
+      this.moduleButtonName = 'Save'
+      this.isNewCourse = true
     } else if (this.moduleButtonName == 'Save') {
       this.isResourceTypeEnabled = true
     }
@@ -1834,9 +1854,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   addModule() {
     this.clearForm()
-    this.showAddModuleForm = false
     this.moduleButtonName = 'Create'
-    this.moduleCreate('Create Module', 'Create Module', '')
+    this.moduleCreate('Module Name', 'Module Name', '')
     // this.moduleNames.push({ name: 'Create Course' })
     // this.moduleName = ''
   }
@@ -1898,7 +1917,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.isAssessmentOrQuizEnabled = false
       this.editResourceLinks = content.artifactUrl ? content.artifactUrl : ''
       console.log("link content", this.isLinkEnabled, this.editResourceLinks)
-      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
+      //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType == 'application/pdf') {
       this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
@@ -1909,7 +1928,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/pdf-icon.svg'
       this.acceptType = '.pdf'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
-      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
+      //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType == 'audio/mpeg') {
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
@@ -1920,7 +1939,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/audio.png'
       this.acceptType = '.mp3'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
-      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
+      //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'video/mp4') {
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
@@ -1931,7 +1950,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/vedio-img.svg'
       this.acceptType = '.mp4, .m4v'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
-      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
+      //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'application/vnd.ekstep.html-archive') {
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/SCROM-img.svg'
@@ -1942,7 +1961,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/SCROM-img.svg'
       this.acceptType = '.zip'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
-      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
+      //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else {
       if (content.mimeType == "application/json") {
         const fileData = ((content.artifactUrl || content.downloadUrl) ?
@@ -2134,6 +2153,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //   console.log(resData)
     // })
     let iframeSupported
+    this.isNewCourse = false
     if (thumbnail != undefined) {
       if (this.timeToSeconds() == 0 && content !== 'application/json') {
         this.snackBar.openFromComponent(NotificationComponent, {
@@ -2463,6 +2483,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
           tap(() => {
             this.storeService.changedHierarchy = {}
+            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+              this.courseData = data
+            })
             Object.keys(this.editorStore.upDatedContent).forEach(id => {
               this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
               // this.editorService.readContentV2(id).subscribe(resData => {
@@ -2493,6 +2516,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
         })
         this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.courseData = data
           this.editorStore.resetOriginalMetaWithHierarchy(data)
         })
         this.editorStore.upDatedContent = {}
@@ -2781,7 +2805,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                         this.canUpdate = false
                         this.resourceLinkForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
                         this.resourceLinkForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
-
+                        this.resourcePdfForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
+                        this.resourcePdfForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
                         this.canUpdate = true
                         // this.data.emit('save')
                         this.updateStoreData()
@@ -3155,7 +3180,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   async resourcePdfSave() {
-    if (this.resourceLinkForm.status == 'INVALID' || this.uploadFileName == '') {
+    console.log(this.resourcePdfForm.status)
+    console.log(this.resourcePdfForm)
+    console.log(this.uploadFileName)
+    if (this.resourcePdfForm.status == 'INVALID' || this.uploadFileName == '') {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.REQUIRED_FIELD,
