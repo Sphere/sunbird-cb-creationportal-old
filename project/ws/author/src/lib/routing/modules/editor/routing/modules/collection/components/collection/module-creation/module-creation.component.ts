@@ -248,7 +248,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   ) {
     this.resourceLinkForm = new FormGroup({
       resourceName: new FormControl('', [Validators.required]),
-      instructions: new FormControl(''),
+      instructions: new FormControl('', [Validators.required]),
       resourceLinks: new FormControl('', [Validators.required]),
       appIcon: new FormControl('', [Validators.required]),
       thumbnail: new FormControl(''),
@@ -272,7 +272,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     this.resourcePdfForm = new FormGroup({
       resourceName: new FormControl('', [Validators.required]),
-      instructions: new FormControl(''),
+      instructions: new FormControl('', [Validators.required]),
       appIcon: new FormControl('', [Validators.required]),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
@@ -1681,60 +1681,69 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.seconds = second || 0
   }
   async resourceLinkSave() {
-    this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
-    if (this.resourceLinkForm.value.duration == 0 && !this.isAssessmentOrQuizEnabled) {
+    console.log(" this.resourceLinkForm", this.resourceLinkForm)
+    if (this.resourceLinkForm.status == 'INVALID') {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
-          type: Notify.DURATION_CANT_BE_0,
+          type: Notify.REQUIRED_FIELD,
         },
         duration: NOTIFICATION_TIME * 1000,
       })
     } else {
-      this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
-      let iframeSupported
-      if (this.resourceLinkForm.value.isIframeSupported)
-        iframeSupported = 'Yes'
-      else
-        iframeSupported = 'No'
-
-      var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
-      this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
-      if (res !== null) {
-        console.log("yes if")
-        const rBody: any = {
-          name: this.resourceLinkForm.value.resourceName,
-          instructions: this.resourceLinkForm.value.instructions,
-          description: this.resourceLinkForm.value.instructions,
-          artifactUrl: this.resourceLinkForm.value.resourceLinks,
-          isIframeSupported: iframeSupported,
-          gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
-          duration: this.resourceLinkForm.value.duration,
-          versionKey: this.versionKey.versionKey,
-        }
-        await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
-        await this.saves()
-        this.clearForm()
-      } else if (res == null && !this.isAssessmentOrQuizEnabled) {
+      this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
+      if (this.resourceLinkForm.value.duration == 0 && !this.isAssessmentOrQuizEnabled) {
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
-            type: Notify.LINK_IS_INVALID,
+            type: Notify.DURATION_CANT_BE_0,
           },
           duration: NOTIFICATION_TIME * 1000,
         })
       } else {
-        console.log("yes else")
-        const rBody: any = {
-          name: this.resourceLinkForm.value.resourceName,
-          instructions: this.resourceLinkForm.value.instructions,
-          description: this.resourceLinkForm.value.instructions,
-          isIframeSupported: iframeSupported,
-          gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
-          versionKey: this.versionKey.versionKey,
+        this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+        let iframeSupported
+        if (this.resourceLinkForm.value.isIframeSupported)
+          iframeSupported = 'Yes'
+        else
+          iframeSupported = 'No'
+
+        var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+        this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+        if (res !== null) {
+          const rBody: any = {
+            name: this.resourceLinkForm.value.resourceName,
+            instructions: this.resourceLinkForm.value.instructions,
+            description: this.resourceLinkForm.value.instructions,
+            artifactUrl: this.resourceLinkForm.value.resourceLinks,
+            isIframeSupported: iframeSupported,
+            gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
+            duration: this.resourceLinkForm.value.duration,
+            versionKey: this.versionKey.versionKey,
+          }
+          await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+          await this.saves()
+          this.clearForm()
+        } else if (res == null && !this.isAssessmentOrQuizEnabled) {
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: Notify.LINK_IS_INVALID,
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+        } else {
+          const rBody: any = {
+            name: this.resourceLinkForm.value.resourceName,
+            instructions: this.resourceLinkForm.value.instructions,
+            description: this.resourceLinkForm.value.instructions,
+            isIframeSupported: iframeSupported,
+            gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
+            versionKey: this.versionKey.versionKey,
+          }
+          await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+          await this.saves()
         }
-        await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
-        await this.saves()
       }
     }
+
   }
 
   createResourseContent(name: string, type: string) {
@@ -3138,33 +3147,42 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   async resourcePdfSave() {
-    this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
-    let iframeSupported
-    if (this.resourcePdfForm.value.isIframeSupported)
-      iframeSupported = 'Yes'
-    else
-      iframeSupported = 'No'
+    if (this.resourceLinkForm.status == 'INVALID' || this.uploadFileName == '') {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.REQUIRED_FIELD,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    } else {
+      this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
+      let iframeSupported
+      if (this.resourcePdfForm.value.isIframeSupported)
+        iframeSupported = 'Yes'
+      else
+        iframeSupported = 'No'
 
-    this.triggerUpload()
-    this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
-    this.duration = this.resourcePdfForm.value.duration
-    this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
-    const rBody: any = {
-      name: this.resourcePdfForm.value.resourceName,
-      instructions: this.resourcePdfForm.value.instructions,
-      description: this.resourcePdfForm.value.instructions,
-      appIcon: this.resourcePdfForm.value.appIcon,
-      thumbnail: this.resourcePdfForm.value.thumbnail,
-      isIframeSupported: iframeSupported,
-      gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
-      duration: this.resourcePdfForm.value.duration,
-      versionKey: this.versionKey.versionKey,
+      this.triggerUpload()
+      this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
+      this.duration = this.resourcePdfForm.value.duration
+      this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+      const rBody: any = {
+        name: this.resourcePdfForm.value.resourceName,
+        instructions: this.resourcePdfForm.value.instructions,
+        description: this.resourcePdfForm.value.instructions,
+        appIcon: this.resourcePdfForm.value.appIcon,
+        thumbnail: this.resourcePdfForm.value.thumbnail,
+        isIframeSupported: iframeSupported,
+        gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
+        duration: this.resourcePdfForm.value.duration,
+        versionKey: this.versionKey.versionKey,
+      }
+      await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+      await this.update()
+      await this.save()
+      // this.loaderService.changeLoad.next(false)
+      this.clearForm()
     }
-    await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
-    await this.update()
-    await this.save()
-    // this.loaderService.changeLoad.next(false)
-    this.clearForm()
   }
 
   clearForm() {

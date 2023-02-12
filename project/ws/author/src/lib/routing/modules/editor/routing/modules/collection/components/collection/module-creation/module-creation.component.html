@@ -401,6 +401,8 @@
                 <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
                   placeholder="Description of the resource" />
               </mat-form-field>
+              <span *ngIf="resourceLinkForm.get('instructions').hasError('required')" class="invalid-text">This field
+                is Required</span>
 
               <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">
@@ -501,9 +503,12 @@
                 <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
                   placeholder="Description of the resource" />
               </mat-form-field>
+              <span *ngIf="resourcePdfForm.get('instructions').hasError('required')" class="invalid-text">This field
+                is Required</span>
 
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
-                <span style="color:#808080">Resource file</span>
+                <span style="color:#808080">Resource file</span><br>
+                <span *ngIf="uploadFileName == ''" class="invalid-text">This fieldis Required</span>
               </div>
               <div class="thumnail-row margin-top-xs">
                 <div>
@@ -553,7 +558,7 @@
 
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource Thumbnail</span><br>
-                <span *ngIf="resourcePdfForm.get('appIcon').hasError('required')" class="invalid-text">This field
+                <span *ngIf="resourceLinkForm.controls.appIcon.value == ''" class="invalid-text">This field
                   is Required</span>
               </div>
               <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
