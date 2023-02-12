@@ -411,10 +411,11 @@
                 </mat-form-field>
                 <mat-checkbox class="check-text" formControlName="isgatingEnabled">Gating Enabled</mat-checkbox>
                 <mat-checkbox class="check-text" formControlName="isIframeSupported">Open link in new tab</mat-checkbox>
+                <span *ngIf="resourceLinkForm.get('resourceLinks').hasError('required')" class="invalid-text">This field
+                  is Required</span>
               </div>
               <!--validation div for resource link-->
-              <span *ngIf="resourceLinkForm.get('resourceLinks').hasError('required')" class="invalid-text">This field
-                is Required</span>
+
               <div class="margin-top-s" *ngIf="isAssessmentOrQuizEnabled">
                 <button mat-raised-button
                   class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"

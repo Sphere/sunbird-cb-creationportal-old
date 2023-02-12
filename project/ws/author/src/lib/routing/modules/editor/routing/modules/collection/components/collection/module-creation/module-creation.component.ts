@@ -1682,7 +1682,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   async resourceLinkSave() {
     console.log(" this.resourceLinkForm", this.resourceLinkForm)
-    if (this.resourceLinkForm.status == 'INVALID') {
+    if (this.resourceLinkForm.status == 'INVALID' && !this.isAssessmentOrQuizEnabled) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.REQUIRED_FIELD,
@@ -1967,11 +1967,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   editAssessmentRes(content?: any) {
+    // this.loaderService.changeLoad.next(true)
     this.initService.updateAssessment(content)
     //this.initService.editAssessmentAction(content)
   }
 
   addAssessment() {
+    // this.loaderService.changeLoad.next(true)
     this.viewMode = 'assessment'
     this.addResourceModule["viewMode"] = 'assessment'
     let obj: any = {}
