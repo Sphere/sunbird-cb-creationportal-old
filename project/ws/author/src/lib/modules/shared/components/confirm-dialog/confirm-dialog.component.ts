@@ -15,6 +15,7 @@ import { MatSnackBarRef } from '@angular/material/snack-bar'
   selector: 'ws-auth-confirm-dialog',
   templateUrl: './confirm-dialog.component.html',
   styleUrls: ['./confirm-dialog.component.scss'],
+  providers: [QuizStoreService],
 })
 export class ConfirmDialogComponent implements OnInit {
   @Output() value = new EventEmitter<any>()

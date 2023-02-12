@@ -109,6 +109,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   ]
   assessmentOrQuizName: string = 'Quiz'
+  isAddOrEdit: boolean = false
   checkCreator = false
   selectedEntryFile: boolean = false
   fileUploaded: any = []
@@ -132,7 +133,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   isNewTab: any = '';
   isGating: any = '';
   topicDescription: string = ''
-  thumbnail: any
+  thumbnail: string = ''
   resourceNames: any = [];
   resourceCount: number = 0;
   independentResourceNames: any = [];
@@ -247,7 +248,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   ) {
     this.resourceLinkForm = new FormGroup({
       resourceName: new FormControl('', [Validators.required]),
-      instructions: new FormControl('', [Validators.required]),
+      instructions: new FormControl(''),
       resourceLinks: new FormControl('', [Validators.required]),
       appIcon: new FormControl('', [Validators.required]),
       thumbnail: new FormControl(''),
@@ -271,7 +272,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     this.resourcePdfForm = new FormGroup({
       resourceName: new FormControl('', [Validators.required]),
-      instructions: new FormControl('', [Validators.required]),
+      instructions: new FormControl(''),
       appIcon: new FormControl('', [Validators.required]),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
@@ -291,6 +292,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
     this.initService.isBackButtonClickedMessage.subscribe(
       (data: any) => {
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.courseData = data
+        })
         /* tslint:disable-next-line */
         console.log("this.isSettings", this.isSettingsPage)
         if (this.showSettingsPage && this.isSettingsPage && data) {
@@ -985,6 +989,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             }
           }
           if (resourceListToReview.length === flag && moduleListToReview.length > 0) {
+            this.storeService.parentData = this.courseData
             const tempRequset: NSApiRequest.IContentUpdateV3 = {
               request: {
                 data: {
@@ -1631,7 +1636,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.editorStore.resetOriginalMetaWithHierarchy(data)
     })
   }
-  setSettingsPage() {
+  async setSettingsPage() {
+    await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+      this.courseData = data
+    })
     this.isSettingsPage = true
     /* tslint:disable-next-line */
     console.log("this.settingsPage", this.isSettingsPage)
@@ -1645,10 +1653,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       obj["type"] = 'collection'
       obj["name"] = input1
       obj["description"] = input2
+      this.addResourceModule = obj
       this.moduleName = name
       this.isSaveModuleFormEnable = true
       this.moduleButtonName = 'Save'
-      this.initService.createModuleUnit(obj)
+
+      this.setContentType(obj)
+      //this.initService.createModuleUnit(obj)
       this.clearForm()
     } else if (this.moduleButtonName == 'Save') {
       this.isResourceTypeEnabled = true
@@ -1689,6 +1700,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
       this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
       if (res !== null) {
+        console.log("yes if")
         const rBody: any = {
           name: this.resourceLinkForm.value.resourceName,
           instructions: this.resourceLinkForm.value.instructions,
@@ -1710,6 +1722,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           duration: NOTIFICATION_TIME * 1000,
         })
       } else {
+        console.log("yes else")
         const rBody: any = {
           name: this.resourceLinkForm.value.resourceName,
           instructions: this.resourceLinkForm.value.instructions,
@@ -1929,6 +1942,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             }
           }
         })
+        if (content.artifactUrl) {
+          console.log("here yes artifact url")
+          this.isAddOrEdit = true
+        }
+        console.log(content.artifactUrl)
         //this.initService.updateAssessment(content)
         // this.isLinkEnabled = false
         // this.isAssessmentOrQuizEnabled = true
@@ -2099,56 +2117,59 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //   console.log(resData)
     // })
     let iframeSupported
-    if (this.timeToSeconds() == 0 && content !== 'application/json') {
-      this.snackBar.openFromComponent(NotificationComponent, {
-        data: {
-          type: Notify.DURATION_CANT_BE_0,
-        },
-        duration: NOTIFICATION_TIME * 1000,
-      })
-    } else {
-      if (isNewTab)
-        iframeSupported = 'Yes'
-      else
-        iframeSupported = 'No'
+    if (thumbnail != undefined) {
+      if (this.timeToSeconds() == 0 && content !== 'application/json') {
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.DURATION_CANT_BE_0,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      } else {
+        if (isNewTab)
+          iframeSupported = 'Yes'
+        else
+          iframeSupported = 'No'
 
-      meta["appIcon"] = thumbnail
-      meta["thumbnail"] = thumbnail
-      meta["versionKey"] = this.courseData.versionKey
-      meta["instructions"] = topicDescription
-      meta["description"] = topicDescription
-      meta["name"] = name
-      meta["duration"] = this.timeToSeconds().toString()
-      meta["gatingEnabled"] = isGating
-      meta["isIframeSupported"] = iframeSupported
-      var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
-      if (res !== null) {
-        meta["artifactUrl"] = this.editResourceLinks
-      }
-      this.editorStore.currentContentData = meta
-      this.editorStore.currentContentID = this.content.identifier
-      requestBody = {
-        request: {
-          content: meta
+        meta["appIcon"] = thumbnail
+        meta["thumbnail"] = thumbnail
+        meta["versionKey"] = this.courseData.versionKey
+        meta["instructions"] = topicDescription
+        meta["description"] = topicDescription
+        meta["name"] = name
+        meta["duration"] = this.timeToSeconds().toString()
+        meta["gatingEnabled"] = isGating
+        meta["isIframeSupported"] = iframeSupported
+        var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+        if (res !== null) {
+          meta["artifactUrl"] = this.editResourceLinks
+        }
+        this.editorStore.currentContentData = meta
+        this.editorStore.currentContentID = this.content.identifier
+        requestBody = {
+          request: {
+            content: meta
+          }
+        }
+
+        this.contentService.setUpdatedMeta(meta, this.content.identifier)
+        if (this.content.contentType === 'Resource') {
+          this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
+            async (info: any) => {
+              /* tslint:disable-next-line */
+              console.log('info', info)
+              if (info) {
+                await this.update()
+                this.clearForm()
+              }
+            })
+        } else {
+          await this.update()
+          this.clearForm()
         }
       }
-
-      this.contentService.setUpdatedMeta(meta, this.content.identifier)
-      if (this.content.contentType === 'Resource') {
-        this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
-          async (info: any) => {
-            /* tslint:disable-next-line */
-            console.log('info', info)
-            if (info) {
-              await this.update()
-              this.clearForm()
-            }
-          })
-      } else {
-        await this.update()
-        this.clearForm()
-      }
     }
+
   }
 
   generateUrl(oldUrl: any) {
@@ -2507,7 +2528,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
 
-  async setContentType(type: string, filetype?: string) {
+  async setContentType(type: any, filetype?: string) {
     this.resourseSelected = type
     if (filetype) {
       this.storeService.uploadFileType.next(filetype)
@@ -2527,8 +2548,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     const newData = {
       topicDescription: '',
-      topicName: 'Resource Title'
+      topicName: type.type === 'Collection' ? 'Add Module' : 'Resource'
     }
+    this.storeService.parentData = this.courseData
     const parentNode = node
     this.loaderService.changeLoad.next(true)
     const isDone = await this.storeService.createChildOrSibling(
@@ -2561,69 +2583,73 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         const result = await this.editorService.resourceToModule(request).toPromise()
         // tslint:disable-next-line:no-console
         console.log(result)
-        console.log(this.resourseSelected)
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-          this.courseData = data
-        })
-        const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+          this.courseData = await data
 
-        hierarchyData[this.editorService.resourseID] = {
-          root: false,
-          name: this.resourseSelected !== 'assessment' ? 'Resource 1' : 'Assessment',
-          children: [],
-        }
-        Object.keys(hierarchyData).forEach((ele: any) => {
-          if (ele === this.addResourceModule["modID"]) {
-            hierarchyData[ele].children.push(this.editorService.resourseID)
+          const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+
+          hierarchyData[this.editorService.resourseID] = {
+            root: false,
+            name: this.resourseSelected !== 'assessment' ? 'Resource 1' : 'Assessment',
+            children: [],
           }
-        })
 
-        const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-          request: {
-            data: {
-              nodesModified: this.editorStore.getNodeModifyData(),
-              hierarchy: hierarchyData,
+          Object.keys(hierarchyData).forEach((ele: any) => {
+            if (ele === this.addResourceModule["modID"]) {
+              hierarchyData[ele].children.push(this.editorService.resourseID)
+            }
+          })
+
+          const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+            request: {
+              data: {
+                nodesModified: this.editorStore.getNodeModifyData(),
+                hierarchy: hierarchyData,
+              },
             },
-          },
-        }
-        await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-          this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-            this.courseData = data
+          }
+          await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+              this.courseData = data
+            })
           })
         })
         //}
       } else {
         //const hierarchyData = this.storeService.getTreeHierarchy()
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-          this.courseData = data
-        })
-        console.log(this.resourseSelected)
-        const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
-        Object.keys(hierarchyData).forEach((ele: any) => {
+        //this.courseData = []
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
 
-          if (ele === this.addResourceModule["courseID"]) {
-            hierarchyData[this.editorService.resourseID] = {
-              root: false,
-              name: this.resourseSelected !== 'assessment' ? 'Resource 1' : 'Assessment',
-              children: [],
+          this.courseData = await data
+
+          const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+
+          Object.keys(hierarchyData).forEach((ele: any) => {
+            if (ele === this.addResourceModule["courseID"]) {
+              hierarchyData[this.editorService.resourseID] = {
+                root: false,
+                name: this.resourseSelected !== 'assessment' ? 'Resource 1' : 'Assessment',
+                children: [],
+              }
+              hierarchyData[ele].children.push(this.editorService.resourseID)
             }
-            hierarchyData[ele].children.push(this.editorService.resourseID)
-          }
-        })
+          })
 
-        const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-          request: {
-            data: {
-              nodesModified: this.editorStore.getNodeModifyData(),
-              hierarchy: hierarchyData,
+          const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+            request: {
+              data: {
+                nodesModified: this.editorStore.getNodeModifyData(),
+                hierarchy: hierarchyData,
+              },
             },
-          },
-        }
-        await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-          this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-            this.courseData = data
+          }
+          await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+              this.courseData = data
+            })
           })
         })
+
       }
       if (newCreatedLexid) {
         const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]

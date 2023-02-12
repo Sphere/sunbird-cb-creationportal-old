@@ -40,6 +40,8 @@ export class EditorService {
   newCreatedLexid!: string
   someDataObservable!: Observable<any>
   resourseID!: any
+  parentData: any
+
   constructor(
     private apiService: ApiService,
     private accessService: AccessControlService,

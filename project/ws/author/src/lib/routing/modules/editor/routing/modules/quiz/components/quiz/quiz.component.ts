@@ -46,7 +46,7 @@ import { AccessControlService } from '@ws/author/src/lib/modules/shared/services
   selector: 'ws-auth-quiz',
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.scss'],
-  providers: [QuizResolverService],
+  providers: [QuizResolverService, QuizStoreService],
 })
 export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -239,132 +239,138 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
    */
 
   ngOnInit() {
-    this.showSettingButtons = true
-    // console.log('kk', JSON.parse(sessionStorage.assessment))
-    const code = sessionStorage.getItem('assessment') || null
-    this.isQuiz = sessionStorage.getItem('quiz') || ''
+    (async () => {
+      this.showSettingButtons = true
+      // console.log('kk', JSON.parse(sessionStorage.assessment))
+      const code = sessionStorage.getItem('assessment') || null
+      this.isQuiz = sessionStorage.getItem('quiz') || ''
 
 
-    this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
+      this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
 
-      if (code) {
-        this.isEdited = true
-        this.metaContentService.currentContent = JSON.parse(code)
-      } else {
-        this.metaContentService.currentContent = id
-      }
-      this.allLanguages = this.initService.ordinals.subTitles
-      this.loaderService.changeLoadState(true)
-      this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
-      this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
-        this.sideNavBarOpened = !isLtMedium
-        this.mediumScreenSize = isLtMedium
-        if (isLtMedium) {
-          this.showContent = false
+        if (code) {
+          this.isEdited = true
+          this.metaContentService.currentContent = JSON.parse(code)
         } else {
-          this.showContent = true
+          this.metaContentService.currentContent = id
         }
-      })
+        this.allLanguages = this.initService.ordinals.subTitles
+        this.loaderService.changeLoadState(true)
+        this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
+        this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
+          this.sideNavBarOpened = !isLtMedium
+          this.mediumScreenSize = isLtMedium
+          if (isLtMedium) {
+            this.showContent = false
+          } else {
+            this.showContent = true
+          }
+        })
 
-      if (this.activateRoute.parent && this.activateRoute.parent.parent) {
-        this.activateRoute.parent.parent.data.subscribe(v => {
-          console.log(v)
-          this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(newData => {
-            console.log(newData)
-            const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
-            console.log(this.metaContentService.currentContent)
-            console.log(quizContent)
-            if (quizContent.mimeType === 'application/json') {
-              const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
-                this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({} as any))
-              fileData.subscribe(jsonResponse => {
-                //console.log('jsonResponse ', jsonResponse)
-                if (jsonResponse && Object.keys(jsonResponse).length > 1) {
-                  if (v.contents && v.contents.length) {
-                    if (jsonResponse) {
-                      v.contents[0].data = jsonResponse
-                      //this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
-                      //this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
-                      this.assessmentDuration = (jsonResponse.assessmentDuration) / 60
-                      this.passPercentage = jsonResponse.passPercentage
+        if (this.activateRoute.parent && this.activateRoute.parent.parent) {
+          this.activateRoute.parent.parent.data.subscribe(v => {
+            console.log(v)
+            this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(async newData => {
+              console.log(newData)
+              // const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
+
+              this.loaderService.changeLoadState(true)
+              let quizContent = await this.editorService.readcontentV3(this.metaContentService.currentContent).toPromise()
+              this.loaderService.changeLoadState(false)
+              console.log(this.metaContentService.currentContent)
+              console.log(quizContent)
+              if (quizContent && quizContent.mimeType === 'application/json') {
+                const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
+                  this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({} as any))
+                fileData.subscribe(jsonResponse => {
+                  //console.log('jsonResponse ', jsonResponse)
+                  if (jsonResponse && Object.keys(jsonResponse).length > 1) {
+                    if (v.contents && v.contents.length) {
+                      if (jsonResponse) {
+                        v.contents[0].data = jsonResponse
+                        //this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
+                        //this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
+                        this.assessmentDuration = (jsonResponse.assessmentDuration) / 60
+                        this.passPercentage = jsonResponse.passPercentage
+                      }
+                      this.allContents.push(v.contents[0].content)
+                      if (v.contents[0].data) {
+                        this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data.questions
+                      } else if (newData[0] && newData[0].data && newData[0].data.questions) {
+                        this.quizStoreSvc.collectiveQuiz[id] = newData[0].data.questions
+                      } else {
+                        this.quizResolverSvc.getUpdatedData(id).subscribe(updatedData => {
+                          if (updatedData && updatedData[0]) {
+                            this.quizStoreSvc.collectiveQuiz[id] = updatedData[0].data.questions
+                            // need to arrange
+                            this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+                            this.resourceType = quizContent.categoryType || 'Assessment'
+                            // this.timeLimit = quizContent.duration || '300'
+                            // this.passPercentage = '50'
+                            // this.quizStoreSvc.assessmentDuration = jsonResponse.timeLimit
+                            // this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
+                            this.questionsArr =
+                              this.quizStoreSvc.collectiveQuiz[id] || []
+                            this.contentLoaded = true
+                            this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
+                            this.currentId = id
+                            this.quizStoreSvc.currentId = id
+                            this.quizStoreSvc.changeQuiz(0)
+                            // need to re-arrange
+                          }
+                        })
+                        this.quizStoreSvc.collectiveQuiz[id] = []
+                      }
+
+                      // this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data
+                      //   ? v.contents[0].data.questions
+                      //   : []
+
+                      this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+                      this.resourceType = quizContent.categoryType || 'Assessment'
+                      this.quizDuration = quizContent.duration || '300'
+                      this.questionsArr =
+                        this.quizStoreSvc.collectiveQuiz[id] || []
+                      this.contentLoaded = true
                     }
-                    this.allContents.push(v.contents[0].content)
-                    if (v.contents[0].data) {
-                      this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data.questions
-                    } else if (newData[0] && newData[0].data && newData[0].data.questions) {
-                      this.quizStoreSvc.collectiveQuiz[id] = newData[0].data.questions
-                    } else {
-                      this.quizResolverSvc.getUpdatedData(id).subscribe(updatedData => {
-                        if (updatedData && updatedData[0]) {
-                          this.quizStoreSvc.collectiveQuiz[id] = updatedData[0].data.questions
-                          // need to arrange
-                          this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
-                          this.resourceType = quizContent.categoryType || 'Assessment'
-                          // this.timeLimit = quizContent.duration || '300'
-                          // this.passPercentage = '50'
-                          // this.quizStoreSvc.assessmentDuration = jsonResponse.timeLimit
-                          // this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
-                          this.questionsArr =
-                            this.quizStoreSvc.collectiveQuiz[id] || []
-                          this.contentLoaded = true
-                          this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
-                          this.currentId = id
-                          this.quizStoreSvc.currentId = id
-                          this.quizStoreSvc.changeQuiz(0)
-                          // need to re-arrange
-                        }
-                      })
+                    if (!this.quizStoreSvc.collectiveQuiz[id]) {
                       this.quizStoreSvc.collectiveQuiz[id] = []
                     }
-
-                    // this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data
-                    //   ? v.contents[0].data.questions
-                    //   : []
-
+                  } else {
+                    this.assessmentDuration = ''
+                    this.passPercentage = ''
                     this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
                     this.resourceType = quizContent.categoryType || 'Assessment'
                     this.quizDuration = quizContent.duration || '300'
                     this.questionsArr =
                       this.quizStoreSvc.collectiveQuiz[id] || []
                     this.contentLoaded = true
+                    if (!this.quizStoreSvc.collectiveQuiz[id]) {
+                      this.quizStoreSvc.collectiveQuiz[id] = []
+                    }
                   }
-                  if (!this.quizStoreSvc.collectiveQuiz[id]) {
-                    this.quizStoreSvc.collectiveQuiz[id] = []
-                  }
-                } else {
-                  this.assessmentDuration = ''
-                  this.passPercentage = ''
-                  this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
-                  this.resourceType = quizContent.categoryType || 'Assessment'
-                  this.quizDuration = quizContent.duration || '300'
-                  this.questionsArr =
-                    this.quizStoreSvc.collectiveQuiz[id] || []
-                  this.contentLoaded = true
-                  if (!this.quizStoreSvc.collectiveQuiz[id]) {
-                    this.quizStoreSvc.collectiveQuiz[id] = []
-                  }
-                }
 
-              })
-            }
+                })
+              }
 
+            })
           })
-        })
 
-        // selected quiz index
-        this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
-          this.selectedQuizIndex = index
-        })
-        // active lex id
-        if (!this.quizStoreSvc.collectiveQuiz[id]) {
-          this.quizStoreSvc.collectiveQuiz[id] = []
+          // selected quiz index
+          this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
+            this.selectedQuizIndex = index
+          })
+          // active lex id
+          if (!this.quizStoreSvc.collectiveQuiz[id]) {
+            this.quizStoreSvc.collectiveQuiz[id] = []
+          }
+          this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
+          this.currentId = id
+          this.quizStoreSvc.currentId = id
+          this.quizStoreSvc.changeQuiz(0)
         }
-        this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
-        this.currentId = id
-        this.quizStoreSvc.currentId = id
-        this.quizStoreSvc.changeQuiz(0)
-      }
-    })
+      })
+    })()
   }
   addTodo(event: any, field: string) {
     const meta: any = {}
@@ -540,7 +546,15 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     if (this.isEdited) {
       this.currentId = this.metaContentService.parentContent
     }
-    const updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+    let updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+    if (!updatedQuizData) {
+      this.currentId = this.metaContentService.currentContent
+      updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+      if (!updatedQuizData) {
+        this.currentId = this.metaContentService.parentContent
+        updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+      }
+    }
     this.currentId = this.metaContentService.currentContent
     const hasTimeChanged =
       (this.metaContentService.upDatedContent[this.currentId] || {}).duration &&
