@@ -219,6 +219,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   selectedQuizIndex!: number
   quizIndex!: number
   editResourceLinks: string = ''
+  isNewCourse!: boolean
 
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
@@ -1663,7 +1664,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
       this.setContentType(obj)
       //this.initService.createModuleUnit(obj)
-      this.clearForm()
+      this.showAddModuleForm = true
+      this.isResourceTypeEnabled = false
+      this.isOnClickOfResourceTypeEnabled = false
+      this.isLinkEnabled = false
+      this.moduleButtonName = 'Save'
+      this.isNewCourse = true
     } else if (this.moduleButtonName == 'Save') {
       this.isResourceTypeEnabled = true
     }
@@ -1685,7 +1691,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   async resourceLinkSave() {
     console.log(" this.resourceLinkForm", this.resourceLinkForm)
-    if (this.resourceLinkForm.status == 'INVALID') {
+    if (this.resourceLinkForm.status == 'INVALID' && !this.isAssessmentOrQuizEnabled) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.REQUIRED_FIELD,
@@ -1829,9 +1835,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   addModule() {
     this.clearForm()
-    this.showAddModuleForm = false
     this.moduleButtonName = 'Create'
-    this.moduleCreate('Create Module', 'Create Module', '')
+    this.moduleCreate('Module Name', 'Module Name', '')
     // this.moduleNames.push({ name: 'Create Course' })
     // this.moduleName = ''
   }
@@ -1893,7 +1898,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.isAssessmentOrQuizEnabled = false
       this.editResourceLinks = content.artifactUrl ? content.artifactUrl : ''
       console.log("link content", this.isLinkEnabled, this.editResourceLinks)
-      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
+      //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType == 'application/pdf') {
       this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
@@ -1904,7 +1909,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/pdf-icon.svg'
       this.acceptType = '.pdf'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
-      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
+      //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType == 'audio/mpeg') {
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
@@ -1915,7 +1920,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/audio.png'
       this.acceptType = '.mp3'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
-      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
+      //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'video/mp4') {
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
@@ -1926,7 +1931,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/vedio-img.svg'
       this.acceptType = '.mp4, .m4v'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
-      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
+      //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'application/vnd.ekstep.html-archive') {
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/SCROM-img.svg'
@@ -1937,7 +1942,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.resourceImg = 'cbp-assets/images/SCROM-img.svg'
       this.acceptType = '.zip'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
-      this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
+      //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else {
       if (content.mimeType == "application/json") {
         const fileData = ((content.artifactUrl || content.downloadUrl) ?
@@ -1970,11 +1975,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   editAssessmentRes(content?: any) {
+    // this.loaderService.changeLoad.next(true)
     this.initService.updateAssessment(content)
     //this.initService.editAssessmentAction(content)
   }
 
   addAssessment() {
+    // this.loaderService.changeLoad.next(true)
     this.viewMode = 'assessment'
     this.addResourceModule["viewMode"] = 'assessment'
     let obj: any = {}
@@ -2129,6 +2136,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //   console.log(resData)
     // })
     let iframeSupported
+    this.isNewCourse = false
     if (thumbnail != undefined) {
       if (this.timeToSeconds() == 0 && content !== 'application/json') {
         this.snackBar.openFromComponent(NotificationComponent, {
