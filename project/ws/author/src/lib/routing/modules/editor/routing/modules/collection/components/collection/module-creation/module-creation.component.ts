@@ -1967,7 +1967,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   editAssessmentRes(content?: any) {
-    debugger
     // this.loaderService.changeLoad.next(true)
     this.initService.updateAssessment(content)
     //this.initService.editAssessmentAction(content)
