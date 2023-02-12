@@ -109,6 +109,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   ]
   assessmentOrQuizName: string = 'Quiz'
+  isAddOrEdit: boolean = false
   checkCreator = false
   selectedEntryFile: boolean = false
   fileUploaded: any = []
@@ -291,6 +292,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
     this.initService.isBackButtonClickedMessage.subscribe(
       (data: any) => {
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.courseData = data
+        })
         /* tslint:disable-next-line */
         console.log("this.isSettings", this.isSettingsPage)
         if (this.showSettingsPage && this.isSettingsPage && data) {
@@ -1947,6 +1951,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             }
           }
         })
+        if (content.artifactUrl) {
+          console.log("here yes artifact url")
+          this.isAddOrEdit = true
+        }
+        console.log(content.artifactUrl)
         //this.initService.updateAssessment(content)
         // this.isLinkEnabled = false
         // this.isAssessmentOrQuizEnabled = true

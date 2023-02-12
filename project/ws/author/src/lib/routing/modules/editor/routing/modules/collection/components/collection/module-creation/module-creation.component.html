@@ -258,11 +258,19 @@
               Gating
               Enabled</mat-checkbox>
           </div>
-          <div class="margin-top-s" *ngIf="content?.mimeType === 'application/json'">
+          <div class="margin-top-s" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
             <button mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
               (click)="editAssessmentRes(content)">Edit {{assessmentOrQuizName}}</button>
           </div>
+          <div class="margin-top-s" *ngIf="content?.mimeType === 'application/json'&&!isAddOrEdit">
+            <button mat-raised-button
+              class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+              (click)="editAssessmentRes(content)">Add {{resourceType==='Assessment'?'Assessment':'Quiz'}}</button>
+          </div>
+
+
+
           <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
             <span style="color:#808080" *ngIf="content?.contentType === 'Course'">Course Thumbnail</span>
             <span style="color:#808080" *ngIf="content?.contentType === 'CourseUnit'">Module Thumbnail</span>
@@ -328,7 +336,7 @@
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
               {{moduleButtonName}}</button>
-            <button [disabled]="content?.mimeType === 'application/json' && !content?.artifactUrl" mat-raised-button
+            <button mat-raised-button
               *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&!isLinkEnabled &&content?.mimeType === 'application/json'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
@@ -404,14 +412,23 @@
                 <mat-checkbox class="check-text" formControlName="isgatingEnabled">Gating Enabled</mat-checkbox>
                 <mat-checkbox class="check-text" formControlName="isIframeSupported">Open link in new tab</mat-checkbox>
               </div>
-              <button *ngIf="isAssessmentOrQuizEnabled"
-                [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
-                class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
-                (click)="resourceLinkSave()">Save</button>
-
               <!--validation div for resource link-->
               <span *ngIf="resourceLinkForm.get('resourceLinks').hasError('required')" class="invalid-text">This field
                 is Required</span>
+              <div class="margin-top-s" *ngIf="isAssessmentOrQuizEnabled">
+                <button mat-raised-button
+                  class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+                  (click)="addAssessment()">Add {{resourceType==='Assessment'?'Assessment':'Quiz'}}</button>
+                <span style="color: #808080 !important;margin-left: 5px;">Note : Save the Resource Details before
+                  clicking on Add
+                  {{resourceType==='Assessment'?'Assessment':'Quiz'}}</span>
+              </div>
+              <!-- <button *ngIf="isAssessmentOrQuizEnabled"
+                [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
+                class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
+                (click)="resourceLinkSave()">Save</button> -->
+
+
 
               <div class="margin-bottom-s" *ngIf="!isAssessmentOrQuizEnabled">
                 <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
@@ -465,16 +482,8 @@
                 is Required</span>
 
               <div>
-                <div class="margin-top-s" *ngIf="isAssessmentOrQuizEnabled">
-                  <button mat-raised-button
-                    class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-                    (click)="addAssessment()">Add {{resourceType==='Assessment'?'Assessment':'Quiz'}}</button>
-                  <span style="color: #808080 !important;margin-left: 5px;">Note : Save the Resource Details before
-                    clicking on Add
-                    {{resourceType==='Assessment'?'Assessment':'Quiz'}}</span>
-                </div>
-                <button *ngIf="!isAssessmentOrQuizEnabled"
-                  [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
+
+                <button [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
                   class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
                   (click)="resourceLinkSave()">Save</button>
               </div>
