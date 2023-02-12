@@ -76,6 +76,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * reviwer and publisher cannot add or delete or edit quizs but can rearrange them
    */
+  isLoading = false
   isEdited = false
   canEditJson = true
   mediumScreenSize = false
@@ -239,11 +240,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
    */
 
   ngOnInit() {
-
     (async () => {
-
       this.showSettingButtons = true
-      // this.loaderService.changeLoad.next(false)
+      this.isLoading = true
       // console.log('kk', JSON.parse(sessionStorage.assessment))
       const code = sessionStorage.getItem('assessment') || null
       this.isQuiz = sessionStorage.getItem('quiz') || ''
@@ -286,6 +285,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                 const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
                   this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({} as any))
                 fileData.subscribe(jsonResponse => {
+                  // this.isLoading = false
                   //console.log('jsonResponse ', jsonResponse)
                   if (jsonResponse && Object.keys(jsonResponse).length > 1) {
                     if (v.contents && v.contents.length) {
@@ -303,6 +303,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                         this.quizStoreSvc.collectiveQuiz[id] = newData[0].data.questions
                       } else {
                         this.quizResolverSvc.getUpdatedData(id).subscribe(updatedData => {
+                          // this.isLoading = false
                           if (updatedData && updatedData[0]) {
                             this.quizStoreSvc.collectiveQuiz[id] = updatedData[0].data.questions
                             // need to arrange
@@ -340,6 +341,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                       this.quizStoreSvc.collectiveQuiz[id] = []
                     }
                   } else {
+                    // this.isLoading = false
                     this.assessmentDuration = ''
                     this.passPercentage = ''
                     this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
@@ -362,6 +364,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
           // selected quiz index
           this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
             this.selectedQuizIndex = index
+            // this.isLoading = false
           })
           // active lex id
           if (!this.quizStoreSvc.collectiveQuiz[id]) {
@@ -371,6 +374,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
           this.currentId = id
           this.quizStoreSvc.currentId = id
           this.quizStoreSvc.changeQuiz(0)
+          setTimeout(() => {
+            this.isLoading = false
+          }, 500)
         }
       })
     })()

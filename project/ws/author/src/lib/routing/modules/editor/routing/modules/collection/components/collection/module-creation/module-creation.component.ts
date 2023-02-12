@@ -219,6 +219,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   selectedQuizIndex!: number
   quizIndex!: number
   editResourceLinks: string = ''
+  isLoading: boolean = false
   isNewCourse!: boolean
 
   constructor(public dialog: MatDialog,
@@ -299,10 +300,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         /* tslint:disable-next-line */
         console.log("this.isSettings", this.isSettingsPage)
         if (this.showSettingsPage && this.isSettingsPage && data) {
+          this.isLoading = true
           /* tslint:disable-next-line */
           console.log("isSettingsPage", data)
           this.isSettingsPage = false
+          setTimeout(() => {
+            this.isLoading = false
+          }, 500)
         } else if (!this.isSettingsPage && data) {
+          this.isLoading = true
           /* tslint:disable-next-line */
           // console.log("backToCourseDetailsPage", data, this.isAssessmentOrQuizEnabled, this.viewMode)
           // if (this.viewMode == 'meta') {
@@ -310,6 +316,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           //   this.initService.publishData('backToCourseDetailsPage')
           // } else {
           this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
+          setTimeout(() => {
+            this.isLoading = false
+          }, 500)
+
           // }
 
         } else {
@@ -317,6 +327,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           console.log("else")
           this.router.navigateByUrl('/author/home')
         }
+        setTimeout(() => {
+          this.isLoading = false
+        }, 500)
       })
 
     this.initService.updateResourceMessage.subscribe(
@@ -1981,13 +1994,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   editAssessmentRes(content?: any) {
-    // this.loaderService.changeLoad.next(true)
     this.initService.updateAssessment(content)
-    //this.initService.editAssessmentAction(content)
   }
 
   addAssessment() {
-    // this.loaderService.changeLoad.next(true)
     this.viewMode = 'assessment'
     this.addResourceModule["viewMode"] = 'assessment'
     let obj: any = {}
@@ -1995,6 +2005,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     obj["name"] = 'assessment'
     obj["description"] = 'assessment'
     this.initService.updateAssessment(obj)
+
   }
 
 

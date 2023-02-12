@@ -97,6 +97,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   clickedNext: boolean = false;
   isMoveCourseToDraft: boolean = false;
   createModule: any
+  isLoading: boolean = false;
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -145,21 +146,36 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.initService.publishMessage.subscribe(
       (data: any) => {
         if (data === 'backToCourseDetailsPage' && this.viewMode !== 'assessment') {
+          this.isLoading = true
           this.showAddchapter = false
           this.viewMode = 'meta'
           this.clickedNext = false
+          setTimeout(() => {
+            this.isLoading = false
+          }, 500)
         }
+        setTimeout(() => {
+          this.isLoading = false
+        }, 500)
       })
     this.initService.isBackButtonFromAssessmentClickedMessage.subscribe(
       (data: any) => {
+        this.isLoading = true
         if ((data === 'backFromAssessmentDetails') && this.viewMode === 'assessment') {
           /* tslint:disable-next-line */
+
           console.log("course-collection: " + JSON.stringify(data))
           this.showAddchapter = true
           this.viewMode = ''
           this.clickedNext = true
+          setTimeout(() => {
+            this.isLoading = false
+          }, 500)
           // this.save()
         }
+        setTimeout(() => {
+          this.isLoading = false
+        }, 500)
       })
 
     this.initService.uploadMessage.subscribe(
@@ -179,6 +195,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
     this.initService.createModuleMessage.subscribe(
       (data: any) => {
+        /* tslint:disable-next-line */
         console.log("data: " + JSON.stringify(data))
         if (data) {
           this.createModule = data
@@ -195,6 +212,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.initService.updateAssessmentMessage.subscribe(
       (data: any) => {
         if (data) {
+          /* tslint:disable-next-line */
           console.log(data)
           this.createModule = data
           //this.setContentType(data['type'])
