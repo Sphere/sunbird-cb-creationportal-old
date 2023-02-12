@@ -239,8 +239,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
    */
 
   ngOnInit() {
+
     (async () => {
+
       this.showSettingButtons = true
+      // this.loaderService.changeLoad.next(false)
       // console.log('kk', JSON.parse(sessionStorage.assessment))
       const code = sessionStorage.getItem('assessment') || null
       this.isQuiz = sessionStorage.getItem('quiz') || ''
@@ -249,13 +252,15 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
 
         if (code) {
+          this.loaderService.changeLoad.next(false)
           this.isEdited = true
           this.metaContentService.currentContent = JSON.parse(code)
         } else {
+          this.loaderService.changeLoad.next(false)
           this.metaContentService.currentContent = id
         }
         this.allLanguages = this.initService.ordinals.subTitles
-        this.loaderService.changeLoadState(true)
+
         this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
         this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
           this.sideNavBarOpened = !isLtMedium
@@ -274,9 +279,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
               console.log(newData)
               // const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
 
-              this.loaderService.changeLoadState(true)
               let quizContent = await this.editorService.readcontentV3(this.metaContentService.currentContent).toPromise()
-              this.loaderService.changeLoadState(false)
               console.log(this.metaContentService.currentContent)
               console.log(quizContent)
               if (quizContent && quizContent.mimeType === 'application/json') {
