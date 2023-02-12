@@ -292,8 +292,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
     this.initService.isBackButtonClickedMessage.subscribe(
       (data: any) => {
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-          this.courseData = data
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+          this.courseData = await data
         })
         /* tslint:disable-next-line */
         console.log("this.isSettings", this.isSettingsPage)
@@ -319,9 +319,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       })
 
     this.initService.updateResourceMessage.subscribe(
-      (data: any) => {
+      async (data: any) => {
         if (data) {
-          this.ngAfterViewInit()
+          await this.ngAfterViewInit()
         }
       })
   }
@@ -1607,8 +1607,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   ngAfterViewInit() {
-    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-      this.courseData = data
+    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+      this.courseData = await data
       //this.moduleButtonName = 'Save'
       //this.isSaveModuleFormEnable = true
       //this.showAddModuleForm = true
@@ -1638,9 +1638,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   async setSettingsPage() {
     await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-      this.courseData = data
+      if (data) {
+        this.courseData = data
+        this.isSettingsPage = true
+      }
     })
-    this.isSettingsPage = true
+
     /* tslint:disable-next-line */
     console.log("this.settingsPage", this.isSettingsPage)
   }
@@ -2455,6 +2458,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
           tap(() => {
             this.storeService.changedHierarchy = {}
+            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+              this.courseData = data
+            })
             Object.keys(this.editorStore.upDatedContent).forEach(id => {
               this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
               // this.editorService.readContentV2(id).subscribe(resData => {
@@ -2485,6 +2491,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
         })
         this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.courseData = data
           this.editorStore.resetOriginalMetaWithHierarchy(data)
         })
         this.editorStore.upDatedContent = {}
@@ -2773,7 +2780,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                         this.canUpdate = false
                         this.resourceLinkForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
                         this.resourceLinkForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
-
+                        this.resourcePdfForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
+                        this.resourcePdfForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
                         this.canUpdate = true
                         // this.data.emit('save')
                         this.updateStoreData()
@@ -3147,7 +3155,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   async resourcePdfSave() {
-    if (this.resourceLinkForm.status == 'INVALID' || this.uploadFileName == '') {
+    console.log(this.resourcePdfForm.status)
+    console.log(this.resourcePdfForm)
+    console.log(this.uploadFileName)
+    if (this.resourcePdfForm.status == 'INVALID' || this.uploadFileName == '') {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.REQUIRED_FIELD,

@@ -376,9 +376,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     const meta: any = {}
     if (field === 'passPercentage') {
       meta['passPercentage'] = event
+      this.passPercentage = event
       this.quizStoreSvc.hasChanged = true
     } else {
       meta['assessmentDuration'] = event
+      this.assessmentDuration = event
       this.quizStoreSvc.hasChanged = true
     }
     this.metaContentService.setUpdatedMeta(meta, this.currentId, true)
@@ -667,15 +669,16 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   // }
 
   uploadJson(array: any[], fileName: string) {
+    console.log(this.assessmentDuration, this.passPercentage)
     this.quizDuration = (this.metaContentService.getUpdatedMeta(this.currentId).duration &&
       this.metaContentService.getUpdatedMeta(this.currentId).duration !== '0') ?
       this.metaContentService.getUpdatedMeta(this.currentId).duration : '300'
     const quizData = {
       // tslint:disable-next-line: prefer-template
       //timeLimit: parseInt(this.quizDuration + '', 10) || 300
-      timeLimit: (this.metaContentService.getUpdatedMeta(this.currentId).assessmentDuration) * 60 || '300',
-      assessmentDuration: (this.metaContentService.getUpdatedMeta(this.currentId).assessmentDuration) * 60 || '300',
-      passPercentage: this.metaContentService.getUpdatedMeta(this.currentId).passPercentage || '50',
+      timeLimit: (this.assessmentDuration) * 60 || '300',
+      assessmentDuration: (this.assessmentDuration) * 60 || '300',
+      passPercentage: this.passPercentage || '50',
       isAssessment: this.isQuiz === '' ? true : false,
       questions: array,
     }
