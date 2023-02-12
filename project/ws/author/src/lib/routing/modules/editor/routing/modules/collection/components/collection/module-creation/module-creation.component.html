@@ -141,8 +141,7 @@
               class="ws-mat-primary-background width-20 margin-left-s mat-button-base save-btn-bottom">
               Go to Course Settings ></button> -->
             <button mat-raised-button [ngClass]="showSettingsPage ? 'ws-mat-primary-background' : 'secondary-button'"
-              class="width-20 margin-left-s mat-button-base save-btn-bottom"
-              (click)="showSettingsPage?isSettingsPage=true:isSettingsPage=false;setSettingsPage()">
+              class="width-20 margin-left-s mat-button-base save-btn-bottom" (click)="setSettingsPage()">
               Go to Course Settings ></button>
           </div>
         </mat-toolbar>

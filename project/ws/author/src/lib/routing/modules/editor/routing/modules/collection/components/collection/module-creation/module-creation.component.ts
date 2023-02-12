@@ -751,6 +751,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
           tap(() => {
             this.storeService.changedHierarchy = {}
+            this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
+              this.courseData = await data
+              this.contentService.resetOriginalMetaWithHierarchy(data)
+              // tslint:disable-next-line: align
+            })
             Object.keys(this.contentService.upDatedContent).forEach(id => {
               this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
             })
@@ -775,13 +780,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     return this.editorService.updateContentV4(requestBodyV2).pipe(
       tap(() => {
-
+        this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
+          this.courseData = await data
+          this.contentService.resetOriginalMetaWithHierarchy(data)
+        })
         this.storeService.changedHierarchy = {}
         Object.keys(this.contentService.upDatedContent).forEach(async id => {
           this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
-        })
-        this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
-          this.contentService.resetOriginalMetaWithHierarchy(data)
         })
         this.contentService.upDatedContent = {}
       }),
@@ -803,7 +808,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       },
     }
     await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-      this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+      this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
+        this.courseData = await data
         this.contentService.resetOriginalMetaWithHierarchy(data)
         // tslint:disable-next-line: align
       })
@@ -1637,10 +1643,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.editorStore.resetOriginalMetaWithHierarchy(data)
     })
   }
-  async setSettingsPage() {
-    await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+  setSettingsPage() {
+    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
       if (data) {
-        this.courseData = data
+        this.courseData = await data
         this.isSettingsPage = true
       }
     })

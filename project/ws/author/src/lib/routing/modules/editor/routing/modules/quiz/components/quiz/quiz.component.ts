@@ -551,7 +551,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     if (this.isEdited) {
       this.currentId = this.metaContentService.parentContent
     }
-    let updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+    //let updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+    let updatedQuizData
     if (!updatedQuizData) {
       this.currentId = this.metaContentService.currentContent
       updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
