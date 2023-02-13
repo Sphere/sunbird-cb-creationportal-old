@@ -1711,6 +1711,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         },
         duration: NOTIFICATION_TIME * 1000,
       })
+    } else if (this.resourceLinkForm.controls.instructions.status == 'INVALID' ||
+      this.resourceLinkForm.controls.appIcon.status == 'INVALID') {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.REQUIRED_FIELD,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
     } else {
       this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())
       if (this.resourceLinkForm.value.duration == 0 && !this.isAssessmentOrQuizEnabled) {
@@ -2148,7 +2156,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //   console.log(resData)
     // })
     let iframeSupported
-    if (thumbnail != undefined) {
+    if (thumbnail != undefined && topicDescription != '') {
       if (this.timeToSeconds() == 0 && content !== 'application/json') {
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
