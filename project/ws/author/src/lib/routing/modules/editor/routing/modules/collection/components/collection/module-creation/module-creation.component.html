@@ -349,7 +349,8 @@
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
               {{moduleButtonName}}</button>
             <button mat-raised-button *ngIf="content?.contentType === 'Course'"
-              class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom" (click)="saveCourseDetails()">
+              class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
+              (click)="saveCourseDetails()">
               Save</button>
           </div>
         </div>
