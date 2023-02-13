@@ -680,3 +680,11 @@ animation-delay: -0.5s;
   opacity: 0;
 }
 }
+
+::ng-deep .theme-igot.day-mode .mat-checkbox-checked.mat-accent .mat-checkbox-background {
+  background-color: #1c5d95!important;
+}
+
+::ng-deep .theme-igot.day-mode .mat-form-field-outline-thick {
+  color: #1c5d95!important;
+}
