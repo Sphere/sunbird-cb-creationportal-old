@@ -487,9 +487,10 @@
                     type="number" min="0" max="59" step="1"
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
+                <span *ngIf="resourceLinkForm.get('duration').hasError('required')" class="invalid-text">This field
+                  is Required</span>
               </div>
-              <span *ngIf="resourceLinkForm.get('duration').hasError('required')" class="invalid-text">This field
-                is Required</span>
+
 
               <div>
 
