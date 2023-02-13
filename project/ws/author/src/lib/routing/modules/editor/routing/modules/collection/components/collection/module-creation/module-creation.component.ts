@@ -3196,33 +3196,42 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         duration: NOTIFICATION_TIME * 1000,
       })
     } else {
-      this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
-      let iframeSupported
-      if (this.resourcePdfForm.value.isIframeSupported)
-        iframeSupported = 'Yes'
-      else
-        iframeSupported = 'No'
+      if (this.resourcePdfForm.value.duration == 0) {
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.DURATION_CANT_BE_0,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      } else {
+        this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
+        let iframeSupported
+        if (this.resourcePdfForm.value.isIframeSupported)
+          iframeSupported = 'Yes'
+        else
+          iframeSupported = 'No'
 
-      this.triggerUpload()
-      this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
-      this.duration = this.resourcePdfForm.value.duration
-      this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
-      const rBody: any = {
-        name: this.resourcePdfForm.value.resourceName,
-        instructions: this.resourcePdfForm.value.instructions,
-        description: this.resourcePdfForm.value.instructions,
-        appIcon: this.resourcePdfForm.value.appIcon,
-        thumbnail: this.resourcePdfForm.value.thumbnail,
-        isIframeSupported: iframeSupported,
-        gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
-        duration: this.resourcePdfForm.value.duration,
-        versionKey: this.versionKey.versionKey,
+        this.triggerUpload()
+        this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
+        this.duration = this.resourcePdfForm.value.duration
+        this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+        const rBody: any = {
+          name: this.resourcePdfForm.value.resourceName,
+          instructions: this.resourcePdfForm.value.instructions,
+          description: this.resourcePdfForm.value.instructions,
+          appIcon: this.resourcePdfForm.value.appIcon,
+          thumbnail: this.resourcePdfForm.value.thumbnail,
+          isIframeSupported: iframeSupported,
+          gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
+          duration: this.resourcePdfForm.value.duration,
+          versionKey: this.versionKey.versionKey,
+        }
+        await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+        await this.update()
+        await this.save()
+        // this.loaderService.changeLoad.next(false)
+        this.clearForm()
       }
-      await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
-      await this.update()
-      await this.save()
-      // this.loaderService.changeLoad.next(false)
-      this.clearForm()
     }
   }
 

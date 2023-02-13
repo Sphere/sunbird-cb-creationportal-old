@@ -350,7 +350,8 @@
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
               {{moduleButtonName}}</button>
             <button mat-raised-button *ngIf="content?.contentType === 'Course'"
-              class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom" (click)="saveCourseDetails()">
+              class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
+              (click)="saveCourseDetails()">
               Save</button>
           </div>
         </div>
@@ -486,9 +487,10 @@
                     type="number" min="0" max="59" step="1"
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
+                <span *ngIf="resourceLinkForm.get('duration').hasError('required')" class="invalid-text">This field
+                  is Required</span>
               </div>
-              <span *ngIf="resourceLinkForm.get('duration').hasError('required')" class="invalid-text">This field
-                is Required</span>
+
 
               <div>
 
