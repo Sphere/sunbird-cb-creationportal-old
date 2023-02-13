@@ -90,7 +90,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       type: 'upload'
     },
     {
-      name: 'SCORM',
+      name: 'SCORM v1.1/1.2',
       icon: 'cloud_upload',
       type: 'upload'
     }
@@ -1655,14 +1655,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.editorStore.resetOriginalMetaWithHierarchy(data)
     })
   }
-  setSettingsPage() {
-    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
-      if (data) {
-        this.courseData = await data
-        this.isSettingsPage = true
-      }
-    })
-
+  async setSettingsPage() {
+    // this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+    //   if (data) {
+    //     this.courseData = await data
+    //     this.isSettingsPage = true
+    //   }
+    // })
+    this.ngAfterViewInit()
+    this.isSettingsPage = true
     /* tslint:disable-next-line */
     console.log("this.settingsPage", this.isSettingsPage)
   }
