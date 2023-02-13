@@ -42,12 +42,18 @@ export class CourseHeaderComponent implements OnInit {
     }
 
     if (this.buttonConfig) {
-      console.log('buttonClicked')
+      console.log('buttonClicked', this.configSvc.userRoles)
       this.buttonConfig.buttons.forEach(button => {
         if (button.event === 'save' || button.event === 'push' || button.title === 'saveAndNext') {
           if (button.title === 'Review' || button.title == 'Publish') {
-            this.backNav = false
-            this.requiredConfig.push(button)
+            if (button.title === 'Review' && this.configSvc.userRoles!.has('content_reviewer')) {
+              this.backNav = false
+              this.requiredConfig.push(button)
+            }
+            if (button.title === 'Publish' && this.configSvc.userRoles!.has('content_publisher')) {
+              this.backNav = false
+              this.requiredConfig.push(button)
+            }
           } else {
             this.backNav = true
           }
