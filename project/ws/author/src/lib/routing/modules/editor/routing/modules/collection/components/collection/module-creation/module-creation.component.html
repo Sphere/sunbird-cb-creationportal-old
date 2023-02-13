@@ -201,6 +201,7 @@
             <mat-form-field appearance="outline" class="margin-top-xs">
               <textarea matInput i18n-placeholder placeholder="Description" [(ngModel)]="topicDescription"></textarea>
             </mat-form-field><br>
+            <span *ngIf="topicDescription == ''" class="invalid-text">This field is Required</span>
           </div>
           <!-- is link enabled -->
           <div *ngIf="isLinkEnabled">
