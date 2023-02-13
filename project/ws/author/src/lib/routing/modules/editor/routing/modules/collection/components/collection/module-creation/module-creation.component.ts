@@ -1655,7 +1655,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.editorStore.resetOriginalMetaWithHierarchy(data)
     })
   }
-  async setSettingsPage() {
+  setSettingsPage() {
     // this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
     //   if (data) {
     //     this.courseData = await data
@@ -1663,7 +1663,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //   }
     // })
     this.ngAfterViewInit()
-    this.isSettingsPage = true
+    setTimeout(() => {
+      this.isSettingsPage = true
+    }, 1000)
     /* tslint:disable-next-line */
     console.log("this.settingsPage", this.isSettingsPage)
   }
