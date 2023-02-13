@@ -362,6 +362,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   routerValuesCalls() {
     this.contentService.changeActiveCont.subscribe(data => {
+      console.log(data)
       this.currentContent = data
       this.currentCourseId = data
       if (this.contentService.getUpdatedMeta(data).contentType !== 'Resource') {
@@ -1780,6 +1781,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   createResourseContent(name: string, type: string) {
+    console.log(type)
     this.resourceType = name
     this.independentResourceCount = this.independentResourceCount + 1
     this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
@@ -1815,7 +1817,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.acceptType = '.mp4, .m4v'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.setContentType(type, 'video')
-    } else if (name == 'SCORM') {
+    } else if (name == 'SCORM v1.1/1.2') {
       this.uploadText = '.zip'
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
@@ -1894,6 +1896,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   editContent(content: any) {
     /* tslint:disable-next-line */
     console.log('current content', content)
+    this.currentContent = content.identifier
     // if (content.mimeType === "application/json") {
     //   let obj: any = {}
     //   obj["type"] = 'assessment'
@@ -3293,13 +3296,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           metadata: this.contentService.upDatedContent[v],
         }
       })
+      console.log(this.currentContent)
+      console.log(this.contentService.getOriginalMeta(this.currentContent))
       const tempUpdateContent = this.contentService.getOriginalMeta(this.currentContent)
       let requestBody: NSApiRequest.IContentUpdateV2
 
       if (tempUpdateContent.category === 'CourseUnit') {
         nodesModified.visibility = 'Parent'
       }
-
+      console.log(nodesModified[this.contentService.currentContent])
       requestBody = {
         request: {
           content: nodesModified[this.contentService.currentContent].metadata,

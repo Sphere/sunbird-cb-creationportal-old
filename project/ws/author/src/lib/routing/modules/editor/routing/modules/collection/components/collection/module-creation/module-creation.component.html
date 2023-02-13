@@ -337,18 +337,18 @@
               *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course'&& !isLinkEnabled && content?.mimeType !== 'application/json'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
-              {{moduleButtonName}}</button>
+              {{moduleButtonName}}--3</button>
             <button
               [disabled]="isLinkEnabled?editResourceLinks.length==0:true || module.value == '' || thumbnail == undefined"
               mat-raised-button *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&isLinkEnabled"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
-              {{moduleButtonName}}</button>
+              {{moduleButtonName}}--4</button>
             <button mat-raised-button
               *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&!isLinkEnabled &&content?.mimeType === 'application/json'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
-              {{moduleButtonName}}</button>
+              {{moduleButtonName}}--5</button>
             <button mat-raised-button *ngIf="content?.contentType === 'Course'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveCourseDetails()">
@@ -496,7 +496,7 @@
 
                 <button [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
                   class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
-                  (click)="resourceLinkSave()">Save</button>
+                  (click)="resourceLinkSave()">Save--9</button>
               </div>
 
             </form>
@@ -639,7 +639,7 @@
 
               <div><button [disabled]="uploadFileName == ''" mat-raised-button
                   class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
-                  (click)="resourcePdfSave()">Save</button></div>
+                  (click)="resourcePdfSave()">Save--0</button></div>
             </form>
             <!--PDF form end-->
             <!-- <form [formGroup]="assessmentOrQuizForm" class="resource-details-form" *ngIf="isAssessmentOrQuizEnabled">
