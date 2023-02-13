@@ -328,12 +328,12 @@
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom"
               (click)="moduleCreate(module.value, topicDescription, thumbnail)">
               {{moduleButtonName}}</button>
-            <button mat-raised-button *ngIf="content?.contentType === 'CourseUnit' || isNewCourse"
+            <button mat-raised-button *ngIf="content?.contentType === 'CourseUnit'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
               {{moduleButtonName}}</button>
             <button [disabled]="(uploadFileName?uploadFileName == '':true)" mat-raised-button
-              *ngIf="!isNewCourse && moduleButtonName === 'Save' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course'&& !isLinkEnabled && content?.mimeType !== 'application/json'"
+              *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course'&& !isLinkEnabled && content?.mimeType !== 'application/json'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
               (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
               {{moduleButtonName}}</button>

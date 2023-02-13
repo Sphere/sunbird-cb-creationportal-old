@@ -220,7 +220,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   quizIndex!: number
   editResourceLinks: string = ''
   isLoading: boolean = false
-  isNewCourse!: boolean
 
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
@@ -1683,12 +1682,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
       this.setContentType(obj)
       //this.initService.createModuleUnit(obj)
-      this.showAddModuleForm = true
-      this.isResourceTypeEnabled = false
-      this.isOnClickOfResourceTypeEnabled = false
-      this.isLinkEnabled = false
-      this.moduleButtonName = 'Save'
-      this.isNewCourse = true
+      this.clearForm()
     } else if (this.moduleButtonName == 'Save') {
       this.isResourceTypeEnabled = true
     }
@@ -1854,6 +1848,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   addModule() {
     this.clearForm()
+    this.showAddModuleForm = false
     this.moduleButtonName = 'Create'
     this.moduleCreate('Module Name', 'Module Name', '')
     // this.moduleNames.push({ name: 'Create Course' })
@@ -2153,7 +2148,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //   console.log(resData)
     // })
     let iframeSupported
-    this.isNewCourse = false
     if (thumbnail != undefined) {
       if (this.timeToSeconds() == 0 && content !== 'application/json') {
         this.snackBar.openFromComponent(NotificationComponent, {
