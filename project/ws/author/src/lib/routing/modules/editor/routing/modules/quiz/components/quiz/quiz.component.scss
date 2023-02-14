@@ -236,3 +236,12 @@ animation-delay: -0.5s;
   opacity: 0;
 }
 }
+
+::ng-deep .theme-igot.day-mode .mat-raised-button.mat-accent {
+  color: white;
+  background-color: #1c5d95;
+}
+
+::ng-deep .theme-igot.day-mode .mat-form-field-outline-thick {
+  color: #1c5d95!important;
+}
