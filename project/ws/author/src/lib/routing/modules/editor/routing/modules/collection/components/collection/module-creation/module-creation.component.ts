@@ -362,6 +362,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   routerValuesCalls() {
     this.contentService.changeActiveCont.subscribe(data => {
+      console.log(data)
       this.currentContent = data
       this.currentCourseId = data
       if (this.contentService.getUpdatedMeta(data).contentType !== 'Resource') {
@@ -1780,6 +1781,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   createResourseContent(name: string, type: string) {
+    console.log(type)
     this.resourceType = name
     this.independentResourceCount = this.independentResourceCount + 1
     this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
@@ -1815,7 +1817,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.acceptType = '.mp4, .m4v'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.setContentType(type, 'video')
-    } else if (name == 'SCORM') {
+    } else if (name == 'SCORM v1.1/1.2') {
       this.uploadText = '.zip'
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
@@ -1894,6 +1896,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   editContent(content: any) {
     /* tslint:disable-next-line */
     console.log('current content', content)
+    this.currentContent = content.identifier
     // if (content.mimeType === "application/json") {
     //   let obj: any = {}
     //   obj["type"] = 'assessment'
@@ -3196,33 +3199,42 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         duration: NOTIFICATION_TIME * 1000,
       })
     } else {
-      this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
-      let iframeSupported
-      if (this.resourcePdfForm.value.isIframeSupported)
-        iframeSupported = 'Yes'
-      else
-        iframeSupported = 'No'
+      if (this.resourcePdfForm.value.duration == 0) {
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.DURATION_CANT_BE_0,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      } else {
+        this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
+        let iframeSupported
+        if (this.resourcePdfForm.value.isIframeSupported)
+          iframeSupported = 'Yes'
+        else
+          iframeSupported = 'No'
 
-      this.triggerUpload()
-      this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
-      this.duration = this.resourcePdfForm.value.duration
-      this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
-      const rBody: any = {
-        name: this.resourcePdfForm.value.resourceName,
-        instructions: this.resourcePdfForm.value.instructions,
-        description: this.resourcePdfForm.value.instructions,
-        appIcon: this.resourcePdfForm.value.appIcon,
-        thumbnail: this.resourcePdfForm.value.thumbnail,
-        isIframeSupported: iframeSupported,
-        gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
-        duration: this.resourcePdfForm.value.duration,
-        versionKey: this.versionKey.versionKey,
+        this.triggerUpload()
+        this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
+        this.duration = this.resourcePdfForm.value.duration
+        this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+        const rBody: any = {
+          name: this.resourcePdfForm.value.resourceName,
+          instructions: this.resourcePdfForm.value.instructions,
+          description: this.resourcePdfForm.value.instructions,
+          appIcon: this.resourcePdfForm.value.appIcon,
+          thumbnail: this.resourcePdfForm.value.thumbnail,
+          isIframeSupported: iframeSupported,
+          gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
+          duration: this.resourcePdfForm.value.duration,
+          versionKey: this.versionKey.versionKey,
+        }
+        await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+        await this.update()
+        await this.save()
+        // this.loaderService.changeLoad.next(false)
+        this.clearForm()
       }
-      await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
-      await this.update()
-      await this.save()
-      // this.loaderService.changeLoad.next(false)
-      this.clearForm()
     }
   }
 
@@ -3284,13 +3296,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           metadata: this.contentService.upDatedContent[v],
         }
       })
+      console.log(this.currentContent)
+      console.log(this.contentService.getOriginalMeta(this.currentContent))
       const tempUpdateContent = this.contentService.getOriginalMeta(this.currentContent)
       let requestBody: NSApiRequest.IContentUpdateV2
 
       if (tempUpdateContent.category === 'CourseUnit') {
         nodesModified.visibility = 'Parent'
       }
-
+      console.log(nodesModified[this.contentService.currentContent])
       requestBody = {
         request: {
           content: nodesModified[this.contentService.currentContent].metadata,
@@ -3498,6 +3512,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         //const hierarchyData = this.storeService.getTreeHierarchy()
         Object.keys(hierarchyData).forEach(async (ele: any) => {
           if (ele === node.identifier) {
+            this.storeService.deleteContentNode(node)
             delete hierarchyData[ele]
           }
           if (ele === node.parent) {
