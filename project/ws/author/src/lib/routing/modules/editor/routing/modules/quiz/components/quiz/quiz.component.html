@@ -127,7 +127,8 @@
                   </button>
                 </div>
               </div>
-              <div class="flex items-center justify-center h-64" *ngIf="!questionsArr.length || !canEditJson">
+              <div class="flex items-center justify-center no-quiz-align-div"
+                *ngIf="!questionsArr.length || !canEditJson">
                 <div class="p-1">
                   <span i18n *ngIf="!questionsArr.length && canEditJson">No {{isQuiz?'quiz':'assessment'}} found, Kindly
                     add</span>
@@ -144,7 +145,7 @@
         </ws-auth-edit-meta>
       </div>
     </div>
-    <button (click)="action('save')" style="float: right;margin-right: 35px;height: 35px;top: 475px;" mat-raised-button
+    <button (click)="action('save')" style="float: right;margin-right: 35px;height: 35px;top:97vh;" mat-raised-button
       color="accent" id="assessmentSave"
       [ngClass]="{ disable: !isCreatorEnable  || !(assessmentDuration && passPercentage)}">
       <ng-container i18n>Save</ng-container>
