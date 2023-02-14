@@ -420,9 +420,12 @@
                 </mat-form-field>
                 <mat-checkbox class="check-text" formControlName="isgatingEnabled">Gating Enabled</mat-checkbox>
                 <mat-checkbox class="check-text" formControlName="isIframeSupported">Open link in new tab</mat-checkbox>
-                <span *ngIf="resourceLinkForm.get('resourceLinks').hasError('required')" class="invalid-text">This field
-                  is Required</span>
+
               </div>
+              <span
+                *ngIf="resourceLinkForm.get('resourceLinks').hasError('required')&&isLinkEnabled && !isAssessmentOrQuizEnabled"
+                class="invalid-text">This field
+                is Required</span>
               <!--validation div for resource link-->
 
               <div class="margin-top-s" *ngIf="isAssessmentOrQuizEnabled">
@@ -487,10 +490,11 @@
                     type="number" min="0" max="59" step="1"
                     onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 </mat-form-field>
-                <span *ngIf="resourceLinkForm.get('duration').hasError('required')" class="invalid-text">This field
-                  is Required</span>
-              </div>
 
+              </div>
+              <span *ngIf="resourceLinkForm.get('duration').hasError('required')&&!isAssessmentOrQuizEnabled"
+                class="invalid-text">This field
+                is Required</span>
 
               <div>
 
