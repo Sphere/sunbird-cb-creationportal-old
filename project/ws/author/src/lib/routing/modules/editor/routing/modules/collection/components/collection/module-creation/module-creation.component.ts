@@ -3512,6 +3512,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         //const hierarchyData = this.storeService.getTreeHierarchy()
         Object.keys(hierarchyData).forEach(async (ele: any) => {
           if (ele === node.identifier) {
+            this.storeService.deleteContentNode(node)
             delete hierarchyData[ele]
           }
           if (ele === node.parent) {

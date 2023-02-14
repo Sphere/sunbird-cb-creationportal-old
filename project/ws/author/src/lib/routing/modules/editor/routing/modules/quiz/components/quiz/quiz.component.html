@@ -144,9 +144,9 @@
         </ws-auth-edit-meta>
       </div>
     </div>
-    <button (click)="action('save')" style="float: right;margin-right: 35px;height: 35px;top: 475px;" mat-raised-button
-      color="accent" id="assessmentSave"
-      [ngClass]="{ disable: !isCreatorEnable  || !(assessmentDuration && passPercentage)}">
+    <button *ngIf="questionsArr.length && canEditJson" (click)="action('save')"
+      style="float: right;margin-right: 35px;height: 35px;top: 475px;" mat-raised-button color="accent"
+      id="assessmentSave" [ngClass]="{ disable: !isCreatorEnable  || !(assessmentDuration && passPercentage)}">
       <ng-container i18n>Save</ng-container>
     </button>
   </div>
