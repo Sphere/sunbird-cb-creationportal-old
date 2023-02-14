@@ -14,15 +14,16 @@
 
         <!--module & resources left canvas header-->
         <mat-toolbar class="model header">
-          <span class="course-title">{{courseData?.name}}</span>
-          <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)=" editContent(courseData)">
+          <span class="course-title" style="white-space: normal;">{{courseData?.name}}</span>
+          <mat-icon class=" material-icons margin-left-m text-medium brand-color" (click)=" editContent(courseData)">
             edit</mat-icon>
           <span class="margin-left-s text-small">{{mainCourseDuration}}</span>
         </mat-toolbar>
         <div class="model-left-create-content">
           <div class="module-container" *ngFor="let module of courseData?.children">
             <div class="mod-heading" *ngIf="module.primaryCategory === 'Course Unit'">
-              <h2 class="module-text" style="margin: 0px !important;">{{module.name !== '' ? module.name : "no title1"}}
+              <h2 class="module-text" style="margin: 0px !important">{{module.name !== '' ?
+                module.name : "no title1"}}
               </h2>
               <span fxFlex style="flex: 1 1 auto;"></span>
               <span style="display:flex;flex-direction: row;">
@@ -35,7 +36,7 @@
             </div>
             <div *ngIf="module?.children?.length > 0">
               <div *ngFor="let resource of module.children" class="heading-resource">
-                <mat-icon class="cursor-pointer">more_vert</mat-icon> <span
+                <mat-icon class="cursor-pointer">more_vert</mat-icon> <span style="white-space: normal;"
                   class="resourse-text">{{resource.name}}</span>
                 <span fxFlex style="flex: 1 1 auto;"></span>
                 <span style="display:flex;flex-direction: row;">
@@ -49,9 +50,8 @@
               </div>
             </div>
             <div *ngIf="module.primaryCategory !== 'Course Unit'" class="heading-resource">
-              <mat-icon class="cursor-pointer">more_vert</mat-icon> <span title="{{module.name}}"
-                class="resourse-text">{{ (module.name.length>12)? (module.name | slice:0:12)+'...':(module.name)
-                }}</span>
+              <mat-icon class="cursor-pointer">more_vert</mat-icon> <span title="{{module.name}}" class="resourse-text"
+                style="white-space: normal;">{{ module.name}}</span>
               <span fxFlex style="flex: 1 1 auto;"></span>
               <span style="display:flex;flex-direction: row;">
                 <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)="editContent(module)">
@@ -90,8 +90,8 @@
               </div>
               <div *ngIf="isOnClickOfResourceTypeEnabled">
                 <div *ngFor="let resource of resourceNames" class="heading-resource">
-                  <mat-icon class="cursor-pointer">more_vert</mat-icon> <span
-                    class="resourse-text">{{resource.name}}</span>
+                  <mat-icon class="cursor-pointer">more_vert</mat-icon> <span class="resourse-text"
+                    style="white-space: normal;">{{resource.name}}</span>
                   <span fxFlex style="flex: 1 1 auto;"></span>
                   <span style="display:flex;flex-direction: row;">
                     <mat-icon class="material-icons margin-left-m text-medium brand-color"
