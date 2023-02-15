@@ -141,10 +141,9 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <a routerLink="/author/my-content" [queryParams]="{ status: 'deleted' }" i18n>Deleted</a>
             </mat-list-item> -->
 
-            <mat-list-item *ngIf="allowReview" mat-button role="listitem" [routerLinkActive]="['active']">
+            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
               <a [ngClass]="{'head-content-title':isSelectedReviewCourse }" style="cursor: pointer"
-                (click)="onClickReviewCourse('Sent for review')" i18n>Courses to
-                Review</a>
+                (click)="onClickReviewCourse('Sent for review')" i18n>Sent For Review</a>
             </mat-list-item>
 
             <mat-list-item *ngIf="allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
@@ -155,6 +154,10 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
               <a [ngClass]="{'head-content-title':isSelectedPublishCourse }" style="cursor: pointer"
                 (click)="onClickReviewCourse('Published Courses')" i18n>Published</a>
+            </mat-list-item>
+            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+              <a [ngClass]="{'head-content-title':isSelectedRetiredCourse }" (click)="onClickReviewCourse('Retired')"
+                i18n>Retired</a>
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
