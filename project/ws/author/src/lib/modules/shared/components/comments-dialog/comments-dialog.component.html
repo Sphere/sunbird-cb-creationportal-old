@@ -4,7 +4,7 @@
     <mat-icon style="cursor: pointer;" mat-dialog-close mat-raised-button i18n>close</mat-icon>
   </div>
   <h2 class="text-bold">Publishing Course: {{contentMeta.name}}</h2>
-  <p class="publish-course-note">Note: All the resources have to be Live before publishing CBP</p>
+  <p class="publish-course-note">Note: Status of all the resources has to be live, before publishing the course</p>
   <div class="fixTableHead">
     <table style="border: none;">
       <thead>
@@ -36,15 +36,21 @@
   </div>
   <div class="margin-bottom-s margin-top-l">
     <div style="float: left;">
-      <button mat-raised-button i18n class="margin-top-s save-btn-mt send-to-creator-link" (click)="moveCourseToDraft()"
+      <button mat-raised-button i18n class="save-btn-mt send-to-creator-link" (click)="moveCourseToDraft()"
         color="#1C5D95" i18n>
         Send to Creator’s draft
       </button>
     </div>
     <div style="float: right;">
-      <button i18n class="refresh-button" id="refresh" (click)="refreshCourse()">
-        <mat-icon style="margin-top: 4px;">refresh</mat-icon>
+      <button class="margin-left-s
+              mat-button-base save-btn-mt send-to-creator-link" (click)="refreshCourse()" mat-raised-button i18n>
+        Refresh Status <mat-icon>refresh</mat-icon>
       </button>
+      <!-- <button i18n class="refresh-button margin-left-s
+          mat-button-base save-btn-mt publish-button" id="refresh" (click)="refreshCourse()">
+        Refresh Status
+        <mat-icon style="margin-top: 4px;">refresh</mat-icon>
+      </button> -->
       <button class="margin-left-s
           text-white ws-mat-primary-background  mat-button-base save-btn-mt publish-button"
         (click)="click('publishResources')" mat-raised-button i18n [disabled]="showPublishCBPBtn">

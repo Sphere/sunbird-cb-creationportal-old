@@ -14,8 +14,9 @@
 
         <!--module & resources left canvas header-->
         <mat-toolbar class="model header">
-          <span class="course-title">{{(courseData?.name.length>20)? (courseData?.name |
-            slice:0:20)+'...':(courseData?.name)}}</span>
+          <span matTooltip="{{courseData?.name}}" class="course-title">{{(courseData?.name.length>15)? (courseData?.name
+            |
+            slice:0:15)+'...':(courseData?.name)}}</span>
           <div class="editDiv">
             <mat-icon class="editIcon material-icons" (click)=" editContent(courseData)">
               edit</mat-icon>
