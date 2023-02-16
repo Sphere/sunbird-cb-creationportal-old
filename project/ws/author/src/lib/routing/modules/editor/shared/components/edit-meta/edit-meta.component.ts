@@ -1578,7 +1578,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       versionKey: '',  // (new Date()).getTime()
       purpose: '',
       lang: '',
-      cneName: ' ',
+      cneName: new FormControl('')
     })
     console.log("form validation", this.contentForm)
 
