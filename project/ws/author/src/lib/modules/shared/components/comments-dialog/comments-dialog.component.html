@@ -5,6 +5,13 @@
   </div>
   <h2 class="text-bold">Publishing Course: {{contentMeta.name}}</h2>
   <p class="publish-course-note">Note: Status of all the resources has to be live, before publishing the course</p>
+  <div style="float: right; margin-top: -42px;">
+    <button style="font-size: 14px !important;" class="margin-left-s
+                    mat-button-base save-btn-mt send-to-creator-link" (click)="refreshCourse()" mat-raised-button i18n>
+      Refresh Status <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
   <div class="fixTableHead">
     <table style="border: none;">
       <thead>
@@ -42,10 +49,7 @@
       </button>
     </div>
     <div style="float: right;">
-      <button class="margin-left-s
-              mat-button-base save-btn-mt send-to-creator-link" (click)="refreshCourse()" mat-raised-button i18n>
-        Refresh Status <mat-icon>refresh</mat-icon>
-      </button>
+
       <!-- <button i18n class="refresh-button margin-left-s
           mat-button-base save-btn-mt publish-button" id="refresh" (click)="refreshCourse()">
         Refresh Status
