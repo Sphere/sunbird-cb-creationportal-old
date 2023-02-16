@@ -639,8 +639,8 @@
 
       <div class="form-edit-container">
         <div class="course-title crs-title-text form-edit-int">
-          <mat-form-field appearance="outline" class="disabledData  field-edit-width"
-            [ngClass]="{ 'mat-form-field-invalid': showError('name') }" style="width:auto">
+          <mat-form-field appearance="{{isEnableTitle ? 'outline' : 'fill'}}" class="disabledData  field-edit-width"
+            [ngClass]="{ 'mat-form-field-invalid': showError('name') }" style="width: 530px">
             <input matInput #name class="text-ellipsis disabledDataContainer" formControlName="name" maxlength="250"
               i18n-placeholder matTooltip="{{this.contentForm.controls.name.value}}"
               placeholder="Enter a Descriptive title" [required]="checkCondition('name', 'required') ? true : null"
@@ -651,8 +651,8 @@
             </mat-error>
           </mat-form-field>
           <mat-icon class="edit-title cursor-pointer" [ngClass]="{ 'active': fieldActive }"
-            (click)="enableClick();name.focus()">edit</mat-icon>
-        </div>
+            (click)="enableClick();name.focus();">edit</mat-icon>
+        </div><br>
         <div class="form-edit-int">
           <mat-form-field appearance="fill" class="margin-top-xs  field-edit-width"
             [ngClass]="{ 'mat-form-field-invalid': showError('subTitle') }">
@@ -789,8 +789,8 @@
         <div class="form-edit-int">
           <mat-form-field appearance="fill" class="margin-top-s field-edit-width">
             <mat-label>(Optional) CNE points</mat-label>
-            <input matInput formControlName="cneName" placeholder="(Optional) CNE points ">
-            <mat-hint class="mt-hint">Note: CNE Points will be approved by INC</mat-hint>
+            <input matInput formControlName="cneName" placeholder="(Optional) CNE points" />
+            <mat-hint class=" mt-hint">Note: CNE Points will be approved by INC</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="margin-top-s field-edit-width"

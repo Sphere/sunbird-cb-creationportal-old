@@ -930,14 +930,14 @@ export class CollectionStoreService {
       // if (content.purpose === '') {
       //   errorMsg.push('Course subtitle cannot be empty')
       // }
-      if (content.instructions === '') {
-        errorMsg.push('Description cannot be empty')
-      }
+      // if (content.instructions === '') {
+      //   errorMsg.push('Description cannot be empty')
+      // }
       /*Workaround*/
       // && content.parent != id[3]
-      if (content.thumbnail === undefined && content.status === 'Draft') {
-        errorMsg.push('Thumbnail cannot be empty')
-      }
+      // if (content.thumbnail === undefined && content.status === 'Draft') {
+      //   errorMsg.push('Thumbnail cannot be empty')
+      // }
       // if (content.sourceName === undefined && content.status === 'Draft') {
       //   errorMsg.push('Course provider/source cannot be empty')
       // }

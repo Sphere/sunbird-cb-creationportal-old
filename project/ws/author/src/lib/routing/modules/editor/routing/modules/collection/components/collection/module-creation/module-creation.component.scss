@@ -5,6 +5,7 @@
 
 .text-small{
   font-size: small;
+  color: #8B8B8B;
 }
 
 .brand-color{
@@ -571,7 +572,28 @@ ul li {
 .resourcePdfSave{
   background-color: #1c5d95 !important;
 }
-
+.greyColor{
+  color:#999;
+}
+.editDiv{
+  height: 42px;
+    width: 42px;
+    background: #F7F7F7;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    left: 8px;
+}
+.editIcon{
+   position: relative;
+    top: 8px;
+    left: 11px;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    color: #1C5D95;
+}
 .custom-placeholder {
   border: dotted 3px #999;
   min-height: 85px;
