@@ -26,7 +26,7 @@
         <div class="model-left-create-content">
           <div class="module-container" *ngFor="let module of courseData?.children">
             <div class="mod-heading" *ngIf="module.primaryCategory === 'Course Unit'">
-              <h2 class="module-text" style="margin: 0px !important">{{module.name !== '' ?
+              <h2 class="module-text module-name-text-overflow">{{module.name !== '' ?
                 module.name : "no title1"}}
               </h2>
               <span fxFlex style="flex: 1 1 auto;"></span>
@@ -81,7 +81,7 @@
           <div class="model-left-create-content" *ngIf="showAddModuleForm">
             <div class="module-container" *ngFor="let module of moduleNames">
               <div class="mod-heading">
-                <h2 class="module-text" style="margin: 0px !important;">{{module.name !== '' ? module.name : "no
+                <h2 class="module-text module-name-text-overflow">{{module.name !== '' ? module.name : "no
                   title2"}}
                 </h2>
                 <span fxFlex style="flex: 1 1 auto;"></span>

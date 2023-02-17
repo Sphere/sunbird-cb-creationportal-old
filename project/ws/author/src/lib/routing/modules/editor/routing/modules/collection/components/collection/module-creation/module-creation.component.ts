@@ -2541,7 +2541,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.editorStore.upDatedContent = {}
       }),
     )
-
   }
 
   subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
@@ -3298,7 +3297,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     } else {
       this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
       this.storeData()
-
       const nodesModified: any = {}
       Object.keys(this.contentService.upDatedContent).forEach(v => {
         nodesModified[v] = {

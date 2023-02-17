@@ -352,6 +352,9 @@
 }
 
 .resourse-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 23vh;
   font-size: 15px;
   line-height: 24px;
   color: #000000;
@@ -577,13 +580,12 @@ ul li {
 }
 .editDiv{
   height: 42px;
-    width: 42px;
-    background: #F7F7F7;
-    border-radius: 50%;
-    display: inline-block;
-    position: relative;
-    cursor: pointer;
-    left: 8px;
+  width: 42px;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  left: 8px;
 }
 .editIcon{
    position: relative;
@@ -709,4 +711,12 @@ animation-delay: -0.5s;
 
 ::ng-deep .theme-igot.day-mode .mat-form-field-outline-thick {
   color: #1c5d95!important;
+}
+
+.module-name-text-overflow{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0px !important;
+  width: 23vh;
 }
