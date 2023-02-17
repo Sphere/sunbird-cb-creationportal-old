@@ -220,7 +220,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   quizIndex!: number
   editResourceLinks: string = ''
   isLoading: boolean = false
-  isEditFormEnabled!: boolean
 
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
@@ -759,12 +758,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //let nodesModified = {}
       /* tslint:disable-next-line */
 
-      if (this.isEditFormEnabled) {
-        if (this.currentCourseId != this.currentContent) {
-          requestBody.request.content.instructions = ''
-        }
-      }
-
+      console.log("requestBody", requestBody)
 
       if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined || tempUpdateContent.category === 'Course') {
         return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
@@ -1900,7 +1894,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   editContent(content: any) {
-    this.isEditFormEnabled = true
     /* tslint:disable-next-line */
     console.log('current content', content)
     this.currentContent = content.identifier
@@ -3232,7 +3225,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         else
           iframeSupported = 'No'
 
-        //this.triggerUpload()
+        this.triggerUpload()
         this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
         this.duration = this.resourcePdfForm.value.duration
         this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
@@ -3305,13 +3298,44 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     } else {
       this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
       this.storeData()
-      const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
-      if (hierarchyData) {
-        this.loaderService.changeLoad.next(true)
-        this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
-        this.upload()
-      } else {
-        this.errorMessage()
+      const nodesModified: any = {}
+      Object.keys(this.contentService.upDatedContent).forEach(v => {
+        nodesModified[v] = {
+          isNew: false,
+          root: this.storeService.parentNode.includes(v),
+          metadata: this.contentService.upDatedContent[v],
+        }
+      })
+      console.log(this.currentContent)
+      console.log(this.contentService.getOriginalMeta(this.currentContent))
+      const tempUpdateContent = this.contentService.getOriginalMeta(this.currentContent)
+      let requestBody: NSApiRequest.IContentUpdateV2
+
+      if (tempUpdateContent.category === 'CourseUnit') {
+        nodesModified.visibility = 'Parent'
+      }
+      console.log(nodesModified[this.contentService.currentContent])
+      requestBody = {
+        request: {
+          content: nodesModified[this.contentService.currentContent].metadata,
+        },
+      }
+      requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
+
+      if (requestBody.request.content.category) {
+        delete requestBody.request.content.category
+      }
+      const contenUpdateRes: any =
+        await this.editorService.updateContentV3(requestBody, this.contentService.currentContent).toPromise().catch(_error => { })
+      if (contenUpdateRes && contenUpdateRes.params && contenUpdateRes.params.status === 'successful') {
+        const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
+        if (hierarchyData) {
+          this.loaderService.changeLoad.next(true)
+          this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
+          this.upload()
+        } else {
+          this.errorMessage()
+        }
       }
     }
   }
