@@ -36,6 +36,8 @@ import { AccessControlService } from './../../../../../../modules/shared/service
 import { AuthInitService } from './../../../../../../services/init.service'
 import { LoaderService } from './../../../../../../services/loader.service'
 // import { CollectionStoreService } from './../../../routing/modules/collection/services/store.service'
+import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-popup.component'
+
 import {
   debounceTime,
   distinctUntilChanged,
@@ -109,6 +111,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   isEditEnabled = false
   public sideNavBarOpened = false
   gatingEnabled!: FormControl
+  hideCourse!: FormControl
   //issueCertification!: FormControl
   bucket: string = ''
   certificateList: any[] = [
@@ -149,7 +152,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   moduleButtonName: string = 'Create';
   fieldActive!: boolean
   isFormValid!: boolean
-
+  competencies: any
   constructor(
     private formBuilder: FormBuilder,
     private uploadService: UploadService,
@@ -362,6 +365,61 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     // )
   }
 
+  addCompetency() {
+    const dialogRef = this.dialog.open(CompetencyPopupComponent, {
+      width: '40%',
+      maxHeight: '90vh',
+    })
+    dialogRef.afterClosed().subscribe((response: boolean) => {
+      console.log(response, this.parentContent)
+      let id = this.parentContent || ''
+      //if (response === true) {
+      this.editorService.readcontentV3(id).subscribe(async (data: any) => {
+        if (data.competencies_v1) {
+          this.competencies = JSON.parse(data.competencies_v1)
+        }
+      })
+    })
+  }
+
+  deleteCompetancy(competency: any) {
+    console.log(competency)
+    let id = this.parentContent || ''
+    let data: any
+    this.editorService.checkReadAPI(id)
+      .subscribe(async (res: any) => {
+        data = await res.result.content
+
+        let requestBody: any
+        let meta: any = {
+          versionKey: data.versionKey,
+          competencySearch: [],
+          competency: false,
+          competencies_v1: []
+        }
+
+        requestBody = {
+          request: {
+            content: meta
+          }
+        }
+        this.editorService.updateNewContentV3(requestBody, id).subscribe(
+          (response: any) => {
+            if (response) {
+              this.loadCompetancy()
+            }
+          })
+      })
+  }
+  loadCompetancy() {
+    let id = this.parentContent || ''
+    this.editorService.readcontentV3(id).subscribe((data: any) => {
+      if (data) {
+        this.competencies = []
+      }
+    })
+  }
+
   enableClick(): void {
     this.isEnableTitle = false
     this.fieldActive = true
@@ -558,6 +616,10 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         this.contentForm.controls.lang.setValue(this.contentMeta.lang)
         this.contentForm.controls.gatingEnabled.setValue(this.contentMeta.gatingEnabled)
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification === undefined ? false : this.contentMeta.issueCertification)
+        console.log(this.contentMeta)
+        if (this.contentMeta.competencies_v1) {
+          this.competencies = JSON.parse(this.contentMeta.competencies_v1)
+        }
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
           this.contentForm.controls[v].markAsTouched()
@@ -1537,6 +1599,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       nodeType: [],
       org: [],
       gatingEnabled: new FormControl(''),
+      hideCourse: false,
       issueCertification: false,
       creatorDetails: [],
       // passPercentage: [],

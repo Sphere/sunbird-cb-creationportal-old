@@ -60,7 +60,7 @@ import { ShowHideToolTipDirective } from './directives/show-hide-tool-tip.direct
 import { StatusTrackComponent } from './components/status-track/status-track.component'
 import { FeedbackFormComponent } from './components/feedback-form/feedback-form.component'
 import { SuccessDialogComponent } from './components/success-dialog/success-dialog.component'
-
+import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-popup.component'
 @NgModule({
   declarations: [
     RelativeUrlPipe,
@@ -83,6 +83,7 @@ import { SuccessDialogComponent } from './components/success-dialog/success-dial
     StatusTrackComponent,
     FeedbackFormComponent,
     SuccessDialogComponent,
+    CompetencyPopupComponent
   ],
   imports: [
     CommonModule,
@@ -146,6 +147,7 @@ import { SuccessDialogComponent } from './components/success-dialog/success-dial
     MatSnackBarModule,
     NotificationComponent,
     CommentsDialogComponent,
+    CompetencyPopupComponent,
     ConfirmDialogComponent,
     MatSelectModule,
     MatChipsModule,
@@ -187,6 +189,7 @@ import { SuccessDialogComponent } from './components/success-dialog/success-dial
     NotificationComponent,
     IprDialogComponent,
     CommentsDialogComponent,
+    CompetencyPopupComponent,
     ConfirmDialogComponent,
     ErrorParserComponent,
     DeleteDialogComponent,

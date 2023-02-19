@@ -179,6 +179,19 @@ export class EditorService {
     return this.someDataObservable
   }
 
+  getAllEntities(): any {
+    let data: any = {
+      "search": {
+        "type": "Competency"
+      }
+    }
+    return this.http
+      .post<any>(
+        `/apis/protected/v8/entityCompetency/getAllEntity`,
+        data,
+      )
+  }
+
   createBatch(data: any): Observable<any> {
     return this.http
       .post<any>(
