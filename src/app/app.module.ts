@@ -60,7 +60,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { PublicReleaseModule } from './routes/public/public-release/public-about.module'
 import { AppTocResolverService } from '@ws/author'
 import { AuthInitService } from '../../project/ws/author/src/lib/services/init.service'
-//import { CompetencyPopupComponent } from './competency-popup/competency-popup.component'
 // import { ServiceWorkerModule } from '@angular/service-worker'
 // import { environment } from '../environments/environment'
 
@@ -96,7 +95,6 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     DialogConfirmComponent,
     LoginRootComponent,
     LoginRootDirective,
-    //CompetencyPopupComponent,
   ],
   imports: [
     FormsModule,
