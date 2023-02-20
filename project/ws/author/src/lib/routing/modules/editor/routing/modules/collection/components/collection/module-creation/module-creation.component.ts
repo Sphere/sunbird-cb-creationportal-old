@@ -291,45 +291,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       questionType: new FormControl(''),
       isgatingEnabled: new FormControl(),
     })
-    this.initService.isBackButtonClickedMessage.subscribe(
-      (data: any) => {
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
-          this.courseData = await data
-        })
-        /* tslint:disable-next-line */
-        console.log("this.isSettings", this.isSettingsPage)
-        if (this.showSettingsPage && this.isSettingsPage && data) {
-          this.isLoading = true
-          /* tslint:disable-next-line */
-          console.log("isSettingsPage", data)
-          this.isSettingsPage = false
-          setTimeout(() => {
-            this.isLoading = false
-          }, 500)
-        } else if (!this.isSettingsPage && data) {
-          this.isLoading = true
-          /* tslint:disable-next-line */
-          // console.log("backToCourseDetailsPage", data, this.isAssessmentOrQuizEnabled, this.viewMode)
-          // if (this.viewMode == 'meta') {
-          //   console.log("yes")
-          //   this.initService.publishData('backToCourseDetailsPage')
-          // } else {
-          this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
-          setTimeout(() => {
-            this.isLoading = false
-          }, 500)
 
-          // }
-
-        } else {
-          /* tslint:disable-next-line */
-          console.log("else")
-          this.router.navigateByUrl('/author/home')
-        }
+    this.initService.backToHomeMessage.subscribe((data: any) => {
+      if (data === 'fromSettings') {
+        this.isSettingsPage = false
         setTimeout(() => {
           this.isLoading = false
         }, 500)
-      })
+      }
+    })
 
     this.initService.updateResourceMessage.subscribe(
       async (data: any) => {
@@ -1665,6 +1635,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     // })
     this.ngAfterViewInit()
     setTimeout(() => {
+      sessionStorage.setItem('isSettingsPage', '1')
       this.isSettingsPage = true
     }, 1000)
     /* tslint:disable-next-line */

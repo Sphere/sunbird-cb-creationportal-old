@@ -143,6 +143,34 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.clickedNext = false
         }
       })
+
+
+    this.initService.isBackButtonClickedMessage.subscribe(
+      (data: any) => {
+        console.log("isBackButtonClickedMessage data " + data)
+        if (sessionStorage.getItem('isSettingsPage') === '1') {
+          sessionStorage.setItem('isSettingsPage', '0')
+          console.log("inside ")
+          this.initService.backToHome('fromSettings')
+        } else {
+          sessionStorage.setItem('isSettingsPage', '0')
+          if (this.viewMode === 'assessment') {
+            this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
+          } else if (this.showAddchapter) {
+            if (this.viewMode === 'meta' && this.clickedNext) {
+              this.clickedNext = false
+              this.showAddchapter = false
+            }
+          } else {
+            if (this.viewMode === 'meta' && this.clickedNext) {
+              this.initService.publishData('backToCourseDetailsPage')
+            } else {
+              this.router.navigateByUrl('/author/home')
+            }
+
+          }
+        }
+      })
     this.initService.publishMessage.subscribe(
       (data: any) => {
         if (data === 'backToCourseDetailsPage' && this.viewMode !== 'assessment') {
