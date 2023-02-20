@@ -136,12 +136,13 @@
     <ws-auth-status-track *ngIf="showNewFlow" [isDialog]="false" [content]="contentMeta"></ws-auth-status-track>
     <div>
       <div class="margin-bottom-l margin-top-l" style="float: left;">
-        <button [disabled]="commentsForm?.invalid" class="margin-left-s
+        <button [disabled]="commentsForm?.invalid" class="button-style margin-left-s
                     text-white ws-mat-primary-background  mat-button-base save-btn-mt publish-button"
           (click)="submitData()" mat-raised-button i18n>
           Send
         </button>
-        <button mat-dialog-close class="margin-left-s text-white mat-button-base save-btn-mt send-back-button"
+        <button mat-dialog-close
+          class="button-style margin-left-s text-white mat-button-base save-btn-mt send-back-button"
           style="margin-right: 10px;" mat-raised-button i18n>
           Cancel
         </button>

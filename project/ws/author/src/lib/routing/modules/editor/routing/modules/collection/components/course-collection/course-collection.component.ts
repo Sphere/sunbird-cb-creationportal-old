@@ -189,7 +189,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         if (data) {
           this.showAddchapter = true
           this.viewMode = ''
-          this.clickedNext = true
           this.save()
         }
       })
@@ -556,6 +555,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   async save(nextAction?: string) {
+    this.loaderService.changeLoad.next(true)
     if (this.resourseSelected !== '') {
       this.update()
     }
@@ -593,6 +593,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
+          this.clickedNext = true
           // window.location.reload()
         },
         (error: any) => {

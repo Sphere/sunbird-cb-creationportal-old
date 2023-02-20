@@ -639,13 +639,15 @@
 
       <div class="form-edit-container">
         <div class="course-title crs-title-text form-edit-int">
-          <mat-form-field appearance="{{isEnableTitle ? 'outline' : 'fill'}}" class="disabledData  field-edit-width"
+          <mat-form-field appearance="{{fieldActive ? 'fill' : 'outline'}}" class="disabledData  field-edit-width"
             [ngClass]="{ 'mat-form-field-invalid': showError('name') }" style="width: 530px">
-            <input matInput #name class="text-ellipsis disabledDataContainer" formControlName="name" maxlength="250"
+            <input matInput #name class="text-ellipsis disabledDataContainer" formControlName="name" maxlength="50"
               i18n-placeholder matTooltip="{{this.contentForm.controls.name.value}}"
               placeholder="Enter a Descriptive title" [required]="checkCondition('name', 'required') ? true : null"
-              readonly [readOnly]="isEnableTitle" autofocus (focusout)="onFocusOutName()" maxlength="50" />
+              readonly [readOnly]="!fieldActive" autofocus (focusout)="onFocusOutName()" maxlength="50" />
             <!-- <mat-hint align="end">{{ name.value.length }} / 50 </mat-hint> -->
+            <mat-hint class="mt-hint" *ngIf="fieldActive">{{ this.contentForm.controls.name.value.length }}/50
+            </mat-hint>
             <mat-error *ngIf="showError('name')" i18n="Name Error|Explains name is required">
               Title is mandatory
             </mat-error>
@@ -874,8 +876,7 @@
           <div class="flex flex-between  margin-bottom-l margin-right-l">
             <button [ngClass]="{'button-disbale' : contentForm?.invalid||contentForm.controls.duration.value==0}"
               mat-raised-button type="submit" (click)="isSubmitPressed = true; clickedNext()"
-              class="text-white save-next  mat-button-base save-btn-bottom saveAndNextBtn">Save
-              and Next</button>
+              class="text-white save-next  mat-button-base save-btn-bottom saveAndNextBtn">Save and Next</button>
           </div>
         </section>
 
