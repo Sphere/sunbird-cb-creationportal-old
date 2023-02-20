@@ -1709,8 +1709,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           iframeSupported = 'Yes'
         else
           iframeSupported = 'No'
-
-        var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+        var res = this.editResourceLinks.match(/^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/)
+        // var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+        // var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
         this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
         if (res !== null) {
           const rBody: any = {
@@ -2155,36 +2156,47 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       meta["duration"] = this.timeToSeconds().toString()
       // meta["gatingEnabled"] = isGating
       meta["isIframeSupported"] = iframeSupported
-      var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+
+
+      var res = this.editResourceLinks.match(/^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/)
+      // var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
       if (res !== null) {
         meta["artifactUrl"] = this.editResourceLinks
       }
-      this.editorStore.currentContentData = meta
-      this.editorStore.currentContentID = this.content.identifier
-      requestBody = {
-        request: {
-          content: meta
+      if (res == null && this.content.mimeType === 'text/x-url') {
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.LINK_IS_INVALID,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      } else {
+        this.editorStore.currentContentData = meta
+        this.editorStore.currentContentID = this.content.identifier
+        requestBody = {
+          request: {
+            content: meta
+          }
+        }
+
+        this.contentService.setUpdatedMeta(meta, this.content.identifier)
+        if (this.content.contentType === 'Resource') {
+          this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
+            async (info: any) => {
+              /* tslint:disable-next-line */
+              console.log('info', info)
+              if (info) {
+                await this.update()
+                this.clearForm()
+              }
+            })
+        } else {
+          await this.update()
+          this.clearForm()
         }
       }
 
-      this.contentService.setUpdatedMeta(meta, this.content.identifier)
-      if (this.content.contentType === 'Resource') {
-        this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
-          async (info: any) => {
-            /* tslint:disable-next-line */
-            console.log('info', info)
-            if (info) {
-              await this.update()
-              this.clearForm()
-            }
-          })
-      } else {
-        await this.update()
-        this.clearForm()
-      }
     }
-    // }
-
   }
 
   generateUrl(oldUrl: any) {
@@ -2500,7 +2512,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.editorStore.upDatedContent = {}
       }),
     )
-
   }
 
   subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
@@ -3257,7 +3268,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     } else {
       this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
       this.storeData()
-
       const nodesModified: any = {}
       Object.keys(this.contentService.upDatedContent).forEach(v => {
         nodesModified[v] = {
