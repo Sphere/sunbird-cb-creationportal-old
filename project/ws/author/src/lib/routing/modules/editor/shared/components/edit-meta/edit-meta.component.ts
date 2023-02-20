@@ -125,7 +125,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   ]
   isAddCerticate: boolean = false;
-  isEnableTitle: boolean = true
 
   @ViewChild('creatorContactsView', { static: false }) creatorContactsView!: ElementRef
   @ViewChild('trackContactsView', { static: false }) trackContactsView!: ElementRef
@@ -363,7 +362,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   enableClick(): void {
-    this.isEnableTitle = false
     this.fieldActive = true
   }
 

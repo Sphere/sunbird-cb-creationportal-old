@@ -194,14 +194,22 @@
           *ngIf="showAddModuleForm && !isResourceTypeEnabled && !isOnClickOfResourceTypeEnabled">
           <div>
             <span class="course-sub-title" *ngIf="!isSaveModuleFormEnable">Create Course</span>
-            <span class="course-sub-title" *ngIf="content?.contentType === 'Course'">Course
-              Details</span>
+            <span class="course-sub-title" *ngIf="content?.contentType === 'Course'">Course Details</span>
             <span class="course-sub-title" *ngIf="content?.contentType === 'CourseUnit'">Module Details</span>
             <span class="course-sub-title" *ngIf="content?.contentType === 'Resource'">Resource Details</span>
           </div>
-          <div>
+          <div *ngIf="content?.contentType === 'Course'">
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
-              class="module-input margin-top-s" placeholder="Name of the Module" autocomplete="off" /><br>
+              class="module-input margin-top-s" placeholder="Name of the Module" autocomplete="off"
+              maxlength="50" /><br>
+            <mat-hint class="mt-hint">{{ moduleName.length }}/50</mat-hint>
+            <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
+          </div>
+          <div *ngIf="content?.contentType === 'CourseUnit' || content?.contentType === 'Resource'">
+            <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
+              class="module-input margin-top-s" placeholder="Name of the Module" autocomplete="off"
+              maxlength="100" /><br>
+            <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint>
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
           <!-- <div>
@@ -406,9 +414,10 @@
             <!--link form start-->
             <form [formGroup]="resourceLinkForm" class="resource-details-form"
               *ngIf="isLinkEnabled||isAssessmentOrQuizEnabled">
-              <mat-form-field appearance="outline" class="margin-top-xs field-width">
+              <mat-form-field appearance="outline" class="margin-top-xs field-width" style="margin-bottom: 0vh;">
                 <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
+                <mat-hint class="mt-hint">{{ this.resourceLinkForm.value.resourceName.length }}/100</mat-hint>
               </mat-form-field>
               <span *ngIf="resourceLinkForm.get('resourceName').hasError('required')" class="invalid-text">This field is
                 Required</span>
@@ -515,9 +524,10 @@
             <!--link form end-->
             <!--PDF/audio/vedio form start-->
             <form [formGroup]="resourcePdfForm" class="resource-details-form" *ngIf="isPdfOrAudioOrVedioEnabled">
-              <mat-form-field appearance="outline" class="margin-top-xs field-width">
+              <mat-form-field appearance="outline" class="margin-top-xs field-width" style="margin-bottom: 0vh;">
                 <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
+                <mat-hint class="mt-hint">{{ this.resourcePdfForm.value.resourceName.length }}/100</mat-hint>
               </mat-form-field>
               <span *ngIf="resourcePdfForm.get('resourceName').hasError('required')" class="invalid-text">This field
                 is Required</span>
