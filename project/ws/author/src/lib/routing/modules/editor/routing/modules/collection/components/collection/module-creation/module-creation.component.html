@@ -14,19 +14,15 @@
 
         <!--module & resources left canvas header-->
         <mat-toolbar class="model header">
-          <span matTooltip="{{courseData?.name}}" class="course-title">{{(courseData?.name.length>15)? (courseData?.name
-            |
-            slice:0:15)+'...':(courseData?.name)}}</span>
-          <div class="editDiv">
-            <mat-icon class="editIcon material-icons" (click)=" editContent(courseData)">
-              edit</mat-icon>
-          </div>
-          <span class="margin-left-s text-small">({{mainCourseDuration}})</span>
+          <span class="course-title" style="white-space: normal;">{{courseData?.name}}</span>
+          <mat-icon class=" material-icons margin-left-m text-medium brand-color" (click)=" editContent(courseData)">
+            edit</mat-icon>
+          <span class="margin-left-s text-small">{{mainCourseDuration}}</span>
         </mat-toolbar>
         <div class="model-left-create-content">
           <div class="module-container" *ngFor="let module of courseData?.children">
             <div class="mod-heading" *ngIf="module.primaryCategory === 'Course Unit'">
-              <h2 class="module-text module-name-text-overflow">{{module.name !== '' ?
+              <h2 class="module-text" style="margin: 0px !important">{{module.name !== '' ?
                 module.name : "no title1"}}
               </h2>
               <span fxFlex style="flex: 1 1 auto;"></span>
@@ -34,7 +30,7 @@
                 <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)=" editContent(module)">
                   edit</mat-icon>
                 <mat-icon class="icons-list" (click)="takeActions('delete', module, $event.type)">delete</mat-icon>
-                <mat-icon class="icons-list greyColor" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
+                <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
                   content_copy</mat-icon>
               </span>
             </div>
@@ -48,8 +44,7 @@
                     (click)="editContent(resource)">
                     edit</mat-icon>
                   <mat-icon class="icons-list" (click)="takeActions('delete', resource, $event.type)">delete</mat-icon>
-                  <mat-icon class="icons-list greyColor" (click)="copyToClipboard(module)"
-                    matTooltip="Copy To Clipboard">
+                  <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
                     content_copy</mat-icon>
                 </span>
               </div>
@@ -62,7 +57,7 @@
                 <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)="editContent(module)">
                   edit</mat-icon>
                 <mat-icon (click)="takeActions('delete', module, $event.type)" class="icons-list">delete</mat-icon>
-                <mat-icon class="icons-list greyColor" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
+                <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
                   content_copy</mat-icon>
               </span>
             </div>
@@ -81,7 +76,7 @@
           <div class="model-left-create-content" *ngIf="showAddModuleForm">
             <div class="module-container" *ngFor="let module of moduleNames">
               <div class="mod-heading">
-                <h2 class="module-text module-name-text-overflow">{{module.name !== '' ? module.name : "no
+                <h2 class="module-text" style="margin: 0px !important;">{{module.name !== '' ? module.name : "no
                   title2"}}
                 </h2>
                 <span fxFlex style="flex: 1 1 auto;"></span>
@@ -89,8 +84,7 @@
                   <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)="editContent(module)">
                     edit</mat-icon>
                   <mat-icon class="icons-list" (click)="takeActions('delete', module, $event.type)">delete</mat-icon>
-                  <mat-icon class="icons-list greyColor" (click)="copyToClipboard(module)"
-                    matTooltip="Copy To Clipboard">
+                  <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
                     content_copy</mat-icon>
                 </span>
               </div>
@@ -107,8 +101,7 @@
                     </mat-icon>
 
                     <!-- <mat-icon class="icons-list">delete</mat-icon> -->
-                    <mat-icon class="icons-list greyColor" (click)="copyToClipboard(module)"
-                      matTooltip="Copy To Clipboard">
+                    <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
                       content_copy</mat-icon>
                   </span>
                 </div>
@@ -204,12 +197,12 @@
               class="module-input margin-top-s" placeholder="Name of the Module" autocomplete="off" /><br>
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
-          <!-- <div>
+          <div>
             <mat-form-field appearance="outline" class="margin-top-xs">
               <textarea matInput i18n-placeholder placeholder="Description" [(ngModel)]="topicDescription"></textarea>
             </mat-form-field><br>
             <span *ngIf="topicDescription == ''" class="invalid-text">This field is Required</span>
-          </div> -->
+          </div>
           <!-- is link enabled -->
           <div *ngIf="isLinkEnabled">
             <mat-form-field appearance="outline" class="margin-top-xs field-width">
@@ -268,11 +261,11 @@
               link
               in new tab</mat-checkbox>
           </div>
-          <!-- <div *ngIf="content?.mimeType !== 'application/json'">
+          <div *ngIf="content?.mimeType !== 'application/json'">
             <mat-checkbox [(ngModel)]="isGating" [checked]="isGating" style="margin-left: 0px;" class="check-text">
               Gating
               Enabled</mat-checkbox>
-          </div> -->
+          </div>
           <div class="margin-top-s" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
             <button mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
@@ -304,12 +297,11 @@
               </div>
             </div>
             <div>
-              Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)<br> Files
-              allowed: JPG, PNG
+              Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
             </div>
           </div>
           <div *ngIf="isSaveModuleFormEnable">
-            <!-- <span *ngIf="thumbnail == undefined" class="invalid-text">This field is Required</span><br> -->
+            <span *ngIf="thumbnail == undefined" class="invalid-text">This field is Required</span><br>
             <span style="color:#808080">Note: Learners will see this image for this module</span>
           </div>
           <div class="duration-style" *ngIf="content?.mimeType !== 'application/json'">
@@ -339,22 +331,23 @@
               {{moduleButtonName}}</button>
             <button mat-raised-button *ngIf="content?.contentType === 'CourseUnit'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
-              (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab,content?.mimeType)">
+              (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
               {{moduleButtonName}}</button>
             <button [disabled]="(uploadFileName?uploadFileName == '':true)" mat-raised-button
               *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course'&& !isLinkEnabled && content?.mimeType !== 'application/json'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
-              (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab,content?.mimeType)">
+              (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
               {{moduleButtonName}}</button>
-            <button [disabled]="isLinkEnabled?editResourceLinks.length==0:true || module.value == ''" mat-raised-button
-              *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&isLinkEnabled"
+            <button
+              [disabled]="isLinkEnabled?editResourceLinks.length==0:true || module.value == '' || thumbnail == undefined"
+              mat-raised-button *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&isLinkEnabled"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
-              (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab,content?.mimeType)">
+              (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
               {{moduleButtonName}}</button>
             <button mat-raised-button
               *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&!isLinkEnabled &&content?.mimeType === 'application/json'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
-              (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab,content?.mimeType)">
+              (click)="saveDetails(module.value, topicDescription, thumbnail, isNewTab, isGating,content?.mimeType)">
               {{moduleButtonName}}</button>
             <button mat-raised-button *ngIf="content?.contentType === 'Course'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
@@ -382,7 +375,7 @@
             </div>
           </div>
           <div class="margin-top-l margin-bottom-s">
-            <span>Assess your learner:</span>
+            <span>Access your learner:</span>
           </div>
           <div style="display:flex;">
             <div *ngFor="let list of accessList">
@@ -413,19 +406,19 @@
               <span *ngIf="resourceLinkForm.get('resourceName').hasError('required')" class="invalid-text">This field is
                 Required</span>
 
-              <!-- <mat-form-field appearance="outline" class="margin-top-xs field-width">
+              <mat-form-field appearance="outline" class="margin-top-xs field-width">
                 <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
                   placeholder="Description of the resource" />
               </mat-form-field>
               <span *ngIf="resourceLinkForm.get('instructions').hasError('required')" class="invalid-text">This field
-                is Required</span> -->
+                is Required</span>
 
               <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">
                   <input matInput #resourceLinks [(ngModel)]="editResourceLinks" formControlName="resourceLinks"
                     maxlength="100" i18n-placeholder placeholder="Link" />
                 </mat-form-field>
-                <!-- <mat-checkbox class="check-text" formControlName="isgatingEnabled">Gating Enabled</mat-checkbox> -->
+                <mat-checkbox class="check-text" formControlName="isgatingEnabled">Gating Enabled</mat-checkbox>
                 <mat-checkbox class="check-text" formControlName="isIframeSupported">Open link in new tab</mat-checkbox>
 
               </div>
@@ -455,8 +448,8 @@
               </div>
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource Thumbnail</span><br>
-                <!-- <span *ngIf="resourceLinkForm.get('appIcon').hasError('required')" class="invalid-text">This field
-                  is Required</span> -->
+                <span *ngIf="resourceLinkForm.get('appIcon').hasError('required')" class="invalid-text">This field
+                  is Required</span>
               </div>
               <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
                 <div>
@@ -470,8 +463,7 @@
                   </div>
                 </div>
                 <div>
-                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)<br> Files
-                  allowed: JPG, PNG
+                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
                 </div>
               </div>
               <div class="duration-style" *ngIf="!isAssessmentOrQuizEnabled">
@@ -522,12 +514,12 @@
               <span *ngIf="resourcePdfForm.get('resourceName').hasError('required')" class="invalid-text">This field
                 is Required</span>
 
-              <!-- <mat-form-field appearance="outline" class="margin-top-xs field-width">
+              <mat-form-field appearance="outline" class="margin-top-xs field-width">
                 <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
                   placeholder="Description of the resource" />
               </mat-form-field>
               <span *ngIf="resourcePdfForm.get('instructions').hasError('required')" class="invalid-text">This field
-                is Required</span> -->
+                is Required</span>
 
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource file</span><br>
@@ -571,8 +563,8 @@
                   Files allowed : {{uploadText}}<br> Max.file size : 200MB
                 </div>
               </div>
-              <!-- <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isgatingEnabled">Gating
-                Enabled</mat-checkbox> -->
+              <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isgatingEnabled">Gating
+                Enabled</mat-checkbox>
               <div style="display:flex; flex-direction:row" *ngIf="acceptType == '.zip'||isLinkEnabled">
 
                 <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isIframeSupported">Open link
@@ -581,8 +573,8 @@
 
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource Thumbnail</span><br>
-                <!-- <span *ngIf="resourcePdfForm.controls.appIcon.value == ''" class="invalid-text">This field is
-                  Required</span> -->
+                <span *ngIf="resourcePdfForm.controls.appIcon.value == ''" class="invalid-text">This field is
+                  Required</span>
               </div>
               <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
                 <div>
@@ -596,8 +588,7 @@
                   </div>
                 </div>
                 <div>
-                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)<br> Files
-                  allowed: JPG, PNG
+                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
                 </div>
               </div>
               <!-- <div class="thumnail-row margin-top-xs">
