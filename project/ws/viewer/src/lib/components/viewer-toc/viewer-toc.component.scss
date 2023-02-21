@@ -72,6 +72,11 @@ app-content-icon {
   flex: 1;
   min-width: 1px;
 }
+.moduleName{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 
 .align-self-start {
   align-self: start;
