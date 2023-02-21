@@ -784,8 +784,8 @@
               </mat-form-field>
             </div> -->
             <mat-checkbox class="example-margin" formControlName="gatingEnabled">Gating Enabled</mat-checkbox>
-            <!-- <mat-checkbox class="example-margin" style="margin-left: 10px;" formControlName="hideCourse">Private
-              Course</mat-checkbox> -->
+            <mat-checkbox class="example-margin" style="margin-left: 10px;" formControlName="courseVisibility">Private
+              Course</mat-checkbox>
             <button mat-raised-button class="mat-button-base link-btn-mt" style="height: fit-content;margin-left: 10px;"
               (click)="addCompetency()">
               Add Competency</button>
@@ -797,11 +797,11 @@
             <input matInput formControlName="cneName" placeholder="(Optional) CNE points" />
             <mat-hint class=" mt-hint">Note: CNE Points will be approved by INC</mat-hint>
           </mat-form-field>
-          <div class="form-edit-width" *ngIf="competencies?.length > 0">
+          <div class="form-edit-width" id="competencies" *ngIf="competencies?.length > 0">
             <p><strong>Competencies List</strong></p>
-            <div *ngFor="let comp of competencies" style="width: 450px">
+            <div *ngFor="let comp of competencies" style="width: 450px; margin-bottom: 10px;">
               <div
-                style="background: #FFFFFF; box-shadow: 0px 0px 4px rgb(0 0 0 / 15%); border-radius: 10px; padding: 10px;">
+                style="background: #FFFFFF; box-shadow: 0px 0px 4px rgb(0 0 0 / 15%); border-radius: 16px; padding: 10px;margin-left: 5px;margin-right: 5px;">
                 <p style="float: left">{{comp.competencyName}}</p>
                 <mat-icon style="color: #1C5D95; cursor: pointer;float: right;" class="icons-list"
                   (click)="deleteCompetancy(comp)">delete</mat-icon>

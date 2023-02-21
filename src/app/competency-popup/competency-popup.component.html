@@ -4,8 +4,8 @@
   </div>
   <h2 class="text-bold">Add Competency</h2>
   <div class="fixTableHead">
-    <mat-form-field appearance="fill" style="width: 80%">
-      <mat-select [(ngModel)]="proficiency" placeholder="Select Proficiency"
+    <mat-form-field appearance="fill" style="width:100%">
+      <mat-select [(ngModel)]="proficiency" placeholder="Select Competency"
         (selectionChange)="eventSelection($event.value)">
         <mat-option *ngFor="let list of proficiencyList" [value]="list">
           {{ list.name }}</mat-option>
@@ -13,12 +13,18 @@
     </mat-form-field>
   </div>
   <div class="fixTableHead">
-    <mat-form-field appearance="fill">
-      <mat-select [(ngModel)]="selectLevel" placeholder="Select Level" (selectionChange)="listSelection($event.value)">
+    <h4>Select Proficiencies</h4>
+    <!-- <mat-form-field appearance="fill"> -->
+    <section *ngFor="let list of levelList;let i=index">
+      <mat-checkbox [checked]="list.selected" (change)="listSelection(levelList,i,$event)"
+        class="leading-none mb-10">{{list.name}}
+      </mat-checkbox>
+    </section>
+    <!-- <mat-select [(ngModel)]="selectLevel" placeholder="Select Level" (selectionChange)="listSelection($event.value)">
         <mat-option *ngFor="let list of levelList" [value]="list">
           {{ list.name }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+      </mat-select> -->
+    <!-- </mat-form-field> -->
   </div>
 
   <div class="">
@@ -28,7 +34,7 @@
         Send to Creator’s draft
       </button>
     </div> -->
-    <div style="margin-bottom: 10px;">
+    <div style="margin: 10px 0px;">
       <!-- <button i18n class="refresh-button" id="refresh" (click)="refreshCourse()">
         <mat-icon style="margin-top: 4px;">refresh</mat-icon>
       </button> -->
@@ -36,7 +42,7 @@
         Cancel
       </button>
       <button class="" style="margin-left: 10px;" (click)="addCompetency(proficiency, selectLevel, true)"
-        mat-raised-button [disabled]="!(proficiency?.id && selectLevel?.value)">
+        mat-raised-button [disabled]="!(proficiency?.id && hasOneChecked)">
         Ok
       </button>
     </div>

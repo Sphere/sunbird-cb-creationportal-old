@@ -19,27 +19,32 @@ export class CompetencyPopupComponent implements OnInit {
   parentData: any
   levelList: any = [
     {
+      selected: false,
       "value": "1",
       "name": "Level 1"
     },
     {
+      selected: false,
       "value": "2",
       "name": "Level 2"
     },
     {
+      selected: false,
       "value": "3",
       "name": "Level 3"
     },
     {
+      selected: false,
       "value": "4",
       "name": "Level 4"
     },
     {
+      selected: false,
       "value": "5",
       "name": "Level 5"
-    },
-
+    }
   ]
+  hasOneChecked: boolean = false
   constructor(
     public dialogRef: MatDialogRef<CompetencyPopupComponent>,
     private editorService: EditorService,
@@ -63,23 +68,60 @@ export class CompetencyPopupComponent implements OnInit {
     this.proficiency = event
   }
 
-  listSelection(event: any) {
-    this.selectLevel = event
+  listSelection(levelList: any, i: number, $event: any) {
+
+    levelList[i].selected = $event.checked
+    this.selectLevel = levelList
+
+    let vendor = levelList.filter((level: any) => level['selected'] === true)
+    if (vendor.length > 0) {
+      this.hasOneChecked = true
+    } else {
+      this.hasOneChecked = false
+    }
+
   }
   addCompetency(proficiency: any, selectLevel: any, onclose: boolean) {
-    if (onclose) {
-      let competencyID = proficiency.id + '-' + selectLevel.value
-      let competencies_obj = [{
-        competencyName: proficiency.name,
-        competencyId: proficiency.id,
-        level: selectLevel.value
-      }]
+    let level = selectLevel.filter((level: any) => level['selected'] === true)
+
+    if (onclose && level.length > 0) {
+      let competencyID
+      let arr1: string[] = []
+      let arr2: { competencyName: any; competencyId: any; level: any }[] = []
+      let competencies_obj
+      if (this.parentData.competencySearch === undefined) {
+        level.forEach((item: any) => {
+          competencyID = proficiency.id + '-' + item.value
+          arr1.push(competencyID)
+          competencies_obj = {
+            competencyName: proficiency.name,
+            competencyId: proficiency.id,
+            level: item.value
+          }
+          arr2.push(competencies_obj)
+        })
+      } else {
+        arr2 = JSON.parse(this.parentData.competencies_v1)
+        arr1 = this.parentData.competencySearch
+
+        level.forEach((item: any) => {
+          competencyID = proficiency.id + '-' + item.value
+          arr1.push(competencyID)
+          competencies_obj = {
+            competencyName: proficiency.name,
+            competencyId: proficiency.id,
+            level: item.value
+          }
+          arr2.push(competencies_obj)
+        })
+      }
+
       let requestBody: any
       let meta: any = {
         versionKey: this.parentData.versionKey,
-        competencySearch: [competencyID],
+        competencySearch: arr1,
         competency: false,
-        competencies_v1: competencies_obj
+        competencies_v1: arr2
       }
 
       requestBody = {

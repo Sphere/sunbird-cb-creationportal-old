@@ -111,7 +111,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   isEditEnabled = false
   public sideNavBarOpened = false
   gatingEnabled!: FormControl
-  hideCourse!: FormControl
+  courseVisibility!: FormControl
   //issueCertification!: FormControl
   bucket: string = ''
   certificateList: any[] = [
@@ -383,19 +383,44 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   deleteCompetancy(competency: any) {
-    console.log(competency)
     let id = this.parentContent || ''
     let data: any
     this.editorService.checkReadAPI(id)
       .subscribe(async (res: any) => {
         data = await res.result.content
-
+        let competencyID: string
+        let arr1: string[] = []
+        let arr2: { competencyName: any; competencyId: any; level: any }[] = []
         let requestBody: any
-        let meta: any = {
-          versionKey: data.versionKey,
-          competencySearch: [],
-          competency: false,
-          competencies_v1: []
+        let meta
+        if (data.competencySearch === undefined) {
+          meta = {
+            versionKey: data.versionKey,
+            competencySearch: [],
+            competency: false,
+            competencies_v1: []
+          }
+        } else {
+
+          arr2 = JSON.parse(data.competencies_v1)
+
+          arr1 = data.competencySearch
+
+          competencyID = competency.competencyId + '-' + competency.level.toString()
+          arr1 = arr1.filter(e => e !== competencyID) // will return ['A', 'C']
+          for (var n = 0; n < arr2.length; n++) {
+            if (arr2[n].competencyName === competency.competencyName && arr2[n].competencyId === competency.competencyId && arr2[n].level === competency.level) {
+              arr2.splice(n, 1)
+              break
+            }
+          }
+
+          meta = {
+            versionKey: data.versionKey,
+            competencySearch: arr1,
+            competency: false,
+            competencies_v1: arr2
+          }
         }
 
         requestBody = {
@@ -413,10 +438,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   loadCompetancy() {
     let id = this.parentContent || ''
-    this.editorService.readcontentV3(id).subscribe((data: any) => {
-      if (data) {
-        this.competencies = []
-      }
+    this.editorService.readcontentV3(id).subscribe(async (data: any) => {
+      this.competencies = await JSON.parse(data.competencies_v1)
     })
   }
 
@@ -616,7 +639,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         this.contentForm.controls.lang.setValue(this.contentMeta.lang)
         this.contentForm.controls.gatingEnabled.setValue(this.contentMeta.gatingEnabled)
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification === undefined ? false : this.contentMeta.issueCertification)
-        console.log(this.contentMeta)
+
         if (this.contentMeta.competencies_v1) {
           this.competencies = JSON.parse(this.contentMeta.competencies_v1)
         }
@@ -832,7 +855,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.stage >= 1 && !this.type) {
           delete meta.artifactUrl
         }
-        console.log("this.contentForm", this.contentForm)
         this.contentService.setUpdatedMeta(meta, this.contentMeta.identifier)
 
       }
@@ -1599,7 +1621,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       nodeType: [],
       org: [],
       gatingEnabled: new FormControl(''),
-      hideCourse: false,
+      courseVisibility: false,
       issueCertification: false,
       creatorDetails: [],
       // passPercentage: [],

@@ -514,3 +514,9 @@ ul li {
 ::ng-deep .theme-igot.day-mode .mat-form-field-outline-thick {
   color: #1c5d95!important;
 }
+
+#competencies {
+    height: 310px;
+    overflow-y: auto;
+    width: fit-content;
+}
