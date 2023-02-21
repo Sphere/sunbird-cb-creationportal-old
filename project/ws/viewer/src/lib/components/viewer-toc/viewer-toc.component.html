@@ -52,20 +52,40 @@
           <div [ngClass]="{ 'mat-toolbar': pathSet.has(node.identifier) }" class="module-border">
             <!-- <ws-widget-display-content-type-icon class="flex" [displayContentType]="node?.type">
             </ws-widget-display-content-type-icon> -->
-            <span role="button" [ngClass]="{ 'content-active': pathSet.has(node.identifier) }" matRipple
-              matTreeNodeToggle class="flat-list-content-title width-expand margin-left-xs">
-              <h3 class="text-truncate margin-remove">{{ node.title }}</h3>
-            </span>
+            <div>
+              <span role="button" [ngClass]="{ 'content-active': pathSet.has(node.identifier) }" matRipple
+                matTreeNodeToggle class="margin-left-xs moduleName">
+                <div>
+                  <h3 class="text-truncate margin-remove">{{ node.title }}</h3>
+                </div>
+                <div style="float: right;">
+                  <button type="button" class="margin-left-m" mat-button color="primary">
+                    <ng-container *ngIf="!nestedTreeControl.isExpanded(node)" i18n>
+                      <mat-icon>expand_more</mat-icon>
+                    </ng-container>
+                    <ng-container *ngIf="nestedTreeControl.isExpanded(node)" i18n>
+                      <mat-icon>expand_less</mat-icon>
+                    </ng-container>
+                  </button>
+                </div>
+
+
+              </span>
+            </div>
+
+
             <div class="content-duration">
               <h3 class="mat-caption margin-remove width-max-content bold">
                 {{ node.duration | pipeDurationTransform: 'hms' }}
               </h3>
             </div>
           </div>
+
           <ul style="margin-left: -3rem;" [hidden]="!nestedTreeControl.isExpanded(node)">
             <ng-container matTreeNodeOutlet></ng-container>
           </ul>
         </li>
+
       </mat-nested-tree-node>
     </mat-tree>
   </ul>
