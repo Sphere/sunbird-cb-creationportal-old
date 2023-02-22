@@ -99,6 +99,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   createModule: any
   isLoading: boolean = false;
   backToCourse?: Subscription
+  isModulePageEnabled: boolean = false;
+
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -216,6 +218,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.initService.saveContentMessage.subscribe(
       (data: any) => {
         if (data) {
+          this.isModulePageEnabled = true
           this.showAddchapter = true
           this.viewMode = ''
           this.save()
@@ -587,7 +590,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   async save(nextAction?: string) {
-    this.loaderService.changeLoad.next(true)
+    if (this.isModulePageEnabled)
+      this.loaderService.changeLoad.next(true)
+
     if (this.resourseSelected !== '') {
       this.update()
     }
@@ -625,7 +630,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-          this.clickedNext = true
+
+          if (this.isModulePageEnabled)
+            this.clickedNext = true
+
           // window.location.reload()
         },
         (error: any) => {
