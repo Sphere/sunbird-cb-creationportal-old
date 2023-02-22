@@ -98,6 +98,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   isMoveCourseToDraft: boolean = false;
   createModule: any
   isLoading: boolean = false;
+  backToCourse?: Subscription
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -145,7 +146,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
 
 
-    this.initService.isBackButtonClickedMessage.subscribe(
+    this.backToCourse = this.initService.isBackButtonClickedMessage.subscribe(
       (data: any) => {
         console.log("isBackButtonClickedMessage data " + data)
         if (sessionStorage.getItem('isSettingsPage') === '1') {
@@ -447,6 +448,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.loaderService.changeLoad.next(false)
     this.headerService.showCreatorHeader('showlogo')
     this.rootSvc.showNavbarDisplay$.next(true)
+    if (this.backToCourse) {
+      this.backToCourse.unsubscribe()
+    }
   }
 
   addChapterName() {

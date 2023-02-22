@@ -220,6 +220,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   quizIndex!: number
   editResourceLinks: string = ''
   isLoading: boolean = false
+  backToModule?: Subscription
 
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
@@ -292,8 +293,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       isgatingEnabled: new FormControl(),
     })
 
-    this.initService.backToHomeMessage.subscribe((data: any) => {
+    this.backToModule = this.initService.backToHomeMessage.subscribe((data: any) => {
       if (data === 'fromSettings') {
+        this.isLoading = true
         this.isSettingsPage = false
         setTimeout(() => {
           this.isLoading = false
@@ -327,6 +329,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
     if (this.activeContentSubscription) {
       this.activeContentSubscription.unsubscribe()
+    }
+    if (this.backToModule) {
+      this.backToModule.unsubscribe()
     }
   }
 
