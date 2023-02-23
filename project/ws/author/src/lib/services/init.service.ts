@@ -24,6 +24,10 @@ export class AuthInitService {
   public currentMessage = this.messageSource.asObservable()
   private publishSource = new Subject<any>()
   public publishMessage = this.publishSource.asObservable()
+
+  private backToHomeSource = new Subject<any>()
+  public backToHomeMessage = this.backToHomeSource.asObservable()
+
   private uploadSource = new Subject<any>()
   public uploadMessage = this.uploadSource.asObservable()
   private editCourseContent = new Subject<any>()
@@ -111,6 +115,9 @@ export class AuthInitService {
   }
   isBackButtonClickedFromAssessmentAction(message: any) {
     this.isBackButtonFromAssessmentClicked.next(message)
+  }
+  backToHome(message: any) {
+    this.backToHomeSource.next(message)
   }
 
 }
