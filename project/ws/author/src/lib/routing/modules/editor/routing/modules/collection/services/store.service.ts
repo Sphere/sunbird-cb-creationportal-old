@@ -941,7 +941,7 @@ export class CollectionStoreService {
       // if (content.sourceName === undefined && content.status === 'Draft') {
       //   errorMsg.push('Course provider/source cannot be empty')
       // }
-      if (content.mimeType === 'text/x-url' && content.artifactUrl === '') {
+      if ((content.mimeType === 'text/x-url' || content.mimeType === 'application/pdf' || content.mimeType === 'audio/mpeg' || content.mimeType === 'video/mp4' || content.mimeType === 'application/vnd.ekstep.html-archive' || content.mimeType === 'application/json') && content.artifactUrl === '') {
         errorMsg.push('ArtifactUrl cannot be empty')
       }
       // if (content.mimeType === 'text/x-url' && !(/(http(s?)):\/\//i.test(content.artifactUrl))) {

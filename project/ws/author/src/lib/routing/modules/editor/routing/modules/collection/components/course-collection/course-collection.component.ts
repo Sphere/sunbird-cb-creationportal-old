@@ -558,7 +558,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   async save(nextAction?: string) {
-    if (this.isModulePageEnabled)
+    if (this.isModulePageEnabled && this.viewMode !== 'assessment')
       this.loaderService.changeLoad.next(true)
 
     if (this.resourseSelected !== '') {
@@ -599,7 +599,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             duration: NOTIFICATION_TIME * 1000,
           })
 
-          if (this.isModulePageEnabled)
+          if (this.isModulePageEnabled && this.viewMode !== 'assessment')
             this.clickedNext = true
 
           // window.location.reload()

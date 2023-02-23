@@ -1663,7 +1663,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //     this.isSettingsPage = true
     //   }
     // })
-    this.ngAfterViewInit()
+    this.editorService.readcontentV3(this.contentService.parentContent).toPromise()
+    // this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => { })
+    // this.ngAfterViewInit()
     setTimeout(() => {
       this.isSettingsPage = true
     }, 1000)
@@ -2175,7 +2177,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         iframeSupported = 'Yes'
       else
         iframeSupported = 'No'
-
       meta["appIcon"] = thumbnail
       meta["thumbnail"] = thumbnail
       meta["versionKey"] = this.courseData.versionKey
@@ -3773,6 +3774,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       })
     } else {
       this.loaderService.changeLoad.next(true)
+      this.currentCourseId = this.content.identifier
       await this.editorService.readcontentV3(this.currentCourseId).subscribe(async (resData: any) => {
         const updateContentReq: any = {
           request: {
