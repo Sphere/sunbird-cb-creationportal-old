@@ -17,6 +17,7 @@ import {
 } from '@ws-widget/utils'
 import { of, Subscription } from 'rxjs'
 import { delay } from 'rxjs/operators'
+import { PlayerStateService } from '../../player-state.service'
 import { ViewerDataService } from '../../viewer-data.service'
 import { ViewerUtilService } from '../../viewer-util.service'
 interface IViewerTocCard {
@@ -62,6 +63,7 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
     private viewSvc: ViewerUtilService,
     private configSvc: ConfigurationsService,
     private contentProgressSvc: ContentProgressService,
+    private playerStateService: PlayerStateService,
   ) {
     this.nestedTreeControl = new NestedTreeControl<IViewerTocCard>(this._getChildren)
     this.nestedDataSource = new MatTreeNestedDataSource()
@@ -362,6 +364,7 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
             this.expandThePath()
           })
       }
+      this.updateResourceChange()
     }
   }
 
@@ -377,5 +380,18 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
 
   minimizenav() {
     this.hidenav.emit(false)
+  }
+
+  updateResourceChange() {
+    const currentIndex = this.queue.findIndex(c => c.identifier === this.resourceId)
+    const next = currentIndex + 1 < this.queue.length ? this.queue[currentIndex + 1].viewerUrl : null
+    const prev = currentIndex - 1 >= 0 ? this.queue[currentIndex - 1].viewerUrl : null
+
+    // tslint:disable-next-line:object-shorthand-properties-first
+    this.playerStateService.setState({
+      isValid: Boolean(this.collection),
+      // tslint:disable-next-line:object-shorthand-properties-first
+      prev, next
+    })
   }
 }

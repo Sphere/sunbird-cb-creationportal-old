@@ -8,6 +8,22 @@
               <ng-container *ngIf="isFetchingDataComplete" [wsResolverWidget]="widgetResolverPdfData"></ng-container>
             </div>
             <div class="flex justify-end mt-3">
+              <div class="pdf prev-button">
+                <a mat-button class="width-auto" [routerLink]="prevResourceUrl" queryParamsHandling="preserve"
+                  accesskey="<">
+                  <span class="material-icons align-left-arrow">
+                    chevron_left
+                  </span>
+                </a>
+              </div>
+              <div class="pdf next-button">
+                <a mat-button class="width-auto mr-10" [routerLink]="nextResourceUrl" queryParamsHandling="preserve"
+                  accesskey=">">
+                  <span class="material-icons align-right-arrow">
+                    chevron_right
+                  </span>
+                </a>
+              </div>
               <!-- <ws-widget-btn-content-download [forPreview]="forPreview" [widgetData]="
                   pdfData
                     | pipePartialContent

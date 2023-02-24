@@ -612,3 +612,40 @@ h3.shepherd-title {
 ::ng-deep .theme-igot.day-mode .mat-form-field-outline-thick {
   color: #1c5d95 !important;
 }
+
+a.width-auto.mat-button {
+    width: 30px;
+    min-width: 35px;
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    padding-top: 20px;
+    padding-bottom: 11px;
+    border-radius: 0 !important;
+    font-size: 18px !important;
+    z-index: 9;
+}
+
+a.width-auto.mat-button, .material-icons {
+    color: #fff;
+    font-size: 38px;
+}
+
+.align-left-arrow {
+    position: relative;
+    right: 15px;
+    top: -4px;
+    color: #fff;
+    font-size: 27px;
+}
+
+.prev-button .width-auto {
+    left: -26px;
+    top: -5px;
+}
+
+.align-right-arrow {
+    right: 15px;
+    position: relative;
+    top: -4px;
+    color: #fff;
+    font-size: 27px;
+}
