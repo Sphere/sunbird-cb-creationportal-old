@@ -110,3 +110,59 @@
   box-sizing: border-box;
   margin-bottom: $size-m;
 }
+
+.prev-button .title {
+  margin-left: 0px !important;
+}
+
+.prev-button .width-auto {
+  top: -75vh;
+  position: relative;
+  left: -109vh;
+  @include breakpoint-xs {
+   left:0px;
+  }
+}
+
+.prev-button .title {
+   @include breakpoint-xs {
+    margin-left: -1px !important;
+   }
+}
+
+.prev-button .title {
+    margin-left: 0px !important;
+}
+
+.next-button .title {
+  margin-right: 0px;
+}
+
+.prev-button .title {
+   @include breakpoint-xs {
+    margin-left: -1px !important;
+   }
+}
+.next-button .title {
+   @include breakpoint-xs {
+    margin-right: -1px !important;
+   }
+}
+
+.next-button .title {
+  margin-right: 0px;
+}
+
+.next-button .width-auto {
+  top: -77vh;
+  right: 0;
+   @include breakpoint-xs {
+   right:0px;
+  }
+}
+
+.next-button .title {
+   @include breakpoint-xs {
+    margin-right: -1px !important;
+   }
+}

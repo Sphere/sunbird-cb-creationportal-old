@@ -11,6 +11,18 @@
               <ng-container *ngIf="isFetchingDataComplete" [wsResolverWidget]="widgetResolverAudioData"></ng-container>
             </div>
             <div class="flex justify-end mt-3">
+              <div class="prev-button">
+                <a mat-button class="width-auto" [routerLink]="prevResourceUrl" queryParamsHandling="preserve"
+                  accesskey="<">
+                  <span class="material-icons align-arrow icon-tour" id="left-arrow">chevron_left</span>
+                </a>
+              </div>
+              <div class="next-button">
+                <a mat-button class="width-auto mr-10" [routerLink]="nextResourceUrl" queryParamsHandling="preserve"
+                  accesskey=">">
+                  <span class="material-icons icon-tour  align-right-arrow" id="right-arrow">chevron_right</span>
+                </a>
+              </div>
               <!-- <ws-widget-btn-content-download [forPreview]="forPreview" [widgetData]="
                   audioData
                     | pipePartialContent
