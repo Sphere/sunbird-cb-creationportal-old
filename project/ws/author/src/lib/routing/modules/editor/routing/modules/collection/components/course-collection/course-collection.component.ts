@@ -98,6 +98,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   isMoveCourseToDraft: boolean = false;
   createModule: any
   isLoading: boolean = false;
+  backToCourse?: Subscription
   isModulePageEnabled: boolean = false;
 
   constructor(
@@ -143,6 +144,34 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.showAddchapter = false
           this.viewMode = 'meta'
           this.clickedNext = false
+        }
+      })
+
+
+    this.backToCourse = this.initService.isBackButtonClickedMessage.subscribe(
+      (data: any) => {
+        console.log("isBackButtonClickedMessage data " + data)
+        if (sessionStorage.getItem('isSettingsPage') === '1') {
+          sessionStorage.setItem('isSettingsPage', '0')
+          console.log("inside ")
+          this.initService.backToHome('fromSettings')
+        } else {
+          sessionStorage.setItem('isSettingsPage', '0')
+          if (this.viewMode === 'assessment') {
+            this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
+          } else if (this.showAddchapter) {
+            if (this.viewMode === 'meta' && this.clickedNext) {
+              this.clickedNext = false
+              this.showAddchapter = false
+            }
+          } else {
+            if (this.viewMode === 'meta' && this.clickedNext) {
+              this.initService.publishData('backToCourseDetailsPage')
+            } else {
+              this.router.navigateByUrl('/author/home')
+            }
+
+          }
         }
       })
     this.initService.publishMessage.subscribe(
@@ -422,6 +451,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.loaderService.changeLoad.next(false)
     this.headerService.showCreatorHeader('showlogo')
     this.rootSvc.showNavbarDisplay$.next(true)
+    if (this.backToCourse) {
+      this.backToCourse.unsubscribe()
+    }
   }
 
   addChapterName() {
@@ -558,7 +590,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   async save(nextAction?: string) {
-    if (this.isModulePageEnabled)
+    if (this.isModulePageEnabled && this.viewMode !== 'assessment')
       this.loaderService.changeLoad.next(true)
 
     if (this.resourseSelected !== '') {
@@ -599,7 +631,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             duration: NOTIFICATION_TIME * 1000,
           })
 
-          if (this.isModulePageEnabled)
+          if (this.isModulePageEnabled && this.viewMode !== 'assessment')
             this.clickedNext = true
 
           // window.location.reload()

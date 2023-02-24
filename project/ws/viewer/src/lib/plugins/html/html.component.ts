@@ -84,7 +84,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
       if (typeof iframeSupport !== 'boolean') {
         iframeSupport = this.htmlContent.isIframeSupported.toLowerCase()
         // if (iframeSupport === 'no') {
-          if (iframeSupport === 'yes') {
+        if (iframeSupport === 'yes') {
           this.showIframeSupportWarning = true
           setTimeout(
             () => {
@@ -143,9 +143,11 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
         if (this.htmlContent.streamingUrl) {
           url = `${this.htmlContent.streamingUrl}?timestamp='${new Date().getTime()}`
         }
+
         this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
       } else {
-        this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.htmlContent.artifactUrl)
+        let urls = this.htmlContent.artifactUrl.replace('watch?v=', 'embed/')
+        this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(urls)
       }
 
       // testing purpose only
