@@ -2405,7 +2405,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       if (tempUpdateContent.category === 'CourseUnit' || tempUpdateContent.category === 'Collection') {
         tempUpdateContent.visibility = 'Parent'
       } else {
-        tempUpdateContent.versionKey = this.versionID === undefined ? this.versionKey.versionKey : this.versionID.versionKey
+        this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+        tempUpdateContent.versionKey = this.versionKey.versionKey == undefined ? this.versionID.versionKey : this.versionKey.versionKey
+        // tempUpdateContent.versionKey = this.versionID === undefined ? this.versionKey.versionKey : this.versionID.versionKey
       }
 
       requestBody = {
