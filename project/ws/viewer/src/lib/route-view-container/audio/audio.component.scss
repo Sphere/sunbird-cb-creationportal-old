@@ -231,3 +231,20 @@
   height: 100vh;
   width: 100vw;
 }
+
+.prev-button .width-auto {
+  left: -109vh;
+  top: -42vh;
+}
+
+.next-button .width-auto {
+  right: -11px;
+  top: -42vh;
+}
+
+.align-arrow {
+  color:white;
+  margin-left: -12px;
+  top: -3px;
+  position: relative;
+}

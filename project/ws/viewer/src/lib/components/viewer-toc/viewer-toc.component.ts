@@ -17,6 +17,8 @@ import {
 } from '@ws-widget/utils'
 import { of, Subscription } from 'rxjs'
 import { delay } from 'rxjs/operators'
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+import { PlayerStateService } from '../../player-state.service'
 import { ViewerDataService } from '../../viewer-data.service'
 import { ViewerUtilService } from '../../viewer-util.service'
 interface IViewerTocCard {
@@ -47,10 +49,12 @@ interface ICollectionCard {
   selector: 'viewer-viewer-toc',
   templateUrl: './viewer-toc.component.html',
   styleUrls: ['./viewer-toc.component.scss'],
+  providers: [EditorService]
 })
 export class ViewerTocComponent implements OnInit, OnDestroy {
   @Output() hidenav = new EventEmitter<boolean>()
   @Input() forPreview = false
+  isGetingEnabled!: boolean
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -62,6 +66,8 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
     private viewSvc: ViewerUtilService,
     private configSvc: ConfigurationsService,
     private contentProgressSvc: ContentProgressService,
+    private playerStateService: PlayerStateService,
+    private editorService: EditorService,
   ) {
     this.nestedTreeControl = new NestedTreeControl<IViewerTocCard>(this._getChildren)
     this.nestedDataSource = new MatTreeNestedDataSource()
@@ -121,6 +127,13 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
         if (this.collection) {
           this.queue = this.utilitySvc.getLeafNodes(this.collection, [])
         }
+
+        this.editorService.readcontentV3(collectionId).subscribe((res: any) => {
+          if (res.gatingEnabled)
+            this.isGetingEnabled = true
+          else
+            this.isGetingEnabled = false
+        })
       }
       if (this.resourceId) {
         this.processCurrentResourceChange()
@@ -362,6 +375,7 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
             this.expandThePath()
           })
       }
+      this.updateResourceChange()
     }
   }
 
@@ -377,5 +391,18 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
 
   minimizenav() {
     this.hidenav.emit(false)
+  }
+
+  updateResourceChange() {
+    const currentIndex = this.queue.findIndex(c => c.identifier === this.resourceId)
+    const next = currentIndex + 1 < this.queue.length ? this.queue[currentIndex + 1].viewerUrl : null
+    const prev = currentIndex - 1 >= 0 ? this.queue[currentIndex - 1].viewerUrl : null
+
+    // tslint:disable-next-line:object-shorthand-properties-first
+    this.playerStateService.setState({
+      isValid: Boolean(this.collection),
+      // tslint:disable-next-line:object-shorthand-properties-first
+      prev, next
+    })
   }
 }

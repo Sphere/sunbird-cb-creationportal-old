@@ -157,9 +157,11 @@
         queryParamsHandling="preserve">
         <h3 *ngIf="content?.type !== enumContentTypes.ASSESSMENT" class="margin-remove text-truncate flex">
           {{ content?.title }}
+          <img *ngIf="isGetingEnabled" class="lock-style" src="cbp-assets/images/lock.png">
         </h3>
         <h1 *ngIf="content?.type === enumContentTypes.ASSESSMENT" class="margin-remove text-truncate flex">
           {{ content?.title }}
+          <img *ngIf="isGetingEnabled" class="lock-style" src="cbp-assets/images/lock.png">
         </h1>
       </a>
       <span class="bold" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms'
