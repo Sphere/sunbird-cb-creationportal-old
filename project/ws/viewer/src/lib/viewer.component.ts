@@ -5,6 +5,7 @@ import { NsWidgetResolver } from '@ws-widget/resolver'
 import { UtilityService, ValueService } from '@ws-widget/utils'
 import { Subscription } from 'rxjs'
 import { RootService } from '../../../../../src/app/component/root/root.service'
+import { ApiService } from '../../../author/src/public-api'
 import { TStatus, ViewerDataService } from './viewer-data.service'
 
 export enum ErrorType {
@@ -21,6 +22,7 @@ export enum ErrorType {
   selector: 'viewer-container',
   templateUrl: './viewer.component.html',
   styleUrls: ['./viewer.component.scss'],
+  providers: [ApiService]
 })
 export class ViewerComponent implements OnInit, OnDestroy, AfterViewChecked {
   fullScreenContainer: HTMLElement | null = null
