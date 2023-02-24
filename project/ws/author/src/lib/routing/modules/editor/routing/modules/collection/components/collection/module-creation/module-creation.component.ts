@@ -2682,6 +2682,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
             this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
               this.courseData = data
+              this.editorStore.setOriginalMeta(data)
             })
           })
         })
