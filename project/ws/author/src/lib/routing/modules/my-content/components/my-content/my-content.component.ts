@@ -150,13 +150,13 @@ export class MyContentComponent implements OnInit, OnDestroy {
       offset: 0,
       limit: 24,
     }
-    console.log(this.configService.userRoles)
+    console.log(this.configService.unMappedUser.roles)
     // this.newDesign = this.accessService.authoringConfig.newDesign
     this.newDesign = l.get(this.accessService, 'authoringConfig.newDesign')
     this.ordinals = this.authInitService.ordinals
     this.allLanguages = this.authInitService.ordinals.subTitles || []
     this.activatedRoute.queryParams.subscribe(params => {
-      if (this.configService.userRoles!.has('public')) {
+      if (this.configService.unMappedUser.roles.length === 1 && this.configService.unMappedUser.roles[0] === "PUBLIC") {
         this.status = 'draft'
         this.links = ['Draft']
         this.navigateContents('Draft')
