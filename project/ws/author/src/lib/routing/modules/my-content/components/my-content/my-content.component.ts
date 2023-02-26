@@ -23,7 +23,11 @@ import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 import { Subscription } from 'rxjs'
 import { MyContentService } from '../../services/my-content.service'
 import { map } from 'rxjs/operators'
-import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
+// import {
+//   REVIEW_ROLE,
+//   PUBLISH_ROLE,
+//   CREATE_ROLE
+// } from '@ws/author/src/lib/constants/content-role'
 import * as l from 'lodash'
 import { ConfigurationsService } from '@ws-widget/utils'
 @Component({
@@ -146,13 +150,20 @@ export class MyContentComponent implements OnInit, OnDestroy {
       offset: 0,
       limit: 24,
     }
-
+    console.log(this.configService.userRoles)
     // this.newDesign = this.accessService.authoringConfig.newDesign
     this.newDesign = l.get(this.accessService, 'authoringConfig.newDesign')
     this.ordinals = this.authInitService.ordinals
     this.allLanguages = this.authInitService.ordinals.subTitles || []
     this.activatedRoute.queryParams.subscribe(params => {
-      this.status = params.status
+      if (this.configService.userRoles!.has('public')) {
+        this.status = 'draft'
+        this.links = ['Draft']
+        this.navigateContents('Draft')
+      } else {
+        this.status = params.status
+      }
+
       this.setAction()
       this.fetchContent(false)
     })
@@ -686,7 +697,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // if (this.status === 'publish' && !this.isAdmin) {
     //   requestData.request.filters.publisherDetails.push(this.userId)
     // }
-
     switch (this.status) {
       case 'published':
         if (this.accessService.hasRole(['content_creator'])) {
@@ -735,6 +745,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         // case 'unpublished':
         if (this.accessService.hasRole(['content_creator']) ||
           this.accessService.hasRole(['content_reviewer']) ||
+          this.configService.userRoles!.has('public') ||
           this.accessService.hasRole(['content_publisher'])) {
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         }
@@ -965,7 +976,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
   }
 
   confirmAction(content: any) {
-    console.log("yes here")
     let message = ''
     if (content.type === 'delete') {
       message = 'delete'
@@ -1157,14 +1167,18 @@ export class MyContentComponent implements OnInit, OnDestroy {
   canShow(role: string): boolean {
     switch (role) {
       case 'review':
-        return this.accessService.hasRole(REVIEW_ROLE)
+        //return this.accessService.hasRole(REVIEW_ROLE)
+        return this.configService.userRoles!.has('content_reviewer')
       case 'publish':
-        return this.accessService.hasRole(PUBLISH_ROLE)
+        //return this.accessService.hasRole(PUBLISH_ROLE)
+        return this.configService.userRoles!.has('content_publisher')
       case 'author':
-        return this.accessService.hasRole(CREATE_ROLE) || this.accessService.hasRole(REVIEW_ROLE)
-          || this.accessService.hasRole(PUBLISH_ROLE)
+        // return this.accessService.hasRole(CREATE_ROLE) || this.accessService.hasRole(REVIEW_ROLE)
+        //   || this.accessService.hasRole(PUBLISH_ROLE)
+        return this.configService.userRoles!.has('content_reviewer') || this.configService.userRoles!.has('content_creator') || this.configService.userRoles!.has('content_publisher')
       case 'author_create':
-        return this.accessService.hasRole(CREATE_ROLE)
+        //return this.accessService.hasRole(CREATE_ROLE)
+        return this.configService.userRoles!.has('content_creator')
       default:
         return false
     }
