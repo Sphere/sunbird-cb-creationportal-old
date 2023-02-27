@@ -371,6 +371,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       maxHeight: '90vh',
     })
     dialogRef.afterClosed().subscribe((response: boolean) => {
+      this.loader.changeLoad.next(true)
       console.log(response, this.parentContent)
       let id = this.parentContent || ''
       //if (response === true) {
@@ -378,11 +379,13 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         if (data.competencies_v1) {
           this.competencies = JSON.parse(data.competencies_v1)
         }
+        this.loader.changeLoad.next(false)
       })
     })
   }
 
   deleteCompetancy(competency: any) {
+    this.loader.changeLoad.next(true)
     let id = this.parentContent || ''
     let data: any
     this.editorService.checkReadAPI(id)
@@ -407,7 +410,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
           arr1 = data.competencySearch
 
           competencyID = competency.competencyId + '-' + competency.level.toString()
-          arr1 = arr1.filter(e => e !== competencyID) // will return ['A', 'C']
+          arr1 = arr1.filter(e => e !== competencyID)
           for (var n = 0; n < arr2.length; n++) {
             if (arr2[n].competencyName === competency.competencyName && arr2[n].competencyId === competency.competencyId && arr2[n].level === competency.level) {
               arr2.splice(n, 1)
@@ -428,18 +431,24 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             content: meta
           }
         }
-        this.editorService.updateNewContentV3(requestBody, id).subscribe(
-          (response: any) => {
-            if (response) {
-              this.loadCompetancy()
-            }
-          })
+        this.editorService.updateNewContentV3(requestBody, id)
+          .subscribe(
+            (response: any) => {
+              if (response) {
+                this.loadCompetancy()
+              }
+            })
       })
   }
   loadCompetancy() {
     let id = this.parentContent || ''
     this.editorService.readcontentV3(id).subscribe(async (data: any) => {
-      this.competencies = await JSON.parse(data.competencies_v1)
+      if (data.competencies_v1 !== undefined) {
+        this.competencies = await JSON.parse(data.competencies_v1)
+      } else {
+        this.competencies = []
+      }
+      this.loader.changeLoad.next(false)
     })
   }
 
