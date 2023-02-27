@@ -550,7 +550,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
           }
         }
         this.contentForm.controls.sourceName.setValue(this.contentMeta.sourceName)
-        this.contentForm.controls.langName.setValue(this.contentMeta.lang)
+        // this.contentForm.controls.langName.setValue(this.contentMeta.lang)
         this.contentForm.controls.trackContactsCtrl.setValue(this.contentMeta.trackContactsCtrl)
         this.contentForm.controls.publisherDetailsCtrl.setValue(this.contentMeta.publisherDetailsCtrl)
         this.contentForm.controls.gatingEnabled.setValue(this.contentMeta.gatingEnabled)
@@ -1597,7 +1597,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       instructions: [],
       versionKey: '',  // (new Date()).getTime()
       purpose: '',
-      langName: '',
+      // langName: '',
       trackContactsCtrl: '',
       publisherDetailsCtrl: '',
       activateLink: new FormControl(),
