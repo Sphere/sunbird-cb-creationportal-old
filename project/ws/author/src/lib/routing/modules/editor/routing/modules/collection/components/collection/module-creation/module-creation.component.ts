@@ -223,6 +223,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   backToModule?: Subscription
   isError: boolean = false
   saveTriggerSub?: Subscription
+  isVisibleReviewDialog: boolean = false
 
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
@@ -876,17 +877,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.contentService.setOriginalMeta(resData)
         }
       })
-      if (contentAction !== 'publishResources') {
+      if (contentAction !== 'publishResources' && !this.isVisibleReviewDialog) {
+        this.isVisibleReviewDialog = true
         const dialogRef = this.dialog.open(CommentsDialogComponent, {
           width: '750px',
           height: '450px',
           data: this.contentService.getOriginalMeta(this.currentParentId),
         })
 
-        // dialogRef.afterClosed().subscribe((commentsForm: FormGroup) => {
-        //   this.finalCall(commentsForm)
-        // })
         dialogRef.afterClosed().subscribe((d) => {
+          this.isVisibleReviewDialog = false
           // this.finalCall(contentAction)
           if (d) {
             if (this.getAction() === 'sendForReview' && d.value.action === 'reject') {
