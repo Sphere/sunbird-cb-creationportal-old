@@ -916,7 +916,7 @@ export class CollectionStoreService {
       const lexId = this.uniqueIdMap.get(v) as string
       const content = this.contentService.getUpdatedMeta(lexId)
       // tslint:disable-next-line:no-console
-      console.log(content)
+      // console.log(content)
       // const url = this.router.url
       // const id = url.split('/')
       if (content.name === '') {
@@ -925,8 +925,8 @@ export class CollectionStoreService {
       // if (content.description === '' && content.status === 'Draft') {
       //   errorMsg.push('Course description/summary cannot be empty')
       // }
-      console.log(content.purpose)
-      console.log(content.contentType)
+      // console.log(content.purpose)
+      // console.log(content.contentType)
       // if (content.purpose === '') {
       //   errorMsg.push('Course subtitle cannot be empty')
       // }
@@ -941,8 +941,13 @@ export class CollectionStoreService {
       // if (content.sourceName === undefined && content.status === 'Draft') {
       //   errorMsg.push('Course provider/source cannot be empty')
       // }
-      if (content.mimeType === 'text/x-url' && content.artifactUrl === '') {
-        errorMsg.push('ArtifactUrl cannot be empty')
+      console.log("artifactUrl: ", content.mimeType, content.artifactUrl)
+      if ((content.mimeType === 'text/x-url' || content.mimeType === 'application/pdf' || content.mimeType === 'audio/mpeg' || content.mimeType === 'video/mp4' || content.mimeType === 'application/vnd.ekstep.html-archive' || content.mimeType === 'application/json') && !content.artifactUrl && content.artifactUrl == undefined || content.artifactUrl === '') {
+        if (content.mimeType === 'text/x-url') {
+          errorMsg.push('Link cannot be empty')
+        } else {
+          errorMsg.push('File cannot be empty')
+        }
       }
       // if (content.mimeType === 'text/x-url' && !(/(http(s?)):\/\//i.test(content.artifactUrl))) {
       // if (content.mimeType === 'text/x-url') {
