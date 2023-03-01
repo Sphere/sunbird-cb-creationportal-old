@@ -25,6 +25,23 @@
   max-width: 640px;
 }
 
+.prev-button .width-auto {
+  left: -109vh;
+  top: -42vh;
+}
+
+.next-button .width-auto {
+  right: -11px;
+  top: -42vh;
+}
+
+.align-arrow {
+  margin-left: -12px;
+  top: -3px;
+  position: relative;
+}
+
+
 .video-player-title {
   width: 65%;
 

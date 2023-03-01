@@ -12,6 +12,19 @@
               </viewer-plugin-html>
             </div>
             <div class="flex justify-end mt-3">
+              <div class="prev-button">
+                <a mat-button class="width-auto" [routerLink]="prevResourceUrl" queryParamsHandling="preserve"
+                  accesskey="<">
+                  <span class="material-icons align-arrow icon-tour" id="left-arrow"
+                    style="color:white">chevron_left</span>
+                </a>
+              </div>
+              <div class="next-button">
+                <a mat-button class="width-auto mr-10" [routerLink]="nextResourceUrl" queryParamsHandling="preserve"
+                  accesskey=">">
+                  <span class="material-icons icon-tour  align-right-arrow" id="right-arrow">chevron_right</span>
+                </a>
+              </div>
               <ws-widget-btn-fullscreen [widgetType]="'actionButton'" [widgetSubType]="'actionButtonFullscreen'"
                 [widgetData]="{ fsContainer: htmlContainer }">
               </ws-widget-btn-fullscreen>
