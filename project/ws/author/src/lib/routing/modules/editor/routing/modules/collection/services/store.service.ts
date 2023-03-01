@@ -945,7 +945,23 @@ export class CollectionStoreService {
       if ((content.mimeType === 'text/x-url' || content.mimeType === 'application/pdf' || content.mimeType === 'audio/mpeg' || content.mimeType === 'video/mp4' || content.mimeType === 'application/vnd.ekstep.html-archive' || content.mimeType === 'application/json') && !content.artifactUrl && content.artifactUrl == undefined || content.artifactUrl === '') {
         if (content.mimeType === 'text/x-url') {
           errorMsg.push('Link cannot be empty')
-        } else {
+        }
+        else if (content.mimeType === 'application/pdf') {
+          errorMsg.push('PDF cannot be empty')
+        }
+        else if (content.mimeType === 'audio/mpeg') {
+          errorMsg.push('Audio File cannot be empty')
+        }
+        else if (content.mimeType === 'video/mp4') {
+          errorMsg.push('Video File cannot be empty')
+        }
+        else if (content.mimeType === 'application/vnd.ekstep.html-archive') {
+          errorMsg.push('Zip File cannot be empty')
+        }
+        else if (content.mimeType === 'application/json') {
+          errorMsg.push('Assessment/Quiz cannot be empty')
+        }
+        else {
           errorMsg.push('File cannot be empty')
         }
       }
