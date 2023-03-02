@@ -221,6 +221,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   editResourceLinks: string = ''
   isLoading: boolean = false
   backToModule?: Subscription
+  updatedVersionKey: any
   isError: boolean = false
   saveTriggerSub?: Subscription
   isVisibleReviewDialog: boolean = false
@@ -1722,7 +1723,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           duration: NOTIFICATION_TIME * 1000,
         })
       } else {
-        this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+        //this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
         let iframeSupported
         if (this.resourceLinkForm.value.isIframeSupported)
           iframeSupported = 'Yes'
@@ -1741,7 +1742,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             isIframeSupported: iframeSupported,
             // gatingEnabled: this.courseData ? this.courseData.gatingEnabled : false,
             duration: this.resourceLinkForm.value.duration,
-            versionKey: this.versionKey.versionKey,
+            versionKey: this.updatedVersionKey,
           }
           await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
           await this.saves()
@@ -1868,13 +1869,17 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.isResourceTypeEnabled = true
   }
 
-  addIndependentResource() {
+  async addIndependentResource() {
     this.clearForm()
     this.addResourceModule["module"] = false
     this.addResourceModule["modID"] = this.courseData.identifier
     this.addResourceModule["courseID"] = this.courseData.identifier
     this.showAddModuleForm = true
     this.isResourceTypeEnabled = true
+
+    await this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
+      this.updatedVersionKey = resData.versionKey
+    })
   }
 
   changeToDefaultImg($event: any) {
@@ -1885,7 +1890,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   editContent(content: any) {
     /* tslint:disable-next-line */
-    console.log('current content', content)
+    this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
+      this.updatedVersionKey = resData.versionKey
+    })
+
     this.currentContent = content.identifier
     // if (content.mimeType === "application/json") {
     //   let obj: any = {}
@@ -2167,7 +2175,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         iframeSupported = 'No'
       meta["appIcon"] = thumbnail
       meta["thumbnail"] = thumbnail
-      meta["versionKey"] = this.courseData.versionKey
+      meta["versionKey"] = this.updatedVersionKey
       meta["instructions"] = topicDescription
       meta["description"] = topicDescription
       meta["name"] = name
@@ -3192,9 +3200,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   async resourcePdfSave() {
-    console.log(this.resourcePdfForm.status)
-    console.log(this.resourcePdfForm)
-    console.log(this.uploadFileName)
     if (this.resourcePdfForm.status == 'INVALID' || this.uploadFileName == '') {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -3221,7 +3226,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.triggerUpload()
         this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
         this.duration = this.resourcePdfForm.value.duration
-        this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+        // this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
         const rBody: any = {
           name: this.resourcePdfForm.value.resourceName,
           instructions: this.resourcePdfForm.value.instructions,
@@ -3231,7 +3236,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           isIframeSupported: iframeSupported,
           gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
           duration: this.resourcePdfForm.value.duration,
-          versionKey: this.versionKey.versionKey,
+          versionKey: this.updatedVersionKey,
         }
         await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
         await this.update()
