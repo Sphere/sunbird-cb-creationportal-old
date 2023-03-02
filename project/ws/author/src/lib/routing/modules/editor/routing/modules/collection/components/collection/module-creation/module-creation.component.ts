@@ -222,6 +222,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   isLoading: boolean = false
   backToModule?: Subscription
   updatedVersionKey: any
+  isError: boolean = false
+  saveTriggerSub?: Subscription
+  isVisibleReviewDialog: boolean = false
 
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
@@ -333,6 +336,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
     if (this.backToModule) {
       this.backToModule.unsubscribe()
+    }
+
+    if (this.saveTriggerSub) {
+      this.saveTriggerSub.unsubscribe()
     }
   }
 
@@ -555,7 +562,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
       }
 
-      this.triggerSaves().subscribe(
+      this.saveTriggerSub = this.triggerSaves().subscribe(
         () => {
           if (nextAction) {
 
@@ -571,13 +578,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           /* tslint:disable-next-line */
 
           // this.isSettingsPage = false
-          if (this.isSettingsPage) {
+          if (this.isSettingsPage && !this.isError) {
             this.action("push")
           }
 
         },
         (error: any) => {
           if (error.status === 409) {
+            this.isError = true
             const errorMap = new Map<string, NSContent.IContentMeta>()
             Object.keys(this.contentService.originalContent).forEach(v =>
               errorMap.set(v, this.contentService.originalContent[v]),
@@ -604,6 +612,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   )
                 }
               }
+              this.isError = false
             })
           }
           this.loader.changeLoad.next(false)
@@ -813,6 +822,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     // returnValue = null
 
     if (returnValue) {
+      this.isError = true
       const dialog = this.dialog.open(ErrorParserComponent, {
         width: '80vw',
         height: '90vh',
@@ -834,6 +844,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             )
           }
         }
+        this.isError = false
       })
       return false
     }
@@ -867,17 +878,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.contentService.setOriginalMeta(resData)
         }
       })
-      if (contentAction !== 'publishResources') {
+      if (contentAction !== 'publishResources' && !this.isVisibleReviewDialog) {
+        this.isVisibleReviewDialog = true
         const dialogRef = this.dialog.open(CommentsDialogComponent, {
           width: '750px',
           height: '450px',
           data: this.contentService.getOriginalMeta(this.currentParentId),
         })
 
-        // dialogRef.afterClosed().subscribe((commentsForm: FormGroup) => {
-        //   this.finalCall(commentsForm)
-        // })
         dialogRef.afterClosed().subscribe((d) => {
+          this.isVisibleReviewDialog = false
           // this.finalCall(contentAction)
           if (d) {
             if (this.getAction() === 'sendForReview' && d.value.action === 'reject') {
@@ -1099,6 +1109,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           Object.keys(this.contentService.originalContent).forEach(v =>
             errorMap.set(v, this.contentService.originalContent[v]),
           )
+          this.isError = true
           const dialog = this.dialog.open(ErrorParserComponent, {
             width: '80vw',
             height: '90vh',
@@ -1121,6 +1132,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                 )
               }
             }
+            this.isError = false
           })
         }
         this.loader.changeLoad.next(false)
@@ -2314,6 +2326,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             Object.keys(this.editorStore.originalContent).forEach(v =>
               errorMap.set(v, this.editorStore.originalContent[v]),
             )
+            this.isError = true
             const dialog = this.dialog.open(ErrorParserComponent, {
               width: '80vw',
               height: '90vh',
@@ -2336,6 +2349,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   )
                 }
               }
+              this.isError = false
             })
           }
           this.loaderService.changeLoad.next(false)
