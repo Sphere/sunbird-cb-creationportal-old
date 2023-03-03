@@ -450,7 +450,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     sourceName = this.contentForm.controls.sourceName.value
     instructions = this.contentForm.controls.instructions.value
     appIcon = this.contentForm.controls.appIcon.value
-    console.log("total: ", totalDuration, subTitles, sourceName, instructions, appIcon)
+    // console.log("total: ", totalDuration, subTitles, sourceName, instructions, appIcon)
     if (totalDuration && subTitles && sourceName && instructions && appIcon) {
       return false
     } else {
