@@ -42,7 +42,8 @@
   <span class="spacer width-1-1"></span>
   <mat-icon class="material-icons white-icon margin-right-l pointer" routerLink="/author/home">arrow_back</mat-icon>
   <span class="text-style margin-right-l pointer" routerLink="/author/home">Back to Dashboard</span>
-  <span class="text-style margin-right-l pointer" (click)="sendForReview()">Finish Review</span>
+  <span class="text-style margin-right-l pointer" (click)="sendForReview()" *ngIf="!isPublisher">Finish Review</span>
+  <span class="text-style margin-right-l pointer" (click)="sendForReview()" *ngIf="isPublisher">Finish Publish</span>
   <mat-icon class="material-icons white-icon pointer" (click)="sendForReview()">arrow_forward</mat-icon>
   <!-- </a> -->
   <!--   <a href="javascript:void(0)" mat-icon-button *ngIf="isTypeOfCollection" role="link" class="width-auto"
