@@ -5,6 +5,7 @@ import { ConfigurationsService, NsPage, ValueService } from '@ws-widget/utils'
 import { Subscription } from 'rxjs'
 import { ViewerDataService } from '../../viewer-data.service'
 import { NsContent } from '@ws-widget/collection/src/lib/_services/widget-content.model'
+import { AccessControlService } from '../../../../../author/src/lib/modules/shared/services/access-control.service'
 
 @Component({
   selector: 'viewer-viewer-top-bar',
@@ -32,6 +33,7 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
   logo = true
   isPreview = false
   forChannel = false
+  isPublisher!: boolean
   constructor(
     private activatedRoute: ActivatedRoute,
     private domSanitizer: DomSanitizer,
@@ -40,6 +42,7 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     private viewerDataSvc: ViewerDataService,
     private valueSvc: ValueService,
     private router: Router,
+    private accessService: AccessControlService,
   ) {
     this.valueSvc.isXSmall$.subscribe(isXSmall => {
       this.logo = !isXSmall
@@ -47,6 +50,8 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.isPublisher = this.accessService.hasRole(['content_publisher'])
+
     if (window.location.href.includes('/channel/')) {
       this.forChannel = true
     }
