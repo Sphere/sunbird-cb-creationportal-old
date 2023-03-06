@@ -254,12 +254,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   ) {
     this.resourceLinkForm = new FormGroup({
       resourceName: new FormControl('', [Validators.required]),
-      instructions: new FormControl('', [Validators.required]),
+      instructions: new FormControl(''),
       resourceLinks: new FormControl('', [Validators.required]),
-      appIcon: new FormControl('', [Validators.required]),
+      appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
-      isgatingEnabled: new FormControl(true),
+      isgatingEnabled: new FormControl(),
       duration: new FormControl('', [Validators.required])
     })
 
@@ -278,11 +278,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     this.resourcePdfForm = new FormGroup({
       resourceName: new FormControl('', [Validators.required]),
-      instructions: new FormControl('', [Validators.required]),
-      appIcon: new FormControl('', [Validators.required]),
+      instructions: new FormControl(''),
+      appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
-      isgatingEnabled: new FormControl(true),
+      isgatingEnabled: new FormControl(),
       duration: new FormControl('', [Validators.required])
     })
 
@@ -294,7 +294,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       resourceName: new FormControl(''),
       duration: new FormControl(''),
       questionType: new FormControl(''),
-      isgatingEnabled: new FormControl(true),
+      isgatingEnabled: new FormControl(),
     })
 
     this.backToModule = this.initService.backToHomeMessage.subscribe((data: any) => {
