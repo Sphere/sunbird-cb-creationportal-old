@@ -3784,7 +3784,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               appIcon: this.thumbnail,
               gatingEnabled: this.isGating,
               instructions: this.topicDescription,
-              thumbnail: this.thumbnail
+              thumbnail: this.thumbnail,
+              duration: this.timeToSeconds().toString()
             },
           },
         }
@@ -3798,6 +3799,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
+          if (data.duration) {
+            const minutes = data.duration > 59 ? Math.floor(data.duration / 60) : 0
+            const second = data.duration % 60
+            const hour = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
+            const minute = minutes ? minutes % 60 : 0
+            const seconds = second || 0
+            this.mainCourseDuration = hour + ':' + minute + ':' + seconds
+          }
           this.clearForm()
         })
       })
