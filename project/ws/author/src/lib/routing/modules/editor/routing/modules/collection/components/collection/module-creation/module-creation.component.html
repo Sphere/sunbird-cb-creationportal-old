@@ -205,12 +205,12 @@
             <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint>
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
-          <div>
+          <!-- <div>
             <mat-form-field appearance="outline" class="margin-top-xs">
               <textarea matInput i18n-placeholder placeholder="Description" [(ngModel)]="topicDescription"></textarea>
             </mat-form-field><br>
             <span *ngIf="topicDescription == ''" class="invalid-text">This field is Required</span>
-          </div>
+          </div> -->
           <!-- is link enabled -->
           <div *ngIf="isLinkEnabled">
             <mat-form-field appearance="outline" class="margin-top-xs field-width">
@@ -269,11 +269,11 @@
               link
               in new tab</mat-checkbox>
           </div>
-          <div *ngIf="content?.mimeType !== 'application/json'">
+          <!-- <div *ngIf="content?.mimeType !== 'application/json'">
             <mat-checkbox [(ngModel)]="isGating" [checked]="isGating" style="margin-left: 0px;" class="check-text">
               Gating
               Enabled</mat-checkbox>
-          </div>
+          </div> -->
           <div class="margin-top-s" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
             <button mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
@@ -309,7 +309,7 @@
             </div>
           </div>
           <div *ngIf="isSaveModuleFormEnable">
-            <span *ngIf="thumbnail == undefined" class="invalid-text">This field is Required</span><br>
+            <!-- <span *ngIf="thumbnail == undefined" class="invalid-text">This field is Required</span><br> -->
             <span style="color:#808080">Note: Learners will see this image for this module</span>
           </div>
           <div class="duration-style" *ngIf="content?.mimeType !== 'application/json'">
@@ -414,19 +414,19 @@
               <span *ngIf="resourceLinkForm.get('resourceName').hasError('required')" class="invalid-text">This field is
                 Required</span>
 
-              <mat-form-field appearance="outline" class="margin-top-xs field-width">
-                <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
-                  placeholder="Description of the resource" />
-              </mat-form-field>
-              <span *ngIf="resourceLinkForm.get('instructions').hasError('required')" class="invalid-text">This field
-                is Required</span>
+              <!-- <mat-form-field appearance="outline" class="margin-top-xs field-width">
+                            <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
+                              placeholder="Description of the resource" />
+                          </mat-form-field>
+                          <span *ngIf="resourceLinkForm.get('instructions').hasError('required')" class="invalid-text">This field
+                            is Required</span> -->
 
               <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">
                   <input matInput #resourceLinks [(ngModel)]="editResourceLinks" formControlName="resourceLinks"
                     maxlength="100" i18n-placeholder placeholder="Link" />
                 </mat-form-field>
-                <mat-checkbox class="check-text" formControlName="isgatingEnabled">Gating Enabled</mat-checkbox>
+                <!-- <mat-checkbox class="check-text" formControlName="isgatingEnabled">Gating Enabled</mat-checkbox> -->
                 <mat-checkbox class="check-text" formControlName="isIframeSupported">Open link in new tab</mat-checkbox>
 
               </div>
@@ -445,9 +445,9 @@
                   {{resourceType==='Assessment'?'Assessment':'Quiz'}}</span>
               </div>
               <!-- <button *ngIf="isAssessmentOrQuizEnabled"
-                [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
-                class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
-                (click)="resourceLinkSave()">Save</button> -->
+                            [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
+                            class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
+                            (click)="resourceLinkSave()">Save</button> -->
 
 
 
@@ -456,8 +456,8 @@
               </div>
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource Thumbnail</span><br>
-                <span *ngIf="resourceLinkForm.get('appIcon').hasError('required')" class="invalid-text">This field
-                  is Required</span>
+                <!-- <span *ngIf="resourceLinkForm.get('appIcon').hasError('required')" class="invalid-text">This field
+                              is Required</span> -->
               </div>
               <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
                 <div>
@@ -471,7 +471,8 @@
                   </div>
                 </div>
                 <div>
-                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
+                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)<br> Files
+                  allowed: JPG, PNG
                 </div>
               </div>
               <div class="duration-style" *ngIf="!isAssessmentOrQuizEnabled">
@@ -523,12 +524,12 @@
               <span *ngIf="resourcePdfForm.get('resourceName').hasError('required')" class="invalid-text">This field
                 is Required</span>
 
-              <mat-form-field appearance="outline" class="margin-top-xs field-width">
-                <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
-                  placeholder="Description of the resource" />
-              </mat-form-field>
-              <span *ngIf="resourcePdfForm.get('instructions').hasError('required')" class="invalid-text">This field
-                is Required</span>
+              <!-- <mat-form-field appearance="outline" class="margin-top-xs field-width">
+                            <input matInput #instructions formControlName="instructions" maxlength="100" i18n-placeholder
+                              placeholder="Description of the resource" />
+                          </mat-form-field>
+                          <span *ngIf="resourcePdfForm.get('instructions').hasError('required')" class="invalid-text">This field
+                            is Required</span> -->
 
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource file</span><br>
@@ -572,8 +573,8 @@
                   Files allowed : {{uploadText}}<br> Max.file size : 200MB
                 </div>
               </div>
-              <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isgatingEnabled">Gating
-                Enabled</mat-checkbox>
+              <!-- <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isgatingEnabled">Gating
+                            Enabled</mat-checkbox> -->
               <div style="display:flex; flex-direction:row" *ngIf="acceptType == '.zip'||isLinkEnabled">
 
                 <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isIframeSupported">Open link
@@ -582,8 +583,8 @@
 
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
                 <span style="color:#808080">Resource Thumbnail</span><br>
-                <span *ngIf="resourcePdfForm.controls.appIcon.value == ''" class="invalid-text">This field is
-                  Required</span>
+                <!-- <span *ngIf="resourcePdfForm.controls.appIcon.value == ''" class="invalid-text">This field is
+                              Required</span> -->
               </div>
               <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
                 <div>
@@ -597,31 +598,32 @@
                   </div>
                 </div>
                 <div>
-                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
+                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)<br> Files
+                  allowed: JPG, PNG
                 </div>
               </div>
               <!-- <div class="thumnail-row margin-top-xs">
-                <div>
-                  <img class="image max-width" height="144" width="256"
-                    src="cbp-assets/images/default-white-background.png">
-                  <div class="pdf">
-                    <img class="pdf-img" [src]="resourceLinkForm.controls.appIcon.value"
-                      (error)="changeToDefaultImg($event)">
-                    <input #uploadResourceFile
-                      (change)="uploadResourceAppIcon($event.target.files[0]); uploadResourceFile.value = null"
-                      style="display: none;" [accept]="imageTypes.toString()" type="file" />
-                    <button (click)="uploadResourceFile.click()" mat-raised-button
-                      class="pdf-button margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom">Upload
-                      File</button>
-                    <div class="pdf-text-1">
-                      <span>OR</span>
-                    </div>
-                    <div class="pdf-text-2">
-                      <span>Drag and drop a file here</span>
-                    </div>
-                  </div>
-                </div>
-              </div> -->
+                            <div>
+                              <img class="image max-width" height="144" width="256"
+                                src="cbp-assets/images/default-white-background.png">
+                              <div class="pdf">
+                                <img class="pdf-img" [src]="resourceLinkForm.controls.appIcon.value"
+                                  (error)="changeToDefaultImg($event)">
+                                <input #uploadResourceFile
+                                  (change)="uploadResourceAppIcon($event.target.files[0]); uploadResourceFile.value = null"
+                                  style="display: none;" [accept]="imageTypes.toString()" type="file" />
+                                <button (click)="uploadResourceFile.click()" mat-raised-button
+                                  class="pdf-button margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom">Upload
+                                  File</button>
+                                <div class="pdf-text-1">
+                                  <span>OR</span>
+                                </div>
+                                <div class="pdf-text-2">
+                                  <span>Drag and drop a file here</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div> -->
               <div class="duration-style">
                 <span class="duration-text">Duration:</span><br>
                 <mat-form-field appearance="outline" class="width-55">

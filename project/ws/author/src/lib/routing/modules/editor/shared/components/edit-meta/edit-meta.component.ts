@@ -1645,7 +1645,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       nodeType: [],
       org: [],
       gatingEnabled: new FormControl(''),
-      courseVisibility: false,
+      courseVisibility: new FormControl(false),
       issueCertification: false,
       creatorDetails: [],
       // passPercentage: [],
