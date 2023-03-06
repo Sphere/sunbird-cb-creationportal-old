@@ -36,6 +36,8 @@ import { AccessControlService } from './../../../../../../modules/shared/service
 import { AuthInitService } from './../../../../../../services/init.service'
 import { LoaderService } from './../../../../../../services/loader.service'
 // import { CollectionStoreService } from './../../../routing/modules/collection/services/store.service'
+import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-popup.component'
+
 import {
   debounceTime,
   distinctUntilChanged,
@@ -109,6 +111,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   isEditEnabled = false
   public sideNavBarOpened = false
   gatingEnabled!: FormControl
+  courseVisibility!: FormControl
   //issueCertification!: FormControl
   bucket: string = ''
   certificateList: any[] = [
@@ -148,7 +151,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   moduleButtonName: string = 'Create';
   fieldActive!: boolean
   isFormValid!: boolean
-
+  competencies: any
   constructor(
     private formBuilder: FormBuilder,
     private uploadService: UploadService,
@@ -361,6 +364,110 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     // )
   }
 
+  addCompetency() {
+    const dialogRef = this.dialog.open(CompetencyPopupComponent, {
+      width: '40%',
+      maxHeight: '90vh',
+    })
+    dialogRef.afterClosed().subscribe((response: boolean) => {
+      this.loader.changeLoad.next(true)
+      console.log(response, this.parentContent)
+      let id = this.parentContent || ''
+      //if (response === true) {
+      this.editorService.readcontentV3(id).subscribe(async (data: any) => {
+        if (data.competencies_v1) {
+          this.competencies = JSON.parse(data.competencies_v1)
+        }
+        this.loader.changeLoad.next(false)
+      })
+    })
+  }
+
+  deleteCompetancy(competency: any) {
+    this.loader.changeLoad.next(true)
+    let id = this.parentContent || ''
+    let data: any
+    this.editorService.checkReadAPI(id)
+      .subscribe(async (res: any) => {
+        data = await res.result.content
+        let competencyID: string
+        let arr1: string[] = []
+        let arr2: { competencyName: any; competencyId: any; level: any }[] = []
+        let requestBody: any
+        let meta
+        if (data.competencySearch === undefined) {
+          meta = {
+            versionKey: data.versionKey,
+            competencySearch: [],
+            competency: false,
+            competencies_v1: []
+          }
+        } else {
+
+          arr2 = JSON.parse(data.competencies_v1)
+
+          arr1 = data.competencySearch
+
+          competencyID = competency.competencyId + '-' + competency.level.toString()
+          arr1 = arr1.filter(e => e !== competencyID)
+          for (var n = 0; n < arr2.length; n++) {
+            if (arr2[n].competencyName === competency.competencyName && arr2[n].competencyId === competency.competencyId && arr2[n].level === competency.level) {
+              arr2.splice(n, 1)
+              break
+            }
+          }
+
+          meta = {
+            versionKey: data.versionKey,
+            competencySearch: arr1,
+            competency: false,
+            competencies_v1: arr2
+          }
+        }
+
+        requestBody = {
+          request: {
+            content: meta
+          }
+        }
+        this.editorService.updateNewContentV3(requestBody, id)
+          .subscribe(
+            (response: any) => {
+              if (response) {
+                this.loadCompetancy()
+              }
+            })
+      })
+  }
+
+  checkMandatoryFields() {
+    let totalDuration = 0, subTitles, sourceName, instructions, appIcon
+    totalDuration += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
+    totalDuration += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
+    totalDuration += this.hours ? this.hours * 60 * 60 : 0
+    subTitles = this.contentForm.controls.subTitle.value
+    sourceName = this.contentForm.controls.sourceName.value
+    instructions = this.contentForm.controls.instructions.value
+    appIcon = this.contentForm.controls.appIcon.value
+    // console.log("total: ", totalDuration, subTitles, sourceName, instructions, appIcon)
+    if (totalDuration && subTitles && sourceName && instructions && appIcon) {
+      return false
+    } else {
+      return true
+    }
+  }
+  loadCompetancy() {
+    let id = this.parentContent || ''
+    this.editorService.readcontentV3(id).subscribe(async (data: any) => {
+      if (data.competencies_v1 !== undefined) {
+        this.competencies = await JSON.parse(data.competencies_v1)
+      } else {
+        this.competencies = []
+      }
+      this.loader.changeLoad.next(false)
+    })
+  }
+
   enableClick(): void {
     this.fieldActive = true
   }
@@ -556,6 +663,10 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         this.contentForm.controls.lang.setValue(this.contentMeta.lang)
         this.contentForm.controls.gatingEnabled.setValue(this.contentMeta.gatingEnabled)
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification === undefined ? false : this.contentMeta.issueCertification)
+
+        if (this.contentMeta.competencies_v1) {
+          this.competencies = JSON.parse(this.contentMeta.competencies_v1)
+        }
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
           this.contentForm.controls[v].markAsTouched()
@@ -768,7 +879,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.stage >= 1 && !this.type) {
           delete meta.artifactUrl
         }
-        console.log("this.contentForm", this.contentForm)
         this.contentService.setUpdatedMeta(meta, this.contentMeta.identifier)
 
       }
@@ -1535,6 +1645,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       nodeType: [],
       org: [],
       gatingEnabled: new FormControl(''),
+      courseVisibility: false,
       issueCertification: false,
       creatorDetails: [],
       // passPercentage: [],

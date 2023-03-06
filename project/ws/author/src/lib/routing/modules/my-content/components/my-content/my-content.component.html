@@ -8,8 +8,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
 </div> -->
 
 <mat-drawer-container class="example-container">
-  <mat-drawer mode="side" class="width-240" style="top: 26px;" opened>
-
+  <mat-drawer mode="side" class="width-240" style="top: 26px" opened>
     <!-- <div *ngIf="allowAuthorContentCreate"
       class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l padding-remove-left create-button">
       <button mat-button class="font-weight-bold margin-remove-bottom mat-h3 ws-mat-primary-text ws-mat-primary-border"
@@ -24,7 +23,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
         <mat-expansion-panel [expanded]="true" class="no-shadow" hideToggle>
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title>
-              <span class="font-weight-500 head-content-title" [ngClass]="{'head-content-title':isSelectedColor }"
+              <span class="font-weight-500 head-content-title" [ngClass]="{ 'head-content-title': isSelectedColor }"
                 i18n>My Content</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
@@ -49,20 +48,17 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <a routerLink="/author/my-content" [queryParams]="{ status: 'deleted' }" i18n>Deleted</a>
             </mat-list-item> -->
             <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
-              <a [ngClass]="{'head-content-title':isSelectedReviewCourse }" style="cursor: pointer"
-                (click)="onClickReviewCourse('Sent for review')" i18n>Courses to
-                Review</a>
+              <a [ngClass]="{ 'head-content-title': isSelectedReviewCourse }" style="cursor: pointer"
+                (click)="onClickReviewCourse('Sent for review')" i18n>Courses to Review</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
-              <a [ngClass]="{'head-content-title':isSelectedToPublishCourse }" style="cursor: pointer"
-                (click)="onClickReviewCourse('Published')" i18n>Courses to
-                Publish</a>
+              <a [ngClass]="{ 'head-content-title': isSelectedToPublishCourse }" style="cursor: pointer"
+                (click)="onClickReviewCourse('Published')" i18n>Courses to Publish</a>
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
       </mat-accordion>
     </ng-container>
-
 
     <ng-container *ngIf="isNewDesign">
       <mat-accordion expanded *ngIf="allowAuthor">
@@ -75,7 +71,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
           <mat-list role="list">
             <mat-list-item mat-button role="listitem" class="draftss">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'draft' }"
-                [routerLinkActive]="status=='draft'" [class.active]="status=='draft'" class="draft" i18n>Draft</a>
+                [routerLinkActive]="status == 'draft'" [class.active]="status == 'draft'" class="draft" i18n>Draft</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'inreview' }" i18n>Sent for review</a>
@@ -98,12 +94,12 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
     </ng-container>
     <ng-container *ngIf="!isNewDesign">
       <mat-accordion expanded *ngIf="allowAuthor">
-        <mat-expansion-panel [expanded]="true" [disabled]="isDisabled" style="cursor:pointer" class="no-shadow"
+        <mat-expansion-panel [expanded]="true" [disabled]="isDisabled" style="cursor: pointer" class="no-shadow"
           hideToggle>
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title>
               <span class="font-weight-500 head-content-title" (click)="onClickReviewCourse('Draft')"
-                [ngClass]="{'head-content-title':isSelectedColor }" i18n>My Content</span>
+                [ngClass]="{ 'head-content-title': isSelectedColor }" i18n>My Content</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <!-- Shown when logged in as admin-->
@@ -113,7 +109,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </mat-list-item> -->
 
             <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
-              <a [ngClass]="{'head-content-title':isSelectedColor }" style="cursor: pointer"
+              <a [ngClass]="{ 'head-content-title': isSelectedColor }" style="cursor: pointer"
                 (click)="onClickReviewCourse('Draft')" i18n>Drafts</a>
             </mat-list-item>
 
@@ -142,21 +138,20 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </mat-list-item> -->
 
             <mat-list-item *ngIf="!allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
-              <a [ngClass]="{'head-content-title':isSelectedReviewCourse }" style="cursor: pointer"
+              <a [ngClass]="{ 'head-content-title': isSelectedReviewCourse }" style="cursor: pointer"
                 (click)="onClickReviewCourse('Sent for review')" i18n>Sent For Review</a>
             </mat-list-item>
 
             <mat-list-item *ngIf="allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
-              <a [ngClass]="{'head-content-title':isSelectedToPublishCourse }" style="cursor: pointer"
-                (click)="onClickReviewCourse('Courses to publish')" i18n>Courses to
-                Publish</a>
+              <a [ngClass]="{ 'head-content-title': isSelectedToPublishCourse }" style="cursor: pointer"
+                (click)="onClickReviewCourse('Courses to publish')" i18n>Courses to Publish</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
-              <a [ngClass]="{'head-content-title':isSelectedPublishCourse }" style="cursor: pointer"
+              <a [ngClass]="{ 'head-content-title': isSelectedPublishCourse }" style="cursor: pointer"
                 (click)="onClickReviewCourse('Published Courses')" i18n>Published</a>
             </mat-list-item>
             <mat-list-item *ngIf="!allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
-              <a [ngClass]="{'head-content-title':isSelectedRetiredCourse }" (click)="onClickReviewCourse('Retired')"
+              <a [ngClass]="{ 'head-content-title': isSelectedRetiredCourse }" (click)="onClickReviewCourse('Retired')"
                 i18n>Retired</a>
             </mat-list-item>
           </mat-list>
@@ -207,10 +202,10 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </ng-container>
           </mat-tree-node>
           <mat-tree-node [ngClass]="{
-          hidden:
-            (status === 'draft' && node.displayName === 'Published Date') ||
-            (status === 'inreview' && node.displayName === 'Published Date')
-        }" class="border-bottom" *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+              hidden:
+                (status === 'draft' && node.displayName === 'Published Date') ||
+                (status === 'inreview' && node.displayName === 'Published Date')
+            }" class="border-bottom" *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
             <div class="grid">
               <h5 class="font-size-m margin-top-xs margin-remove-bottom" matTreeNodeToggle>
                 {{ node.displayName }}
@@ -225,14 +220,14 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
         </mat-tree>
       </mat-sidenav>
 
-
       <mat-sidenav-content class="sidenav-content">
         <nav mat-tab-nav-bar class="mat-nav-container">
           <a class="tab-links-data nav-tab-links" mat-tab-link *ngFor="let link of links"
             (click)="navigateContents(link)" [active]="activeLink == link">
-            {{link}} </a>
+            {{ link }}
+          </a>
 
-          <span fxFlex style="flex: 1 1 auto;"></span>
+          <span fxFlex style="flex: 1 1 auto"></span>
 
           <div *ngIf="allowAuthorContentCreate"
             class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l padding-remove-left create-button">
@@ -240,10 +235,8 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               name="ws-auth-root-home-btn-create">
               <mat-icon class="add-create-icon">add</mat-icon>
               <ng-container i18n>Create a new course</ng-container>
-
             </button>
           </div>
-
         </nav>
 
         <div class="outer-flex">
@@ -255,8 +248,6 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 </a>
               </div>
               <mat-icon class="px-1">chevron_right</mat-icon> -->
-
-
 
               <!-- <div class="mat-subheading-2 margin-remove-bottom">
                 <a routerLink="/author/my-content" [queryParams]="{ status: 'all' }" i18n>
@@ -283,7 +274,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   i18n>Deleted</a>
               </div> -->
             </nav>
-            <div class="flex  margin-horizontal-s margin-top-xs">
+            <div class="flex margin-horizontal-s margin-top-xs">
               <div>
                 <mat-chip-list *ngIf="filters && filters.length" #chipList aria-label="Filter">
                   <mat-chip [selectable]="true" [removable]="false">
@@ -315,7 +306,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   <mat-icon>search</mat-icon>
                 </div>
               </div>
-              <span fxFlex style="flex: 1 1 auto;"></span>
+              <span fxFlex style="flex: 1 1 auto"></span>
               <div class="flex items-center">
                 <div>
                   <h4 *ngIf="filterMenuItems.length" class="ws-mat-primary-text font-size-m font-weight-bold">
@@ -326,20 +317,22 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   </h4>
                 </div>
 
-                <div (click)="listview=false" class="filter-icons"><span class="mr-2 ">
+                <div (click)="listview = false" class="filter-icons">
+                  <span class="mr-2">
                     <mat-icon class="pointer">border_all</mat-icon>
                   </span>
                 </div>
-                <div (click)="listview=true" class="filter-icons"><span>
+                <div (click)="listview = true" class="filter-icons">
+                  <span>
                     <mat-icon class="pointer">list</mat-icon>
-                  </span></div>
+                  </span>
+                </div>
               </div>
-
             </div>
-            <div style="max-height: 50vh;overflow-y: scroll;">
+            <div style="max-height: 45vh; overflow-y: scroll">
               <div *ngIf="cardContent" class="flex flex-wrapped flex-dynamic margin-xs class-here">
                 <ng-template #oldDesign>
-                  <div [ngClass]="listview == true ? 'full-width-field': 'margin-l'"
+                  <div [ngClass]="listview == true ? 'full-width-field' : 'margin-l'"
                     *ngFor="let content of cardContent">
                     <ws-auth-root-content-card [data]="content" [forExpiry]="status === 'expiry'"
                       [changeView]="listview" [forDelete]="status === 'deleted'" [ordinals]="ordinals"
@@ -357,19 +350,20 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               </div>
             </div>
 
-            <div style="display:none" class="text-right margin-right-xxl margin-bottom-m" *ngIf="showLoadMore">
-              <button mat-raised-button [color]="'primary'" (click)="loadMore()" i18n>Load More...</button>
+            <div style="display: none" class="text-right margin-right-xxl margin-bottom-m" *ngIf="showLoadMore">
+              <button mat-raised-button [color]="'primary'" (click)="loadMore()" i18n>
+                Load More...
+              </button>
             </div>
             <div class="flat-no-data-found margin-m" *ngIf="!fetchError && cardContent && !cardContent.length">
               <!-- <mat-icon class="large-icon">info</mat-icon> -->
               <!-- <span class="font-weight-bold margin-left-s mat-h3 margin-remove-bottom" i18n>No data found</span> -->
               <div class="no-data-msg">
-                <img src="cbp-assets/icons/cuate.svg">
+                <img src="cbp-assets/icons/cuate.svg" />
                 <span>
                   <h3 class="no-data-msg-text">No data found</h3>
                 </span>
               </div>
-
             </div>
             <div class="flat-error-alert margin-m" *ngIf="fetchError">
               <mat-icon class="large-icon">info</mat-icon>
@@ -398,8 +392,6 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
           </div> -->
         </div>
       </mat-sidenav-content>
-
-
     </mat-sidenav-container>
     <mat-menu #sortLang="matMenu">
       <ng-template matMenuContent>

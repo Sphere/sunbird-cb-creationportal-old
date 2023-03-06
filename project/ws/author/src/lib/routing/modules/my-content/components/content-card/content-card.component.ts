@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { Router } from '@angular/router'
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 
 @Component({
   selector: 'ws-auth-root-content-card',
@@ -23,7 +24,9 @@ export class ContentCardComponent implements OnInit {
   isBaseContent: Boolean = true
   constructor(private accessService: AccessControlService,
     private authInitService: AuthInitService,
-    private router: Router) { }
+    private router: Router,
+    private editorService: EditorService,
+  ) { }
 
   ngOnInit() {
     if ((this.router.url).includes('published')) {
@@ -143,7 +146,29 @@ export class ContentCardComponent implements OnInit {
     })
   }
 
-  editCourse(actionType: string) {
+  editCourse(actionType: string, data: any) {
+    if (data.status === 'Live') {
+      let requestBody: any
+      this.editorService.readContentV2(data.identifier).subscribe(resData => {
+        let meta: any = {
+          versionKey: resData.versionKey,
+        }
+        requestBody = {
+          request: {
+            content: meta
+          }
+        }
+        this.editorService.updateNewContentV3(requestBody, data.identifier).subscribe(
+          (response: any) => {
+            if (response.params.status === "successful") {
+              this.router.navigateByUrl(`/author/editor/${data.identifier}`)
+            }
+          })
+
+      })
+    } else {
+      this.router.navigateByUrl(`/author/editor/${data.identifier}`)
+    }
     this.authInitService.editCourse(actionType)
   }
 

@@ -254,12 +254,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   ) {
     this.resourceLinkForm = new FormGroup({
       resourceName: new FormControl('', [Validators.required]),
-      instructions: new FormControl(''),
+      instructions: new FormControl('', [Validators.required]),
       resourceLinks: new FormControl('', [Validators.required]),
-      appIcon: new FormControl(''),
+      appIcon: new FormControl('', [Validators.required]),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
-      isgatingEnabled: new FormControl(),
+      isgatingEnabled: new FormControl(true),
       duration: new FormControl('', [Validators.required])
     })
 
@@ -278,11 +278,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     this.resourcePdfForm = new FormGroup({
       resourceName: new FormControl('', [Validators.required]),
-      instructions: new FormControl(''),
-      appIcon: new FormControl(''),
+      instructions: new FormControl('', [Validators.required]),
+      appIcon: new FormControl('', [Validators.required]),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
-      isgatingEnabled: new FormControl(),
+      isgatingEnabled: new FormControl(true),
       duration: new FormControl('', [Validators.required])
     })
 
@@ -294,7 +294,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       resourceName: new FormControl(''),
       duration: new FormControl(''),
       questionType: new FormControl(''),
-      isgatingEnabled: new FormControl(),
+      isgatingEnabled: new FormControl(true),
     })
 
     this.backToModule = this.initService.backToHomeMessage.subscribe((data: any) => {
@@ -1698,6 +1698,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.seconds = second || 0
   }
   async resourceLinkSave() {
+    console.log(" this.resourceLinkForm", this.resourceLinkForm)
     if (this.resourceLinkForm.status == 'INVALID' && !this.isAssessmentOrQuizEnabled) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -1729,9 +1730,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           iframeSupported = 'Yes'
         else
           iframeSupported = 'No'
-        var res = this.editResourceLinks.match(/^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/)
-        // var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
-        // var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+
+        var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
         this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
         if (res !== null) {
           const rBody: any = {
@@ -1740,7 +1740,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             description: this.resourceLinkForm.value.instructions,
             artifactUrl: this.resourceLinkForm.value.resourceLinks,
             isIframeSupported: iframeSupported,
-            // gatingEnabled: this.courseData ? this.courseData.gatingEnabled : false,
+            gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
             duration: this.resourceLinkForm.value.duration,
             versionKey: this.updatedVersionKey,
           }
@@ -1760,7 +1760,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             instructions: this.resourceLinkForm.value.instructions,
             description: this.resourceLinkForm.value.instructions,
             isIframeSupported: iframeSupported,
-            // gatingEnabled: this.courseData ? this.courseData.gatingEnabled : false,
+            gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
             versionKey: this.versionKey.versionKey,
           }
           await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
@@ -2542,6 +2542,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.editorStore.upDatedContent = {}
       }),
     )
+
   }
 
   subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
@@ -3296,6 +3297,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     } else {
       this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
       this.storeData()
+
       const nodesModified: any = {}
       Object.keys(this.contentService.upDatedContent).forEach(v => {
         nodesModified[v] = {

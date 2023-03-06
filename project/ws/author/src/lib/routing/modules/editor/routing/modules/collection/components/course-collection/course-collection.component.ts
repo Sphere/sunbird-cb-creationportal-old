@@ -64,6 +64,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   currentCourseId!: string
   activeContentSubscription: Subscription | null = null
   routerSubscription: Subscription | null = null
+  changeMessageSubscription: Subscription | null = null
   isChanged = false
   previewIdentifier: string | null = null
   viewMode = 'meta'
@@ -128,7 +129,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         this.save()
       }
     })
-    this.initService.currentMessage.subscribe(
+    this.changeMessageSubscription = this.initService.currentMessage.subscribe(
       (data: any) => {
         if (data === 'publishResources') {
           this.takeAction('publishResources')
@@ -448,6 +449,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.changeMessageSubscription) {
+      this.changeMessageSubscription.unsubscribe()
+    }
     this.loaderService.changeLoad.next(false)
     this.headerService.showCreatorHeader('showlogo')
     this.rootSvc.showNavbarDisplay$.next(true)
@@ -1537,8 +1541,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   async changeStatusToDraft(comment: string) {
-    //const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
-    const originalData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise()
+    const url = this.router.url
+    const id = url.split('/')
+    // const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
+    const originalData = await this.editorService.readcontentV3(id[3]).toPromise()
+    this.storeService.parentData = originalData
     this.dialog.closeAll()
     const resourceListToReview: any = []
     const moduleListToReview: any = []
