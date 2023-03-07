@@ -253,7 +253,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   ) {
     this.resourceLinkForm = new FormGroup({
-      resourceName: new FormControl('', [Validators.required, Validators.minLength(1), Validators.pattern(/^(\s+\S+\s*)(?!\s).$/)]),
+      resourceName: new FormControl('', [Validators.required, Validators.minLength(1)]),
       instructions: new FormControl(''),
       resourceLinks: new FormControl('', [Validators.required]),
       appIcon: new FormControl(''),
@@ -277,7 +277,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
 
     this.resourcePdfForm = new FormGroup({
-      resourceName: new FormControl('', [Validators.required, Validators.minLength(1), Validators.pattern(/^(\s+\S+\s*)(?!\s).$/)]),
+      resourceName: new FormControl('', [Validators.required, Validators.minLength(1)]),
       instructions: new FormControl(''),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
@@ -1747,7 +1747,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               description: this.resourceLinkForm.value.instructions,
               artifactUrl: this.resourceLinkForm.value.resourceLinks,
               isIframeSupported: iframeSupported,
-              gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
+              //gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
               duration: this.resourceLinkForm.value.duration,
               versionKey: this.updatedVersionKey,
             }
@@ -1776,7 +1776,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               instructions: this.resourceLinkForm.value.instructions,
               description: this.resourceLinkForm.value.instructions,
               isIframeSupported: iframeSupported,
-              gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
+              //gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
               versionKey: this.versionKey.versionKey,
             }
             await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
@@ -3346,10 +3346,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       if (tempUpdateContent.category === 'CourseUnit') {
         nodesModified.visibility = 'Parent'
       }
-      console.log(nodesModified[this.contentService.currentContent])
+
+      let currentContent = this.currentContent
+      console.log(nodesModified[currentContent])
       requestBody = {
         request: {
-          content: nodesModified[this.contentService.currentContent].metadata,
+          content: nodesModified[currentContent].metadata,
         },
       }
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
@@ -3358,7 +3360,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         delete requestBody.request.content.category
       }
       const contenUpdateRes: any =
-        await this.editorService.updateContentV3(requestBody, this.contentService.currentContent).toPromise().catch(_error => { })
+        await this.editorService.updateContentV3(requestBody, currentContent).toPromise().catch(_error => { })
       if (contenUpdateRes && contenUpdateRes.params && contenUpdateRes.params.status === 'successful') {
         const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
         if (hierarchyData) {
@@ -3448,6 +3450,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             duration: NOTIFICATION_TIME * 1000,
           })
           this.action('save')
+          this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+            this.courseData = data
+          })
+          this.loaderService.changeLoad.next(false)
         },
         () => {
           this.loaderService.changeLoad.next(false)
