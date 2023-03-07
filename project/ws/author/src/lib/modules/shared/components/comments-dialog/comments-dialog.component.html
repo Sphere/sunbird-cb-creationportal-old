@@ -1,6 +1,5 @@
-<mat-dialog-content
-  *ngIf="contentMeta && contentMeta.reviewStatus === 'Reviewed'&&contentMeta.status == 'Review' && contentMeta.status !== 'Draft'">
-  <div style="float: right;">
+<mat-dialog-content *ngIf="contentMeta && contentMeta.reviewStatus === 'Reviewed'&&contentMeta.status == 'Review'">
+  <div style=" float: right;">
     <mat-icon style="cursor: pointer;" mat-dialog-close mat-raised-button i18n>close</mat-icon>
   </div>
   <h2 class="text-bold">Publishing Course: {{contentMeta.name}}</h2>
