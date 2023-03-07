@@ -277,3 +277,8 @@
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
   <span i18n>Module name can't be blank. </span>
 </p>
+
+<p *ngIf="type === notify.INVALID_COURSE_NAME">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Course name can't be blank. </span>
+</p>

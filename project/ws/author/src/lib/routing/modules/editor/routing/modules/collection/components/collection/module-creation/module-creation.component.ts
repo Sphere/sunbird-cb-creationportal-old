@@ -253,7 +253,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   ) {
     this.resourceLinkForm = new FormGroup({
-      resourceName: new FormControl('', [Validators.required, Validators.minLength(1)]),
+      resourceName: new FormControl('', [Validators.required, Validators.minLength(1), Validators.pattern(/^(\s+\S+\s*)(?!\s).$/)]),
       instructions: new FormControl(''),
       resourceLinks: new FormControl('', [Validators.required]),
       appIcon: new FormControl(''),
@@ -277,7 +277,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
 
     this.resourcePdfForm = new FormGroup({
-      resourceName: new FormControl('', [Validators.required]),
+      resourceName: new FormControl('', [Validators.required, Validators.minLength(1), Validators.pattern(/^(\s+\S+\s*)(?!\s).$/)]),
       instructions: new FormControl(''),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
@@ -3807,7 +3807,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     } else if (this.moduleName.trim() === '') {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
-          type: Notify.INVALID_MODULE_NAME,
+          type: Notify.INVALID_COURSE_NAME,
         },
         duration: NOTIFICATION_TIME * 1000,
       })

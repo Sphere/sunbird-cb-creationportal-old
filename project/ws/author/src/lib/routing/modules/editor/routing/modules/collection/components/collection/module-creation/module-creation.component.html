@@ -193,16 +193,16 @@
           </div>
           <div *ngIf="content?.contentType === 'Course'">
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
-              class="module-input margin-top-s" placeholder="Name of the Module" autocomplete="off"
-              maxlength="50" /><br>
-            <mat-hint class="mt-hint">{{ moduleName.length }}/50</mat-hint>
+              class="module-input margin-top-s" placeholder="Name of the Course" autocomplete="off"
+              maxlength="250" /><br>
+            <mat-hint class="mt-hint">{{ moduleName.length }}/250</mat-hint><br>
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
           <div *ngIf="content?.contentType === 'CourseUnit' || content?.contentType === 'Resource'">
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
               class="module-input margin-top-s" placeholder="Name of the Module" autocomplete="off"
               maxlength="100" /><br>
-            <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint>
+            <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint><br>
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
           <!-- <div>
