@@ -3314,10 +3314,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       if (tempUpdateContent.category === 'CourseUnit') {
         nodesModified.visibility = 'Parent'
       }
-      console.log(nodesModified[this.contentService.currentContent])
+
+      let currentContent = this.currentContent
+      console.log(nodesModified[currentContent])
       requestBody = {
         request: {
-          content: nodesModified[this.contentService.currentContent].metadata,
+          content: nodesModified[currentContent].metadata,
         },
       }
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
@@ -3326,7 +3328,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         delete requestBody.request.content.category
       }
       const contenUpdateRes: any =
-        await this.editorService.updateContentV3(requestBody, this.contentService.currentContent).toPromise().catch(_error => { })
+        await this.editorService.updateContentV3(requestBody, currentContent).toPromise().catch(_error => { })
       if (contenUpdateRes && contenUpdateRes.params && contenUpdateRes.params.status === 'successful') {
         const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
         if (hierarchyData) {
@@ -3416,6 +3418,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             duration: NOTIFICATION_TIME * 1000,
           })
           this.action('save')
+          this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+            this.courseData = data
+          })
+          this.loaderService.changeLoad.next(false)
         },
         () => {
           this.loaderService.changeLoad.next(false)
