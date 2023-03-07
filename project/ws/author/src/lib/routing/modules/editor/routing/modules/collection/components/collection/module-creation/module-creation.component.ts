@@ -1763,16 +1763,25 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             duration: NOTIFICATION_TIME * 1000,
           })
         } else {
-          const rBody: any = {
-            name: this.resourceLinkForm.value.resourceName,
-            instructions: this.resourceLinkForm.value.instructions,
-            description: this.resourceLinkForm.value.instructions,
-            isIframeSupported: iframeSupported,
-            gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
-            versionKey: this.versionKey.versionKey,
+          if (this.resourceLinkForm.value.resourceName.trim() === '') {
+            this.snackBar.openFromComponent(NotificationComponent, {
+              data: {
+                type: Notify.INVALID_RESOURCE_NAME,
+              },
+              duration: NOTIFICATION_TIME * 1000,
+            })
+          } else {
+            const rBody: any = {
+              name: this.resourceLinkForm.value.resourceName,
+              instructions: this.resourceLinkForm.value.instructions,
+              description: this.resourceLinkForm.value.instructions,
+              isIframeSupported: iframeSupported,
+              gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
+              versionKey: this.versionKey.versionKey,
+            }
+            await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+            await this.saves()
           }
-          await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
-          await this.saves()
         }
       }
     }
