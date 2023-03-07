@@ -6,14 +6,14 @@
   <!-- <br /> -->
   <form [formGroup]="createCourseForm" style="margin-top: -1rem;">
     <div>
-      <div class="margin-top-s first-row-container">
+      <div class="">
         <!-- <p class="required margin-remove-bottom">
         Hi, Lets start with a name
       </p> -->
-        <mat-form-field appearance="outline" class="margin-top-xs field-width name-field ">
-          <input matInput #courseName formControlName="courseName" maxlength="50" i18n-placeholder
-            placeholder="Course name" />
-          <mat-hint class="mt-hint">{{ courseName.value.length }}/50</mat-hint>
+        <mat-form-field appearance="outline" class="margin-top-xs desc-field name-field ">
+          <textarea matInput #courseName formControlName="courseName" maxlength="100" rows="2"
+            placeholder="Course name"></textarea>
+          <mat-hint class="mt-hint">{{ courseName.value.length }}/100</mat-hint>
         </mat-form-field>
 
         <!-- <mat-form-field appearance="outline" class="margin-top-xs field-width name-field ">
