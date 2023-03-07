@@ -1,5 +1,5 @@
 <mat-dialog-content
-  *ngIf="contentMeta && contentMeta.reviewStatus === 'Reviewed' && courseEdited === false && contentMeta.status !== 'Draft'">
+  *ngIf="contentMeta && contentMeta.reviewStatus === 'Reviewed'&&contentMeta.status == 'Review' && contentMeta.status !== 'Draft'">
   <div style="float: right;">
     <mat-icon style="cursor: pointer;" mat-dialog-close mat-raised-button i18n>close</mat-icon>
   </div>
@@ -70,8 +70,7 @@
 </mat-dialog-content>
 
 
-<mat-dialog-content
-  *ngIf="(contentMeta && contentMeta.reviewStatus !== 'Reviewed' || courseEdited === true) && contentMeta.status === 'Review'">
+<mat-dialog-content *ngIf="contentMeta && contentMeta.reviewStatus == 'InReview' && contentMeta.status === 'Review'">
   <div class="row">
     <div style="float: left;">
       <h2 mat-dialog-title i18n>Reviewing Course : {{contentMeta.name}}</h2>
