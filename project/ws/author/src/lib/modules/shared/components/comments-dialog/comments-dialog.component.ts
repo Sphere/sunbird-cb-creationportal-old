@@ -58,7 +58,7 @@ export class CommentsDialogComponent implements OnInit {
           }
         }
       }
-      let count = 0
+      let count = 0, isDraftOrReview = 0
       for (const element of this.contentMeta.children) {
         // console.log('element', element)
         if (element.status === 'Live' && element.contentType !== 'CourseUnit') {
@@ -69,12 +69,16 @@ export class CommentsDialogComponent implements OnInit {
             if (elem.status === 'Live') {
               count += 1
             }
+            if (elem.status === 'Draft' || elem.status === 'Review') {
+              isDraftOrReview += 1
+            }
           }
         }
       }
+      // console.log("here is ngOnInit", flag, count, isDraftOrReview)
 
       // console.log("here is updateUI", flag, this.contentMeta.children.length)
-      if (flag === count && flag !== 0 || count !== 0) {
+      if ((flag === count && flag !== 0 || count !== 0) && isDraftOrReview === 0) {
         this.showPublishCBPBtn = true
       } else {
         this.refreshCourse()
@@ -85,6 +89,7 @@ export class CommentsDialogComponent implements OnInit {
 
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
     this.contentMeta = this.data
+    // console.log("this.contentMeta", this.contentMeta)
     // to check if the course is having topics
     for (const element of this.contentMeta.children) {
       if (element.children) {
@@ -130,7 +135,7 @@ export class CommentsDialogComponent implements OnInit {
         }
       }
     }
-    let count = 0
+    let count = 0, isDraftOrReview = 0
     for (const element of this.contentMeta.children) {
       // console.log('element', element)
       if (element.status === 'Live' && element.contentType !== 'CourseUnit') {
@@ -141,11 +146,16 @@ export class CommentsDialogComponent implements OnInit {
           if (elem.status === 'Live') {
             count += 1
           }
+          if (elem.status === 'Draft' || elem.status === 'Review') {
+            // console.log('elem.status', elem)
+            isDraftOrReview += 1
+          }
         }
       }
     }
-    // console.log("here is ngOnInit", flag, count)
-    if (flag === count && flag !== 0 || count !== 0) {
+    // console.log("here is ngOnInit", flag, count, isDraftOrReview)
+    if ((flag === count && flag !== 0 || count !== 0) && isDraftOrReview === 0) {
+      // console.log("yes here okay", isDraftOrReview === 0)
       this.showPublishCBPBtn = true
     }
 
@@ -212,7 +222,7 @@ export class CommentsDialogComponent implements OnInit {
     // else {
     //   //this.refreshCourse()
     // }
-    let flag = 0
+    let flag = 0, isDraftOrReview = 0
     for (const element of this.contentMeta.children) {
       // console.log('element', element)
       if (element.status === 'Live' && element.contentType !== 'CourseUnit') {
@@ -242,12 +252,17 @@ export class CommentsDialogComponent implements OnInit {
           if (elem.status === 'Live') {
             count += 1
           }
+          if (elem.status === 'Draft' || elem.status === 'Review') {
+            isDraftOrReview += 1
+          }
         }
       }
     }
     // console.log("here is refreshCourse", flag, count)
+    // console.log("here is ngOnInit", flag, count, isDraftOrReview)
+
     setTimeout(() => {
-      if (flag === count && flag !== 0 || count !== 0) {
+      if ((flag === count && flag !== 0 || count !== 0) && isDraftOrReview === 0) {
         this.showPublishCBPBtn = true
       }
     }, 500)
