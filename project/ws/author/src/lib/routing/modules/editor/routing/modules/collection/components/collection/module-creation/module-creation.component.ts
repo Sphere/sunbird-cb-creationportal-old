@@ -1740,7 +1740,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             description: this.resourceLinkForm.value.instructions,
             artifactUrl: this.resourceLinkForm.value.resourceLinks,
             isIframeSupported: iframeSupported,
-            gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
+            // gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
             duration: this.resourceLinkForm.value.duration,
             versionKey: this.updatedVersionKey,
           }
@@ -1760,7 +1760,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             instructions: this.resourceLinkForm.value.instructions,
             description: this.resourceLinkForm.value.instructions,
             isIframeSupported: iframeSupported,
-            gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
+            // gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
             versionKey: this.versionKey.versionKey,
           }
           await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
