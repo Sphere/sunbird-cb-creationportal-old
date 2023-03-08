@@ -78,7 +78,7 @@ export class CommentsDialogComponent implements OnInit {
       // console.log("here is ngOnInit", flag, count, isDraftOrReview)
 
       // console.log("here is updateUI", flag, this.contentMeta.children.length)
-      if ((flag === count && flag !== 0 || count !== 0) && isDraftOrReview === 0) {
+      if ((flag === count && (flag !== 0 || count !== 0)) && isDraftOrReview === 0) {
         this.showPublishCBPBtn = true
       } else {
         this.refreshCourse()
@@ -154,7 +154,7 @@ export class CommentsDialogComponent implements OnInit {
       }
     }
     // console.log("here is ngOnInit", flag, count, isDraftOrReview)
-    if ((flag === count && flag !== 0 || count !== 0) && isDraftOrReview === 0) {
+    if ((flag === count && (flag !== 0 || count !== 0)) && isDraftOrReview === 0) {
       // console.log("yes here okay", isDraftOrReview === 0)
       this.showPublishCBPBtn = true
     }
@@ -261,11 +261,11 @@ export class CommentsDialogComponent implements OnInit {
     // console.log("here is refreshCourse", flag, count)
     // console.log("here is ngOnInit", flag, count, isDraftOrReview)
 
-    setTimeout(() => {
-      if ((flag === count && flag !== 0 || count !== 0) && isDraftOrReview === 0) {
-        this.showPublishCBPBtn = true
-      }
-    }, 500)
+    // setTimeout(() => {
+    if ((flag === count && (flag !== 0 || count !== 0)) && isDraftOrReview === 0) {
+      this.showPublishCBPBtn = true
+    }
+    // }, 500)
     // if (flag === count && flag !== 0 || count !== 0) {
     //   this.showPublishCBPBtn = true
     // }
