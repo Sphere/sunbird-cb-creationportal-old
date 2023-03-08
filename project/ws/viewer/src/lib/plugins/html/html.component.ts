@@ -84,7 +84,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
       if (typeof iframeSupport !== 'boolean') {
         iframeSupport = this.htmlContent.isIframeSupported.toLowerCase()
         // if (iframeSupport === 'no') {
-        if (iframeSupport === 'yes') {
+        if (iframeSupport === 'yes' && this.htmlContent.mimeType !== 'application/vnd.ekstep.html-archive') {
           this.showIframeSupportWarning = true
           setTimeout(
             () => {
@@ -138,16 +138,33 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
         )
       }
 
-      if (this.htmlContent.mimeType !== 'text/x-url') {
-        let url = ''
-        if (this.htmlContent.streamingUrl) {
-          url = `${this.htmlContent.streamingUrl}?timestamp='${new Date().getTime()}`
+      if (this.htmlContent.mimeType === 'application/vnd.ekstep.html-archive') {
+        var url: any
+        if (this.htmlContent.status !== 'Live') {
+          url = this.htmlContent.streamingUrl
+          if (this.htmlContent.entryPoint) {
+            url = url + this.htmlContent.entryPoint
+          }
+          console.log(url)
+          this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
+        } else {
+          if (this.htmlContent.streamingUrl) {
+            //url = `${this.htmlContent.streamingUrl}?timestamp='${new Date().getTime()}`
+            let streamingUrl = this.htmlContent.streamingUrl
+            streamingUrl = streamingUrl.includes(
+              'https://sunbirdcontent-stage.s3-ap-south-1.amazonaws.com'
+            )
+              ? streamingUrl.substring(56)
+              : streamingUrl.substring(50)
+            const entryPoint = this.htmlContent.entryPoint || ''
+            const newUrl = `/apis/proxies/v8/getContents/${streamingUrl}${entryPoint}`
+            this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(`${newUrl}`)
+          }
         }
-
-        this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
+        //this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
       } else {
-        let urls = this.htmlContent.artifactUrl.replace('watch?v=', 'embed/')
-        this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(urls)
+        //let urls = this.htmlContent.artifactUrl.replace('watch?v=', 'embed/')
+        this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.htmlContent.artifactUrl)
       }
 
       // testing purpose only
