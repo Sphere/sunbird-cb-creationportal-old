@@ -1168,6 +1168,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             }
           }
           if (resourceListToReview.length === flag && moduleListToReview.length > 0) {
+            this.storeService.parentData = originalData
             const tempRequset: NSApiRequest.IContentUpdateV3 = {
               request: {
                 data: {
@@ -1936,7 +1937,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           if (this.contents.length) {
             this.contentService.changeActiveCont.next(this.contents[0].identifier)
           } else {
-            this.router.navigate(['author', 'cbp'])
+            this.loaderService.changeLoad.next(false)
+            this.dialog.open(SuccessDialogComponent, {
+              width: '450px',
+              height: '300x',
+              data: { 'message': 'Course Sent For Review', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important' },
+            })
+            // this.router.navigate(['author', 'cbp'])
           }
         } else {
           this.loaderService.changeLoad.next(false)
