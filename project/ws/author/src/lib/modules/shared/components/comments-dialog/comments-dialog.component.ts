@@ -261,11 +261,11 @@ export class CommentsDialogComponent implements OnInit {
     // console.log("here is refreshCourse", flag, count)
     console.log("here is refreshCourse", flag, count, isDraftOrReview)
 
-    // setTimeout(() => {
-    if ((flag === count && (flag !== 0 || count !== 0)) && isDraftOrReview === 0) {
-      this.showPublishCBPBtn = true
-    }
-    // }, 500)
+    setTimeout(() => {
+      if ((flag === count && (flag !== 0 || count !== 0)) && isDraftOrReview === 0) {
+        this.showPublishCBPBtn = true
+      }
+    }, 1000)
     // if (flag === count && flag !== 0 || count !== 0) {
     //   this.showPublishCBPBtn = true
     // }
