@@ -264,7 +264,7 @@
             </div>
           </div>
           <div>
-            <mat-checkbox *ngIf="acceptType == '.zip'||isLinkEnabled" [(ngModel)]="isNewTab" [checked]="isNewTab"
+            <mat-checkbox *ngIf="acceptType == isLinkEnabled" [(ngModel)]="isNewTab" [checked]="isNewTab"
               style="margin-left: 0px;" class="check-text">Open
               link
               in new tab</mat-checkbox>
@@ -575,7 +575,7 @@
               </div>
               <!-- <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isgatingEnabled">Gating
                             Enabled</mat-checkbox> -->
-              <div style="display:flex; flex-direction:row" *ngIf="acceptType == '.zip'||isLinkEnabled">
+              <div style="display:flex; flex-direction:row" *ngIf="acceptType == isLinkEnabled">
 
                 <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isIframeSupported">Open link
                   in new tab</mat-checkbox>
