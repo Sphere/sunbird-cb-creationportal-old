@@ -1,6 +1,7 @@
 import { NSContent } from './content'
 
 export interface ISearchContent {
+  id: string
   locale: string
   subTitle: string
   sourceName: string

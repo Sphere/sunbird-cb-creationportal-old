@@ -1316,7 +1316,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.dialog.open(SuccessDialogComponent, {
         width: '450px',
         height: '300x',
-        data: { 'message': 'Course is Live', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent, "createdBy": this._configurationsService.userProfile!.userId },
+        data: { 'message': 'Course is Live', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
       })
     } else {
       this.loaderService.changeLoad.next(false)
