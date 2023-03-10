@@ -164,6 +164,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             if (this.viewMode === 'meta' && this.clickedNext) {
               this.clickedNext = false
               this.showAddchapter = false
+            } else if (this.viewMode === '') {
+              this.viewMode = 'meta'
+              this.initService.publishData('backToCourseDetailsPage')
             }
           } else {
             if (this.viewMode === 'meta' && this.clickedNext) {
