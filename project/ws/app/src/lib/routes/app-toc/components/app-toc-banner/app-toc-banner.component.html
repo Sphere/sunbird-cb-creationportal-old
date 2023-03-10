@@ -1,9 +1,6 @@
-<div [ngStyle]="{'background-color': ((content?.posterImage || '').length === 7? content?.posterImage : '#F8AD1E')}">
-
+<div [ngStyle]="{'background-color': ((content?.posterImage || '').length === 7? content?.posterImage : '#F8AD1E')}"
+  style="width: 100%; overflow: hidden;">
   <div [ngClass]="{ 'header-synopsis-gradient': bannerUrl }" *ngIf="content">
-
-
-
     <!-- <div class="pt-10 header-actions top">
       <div class="action-btns">
         <div class="hidden-block-xs">
@@ -14,22 +11,18 @@
         </button>
       </div>
     </div> -->
-
-
     <div class="flex flex-between flex-wrap-reverse">
-
       <div class="header-left">
         <div class="header-synopsis">
           <!-- <div class="header-synopsis" [ngClass]="{ 'header-synopsis-gradient': bannerUrl }" *ngIf="content"> -->
-
-
           <div class="header-title flex-col sm:flex-row">
             <!-- <div *ngIf="content?.appIcon" class="apIcon">
             <img [src]="content?.creatorLogo" [id]="'source_' + content.identifier" class="source-icon"
               [wsUtilsDefaultThumbnail]="defaultSLogo" [alt]="content.sourceName || ''" />
           </div> -->
             <div class="sm:ml-5 flex flex-auto" [id]="'m-c-'+ content.identifier">
-              <h1 class="mat-display-2 margin-remove-bottom padding-bottom-xs hidden sm:block" [title]="content?.name">
+              <h1 class="mat-display-2 margin-remove-bottom padding-bottom-xs hidden sm:block" [title]="content?.name"
+                style="word-wrap: break-word;width: 49%;">
                 {{ content?.name }}
               </h1>
               <h1 class="mat-display-1 margin-remove-bottom padding-bottom-xs block sm:hidden" [title]="content?.name">
@@ -39,14 +32,11 @@
                 <mat-icon class="ws-mat-accent-text">check_circle</mat-icon>
               </span>
             </div>
-
           </div>
 
           <div class="flex flex-col sm:flex-row">
-
             <div class="sm:ml-5 flex flex-col flex-auto">
               <div [ngSwitch]="routePath" class="header-meta" [ngClass]="{ 'header-meta-banner': bannerUrl }">
-
                 <div class="banner-overview-container" [hidden]="!content?.purpose && showSubtitleOnBanner"
                   *ngSwitchCase="'overview'">
                   <h2 class="overview-description" *ngIf="showSubtitleOnBanner" i18n-title title="Subtitle">
