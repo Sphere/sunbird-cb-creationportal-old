@@ -1168,6 +1168,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             }
           }
           if (resourceListToReview.length === flag && moduleListToReview.length > 0) {
+            this.storeService.parentData = originalData
             const tempRequset: NSApiRequest.IContentUpdateV3 = {
               request: {
                 data: {
@@ -1285,36 +1286,37 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         },
         duration: NOTIFICATION_TIME * 2000,
       })
-      this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
-        /* tslint:disable-next-line */
-        console.log(data)
-        if (data && data.lastPublishedBy === undefined) {
-          let obj = {
-            "request": {
-              "courseId": this.contentService.parentContent,
-              "name": "Open Batch",
-              "description": "Open Batch",
-              "enrollmentType": "open",
-              "startDate": moment(new Date()).format("YYYY-MM-DD"),
-              "endDate": "2031-01-01",
-              "enrollmentEndDate": "2030-12-01",
-              "createdBy": this._configurationsService.userProfile!.userId
+      setTimeout(() => {
+        this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
+          /* tslint:disable-next-line */
+          console.log(data)
+          if (data && data.lastPublishedBy === undefined) {
+            let obj = {
+              "request": {
+                "courseId": this.contentService.parentContent,
+                "name": "Open Batch",
+                "description": "Open Batch",
+                "enrollmentType": "open",
+                "startDate": moment(new Date()).format("YYYY-MM-DD"),
+                "endDate": "2031-01-01",
+                "enrollmentEndDate": "2030-12-01",
+                "createdBy": this._configurationsService.userProfile!.userId
+              }
             }
-
+            console.log(obj)
+            let data = await this.editorService.createBatch(obj).toPromise().catch(_error => { })
+            console.log(data)
           }
-
-          this.editorService.createBatch(obj).toPromise().catch(_error => { })
-        }
-        // this.contentService.resetOriginalMetaWithHierarchy(data)
-        // this.initService.publishData(data)
-        // tslint:disable-next-line: align
-      })
-
+          // this.contentService.resetOriginalMetaWithHierarchy(data)
+          // this.initService.publishData(data)
+          // tslint:disable-next-line: align
+        })
+      }, 700)
       await this.sendEmailNotification('publishCompleted')
       this.dialog.open(SuccessDialogComponent, {
         width: '450px',
         height: '300x',
-        data: { 'message': 'Course is Live', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important' },
+        data: { 'message': 'Course is Live', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
       })
     } else {
       this.loaderService.changeLoad.next(false)
@@ -1936,7 +1938,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           if (this.contents.length) {
             this.contentService.changeActiveCont.next(this.contents[0].identifier)
           } else {
-            this.router.navigate(['author', 'cbp'])
+            this.loaderService.changeLoad.next(false)
+            this.dialog.open(SuccessDialogComponent, {
+              width: '450px',
+              height: '300x',
+              data: { 'message': 'Course Sent For Review', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important' },
+            })
+            // this.router.navigate(['author', 'cbp'])
           }
         } else {
           this.loaderService.changeLoad.next(false)

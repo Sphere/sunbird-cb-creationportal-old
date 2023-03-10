@@ -142,9 +142,9 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
         var url: any
         if (this.htmlContent.status !== 'Live') {
           url = this.htmlContent.streamingUrl
-          if (this.htmlContent.entryPoint) {
-            url = url + this.htmlContent.entryPoint
-          }
+          // if (this.htmlContent.entryPoint) {
+          //   url = url + this.htmlContent.entryPoint
+          // }
           console.log(url)
           this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
         } else {

@@ -2190,6 +2190,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         iframeSupported = 'Yes'
       else
         iframeSupported = 'No'
+      if (this.acceptType === '.zip') {
+        iframeSupported = 'Yes'
+      }
       meta["appIcon"] = thumbnail
       meta["thumbnail"] = thumbnail
       meta["versionKey"] = this.updatedVersionKey
@@ -3255,6 +3258,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           iframeSupported = 'Yes'
         else
           iframeSupported = 'No'
+
+        if (this.acceptType === '.zip') {
+          iframeSupported = 'Yes'
+        }
 
         //this.triggerUpload()
         this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
