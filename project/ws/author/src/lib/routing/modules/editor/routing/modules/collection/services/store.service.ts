@@ -821,10 +821,18 @@ export class CollectionStoreService {
         const childTypeMap: number[] = allowedTypes.map(() => 0)
         const children = contentNode.children || []
         if (childConfig.minChildren && children.length < childConfig.minChildren) {
-          errorMsg.push(
-            `Minimum ${childConfig.minChildren} children is required. But ${children.length ? children.length : 'nothing'
-            } present`,
-          )
+          this.editorService.readcontentV3(this.contentService.parentContent).subscribe((resData: any) => {
+            resData.children.forEach((data: any) => {
+              if (data.identifier == contentNode.identifier) {
+                if (data.children.length == 0) {
+                  errorMsg.push(
+                    `Minimum ${childConfig.minChildren} children is required. But ${children.length ? children.length : 'nothing'
+                    } present`,
+                  )
+                }
+              }
+            })
+          })
         }
         if (childConfig.maxChildren && children.length > childConfig.maxChildren) {
           errorMsg.push(
