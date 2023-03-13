@@ -19,6 +19,7 @@ export class CommentsDialogComponent implements OnInit {
   isSubmitPressed = false
   showNewFlow = false
   showPublishCBPBtn = false
+  showPublishResourceBtn = false
   courseEdited: any
   isModule: boolean = false
   constructor(
@@ -80,6 +81,7 @@ export class CommentsDialogComponent implements OnInit {
       console.log("here is updateUI", flag, count, isDraftOrReview)
       if ((flag === count && (flag !== 0 || count !== 0)) && isDraftOrReview === 0) {
         this.showPublishCBPBtn = true
+        this.showPublishResourceBtn = true
       } else {
         this.refreshCourse()
       }
@@ -157,6 +159,7 @@ export class CommentsDialogComponent implements OnInit {
     if ((flag === count && (flag !== 0 || count !== 0)) && isDraftOrReview === 0) {
       // console.log("yes here okay", isDraftOrReview === 0)
       this.showPublishCBPBtn = true
+      this.showPublishResourceBtn = true
     }
 
 
@@ -264,6 +267,7 @@ export class CommentsDialogComponent implements OnInit {
     setTimeout(() => {
       if ((flag === count && (flag !== 0 || count !== 0)) && isDraftOrReview === 0) {
         this.showPublishCBPBtn = true
+        this.showPublishResourceBtn = true
       }
     }, 1000)
     // if (flag === count && flag !== 0 || count !== 0) {
