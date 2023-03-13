@@ -1907,10 +1907,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   editContent(content: any) {
-    /* tslint:disable-next-line */
-    this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
-      this.updatedVersionKey = resData.versionKey
-    })
+    this.currentCourseId = content.identifier
+    if (content.contentType !== 'CourseUnit') {
+      this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
+        this.updatedVersionKey = resData.versionKey
+      })
+    }
 
     this.editItem = content.identifier
     this.currentContent = content.identifier
