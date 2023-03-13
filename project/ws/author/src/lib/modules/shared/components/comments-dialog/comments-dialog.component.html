@@ -56,7 +56,8 @@
       </button> -->
       <button class="margin-left-s
           text-white ws-mat-primary-background  mat-button-base save-btn-mt publish-button"
-        (click)="click('publishResources')" mat-raised-button i18n [disabled]="showPublishCBPBtn">
+        (click)="click('publishResources'); showPublishResourceBtn=true" mat-raised-button i18n
+        [disabled]="showPublishResourceBtn">
         Publish Resources
       </button>
       <button class="margin-left-s
