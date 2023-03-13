@@ -9,7 +9,7 @@
 }
 
 .brand-color{
-  color: #0074b6 !important;
+  color: #0074b6;
   cursor: pointer;
 }
 
@@ -719,4 +719,14 @@ animation-delay: -0.5s;
   text-overflow: ellipsis;
   margin: 0px !important;
   width: 23vh;
+}
+
+.edit-item {
+  background-color: #1c5d95;
+  h2 {
+    color: white!important;
+  }
+  .resourse-text, .icons-list, .brand-color, .cursor-pointer{
+    color: white!important;
+  }
 }
