@@ -284,19 +284,28 @@
             <ng-container *ngIf="content?.mimeType">
               <div class="pr-1" [ngSwitch]="content?.mimeType | lowercase">
                 <div *ngSwitchCase="'application/pdf'">
-                  <img src="cbp-assets/images/pdf-icon.png">
+                  <img src="cbp-assets/images/pdf-icon.png"> PDF
                 </div>
-                <div *ngSwitchCase="'video/mp4' || 'audio/mpeg' || 'application/x-mpegURL'">
-                  <img src="cbp-assets/images/video-icon.png">
+                <div *ngSwitchCase="'audio/mpeg' || 'application/x-mpegURL'">
+                  <img src="cbp-assets/images/video-icon.png"> Audio
                 </div>
-                <div *ngSwitchCase="'application/html' || 'application/vnd.ekstep.html-archive'">
-                  <img src="cbp-assets/images/video-icon.png">
+                <div *ngSwitchCase="'video/mp4'">
+                  <img src="cbp-assets/images/video-icon.png"> Video
                 </div>
                 <div
-                  *ngSwitchCase="'video/x-youtube' || 'text/x-url' || 'application/web-module'|| 'application/quiz' || 'application/json'">
-                  <img src="cbp-assets/images/link-icon.png">
+                  *ngSwitchCase="'application/html' || 'application/vnd.ekstep.html-archive'|| 'application/web-module'">
+                  <img src="cbp-assets/images/video-icon.png"> SCORM
                 </div>
-                <div *ngSwitchDefault><img src="cbp-assets/images/link-icon.png"></div>
+                <div *ngSwitchCase="'application/vnd.ekstep.html-archive' ">
+                  <img src="cbp-assets/images/link-icon.png"> SCORM
+                </div>
+                <div *ngSwitchCase="'video/x-youtube' || 'text/x-url' ">
+                  <img src="cbp-assets/images/link-icon.png"> Link
+                </div>
+                <div *ngSwitchCase=" 'application/quiz' || 'application/json'">
+                  <img src="cbp-assets/images/link-icon.png"> Assessment
+                </div>
+                <div *ngSwitchDefault><img src="cbp-assets/images/link-icon.png"> Link</div>
               </div>
 
             </ng-container>
