@@ -82,6 +82,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   mediumScreenSize = false
   quizDuration!: number
   assessmentDuration: any
+  randomCount: any
   passPercentage: any
   isQuiz: string = ''
   mediumSizeBreakpoint$ = this.breakpointObserver
@@ -295,6 +296,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                         //this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
                         this.assessmentDuration = (jsonResponse.timeLimit) / 60
                         this.passPercentage = jsonResponse.passPercentage
+                        this.randomCount = jsonResponse.randomCount
                       }
                       this.allContents.push(v.contents[0].content)
                       if (v.contents[0].data) {
@@ -344,6 +346,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                     // this.isLoading = false
                     this.assessmentDuration = ''
                     this.passPercentage = ''
+                    this.randomCount = ''
                     this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
                     this.resourceType = quizContent.categoryType || 'Assessment'
                     this.quizDuration = quizContent.duration || '300'
@@ -388,9 +391,16 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       this.passPercentage = event
       this.quizStoreSvc.hasChanged = true
     } else {
-      meta['assessmentDuration'] = event
-      this.assessmentDuration = event
-      this.quizStoreSvc.hasChanged = true
+      if (field === 'randomCount') {
+        meta['randomCount'] = event
+        this.randomCount = event
+        this.quizStoreSvc.hasChanged = true
+      } else {
+        meta['assessmentDuration'] = event
+        this.assessmentDuration = event
+        this.quizStoreSvc.hasChanged = true
+      }
+
     }
     this.metaContentService.setUpdatedMeta(meta, this.currentId, true)
   }
@@ -401,6 +411,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     // }
     this.assessmentDuration = ''
     this.passPercentage = ''
+    this.randomCount = ''
   }
   customStepper(step: number) {
     if (step === 1) {
@@ -690,6 +701,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       //assessmentDuration: (this.assessmentDuration) * 60 || '300',
       passPercentage: this.passPercentage || '50',
       isAssessment: this.isQuiz === '' ? true : false,
+      randomCount: this.randomCount || this.questionsArr.length,
       questions: array,
     }
     //console.log(this.resourceType, this.resourceType === ASSESSMENT)

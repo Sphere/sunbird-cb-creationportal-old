@@ -112,6 +112,11 @@
                   <input matInput type="number" class="form-control" placeholder="Enter duration" min="10"
                     [(ngModel)]="assessmentDuration" (change)="addTodo(assessmentDuration, 'assessmentDuration')" />
                 </mat-form-field>
+                <mat-form-field appearance="outline" style="padding: 5px 15px 0px 15px; min-width: 285px">
+                  <label class="">Random Count (Only For Self-Assessment)</label>
+                  <input matInput type="number" class="form-control" placeholder="Enter Random Question Count"
+                    [(ngModel)]="randomCount" (change)="addTodo(randomCount, 'randomCount')" />
+                </mat-form-field>
                 <div class="flex justify-between px-1 pb-3" *ngIf="questionsArr && canEditJson">
                   <button class=" ws-mat-primary-background mat-elevation-z6 margin-left-s" (click)="changeQuiz(-1)"
                     [disabled]="selectedQuizIndex === 0"
