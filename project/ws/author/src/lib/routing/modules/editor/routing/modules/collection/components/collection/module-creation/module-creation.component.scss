@@ -9,7 +9,7 @@
 }
 
 .brand-color{
-  color: #0074b6 !important;
+  color: #0074b6;
   cursor: pointer;
 }
 
@@ -722,5 +722,11 @@ animation-delay: -0.5s;
 }
 
 .edit-item {
-  background-color: #f9f9cf;
+  background-color: #1c5d95;
+  h2 {
+    color: white!important;
+  }
+  .resourse-text, .icons-list, .brand-color, .cursor-pointer{
+    color: white!important;
+  }
 }
