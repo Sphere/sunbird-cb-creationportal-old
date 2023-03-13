@@ -21,7 +21,8 @@
         </mat-toolbar>
         <div class="model-left-create-content">
           <div class="module-container" *ngFor="let module of courseData?.children">
-            <div class="mod-heading" *ngIf="module.primaryCategory === 'Course Unit'">
+            <div class="mod-heading" *ngIf="module.primaryCategory === 'Course Unit'"
+              [ngClass]="editItem === module.identifier ? 'edit-item' : ''">
               <h2 class="module-text" style="margin: 0px !important">{{module.name !== '' ?
                 module.name : "no title1"}}
               </h2>
@@ -35,7 +36,8 @@
               </span>
             </div>
             <div *ngIf="module?.children?.length > 0">
-              <div *ngFor="let resource of module.children" class="heading-resource">
+              <div *ngFor="let resource of module.children" class="heading-resource"
+                [ngClass]="editItem === resource.identifier ? 'edit-item' : ''">
                 <mat-icon class="cursor-pointer">more_vert</mat-icon> <span style="white-space: normal;"
                   class="resourse-text">{{resource.name}}</span>
                 <span fxFlex style="flex: 1 1 auto;"></span>
@@ -49,7 +51,8 @@
                 </span>
               </div>
             </div>
-            <div *ngIf="module.primaryCategory !== 'Course Unit'" class="heading-resource">
+            <div *ngIf="module.primaryCategory !== 'Course Unit'" class="heading-resource"
+              [ngClass]="editItem === module.identifier ? 'edit-item' : ''">
               <mat-icon class="cursor-pointer">more_vert</mat-icon> <span title="{{module.name}}" class="resourse-text"
                 style="white-space: normal;">{{ module.name}}</span>
               <span fxFlex style="flex: 1 1 auto;"></span>

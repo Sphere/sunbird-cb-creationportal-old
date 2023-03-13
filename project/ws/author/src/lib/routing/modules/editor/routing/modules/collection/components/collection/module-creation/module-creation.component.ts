@@ -225,6 +225,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   isError: boolean = false
   saveTriggerSub?: Subscription
   isVisibleReviewDialog: boolean = false
+  editItem: string = ''
 
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
@@ -1911,6 +1912,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.updatedVersionKey = resData.versionKey
     })
 
+    this.editItem = content.identifier
     this.currentContent = content.identifier
     // if (content.mimeType === "application/json") {
     //   let obj: any = {}
