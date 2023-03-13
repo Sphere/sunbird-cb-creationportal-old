@@ -1731,7 +1731,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           iframeSupported = 'Yes'
         else
           iframeSupported = 'No'
-        var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+        var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
         this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
         if (res !== null) {
           if (this.resourceLinkForm.value.resourceName.trim() === '') {
@@ -2206,7 +2206,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       meta["isIframeSupported"] = iframeSupported
 
 
-      var res = this.editResourceLinks.match(/^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/)
+      var res = this.editResourceLinks.match(/^(?:https?:\/\/)(?:www\.)(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/)
       // var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
       if (res !== null && this.content.mimeType === 'text/x-url') {
         meta["artifactUrl"] = this.editResourceLinks
