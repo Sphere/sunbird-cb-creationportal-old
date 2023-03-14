@@ -37,6 +37,7 @@ import { AuthInitService } from './../../../../../../services/init.service'
 import { LoaderService } from './../../../../../../services/loader.service'
 // import { CollectionStoreService } from './../../../routing/modules/collection/services/store.service'
 import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-popup.component'
+import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
 
 import {
   debounceTime,
@@ -384,60 +385,72 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   deleteCompetancy(competency: any) {
-    this.loader.changeLoad.next(true)
     let id = this.parentContent || ''
     let data: any
-    this.editorService.checkReadAPI(id)
-      .subscribe(async (res: any) => {
-        data = await res.result.content
-        let competencyID: string
-        let arr1: string[] = []
-        let arr2: { competencyName: any; competencyId: any; level: any }[] = []
-        let requestBody: any
-        let meta
-        if (data.competencySearch === undefined) {
-          meta = {
-            versionKey: data.versionKey,
-            competencySearch: [],
-            competency: false,
-            competencies_v1: []
-          }
-        } else {
 
-          arr2 = JSON.parse(data.competencies_v1)
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '600px',
+      height: '200px',
+      data: 'delete',
+    })
 
-          arr1 = data.competencySearch
-
-          competencyID = competency.competencyId + '-' + competency.level.toString()
-          arr1 = arr1.filter(e => e !== competencyID)
-          for (var n = 0; n < arr2.length; n++) {
-            if (arr2[n].competencyName === competency.competencyName && arr2[n].competencyId === competency.competencyId && arr2[n].level === competency.level) {
-              arr2.splice(n, 1)
-              break
-            }
-          }
-
-          meta = {
-            versionKey: data.versionKey,
-            competencySearch: arr1,
-            competency: false,
-            competencies_v1: arr2
-          }
-        }
-
-        requestBody = {
-          request: {
-            content: meta
-          }
-        }
-        this.editorService.updateNewContentV3(requestBody, id)
-          .subscribe(
-            (response: any) => {
-              if (response) {
-                this.loadCompetancy()
+    dialogRef.afterClosed().subscribe((confirm: any) => {
+      if (confirm) {
+        this.loader.changeLoad.next(true)
+        this.editorService.checkReadAPI(id)
+          .subscribe(async (res: any) => {
+            data = await res.result.content
+            let competencyID: string
+            let arr1: string[] = []
+            let arr2: { competencyName: any; competencyId: any; level: any }[] = []
+            let requestBody: any
+            let meta
+            if (data.competencySearch === undefined) {
+              meta = {
+                versionKey: data.versionKey,
+                competencySearch: [],
+                competency: false,
+                competencies_v1: []
               }
-            })
-      })
+            } else {
+
+              arr2 = JSON.parse(data.competencies_v1)
+
+              arr1 = data.competencySearch
+
+              competencyID = competency.competencyId + '-' + competency.level.toString()
+              arr1 = arr1.filter(e => e !== competencyID)
+              for (var n = 0; n < arr2.length; n++) {
+                if (arr2[n].competencyName === competency.competencyName && arr2[n].competencyId === competency.competencyId && arr2[n].level === competency.level) {
+                  arr2.splice(n, 1)
+                  break
+                }
+              }
+
+              meta = {
+                versionKey: data.versionKey,
+                competencySearch: arr1,
+                competency: false,
+                competencies_v1: arr2
+              }
+            }
+
+            requestBody = {
+              request: {
+                content: meta
+              }
+            }
+            this.editorService.updateNewContentV3(requestBody, id)
+              .subscribe(
+                (response: any) => {
+                  if (response) {
+                    this.loadCompetancy()
+                  }
+                })
+          })
+      }
+    })
+
   }
 
   checkMandatoryFields() {
