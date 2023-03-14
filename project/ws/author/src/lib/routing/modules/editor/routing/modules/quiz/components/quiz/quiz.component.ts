@@ -73,6 +73,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   quizConfig!: any
   quizData!: any
   bucket: string = ''
+  validPercentage = false
   /**
    * reviwer and publisher cannot add or delete or edit quizs but can rearrange them
    */
@@ -389,6 +390,14 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     if (field === 'passPercentage') {
       meta['passPercentage'] = event
       this.passPercentage = event
+      if (event >= 0) {
+        this.validPercentage = true
+      } else {
+        this.validPercentage = false
+      }
+      if (event === null) {
+        this.validPercentage = false
+      }
       this.quizStoreSvc.hasChanged = true
     } else {
       if (field === 'randomCount') {

@@ -104,12 +104,12 @@
                 </ws-auth-question-editor>
                 <mat-form-field appearance="outline" style="padding: 5px 15px 0px 25px">
                   <label class="starlabel">Pass Percentage</label>
-                  <input matInput placeholder="Enter pass percentage" min="10" max="100" [(ngModel)]="passPercentage"
+                  <input matInput placeholder="Enter pass percentage" max="100" [(ngModel)]="passPercentage"
                     (change)="addTodo(passPercentage, 'passPercentage')" type="number" />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
                   <label class="starlabel">Assessment Duration (Minutes)</label>
-                  <input matInput type="number" class="form-control" placeholder="Enter duration" min="10"
+                  <input matInput type="number" class="form-control" placeholder="Enter duration" min="2"
                     [(ngModel)]="assessmentDuration" (change)="addTodo(assessmentDuration, 'assessmentDuration')" />
                 </mat-form-field>
                 <mat-form-field appearance="outline" style="padding: 5px 15px 0px 15px; min-width: 285px">
@@ -150,9 +150,10 @@
         </ws-auth-edit-meta>
       </div>
     </div>
+
     <button *ngIf="questionsArr.length && canEditJson" (click)="action('save')"
       style="float: right;margin-right: 35px;height: 35px;top: 97vh;" mat-raised-button color="accent"
-      id="assessmentSave" [ngClass]="{ disable: !isCreatorEnable  || !(assessmentDuration && passPercentage)}">
+      id="assessmentSave" [ngClass]="{ disable: !isCreatorEnable  || !(assessmentDuration && validPercentage)}">
       <ng-container i18n>Save</ng-container>
     </button>
   </div>
