@@ -121,7 +121,6 @@ export class CompetencyPopupComponent implements OnInit {
               duration: NOTIFICATION_TIME * 1000,
             })
           } else {
-            this.loader.changeLoad.next(true)
             competencyID = proficiency.id + '-' + item.value
             arr1.push(competencyID)
             competencies_obj = {
@@ -149,6 +148,7 @@ export class CompetencyPopupComponent implements OnInit {
         }
       }
       if (!isDuplicate) {
+        this.loader.changeLoad.next(true)
         this.editorService.updateNewContentV3(requestBody, this.parentData.identifier).subscribe(
           (response: any) => {
             if (response.params.status === "successful") {
