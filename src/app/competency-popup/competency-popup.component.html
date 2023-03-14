@@ -38,7 +38,7 @@
       <!-- <button i18n class="refresh-button" id="refresh" (click)="refreshCourse()">
         <mat-icon style="margin-top: 4px;">refresh</mat-icon>
       </button> -->
-      <button mat-raised-button (click)="addCompetency(proficiency, selectLevel, false)">
+      <button [mat-dialog-close]="true" mat-raised-button (click)="addCompetency(proficiency, selectLevel, false)">
         Cancel
       </button>
       <button class="" style="margin-left: 10px;" (click)="addCompetency(proficiency, selectLevel, true)"
