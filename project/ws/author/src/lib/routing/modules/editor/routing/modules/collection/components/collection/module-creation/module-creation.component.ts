@@ -1658,6 +1658,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       sessionStorage.setItem('isSettingsPage', '1')
       this.isSettingsPage = true
+      this.editItem = ''
     }, 1000)
     /* tslint:disable-next-line */
     console.log("this.settingsPage", this.isSettingsPage)
@@ -1679,6 +1680,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.setContentType(obj)
       //this.initService.createModuleUnit(obj)
       this.clearForm()
+      this.editItem = ''
     } else if (this.moduleButtonName == 'Save') {
       this.isResourceTypeEnabled = true
     }
@@ -1873,6 +1875,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.showAddModuleForm = false
     this.moduleButtonName = 'Create'
     this.moduleCreate('Module Name', 'Module Name', '')
+    this.editItem = ''
     // this.moduleNames.push({ name: 'Create Course' })
     // this.moduleName = ''
   }
@@ -1885,6 +1888,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //this.addIndependentResource()
     this.showAddModuleForm = true
     this.isResourceTypeEnabled = true
+    //this.editItem = ''
   }
 
   async addIndependentResource() {
@@ -1898,6 +1902,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     await this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
       this.updatedVersionKey = resData.versionKey
     })
+    this.editItem = ''
   }
 
   changeToDefaultImg($event: any) {
@@ -1907,10 +1912,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   editContent(content: any) {
-    /* tslint:disable-next-line */
-    this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
-      this.updatedVersionKey = resData.versionKey
-    })
+    this.currentCourseId = content.identifier
+    if (content.contentType !== 'CourseUnit') {
+      this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
+        this.updatedVersionKey = resData.versionKey
+      })
+    }
 
     this.editItem = content.identifier
     this.currentContent = content.identifier
@@ -2244,11 +2251,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                 if (info) {
                   await this.update()
                   this.clearForm()
+                  this.editItem = ''
                 }
               })
           } else {
             await this.update()
             this.clearForm()
+            this.editItem = ''
           }
         }
       }
