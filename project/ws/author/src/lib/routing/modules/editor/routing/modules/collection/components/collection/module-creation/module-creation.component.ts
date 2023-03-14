@@ -1757,6 +1757,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
             await this.saves()
             this.clearForm()
+            this.editItem = ''
           }
         } else if (res == null && !this.isAssessmentOrQuizEnabled) {
           this.snackBar.openFromComponent(NotificationComponent, {
@@ -1784,6 +1785,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             }
             await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
             await this.saves()
+            this.editItem = ''
           }
         }
       }
@@ -2594,6 +2596,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         /* tslint:disable-next-line */
         console.log(content)
         if (content.contentType === 'Resource') {
+          this.editItem = content.identifier
+
           this.resourceLinkForm.controls.resourceName.setValue(content.name)
         }
         const isCreator = (this._configurationsService.userProfile
@@ -3294,6 +3298,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         await this.save()
         // this.loaderService.changeLoad.next(false)
         this.clearForm()
+        this.editItem = ''
       }
     }
   }
