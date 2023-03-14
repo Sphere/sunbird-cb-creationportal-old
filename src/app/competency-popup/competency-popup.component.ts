@@ -6,6 +6,11 @@ import {
 } from '@angular/material/dialog'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { Router } from '@angular/router'
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 
 @Component({
   selector: 'ws-competency-popup',
@@ -46,6 +51,8 @@ export class CompetencyPopupComponent implements OnInit {
   ]
   hasOneChecked: boolean = false
   constructor(
+    private loader: LoaderService,
+    private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<CompetencyPopupComponent>,
     private editorService: EditorService,
     private router: Router
@@ -83,7 +90,7 @@ export class CompetencyPopupComponent implements OnInit {
   }
   addCompetency(proficiency: any, selectLevel: any, onclose: boolean) {
     let level = selectLevel.filter((level: any) => level['selected'] === true)
-
+    let isDuplicate = false
     if (onclose && level.length > 0) {
       let competencyID
       let arr1: string[] = []
@@ -103,16 +110,27 @@ export class CompetencyPopupComponent implements OnInit {
       } else {
         arr2 = JSON.parse(this.parentData.competencies_v1)
         arr1 = this.parentData.competencySearch
-
         level.forEach((item: any) => {
-          competencyID = proficiency.id + '-' + item.value
-          arr1.push(competencyID)
-          competencies_obj = {
-            competencyName: proficiency.name,
-            competencyId: proficiency.id,
-            level: item.value
+          let duplicateCompetency = arr2.filter((com: any) => (com['competencyId'] === proficiency.id && com['level'] === item.value))
+          if (duplicateCompetency.length > 0) {
+            isDuplicate = true
+            this.snackBar.openFromComponent(NotificationComponent, {
+              data: {
+                type: Notify.INVALID_COMPETENCY,
+              },
+              duration: NOTIFICATION_TIME * 1000,
+            })
+          } else {
+            competencyID = proficiency.id + '-' + item.value
+            arr1.push(competencyID)
+            competencies_obj = {
+              competencyName: proficiency.name,
+              competencyId: proficiency.id,
+              level: item.value
+            }
+            arr2.push(competencies_obj)
           }
-          arr2.push(competencies_obj)
+
         })
       }
 
@@ -129,12 +147,16 @@ export class CompetencyPopupComponent implements OnInit {
           content: meta
         }
       }
-      this.editorService.updateNewContentV3(requestBody, this.parentData.identifier).subscribe(
-        (response: any) => {
-          if (response.params.status === "successful") {
-            this.dialogRef.close(onclose)
-          }
-        })
+      if (!isDuplicate) {
+        this.loader.changeLoad.next(true)
+        this.editorService.updateNewContentV3(requestBody, this.parentData.identifier).subscribe(
+          (response: any) => {
+            if (response.params.status === "successful") {
+              this.dialogRef.close(onclose)
+            }
+          })
+      }
+
     } else {
       this.dialogRef.close(onclose)
     }

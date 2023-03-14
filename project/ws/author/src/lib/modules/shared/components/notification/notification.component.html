@@ -282,3 +282,8 @@
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
   <span i18n>Course name can't be blank. </span>
 </p>
+
+<p *ngIf="type === notify.INVALID_COMPETENCY">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Selected Competency is already present. </span>
+</p>
