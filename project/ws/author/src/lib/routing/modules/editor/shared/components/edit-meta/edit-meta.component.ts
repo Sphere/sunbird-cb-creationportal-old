@@ -195,7 +195,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   contentForm!: FormGroup
   ngOnInit() {
-
     this.isSiemens = this.accessService.rootOrg.toLowerCase() === 'siemens'
     this.ordinals = this.authInitService.ordinals
     this.audienceList = this.ordinals.audience
@@ -351,7 +350,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       filter(v => v),
     ).subscribe(() => this.fetchAccessRestrictions())
 
-    this.contentService.changeActiveCont.subscribe(data => {
+    this.saveTriggerSub = this.contentService.changeActiveCont.subscribe(data => {
+      console.log("data", data)
       if (this.contentMeta && this.canUpdate) {
         this.storeData()
       }
@@ -584,7 +584,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.filterOrdinals()
     this.changeResourceType()
-
   }
 
   filterOrdinals() {
@@ -654,6 +653,17 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.createForm()
     }
     this.canUpdate = false
+    const url = this.router.url
+    const id = url.split('/')
+    this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
+      console.log(res.name)
+      this.contentMeta = res
+      this.contentMeta = res
+      this.contentForm.controls.name.setValue(res.name)
+      this.contentForm.controls.appIcon.setValue(res.appIcon)
+      this.contentForm.controls.instructions.setValue(res.instructions)
+      this.setDuration(res.duration || '0')
+    })
     Object.keys(this.contentForm.controls).map(v => {
       try {
         if (
