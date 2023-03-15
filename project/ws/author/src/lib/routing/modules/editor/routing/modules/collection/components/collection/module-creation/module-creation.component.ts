@@ -2654,7 +2654,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       topicDescription: '',
       topicName: type.type === 'Collection' ? 'Add Module' : 'Resource'
     }
-    this.storeService.parentData = this.courseData
+    // this.storeService.parentData = this.courseData
     const parentNode = node
     this.loaderService.changeLoad.next(true)
     const isDone = await this.storeService.createChildOrSibling(

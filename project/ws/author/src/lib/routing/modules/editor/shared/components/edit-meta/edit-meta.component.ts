@@ -47,7 +47,7 @@ import {
   switchMap,
   map,
 } from 'rxjs/operators'
-// import { Router } from '@angular/router'
+import { Router } from '@angular/router'
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
 
 // import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
@@ -68,7 +68,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() stage = 1
   @Input() type = ''
   clickedBtnNext: boolean = false
-
+  saveTriggerSub?: Subscription
   location = CONTENT_BASE_STATIC
   selectable = true
   removable = true
@@ -154,6 +154,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   isFormValid!: boolean
   competencies: any
   constructor(
+    // private storeService: CollectionStoreService,
     private formBuilder: FormBuilder,
     private uploadService: UploadService,
     private snackBar: MatSnackBar,
@@ -168,7 +169,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     private accessService: AccessControlService,
     // private apiService: ApiService,
     private http: HttpClient,
-    // private router: Router,
+    private router: Router,
   ) {
 
 
@@ -194,7 +195,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   contentForm!: FormGroup
   ngOnInit() {
-
     this.isSiemens = this.accessService.rootOrg.toLowerCase() === 'siemens'
     this.ordinals = this.authInitService.ordinals
     this.audienceList = this.ordinals.audience
@@ -350,11 +350,17 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       filter(v => v),
     ).subscribe(() => this.fetchAccessRestrictions())
 
-    this.contentService.changeActiveCont.subscribe(data => {
+    this.saveTriggerSub = this.contentService.changeActiveCont.subscribe(data => {
+      console.log("data", data)
       if (this.contentMeta && this.canUpdate) {
         this.storeData()
       }
-      this.content = this.contentService.getUpdatedMeta(data)
+      const url = this.router.url
+      const id = url.split('/')
+      this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
+        this.contentMeta = res
+      })
+      this.content = this.contentService.getUpdatedMeta(id[3])
     })
 
     // this.filteredOptions$ = this.keywordsCtrl.valueChanges.pipe(
@@ -524,6 +530,9 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe()
     }
+    if (this.saveTriggerSub) {
+      this.saveTriggerSub.unsubscribe()
+    }
     this.loader.changeLoad.next(false)
     this.ref.detach()
     clearInterval(this.timer)
@@ -575,7 +584,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.filterOrdinals()
     this.changeResourceType()
-
   }
 
   filterOrdinals() {
@@ -645,6 +653,17 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.createForm()
     }
     this.canUpdate = false
+    const url = this.router.url
+    const id = url.split('/')
+    this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
+      console.log(res.name)
+      this.contentMeta = res
+      this.contentMeta = res
+      this.contentForm.controls.name.setValue(res.name)
+      this.contentForm.controls.appIcon.setValue(res.appIcon)
+      this.contentForm.controls.instructions.setValue(res.instructions)
+      this.setDuration(res.duration || '0')
+    })
     Object.keys(this.contentForm.controls).map(v => {
       try {
         if (
