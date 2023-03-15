@@ -460,7 +460,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   checkMandatoryFields() {
-    let totalDuration = 0, subTitles, sourceName, instructions, appIcon
+    let totalDuration = 0, subTitles, sourceName, instructions, appIcon, lang
     totalDuration += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
     totalDuration += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
     totalDuration += this.hours ? this.hours * 60 * 60 : 0
@@ -468,8 +468,9 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     sourceName = this.contentForm.controls.sourceName.value
     instructions = this.contentForm.controls.instructions.value
     appIcon = this.contentForm.controls.appIcon.value
+    lang = this.contentForm.controls.lang.value
     // console.log("total: ", totalDuration, subTitles, sourceName, instructions, appIcon)
-    if (totalDuration && subTitles && sourceName && instructions && appIcon) {
+    if (totalDuration && subTitles && sourceName && instructions && appIcon && lang) {
       return false
     } else {
       return true
@@ -1718,7 +1719,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       instructions: new FormControl('', [Validators.required]),
       versionKey: '',  // (new Date()).getTime()
       purpose: '',
-      lang: '',
+      lang: new FormControl('', [Validators.required]),
       cneName: new FormControl('')
     })
     console.log("form validation", this.contentForm)

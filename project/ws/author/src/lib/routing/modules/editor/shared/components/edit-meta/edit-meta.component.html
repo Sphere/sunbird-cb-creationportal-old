@@ -825,7 +825,8 @@
           </div>
           <mat-form-field appearance="fill" class="margin-top-s field-edit-width"
             [ngClass]="{ 'mat-form-field-invalid': showError('lang') }">
-            <mat-label>Course Language</mat-label>
+            <mat-label [ngClass]="{ required: checkCondition('lang', 'required') }">Course Language <span
+                style="color: #d32f2f">*</span></mat-label>
             <mat-select formControlName="lang" i18n-placeholder placeholder="Course Language">
               <mat-option *ngFor="let lang of languageList" [value]="lang.value">
                 {{ lang.name }}</mat-option>
@@ -833,6 +834,8 @@
             <mat-hint class="mt-hint">If this course exists in another languages, you can link it to the respective
               courses(s)
             </mat-hint>
+            <mat-error i18n>This field is mandatory </mat-error>
+            <!-- <mat-error *ngIf="showError('lang')" i18n>This field is mandatory </mat-error> -->
           </mat-form-field>
           <!-- <button mat-raised-button (click)="navigateTo('features')" class="
                   text-white ws-mat-primary-background  mat-button-base">Back</button> -->
