@@ -410,11 +410,11 @@
             <form [formGroup]="resourceLinkForm" class="resource-details-form"
               *ngIf="isLinkEnabled||isAssessmentOrQuizEnabled">
               <mat-form-field appearance="outline" class="margin-top-xs field-width" style="margin-bottom: 0vh;">
-                <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
+                <input matInput #name formControlName="name" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
-                <mat-hint class="mt-hint">{{ this.resourceLinkForm.value.resourceName.length }}/100</mat-hint>
+                <mat-hint class="mt-hint">{{ this.resourceLinkForm.value.name.length }}/100</mat-hint>
               </mat-form-field>
-              <span *ngIf="resourceLinkForm.get('resourceName').hasError('required')" class="invalid-text">This field is
+              <span *ngIf="resourceLinkForm.get('name').hasError('required')" class="invalid-text">This field is
                 Required</span>
 
               <!-- <mat-form-field appearance="outline" class="margin-top-xs field-width">
@@ -520,11 +520,11 @@
             <!--PDF/audio/vedio form start-->
             <form [formGroup]="resourcePdfForm" class="resource-details-form" *ngIf="isPdfOrAudioOrVedioEnabled">
               <mat-form-field appearance="outline" class="margin-top-xs field-width" style="margin-bottom: 0vh;">
-                <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
+                <input matInput #name formControlName="name" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
-                <mat-hint class="mt-hint">{{ this.resourcePdfForm.value.resourceName.length }}/100</mat-hint>
+                <mat-hint class="mt-hint">{{ this.resourcePdfForm.value.name.length }}/100</mat-hint>
               </mat-form-field>
-              <span *ngIf="resourcePdfForm.get('resourceName').hasError('required')" class="invalid-text">This field
+              <span *ngIf="resourcePdfForm.get('name').hasError('required')" class="invalid-text">This field
                 is Required</span>
 
               <!-- <mat-form-field appearance="outline" class="margin-top-xs field-width">
@@ -663,7 +663,7 @@
             <!-- <form [formGroup]="assessmentOrQuizForm" class="resource-details-form" *ngIf="isAssessmentOrQuizEnabled">
               <div style="display:flex; flex-direction:row">
                 <mat-form-field appearance="outline" class="margin-right-l field-width">
-                  <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
+                  <input matInput #name formControlName="name" maxlength="100" i18n-placeholder
                     placeholder="Name of the resource" />
                 </mat-form-field>
                 <span class="duration-text">Duration :</span>
