@@ -232,7 +232,8 @@
               <img class="image max-width" height="144" width="256"
                 src="cbp-assets/images/default-white-background.png">
               <div *ngIf="uploadFileName != ''">
-                <mat-icon class="material-icons margin-left-m text-medium close-uploadIcon"
+                <mat-icon title="Remove"
+                  class="material-icons margin-left-m text-medium close-uploadIcon cursor-pointer"
                   (click)="clearUploadedFile();$event.stopPropagation()">close</mat-icon>
                 <div class="upload-file-name">
                   <div style="flex: 0 0 auto;">

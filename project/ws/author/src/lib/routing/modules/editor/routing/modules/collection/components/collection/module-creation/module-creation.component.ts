@@ -2158,15 +2158,18 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                             content: meta
                           }
                         }
-
+                        console.log(this.content.contentType)
                         this.editorStore.setUpdatedMeta(meta, this.content.identifier)
                         //this.initService.uploadData('thumbnail')
-                        if (this.content.contentType === 'Resource') {
+                        if (this.content.contentType === 'Resource' || this.content.contentType === 'Course') {
                           this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
                             (info: any) => {
                               /* tslint:disable-next-line */
                               console.log('info', info)
                               if (info) {
+                                this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                                  this.courseData = data
+                                })
                                 //this.update()
                               }
                             })
@@ -2649,12 +2652,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       level: 1,
     }
 
-
+    console.log(type.type)
     const newData = {
       topicDescription: '',
-      topicName: type.type === 'Collection' ? 'Add Module' : 'Resource'
+      topicName: type.type === 'collection' ? 'Add Module' : 'Resource'
     }
     // this.storeService.parentData = this.courseData
+    if (type.type == 'collection') {
+      this.storeService.parentData = this.courseData
+    }
     const parentNode = node
     this.loaderService.changeLoad.next(true)
     const isDone = await this.storeService.createChildOrSibling(
@@ -2874,6 +2880,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                         this.canUpdate = true
                         // this.data.emit('save')
                         this.updateStoreData()
+
                         this.initService.uploadData('thumbnail')
                         // this.contentForm.controls.posterImage.setValue(data.artifactURL)
                         this.snackBar.openFromComponent(NotificationComponent, {
@@ -3125,7 +3132,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         : fileName.toLowerCase().endsWith('.zip')
           ? 'application/vnd.ekstep.html-archive'
           : 'audio/mpeg'
-
+    console.log(this.currentContent)
+    console.log(currentContentData)
     if (
       (currentContentData.status === 'Live' || currentContentData.prevStatus === 'Live')
       && this.mimeType !== currentContentData.mimeType
