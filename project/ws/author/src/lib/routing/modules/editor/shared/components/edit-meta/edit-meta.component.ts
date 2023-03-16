@@ -663,6 +663,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.contentForm.controls.name.setValue(res.name)
       this.contentForm.controls.appIcon.setValue(res.appIcon)
       this.contentForm.controls.instructions.setValue(res.instructions)
+      this.contentForm.controls.lang.setValue(res.lang)
       this.setDuration(res.duration || '0')
     })
     Object.keys(this.contentForm.controls).map(v => {
@@ -875,14 +876,16 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
               meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
             } else {
               if (this.authInitService.authConfig[v as keyof IFormMeta] && this.authInitService.authConfig[v as keyof IFormMeta].defaultValue) {
-                meta[v as keyof NSContent.IContentMeta] = JSON.parse(
-                  JSON.stringify(
-                    this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                      originalMeta.contentType
-                      // tslint:disable-next-line: ter-computed-property-spacing
-                    ][0].value,
-                  ),
-                )
+                if (v !== 'isIframeSupported') {
+                  meta[v as keyof NSContent.IContentMeta] = JSON.parse(
+                    JSON.stringify(
+                      this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
+                        originalMeta.contentType
+                        // tslint:disable-next-line: ter-computed-property-spacing
+                      ][0].value,
+                    ),
+                  )
+                }
               }
 
             }
@@ -1664,7 +1667,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       introductoryVideoIcon: [],
       isExternal: [],
       isIframeSupported: [],
-      isRejected: [],
+      // isRejected: [],
       fileType: [],
       jobProfile: [],
       kArtifacts: [],
