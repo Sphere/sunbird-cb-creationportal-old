@@ -256,7 +256,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.resourceLinkForm = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.minLength(1)]),
       instructions: new FormControl(''),
-      resourceLinks: new FormControl('', [Validators.required]),
+      artifactUrl: new FormControl('', [Validators.required]),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
@@ -1733,7 +1733,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           iframeSupported = 'Yes'
         else
           iframeSupported = 'No'
-        var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+        var res = this.resourceLinkForm.value.artifactURL.match(/(http(s)?:\/\/.)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
         this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
         if (res !== null) {
           if (this.resourceLinkForm.value.name.trim() === '') {
@@ -1748,7 +1748,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               name: this.resourceLinkForm.value.name,
               instructions: this.resourceLinkForm.value.instructions,
               description: this.resourceLinkForm.value.instructions,
-              artifactUrl: this.resourceLinkForm.value.resourceLinks,
+              artifactUrl: this.resourceLinkForm.value.artifactUrl,
               isIframeSupported: iframeSupported,
               //gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
               duration: this.resourceLinkForm.value.duration,
@@ -3329,7 +3329,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.resourceLinkForm.setValue({
       name: '',
       instructions: '',
-      resourceLinks: '',
+      artifactUrl: '',
       appIcon: '',
       thumbnail: '',
       isIframeSupported: '',
