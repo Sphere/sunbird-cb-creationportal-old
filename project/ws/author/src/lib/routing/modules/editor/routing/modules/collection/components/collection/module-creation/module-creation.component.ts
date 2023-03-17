@@ -254,7 +254,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   ) {
     this.resourceLinkForm = new FormGroup({
-      resourceName: new FormControl('', [Validators.required, Validators.minLength(1)]),
+      name: new FormControl('', [Validators.required, Validators.minLength(1)]),
       instructions: new FormControl(''),
       resourceLinks: new FormControl('', [Validators.required]),
       appIcon: new FormControl(''),
@@ -278,7 +278,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
 
     this.resourcePdfForm = new FormGroup({
-      resourceName: new FormControl('', [Validators.required, Validators.minLength(1)]),
+      name: new FormControl('', [Validators.required, Validators.minLength(1)]),
       instructions: new FormControl(''),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
@@ -292,7 +292,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
 
     this.assessmentOrQuizForm = new FormGroup({
-      resourceName: new FormControl(''),
+      name: new FormControl(''),
       duration: new FormControl(''),
       questionType: new FormControl(''),
       isgatingEnabled: new FormControl(),
@@ -1736,7 +1736,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         var res = this.resourceLinkForm.value.resourceLinks.match(/(http(s)?:\/\/.)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
         this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
         if (res !== null) {
-          if (this.resourceLinkForm.value.resourceName.trim() === '') {
+          if (this.resourceLinkForm.value.name.trim() === '') {
             this.snackBar.openFromComponent(NotificationComponent, {
               data: {
                 type: Notify.INVALID_RESOURCE_NAME,
@@ -1745,7 +1745,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             })
           } else {
             const rBody: any = {
-              name: this.resourceLinkForm.value.resourceName,
+              name: this.resourceLinkForm.value.name,
               instructions: this.resourceLinkForm.value.instructions,
               description: this.resourceLinkForm.value.instructions,
               artifactUrl: this.resourceLinkForm.value.resourceLinks,
@@ -1767,7 +1767,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             duration: NOTIFICATION_TIME * 1000,
           })
         } else {
-          if (this.resourceLinkForm.value.resourceName.trim() === '') {
+          if (this.resourceLinkForm.value.name.trim() === '') {
             this.snackBar.openFromComponent(NotificationComponent, {
               data: {
                 type: Notify.INVALID_RESOURCE_NAME,
@@ -1776,7 +1776,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             })
           } else {
             const rBody: any = {
-              name: this.resourceLinkForm.value.resourceName,
+              name: this.resourceLinkForm.value.name,
               instructions: this.resourceLinkForm.value.instructions,
               description: this.resourceLinkForm.value.instructions,
               isIframeSupported: iframeSupported,
@@ -2158,15 +2158,18 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                             content: meta
                           }
                         }
-
+                        console.log(this.content.contentType)
                         this.editorStore.setUpdatedMeta(meta, this.content.identifier)
                         //this.initService.uploadData('thumbnail')
-                        if (this.content.contentType === 'Resource') {
+                        if (this.content.contentType === 'Resource' || this.content.contentType === 'Course') {
                           this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
                             (info: any) => {
                               /* tslint:disable-next-line */
                               console.log('info', info)
                               if (info) {
+                                this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                                  this.courseData = data
+                                })
                                 //this.update()
                               }
                             })
@@ -2598,7 +2601,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         if (content.contentType === 'Resource') {
           this.editItem = content.identifier
 
-          this.resourceLinkForm.controls.resourceName.setValue(content.name)
+          this.resourceLinkForm.controls.name.setValue(content.name)
         }
         const isCreator = (this._configurationsService.userProfile
           && this._configurationsService.userProfile.userId === content.createdBy)
@@ -2649,12 +2652,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       level: 1,
     }
 
-
+    console.log(type.type)
     const newData = {
       topicDescription: '',
-      topicName: type.type === 'Collection' ? 'Add Module' : 'Resource'
+      topicName: type.type === 'collection' ? 'Add Module' : 'Resource'
     }
-    this.storeService.parentData = this.courseData
+    if (type.type === 'collection') {
+      this.storeService.parentData = this.courseData
+    }
+
     const parentNode = node
     this.loaderService.changeLoad.next(true)
     const isDone = await this.storeService.createChildOrSibling(
@@ -2874,6 +2880,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                         this.canUpdate = true
                         // this.data.emit('save')
                         this.updateStoreData()
+
                         this.initService.uploadData('thumbnail')
                         // this.contentForm.controls.posterImage.setValue(data.artifactURL)
                         this.snackBar.openFromComponent(NotificationComponent, {
@@ -2989,14 +2996,17 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
             } else {
               if (this.initService.authConfig[v as keyof IFormMeta] && this.initService.authConfig[v as keyof IFormMeta].defaultValue) {
-                meta[v as keyof NSContent.IContentMeta] = JSON.parse(
-                  JSON.stringify(
-                    this.initService.authConfig[v as keyof IFormMeta].defaultValue[
-                      originalMeta.contentType
-                      // tslint:disable-next-line: ter-computed-property-spacing
-                    ][0].value,
-                  ),
-                )
+                if (v !== 'isIframeSupported') {
+                  meta[v as keyof NSContent.IContentMeta] = JSON.parse(
+                    JSON.stringify(
+                      this.initService.authConfig[v as keyof IFormMeta].defaultValue[
+                        originalMeta.contentType
+                        // tslint:disable-next-line: ter-computed-property-spacing
+                      ][0].value,
+                    ),
+                  )
+                }
+
               }
 
             }
@@ -3125,7 +3135,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         : fileName.toLowerCase().endsWith('.zip')
           ? 'application/vnd.ekstep.html-archive'
           : 'audio/mpeg'
-
+    console.log(this.currentContent)
+    console.log(currentContentData)
     if (
       (currentContentData.status === 'Live' || currentContentData.prevStatus === 'Live')
       && this.mimeType !== currentContentData.mimeType
@@ -3259,7 +3270,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           },
           duration: NOTIFICATION_TIME * 1000,
         })
-      } else if (this.resourcePdfForm.value.resourceName.trim() === '') {
+      } else if (this.resourcePdfForm.value.name.trim() === '') {
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
             type: Notify.INVALID_RESOURCE_NAME,
@@ -3283,7 +3294,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.duration = this.resourcePdfForm.value.duration
         // this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
         const rBody: any = {
-          name: this.resourcePdfForm.value.resourceName,
+          name: this.resourcePdfForm.value.name,
           instructions: this.resourcePdfForm.value.instructions,
           description: this.resourcePdfForm.value.instructions,
           appIcon: this.resourcePdfForm.value.appIcon,
@@ -3306,7 +3317,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   clearForm() {
     this.showAddModuleForm = false
     this.resourcePdfForm.setValue({
-      resourceName: '',
+      name: '',
       instructions: '',
       appIcon: '',
       thumbnail: '',
@@ -3316,7 +3327,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
 
     this.resourceLinkForm.setValue({
-      resourceName: '',
+      name: '',
       instructions: '',
       resourceLinks: '',
       appIcon: '',

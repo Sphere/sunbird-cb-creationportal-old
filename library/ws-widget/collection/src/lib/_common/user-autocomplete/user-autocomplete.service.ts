@@ -39,7 +39,7 @@ export class UserAutocompleteService {
     url += stringifiedQueryParams ? `?${stringifiedQueryParams}` : ''
 
     return this.http.get<NsAutoComplete.IUserAutoComplete[]>(
-      url ,
+      url,
     )
   }
 
@@ -54,9 +54,7 @@ export class UserAutocompleteService {
         ? this.configSvc.instanceConfig.sourceFieldsUserAutocomplete
         : undefined,
     })
-
     url += stringifiedQueryParams ? `?${stringifiedQueryParams}` : ''
-
     return this.http.get<NsAutoComplete.IUserAutoComplete[]>(url).pipe(
       map((data: any) => {
         const resData: any = []
@@ -65,7 +63,7 @@ export class UserAutocompleteService {
           const tempData = (data.result && data.result.response && data.result.response.count > 0) ? data.result.response.content : []
           if (tempData && tempData.length > 0) {
             tempData.forEach((element: any) => {
-             if (element.roles && element.roles.length > 0 && element.roles.filter((v: any) => v.role === roleType).length) {
+              if (element.roles && element.roles.length > 0 && element.roles.filter((v: any) => v.role === roleType).length) {
                 if (roleType === 'CONTENT_PUBLISHER') {
                   resData.push(this.getAutoCompleteData(element))
                 } else if (roleType === 'CONTENT_REVIEWER') {

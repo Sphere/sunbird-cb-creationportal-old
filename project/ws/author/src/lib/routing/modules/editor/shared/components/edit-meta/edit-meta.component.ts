@@ -47,7 +47,7 @@ import {
   switchMap,
   map,
 } from 'rxjs/operators'
-// import { Router } from '@angular/router'
+import { Router } from '@angular/router'
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
 
 // import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
@@ -68,7 +68,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() stage = 1
   @Input() type = ''
   clickedBtnNext: boolean = false
-
+  saveTriggerSub?: Subscription
   location = CONTENT_BASE_STATIC
   selectable = true
   removable = true
@@ -154,6 +154,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   isFormValid!: boolean
   competencies: any
   constructor(
+    // private storeService: CollectionStoreService,
     private formBuilder: FormBuilder,
     private uploadService: UploadService,
     private snackBar: MatSnackBar,
@@ -168,7 +169,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     private accessService: AccessControlService,
     // private apiService: ApiService,
     private http: HttpClient,
-    // private router: Router,
+    private router: Router,
   ) {
 
 
@@ -194,7 +195,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   contentForm!: FormGroup
   ngOnInit() {
-
     this.isSiemens = this.accessService.rootOrg.toLowerCase() === 'siemens'
     this.ordinals = this.authInitService.ordinals
     this.audienceList = this.ordinals.audience
@@ -350,11 +350,17 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       filter(v => v),
     ).subscribe(() => this.fetchAccessRestrictions())
 
-    this.contentService.changeActiveCont.subscribe(data => {
+    this.saveTriggerSub = this.contentService.changeActiveCont.subscribe(data => {
+      console.log("data", data)
       if (this.contentMeta && this.canUpdate) {
         this.storeData()
       }
-      this.content = this.contentService.getUpdatedMeta(data)
+      const url = this.router.url
+      const id = url.split('/')
+      this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
+        this.contentMeta = res
+      })
+      this.content = this.contentService.getUpdatedMeta(id[3])
     })
 
     // this.filteredOptions$ = this.keywordsCtrl.valueChanges.pipe(
@@ -454,7 +460,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   checkMandatoryFields() {
-    let totalDuration = 0, subTitles, sourceName, instructions, appIcon
+    let totalDuration = 0, subTitles, sourceName, instructions, appIcon, lang
     totalDuration += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
     totalDuration += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
     totalDuration += this.hours ? this.hours * 60 * 60 : 0
@@ -462,8 +468,9 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     sourceName = this.contentForm.controls.sourceName.value
     instructions = this.contentForm.controls.instructions.value
     appIcon = this.contentForm.controls.appIcon.value
+    lang = this.contentForm.controls.lang.value
     // console.log("total: ", totalDuration, subTitles, sourceName, instructions, appIcon)
-    if (totalDuration && subTitles && sourceName && instructions && appIcon) {
+    if (totalDuration && subTitles && sourceName && instructions && appIcon && lang) {
       return false
     } else {
       return true
@@ -524,6 +531,9 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe()
     }
+    if (this.saveTriggerSub) {
+      this.saveTriggerSub.unsubscribe()
+    }
     this.loader.changeLoad.next(false)
     this.ref.detach()
     clearInterval(this.timer)
@@ -575,7 +585,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.filterOrdinals()
     this.changeResourceType()
-
   }
 
   filterOrdinals() {
@@ -645,6 +654,18 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.createForm()
     }
     this.canUpdate = false
+    const url = this.router.url
+    const id = url.split('/')
+    this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
+      console.log(res.name)
+      this.contentMeta = res
+      this.contentMeta = res
+      this.contentForm.controls.name.setValue(res.name)
+      this.contentForm.controls.appIcon.setValue(res.appIcon)
+      this.contentForm.controls.instructions.setValue(res.instructions)
+      this.contentForm.controls.lang.setValue(res.lang)
+      this.setDuration(res.duration || '0')
+    })
     Object.keys(this.contentForm.controls).map(v => {
       try {
         if (
@@ -855,14 +876,16 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
               meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
             } else {
               if (this.authInitService.authConfig[v as keyof IFormMeta] && this.authInitService.authConfig[v as keyof IFormMeta].defaultValue) {
-                meta[v as keyof NSContent.IContentMeta] = JSON.parse(
-                  JSON.stringify(
-                    this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                      originalMeta.contentType
-                      // tslint:disable-next-line: ter-computed-property-spacing
-                    ][0].value,
-                  ),
-                )
+                if (v !== 'isIframeSupported') {
+                  meta[v as keyof NSContent.IContentMeta] = JSON.parse(
+                    JSON.stringify(
+                      this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
+                        originalMeta.contentType
+                        // tslint:disable-next-line: ter-computed-property-spacing
+                      ][0].value,
+                    ),
+                  )
+                }
               }
 
             }
@@ -1644,7 +1667,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       introductoryVideoIcon: [],
       isExternal: [],
       isIframeSupported: [],
-      isRejected: [],
+      // isRejected: [],
       fileType: [],
       jobProfile: [],
       kArtifacts: [],
@@ -1699,7 +1722,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       instructions: new FormControl('', [Validators.required]),
       versionKey: '',  // (new Date()).getTime()
       purpose: '',
-      lang: '',
+      lang: new FormControl('', [Validators.required]),
       cneName: new FormControl('')
     })
     console.log("form validation", this.contentForm)
