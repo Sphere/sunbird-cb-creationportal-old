@@ -217,7 +217,7 @@
           <!-- is link enabled -->
           <div *ngIf="isLinkEnabled">
             <mat-form-field appearance="outline" class="margin-top-xs field-width">
-              <input matInput #resourceLinks [(ngModel)]="editResourceLinks" maxlength="100" i18n-placeholder
+              <input matInput #artifactUrl [(ngModel)]="editResourceLinks" maxlength="100" i18n-placeholder
                 placeholder="Link" />
             </mat-form-field><br>
             <span *ngIf="editResourceLinks == ''" class="invalid-text">This field is Required</span>
@@ -427,7 +427,7 @@
 
               <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">
-                  <input matInput #resourceLinks [(ngModel)]="editResourceLinks" formControlName="resourceLinks"
+                  <input matInput #artifactUrl [(ngModel)]="editResourceLinks" formControlName="artifactUrl"
                     maxlength="100" i18n-placeholder placeholder="Link" />
                 </mat-form-field>
                 <!-- <mat-checkbox class="check-text" formControlName="isgatingEnabled">Gating Enabled</mat-checkbox> -->
@@ -435,7 +435,7 @@
 
               </div>
               <span
-                *ngIf="resourceLinkForm.get('resourceLinks').hasError('required')&&isLinkEnabled && !isAssessmentOrQuizEnabled"
+                *ngIf="resourceLinkForm.get('artifactUrl').hasError('required')&&isLinkEnabled && !isAssessmentOrQuizEnabled"
                 class="invalid-text">This field
                 is Required</span>
               <!--validation div for resource link-->

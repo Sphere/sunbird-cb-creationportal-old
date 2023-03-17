@@ -20,3 +20,17 @@ button {
   max-height: 18rem;
   overflow-x: scroll;
 }
+.buttonColor{
+  border: 1px #1C5D95 solid !important;
+  border-radius: 30px !important;
+  font-family: sans-serif !important;
+}
+.yesButtonColor{
+  background-color: #1C5D95 !important;
+  color: white !important;
+}
+
+.noButtonColor{
+  background-color: white !important;
+  color: #1C5D95 !important;
+}
