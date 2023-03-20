@@ -142,6 +142,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.changeStatusToDraft('Content Rejected')
         }
         if (data === 'backToCourseDetailsPage') {
+          this.isModulePageEnabled = false
           this.showAddchapter = false
           this.viewMode = 'meta'
           this.clickedNext = false
@@ -164,6 +165,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             if (this.viewMode === 'meta' && this.clickedNext) {
               this.clickedNext = false
               this.showAddchapter = false
+              this.isModulePageEnabled = false
             } else if (this.viewMode === '') {
               this.viewMode = 'meta'
               this.initService.publishData('backToCourseDetailsPage')
@@ -181,6 +183,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.initService.publishMessage.subscribe(
       (data: any) => {
         if (data === 'backToCourseDetailsPage' && this.viewMode !== 'assessment') {
+          this.isModulePageEnabled = false
           this.isLoading = true
           this.showAddchapter = false
           this.viewMode = 'meta'
@@ -692,6 +695,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           },
           duration: NOTIFICATION_TIME * 1000,
         })
+        if (this.isModulePageEnabled && this.viewMode !== 'assessment') {
+          this.clickedNext = true
+        }
       }
     }
   }
