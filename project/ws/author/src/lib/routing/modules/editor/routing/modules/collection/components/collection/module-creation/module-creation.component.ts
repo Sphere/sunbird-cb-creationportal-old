@@ -2993,7 +2993,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               currentMeta[v as keyof NSContent.IContentMeta] ||
               // (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
               currentMeta[v as keyof NSContent.IContentMeta] === false) {
-              meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
+              if (v !== 'isIframeSupported') {
+                meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
+              }
             } else {
               if (this.initService.authConfig[v as keyof IFormMeta] && this.initService.authConfig[v as keyof IFormMeta].defaultValue) {
                 if (v !== 'isIframeSupported') {
