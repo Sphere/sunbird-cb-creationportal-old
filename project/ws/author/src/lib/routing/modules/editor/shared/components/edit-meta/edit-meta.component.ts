@@ -1666,7 +1666,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       introductoryVideo: [],
       introductoryVideoIcon: [],
       isExternal: [],
-      isIframeSupported: [],
+      // isIframeSupported: [],
       // isRejected: [],
       fileType: [],
       jobProfile: [],
