@@ -58,7 +58,8 @@ export class UserAutocompleteService {
     return this.http.get<NsAutoComplete.IUserAutoComplete[]>(url).pipe(
       map((data: any) => {
         const resData: any = []
-        if (data && data.params && (data.params.status === 'SUCCESS' || data.params.status === 'success')) {
+
+        if (data && data.params && (data.params.status === 'success' || data.params.status === 'SUCCESS')) {
           const tempData = (data.result && data.result.response && data.result.response.count > 0) ? data.result.response.content : []
           if (tempData && tempData.length > 0) {
             tempData.forEach((element: any) => {
