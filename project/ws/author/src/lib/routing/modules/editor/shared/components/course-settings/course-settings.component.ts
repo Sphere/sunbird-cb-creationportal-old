@@ -1583,7 +1583,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       creatorPosterImage: [],
       creatorThumbnail: [],
       status: [],
-      studyDuration: [],
+      // studyDuration: [],
       studyMaterials: [],
       subTitle: [],
       subTitles: [],
