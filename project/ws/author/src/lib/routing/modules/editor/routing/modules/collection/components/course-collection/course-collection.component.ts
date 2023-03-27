@@ -2620,9 +2620,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.contentService.currentContentData = requestBody.request.content
       this.contentService.currentContentID = this.currentCourseId
 
-      //let nodesModified = {}
-
-      if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined || tempUpdateContent.category === 'Course') {
+      if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined) {
         return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
           tap(() => {
             // this.storeService.getHierarchyTreeStructure()
@@ -2694,6 +2692,35 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         )
 
       } else {
+        if (tempUpdateContent.category === 'Course') {
+          let resourceDurat: any = []
+          let sum: any
+          if (this.versionKey.children.length > 0) {
+            this.versionKey.children.forEach((element: any) => {
+              resourceDurat.push(parseInt(element.duration))
+            })
+            sum = resourceDurat.reduce((a: any, b: any) => a + b)
+          } else {
+            requestBody.request.content.duration = null
+          }
+          console.log(resourceDurat)
+          console.log(sum)
+          console.log(requestBody)
+          console.log(tempUpdateContent)
+          console.log(this.versionKey)
+          return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
+            tap(() => {
+              this.storeService.changedHierarchy = {}
+              Object.keys(this.contentService.upDatedContent).forEach(id => {
+                this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
+                // this.editorService.readContentV2(id).subscribe(resData => {
+                //   this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
+                // })
+              })
+              this.contentService.upDatedContent = {}
+            })
+          )
+        }
         // Object.keys(this.contentService.upDatedContent).forEach(v => {
         //           nodesModified = {
         //             [v]: {
