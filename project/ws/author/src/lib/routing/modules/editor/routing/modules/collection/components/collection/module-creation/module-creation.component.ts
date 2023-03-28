@@ -3486,6 +3486,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             duration: NOTIFICATION_TIME * 1000,
           })
           this.action('save')
+          this.validateFile(this.file as File)
           this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
             this.courseData = data
           })
@@ -3502,7 +3503,17 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         },
       )
   }
-
+  validateFile(file: File) {
+    const content = document.createElement(
+      this.mimeType === 'video/mp4' ? 'video' : 'audio',
+    )
+    content.preload = 'metadata'
+    content.onloadedmetadata = () => {
+      window.URL.revokeObjectURL(content.src)
+      this.setDuration(JSON.stringify(Math.round(content.duration)))
+    }
+    content.src = URL.createObjectURL(file)
+  }
   generateStreamUrl(fileName: string) {
     return `${environment.azureHost}/${environment.azureBucket}/html/${this.currentContent}-snapshot/${fileName}`
   }
@@ -3536,16 +3547,21 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           (this.initService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
             currentMeta[v] === false)
         ) {
-          meta[v] = currentMeta[v]
+          if (v !== 'duration') {
+            meta[v] = currentMeta[v]
+          }
+
         } else {
-          meta[v] = JSON.parse(
-            JSON.stringify(
-              this.initService.authConfig[v as keyof IFormMeta].defaultValue[
-                originalMeta.contentType
-                // tslint:disable-next-line: ter-computed-property-spacing
-              ][0].value,
-            ),
-          )
+          if (v !== 'duration') {
+            meta[v] = JSON.parse(
+              JSON.stringify(
+                this.initService.authConfig[v as keyof IFormMeta].defaultValue[
+                  originalMeta.contentType
+                  // tslint:disable-next-line: ter-computed-property-spacing
+                ][0].value,
+              ),
+            )
+          }
         }
       } else if (v === 'versionKey') {
         meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
