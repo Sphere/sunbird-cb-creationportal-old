@@ -3547,13 +3547,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           (this.initService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
             currentMeta[v] === false)
         ) {
-          debugger
           if (v !== 'duration') {
             meta[v] = currentMeta[v]
           }
 
         } else {
-          debugger
           if (v !== 'duration') {
             meta[v] = JSON.parse(
               JSON.stringify(
