@@ -706,9 +706,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     const quizData = {
       // tslint:disable-next-line: prefer-template
       //timeLimit: parseInt(this.quizDuration + '', 10) || 300
-      timeLimit: (this.assessmentDuration) * 60 || '300',
+      timeLimit: (this.assessmentDuration) * 60,
       //assessmentDuration: (this.assessmentDuration) * 60 || '300',
-      passPercentage: this.passPercentage || '50',
+      passPercentage: this.passPercentage,
       isAssessment: this.isQuiz === '' ? true : false,
       randomCount: this.randomCount || this.questionsArr.length,
       questions: array,
