@@ -1708,7 +1708,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       creatorPosterImage: [],
       creatorThumbnail: [],
       status: [],
-      studyDuration: [],
+      // studyDuration: [],
       studyMaterials: [],
       subTitle: new FormControl('', [Validators.required]),
       subTitles: [],
