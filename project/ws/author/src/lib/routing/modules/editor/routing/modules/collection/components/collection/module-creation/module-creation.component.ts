@@ -3511,6 +3511,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     content.onloadedmetadata = () => {
       window.URL.revokeObjectURL(content.src)
       this.setDuration(JSON.stringify(Math.round(content.duration)))
+      this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
     }
     content.src = URL.createObjectURL(file)
   }
