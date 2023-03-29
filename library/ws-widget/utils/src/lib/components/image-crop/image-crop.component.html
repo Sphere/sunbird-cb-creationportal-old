@@ -16,10 +16,10 @@
   </mat-dialog-content>
   <mat-dialog-actions class="flex flex-end">
     <div class="flex flex-end">
-      <button mat-raised-button autofocus type="button" (click)=" close()">
+      <button mat-raised-button class="cancelBtn" autofocus type="button" (click)=" close()">
         <span i18n>No</span>
       </button>
-      <button mat-raised-button type="button" class="text-white ws-mat-primary-background text-white"
+      <button mat-raised-button type="button" class="text-white ws-mat-primary-background text-white updateBtn"
         (click)=" continueToImageCrop()">
         <span class="text-white" i18n>Yes</span>
       </button>
@@ -138,9 +138,9 @@
       <!--  <button mat-raised-button type="button" (click)=" reset()">
         <span i18n>Reset</span>
       </button> -->
-      <button mat-raised-button type="button" class="text-white ws-mat-primary-background text-white"
+      <button mat-raised-button type="button" class="text-white ws-mat-primary-background text-white updateBtn"
         (click)=" croppingImage()">
-        <span class="text-white" i18n>Apply</span>
+        <span class="text-white " i18n>Apply</span>
       </button>
     </div>
   </mat-dialog-actions>

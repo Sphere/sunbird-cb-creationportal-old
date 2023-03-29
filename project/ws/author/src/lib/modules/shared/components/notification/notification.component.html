@@ -287,3 +287,8 @@
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
   <span i18n>Selected Competency is already present. </span>
 </p>
+
+<p *ngIf="type === notify.UPLOAD_FILE_REMOVED">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Removed file successfully, Upload new file </span>
+</p>

@@ -234,7 +234,7 @@
               <div *ngIf="uploadFileName != ''">
                 <mat-icon title="Remove"
                   class="material-icons margin-left-m text-medium close-uploadIcon cursor-pointer"
-                  (click)="clearUploadedFile();$event.stopPropagation()">close</mat-icon>
+                  (click)="deleteUploadedFile();$event.stopPropagation()">close</mat-icon>
                 <div class="upload-file-name">
                   <div style="flex: 0 0 auto;">
                     <img class="uploaded-img" src="{{uploadIcon}}">
@@ -545,7 +545,7 @@
                     src="cbp-assets/images/default-white-background.png">
                   <div *ngIf="uploadFileName != ''">
                     <mat-icon class="material-icons margin-left-m text-medium close-uploadIcon"
-                      (click)="clearUploadedFile();$event.stopPropagation()">close</mat-icon>
+                      (click)="deleteUploadedFile();$event.stopPropagation()">close</mat-icon>
                     <div class="upload-file-name">
                       <div style="flex: 0 0 auto;">
                         <img class="uploaded-img" src="{{uploadIcon}}">

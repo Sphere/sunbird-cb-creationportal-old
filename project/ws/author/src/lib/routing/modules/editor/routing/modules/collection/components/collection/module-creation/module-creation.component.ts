@@ -1792,7 +1792,73 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
 
   }
+  async deleteUploadedFile() {
+    this.contentService.removeListOfFilesAndUpdatedIPR(this.currentContent)
+    this.uploadFileName = ''
+    this.file = null
+    this.duration = '0'
+    this.mimeType = ''
+    let meta: any = {}
+    meta['versionKey'] = this.content.versionKey
+    meta['artifactUrl'] = null
+    meta['downloadUrl'] = null
+    meta['duration'] = "0"
+    let requestBody = {
+      request: {
+        content: meta
+      }
+    }
+    this.editorStore.setUpdatedMeta(meta, this.currentContent)
+    this.loader.changeLoad.next(true)
+    await this.editorService.updateNewContentV3(requestBody, this.currentContent).subscribe(
+      async (info: any) => {
+        /* tslint:disable-next-line */
+        console.log('info', info, this.editorStore.parentContent)
+        if (info) {
+          await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+            this.courseData = data
+            console.log("this.courseData", this.courseData)
+            if (info) {
+              const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
 
+              const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+                request: {
+                  data: {
+                    nodesModified: this.editorStore.getNodeModifyData(),
+                    hierarchy: hierarchyData,
+                  },
+                },
+              }
+              this.loaderService.changeLoad.next(true)
+              await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+                this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                  this.courseData = data
+                  if (this.courseData && this.courseData.children.length >= 2) {
+                    this.showSettingsPage = true
+                  } else {
+                    this.showSettingsPage = false
+                  }
+                  this.loader.changeLoad.next(false)
+                  this.snackBar.openFromComponent(NotificationComponent, {
+                    data: {
+                      type: Notify.UPLOAD_FILE_REMOVED,
+                    },
+                    duration: NOTIFICATION_TIME * 1000,
+                  })
+                  this.editorStore.resetOriginalMetaWithHierarchy(data)
+                  // tslint:disable-next-line: align
+                })
+              })
+
+            }
+            this.setDuration(0)
+          })
+
+
+          //this.update()
+        }
+      })
+  }
   createResourseContent(name: string, type: string) {
     console.log(type)
     this.resourceType = name
@@ -1913,11 +1979,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       : ''
   }
 
-  editContent(content: any) {
+  async editContent(content: any) {
     this.currentCourseId = content.identifier
     if (content.contentType !== 'CourseUnit') {
-      this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
+      await this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
         this.updatedVersionKey = resData.versionKey
+        content = resData
       })
     }
 
@@ -1976,6 +2043,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'video/mp4') {
+      console.log("this.uploadFile", content.artifactUrl)
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
       this.uploadText = 'mp4, m4v'
