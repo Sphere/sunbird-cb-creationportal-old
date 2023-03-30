@@ -1655,25 +1655,29 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           }
         })
         console.log(this.resourceDurat)
-        this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
-        console.log(this.sumDuration.toString(), this.courseData.duration)
-        if (this.sumDuration.toString() !== this.courseData.duration) {
-          let requestBody: any
-          requestBody = {
-            request: {
-              content: {
-                duration: isNumber(this.sumDuration) ?
-                  this.sumDuration.toString() : this.sumDuration,
-                versionKey: data.versionKey
-              },
+        if (this.resourceDurat.length > 0) {
+          this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
+          console.log(this.sumDuration.toString(), this.courseData.duration)
+          if (this.sumDuration.toString() !== this.courseData.duration) {
+            let requestBody: any
+            requestBody = {
+              request: {
+                content: {
+                  duration: isNumber(this.sumDuration) ?
+                    this.sumDuration.toString() : this.sumDuration,
+                  versionKey: data.versionKey
+                },
+              }
             }
+            this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.courseData.identifier).subscribe((response: any) => {
+              console.log(response)
+            })
           }
-          this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.courseData.identifier).subscribe((response: any) => {
-            console.log(response)
-          })
+          this.loader.changeLoad.next(false)
+          this.setCourseDuration(this.sumDuration)
         }
         this.loader.changeLoad.next(false)
-        this.setDuration(this.sumDuration)
+
       }
       //this.isResourceTypeEnabled = true
       /* tslint:disable-next-line */
@@ -1730,6 +1734,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     return total
   }
   private setDuration(seconds: any) {
+    const minutes = seconds > 59 ? Math.floor(seconds / 60) : 0
+    const second = seconds % 60
+    this.hours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
+    this.minutes = minutes ? minutes % 60 : 0
+    this.seconds = second || 0
+    // this.mainCourseDuration = this.hours + ':' + this.minutes + ':' + this.seconds
+  }
+  private setCourseDuration(seconds: any) {
     const minutes = seconds > 59 ? Math.floor(seconds / 60) : 0
     const second = seconds % 60
     this.hours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
@@ -2562,7 +2574,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             }
           }
           this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.editorStore.parentContent).subscribe((response: any) => {
-            console.log(response)
+            console.log('duration', response.duration)
+            this.setCourseDuration(isNumber(sumDuration) ?
+              sumDuration.toString() : sumDuration)
           })
         }
 
@@ -4066,14 +4080,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-          if (data.duration) {
-            const minutes = data.duration > 59 ? Math.floor(data.duration / 60) : 0
-            const second = data.duration % 60
-            const hour = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
-            const minute = minutes ? minutes % 60 : 0
-            const seconds = second || 0
-            this.mainCourseDuration = hour + ':' + minute + ':' + seconds
-          }
+          // if (data.duration) {
+          //   const minutes = data.duration > 59 ? Math.floor(data.duration / 60) : 0
+          //   const second = data.duration % 60
+          //   const hour = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
+          //   const minute = minutes ? minutes % 60 : 0
+          //   const seconds = second || 0
+          //   this.mainCourseDuration = hour + ':' + minute + ':' + seconds
+          // }
           this.clearForm()
         })
       })
