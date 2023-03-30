@@ -54,6 +54,8 @@ import { NSApiRequest } from '../../../../../../interface/apiRequest'
 // import { NSApiResponse } from '../../../../../../interface/apiResponse'
 //import { environment } from '../../../../../../../../../../../src/environments/environment'
 import { HttpClient } from '@angular/common/http'
+import { isNumber } from 'lodash'
+import _ from 'lodash'
 @Component({
   selector: 'ws-auth-edit-meta',
   templateUrl: './edit-meta.component.html',
@@ -129,6 +131,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   ]
   isAddCerticate: boolean = false;
+  resourceDurat: any = []
+  sumDuration: any
 
   @ViewChild('creatorContactsView', { static: false }) creatorContactsView!: ElementRef
   @ViewChild('trackContactsView', { static: false }) trackContactsView!: ElementRef
@@ -460,17 +464,19 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   checkMandatoryFields() {
-    let totalDuration = 0, subTitles, sourceName, instructions, appIcon, lang
-    totalDuration += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
-    totalDuration += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
-    totalDuration += this.hours ? this.hours * 60 * 60 : 0
+    //let totalDuration = 0, subTitles, sourceName, instructions, appIcon, lang
+    let subTitles, sourceName, instructions, appIcon, lang
+    //totalDuration += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
+    //totalDuration += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
+    //totalDuration += this.hours ? this.hours * 60 * 60 : 0
     subTitles = this.contentForm.controls.subTitle.value
     sourceName = this.contentForm.controls.sourceName.value
     instructions = this.contentForm.controls.instructions.value
     appIcon = this.contentForm.controls.appIcon.value
     lang = this.contentForm.controls.lang.value
     // console.log("total: ", totalDuration, subTitles, sourceName, instructions, appIcon)
-    if (totalDuration && subTitles && sourceName && instructions && appIcon && lang) {
+    //if (totalDuration && subTitles && sourceName && instructions && appIcon && lang) {
+    if (subTitles && sourceName && instructions && appIcon && lang) {
       return false
     } else {
       return true
@@ -579,7 +585,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.contentService.currentContentID = this.contentMeta.identifier
 
     this.assignFields()
-    this.setDuration(contentMeta.duration || '0')
+    console.log(contentMeta.duration)
+    //this.setDuration(contentMeta.duration || '0')
 
     this.isEditEnabled = isCreator && isEditable
 
@@ -664,7 +671,44 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.contentForm.controls.appIcon.setValue(res.appIcon)
       this.contentForm.controls.instructions.setValue(res.instructions)
       this.contentForm.controls.lang.setValue(res.lang)
-      this.setDuration(res.duration || '0')
+      if (res.children.length > 0) {
+        this.loader.changeLoad.next(true)
+        res.children.forEach((element: any) => {
+          if (element.duration) {
+            this.resourceDurat.push(parseInt(element.duration))
+          }
+          if (element.children && element.children.length > 0) {
+            element.children.forEach((ele: any) => {
+              if (ele.duration) {
+                this.resourceDurat.push(parseInt(ele.duration))
+              }
+            })
+          }
+        })
+        console.log(this.resourceDurat)
+        this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
+        console.log(this.sumDuration.toString(), this.contentMeta.duration)
+        if (this.sumDuration.toString() !== this.contentMeta.duration) {
+          let requestBody: any
+          requestBody = {
+            request: {
+              content: {
+                duration: isNumber(this.sumDuration) ?
+                  this.sumDuration.toString() : this.sumDuration,
+                versionKey: res.versionKey
+              },
+            }
+          }
+          this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.contentMeta.identifier).subscribe((response: any) => {
+            console.log(response)
+          })
+        }
+        this.loader.changeLoad.next(false)
+        this.setDuration(this.sumDuration)
+      } else {
+
+      }
+
     })
     Object.keys(this.contentForm.controls).map(v => {
       try {
@@ -697,7 +741,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         this.contentForm.controls.lang.setValue(this.contentMeta.lang)
         this.contentForm.controls.gatingEnabled.setValue(this.contentMeta.gatingEnabled)
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification === undefined ? false : this.contentMeta.issueCertification)
-
+        console.log(this.contentMeta)
         if (this.contentMeta.competencies_v1) {
           this.competencies = JSON.parse(this.contentMeta.competencies_v1)
         }

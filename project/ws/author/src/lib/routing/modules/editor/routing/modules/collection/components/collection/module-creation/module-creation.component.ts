@@ -226,6 +226,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   saveTriggerSub?: Subscription
   isVisibleReviewDialog: boolean = false
   editItem: string = ''
+  resourceDurat: any = []
+  sumDuration: any
 
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
@@ -1630,15 +1632,49 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.topicDescription = data.description
       this.thumbnail = data.thumbnail
 
-      if (data.duration) {
-        const minutes = data.duration > 59 ? Math.floor(data.duration / 60) : 0
-        const second = data.duration % 60
-        const hour = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
-        const minute = minutes ? minutes % 60 : 0
-        const seconds = second || 0
-        this.mainCourseDuration = hour + ':' + minute + ':' + seconds
+      // if (data.duration) {
+      //   const minutes = data.duration > 59 ? Math.floor(data.duration / 60) : 0
+      //   const second = data.duration % 60
+      //   const hour = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
+      //   const minute = minutes ? minutes % 60 : 0
+      //   const seconds = second || 0
+      //   this.mainCourseDuration = hour + ':' + minute + ':' + seconds
+      // }
+      if (data.children.length > 0) {
+        this.loader.changeLoad.next(true)
+        data.children.forEach((element: any) => {
+          if (element.duration) {
+            this.resourceDurat.push(parseInt(element.duration))
+          }
+          if (element.children && element.children.length > 0) {
+            element.children.forEach((ele: any) => {
+              if (ele.duration) {
+                this.resourceDurat.push(parseInt(ele.duration))
+              }
+            })
+          }
+        })
+        console.log(this.resourceDurat)
+        this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
+        console.log(this.sumDuration.toString(), this.courseData.duration)
+        if (this.sumDuration.toString() !== this.courseData.duration) {
+          let requestBody: any
+          requestBody = {
+            request: {
+              content: {
+                duration: isNumber(this.sumDuration) ?
+                  this.sumDuration.toString() : this.sumDuration,
+                versionKey: data.versionKey
+              },
+            }
+          }
+          this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.courseData.identifier).subscribe((response: any) => {
+            console.log(response)
+          })
+        }
+        this.loader.changeLoad.next(false)
+        this.setDuration(this.sumDuration)
       }
-
       //this.isResourceTypeEnabled = true
       /* tslint:disable-next-line */
       console.log(this.isSaveModuleFormEnable)
@@ -1699,6 +1735,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.hours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
     this.minutes = minutes ? minutes % 60 : 0
     this.seconds = second || 0
+    this.mainCourseDuration = this.hours + ':' + this.minutes + ':' + this.seconds
   }
   async resourceLinkSave() {
     console.log(" this.resourceLinkForm", this.resourceLinkForm)
@@ -2321,13 +2358,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                 /* tslint:disable-next-line */
                 console.log('info', info)
                 if (info) {
-                  await this.update()
+                  let result = await this.update()
+                  console.log(result)
                   this.clearForm()
                   this.editItem = ''
                 }
               })
           } else {
-            await this.update()
+            let result = await this.update()
+            console.log(result)
             this.clearForm()
             this.editItem = ''
           }
@@ -2492,6 +2531,41 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
       this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
         this.courseData = data
+        let resourceDurat: any = []
+        let sumDuration: any
+        if (data.children.length > 0) {
+          data.children.forEach((element: any) => {
+            if (element.duration) {
+              resourceDurat.push(parseInt(element.duration))
+            }
+            if (element.children && element.children.length > 0) {
+              element.children.forEach((ele: any) => {
+                if (ele.duration) {
+                  resourceDurat.push(parseInt(ele.duration))
+                }
+              })
+            }
+          })
+          console.log(resourceDurat)
+          sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
+        }
+        let requestBody: any
+        console.log(sumDuration)
+        if (sumDuration) {
+          requestBody = {
+            request: {
+              content: {
+                duration: isNumber(sumDuration) ?
+                  sumDuration.toString() : sumDuration,
+                versionKey: data.versionKey
+              },
+            }
+          }
+          this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.editorStore.parentContent).subscribe((response: any) => {
+            console.log(response)
+          })
+        }
+
         if (this.courseData && this.courseData.children.length >= 2) {
           this.showSettingsPage = true
         } else {
@@ -2610,12 +2684,23 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.editorStore.currentContentData = requestBody.request.content
       this.editorStore.currentContentID = this.currentCourseId
 
-      if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined || tempUpdateContent.category === 'Course') {
+      if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined) {
         return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
           tap(() => {
             this.storeService.changedHierarchy = {}
             this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
               this.courseData = data
+              let resourceDurat: any = []
+              let sumDuration: any
+              if (data.children.length > 0) {
+                data.forEach((element: any) => {
+                  console.log(element)
+                  resourceDurat.push(parseInt(element.duration))
+                })
+                console.log(resourceDurat)
+                sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
+              }
+              console.log(sumDuration)
             })
             Object.keys(this.editorStore.upDatedContent).forEach(id => {
               this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
@@ -2627,6 +2712,23 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           })
         )
       } else {
+        if (tempUpdateContent.category === 'Course') {
+          return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
+            tap(() => {
+              this.storeService.changedHierarchy = {}
+              this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                this.courseData = data
+              })
+              Object.keys(this.editorStore.upDatedContent).forEach(id => {
+                this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
+                // this.editorService.readContentV2(id).subscribe(resData => {
+                //   this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
+                // })
+              })
+              this.editorStore.upDatedContent = {}
+            })
+          )
+        }
       }
     }
     //console.log('updateContentV4  COURSE COLL')

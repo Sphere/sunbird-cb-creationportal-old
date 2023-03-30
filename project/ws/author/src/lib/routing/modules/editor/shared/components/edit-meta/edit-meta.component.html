@@ -714,10 +714,10 @@
             Add Certificate</button> -->
         </div>
         <div>
-          <div style="width: 50%; float: left">
+          <!-- <div style="width: 50%; float: left">
             <p class="font-weight-bold margin-remove-bottom"
               [ngClass]="{ required: checkCondition('duration', 'required') }">
-              <span>Duration</span>
+              <span>Duration</span> {{seconds}}
               <small>
                 (<strong>hours</strong> :<strong> minutes</strong> :<strong> seconds</strong>)</small>
             </p>
@@ -750,8 +750,8 @@
                 </mat-form-field>
               </div>
             </div>
-          </div>
-          <div class="margin-top-s">
+          </div> -->
+          <div class="margin-top-s" style="width: 50%; float: left">
             <!-- <div [ngClass]="{ disable: checkCondition('description', 'disabled') }">
               <mat-form-field appearance="fill" class="margin-top-xs field-edit-width"
                 [ngClass]="{ 'mat-form-field-invalid': showError('description') }">
@@ -769,6 +769,8 @@
             <mat-checkbox class="example-margin" formControlName="gatingEnabled">Gating Enabled</mat-checkbox>
             <mat-checkbox class="example-margin" style="margin-left: 10px" formControlName="courseVisibility">Private
               Course</mat-checkbox>
+          </div>
+          <div>
             <button mat-raised-button class="mat-button-base link-btn-mt" style="height: fit-content; margin-left: 10px"
               (click)="addCompetency()">
               Add Competency

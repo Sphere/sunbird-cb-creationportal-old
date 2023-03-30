@@ -129,6 +129,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   ]
   isAddCerticate: boolean = false;
   isEnableTitle: boolean = true
+  mainCourseDuration: string = ''
 
   @ViewChild('creatorContactsView', { static: false }) creatorContactsView!: ElementRef
   @ViewChild('trackContactsView', { static: false }) trackContactsView!: ElementRef
@@ -174,6 +175,14 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   async ngAfterViewInit() {
     this.editorService.readcontentV3(this.contentService.parentUpdatedMeta().identifier).subscribe(async (data: any) => {
       this.courseData = await data
+      if (data.duration) {
+        const minutes = data.duration > 59 ? Math.floor(data.duration / 60) : 0
+        const second = data.duration % 60
+        const hour = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
+        const minute = minutes ? minutes % 60 : 0
+        const seconds = second || 0
+        this.mainCourseDuration = hour + ':' + minute + ':' + seconds
+      }
     })
 
     this.ref.detach()
