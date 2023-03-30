@@ -162,6 +162,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   hours = 0
   minutes = 0
   seconds = 0
+  courseHours = 0
+  courseMinutes = 0
+  courseSeconds = 0
   resourceType: string = ''
   resourseSelected: string = ''
   viewMode!: string
@@ -1744,10 +1747,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   private setCourseDuration(seconds: any) {
     const minutes = seconds > 59 ? Math.floor(seconds / 60) : 0
     const second = seconds % 60
-    this.hours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
-    this.minutes = minutes ? minutes % 60 : 0
-    this.seconds = second || 0
-    this.mainCourseDuration = this.hours + ':' + this.minutes + ':' + this.seconds
+    this.courseHours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
+    this.courseMinutes = minutes ? minutes % 60 : 0
+    this.courseSeconds = second || 0
+    this.mainCourseDuration = this.courseHours + ':' + this.courseMinutes + ':' + this.courseSeconds
   }
   async resourceLinkSave() {
     console.log(" this.resourceLinkForm", this.resourceLinkForm)
@@ -1884,6 +1887,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
                 this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
                   this.courseData = data
+
                   if (this.courseData && this.courseData.children.length >= 2) {
                     this.showSettingsPage = true
                   } else {
@@ -1898,6 +1902,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   })
                   this.editorStore.resetOriginalMetaWithHierarchy(data)
                   if (this.content.mimeType === 'video/mp4' || this.content.mimeType === 'audio/mpeg') {
+                    this.updateCouseDuration(data)
                     this.setDuration(0)
                   }
                 })
@@ -1906,6 +1911,45 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           })
         }
       })
+  }
+
+  updateCouseDuration(data: any) {
+    let resourceDurat: any = []
+    let sumDuration: any
+    if (data.children.length > 0) {
+      data.children.forEach((element: any) => {
+        if (element.duration) {
+          resourceDurat.push(parseInt(element.duration))
+        }
+        if (element.children && element.children.length > 0) {
+          element.children.forEach((ele: any) => {
+            if (ele.duration) {
+              resourceDurat.push(parseInt(ele.duration))
+            }
+          })
+        }
+      })
+      console.log(resourceDurat)
+      sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
+    }
+    let requestBody: any
+    console.log(sumDuration)
+    if (sumDuration) {
+      requestBody = {
+        request: {
+          content: {
+            duration: isNumber(sumDuration) ?
+              sumDuration.toString() : sumDuration,
+            versionKey: data.versionKey
+          },
+        }
+      }
+      this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.editorStore.parentContent).subscribe((response: any) => {
+        console.log('duration', response.duration)
+        this.setCourseDuration(isNumber(sumDuration) ?
+          sumDuration.toString() : sumDuration)
+      })
+    }
   }
   createResourseContent(name: string, type: string) {
     console.log(type)
@@ -3814,6 +3858,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
                 this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
                   this.courseData = data
+                  this.updateCouseDuration(data)
                   this.showAddModuleForm = false
                   if (this.courseData && this.courseData.children.length >= 2) {
                     this.showSettingsPage = true
