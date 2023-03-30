@@ -686,25 +686,28 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         })
         console.log(this.resourceDurat)
-        this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
-        console.log(this.sumDuration.toString(), this.contentMeta.duration)
-        if (this.sumDuration.toString() !== this.contentMeta.duration) {
-          let requestBody: any
-          requestBody = {
-            request: {
-              content: {
-                duration: isNumber(this.sumDuration) ?
-                  this.sumDuration.toString() : this.sumDuration,
-                versionKey: res.versionKey
-              },
+        if (this.resourceDurat.length > 0) {
+          this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
+          console.log(this.sumDuration.toString(), this.contentMeta.duration)
+          if (this.sumDuration.toString() !== this.contentMeta.duration) {
+            let requestBody: any
+            requestBody = {
+              request: {
+                content: {
+                  duration: isNumber(this.sumDuration) ?
+                    this.sumDuration.toString() : this.sumDuration,
+                  versionKey: res.versionKey
+                },
+              }
             }
+            this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.contentMeta.identifier).subscribe((response: any) => {
+              console.log(response)
+            })
           }
-          this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.contentMeta.identifier).subscribe((response: any) => {
-            console.log(response)
-          })
+          this.loader.changeLoad.next(false)
+          this.setDuration(this.sumDuration)
         }
         this.loader.changeLoad.next(false)
-        this.setDuration(this.sumDuration)
       } else {
 
       }

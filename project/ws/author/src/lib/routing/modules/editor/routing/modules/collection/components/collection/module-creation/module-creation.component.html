@@ -316,7 +316,8 @@
             <!-- <span *ngIf="thumbnail == undefined" class="invalid-text">This field is Required</span><br> -->
             <span style="color:#808080">Note: Learners will see this image for this module</span>
           </div>
-          <div class="duration-style" *ngIf="content?.mimeType !== 'application/json'">
+          <div class="duration-style"
+            *ngIf="content?.mimeType !== 'application/json'&&content?.contentType !== 'Course'">
             <span class="duration-text">Duration:</span>
             <mat-form-field appearance="outline" class="width-55">
               <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
