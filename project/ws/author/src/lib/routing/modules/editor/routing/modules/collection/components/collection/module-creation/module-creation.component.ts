@@ -1802,7 +1802,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     meta['versionKey'] = this.content.versionKey
     meta['artifactUrl'] = null
     meta['downloadUrl'] = null
-    meta['duration'] = "0"
+    if (this.content.mimeType === 'video/mp4' || this.content.mimeType === 'audio/mpeg') {
+      meta['duration'] = "0"
+    }
     let requestBody = {
       request: {
         content: meta
@@ -1846,16 +1848,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                     duration: NOTIFICATION_TIME * 1000,
                   })
                   this.editorStore.resetOriginalMetaWithHierarchy(data)
-                  // tslint:disable-next-line: align
+                  if (this.content.mimeType === 'video/mp4' || this.content.mimeType === 'audio/mpeg') {
+                    this.setDuration(0)
+                  }
                 })
               })
-
             }
-            this.setDuration(0)
           })
-
-
-          //this.update()
         }
       })
   }
