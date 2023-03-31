@@ -301,6 +301,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                         //this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
                         //this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
                         this.assessmentDuration = (jsonResponse.timeLimit) / 60
+                        if (jsonResponse.timeLimit > 0) {
+                          this.validPercentage = true
+                        }
                         this.passPercentage = jsonResponse.passPercentage
                         this.randomCount = jsonResponse.randomCount
                       }
