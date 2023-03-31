@@ -531,45 +531,52 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   }
   async updateResourceDetails() {
     let meta: any = {}
-    meta['versionKey'] = this.quizContentData.versionKey
-    meta['duration'] = (this.assessmentDuration * 60).toString()
-    let requestBody = {
-      request: {
-        content: meta
-      }
-    }
-    this.metaContentService.setUpdatedMeta(meta, this.currentId)
-    this.loaderService.changeLoad.next(true)
-    await this.editorService.updateNewContentV3(requestBody, this.currentId).subscribe(
-      async (info: any) => {
-        /* tslint:disable-next-line */
-        console.log('info', info, this.metaContentService.parentContent)
-        if (info) {
-          await this.editorService.readcontentV3(this.metaContentService.parentContent).subscribe(async (data: any) => {
-            if (info) {
-              this.storeService.parentNode.push(this.metaContentService.parentContent)
 
-              const hierarchyData = this.storeService.getNewTreeHierarchy(data)
-
-              const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-                request: {
-                  data: {
-                    nodesModified: this.metaContentService.getNodeModifyData(),
-                    hierarchy: hierarchyData,
-                  },
-                },
-              }
-              this.loaderService.changeLoad.next(true)
-              await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-                this.editorService.readcontentV3(this.metaContentService.parentContent).subscribe((data: any) => {
-                  console.log(data)
-                  this.loaderService.changeLoad.next(false)
-                })
-              })
-            }
-          })
+    await this.editorService.readContentV2(this.quizContentData.identifier).subscribe(async resData => {
+      meta['versionKey'] = resData.versionKey
+      // meta['versionKey'] = this.quizContentData.versionKey
+      meta['duration'] = (this.assessmentDuration * 60).toString()
+      let requestBody = {
+        request: {
+          content: meta
         }
-      })
+      }
+      this.metaContentService.setUpdatedMeta(meta, this.currentId)
+      this.loaderService.changeLoad.next(true)
+      await this.editorService.updateNewContentV3(requestBody, this.currentId).subscribe(
+        async (info: any) => {
+          /* tslint:disable-next-line */
+          console.log('info', info, this.metaContentService.parentContent)
+          if (info) {
+            await this.editorService.readcontentV3(this.metaContentService.parentContent).subscribe(async (data: any) => {
+              if (info) {
+                this.storeService.parentNode.push(this.metaContentService.parentContent)
+
+                const hierarchyData = this.storeService.getNewTreeHierarchy(data)
+
+                const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+                  request: {
+                    data: {
+                      nodesModified: this.metaContentService.getNodeModifyData(),
+                      hierarchy: hierarchyData,
+                    },
+                  },
+                }
+                this.loaderService.changeLoad.next(true)
+                await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+                  this.editorService.readcontentV3(this.metaContentService.parentContent).subscribe((data: any) => {
+                    console.log(data)
+                    this.loaderService.changeLoad.next(false)
+                  })
+                })
+              }
+            })
+          }
+        })
+    })
+
+
+
   }
   generateUrl(oldUrl: any) {
     // @ts-ignore: Unreachable code error
