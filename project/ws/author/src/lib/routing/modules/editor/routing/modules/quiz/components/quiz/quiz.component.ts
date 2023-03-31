@@ -7,6 +7,7 @@ import { map, mergeMap, catchError } from 'rxjs/operators'
 import { forkJoin, of, Observable, Subscription, EMPTY } from 'rxjs'
 import { MatDialog } from '@angular/material'
 import { ActivatedRoute, Router } from '@angular/router'
+import { CollectionStoreService } from '../../../.././modules/collection/services/store.service'
 
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
 import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/components/comments-dialog/comments-dialog.component'
@@ -42,11 +43,6 @@ import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
 import { FormGroup } from '@angular/forms'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 // import { environment } from '../../../../../../../../../../../../../src/environments/environment'
-import * as _ from 'lodash'
-import { isNumber } from 'lodash'
-import { CollectionStoreService } from '../../../.././modules/collection/services/store.service'
-
-
 @Component({
   selector: 'ws-auth-quiz',
   templateUrl: './quiz.component.html',
@@ -78,7 +74,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   quizConfig!: any
   quizData!: any
   bucket: string = ''
-  currentContent: any = []
   validPercentage = false
   /**
    * reviwer and publisher cannot add or delete or edit quizs but can rearrange them
@@ -92,6 +87,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   randomCount: any
   passPercentage: any
   isQuiz: string = ''
+  quizContentData: any = []
   mediumSizeBreakpoint$ = this.breakpointObserver
     .observe([Breakpoints.XSmall, Breakpoints.Small])
     .pipe(map((res: BreakpointState) => res.matches))
@@ -289,8 +285,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
               // const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
 
               let quizContent = await this.editorService.readcontentV3(this.metaContentService.currentContent).toPromise()
-              this.currentContent = quizContent
-
+              this.quizContentData = quizContent
               console.log(this.metaContentService.currentContent)
               console.log(quizContent)
               if (quizContent && quizContent.mimeType === 'application/json') {
@@ -306,6 +301,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                         //this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
                         //this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
                         this.assessmentDuration = (jsonResponse.timeLimit) / 60
+                        if (jsonResponse.timeLimit > 0) {
+                          this.validPercentage = true
+                        }
                         this.passPercentage = jsonResponse.passPercentage
                         this.randomCount = jsonResponse.randomCount
                       }
@@ -395,12 +393,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       })
     })()
   }
-  addTodo(event: any, field: string) {
+  async addTodo(event: any, field: string) {
     const meta: any = {}
     if (field === 'passPercentage') {
       meta['passPercentage'] = event
       this.passPercentage = event
-      console.log("event: " + event)
       if (event >= 0) {
         this.validPercentage = true
       } else {
@@ -422,7 +419,10 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       }
 
     }
+    // debugger
+    this.currentId = this.quizContentData.identifier
     this.metaContentService.setUpdatedMeta(meta, this.currentId, true)
+
   }
 
   ngOnChanges() {
@@ -521,14 +521,56 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     //   .updateContent(requestBody)
     //   .pipe(tap(() => this.metaContentService.resetOriginalMeta(meta, id)))
     /* tslint:disable-next-line */
-    console.log(meta, id)
+    console.log('meta', meta, id)
     if (meta && id) {
       this.metaContentService.setUpdatedMeta(meta, id)
+      this.updateResourceDetails()
       this.data.emit('save')
     }
     return of({})
   }
+  async updateResourceDetails() {
+    let meta: any = {}
+    meta['versionKey'] = this.quizContentData.versionKey
+    meta['duration'] = (this.assessmentDuration * 60).toString()
+    let requestBody = {
+      request: {
+        content: meta
+      }
+    }
+    this.metaContentService.setUpdatedMeta(meta, this.currentId)
+    this.loaderService.changeLoad.next(true)
+    await this.editorService.updateNewContentV3(requestBody, this.currentId).subscribe(
+      async (info: any) => {
+        /* tslint:disable-next-line */
+        console.log('info', info, this.metaContentService.parentContent)
+        if (info) {
+          await this.editorService.readcontentV3(this.metaContentService.parentContent).subscribe(async (data: any) => {
+            if (info) {
+              this.storeService.parentNode.push(this.metaContentService.parentContent)
 
+              const hierarchyData = this.storeService.getNewTreeHierarchy(data)
+
+              const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+                request: {
+                  data: {
+                    nodesModified: this.metaContentService.getNodeModifyData(),
+                    hierarchy: hierarchyData,
+                  },
+                },
+              }
+              this.loaderService.changeLoad.next(true)
+              await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+                this.editorService.readcontentV3(this.metaContentService.parentContent).subscribe((data: any) => {
+                  console.log(data)
+                  this.loaderService.changeLoad.next(false)
+                })
+              })
+            }
+          })
+        }
+      })
+  }
   generateUrl(oldUrl: any) {
     // @ts-ignore: Unreachable code error
     let bucket = window["env"]["azureBucket"]
@@ -729,97 +771,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     const blob = new Blob([JSON.stringify(quizData, null, 2)], { type: 'application/json' })
     const formdata = new FormData()
     formdata.append('content', blob)
-    this.updateData()
     return this.uploadService.encodedUploadAWS(formdata, fileName, {
       contentId: this.currentId,
       contentType: CONTENT_BASE_WEBHOST,
     })
   }
-  async updateData() {
-    let meta: any = {}
-    meta['versionKey'] = this.currentContent.versionKey
-    meta['duration'] = isNumber(this.assessmentDuration) ? ((this.assessmentDuration) * 60).toString() : "0"
-    console.log("meta['duration']", meta['duration'])
-    let requestBody = {
-      request: {
-        content: meta
-      }
-    }
 
-    // this.metaContentService.setUpdatedMeta(meta, this.currentContent.identifier)
-    this.loaderService.changeLoad.next(true)
-    await this.editorService.updateNewContentV3(requestBody, this.currentContent.identifier).subscribe(
-      async (info: any) => {
-        /* tslint:disable-next-line */
-        console.log('info', info, this.metaContentService.parentContent)
-        if (info) {
-          await this.editorService.readcontentV3(this.metaContentService.parentContent).subscribe(async (data: any) => {
-            if (info) {
-              console.log("data: ", data, this.metaContentService.parentContent)
-              this.storeService.parentNode.push(this.metaContentService.parentContent)
-              const hierarchyData = this.storeService.getNewTreeHierarchy(data)
-
-              const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-                request: {
-                  data: {
-                    nodesModified: this.metaContentService.getNodeModifyData(),
-                    hierarchy: hierarchyData,
-                  },
-                },
-              }
-              this.loaderService.changeLoad.next(true)
-              await this.editorService.updateContentV4(requestBodyV2).subscribe((data) => {
-                if (data) {
-                  this.editorService.readcontentV3(this.metaContentService.parentContent).subscribe((response: any) => {
-                    this.loaderService.changeLoad.next(false)
-                    this.updateCouseDuration(response)
-                  })
-                }
-              })
-            }
-          })
-        }
-      })
-
-  }
-  updateCouseDuration(data: any) {
-    let resourceDurat: any = []
-    let sumDuration: any
-    if (data.children.length > 0) {
-      data.children.forEach((element: any) => {
-        if (element.duration && element.identifier !== this.currentId) {
-          resourceDurat.push(parseInt(element.duration))
-        }
-        if (element.children && element.children.length > 0) {
-          element.children.forEach((ele: any) => {
-            if (ele.duration && ele.identifier !== this.currentId) {
-              resourceDurat.push(parseInt(ele.duration))
-            }
-          })
-        }
-      })
-      console.log(resourceDurat)
-      sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
-    }
-
-    let requestBody: any
-    console.log(sumDuration)
-    if (sumDuration) {
-      sumDuration = ((this.assessmentDuration) * 60) + sumDuration
-      requestBody = {
-        request: {
-          content: {
-            duration: isNumber(sumDuration) ?
-              sumDuration.toString() : sumDuration,
-            versionKey: data.versionKey
-          },
-        }
-      }
-      this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.metaContentService.parentContent).subscribe((response: any) => {
-        console.log(response)
-      })
-    }
-  }
   shuffle(data: any[]) {
     let currentIndex = data.length
     let temporaryValue: any
