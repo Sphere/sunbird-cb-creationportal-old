@@ -42,16 +42,11 @@ import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
 import { FormGroup } from '@angular/forms'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 // import { environment } from '../../../../../../../../../../../../../src/environments/environment'
-import * as _ from 'lodash'
-import { isNumber } from 'lodash'
-import { CollectionStoreService } from '../../../.././modules/collection/services/store.service'
-
-
 @Component({
   selector: 'ws-auth-quiz',
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.scss'],
-  providers: [QuizResolverService, QuizStoreService, CollectionStoreService],
+  providers: [QuizResolverService, QuizStoreService],
 })
 export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -78,7 +73,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   quizConfig!: any
   quizData!: any
   bucket: string = ''
-  currentContent: any = []
   validPercentage = false
   /**
    * reviwer and publisher cannot add or delete or edit quizs but can rearrange them
@@ -121,8 +115,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     private initService: AuthInitService,
     private quizResolverSvc: QuizResolverService,
     private accessControl: AccessControlService,
-    private storeService: CollectionStoreService,
-
   ) {
 
     this.initService.uploadMessage.subscribe(
@@ -289,8 +281,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
               // const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
 
               let quizContent = await this.editorService.readcontentV3(this.metaContentService.currentContent).toPromise()
-              this.currentContent = quizContent
-
               console.log(this.metaContentService.currentContent)
               console.log(quizContent)
               if (quizContent && quizContent.mimeType === 'application/json') {
@@ -400,7 +390,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     if (field === 'passPercentage') {
       meta['passPercentage'] = event
       this.passPercentage = event
-      console.log("event: " + event)
       if (event >= 0) {
         this.validPercentage = true
       } else {
@@ -717,9 +706,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     const quizData = {
       // tslint:disable-next-line: prefer-template
       //timeLimit: parseInt(this.quizDuration + '', 10) || 300
-      timeLimit: (this.assessmentDuration) * 60,
+      timeLimit: (this.assessmentDuration) * 60 || '300',
       //assessmentDuration: (this.assessmentDuration) * 60 || '300',
-      passPercentage: this.passPercentage,
+      passPercentage: this.passPercentage || '50',
       isAssessment: this.isQuiz === '' ? true : false,
       randomCount: this.randomCount || this.questionsArr.length,
       questions: array,
@@ -729,97 +718,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     const blob = new Blob([JSON.stringify(quizData, null, 2)], { type: 'application/json' })
     const formdata = new FormData()
     formdata.append('content', blob)
-    this.updateData()
     return this.uploadService.encodedUploadAWS(formdata, fileName, {
       contentId: this.currentId,
       contentType: CONTENT_BASE_WEBHOST,
     })
   }
-  async updateData() {
-    let meta: any = {}
-    meta['versionKey'] = this.currentContent.versionKey
-    meta['duration'] = isNumber(this.assessmentDuration) ? ((this.assessmentDuration) * 60).toString() : "0"
-    console.log("meta['duration']", meta['duration'])
-    let requestBody = {
-      request: {
-        content: meta
-      }
-    }
 
-    // this.metaContentService.setUpdatedMeta(meta, this.currentContent.identifier)
-    this.loaderService.changeLoad.next(true)
-    await this.editorService.updateNewContentV3(requestBody, this.currentContent.identifier).subscribe(
-      async (info: any) => {
-        /* tslint:disable-next-line */
-        console.log('info', info, this.metaContentService.parentContent)
-        if (info) {
-          await this.editorService.readcontentV3(this.metaContentService.parentContent).subscribe(async (data: any) => {
-            if (info) {
-              console.log("data: ", data, this.metaContentService.parentContent)
-              this.storeService.parentNode.push(this.metaContentService.parentContent)
-              const hierarchyData = this.storeService.getNewTreeHierarchy(data)
-
-              const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-                request: {
-                  data: {
-                    nodesModified: this.metaContentService.getNodeModifyData(),
-                    hierarchy: hierarchyData,
-                  },
-                },
-              }
-              this.loaderService.changeLoad.next(true)
-              await this.editorService.updateContentV4(requestBodyV2).subscribe((data) => {
-                if (data) {
-                  this.editorService.readcontentV3(this.metaContentService.parentContent).subscribe((response: any) => {
-                    this.loaderService.changeLoad.next(false)
-                    this.updateCouseDuration(response)
-                  })
-                }
-              })
-            }
-          })
-        }
-      })
-
-  }
-  updateCouseDuration(data: any) {
-    let resourceDurat: any = []
-    let sumDuration: any
-    if (data.children.length > 0) {
-      data.children.forEach((element: any) => {
-        if (element.duration && element.identifier !== this.currentId) {
-          resourceDurat.push(parseInt(element.duration))
-        }
-        if (element.children && element.children.length > 0) {
-          element.children.forEach((ele: any) => {
-            if (ele.duration && ele.identifier !== this.currentId) {
-              resourceDurat.push(parseInt(ele.duration))
-            }
-          })
-        }
-      })
-      console.log(resourceDurat)
-      sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
-    }
-
-    let requestBody: any
-    console.log(sumDuration)
-    if (sumDuration) {
-      sumDuration = ((this.assessmentDuration) * 60) + sumDuration
-      requestBody = {
-        request: {
-          content: {
-            duration: isNumber(sumDuration) ?
-              sumDuration.toString() : sumDuration,
-            versionKey: data.versionKey
-          },
-        }
-      }
-      this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.metaContentService.parentContent).subscribe((response: any) => {
-        console.log(response)
-      })
-    }
-  }
   shuffle(data: any[]) {
     let currentIndex = data.length
     let temporaryValue: any
