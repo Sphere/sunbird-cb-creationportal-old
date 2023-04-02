@@ -41,6 +41,7 @@ import { CONTENT_BASE_WEBHOST } from '@ws/author/src/lib/constants/apiEndpoints'
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
 import { FormGroup } from '@angular/forms'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+import { isNumber } from 'lodash'
 // import { environment } from '../../../../../../../../../../../../../src/environments/environment'
 @Component({
   selector: 'ws-auth-quiz',
@@ -519,11 +520,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
       console.log(requestBody)
-      return this.editorService.updateNewContentV3(requestBody, this.currentId).pipe(
-        tap(() => {
-
+      this.editorService.updateNewContentV3(requestBody, this.currentId).subscribe(
+        (data: any) => {
+          /* tslint:disable-next-line */
+          console.log(data)
         })
-      )
     }
     return of({})
   }
@@ -639,7 +640,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         console.log(updatedMeta, this.currentId)
         this.editorService.readContentV2(this.currentId).subscribe(resData => {
           updatedMeta["versionKey"] = resData.versionKey
-          updatedMeta["duration"] = this.assessmentDuration
+          updatedMeta["duration"] = isNumber(this.assessmentDuration) ?
+            this.assessmentDuration.toString() : this.assessmentDuration
           return this.triggerSave(updatedMeta, this.currentId)
         })
       }
