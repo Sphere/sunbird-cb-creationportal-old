@@ -744,7 +744,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         this.contentForm.controls.lang.setValue(this.contentMeta.lang)
         this.contentForm.controls.gatingEnabled.setValue(this.contentMeta.gatingEnabled)
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification === undefined ? false : this.contentMeta.issueCertification)
-        console.log(this.contentMeta)
+
         if (this.contentMeta.competencies_v1) {
           this.competencies = JSON.parse(this.contentMeta.competencies_v1)
         }

@@ -25,16 +25,18 @@ export class SuccessDialogComponent implements OnInit {
 
   ngOnInit() {
     console.log(this.data)
-    this.editorService.readcontentV3(this.data.id).subscribe(async (data: any) => {
-      /* tslint:disable-next-line */
-      console.log(data)
-    })
+    setTimeout(() => {
+      this.editorService.readcontentV3(this.data.id).subscribe(async (data: any) => {
+        /* tslint:disable-next-line */
+        console.log(data)
+      })
+    }, 500)
   }
   routeToDashboard() {
     this.editorService.readcontentV3(this.data.id).subscribe(async (data: any) => {
       /* tslint:disable-next-line */
       console.log(data)
-      if (data.status === 'Live' && data.batches == undefined) {
+      if (data.status === 'Live' || data.status === 'Processing' && data.batches == undefined) {
         let obj = {
           "request": {
             "courseId": this.data.id,

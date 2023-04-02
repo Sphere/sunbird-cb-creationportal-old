@@ -3,11 +3,10 @@ import { Component, OnInit, ChangeDetectorRef, OnDestroy, Input, Output, EventEm
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
 // import { map, mergeMap, tap, catchError } from 'rxjs/operators'
-import { map, mergeMap, catchError } from 'rxjs/operators'
+import { map, mergeMap, catchError, tap } from 'rxjs/operators'
 import { forkJoin, of, Observable, Subscription, EMPTY } from 'rxjs'
 import { MatDialog } from '@angular/material'
 import { ActivatedRoute, Router } from '@angular/router'
-import { CollectionStoreService } from '../../../.././modules/collection/services/store.service'
 
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
 import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/components/comments-dialog/comments-dialog.component'
@@ -47,7 +46,7 @@ import { AccessControlService } from '@ws/author/src/lib/modules/shared/services
   selector: 'ws-auth-quiz',
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.scss'],
-  providers: [QuizResolverService, QuizStoreService, CollectionStoreService],
+  providers: [QuizResolverService, QuizStoreService],
 })
 export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -87,7 +86,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   randomCount: any
   passPercentage: any
   isQuiz: string = ''
-  quizContentData: any = []
   mediumSizeBreakpoint$ = this.breakpointObserver
     .observe([Breakpoints.XSmall, Breakpoints.Small])
     .pipe(map((res: BreakpointState) => res.matches))
@@ -117,8 +115,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     private initService: AuthInitService,
     private quizResolverSvc: QuizResolverService,
     private accessControl: AccessControlService,
-    private storeService: CollectionStoreService,
-
   ) {
 
     this.initService.uploadMessage.subscribe(
@@ -281,13 +277,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
           this.activateRoute.parent.parent.data.subscribe(v => {
             console.log(v)
             this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(async newData => {
-              console.log(newData)
               // const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
 
               let quizContent = await this.editorService.readcontentV3(this.metaContentService.currentContent).toPromise()
-              this.quizContentData = quizContent
-              console.log(this.metaContentService.currentContent)
-              console.log(quizContent)
+              // console.log(this.metaContentService.currentContent)
+              // console.log(quizContent)
               if (quizContent && quizContent.mimeType === 'application/json') {
                 const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
                   this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({} as any))
@@ -301,9 +295,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                         //this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
                         //this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
                         this.assessmentDuration = (jsonResponse.timeLimit) / 60
-                        if (jsonResponse.timeLimit > 0) {
-                          this.validPercentage = true
-                        }
                         this.passPercentage = jsonResponse.passPercentage
                         this.randomCount = jsonResponse.randomCount
                       }
@@ -340,10 +331,10 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                       // this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data
                       //   ? v.contents[0].data.questions
                       //   : []
-
+                      console.log(quizContent)
                       this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
                       this.resourceType = quizContent.categoryType || 'Assessment'
-                      this.quizDuration = quizContent.duration || '300'
+                      this.quizDuration = quizContent.duration
                       this.questionsArr =
                         this.quizStoreSvc.collectiveQuiz[id] || []
                       this.contentLoaded = true
@@ -358,7 +349,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                     this.randomCount = ''
                     this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
                     this.resourceType = quizContent.categoryType || 'Assessment'
-                    this.quizDuration = quizContent.duration || '300'
+                    this.quizDuration = quizContent.duration
                     this.questionsArr =
                       this.quizStoreSvc.collectiveQuiz[id] || []
                     this.contentLoaded = true
@@ -393,7 +384,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       })
     })()
   }
-  async addTodo(event: any, field: string) {
+  addTodo(event: any, field: string) {
     const meta: any = {}
     if (field === 'passPercentage') {
       meta['passPercentage'] = event
@@ -419,10 +410,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       }
 
     }
-    // debugger
-    this.currentId = this.quizContentData.identifier
     this.metaContentService.setUpdatedMeta(meta, this.currentId, true)
-
   }
 
   ngOnChanges() {
@@ -521,63 +509,25 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     //   .updateContent(requestBody)
     //   .pipe(tap(() => this.metaContentService.resetOriginalMeta(meta, id)))
     /* tslint:disable-next-line */
-    console.log('meta', meta, id)
+    console.log(meta, id)
     if (meta && id) {
       this.metaContentService.setUpdatedMeta(meta, id)
-      this.updateResourceDetails()
-      this.data.emit('save')
+      //this.data.emit('save')
+      let requestBody = {
+        request: {
+          content: meta,
+        }
+      }
+      console.log(requestBody)
+      return this.editorService.updateNewContentV3(requestBody, this.currentId).pipe(
+        tap(() => {
+
+        })
+      )
     }
     return of({})
   }
-  async updateResourceDetails() {
-    let meta: any = {}
 
-    await this.editorService.readContentV2(this.quizContentData.identifier).subscribe(async resData => {
-      meta['versionKey'] = resData.versionKey
-      // meta['versionKey'] = this.quizContentData.versionKey
-      meta['duration'] = (this.assessmentDuration * 60).toString()
-      let requestBody = {
-        request: {
-          content: meta
-        }
-      }
-      this.metaContentService.setUpdatedMeta(meta, this.currentId)
-      this.loaderService.changeLoad.next(true)
-      await this.editorService.updateNewContentV3(requestBody, this.currentId).subscribe(
-        async (info: any) => {
-          /* tslint:disable-next-line */
-          console.log('info', info, this.metaContentService.parentContent)
-          if (info) {
-            await this.editorService.readcontentV3(this.metaContentService.parentContent).subscribe(async (data: any) => {
-              if (info) {
-                this.storeService.parentNode.push(this.metaContentService.parentContent)
-
-                const hierarchyData = this.storeService.getNewTreeHierarchy(data)
-
-                const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-                  request: {
-                    data: {
-                      nodesModified: this.metaContentService.getNodeModifyData(),
-                      hierarchy: hierarchyData,
-                    },
-                  },
-                }
-                this.loaderService.changeLoad.next(true)
-                await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-                  this.editorService.readcontentV3(this.metaContentService.parentContent).subscribe((data: any) => {
-                    console.log(data)
-                    this.loaderService.changeLoad.next(false)
-                  })
-                })
-              }
-            })
-          }
-        })
-    })
-
-
-
-  }
   generateUrl(oldUrl: any) {
     // @ts-ignore: Unreachable code error
     let bucket = window["env"]["azureBucket"]
@@ -687,8 +637,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         // this.metaContentService.setUpdatedMeta(updatedMeta, this.currentId)
         /* tslint:disable-next-line */
         console.log(updatedMeta, this.currentId)
-
-        return this.triggerSave(updatedMeta, this.currentId)
+        this.editorService.readContentV2(this.currentId).subscribe(resData => {
+          updatedMeta["versionKey"] = resData.versionKey
+          updatedMeta["duration"] = this.assessmentDuration
+          return this.triggerSave(updatedMeta, this.currentId)
+        })
       }
       return EMPTY
 
@@ -762,7 +715,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     console.log(this.assessmentDuration, this.passPercentage)
     this.quizDuration = (this.metaContentService.getUpdatedMeta(this.currentId).duration &&
       this.metaContentService.getUpdatedMeta(this.currentId).duration !== '0') ?
-      this.metaContentService.getUpdatedMeta(this.currentId).duration : '300'
+      this.metaContentService.getUpdatedMeta(this.currentId).duration : this.assessmentDuration
     const quizData = {
       // tslint:disable-next-line: prefer-template
       //timeLimit: parseInt(this.quizDuration + '', 10) || 300
