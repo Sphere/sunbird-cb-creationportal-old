@@ -669,6 +669,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.contentMeta = res
       this.contentForm.controls.name.setValue(res.name)
       this.contentForm.controls.appIcon.setValue(res.appIcon)
+      this.contentForm.controls.thumbnail.setValue(res.appIcon)
       this.contentForm.controls.instructions.setValue(res.instructions)
       this.contentForm.controls.lang.setValue(res.lang)
       this.contentForm.controls.subTitle.setValue(res.subTitle)
