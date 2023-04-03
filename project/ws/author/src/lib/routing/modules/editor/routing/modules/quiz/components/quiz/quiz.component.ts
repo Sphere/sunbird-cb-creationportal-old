@@ -295,6 +295,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                         v.contents[0].data = jsonResponse
                         //this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
                         //this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
+                        if (jsonResponse.passPercentage >= 0) {
+                          this.validPercentage = true
+                        }
                         this.assessmentDuration = (jsonResponse.timeLimit) / 60
                         this.passPercentage = jsonResponse.passPercentage
                         this.randomCount = jsonResponse.randomCount
@@ -641,7 +644,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         this.editorService.readContentV2(this.currentId).subscribe(resData => {
           updatedMeta["versionKey"] = resData.versionKey
           updatedMeta["duration"] = isNumber(this.assessmentDuration) ?
-            this.assessmentDuration.toString() : this.assessmentDuration
+            (this.assessmentDuration * 60).toString() : this.assessmentDuration
           return this.triggerSave(updatedMeta, this.currentId)
         })
       }
