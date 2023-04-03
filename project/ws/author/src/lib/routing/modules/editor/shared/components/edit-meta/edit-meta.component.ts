@@ -671,6 +671,13 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.contentForm.controls.appIcon.setValue(res.appIcon)
       this.contentForm.controls.instructions.setValue(res.instructions)
       this.contentForm.controls.lang.setValue(res.lang)
+      this.contentForm.controls.subTitle.setValue(res.subTitle)
+      this.contentForm.controls.sourceName.setValue(res.sourceName)
+      this.contentForm.controls.gatingEnabled.setValue(res.gatingEnabled)
+      this.contentForm.controls.courseVisibility.setValue(res.courseVisibility)
+      if (res.competencies_v1) {
+        this.competencies = JSON.parse(res.competencies_v1)
+      }
       if (res.children.length > 0) {
         this.loader.changeLoad.next(true)
         res.children.forEach((element: any) => {
