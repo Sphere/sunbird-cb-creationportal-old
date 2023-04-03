@@ -1915,7 +1915,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   updateCouseDuration(data: any) {
     let resourceDurat: any = []
-    let sumDuration: any
+    let sumDuration: any = "0"
     if (data.children.length > 0) {
       data.children.forEach((element: any) => {
         if (element.duration) {
@@ -1930,7 +1930,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }
       })
       console.log(resourceDurat)
-      sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
+      if (resourceDurat.length > 0) {
+        sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
+      }
+
     }
     let requestBody: any
     console.log(sumDuration)
@@ -2603,7 +2606,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             }
           })
           console.log(resourceDurat)
-          sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
+          if (resourceDurat.length > 0) {
+            sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
+          }
+
         }
         let requestBody: any
         console.log(sumDuration)
@@ -2756,7 +2762,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   resourceDurat.push(parseInt(element.duration))
                 })
                 console.log(resourceDurat)
-                sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
+                if (resourceDurat.length > 0) {
+                  sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
+                }
               }
               console.log(sumDuration)
             })

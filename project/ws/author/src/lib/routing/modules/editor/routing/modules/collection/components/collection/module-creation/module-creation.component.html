@@ -17,7 +17,7 @@
           <span class="course-title" style="white-space: normal;">{{courseData?.name}}</span>
           <mat-icon class=" material-icons margin-left-m text-medium brand-color" (click)=" editContent(courseData)">
             edit</mat-icon>
-          <span class="margin-left-s text-small">{{mainCourseDuration}}</span>
+          <span class="margin-left-s text-small" matTooltip="Course Duration">{{mainCourseDuration}}</span>
         </mat-toolbar>
         <div class="model-left-create-content">
           <div class="module-container" *ngFor="let module of courseData?.children">

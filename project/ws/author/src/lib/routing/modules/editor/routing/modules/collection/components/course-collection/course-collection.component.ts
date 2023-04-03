@@ -2699,7 +2699,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             this.versionKey.children.forEach((element: any) => {
               resourceDurat.push(parseInt(element.duration))
             })
-            sum = resourceDurat.reduce((a: any, b: any) => a + b)
+            if (resourceDurat.length > 0) {
+              sum = resourceDurat.reduce((a: any, b: any) => a + b)
+            }
           } else {
             requestBody.request.content.duration = null
           }
