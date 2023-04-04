@@ -1587,7 +1587,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       sampleCertificates: [],
       skills: [],
       softwareRequirements: [],
-      sourceName: new FormControl('', [Validators.required]),
+      sourceName: [],
       creatorLogo: [],
       creatorPosterImage: [],
       creatorThumbnail: [],
