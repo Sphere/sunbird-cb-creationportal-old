@@ -1095,7 +1095,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             this.dialog.open(SuccessDialogComponent, {
               width: '450px',
               height: '300x',
-              data: { 'message': 'Course Sent For Review', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important' },
+              data: { 'message': 'Course Sent For Review', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
             })
             // this.router.navigate(['author', 'cbp'])
           }
@@ -1345,7 +1345,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               this.dialog.open(SuccessDialogComponent, {
                 width: '450px',
                 height: '300x',
-                data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important' },
+                data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important', 'id': this.contentService.parentContent },
               })
               if (!this.isMoveCourseToDraft) {
                 this.router.navigate(['author', 'cbp'])
@@ -1418,7 +1418,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             this.dialog.open(SuccessDialogComponent, {
               width: '450px',
               height: '300x',
-              data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important' },
+              data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important', 'id': this.contentService.parentContent },
             })
             if (!this.isMoveCourseToDraft) {
               this.router.navigate(['author', 'cbp'])
@@ -1588,7 +1588,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.dialog.open(SuccessDialogComponent, {
             width: '450px',
             height: '300x',
-            data: { 'message': 'Course Accepted and sent to Publisher', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important' },
+            data: { 'message': 'Course Accepted and sent to Publisher', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
           })
           // this.router.navigate(['author', 'cbp'])
           // } else {
@@ -3729,9 +3729,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         },
         () => {
           this.loaderService.changeLoad.next(false)
+          this.uploadFileName = ''
+          this.file = null
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
-              type: Notify.UPLOAD_FAIL,
+              type: Notify.UPLOAD_FILE_ERROR,
             },
             duration: NOTIFICATION_TIME * 1000,
           })
