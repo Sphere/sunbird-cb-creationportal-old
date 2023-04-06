@@ -46,11 +46,11 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
     //   (<any>window).attachEvent('onmessage', this.receiveMessage.bind(this))
     // }
     // window.addEventListener('message', function (event) {
-    //   /* tslint:disable-next-line */
+    //   // tslint:disable-next-line:no-console
     //   console.log('message', event)
     // })
     // window.addEventListener('onmessage', function (event) {
-    //   /* tslint:disable-next-line */
+    //   // tslint:disable-next-line:no-console
     //   console.log('onmessage===>', event)
     // })
   }
@@ -145,6 +145,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
           // if (this.htmlContent.entryPoint) {
           //   url = url + this.htmlContent.entryPoint
           // }
+          // tslint:disable-next-line:no-console
           console.log(url)
           this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
         } else {
@@ -193,7 +194,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
     ])
   }
   receiveMessage(msg: any) {
-    // /* tslint:disable-next-line */
+    // // tslint:disable-next-line:no-console
     // console.log("msg=>", msg)
     if (msg.data) {
       this.raiseTelemetry(msg.data)
@@ -271,7 +272,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
 
   raiseTelemetry(data: any) {
     if (this.htmlContent) {
-      /* tslint:disable-next-line */
+      // tslint:disable-next-line:no-console
       console.log(this.htmlContent.identifier)
       this.events.raiseInteractTelemetry(data.event, 'scrom', {
         contentId: this.htmlContent.identifier,

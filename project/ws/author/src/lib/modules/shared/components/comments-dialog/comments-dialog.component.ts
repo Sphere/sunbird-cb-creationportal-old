@@ -32,7 +32,7 @@ export class CommentsDialogComponent implements OnInit {
   ) {
     this.authInitService.publishMessage.subscribe(
       async (result: any) => {
-        /* tslint:disable-next-line */
+        // tslint:disable-next-line:no-console
         if (result) {
           await this.updateUI(result)
         }
@@ -77,7 +77,7 @@ export class CommentsDialogComponent implements OnInit {
         }
       }
       // console.log("here is ngOnInit", flag, count, isDraftOrReview)
-
+      // tslint:disable-next-line:no-console
       console.log("here is updateUI", flag, count, isDraftOrReview)
       if ((flag === count && (flag !== 0 || count !== 0)) && isDraftOrReview === 0) {
         this.showPublishCBPBtn = true
@@ -155,6 +155,7 @@ export class CommentsDialogComponent implements OnInit {
         }
       }
     }
+    // tslint:disable-next-line:no-console
     console.log("here is ngOnInit", flag, count, isDraftOrReview)
     if ((flag === count && (flag !== 0 || count !== 0)) && isDraftOrReview === 0) {
       // console.log("yes here okay", isDraftOrReview === 0)
@@ -262,6 +263,7 @@ export class CommentsDialogComponent implements OnInit {
       }
     }
     // console.log("here is refreshCourse", flag, count)
+    // tslint:disable-next-line:no-console
     console.log("here is refreshCourse", flag, count, isDraftOrReview)
 
     setTimeout(() => {

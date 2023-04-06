@@ -24,17 +24,18 @@ export class SuccessDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+    // tslint:disable-next-line:no-console
     console.log(this.data)
     setTimeout(() => {
       this.editorService.readcontentV3(this.data.id).subscribe(async (data: any) => {
-        /* tslint:disable-next-line */
+        // tslint:disable-next-line:no-console
         console.log(data)
       })
     }, 500)
   }
   routeToDashboard() {
     this.editorService.readcontentV3(this.data.id).subscribe(async (data: any) => {
-      /* tslint:disable-next-line */
+      // tslint:disable-next-line:no-console
       console.log(data)
       if (data.status === 'Live' || data.status === 'Processing' && data.batches == undefined) {
         let obj = {
@@ -49,8 +50,10 @@ export class SuccessDialogComponent implements OnInit {
             "createdBy": this._configurationsService.userProfile!.userId
           }
         }
+        // tslint:disable-next-line:no-console
         console.log(obj)
         let data = await this.editorService.createBatch(obj).toPromise().catch(_error => { })
+        // tslint:disable-next-line:no-console
         console.log(data)
       }
     })

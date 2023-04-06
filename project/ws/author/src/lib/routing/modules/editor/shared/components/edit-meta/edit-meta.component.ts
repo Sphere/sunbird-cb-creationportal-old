@@ -355,6 +355,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     ).subscribe(() => this.fetchAccessRestrictions())
 
     this.saveTriggerSub = this.contentService.changeActiveCont.subscribe(data => {
+      // tslint:disable-next-line:no-console
       console.log("data", data)
       if (this.contentMeta && this.canUpdate) {
         this.storeData()
@@ -382,6 +383,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     })
     dialogRef.afterClosed().subscribe((response: boolean) => {
       this.loader.changeLoad.next(true)
+      // tslint:disable-next-line:no-console
       console.log(response, this.parentContent)
       let id = this.parentContent || ''
       //if (response === true) {
@@ -585,6 +587,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.contentService.currentContentID = this.contentMeta.identifier
 
     this.assignFields()
+    // tslint:disable-next-line:no-console
     console.log(contentMeta.duration)
     //this.setDuration(contentMeta.duration || '0')
 
@@ -664,6 +667,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     const url = this.router.url
     const id = url.split('/')
     this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
+      // tslint:disable-next-line:no-console
       console.log(res.name)
       this.contentMeta = res
       this.contentMeta = res
@@ -693,9 +697,11 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             })
           }
         })
+        // tslint:disable-next-line:no-console
         console.log(this.resourceDurat)
         if (this.resourceDurat.length > 0) {
           this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
+          // tslint:disable-next-line:no-console
           console.log(this.sumDuration.toString(), this.contentMeta.duration)
           if (this.sumDuration.toString() !== this.contentMeta.duration) {
             let requestBody: any
@@ -709,6 +715,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
               }
             }
             this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.contentMeta.identifier).subscribe((response: any) => {
+              // tslint:disable-next-line:no-console
               console.log(response)
             })
           }
@@ -974,6 +981,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
       }
     } catch (ex) {
+      // tslint:disable-next-line:no-console
       console.log(ex)
       this.snackBar.open('Please Save Parent first and refresh page.')
       if (ex) {
@@ -1780,6 +1788,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       lang: new FormControl('', [Validators.required]),
       cneName: new FormControl('')
     })
+    // tslint:disable-next-line:no-console
     console.log("form validation", this.contentForm)
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {

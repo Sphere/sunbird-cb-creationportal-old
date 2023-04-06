@@ -152,9 +152,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
     this.backToCourse = this.initService.isBackButtonClickedMessage.subscribe(
       (data: any) => {
+        // tslint:disable-next-line:no-console
         console.log("isBackButtonClickedMessage data " + data)
         if (sessionStorage.getItem('isSettingsPage') === '1') {
           sessionStorage.setItem('isSettingsPage', '0')
+          // tslint:disable-next-line:no-console
           console.log("inside ")
           this.initService.backToHome('fromSettings')
         } else {
@@ -200,8 +202,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       (data: any) => {
         this.isLoading = true
         if ((data === 'backFromAssessmentDetails') && this.viewMode === 'assessment') {
-          /* tslint:disable-next-line */
-
+          // tslint:disable-next-line:no-console
           console.log("course-collection: " + JSON.stringify(data))
           this.showAddchapter = true
           this.viewMode = ''
@@ -233,7 +234,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
     this.initService.createModuleMessage.subscribe(
       (data: any) => {
-        /* tslint:disable-next-line */
+        // tslint:disable-next-line:no-console
         console.log("data: " + JSON.stringify(data))
         if (data) {
           this.createModule = data
@@ -250,7 +251,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.initService.updateAssessmentMessage.subscribe(
       (data: any) => {
         if (data) {
-          /* tslint:disable-next-line */
+          // tslint:disable-next-line:no-console
           console.log(data)
           this.createModule = data
           //this.setContentType(data['type'])
@@ -370,8 +371,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           )
         })
         contentDataMap.forEach(content => this.contentService.setOriginalMeta(content))
+        // tslint:disable-next-line:no-console
         console.log((this.storeService.lexIdMap.get(this.currentContent) as number[]))
         const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
+        // tslint:disable-next-line:no-console
         console.log(currentNode)
         this.currentParentId = this.currentContent
         this.storeService.treeStructureChange.next(
@@ -757,6 +760,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     // console.log('this.validationCheck', this.validationCheck)
 
     if (this.validationCheck) {
+      // tslint:disable-next-line:no-console
       console.log('validationCheck', contentAction)
 
       this.editorService.readcontentV3(this.contentService.parentContent).subscribe((resData: any) => {
@@ -795,9 +799,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           if (d) {
             if (this.getAction() === 'sendForReview' && d.value.action === 'reject') {
               contentAction = 'rejectContent'
+              // tslint:disable-next-line:no-console
               console.log("rejectContent")
               this.finalCall(contentAction)
             } else {
+              // tslint:disable-next-line:no-console
               console.log("contentAction", contentAction)
               this.finalCall(contentAction)
             }
@@ -1260,7 +1266,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
         //if (result.params.status === 'successful') {
         this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
-          /* tslint:disable-next-line */
+          // tslint:disable-next-line:no-console
           this.contentService.resetOriginalMetaWithHierarchy(data)
           this.initService.publishData(data)
           // tslint:disable-next-line: align
@@ -1297,7 +1303,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
       setTimeout(() => {
         this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
-          /* tslint:disable-next-line */
+          // tslint:disable-next-line:no-console
           console.log(data)
           if (data && data.lastPublishedBy === undefined) {
             let obj = {
@@ -1312,8 +1318,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 "createdBy": this._configurationsService.userProfile!.userId
               }
             }
+            // tslint:disable-next-line:no-console
             console.log(obj)
             let data = await this.editorService.createBatch(obj).toPromise().catch(_error => { })
+            // tslint:disable-next-line:no-console
             console.log(data)
           }
           // this.contentService.resetOriginalMetaWithHierarchy(data)
@@ -2705,11 +2713,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           } else {
             requestBody.request.content.duration = null
           }
-          console.log(resourceDurat)
-          console.log(sum)
-          console.log(requestBody)
-          console.log(tempUpdateContent)
-          console.log(this.versionKey)
+
           return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
             tap(() => {
               this.storeService.changedHierarchy = {}
@@ -2924,7 +2928,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               hierarchyData[ele].children.push(content.identifier)
             }
           })
-          console.log(hierarchyData)
           const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
             request: {
               data: {
@@ -2935,6 +2938,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           }
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
             this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+              // tslint:disable-next-line:no-console
               console.log(data)
               this.showAddchapter = true
               this.initService.updateResources('update')
@@ -2958,7 +2962,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         // } else if (content.mimeType === 'application/web-module') {
         //   this.viewMode = 'webmodule'
         // }
-        console.log(content.mimeType)
         if (['application/pdf', 'application/x-mpegURL', 'application/vnd.ekstep.html-archive', 'audio/mpeg', 'video/mp4'].includes(content.mimeType)) {
           this.viewMode = 'upload'
           // } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === 'link') {
@@ -3204,6 +3207,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   async sendEmailNotification(actionType: string) {
     const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
+    // tslint:disable-next-line:no-console
     console.log('originalData', originalData)
     const emailReqPayload = {
       contentState: actionType,

@@ -371,6 +371,7 @@ export class CollectionStoreService {
       }
 
       const meta = this.authInitService.creationEntity.get(cType) as ICreateEntity
+      // tslint:disable-next-line:no-console
       console.log(meta)
       const parentData = this.contentService.parentUpdatedMeta()
       let content
@@ -465,7 +466,9 @@ export class CollectionStoreService {
 
   getModuleRequest(meta: any) {
     const parentData = this.contentService.getOriginalMeta(this.contentService.parentContent)
+    // tslint:disable-next-line:no-console
     console.log(parentData)
+    // tslint:disable-next-line:no-console
     console.log(this.parentData)
     const nodesModify: any = {}
     // const uuidValue = uuidv4()
@@ -567,6 +570,7 @@ export class CollectionStoreService {
         })
       }
     })
+    // tslint:disable-next-line:no-console
     console.log(hierarchyData)
     const modulePayload = {
       request: {
@@ -844,7 +848,7 @@ export class CollectionStoreService {
         }
         children.forEach((child: IContentNode, position: number) => {
           const childContent = this.contentService.getUpdatedMeta(child.identifier)
-          /* tslint:disable-next-line */
+          // tslint:disable-next-line:no-console
           console.log(content)
           let canPresent = false
 
@@ -952,6 +956,7 @@ export class CollectionStoreService {
       // if (content.sourceName === undefined && content.status === 'Draft') {
       //   errorMsg.push('Course provider/source cannot be empty')
       // }
+      // tslint:disable-next-line:no-console
       console.log("artifactUrl: ", content.mimeType, content.artifactUrl)
       if ((content.mimeType === 'text/x-url' || content.mimeType === 'application/pdf' || content.mimeType === 'audio/mpeg' || content.mimeType === 'video/mp4' || content.mimeType === 'application/vnd.ekstep.html-archive' || content.mimeType === 'application/json') && !content.artifactUrl && content.artifactUrl == undefined || content.artifactUrl === '') {
         if (content.mimeType === 'text/x-url') {
