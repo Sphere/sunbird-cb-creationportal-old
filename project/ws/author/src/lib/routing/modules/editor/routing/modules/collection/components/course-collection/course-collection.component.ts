@@ -2713,6 +2713,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           } else {
             requestBody.request.content.duration = null
           }
+          // tslint:disable-next-line:no-console
+          console.log("sum", sum)
 
           return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
             tap(() => {
