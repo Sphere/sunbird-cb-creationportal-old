@@ -150,6 +150,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       offset: 0,
       limit: 24,
     }
+    // tslint:disable-next-line:no-console
     console.log(this.configService.unMappedUser.roles)
     // this.newDesign = this.accessService.authoringConfig.newDesign
     this.newDesign = l.get(this.accessService, 'authoringConfig.newDesign')

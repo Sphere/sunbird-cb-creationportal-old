@@ -129,11 +129,13 @@ export class EditorContentService {
   getNodeModifyData() {
     const nodesModify: any = {}
     const parentData = this.getOriginalMeta(this.parentContent)
+    // tslint:disable-next-line:no-console
     console.log(parentData)
     // console.log(this.upDatedContent)
     // console.log((Object.keys(this.upDatedContent)[0]))
     // const id = Object.keys(this.upDatedContent)[this.currentContent]
     const id = this.currentContentID
+    // tslint:disable-next-line:no-console
     console.log(this.upDatedContent[id])
     let data = this.cleanProperties(this.upDatedContent[id])
     data = this.currentContentData

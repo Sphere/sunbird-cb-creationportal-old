@@ -235,6 +235,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       )
       .subscribe(
         users => {
+          // tslint:disable-next-line:no-console
           console.log(users)
 
           this.employeeList = users || <string[]>[]
@@ -251,6 +252,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         distinctUntilChanged(),
         filter(val => typeof val === 'string'),
         switchMap((value: string) => {
+          // tslint:disable-next-line:no-console
           console.log(value)
 
           if (typeof value === 'string' && value) {
@@ -577,6 +579,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       } catch (ex) { }
     })
     this.canUpdate = true
+    // tslint:disable-next-line:no-console
     console.log('saved', this.contentForm.controls)
     this.storeData()
     if (this.isSubmitPressed) {
@@ -655,6 +658,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
   storeData() {
     try {
+      // tslint:disable-next-line:no-console
       console.log("cameherer")
       const originalMeta = this.contentService.getOriginalMeta(this.contentMeta.identifier)
       // console.log("originalMeta", originalMeta, this.contentMeta.identifier)
@@ -744,6 +748,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             .split('.')[0]
             }+0000`
         }
+        // tslint:disable-next-line:no-console
         console.log("currentMeta", currentMeta)
         Object.keys(currentMeta).map(v => {
           if (
@@ -768,10 +773,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
             }
           } else if (v === 'versionKey') {
-            console.log("versionKey")
             meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
           } else if (v === 'visibility') {
-            console.log("visibility")
             // if (currentMeta['contentType'] === 'CourseUnit' && currentMeta[v] !== 'Parent') {
             //   // console.log('%c COURSE UNIT ', 'color: #f5ec3d', meta[v],  currentMeta[v])
             //   meta[v as keyof NSContent.IContentMeta] = 'Default'
@@ -782,6 +785,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         if (this.stage >= 1 && !this.type) {
           delete meta.artifactUrl
         }
+        // tslint:disable-next-line:no-console
         console.log("originalMeta", meta)
 
         // console.log('meta', meta, this.contentMeta.identifier)
@@ -808,6 +812,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   // }
 
   updateContentService(meta: string, value: any, event = false) {
+    // tslint:disable-next-line:no-console
     console.log("updateContentService")
     this.contentForm.controls[meta].setValue(value, { events: event })
     this.contentService.setUpdatedMeta({ [meta]: value } as any, this.contentMeta.identifier)
@@ -867,6 +872,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         this.contentForm.controls.creatorDetails.value,
       )
     }
+    // tslint:disable-next-line:no-console
     console.log(this.contentForm.controls.creatorDetails)
 
     // Reset the input value
@@ -876,6 +882,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   }
   updateMyValue(event: any) {
     if (event) {
+      // tslint:disable-next-line:no-console
       console.log(event.checked)
       this.contentForm.controls.gatingEnabled.setValue(
         event.checked
@@ -893,7 +900,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   addToFormControl(event: MatAutocompleteSelectedEvent, fieldName: string): void {
-    console.log("addToFormControl")
     const value = (event.option.value || '').trim()
     if (value && this.contentForm.controls[fieldName].value.indexOf(value) === -1) {
       this.contentForm.controls[fieldName].value.push(value)
@@ -1208,7 +1214,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
                         this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
                         this.canUpdate = true
                         // this.data.emit('save')
-                        console.log("emai save")
                         this.storeData()
                         this.authInitService.uploadData('thumbnail')
                         // this.contentForm.controls.posterImage.setValue(data.artifactURL)
@@ -1333,7 +1338,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
                   this.contentForm.controls.creatorThumbnail.setValue(data.result.artifactUrl)
                   this.contentForm.controls.creatorPosterImage.setValue(data.result.artifactUrl)
                   this.canUpdate = true
-                  console.log("dialog")
                   this.storeData()
                   this.snackBar.openFromComponent(NotificationComponent, {
                     data: {
@@ -1519,7 +1523,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   createForm() {
-    console.log("creating form")
     this.contentForm = this.formBuilder.group({
       accessPaths: [],
       accessibility: [],
@@ -1617,7 +1620,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       if (this.canUpdate) {
-        console.log("yes here with canUpdate", this.contentForm.value)
         this.storeData()
         // this.contentForm.controls.publisherDetails.setValue(
         //   this.contentForm.controls.publisherDetails.value

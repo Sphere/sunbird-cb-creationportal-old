@@ -229,6 +229,7 @@ export class MandatoryContentComponent implements OnInit, OnDestroy {
   actionClick(event: any) {
     if (event) {
       /* tslint:disable */
+      // tslint:disable-next-line:no-console
       console.log(event)
       /* tslint:enable */
     }

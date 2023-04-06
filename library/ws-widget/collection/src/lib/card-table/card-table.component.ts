@@ -111,6 +111,7 @@ export class CardTableComponent extends WidgetBaseComponent
     }
   }
   buttonClick(action: string, row: any) {
+    // tslint:disable-next-line:no-console
     // console.log(action, row);
     const isDisabled = _.get(_.find(this.widgetData.actions, ac => ac.name === action), 'disabled') || false
     if (!isDisabled && this.actionsClick) {
@@ -131,6 +132,7 @@ export class CardTableComponent extends WidgetBaseComponent
     if (this.widgetData.actionsMenu && this.widgetData.actionsMenu.menus.length > 0) {
       columns.push('ActionsMenu')
     }
+    // tslint:disable-next-line:no-console
     // console.log(columns);
 
     return columns || []
