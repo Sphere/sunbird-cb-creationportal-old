@@ -230,7 +230,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
 
   get validationCheck(): boolean {
     const currentNodeId = this.storeService.lexIdMap.get(this.currentParentId) as number[]
-    const returnValue = this.storeService.validationCheck(currentNodeId[0])
+    const returnValue = this.storeService.validationCheck(currentNodeId[0], this.currentContent)
     if (returnValue) {
       const dialog = this.dialog.open(ErrorParserComponent, {
         width: '80vw',
