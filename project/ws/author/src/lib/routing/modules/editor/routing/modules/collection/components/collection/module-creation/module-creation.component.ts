@@ -365,7 +365,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.courseName = data.contents[0].content.name
 
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
-
         data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
           this.storeService.parentNode.push(v.content.identifier)
           this.resolverService.buildTreeAndMap(
@@ -378,7 +377,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         })
         contentDataMap.forEach(content => this.contentService.setOriginalMeta(content))
         const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
-
         this.currentParentId = this.currentContent
         this.storeService.treeStructureChange.next(
           this.storeService.flatNodeMap.get(currentNode) as IContentNode,
@@ -820,7 +818,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   get validationCheck(): boolean {
     const currentNodeId = this.storeService.lexIdMap.get(this.currentParentId) as number[]
-    let returnValue = this.storeService.validationCheck(currentNodeId[0])
+    let returnValue = this.storeService.validationCheck(currentNodeId[0], this.courseData)
 
     // console.log('returnvalue ', returnValue)
 

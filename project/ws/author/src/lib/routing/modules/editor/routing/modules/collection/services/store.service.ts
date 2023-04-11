@@ -782,16 +782,138 @@ export class CollectionStoreService {
     return true
   }
 
-  validationCheck(id: number): IProcessedError[] | null {
+  validationCheck(id: number, courseData: any): IProcessedError[] | null {
     const returnValue: Map<number, IProcessedError> = new Map<number, IProcessedError>()
     const errorIds = new Set<number>()
-    const hierarchy = this.resolver.getFlatHierarchy(id, this.flatNodeMap)
-    this.metaValidationCheck(hierarchy, errorIds, returnValue)
-    this.hierarchyStructureCheck(hierarchy, errorIds, returnValue)
+    this.checkValidation(errorIds, returnValue, courseData)
+    this.checkValidations(errorIds, returnValue, courseData)
+    console.log("id", id)
+    // const hierarchy = this.resolver.getFlatHierarchy(id, this.flatNodeMap)
+    // this.metaValidationCheck(hierarchy, errorIds, returnValue)
+    // this.hierarchyStructureCheck(hierarchy, errorIds, returnValue)
     this.onInvalidNodeChange.next(Array.from(errorIds))
     return returnValue.size ? Array.from(returnValue.values()) : null
   }
+  checkValidation(errorId: Set<number>,
+    errorMap: Map<number, IProcessedError>, courseData: any) {
+    console.log('courseData', courseData)
+    let errorMsg: string[] = []
+    if (courseData) {
+      if (!courseData.children || courseData.children.length < 2) {
+        if (!courseData.children || courseData.children.length < 2) {
+          console.log("lenght check", courseData)
+          errorMsg.push(
+            `Minimum 2 children is required. But nothing present`,
+          )
+          this.populateErrorMsg(courseData.identifier, errorMsg, courseData, errorId, errorMap)
+          errorMsg = []
+        }
+        console.log("lenght check", courseData)
+        if ((!courseData.publisherDetails) || (courseData.publisherDetails && courseData.publisherDetails.length === 0 && courseData.parent === undefined && courseData.contentType === 'Course')) {
+          errorMsg.push('Publisher details cannot be empty')
+        }
+        if ((!courseData.trackContacts) || (courseData.trackContacts && courseData.trackContacts.length === 0 && courseData.parent === undefined && courseData.contentType === 'Course')) {
+          errorMsg.push('Reviewer details cannot be empty')
+        }
+        this.populateErrorMsg(courseData.identifier, errorMsg, courseData, errorId, errorMap)
+        errorMsg = []
+      }
+      courseData.children.forEach((element: any) => {
+        console.log("moduleChildren", element)
 
+        if (element.contentType === "CourseUnit" && !element.children) {
+          console.log("yes here")
+          errorMsg.push(
+            `Minimum 1 children is required. But nothing presents`,
+          )
+          this.populateErrorMsg(element.identifier, errorMsg, element, errorId, errorMap)
+          errorMsg = []
+        }
+
+
+      })
+      this.populateErrorMsg(courseData.identifier, errorMsg, courseData, errorId, errorMap)
+    }
+
+  }
+  checkValidations(
+    errorId: Set<number>,
+    errorMap: Map<number, IProcessedError>, courseData: any) {
+    console.log('courseData', courseData)
+    let errorMsg: string[] = []
+    if (courseData) {
+      courseData.children.forEach((element: any) => {
+        if (element.contentType === "Resource") {
+          if (element.name === '') {
+            errorMsg.push('Title cannot be empty')
+          }
+          if ((element.mimeType === 'text/x-url' || element.mimeType === 'application/pdf' || element.mimeType === 'audio/mpeg' || element.mimeType === 'video/mp4' || element.mimeType === 'application/vnd.ekstep.html-archive' || element.mimeType === 'application/json') && !element.artifactUrl && element.artifactUrl == undefined || element.artifactUrl === '') {
+            if (element.mimeType === 'text/x-url') {
+              errorMsg.push('Link cannot be empty')
+            }
+            else if (element.mimeType === 'application/pdf') {
+              errorMsg.push('PDF cannot be empty')
+            }
+            else if (element.mimeType === 'audio/mpeg') {
+              errorMsg.push('Audio File cannot be empty')
+            }
+            else if (element.mimeType === 'video/mp4') {
+              errorMsg.push('Video File cannot be empty')
+            }
+            else if (element.mimeType === 'application/vnd.ekstep.html-archive') {
+              errorMsg.push('Zip File cannot be empty')
+            }
+            else if (element.mimeType === 'application/json') {
+              errorMsg.push('Assessment/Quiz cannot be empty')
+            }
+            else {
+              errorMsg.push('File cannot be empty')
+            }
+          }
+          this.populateErrorMsg(element.identifier, errorMsg, element, errorId, errorMap)
+          errorMsg = []
+        }
+
+        if (element.children && element.children.length > 0) {
+          element.children.forEach((ele: any) => {
+            console.log("childrens", ele)
+            if (ele.contentType === "Resource") {
+              if (ele.name === '') {
+                errorMsg.push('Title cannot be empty')
+              }
+              if ((ele.mimeType === 'text/x-url' || ele.mimeType === 'application/pdf' || ele.mimeType === 'audio/mpeg' || ele.mimeType === 'video/mp4' || ele.mimeType === 'application/vnd.ekstep.html-archive' || ele.mimeType === 'application/json') && !ele.artifactUrl && ele.artifactUrl == undefined || ele.artifactUrl === '') {
+                if (ele.mimeType === 'text/x-url') {
+                  errorMsg.push('Link cannot be emptys')
+                }
+                else if (ele.mimeType === 'application/pdf') {
+                  errorMsg.push('PDF cannot be empty')
+                }
+                else if (ele.mimeType === 'audio/mpeg') {
+                  errorMsg.push('Audio File cannot be empty')
+                }
+                else if (ele.mimeType === 'video/mp4') {
+                  errorMsg.push('Video File cannot be empty')
+                }
+                else if (ele.mimeType === 'application/vnd.ekstep.html-archive') {
+                  errorMsg.push('Zip File cannot be empty')
+                }
+                else if (ele.mimeType === 'application/json') {
+                  errorMsg.push('Assessment/Quiz cannot be empty')
+                }
+                else {
+                  errorMsg.push('File cannot be empty')
+                }
+              }
+            }
+            this.populateErrorMsg(ele.identifier, errorMsg, ele, errorId, errorMap)
+            errorMsg = []
+          })
+        }
+
+      })
+    }
+
+  }
   hierarchyStructureCheck(
     ids: number[],
     errorId: Set<number>,
