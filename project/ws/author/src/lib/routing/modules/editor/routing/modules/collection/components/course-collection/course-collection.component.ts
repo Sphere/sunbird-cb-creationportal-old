@@ -707,7 +707,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   get validationCheck(): boolean {
     const currentNodeId = this.storeService.lexIdMap.get(this.currentParentId) as number[]
-    let returnValue = this.storeService.validationCheck(currentNodeId[0])
+    let returnValue = this.storeService.validationCheck(currentNodeId[0], this.courseData)
     // console.log('returnvalue ', returnValue)
 
     // returnValue = null
