@@ -8,6 +8,11 @@
   <span i18n>Unable to complete action. Try again</span>
 </p>
 
+<p *ngIf="type === notify.UPLOAD_FILE_ERROR">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Fail">error</mat-icon>
+  <span i18n>Uploaded File is having issue. Try again</span>
+</p>
+
 <p *ngIf="type === notify.CONTENT_CREATE_SUCCESS">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Success">thumb_up</mat-icon>
   <span i18n>New content created. Add details</span>

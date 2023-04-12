@@ -276,6 +276,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
         if (this.activateRoute.parent && this.activateRoute.parent.parent) {
           this.activateRoute.parent.parent.data.subscribe(v => {
+            // tslint:disable-next-line:no-console
             console.log(v)
             this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(async newData => {
               // const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
@@ -335,6 +336,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                       // this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data
                       //   ? v.contents[0].data.questions
                       //   : []
+                      // tslint:disable-next-line:no-console
                       console.log(quizContent)
                       this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
                       this.resourceType = quizContent.categoryType || 'Assessment'
@@ -512,7 +514,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     // return this.editorService
     //   .updateContent(requestBody)
     //   .pipe(tap(() => this.metaContentService.resetOriginalMeta(meta, id)))
-    /* tslint:disable-next-line */
+    // tslint:disable-next-line:no-console
     console.log(meta, id)
     if (meta && id) {
       this.metaContentService.setUpdatedMeta(meta, id)
@@ -522,10 +524,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
           content: meta,
         }
       }
+      // tslint:disable-next-line:no-console
       console.log(requestBody)
       this.editorService.updateNewContentV3(requestBody, this.currentId).subscribe(
         (data: any) => {
-          /* tslint:disable-next-line */
+          // tslint:disable-next-line:no-console
           console.log(data)
         })
     }
@@ -616,7 +619,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       : of({} as any)
       // ).pipe(map(v => v.result))
     ).pipe(mergeMap(v => {
-      /* tslint:disable-next-line */
+      // tslint:disable-next-line:no-console
       console.log(v)
       // tslint:disable-next-line: no-parameter-reassignment
       v = v[0].result || v[0]
@@ -639,7 +642,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         //   this.snackBar.open('Error Occured! Please refresh the page.')
         // })
         // this.metaContentService.setUpdatedMeta(updatedMeta, this.currentId)
-        /* tslint:disable-next-line */
+        // tslint:disable-next-line:no-console
         console.log(updatedMeta, this.currentId)
         this.editorService.readContentV2(this.currentId).subscribe(resData => {
           updatedMeta["versionKey"] = resData.versionKey
@@ -717,6 +720,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   // }
 
   uploadJson(array: any[], fileName: string) {
+    // tslint:disable-next-line:no-console
     console.log(this.assessmentDuration, this.passPercentage)
     this.quizDuration = (this.metaContentService.getUpdatedMeta(this.currentId).duration &&
       this.metaContentService.getUpdatedMeta(this.currentId).duration !== '0') ?

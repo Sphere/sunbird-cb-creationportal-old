@@ -371,6 +371,7 @@ export class CollectionStoreService {
       }
 
       const meta = this.authInitService.creationEntity.get(cType) as ICreateEntity
+      // tslint:disable-next-line:no-console
       console.log(meta)
       const parentData = this.contentService.parentUpdatedMeta()
       let content
@@ -465,7 +466,9 @@ export class CollectionStoreService {
 
   getModuleRequest(meta: any) {
     const parentData = this.contentService.getOriginalMeta(this.contentService.parentContent)
+    // tslint:disable-next-line:no-console
     console.log(parentData)
+    // tslint:disable-next-line:no-console
     console.log(this.parentData)
     const nodesModify: any = {}
     // const uuidValue = uuidv4()
@@ -567,6 +570,7 @@ export class CollectionStoreService {
         })
       }
     })
+    // tslint:disable-next-line:no-console
     console.log(hierarchyData)
     const modulePayload = {
       request: {
@@ -778,16 +782,138 @@ export class CollectionStoreService {
     return true
   }
 
-  validationCheck(id: number): IProcessedError[] | null {
+  validationCheck(id: number, courseData: any): IProcessedError[] | null {
     const returnValue: Map<number, IProcessedError> = new Map<number, IProcessedError>()
     const errorIds = new Set<number>()
-    const hierarchy = this.resolver.getFlatHierarchy(id, this.flatNodeMap)
-    this.metaValidationCheck(hierarchy, errorIds, returnValue)
-    this.hierarchyStructureCheck(hierarchy, errorIds, returnValue)
+    this.checkValidation(errorIds, returnValue, courseData)
+    this.checkValidations(errorIds, returnValue, courseData)
+    console.log("id", id)
+    // const hierarchy = this.resolver.getFlatHierarchy(id, this.flatNodeMap)
+    // this.metaValidationCheck(hierarchy, errorIds, returnValue)
+    // this.hierarchyStructureCheck(hierarchy, errorIds, returnValue)
     this.onInvalidNodeChange.next(Array.from(errorIds))
     return returnValue.size ? Array.from(returnValue.values()) : null
   }
+  checkValidation(errorId: Set<number>,
+    errorMap: Map<number, IProcessedError>, courseData: any) {
+    console.log('courseData', courseData)
+    let errorMsg: string[] = []
+    if (courseData) {
+      if (!courseData.children || courseData.children.length < 2) {
+        if (!courseData.children || courseData.children.length < 2) {
+          console.log("lenght check", courseData)
+          errorMsg.push(
+            `Minimum 2 children is required. But nothing present`,
+          )
+          this.populateErrorMsg(courseData.identifier, errorMsg, courseData, errorId, errorMap)
+          errorMsg = []
+        }
+        console.log("lenght check", courseData)
+        if ((!courseData.publisherDetails) || (courseData.publisherDetails && courseData.publisherDetails.length === 0 && courseData.parent === undefined && courseData.contentType === 'Course')) {
+          errorMsg.push('Publisher details cannot be empty')
+        }
+        if ((!courseData.trackContacts) || (courseData.trackContacts && courseData.trackContacts.length === 0 && courseData.parent === undefined && courseData.contentType === 'Course')) {
+          errorMsg.push('Reviewer details cannot be empty')
+        }
+        this.populateErrorMsg(courseData.identifier, errorMsg, courseData, errorId, errorMap)
+        errorMsg = []
+      }
+      courseData.children.forEach((element: any) => {
+        console.log("moduleChildren", element)
 
+        if (element.contentType === "CourseUnit" && !element.children) {
+          console.log("yes here")
+          errorMsg.push(
+            `Minimum 1 children is required. But nothing presents`,
+          )
+          this.populateErrorMsg(element.identifier, errorMsg, element, errorId, errorMap)
+          errorMsg = []
+        }
+
+
+      })
+      this.populateErrorMsg(courseData.identifier, errorMsg, courseData, errorId, errorMap)
+    }
+
+  }
+  checkValidations(
+    errorId: Set<number>,
+    errorMap: Map<number, IProcessedError>, courseData: any) {
+    console.log('courseData', courseData)
+    let errorMsg: string[] = []
+    if (courseData) {
+      courseData.children.forEach((element: any) => {
+        if (element.contentType === "Resource") {
+          if (element.name === '') {
+            errorMsg.push('Title cannot be empty')
+          }
+          if ((element.mimeType === 'text/x-url' || element.mimeType === 'application/pdf' || element.mimeType === 'audio/mpeg' || element.mimeType === 'video/mp4' || element.mimeType === 'application/vnd.ekstep.html-archive' || element.mimeType === 'application/json') && !element.artifactUrl && element.artifactUrl == undefined || element.artifactUrl === '') {
+            if (element.mimeType === 'text/x-url') {
+              errorMsg.push('Link cannot be empty')
+            }
+            else if (element.mimeType === 'application/pdf') {
+              errorMsg.push('PDF cannot be empty')
+            }
+            else if (element.mimeType === 'audio/mpeg') {
+              errorMsg.push('Audio File cannot be empty')
+            }
+            else if (element.mimeType === 'video/mp4') {
+              errorMsg.push('Video File cannot be empty')
+            }
+            else if (element.mimeType === 'application/vnd.ekstep.html-archive') {
+              errorMsg.push('Zip File cannot be empty')
+            }
+            else if (element.mimeType === 'application/json') {
+              errorMsg.push('Assessment/Quiz cannot be empty')
+            }
+            else {
+              errorMsg.push('File cannot be empty')
+            }
+          }
+          this.populateErrorMsg(element.identifier, errorMsg, element, errorId, errorMap)
+          errorMsg = []
+        }
+
+        if (element.children && element.children.length > 0) {
+          element.children.forEach((ele: any) => {
+            console.log("childrens", ele)
+            if (ele.contentType === "Resource") {
+              if (ele.name === '') {
+                errorMsg.push('Title cannot be empty')
+              }
+              if ((ele.mimeType === 'text/x-url' || ele.mimeType === 'application/pdf' || ele.mimeType === 'audio/mpeg' || ele.mimeType === 'video/mp4' || ele.mimeType === 'application/vnd.ekstep.html-archive' || ele.mimeType === 'application/json') && !ele.artifactUrl && ele.artifactUrl == undefined || ele.artifactUrl === '') {
+                if (ele.mimeType === 'text/x-url') {
+                  errorMsg.push('Link cannot be emptys')
+                }
+                else if (ele.mimeType === 'application/pdf') {
+                  errorMsg.push('PDF cannot be empty')
+                }
+                else if (ele.mimeType === 'audio/mpeg') {
+                  errorMsg.push('Audio File cannot be empty')
+                }
+                else if (ele.mimeType === 'video/mp4') {
+                  errorMsg.push('Video File cannot be empty')
+                }
+                else if (ele.mimeType === 'application/vnd.ekstep.html-archive') {
+                  errorMsg.push('Zip File cannot be empty')
+                }
+                else if (ele.mimeType === 'application/json') {
+                  errorMsg.push('Assessment/Quiz cannot be empty')
+                }
+                else {
+                  errorMsg.push('File cannot be empty')
+                }
+              }
+            }
+            this.populateErrorMsg(ele.identifier, errorMsg, ele, errorId, errorMap)
+            errorMsg = []
+          })
+        }
+
+      })
+    }
+
+  }
   hierarchyStructureCheck(
     ids: number[],
     errorId: Set<number>,
@@ -821,18 +947,21 @@ export class CollectionStoreService {
         const childTypeMap: number[] = allowedTypes.map(() => 0)
         const children = contentNode.children || []
         if (childConfig.minChildren && children.length < childConfig.minChildren) {
-          this.editorService.readcontentV3(this.contentService.parentContent).subscribe((resData: any) => {
-            resData.children.forEach((data: any) => {
-              if (data.identifier == contentNode.identifier) {
-                if (data.children.length == 0) {
-                  errorMsg.push(
-                    `Minimum ${childConfig.minChildren} children is required. But ${children.length ? children.length : 'nothing'
-                    } present`,
-                  )
-                }
-              }
-            })
-          })
+          // await this.editorService.readcontentV3(this.contentService.parentContent).subscribe((resData: any) => {
+          //   debugger
+          //   resData.children.forEach((data: any) => {
+          //     debugger
+          //     if (data.identifier == contentNode.identifier) {
+          //       if (!data.children || data.children.length == 0) {
+          //         debugger
+          errorMsg.push(
+            `Minimum ${childConfig.minChildren} children is required. But ${children.length ? children.length : 'nothing'
+            } present`,
+          )
+          //       }
+          //     }
+          //   })
+          // })
         }
         if (childConfig.maxChildren && children.length > childConfig.maxChildren) {
           errorMsg.push(
@@ -841,7 +970,7 @@ export class CollectionStoreService {
         }
         children.forEach((child: IContentNode, position: number) => {
           const childContent = this.contentService.getUpdatedMeta(child.identifier)
-          /* tslint:disable-next-line */
+          // tslint:disable-next-line:no-console
           console.log(content)
           let canPresent = false
 
@@ -949,6 +1078,7 @@ export class CollectionStoreService {
       // if (content.sourceName === undefined && content.status === 'Draft') {
       //   errorMsg.push('Course provider/source cannot be empty')
       // }
+      // tslint:disable-next-line:no-console
       console.log("artifactUrl: ", content.mimeType, content.artifactUrl)
       if ((content.mimeType === 'text/x-url' || content.mimeType === 'application/pdf' || content.mimeType === 'audio/mpeg' || content.mimeType === 'video/mp4' || content.mimeType === 'application/vnd.ekstep.html-archive' || content.mimeType === 'application/json') && !content.artifactUrl && content.artifactUrl == undefined || content.artifactUrl === '') {
         if (content.mimeType === 'text/x-url') {

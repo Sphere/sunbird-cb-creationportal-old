@@ -42,6 +42,7 @@ export class CourseHeaderComponent implements OnInit {
     }
 
     if (this.buttonConfig) {
+      // tslint:disable-next-line:no-console
       console.log('buttonClicked', this.configSvc.userRoles)
       this.buttonConfig.buttons.forEach(button => {
         if (button.event === 'save' || button.event === 'push' || button.title === 'saveAndNext') {

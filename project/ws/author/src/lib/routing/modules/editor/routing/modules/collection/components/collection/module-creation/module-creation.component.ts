@@ -351,6 +351,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   routerValuesCalls() {
     this.contentService.changeActiveCont.subscribe(data => {
+      // tslint:disable-next-line:no-console
       console.log(data)
       this.currentContent = data
       this.currentCourseId = data
@@ -364,7 +365,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.courseName = data.contents[0].content.name
 
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
-
         data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
           this.storeService.parentNode.push(v.content.identifier)
           this.resolverService.buildTreeAndMap(
@@ -377,7 +377,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         })
         contentDataMap.forEach(content => this.contentService.setOriginalMeta(content))
         const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
-
         this.currentParentId = this.currentContent
         this.storeService.treeStructureChange.next(
           this.storeService.flatNodeMap.get(currentNode) as IContentNode,
@@ -439,7 +438,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   action(type: string) {      // recheck
-    /* tslint:disable-next-line */
+    // tslint:disable-next-line:no-console
     switch (type) {
       case 'next':
         this.viewMode = 'meta'
@@ -581,7 +580,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-          /* tslint:disable-next-line */
+          // tslint:disable-next-line:no-console
 
           // this.isSettingsPage = false
           if (this.isSettingsPage && !this.isError) {
@@ -632,7 +631,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       )
     } else {
       if (nextAction) {
-        /* tslint:disable-next-line */
+        // tslint:disable-next-line:no-console
         // console.log("nextAction")
         if (this.isSettingsPage) {
           this.action("push")
@@ -653,7 +652,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   triggerSaves() {
     const nodesModified: any = {}
     let isRootPresent = false
-    /* tslint:disable-next-line */
+    // tslint:disable-next-line:no-console
     console.log(this.contentService.upDatedContent)
     Object.keys(this.contentService.upDatedContent).forEach(v => {
       if (!isRootPresent) {
@@ -688,7 +687,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           content: tempUpdateContent,
         }
       }
-      /* tslint:disable-next-line */
+      // tslint:disable-next-line:no-console
 
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
 
@@ -747,8 +746,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.contentService.currentContentData = requestBody.request.content
       this.contentService.currentContentID = this.currentCourseId
       //let nodesModified = {}
-      /* tslint:disable-next-line */
-
+      // tslint:disable-next-line:no-console
       console.log("requestBody", requestBody)
 
       if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined || tempUpdateContent.category === 'Course') {
@@ -799,8 +797,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   }
   async updates() {
-    /* tslint:disable-next-line */
-
+    // tslint:disable-next-line:no-console
     console.log("update")
     this.resourseSelected = ''
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
@@ -821,7 +818,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   get validationCheck(): boolean {
     const currentNodeId = this.storeService.lexIdMap.get(this.currentParentId) as number[]
-    let returnValue = this.storeService.validationCheck(currentNodeId[0])
+    let returnValue = this.storeService.validationCheck(currentNodeId[0], this.courseData)
 
     // console.log('returnvalue ', returnValue)
 
@@ -906,8 +903,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         })
       }
       if (contentAction === 'publishResources') {
-        /* tslint:disable-next-line */
-
+        // tslint:disable-next-line:no-console
         console.log("here", this.getAction())
 
         this.finalCall(contentAction)
@@ -1030,8 +1026,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }
       }
     } else {
-      /* tslint:disable-next-line */
-
+      // tslint:disable-next-line:no-console
       console.log("yes here")
       // this.changeStatusToDraft('Content Rejected')
     }
@@ -1095,7 +1090,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             this.dialog.open(SuccessDialogComponent, {
               width: '450px',
               height: '300x',
-              data: { 'message': 'Course Sent For Review', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important' },
+              data: { 'message': 'Course Sent For Review', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
             })
             // this.router.navigate(['author', 'cbp'])
           }
@@ -1345,7 +1340,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               this.dialog.open(SuccessDialogComponent, {
                 width: '450px',
                 height: '300x',
-                data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important' },
+                data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important', 'id': this.contentService.parentContent },
               })
               if (!this.isMoveCourseToDraft) {
                 this.router.navigate(['author', 'cbp'])
@@ -1418,7 +1413,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             this.dialog.open(SuccessDialogComponent, {
               width: '450px',
               height: '300x',
-              data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important' },
+              data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important', 'id': this.contentService.parentContent },
             })
             if (!this.isMoveCourseToDraft) {
               this.router.navigate(['author', 'cbp'])
@@ -1515,7 +1510,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
         //if (result.params.status === 'successful') {
         this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
-          /* tslint:disable-next-line */
+          // tslint:disable-next-line:no-console
           console.log(data)
           this.contentService.resetOriginalMetaWithHierarchy(data)
           this.initService.publishData(data)
@@ -1588,7 +1583,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.dialog.open(SuccessDialogComponent, {
             width: '450px',
             height: '300x',
-            data: { 'message': 'Course Accepted and sent to Publisher', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important' },
+            data: { 'message': 'Course Accepted and sent to Publisher', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
           })
           // this.router.navigate(['author', 'cbp'])
           // } else {
@@ -1657,9 +1652,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             })
           }
         })
+        // tslint:disable-next-line:no-console
         console.log(this.resourceDurat)
         if (this.resourceDurat.length > 0) {
           this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
+          // tslint:disable-next-line:no-console
           console.log(this.sumDuration.toString(), this.courseData.duration)
           if (this.sumDuration.toString() !== this.courseData.duration) {
             let requestBody: any
@@ -1673,6 +1670,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               }
             }
             this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.courseData.identifier).subscribe((response: any) => {
+              // tslint:disable-next-line:no-console
               console.log(response)
             })
           }
@@ -1683,7 +1681,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
       }
       //this.isResourceTypeEnabled = true
-      /* tslint:disable-next-line */
+      // tslint:disable-next-line:no-console
       console.log(this.isSaveModuleFormEnable)
       //this.editorStore.resetOriginalMetaWithHierarchy(data)
     })
@@ -1703,12 +1701,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.isSettingsPage = true
       this.editItem = ''
     }, 1000)
-    /* tslint:disable-next-line */
+    // tslint:disable-next-line:no-console
     console.log("this.settingsPage", this.isSettingsPage)
   }
   moduleCreate(name: string, input1: string, input2: string) {
-    /* tslint:disable-next-line */
-
+    // tslint:disable-next-line:no-console
     console.log(input1, input2)
     let obj: any = {}
     if (this.moduleButtonName == 'Create') {
@@ -1753,6 +1750,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.mainCourseDuration = this.courseHours + ':' + this.courseMinutes + ':' + this.courseSeconds
   }
   async resourceLinkSave() {
+    // tslint:disable-next-line:no-console
     console.log(" this.resourceLinkForm", this.resourceLinkForm)
     if (this.resourceLinkForm.status == 'INVALID' && !this.isAssessmentOrQuizEnabled) {
       this.snackBar.openFromComponent(NotificationComponent, {
@@ -1866,11 +1864,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.loader.changeLoad.next(true)
     await this.editorService.updateNewContentV3(requestBody, this.currentContent).subscribe(
       async (info: any) => {
-        /* tslint:disable-next-line */
+        // tslint:disable-next-line:no-console
         console.log('info', info, this.editorStore.parentContent)
         if (info) {
           await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
             this.courseData = data
+            // tslint:disable-next-line:no-console
             console.log("this.courseData", this.courseData)
             if (info) {
               const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
@@ -1929,6 +1928,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           })
         }
       })
+      // tslint:disable-next-line:no-console
       console.log(resourceDurat)
       if (resourceDurat.length > 0) {
         sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
@@ -1936,6 +1936,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     }
     let requestBody: any
+    // tslint:disable-next-line:no-console
     console.log(sumDuration)
     if (sumDuration) {
       requestBody = {
@@ -1948,6 +1949,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }
       }
       this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.editorStore.parentContent).subscribe((response: any) => {
+        // tslint:disable-next-line:no-console
         console.log('duration', response.duration)
         this.setCourseDuration(isNumber(sumDuration) ?
           sumDuration.toString() : sumDuration)
@@ -1955,6 +1957,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   createResourseContent(name: string, type: string) {
+    // tslint:disable-next-line:no-console
     console.log(type)
     this.resourceType = name
     this.independentResourceCount = this.independentResourceCount + 1
@@ -2113,6 +2116,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.isPdfOrAudioOrVedioEnabled = false
       this.isAssessmentOrQuizEnabled = false
       this.editResourceLinks = content.artifactUrl ? content.artifactUrl : ''
+      // tslint:disable-next-line:no-console
       console.log("link content", this.isLinkEnabled, this.editResourceLinks)
       //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType == 'application/pdf') {
@@ -2138,6 +2142,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'video/mp4') {
+      // tslint:disable-next-line:no-console
       console.log("this.uploadFile", content.artifactUrl)
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
@@ -2177,10 +2182,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           }
         })
         if (content.artifactUrl) {
-          console.log("here yes artifact url")
           this.isAddOrEdit = true
         }
-        console.log(content.artifactUrl)
         //this.initService.updateAssessment(content)
         // this.isLinkEnabled = false
         // this.isAssessmentOrQuizEnabled = true
@@ -2313,7 +2316,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
                         this.editorStore.currentContentID = this.content.identifier
                         this.editorStore.setUpdatedMeta(meta, this.content.identifier || data.identifier)
-                        /* tslint:disable-next-line */
+                        // tslint:disable-next-line:no-console
 
                         console.log(meta)
                         requestBody = {
@@ -2321,13 +2324,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                             content: meta
                           }
                         }
-                        console.log(this.content.contentType)
                         this.editorStore.setUpdatedMeta(meta, this.content.identifier)
                         //this.initService.uploadData('thumbnail')
                         if (this.content.contentType === 'Resource' || this.content.contentType === 'Course') {
                           this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
                             (info: any) => {
-                              /* tslint:disable-next-line */
+                              // tslint:disable-next-line:no-console
                               console.log('info', info)
                               if (info) {
                                 this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
@@ -2414,10 +2416,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           if (this.content.contentType === 'Resource') {
             this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
               async (info: any) => {
-                /* tslint:disable-next-line */
+                // tslint:disable-next-line:no-console
                 console.log('info', info)
                 if (info) {
                   let result = await this.update()
+                  // tslint:disable-next-line:no-console
                   console.log(result)
                   this.clearForm()
                   this.editItem = ''
@@ -2425,6 +2428,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               })
           } else {
             let result = await this.update()
+            // tslint:disable-next-line:no-console
             console.log(result)
             this.clearForm()
             this.editItem = ''
@@ -2605,6 +2609,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               })
             }
           })
+          // tslint:disable-next-line:no-console
           console.log(resourceDurat)
           if (resourceDurat.length > 0) {
             sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
@@ -2612,6 +2617,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
         }
         let requestBody: any
+        // tslint:disable-next-line:no-console
         console.log(sumDuration)
         if (sumDuration) {
           requestBody = {
@@ -2624,6 +2630,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             }
           }
           this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.editorStore.parentContent).subscribe((response: any) => {
+            // tslint:disable-next-line:no-console
             console.log('duration', response.duration)
             this.setCourseDuration(isNumber(sumDuration) ?
               sumDuration.toString() : sumDuration)
@@ -2758,14 +2765,17 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               let sumDuration: any
               if (data.children.length > 0) {
                 data.forEach((element: any) => {
+                  // tslint:disable-next-line:no-console
                   console.log(element)
                   resourceDurat.push(parseInt(element.duration))
                 })
+                // tslint:disable-next-line:no-console
                 console.log(resourceDurat)
                 if (resourceDurat.length > 0) {
                   sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
                 }
               }
+              // tslint:disable-next-line:no-console
               console.log(sumDuration)
             })
             Object.keys(this.editorStore.upDatedContent).forEach(id => {
@@ -2831,7 +2841,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         if (event.nodeClicked === false) {
         }
         const content = this.editorStore.getUpdatedMeta(event.identifier)
-        /* tslint:disable-next-line */
+        // tslint:disable-next-line:no-console
         console.log(content)
         if (content.contentType === 'Resource') {
           this.editItem = content.identifier
@@ -2887,7 +2897,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       level: 1,
     }
 
-    console.log(type.type)
     const newData = {
       topicDescription: '',
       topicName: type.type === 'collection' ? 'Add Module' : 'Resource'
@@ -3012,7 +3021,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //this.save()
   }
   copyToClipboard(module: any) {
-    /* tslint:disable-next-line */
+    // tslint:disable-next-line:no-console
     navigator.clipboard.writeText(module).then().catch(e => console.log(e))
   }
 
@@ -3372,7 +3381,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         : fileName.toLowerCase().endsWith('.zip')
           ? 'application/vnd.ekstep.html-archive'
           : 'audio/mpeg'
+    // tslint:disable-next-line:no-console
     console.log(this.currentContent)
+    // tslint:disable-next-line:no-console
     console.log(currentContentData)
     if (
       (currentContentData.status === 'Live' || currentContentData.prevStatus === 'Live')
@@ -3385,6 +3396,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         duration: NOTIFICATION_TIME * 1000,
       })
       this.fileUploadForm.controls.artifactUrl.setValue(currentContentData.artifactUrl)
+      // tslint:disable-next-line:no-console
       console.log("this.fileUploadForm.controls.artifactUrl", this.fileUploadForm.controls.artifactUrl)
       this.mimeType = currentContentData.mimeType
       this.iprChecked()
@@ -3397,8 +3409,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
     }
 
-    /* tslint:disable-next-line */
-
+    // tslint:disable-next-line:no-console
     console.log("this.uploadFileName", this.mimeType)
     if (this.mimeType == 'application/pdf') {
       this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
@@ -3609,7 +3620,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           metadata: this.contentService.upDatedContent[v],
         }
       })
+      // tslint:disable-next-line:no-console
       console.log(this.currentContent)
+      // tslint:disable-next-line:no-console
       console.log(this.contentService.getOriginalMeta(this.currentContent))
       const tempUpdateContent = this.contentService.getOriginalMeta(this.currentContent)
       let requestBody: NSApiRequest.IContentUpdateV2
@@ -3619,6 +3632,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
 
       let currentContent = this.currentContent
+      // tslint:disable-next-line:no-console
       console.log(nodesModified[currentContent])
       requestBody = {
         request: {
@@ -3673,6 +3687,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.canUpdate = false
           // const artifactUrl = v.result && v.result.artifactUrl ? v.result.artifactUrl : ''
           const artifactUrl = v && v.artifactUrl ? v.artifactUrl : ''
+          // tslint:disable-next-line:no-console
           console.log("this.mimeType", this.mimeType)
           if (this.mimeType === 'video/mp4' || this.mimeType === 'application/pdf' || this.mimeType === 'audio/mpeg') {
             this.fileUploadForm.controls.artifactUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
@@ -3729,9 +3744,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         },
         () => {
           this.loaderService.changeLoad.next(false)
+          this.uploadFileName = ''
+          this.file = null
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
-              type: Notify.UPLOAD_FAIL,
+              type: Notify.UPLOAD_FILE_ERROR,
             },
             duration: NOTIFICATION_TIME * 1000,
           })
@@ -4041,6 +4058,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
     dialogRefForPublish.componentInstance.onFormChange.subscribe((result: any) => {
       this.updateSelectedQuiz(result)
+      // tslint:disable-next-line:no-console
       console.log('dialog data', result)
     })
 
@@ -4049,6 +4067,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
 
     dialogRefForPublish.afterClosed().subscribe(result => {
+      // tslint:disable-next-line:no-console
       console.log(result)
     })
   }
