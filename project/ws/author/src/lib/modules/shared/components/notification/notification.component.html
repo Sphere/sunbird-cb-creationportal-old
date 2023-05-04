@@ -292,6 +292,14 @@
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
   <span i18n>Selected Competency is already present. </span>
 </p>
+<p *ngIf="type === notify.SELF_ASSESSMENT_COMPETENCY">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Competencies with level will be removed. </span>
+</p>
+<p *ngIf="type === notify.REMOVE_SELF_ASSESSMENT_COMPETENCY">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Self Assessment will be removed. </span>
+</p>
 
 <p *ngIf="type === notify.UPLOAD_FILE_REMOVED">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>

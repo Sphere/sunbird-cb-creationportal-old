@@ -2703,7 +2703,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         if (tempUpdateContent.category === 'Course') {
           let resourceDurat: any = []
           let sum: any
-          if (this.versionKey.children.length > 0) {
+          if (this.versionKey && this.versionKey.children && this.versionKey.children.length > 0) {
             this.versionKey.children.forEach((element: any) => {
               resourceDurat.push(parseInt(element.duration))
             })

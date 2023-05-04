@@ -12,7 +12,7 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="fixTableHead">
+  <div *ngIf="!disableLevel" class="fixTableHead">
     <h4>Select Proficiencies</h4>
     <!-- <mat-form-field appearance="fill"> -->
     <section *ngFor="let list of levelList;let i=index">
@@ -42,7 +42,7 @@
         Cancel
       </button>
       <button class="" style="margin-left: 10px;" (click)="addCompetency(proficiency, selectLevel, true)"
-        mat-raised-button [disabled]="!(proficiency?.id && hasOneChecked)">
+        mat-raised-button [disabled]="!(proficiency?.id && (hasOneChecked||disableLevel))">
         Ok
       </button>
     </div>
