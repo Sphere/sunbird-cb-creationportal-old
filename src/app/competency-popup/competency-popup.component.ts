@@ -73,10 +73,11 @@ export class CompetencyPopupComponent implements OnInit {
     })
     const url = this.router.url
     const id = url.split('/')
-    this.editorService.checkReadAPI(id[3])
-      .subscribe(async (res: any) => {
-        this.parentData = await res.result.content
-      })
+    console.log("id: " + id)
+    this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
+      this.parentData = res
+    })
+
   }
   eventSelection(event: any) {
     this.proficiency = event
@@ -105,10 +106,12 @@ export class CompetencyPopupComponent implements OnInit {
       let competencyID
       let arr1: string[] = []
       let arr2: { competencyName: any; competencyId: any; level: any }[] = []
-      let arr3: { competencyName: any; competencyId: any }[] = []
-
+      // let arr3: { competencyName: any; competencyId: any }[] = []
+      var filteredComps: { competencyName: any; competencyId: any; level: any }[] = []
+      var filteredComp: { competencyName: any; competencyId: any }[] = []
       let competencies_obj
-      if (this.parentData.competencySearch === undefined) {
+      if (this.parentData.competencies_v1 === undefined) {
+        debugger
         if (level.length > 0) {
           level.forEach((item: any) => {
             competencyID = proficiency.id + '-' + item.value
@@ -118,7 +121,7 @@ export class CompetencyPopupComponent implements OnInit {
               competencyId: proficiency.id,
               level: item.value
             }
-            arr2.push(competencies_obj)
+            filteredComps.push(competencies_obj)
           })
         } else {
           competencyID = proficiency.id
@@ -127,15 +130,20 @@ export class CompetencyPopupComponent implements OnInit {
             competencyName: proficiency.name,
             competencyId: proficiency.id,
           }
-          arr3.push(competencies_obj)
+          filteredComp.push(competencies_obj)
+
+          // arr3.push(competencies_obj)
 
         }
 
       } else {
+        debugger
         arr2 = this.parentData.competencies_v1 ? JSON.parse(this.parentData.competencies_v1) : []
-        var filteredComps: any = arr2.filter((com: any) => (com['level'] > 0))
-        arr3 = this.parentData.competencies_v1 ? JSON.parse(this.parentData.competencies_v1) : []
-        arr1 = this.parentData.competencySearch
+        filteredComps = arr2.filter((com: any) => (com['level'] > 0))
+        // arr3 = this.parentData.competencies_v1 ? JSON.parse(this.parentData.competencies_v1) : []
+        if (this.parentData.competencySearch) {
+          arr1 = this.parentData.competencySearch
+        }
         if (level.length > 0) {
           level.forEach((item: any) => {
             let duplicateCompetency = arr2.filter((com: any) => (com['competencyId'] === proficiency.id && com['level'] === item.value))
@@ -170,10 +178,10 @@ export class CompetencyPopupComponent implements OnInit {
               duration: NOTIFICATION_TIME * 1000,
             })
           }
-          var filteredComp: any = arr2.filter((com: any) => (!com['level']))
+          filteredComp = arr2.filter((com: any) => (!com['level']))
 
           competencyID = proficiency.id
-          arr1.push(competencyID)
+          // arr1.push(competencyID)
           competencies_obj = {
             competencyName: proficiency.name,
             competencyId: proficiency.id,
@@ -188,6 +196,7 @@ export class CompetencyPopupComponent implements OnInit {
       if (!this.disableLevel) {
         meta = {
           versionKey: this.parentData.versionKey,
+          selfAssessment: false,
           competencySearch: arr1,
           competency: false,
           competencies_v1: filteredComps
@@ -195,6 +204,7 @@ export class CompetencyPopupComponent implements OnInit {
       } else {
         meta = {
           versionKey: this.parentData.versionKey,
+          selfAssessment: true,
           competency: true,
           competencies_v1: filteredComp
         }
