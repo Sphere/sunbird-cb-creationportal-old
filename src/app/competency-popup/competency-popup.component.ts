@@ -132,9 +132,9 @@ export class CompetencyPopupComponent implements OnInit {
         }
 
       } else {
-        arr2 = JSON.parse(this.parentData.competencies_v1)
+        arr2 = this.parentData.competencies_v1 ? JSON.parse(this.parentData.competencies_v1) : []
         var filteredComps: any = arr2.filter((com: any) => (com['level'] > 0))
-        arr3 = JSON.parse(this.parentData.competencies_v1)
+        arr3 = this.parentData.competencies_v1 ? JSON.parse(this.parentData.competencies_v1) : []
         arr1 = this.parentData.competencySearch
         if (level.length > 0) {
           level.forEach((item: any) => {
