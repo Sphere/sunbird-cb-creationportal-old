@@ -800,8 +800,7 @@
                 <p style="float: left">{{ comp.competencyName }}</p>
                 <mat-icon style="color: #1c5d95; cursor: pointer; float: right" class="icons-list"
                   (click)="deleteCompetancy(comp)">delete</mat-icon>
-                <p *ngIf="!selectedSelfCompetency" style="color: #1c5d95; clear: left">Level {{ comp.level }}</p>
-                <p *ngIf="selectedSelfCompetency" style="color: #1c5d95; clear: left"></p>
+                <p *ngIf="comp.level" style="color: #1c5d95; clear: left">Level {{ comp.level }}</p>
               </div>
             </div>
           </div>
