@@ -801,6 +801,7 @@
                 <mat-icon style="color: #1c5d95; cursor: pointer; float: right" class="icons-list"
                   (click)="deleteCompetancy(comp)">delete</mat-icon>
                 <p *ngIf="comp.level" style="color: #1c5d95; clear: left">Level {{ comp.level }}</p>
+                <p *ngIf="!comp.level" style="color: #1c5d95; clear: left"></p>
               </div>
             </div>
           </div>
