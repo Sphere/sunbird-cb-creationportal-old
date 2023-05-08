@@ -205,6 +205,7 @@ export class CompetencyPopupComponent implements OnInit {
         meta = {
           versionKey: this.parentData.versionKey,
           selfAssessment: true,
+          competencySearch: "",
           competency: true,
           competencies_v1: filteredComp
         }
