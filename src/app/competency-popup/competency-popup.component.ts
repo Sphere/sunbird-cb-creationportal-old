@@ -111,7 +111,6 @@ export class CompetencyPopupComponent implements OnInit {
       var filteredComp: { competencyName: any; competencyId: any }[] = []
       let competencies_obj
       if (this.parentData.competencies_v1 === undefined) {
-        debugger
         if (level.length > 0) {
           level.forEach((item: any) => {
             competencyID = proficiency.id + '-' + item.value
@@ -137,7 +136,6 @@ export class CompetencyPopupComponent implements OnInit {
         }
 
       } else {
-        debugger
         arr2 = this.parentData.competencies_v1 ? JSON.parse(this.parentData.competencies_v1) : []
         filteredComps = arr2.filter((com: any) => (com['level'] > 0))
         // arr3 = this.parentData.competencies_v1 ? JSON.parse(this.parentData.competencies_v1) : []

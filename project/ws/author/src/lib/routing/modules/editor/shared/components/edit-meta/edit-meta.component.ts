@@ -450,8 +450,9 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             } else {
 
               arr2 = JSON.parse(data.competencies_v1)
-
-              arr1 = data.competencySearch
+              if (data.competencySearch) {
+                arr1 = data.competencySearch
+              }
               if (competency.level) {
                 competencyID = competency.competencyId + '-' + competency.level.toString()
               } else {
