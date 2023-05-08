@@ -4111,14 +4111,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   /*course details functionality start*/
   async saveCourseDetails() {
-    if (this.timeToSeconds() == 0) {
-      this.snackBar.openFromComponent(NotificationComponent, {
-        data: {
-          type: Notify.DURATION_CANT_BE_0,
-        },
-        duration: NOTIFICATION_TIME * 1000,
-      })
-    } else if (this.moduleName.trim() === '') {
+    // if (this.timeToSeconds() == 0) {
+    //   this.snackBar.openFromComponent(NotificationComponent, {
+    //     data: {
+    //       type: Notify.DURATION_CANT_BE_0,
+    //     },
+    //     duration: NOTIFICATION_TIME * 1000,
+    //   })
+    // } else
+    if (this.moduleName.trim() === '') {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_COURSE_NAME,
