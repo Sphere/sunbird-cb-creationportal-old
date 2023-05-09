@@ -110,7 +110,7 @@ export class CompetencyPopupComponent implements OnInit {
       var filteredComps: { competencyName: any; competencyId: any; level: any }[] = []
       var filteredComp: { competencyName: any; competencyId: any }[] = []
       let competencies_obj
-      if (this.parentData.competencies_v1 === undefined) {
+      if (this.parentData.competencies_v1 && this.parentData.competencies_v1 === undefined) {
         if (level.length > 0) {
           level.forEach((item: any) => {
             competencyID = proficiency.id + '-' + item.value
@@ -125,6 +125,7 @@ export class CompetencyPopupComponent implements OnInit {
         } else {
           competencyID = proficiency.id
           arr1.push(competencyID)
+          filteredComp = []
           competencies_obj = {
             competencyName: proficiency.name,
             competencyId: proficiency.id,
@@ -137,7 +138,9 @@ export class CompetencyPopupComponent implements OnInit {
 
       } else {
         arr2 = this.parentData.competencies_v1 ? JSON.parse(this.parentData.competencies_v1) : []
-        filteredComps = arr2.filter((com: any) => (com['level'] > 0))
+        if (arr2.length > 0) {
+          filteredComps = arr2.filter((com: any) => (com['level'] > 0))
+        }
         // arr3 = this.parentData.competencies_v1 ? JSON.parse(this.parentData.competencies_v1) : []
         if (this.parentData.competencySearch) {
           arr1 = this.parentData.competencySearch
@@ -166,6 +169,7 @@ export class CompetencyPopupComponent implements OnInit {
             filteredComps.push(competencies_obj)
           })
         } else {
+          console.log("arr2", arr2)
           let duplicateCompetency = arr2.filter((com: any) => (com['competencyId'] === proficiency.id))
           if (duplicateCompetency.length > 0) {
             isDuplicate = true
@@ -176,7 +180,7 @@ export class CompetencyPopupComponent implements OnInit {
               duration: NOTIFICATION_TIME * 1000,
             })
           }
-          filteredComp = arr2.filter((com: any) => (!com['level']))
+          filteredComp = []
 
           competencyID = proficiency.id
           // arr1.push(competencyID)

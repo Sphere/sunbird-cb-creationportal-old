@@ -195,6 +195,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   uploadText!: string
   uploadFileName: string = '';
   uploadIcon!: string
+  isSelfAssessment: boolean = false
   questionType: IQuizQuestionType['fillInTheBlanks'] |
     IQuizQuestionType['matchTheFollowing'] |
     IQuizQuestionType['multipleChoiceQuestionSingleCorrectAnswer'] |
@@ -1626,6 +1627,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       if (this.courseData && this.courseData.children.length >= 2) {
         this.showSettingsPage = true
       }
+      if (this.courseData && this.courseData.competency == true) {
+        this.isSelfAssessment = true
+      } else {
+        this.isSelfAssessment = false
+      }
       this.moduleName = data.name
       this.topicDescription = data.description
       this.thumbnail = data.thumbnail
@@ -1891,6 +1897,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                     this.showSettingsPage = true
                   } else {
                     this.showSettingsPage = false
+                  }
+                  if (this.courseData && this.courseData.competency == true) {
+                    this.isSelfAssessment = true
+                  } else {
+                    this.isSelfAssessment = false
                   }
                   this.loader.changeLoad.next(false)
                   this.snackBar.openFromComponent(NotificationComponent, {
@@ -2641,6 +2652,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.showSettingsPage = true
         } else {
           this.showSettingsPage = false
+        }
+        if (this.courseData && this.courseData.competency == true) {
+          this.isSelfAssessment = true
+        } else {
+          this.isSelfAssessment = false
         }
         this.loaderService.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
@@ -3885,6 +3901,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   this.courseData = data
                   this.updateCouseDuration(data)
                   this.showAddModuleForm = false
+                  if (this.courseData && this.courseData.competency == true) {
+                    this.isSelfAssessment = true
+                  } else {
+                    this.isSelfAssessment = false
+                  }
                   if (this.courseData && this.courseData.children.length >= 2) {
                     this.showSettingsPage = true
                   } else {

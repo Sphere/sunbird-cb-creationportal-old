@@ -373,10 +373,10 @@
           <div>
             <span class="course-title">Select Resourse Type</span>
           </div>
-          <div *ngIf="!courseData.selfAssessment" class="margin-top-m margin-bottom-s">
+          <div *ngIf="!isSelfAssessment" class="margin-top-m margin-bottom-s">
             <span>Deliver Learning Content:</span>
           </div>
-          <div *ngIf="!courseData.selfAssessment" style="display:flex;">
+          <div *ngIf="!isSelfAssessment" style="display:flex;">
             <div *ngFor="let list of contentList">
               <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
                 <div class="list-boxes">
