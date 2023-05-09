@@ -196,6 +196,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   uploadFileName: string = '';
   uploadIcon!: string
   isSelfAssessment: boolean = false
+  hideResource: boolean = false
   questionType: IQuizQuestionType['fillInTheBlanks'] |
     IQuizQuestionType['matchTheFollowing'] |
     IQuizQuestionType['multipleChoiceQuestionSingleCorrectAnswer'] |
@@ -1616,6 +1617,27 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
     }
   }
+  getChildrenCount(): any {
+    let count = 0
+    for (const element of this.courseData.children) {
+      // console.log('element', element)
+      if (element.contentType !== 'CourseUnit' && (element.mimeType === 'application/quiz' || element.mimeType === 'application/json')) {
+        count += 1
+      }
+      if (element.children) {
+        for (const elem of element.children) {
+          if (elem.contentType !== 'CourseUnit' && (elem.mimeType === 'application/quiz' || elem.mimeType === 'application/json')) {
+            count += 1
+          }
+        }
+      }
+    }
+    if (this.courseData && this.courseData.competency == true && count >= 5) {
+      this.hideResource = true
+    } else {
+      this.hideResource = false
+    }
+  }
   ngAfterViewInit() {
     this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
       this.courseData = await data
@@ -1627,6 +1649,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       if (this.courseData && this.courseData.children.length >= 2) {
         this.showSettingsPage = true
       }
+
       if (this.courseData && this.courseData.competency == true) {
         this.isSelfAssessment = true
       } else {
@@ -1898,6 +1921,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   } else {
                     this.showSettingsPage = false
                   }
+                  this.getChildrenCount()
                   if (this.courseData && this.courseData.competency == true) {
                     this.isSelfAssessment = true
                   } else {
@@ -2653,6 +2677,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         } else {
           this.showSettingsPage = false
         }
+        this.getChildrenCount()
         if (this.courseData && this.courseData.competency == true) {
           this.isSelfAssessment = true
         } else {
@@ -2981,6 +3006,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
             this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
               this.courseData = data
+              this.getChildrenCount()
             })
           })
         })
@@ -3016,6 +3042,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
             this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
               this.courseData = data
+              this.getChildrenCount()
               this.editorStore.setOriginalMeta(data)
             })
           })
@@ -3906,6 +3933,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   } else {
                     this.isSelfAssessment = false
                   }
+                  this.getChildrenCount()
                   if (this.courseData && this.courseData.children.length >= 2) {
                     this.showSettingsPage = true
                   } else {

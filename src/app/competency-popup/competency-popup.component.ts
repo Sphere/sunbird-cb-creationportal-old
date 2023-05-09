@@ -53,6 +53,7 @@ export class CompetencyPopupComponent implements OnInit {
   hasOneChecked: boolean = false
   selectedSelfAssessment: any
   disableLevel: boolean = false
+  searchComp: any = ''
   constructor(
     private loader: LoaderService,
     private snackBar: MatSnackBar,
@@ -70,6 +71,7 @@ export class CompetencyPopupComponent implements OnInit {
     }
     this.editorService.getAllEntities().subscribe(async (res: any) => {
       this.proficiencyList = await res.result.response
+      this.searchComp = this.proficiencyList
     })
     const url = this.router.url
     const id = url.split('/')
@@ -220,7 +222,6 @@ export class CompetencyPopupComponent implements OnInit {
           content: meta
         }
       }
-      console.log("requestBody", requestBody)
       if (!isDuplicate) {
         this.loader.changeLoad.next(true)
         this.editorService.updateNewContentV3(requestBody, this.parentData.identifier).subscribe(
@@ -234,5 +235,20 @@ export class CompetencyPopupComponent implements OnInit {
     } else {
       this.dialogRef.close(onclose)
     }
+  }
+
+
+  onKey(value: string) {
+    this.proficiencyList = this.search(value)
+  }
+
+  search(value: string) {
+    let filter = value.toLowerCase()
+    if (!filter) {
+      return this.searchComp
+    }
+    return this.proficiencyList = this.searchComp.filter((option: any) =>
+      option.name.toLowerCase().includes(filter)
+    )
   }
 }
