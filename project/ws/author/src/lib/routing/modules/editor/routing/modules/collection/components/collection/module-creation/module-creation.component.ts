@@ -196,6 +196,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   uploadFileName: string = '';
   uploadIcon!: string
   isSelfAssessment: boolean = false
+  hideModule: boolean = false
   hideResource: boolean = false
   questionType: IQuizQuestionType['fillInTheBlanks'] |
     IQuizQuestionType['matchTheFollowing'] |
@@ -365,7 +366,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.routerSubscription = this.activateRoute.parent.parent.data.subscribe(data => {
 
         this.courseName = data.contents[0].content.name
-
+        this.courseData = data.contents[0].content
+        this.getChildrenCount()
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
         data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
           this.storeService.parentNode.push(v.content.identifier)
@@ -1631,6 +1633,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           }
         }
       }
+    }
+    if (this.courseData && this.courseData.competency == true) {
+      this.hideModule = true
+    } else {
+      this.hideModule = false
     }
     if (this.courseData && this.courseData.competency == true && count >= 5) {
       this.hideResource = true
