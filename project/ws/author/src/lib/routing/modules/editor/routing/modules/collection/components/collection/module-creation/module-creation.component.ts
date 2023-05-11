@@ -367,7 +367,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
         this.courseName = data.contents[0].content.name
         this.courseData = data.contents[0].content
-        this.getChildrenCount()
+
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.courseData = data
+          console.log("data", data)
+          this.getChildrenCount()
+        })
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
         data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
           this.storeService.parentNode.push(v.content.identifier)

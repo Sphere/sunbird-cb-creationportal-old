@@ -623,7 +623,11 @@ ul li {
 ::ng-deep .theme-igot.day-mode .ws-mat-primary-background {
   background-color: #1c5d95 ;
 }
+::ng-deep .theme-igot.day-mode .ws-mat-primary-background[disabled]{
+  background-color: #d3d3d3 !important;
+  color: #999 !important;
 
+}
 ::ng-deep .mat-form-field-flex {
     background-color: white !important;
 }

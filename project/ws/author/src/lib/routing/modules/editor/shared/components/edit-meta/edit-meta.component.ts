@@ -102,6 +102,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   fetchTagsStatus: 'done' | 'fetching' | null = null
   readonly separatorKeysCodes: number[] = [ENTER, COMMA]
   selectedIndex = 0
+  selfAssessmentSelected!: boolean
   hours = 0
   minutes = 1
   seconds = 0
@@ -364,7 +365,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       const url = this.router.url
       const id = url.split('/')
       this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
-        if (this.contentForm.controls.selfAssessment.value) {
+        if (res.selfAssessment && res.selfAssessment.value) {
           this.selectedSelfCompetency = true
         }
         this.contentMeta = res
@@ -695,7 +696,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     const id = url.split('/')
     this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
       // tslint:disable-next-line:no-console
-      console.log(res.name)
+      console.log(res)
       this.contentMeta = res
       this.contentMeta = res
       this.contentForm.controls.name.setValue(res.name)
@@ -708,11 +709,13 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.contentForm.controls.gatingEnabled.setValue(res.gatingEnabled)
       this.contentForm.controls.courseVisibility.setValue(res.courseVisibility)
       this.contentForm.controls.selfAssessment.setValue(res.selfAssessment)
-      // if (this.contentForm.controls.selfAssessment.value) {
-      //   this.selectedSelfCompetency = true
-      // }
+      if (this.contentForm.controls.selfAssessment.value) {
+        this.selectedSelfCompetency = true
+      }
       if (res.competencies_v1) {
         this.competencies = JSON.parse(res.competencies_v1)
+      } else {
+        this.competencies = []
       }
       if (res.children.length > 0) {
         this.loader.changeLoad.next(true)
