@@ -495,7 +495,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   checkMandatoryFields() {
     //let totalDuration = 0, subTitles, sourceName, instructions, appIcon, lang
-    let subTitles, sourceName, instructions, appIcon, lang, competency
+    let subTitles, sourceName, instructions, appIcon, lang, competency, selfAssessment
     //totalDuration += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
     //totalDuration += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
     //totalDuration += this.hours ? this.hours * 60 * 60 : 0
@@ -505,10 +505,21 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     appIcon = this.contentForm.controls.appIcon.value
     lang = this.contentForm.controls.lang.value
     competency = this.competencies
+    selfAssessment = this.selectedSelfCompetency
+
+    console.log("competencies", selfAssessment, competency)
     // console.log("total: ", totalDuration, subTitles, sourceName, instructions, appIcon)
     //if (totalDuration && subTitles && sourceName && instructions && appIcon && lang) {
-    if (subTitles && sourceName && instructions && appIcon && lang && (competency && competency.length > 0)) {
-      return false
+    if (subTitles && sourceName && instructions && appIcon && lang) {
+      if (selfAssessment) {
+        if (competency && competency.length > 0) {
+          return false
+        } else {
+          return true
+        }
+      } else {
+        return false
+      }
     } else {
       return true
     }
@@ -532,12 +543,33 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   onFocusOutName() {
     this.fieldActive = false
   }
-
+  // clickedNext() {
+  //   if (this.contentForm.status == 'VALID') {
+  //     this.isFormValid = true
+  //     this.authInitService.saveData('saved')
+  //     this.clickedBtnNext = true
+  //   } else {
+  //     this.isFormValid = false
+  //   }
+  // }
   clickedNext() {
+    let competency, selfAssessment
+    competency = this.competencies
+    selfAssessment = this.selectedSelfCompetency
     if (this.contentForm.status == 'VALID') {
-      this.isFormValid = true
-      this.authInitService.saveData('saved')
-      this.clickedBtnNext = true
+      if (selfAssessment) {
+        if (competency && competency.length > 0) {
+          this.isFormValid = true
+          this.authInitService.saveData('saved')
+          this.clickedBtnNext = true
+        } else {
+          this.isFormValid = false
+        }
+      } else {
+        this.isFormValid = true
+        this.authInitService.saveData('saved')
+        this.clickedBtnNext = true
+      }
     } else {
       this.isFormValid = false
     }
