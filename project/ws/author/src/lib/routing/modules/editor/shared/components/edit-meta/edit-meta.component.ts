@@ -507,7 +507,6 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     competency = this.competencies
     selfAssessment = this.selectedSelfCompetency
 
-    console.log("competencies", selfAssessment, competency)
     // console.log("total: ", totalDuration, subTitles, sourceName, instructions, appIcon)
     //if (totalDuration && subTitles && sourceName && instructions && appIcon && lang) {
     if (subTitles && sourceName && instructions && appIcon && lang) {
