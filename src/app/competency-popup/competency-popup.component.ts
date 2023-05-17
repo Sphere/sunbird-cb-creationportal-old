@@ -1,8 +1,9 @@
 import {
-  Component, OnInit,
+  Component, OnInit, Inject
 } from '@angular/core'
 import {
   MatDialogRef,
+  MAT_DIALOG_DATA
 } from '@angular/material/dialog'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { Router } from '@angular/router'
@@ -50,26 +51,35 @@ export class CompetencyPopupComponent implements OnInit {
     }
   ]
   hasOneChecked: boolean = false
+  selectedSelfAssessment: any
+  disableLevel: boolean = false
+  searchComp: any = ''
   constructor(
     private loader: LoaderService,
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<CompetencyPopupComponent>,
     private editorService: EditorService,
-    private router: Router
+    private router: Router,
+    @Inject(MAT_DIALOG_DATA) data: any,
   ) {
-
+    this.selectedSelfAssessment = data
   }
 
   ngOnInit() {
+    if (this.selectedSelfAssessment == true) {
+      this.disableLevel = true
+    }
     this.editorService.getAllEntities().subscribe(async (res: any) => {
       this.proficiencyList = await res.result.response
+      this.searchComp = this.proficiencyList
     })
     const url = this.router.url
     const id = url.split('/')
-    this.editorService.checkReadAPI(id[3])
-      .subscribe(async (res: any) => {
-        this.parentData = await res.result.content
-      })
+    console.log("id: " + id)
+    this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
+      this.parentData = res
+    })
+
   }
   eventSelection(event: any) {
     this.proficiency = event
@@ -89,29 +99,80 @@ export class CompetencyPopupComponent implements OnInit {
 
   }
   addCompetency(proficiency: any, selectLevel: any, onclose: boolean) {
-    let level = selectLevel.filter((level: any) => level['selected'] === true)
+    let level = []
+    if (!this.disableLevel) {
+      level = selectLevel.filter((level: any) => level['selected'] === true)
+    }
     let isDuplicate = false
-    if (onclose && level.length > 0) {
+    if (onclose) {
       let competencyID
       let arr1: string[] = []
       let arr2: { competencyName: any; competencyId: any; level: any }[] = []
+      // let arr3: { competencyName: any; competencyId: any }[] = []
+      var filteredComps: { competencyName: any; competencyId: any; level: any }[] = []
+      var filteredComp: { competencyName: any; competencyId: any }[] = []
       let competencies_obj
-      if (this.parentData.competencySearch === undefined) {
-        level.forEach((item: any) => {
-          competencyID = proficiency.id + '-' + item.value
+      if (this.parentData.competencies_v1 && this.parentData.competencies_v1 === undefined) {
+        if (level.length > 0) {
+          level.forEach((item: any) => {
+            competencyID = proficiency.id + '-' + item.value
+            arr1.push(competencyID)
+            competencies_obj = {
+              competencyName: proficiency.name,
+              competencyId: proficiency.id,
+              level: item.value
+            }
+            filteredComps.push(competencies_obj)
+          })
+        } else {
+          competencyID = proficiency.id
           arr1.push(competencyID)
+          filteredComp = []
           competencies_obj = {
             competencyName: proficiency.name,
             competencyId: proficiency.id,
-            level: item.value
           }
-          arr2.push(competencies_obj)
-        })
+          filteredComp.push(competencies_obj)
+
+          // arr3.push(competencies_obj)
+
+        }
+
       } else {
-        arr2 = JSON.parse(this.parentData.competencies_v1)
-        arr1 = this.parentData.competencySearch
-        level.forEach((item: any) => {
-          let duplicateCompetency = arr2.filter((com: any) => (com['competencyId'] === proficiency.id && com['level'] === item.value))
+        arr2 = this.parentData.competencies_v1 ? JSON.parse(this.parentData.competencies_v1) : []
+        if (arr2.length > 0) {
+          filteredComps = arr2.filter((com: any) => (com['level'] > 0))
+        }
+        // arr3 = this.parentData.competencies_v1 ? JSON.parse(this.parentData.competencies_v1) : []
+        if (this.parentData.competencySearch) {
+          arr1 = this.parentData.competencySearch
+        }
+        if (level.length > 0) {
+          level.forEach((item: any) => {
+            let duplicateCompetency = arr2.filter((com: any) => (com['competencyId'] === proficiency.id && com['level'] === item.value))
+            if (duplicateCompetency.length > 0) {
+              isDuplicate = true
+              this.snackBar.openFromComponent(NotificationComponent, {
+                data: {
+                  type: Notify.INVALID_COMPETENCY,
+                },
+                duration: NOTIFICATION_TIME * 1000,
+              })
+            }
+
+
+            competencyID = proficiency.id + '-' + item.value
+            arr1.push(competencyID)
+            competencies_obj = {
+              competencyName: proficiency.name,
+              competencyId: proficiency.id,
+              level: item.value
+            }
+            filteredComps.push(competencies_obj)
+          })
+        } else {
+          console.log("arr2", arr2)
+          let duplicateCompetency = arr2.filter((com: any) => (com['competencyId'] === proficiency.id))
           if (duplicateCompetency.length > 0) {
             isDuplicate = true
             this.snackBar.openFromComponent(NotificationComponent, {
@@ -120,27 +181,41 @@ export class CompetencyPopupComponent implements OnInit {
               },
               duration: NOTIFICATION_TIME * 1000,
             })
-          } else {
-            competencyID = proficiency.id + '-' + item.value
-            arr1.push(competencyID)
-            competencies_obj = {
-              competencyName: proficiency.name,
-              competencyId: proficiency.id,
-              level: item.value
-            }
-            arr2.push(competencies_obj)
           }
+          filteredComp = []
 
-        })
+          competencyID = proficiency.id
+          // arr1.push(competencyID)
+          competencies_obj = {
+            competencyName: proficiency.name,
+            competencyId: proficiency.id,
+          }
+          filteredComp.push(competencies_obj)
+        }
+
       }
 
       let requestBody: any
-      let meta: any = {
-        versionKey: this.parentData.versionKey,
-        competencySearch: arr1,
-        competency: false,
-        competencies_v1: arr2
+      let meta: any
+      if (!this.disableLevel) {
+        meta = {
+          versionKey: this.parentData.versionKey,
+          selfAssessment: false,
+          competencySearch: arr1,
+          competency: false,
+          competencies_v1: filteredComps
+        }
+      } else {
+        meta = {
+          versionKey: this.parentData.versionKey,
+          selfAssessment: true,
+          competencySearch: "",
+          competency: true,
+          competencies_v1: filteredComp
+        }
       }
+
+
 
       requestBody = {
         request: {
@@ -160,5 +235,20 @@ export class CompetencyPopupComponent implements OnInit {
     } else {
       this.dialogRef.close(onclose)
     }
+  }
+
+
+  onKey(value: string) {
+    this.proficiencyList = this.search(value)
+  }
+
+  search(value: string) {
+    let filter = value.toLowerCase()
+    if (!filter) {
+      return this.searchComp
+    }
+    return this.proficiencyList = this.searchComp.filter((option: any) =>
+      option.name.toLowerCase().includes(filter)
+    )
   }
 }

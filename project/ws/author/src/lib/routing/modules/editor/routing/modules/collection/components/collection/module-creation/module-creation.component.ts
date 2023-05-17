@@ -195,6 +195,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   uploadText!: string
   uploadFileName: string = '';
   uploadIcon!: string
+  isSelfAssessment: boolean = false
+  hideModule: boolean = false
+  hideResource: boolean = false
   questionType: IQuizQuestionType['fillInTheBlanks'] |
     IQuizQuestionType['matchTheFollowing'] |
     IQuizQuestionType['multipleChoiceQuestionSingleCorrectAnswer'] |
@@ -363,7 +366,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.routerSubscription = this.activateRoute.parent.parent.data.subscribe(data => {
 
         this.courseName = data.contents[0].content.name
+        this.courseData = data.contents[0].content
 
+        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.courseData = data
+          console.log("data", data)
+          this.getChildrenCount()
+        })
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
         data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
           this.storeService.parentNode.push(v.content.identifier)
@@ -1615,6 +1624,32 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
     }
   }
+  getChildrenCount(): any {
+    let count = 0
+    for (const element of this.courseData.children) {
+      // console.log('element', element)
+      if (element.contentType !== 'CourseUnit' && (element.mimeType === 'application/quiz' || element.mimeType === 'application/json')) {
+        count += 1
+      }
+      if (element.children) {
+        for (const elem of element.children) {
+          if (elem.contentType !== 'CourseUnit' && (elem.mimeType === 'application/quiz' || elem.mimeType === 'application/json')) {
+            count += 1
+          }
+        }
+      }
+    }
+    if (this.courseData && this.courseData.competency == true) {
+      this.hideModule = true
+    } else {
+      this.hideModule = false
+    }
+    if (this.courseData && this.courseData.competency == true && count >= 5) {
+      this.hideResource = true
+    } else {
+      this.hideResource = false
+    }
+  }
   ngAfterViewInit() {
     this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
       this.courseData = await data
@@ -1625,6 +1660,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.showAddModuleForm = true
       if (this.courseData && this.courseData.children.length >= 2) {
         this.showSettingsPage = true
+      }
+
+      if (this.courseData && this.courseData.competency == true) {
+        this.isSelfAssessment = true
+      } else {
+        this.isSelfAssessment = false
       }
       this.moduleName = data.name
       this.topicDescription = data.description
@@ -1891,6 +1932,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                     this.showSettingsPage = true
                   } else {
                     this.showSettingsPage = false
+                  }
+                  this.getChildrenCount()
+                  if (this.courseData && this.courseData.competency == true) {
+                    this.isSelfAssessment = true
+                  } else {
+                    this.isSelfAssessment = false
                   }
                   this.loader.changeLoad.next(false)
                   this.snackBar.openFromComponent(NotificationComponent, {
@@ -2642,6 +2689,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         } else {
           this.showSettingsPage = false
         }
+        this.getChildrenCount()
+        if (this.courseData && this.courseData.competency == true) {
+          this.isSelfAssessment = true
+        } else {
+          this.isSelfAssessment = false
+        }
         this.loaderService.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
@@ -2965,6 +3018,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
             this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
               this.courseData = data
+              this.getChildrenCount()
             })
           })
         })
@@ -3000,6 +3054,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
             this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
               this.courseData = data
+              this.getChildrenCount()
               this.editorStore.setOriginalMeta(data)
             })
           })
@@ -3885,6 +3940,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   this.courseData = data
                   this.updateCouseDuration(data)
                   this.showAddModuleForm = false
+                  if (this.courseData && this.courseData.competency == true) {
+                    this.isSelfAssessment = true
+                  } else {
+                    this.isSelfAssessment = false
+                  }
+                  this.getChildrenCount()
                   if (this.courseData && this.courseData.children.length >= 2) {
                     this.showSettingsPage = true
                   } else {
@@ -4111,14 +4172,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   /*course details functionality start*/
   async saveCourseDetails() {
-    if (this.timeToSeconds() == 0) {
-      this.snackBar.openFromComponent(NotificationComponent, {
-        data: {
-          type: Notify.DURATION_CANT_BE_0,
-        },
-        duration: NOTIFICATION_TIME * 1000,
-      })
-    } else if (this.moduleName.trim() === '') {
+    // if (this.timeToSeconds() == 0) {
+    //   this.snackBar.openFromComponent(NotificationComponent, {
+    //     data: {
+    //       type: Notify.DURATION_CANT_BE_0,
+    //     },
+    //     duration: NOTIFICATION_TIME * 1000,
+    //   })
+    // } else
+    if (this.moduleName.trim() === '') {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_COURSE_NAME,

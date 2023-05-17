@@ -64,7 +64,7 @@
                   content_copy</mat-icon>
               </span>
             </div>
-            <button *ngIf="module.primaryCategory === 'Course Unit'" mat-raised-button
+            <button [disabled]="hideResource" *ngIf="module.primaryCategory === 'Course Unit'" mat-raised-button
               class="button-style secondary-button-outline mat-button-base"
               style="margin:0.4rem;color: #0074b6 !important;"
               (click)="addResModule(module.identifier, courseData.identifier)">Add Resource</button>
@@ -129,9 +129,11 @@
         </div>
         <!--module & resource left footer-->
         <div class="model-button">
-          <button mat-raised-button class=" margin-left-l  ws-mat-primary-background mat-button-base save-btn-bottom"
-            (click)="addModule()"> Add Module</button>
-          <button mat-raised-button class=" margin-left-m  ws-mat-primary-background mat-button-base save-btn-bottom"
+          <button [disabled]="hideModule" mat-raised-button
+            class=" margin-left-l  ws-mat-primary-background mat-button-base save-btn-bottom" (click)="addModule()"> Add
+            Module</button>
+          <button [disabled]="hideResource" mat-raised-button
+            class=" margin-left-m  ws-mat-primary-background mat-button-base save-btn-bottom"
             (click)="addIndependentResource()">Add Resource</button>
         </div>
       </mat-drawer-container>
@@ -164,12 +166,12 @@
             <img src="cbp-assets/images/module-page.png" [alt]="model" style="width: 100%;height:200px;">
           </div>
           <div class="model-right-footer">
-            <button mat-raised-button
+            <button mat-raised-button [disabled]="hideModule"
               class="width-45 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
               (click)="addModule()">
               Module</button>
             <span class="margin-left-l">or</span>
-            <button mat-raised-button
+            <button mat-raised-button [disabled]="hideResource"
               class="margin-left-l width-45 text-white ws-mat-primary-background  mat-button-base save-btn-bottom"
               (click)="addIndependentResource()">
               Resource</button>
@@ -373,10 +375,10 @@
           <div>
             <span class="course-title">Select Resourse Type</span>
           </div>
-          <div class="margin-top-m margin-bottom-s">
+          <div *ngIf="!isSelfAssessment" class="margin-top-m margin-bottom-s">
             <span>Deliver Learning Content:</span>
           </div>
-          <div style="display:flex;">
+          <div *ngIf="!isSelfAssessment" style="display:flex;">
             <div *ngFor="let list of contentList">
               <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
                 <div class="list-boxes">

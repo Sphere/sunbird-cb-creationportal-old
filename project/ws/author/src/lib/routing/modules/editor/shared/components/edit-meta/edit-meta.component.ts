@@ -102,6 +102,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   fetchTagsStatus: 'done' | 'fetching' | null = null
   readonly separatorKeysCodes: number[] = [ENTER, COMMA]
   selectedIndex = 0
+  selfAssessmentSelected!: boolean
   hours = 0
   minutes = 1
   seconds = 0
@@ -115,6 +116,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   public sideNavBarOpened = false
   gatingEnabled!: FormControl
   courseVisibility!: FormControl
+  selfAssessment!: FormControl
   //issueCertification!: FormControl
   bucket: string = ''
   certificateList: any[] = [
@@ -133,7 +135,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   isAddCerticate: boolean = false;
   resourceDurat: any = []
   sumDuration: any
-
+  selectedSelfCompetency: boolean = false
   @ViewChild('creatorContactsView', { static: false }) creatorContactsView!: ElementRef
   @ViewChild('trackContactsView', { static: false }) trackContactsView!: ElementRef
   @ViewChild('publisherDetailsView', { static: false }) publisherDetailsView!: ElementRef
@@ -363,6 +365,9 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       const url = this.router.url
       const id = url.split('/')
       this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
+        if (res.selfAssessment && res.selfAssessment.value) {
+          this.selectedSelfCompetency = true
+        }
         this.contentMeta = res
       })
       this.content = this.contentService.getUpdatedMeta(id[3])
@@ -375,11 +380,30 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     //   switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
     // )
   }
-
+  addSelfCompetency(checked: boolean) {
+    if (checked == true) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.SELF_ASSESSMENT_COMPETENCY,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+      this.selectedSelfCompetency = true
+    } else {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.REMOVE_SELF_ASSESSMENT_COMPETENCY,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+      this.selectedSelfCompetency = false
+    }
+  }
   addCompetency() {
     const dialogRef = this.dialog.open(CompetencyPopupComponent, {
       width: '40%',
       maxHeight: '90vh',
+      data: this.selectedSelfCompetency
     })
     dialogRef.afterClosed().subscribe((response: boolean) => {
       this.loader.changeLoad.next(true)
@@ -427,10 +451,14 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             } else {
 
               arr2 = JSON.parse(data.competencies_v1)
-
-              arr1 = data.competencySearch
-
-              competencyID = competency.competencyId + '-' + competency.level.toString()
+              if (data.competencySearch) {
+                arr1 = data.competencySearch
+              }
+              if (competency.level) {
+                competencyID = competency.competencyId + '-' + competency.level.toString()
+              } else {
+                competencyID = competency.competencyId
+              }
               arr1 = arr1.filter(e => e !== competencyID)
               for (var n = 0; n < arr2.length; n++) {
                 if (arr2[n].competencyName === competency.competencyName && arr2[n].competencyId === competency.competencyId && arr2[n].level === competency.level) {
@@ -668,7 +696,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     const id = url.split('/')
     this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
       // tslint:disable-next-line:no-console
-      console.log(res.name)
+      console.log(res)
       this.contentMeta = res
       this.contentMeta = res
       this.contentForm.controls.name.setValue(res.name)
@@ -680,8 +708,14 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.contentForm.controls.sourceName.setValue(res.sourceName)
       this.contentForm.controls.gatingEnabled.setValue(res.gatingEnabled)
       this.contentForm.controls.courseVisibility.setValue(res.courseVisibility)
+      this.contentForm.controls.selfAssessment.setValue(res.selfAssessment)
+      if (this.contentForm.controls.selfAssessment.value) {
+        this.selectedSelfCompetency = true
+      }
       if (res.competencies_v1) {
         this.competencies = JSON.parse(res.competencies_v1)
+      } else {
+        this.competencies = []
       }
       if (res.children.length > 0) {
         this.loader.changeLoad.next(true)
@@ -1745,6 +1779,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       org: [],
       gatingEnabled: new FormControl(''),
       courseVisibility: new FormControl(false),
+      selfAssessment: new FormControl(false),
       issueCertification: false,
       creatorDetails: [],
       // passPercentage: [],
