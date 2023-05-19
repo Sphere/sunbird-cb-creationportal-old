@@ -135,6 +135,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   isAddCerticate: boolean = false;
   resourceDurat: any = []
   sumDuration: any
+  proficiencyList: any
+  addedCompetency: any
   selectedSelfCompetency: boolean = false
   @ViewChild('creatorContactsView', { static: false }) creatorContactsView!: ElementRef
   @ViewChild('trackContactsView', { static: false }) trackContactsView!: ElementRef
@@ -413,6 +415,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       //if (response === true) {
       this.editorService.readcontentV3(id).subscribe(async (data: any) => {
         if (data.competencies_v1) {
+          this.getAllEntity()
           this.competencies = JSON.parse(data.competencies_v1)
         }
         this.loader.changeLoad.next(false)
@@ -495,7 +498,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   checkMandatoryFields() {
     //let totalDuration = 0, subTitles, sourceName, instructions, appIcon, lang
-    let subTitles, sourceName, instructions, appIcon, lang
+    let subTitles, sourceName, instructions, appIcon, lang, competency, selfAssessment
     //totalDuration += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
     //totalDuration += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
     //totalDuration += this.hours ? this.hours * 60 * 60 : 0
@@ -504,10 +507,21 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     instructions = this.contentForm.controls.instructions.value
     appIcon = this.contentForm.controls.appIcon.value
     lang = this.contentForm.controls.lang.value
+    competency = this.competencies
+    selfAssessment = this.selectedSelfCompetency
+
     // console.log("total: ", totalDuration, subTitles, sourceName, instructions, appIcon)
     //if (totalDuration && subTitles && sourceName && instructions && appIcon && lang) {
     if (subTitles && sourceName && instructions && appIcon && lang) {
-      return false
+      if (selfAssessment) {
+        if (competency && competency.length > 0) {
+          return false
+        } else {
+          return true
+        }
+      } else {
+        return false
+      }
     } else {
       return true
     }
@@ -516,8 +530,10 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     let id = this.parentContent || ''
     this.editorService.readcontentV3(id).subscribe(async (data: any) => {
       if (data.competencies_v1 !== undefined) {
+        this.getAllEntity()
         this.competencies = await JSON.parse(data.competencies_v1)
       } else {
+        this.getAllEntity()
         this.competencies = []
       }
       this.loader.changeLoad.next(false)
@@ -531,12 +547,33 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   onFocusOutName() {
     this.fieldActive = false
   }
-
+  // clickedNext() {
+  //   if (this.contentForm.status == 'VALID') {
+  //     this.isFormValid = true
+  //     this.authInitService.saveData('saved')
+  //     this.clickedBtnNext = true
+  //   } else {
+  //     this.isFormValid = false
+  //   }
+  // }
   clickedNext() {
+    let competency, selfAssessment
+    competency = this.competencies
+    selfAssessment = this.selectedSelfCompetency
     if (this.contentForm.status == 'VALID') {
-      this.isFormValid = true
-      this.authInitService.saveData('saved')
-      this.clickedBtnNext = true
+      if (selfAssessment) {
+        if (competency && competency.length > 0) {
+          this.isFormValid = true
+          this.authInitService.saveData('saved')
+          this.clickedBtnNext = true
+        } else {
+          this.isFormValid = false
+        }
+      } else {
+        this.isFormValid = true
+        this.authInitService.saveData('saved')
+        this.clickedBtnNext = true
+      }
     } else {
       this.isFormValid = false
     }
@@ -713,7 +750,9 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         this.selectedSelfCompetency = true
       }
       if (res.competencies_v1) {
+        this.getAllEntity()
         this.competencies = JSON.parse(res.competencies_v1)
+        console.log("this.competencies", res)
       } else {
         this.competencies = []
       }
@@ -795,6 +834,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification === undefined ? false : this.contentMeta.issueCertification)
 
         if (this.contentMeta.competencies_v1) {
+          // this.getAllEntity()
           this.competencies = JSON.parse(this.contentMeta.competencies_v1)
         }
         if (this.isSubmitPressed) {
@@ -816,7 +856,25 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.contentForm.markAsUntouched()
     }
   }
+  getAllEntity() {
+    this.editorService.getAllEntities().subscribe(async (res: any) => {
+      this.proficiencyList = await res.result.response
+      console.log("this.proficiencyList")
+      const combinedArray = this.competencies.map((element: any) => {
+        const matchingValue = this.proficiencyList.find((value: any) => value.id == element.competencyId)
 
+        const finalComp = {
+          ...element,
+          ...matchingValue.additionalProperties
+        }
+        return finalComp
+      })
+
+      this.addedCompetency = combinedArray
+      // this.code = this.competencies.map((entity: any) => this.proficiencyList.find((e: any) => e.id = entity.competencyId))
+      // console.log("this.proficiencyList", combinedArray)
+    })
+  }
   convertToISODate(date = ''): Date {
     try {
       return new Date(

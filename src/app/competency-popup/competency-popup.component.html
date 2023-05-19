@@ -9,7 +9,7 @@
         (selectionChange)="eventSelection($event.value)">
         <input placeholder="Search Competency" matInput class="module-input" (keyup)="onKey($event.target.value)">
         <mat-option *ngFor="let list of proficiencyList" [value]="list">
-          {{ list.name }}</mat-option>
+          {{ list.additionalProperties?list.additionalProperties.Code:''}} - {{list.name }}</mat-option>
       </mat-select>
     </mat-form-field>
   </div>

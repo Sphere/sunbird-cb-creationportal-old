@@ -340,8 +340,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.sideBarOpened = !isLtMedium
     })
     if (sessionStorage.getItem('isReviewClicked')) {
-      sessionStorage.removeItem('isReviewClicked')
-      this.action('push')
+      // sessionStorage.removeItem('isReviewClicked')
+      this.clickedNext = true
+      this.showAddchapter = true
+
     }
   }
 

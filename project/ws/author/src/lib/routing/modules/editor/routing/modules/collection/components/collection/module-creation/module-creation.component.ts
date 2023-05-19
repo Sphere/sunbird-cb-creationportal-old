@@ -332,8 +332,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     )
     // this.isSettingsPage = false
     this.routerValuesCalls()
-
-
+    if (sessionStorage.getItem('isReviewClicked')) {
+      sessionStorage.removeItem('isReviewClicked')
+      this.isSettingsPage = true
+    }
   }
 
   ngOnDestroy() {
