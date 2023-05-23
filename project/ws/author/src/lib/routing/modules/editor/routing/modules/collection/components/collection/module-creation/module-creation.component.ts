@@ -3005,7 +3005,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         const result = await this.editorService.resourceToModule(request).toPromise()
         // tslint:disable-next-line:no-console
         console.log(result)
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+        await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
           this.courseData = await data
 
           const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
@@ -3031,8 +3031,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             },
           }
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-              this.courseData = data
+            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+              this.courseData = await data
               this.getChildrenCount()
             })
           })
@@ -3041,7 +3041,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       } else {
         //const hierarchyData = this.storeService.getTreeHierarchy()
         //this.courseData = []
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+        await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
 
           this.courseData = await data
 
@@ -3067,9 +3067,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             },
           }
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-              this.courseData = data
+            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+              this.courseData = await data
               this.getChildrenCount()
+              this.loaderService.changeLoad.next(false)
               this.editorStore.setOriginalMeta(data)
             })
           })
@@ -3084,9 +3085,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.currentContent = this.editorService.newCreatedLexid
       // update the id
       this.editorStore.currentContent = newCreatedLexid
-      this.loaderService.changeLoad.next(false)
     }
-    this.loaderService.changeLoad.next(false)
+    // this.loaderService.changeLoad.next(false)
     this.subAction({ type: 'editContent', identifier: this.editorService.newCreatedLexid, nodeClicked: false })
     //this.save()
   }
