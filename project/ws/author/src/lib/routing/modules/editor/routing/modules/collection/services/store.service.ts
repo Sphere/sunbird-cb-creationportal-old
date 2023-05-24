@@ -803,7 +803,7 @@ export class CollectionStoreService {
         if (!courseData.children || courseData.children.length < 2) {
           console.log("lenght check", courseData)
           errorMsg.push(
-            `Minimum 2 children is required. But nothing present`,
+            `Minimum 2 children is required. But ` + courseData.children.length + ` present`,
           )
           this.populateErrorMsg(courseData.identifier, errorMsg, courseData, errorId, errorMap)
           errorMsg = []
@@ -812,7 +812,7 @@ export class CollectionStoreService {
         if ((!courseData.publisherDetails) || (courseData.publisherDetails && courseData.publisherDetails.length === 0 && courseData.parent === undefined && courseData.contentType === 'Course')) {
           errorMsg.push('Publisher details cannot be empty')
         }
-        if ((!courseData.trackContacts) || (courseData.trackContacts && courseData.trackContacts.length === 0 && courseData.parent === undefined && courseData.contentType === 'Course')) {
+        if ((!courseData.reviewer) || (courseData.reviewer && courseData.reviewer.length === 0 && courseData.parent === undefined && courseData.contentType === 'Course')) {
           errorMsg.push('Reviewer details cannot be empty')
         }
         this.populateErrorMsg(courseData.identifier, errorMsg, courseData, errorId, errorMap)

@@ -594,9 +594,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           // tslint:disable-next-line:no-console
 
           // this.isSettingsPage = false
-          if (this.isSettingsPage && !this.isError) {
-            this.action("push")
-          }
 
         },
         (error: any) => {
@@ -645,10 +642,19 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         // tslint:disable-next-line:no-console
         // console.log("nextAction")
         if (this.isSettingsPage) {
-          this.action("push")
+          this.loader.changeLoad.next(true)
+          this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
+            this.courseData = await data
+            this.contentService.resetOriginalMetaWithHierarchy(data)
+            if (this.isSettingsPage && !this.isError) {
+              this.action("push")
+              this.loader.changeLoad.next(false)
+            }
+            // tslint:disable-next-line: align
+          })
+          // this.action("push")
         } else {
           this.action(nextAction)
-
         }
       } else {
         this.snackBar.openFromComponent(NotificationComponent, {
@@ -764,9 +770,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
           tap(() => {
             this.storeService.changedHierarchy = {}
+            this.loader.changeLoad.next(true)
+
             this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
               this.courseData = await data
               this.contentService.resetOriginalMetaWithHierarchy(data)
+              if (this.isSettingsPage && !this.isError) {
+                this.action("push")
+                this.loader.changeLoad.next(false)
+              }
               // tslint:disable-next-line: align
             })
             Object.keys(this.contentService.upDatedContent).forEach(id => {
@@ -829,6 +841,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   get validationCheck(): boolean {
     const currentNodeId = this.storeService.lexIdMap.get(this.currentParentId) as number[]
+    console.log("this.courseData", this.courseData)
     let returnValue = this.storeService.validationCheck(currentNodeId[0], this.courseData)
 
     // console.log('returnvalue ', returnValue)
@@ -2992,7 +3005,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         const result = await this.editorService.resourceToModule(request).toPromise()
         // tslint:disable-next-line:no-console
         console.log(result)
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+        await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
           this.courseData = await data
 
           const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
@@ -3018,8 +3031,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             },
           }
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-              this.courseData = data
+            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+              this.courseData = await data
               this.getChildrenCount()
             })
           })
@@ -3028,7 +3041,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       } else {
         //const hierarchyData = this.storeService.getTreeHierarchy()
         //this.courseData = []
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+        await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
 
           this.courseData = await data
 
@@ -3054,9 +3067,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             },
           }
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-              this.courseData = data
+            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+              this.courseData = await data
               this.getChildrenCount()
+              this.loaderService.changeLoad.next(false)
               this.editorStore.setOriginalMeta(data)
             })
           })
@@ -3071,9 +3085,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.currentContent = this.editorService.newCreatedLexid
       // update the id
       this.editorStore.currentContent = newCreatedLexid
-      this.loaderService.changeLoad.next(false)
     }
-    this.loaderService.changeLoad.next(false)
+    // this.loaderService.changeLoad.next(false)
     this.subAction({ type: 'editContent', identifier: this.editorService.newCreatedLexid, nodeClicked: false })
     //this.save()
   }
