@@ -274,6 +274,8 @@
               class="check-text">Open
               link
               in new tab</mat-checkbox>
+            <mat-checkbox *ngIf="isShowDownloadBtnEnabled" [(ngModel)]="isShowBtn" [checked]="isShowBtn"
+              style="margin-left: 0px;" class="check-text">Show Download button</mat-checkbox>
           </div>
           <!-- <div *ngIf="content?.mimeType !== 'application/json'">
             <mat-checkbox [(ngModel)]="isGating" [checked]="isGating" style="margin-left: 0px;" class="check-text">
@@ -346,22 +348,22 @@
               {{moduleButtonName}}</button>
             <button mat-raised-button *ngIf="content?.contentType === 'CourseUnit'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
-              (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab,content?.mimeType)">
+              (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab,isShowBtn,content?.mimeType)">
               {{moduleButtonName}}</button>
             <button [disabled]="(uploadFileName?uploadFileName == '':true)" mat-raised-button
               *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course'&& !isLinkEnabled && content?.mimeType !== 'application/json'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
-              (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab,content?.mimeType)">
+              (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab,isShowBtn,content?.mimeType)">
               {{moduleButtonName}}</button>
             <button [disabled]="isLinkEnabled?editResourceLinks.length==0:true || moduleName == ''" mat-raised-button
               *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&isLinkEnabled"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
-              (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab,content?.mimeType)">
+              (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab,isShowBtn,content?.mimeType)">
               {{moduleButtonName}}</button>
             <button mat-raised-button
               *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Course'&&!isLinkEnabled &&content?.mimeType === 'application/json'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
-              (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab,content?.mimeType)">
+              (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab,isShowBtn,content?.mimeType)">
               {{moduleButtonName}}</button>
             <button mat-raised-button *ngIf="content?.contentType === 'Course'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
@@ -586,6 +588,11 @@
 
                 <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isIframeSupported">Open link
                   in new tab</mat-checkbox>
+              </div>
+              <div style="display:flex; flex-direction:row" *ngIf="isShowDownloadBtnEnabled">
+
+                <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="showDownloadBtn">Show
+                  Download Button</mat-checkbox>
               </div>
 
               <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
