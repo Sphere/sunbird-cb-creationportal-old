@@ -128,9 +128,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   moduleForm!: FormGroup
   resourceImg: string = '';
   isLinkEnabled: boolean = false;
+  isShowDownloadBtnEnabled: boolean = false;
   openinnewtab: boolean = false
   moduleName: string = '';
   isNewTab: any = '';
+  isShowBtn: any = '';
   isGating: any = '';
   topicDescription: string = ''
   thumbnail: string = ''
@@ -267,6 +269,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       artifactUrl: new FormControl('', [Validators.required]),
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
+      showDownloadBtn: new FormControl(''),
       isIframeSupported: new FormControl(''),
       isgatingEnabled: new FormControl(),
       duration: new FormControl('', [Validators.required])
@@ -291,6 +294,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       appIcon: new FormControl(''),
       thumbnail: new FormControl(''),
       isIframeSupported: new FormControl(''),
+      showDownloadBtn: new FormControl(''),
       isgatingEnabled: new FormControl(),
       duration: new FormControl('', [Validators.required])
     })
@@ -2026,12 +2030,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
     if (name == 'Link') {
       this.isLinkEnabled = true
+      this.isShowDownloadBtnEnabled = false
       this.isPdfOrAudioOrVedioEnabled = false
       this.isAssessmentOrQuizEnabled = false
       this.setContentType(type, 'url')
     } else if (name == 'PDF') {
       this.uploadText = 'PDF'
       this.isLinkEnabled = false
+      this.isShowDownloadBtnEnabled = true
       this.isAssessmentOrQuizEnabled = false
       this.isPdfOrAudioOrVedioEnabled = true
       this.resourceImg = 'cbp-assets/images/pdf-icon.svg'
@@ -2041,6 +2047,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     } else if (name == 'Audio') {
       this.uploadText = 'mp3'
       this.isLinkEnabled = false
+      this.isShowDownloadBtnEnabled = true
       this.isAssessmentOrQuizEnabled = false
       this.isPdfOrAudioOrVedioEnabled = true
       this.resourceImg = 'cbp-assets/images/audio.png'
@@ -2050,6 +2057,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     } else if (name == 'Video') {
       this.uploadText = 'mp4, m4v'
       this.isLinkEnabled = false
+      this.isShowDownloadBtnEnabled = true
       this.isAssessmentOrQuizEnabled = false
       this.isPdfOrAudioOrVedioEnabled = true
       this.resourceImg = 'cbp-assets/images/vedio-img.svg'
@@ -2059,6 +2067,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     } else if (name == 'SCORM v1.1/1.2') {
       this.uploadText = '.zip'
       this.isLinkEnabled = false
+      this.isShowDownloadBtnEnabled = false
       this.isAssessmentOrQuizEnabled = false
       this.isPdfOrAudioOrVedioEnabled = true
       this.resourceImg = 'cbp-assets/images/SCROM-img.svg'
@@ -2067,6 +2076,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.setContentType(type, 'zip')
     } else if (name == 'Assessment') {
       this.isLinkEnabled = false
+      this.isShowDownloadBtnEnabled = false
       this.isAssessmentOrQuizEnabled = true
       this.isPdfOrAudioOrVedioEnabled = false
       let obj: any = {}
@@ -2080,6 +2090,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.getassessment()
     } else if (name == 'Quiz') {
       this.isLinkEnabled = false
+      this.isShowDownloadBtnEnabled = false
       this.isAssessmentOrQuizEnabled = true
       this.isPdfOrAudioOrVedioEnabled = false
       sessionStorage.clear()
@@ -2163,6 +2174,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.isOnClickOfResourceTypeEnabled = false
     //this.isOnClickOfResourceTypeEnabled = true
     this.isLinkEnabled = false
+    this.isShowDownloadBtnEnabled = false
     this.moduleButtonName = 'Save'
     this.content = content
     this.moduleName = content.name
@@ -2170,11 +2182,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.thumbnail = content.thumbnail
     this.setDuration(content.duration)
     this.isNewTab = content.isIframeSupported == 'Yes' ? true : false
+    this.isShowBtn = content.showDownloadBtn == 'Yes' ? true : false
     this.isGating = content.gatingEnabled
     this.duration = content.duration
     this.isPdfOrAudioOrVedioEnabled = false
     if (content.mimeType == 'text/x-url') {
       this.isLinkEnabled = true
+      this.isShowDownloadBtnEnabled = false
       this.isPdfOrAudioOrVedioEnabled = false
       this.isAssessmentOrQuizEnabled = false
       this.editResourceLinks = content.artifactUrl ? content.artifactUrl : ''
@@ -2185,6 +2199,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadText = 'PDF'
+      this.isShowDownloadBtnEnabled = true
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
       this.isPdfOrAudioOrVedioEnabled = true
@@ -2195,6 +2210,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     } else if (content.mimeType == 'audio/mpeg') {
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
+      this.isShowDownloadBtnEnabled = true
       this.uploadText = 'mp3'
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
@@ -2208,6 +2224,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       console.log("this.uploadFile", content.artifactUrl)
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
+      this.isShowDownloadBtnEnabled = true
       this.uploadText = 'mp4, m4v'
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
@@ -2220,6 +2237,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
       this.uploadIcon = 'cbp-assets/images/SCROM-img.svg'
       this.uploadText = '.zip'
+      this.isShowDownloadBtnEnabled = false
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
       this.isPdfOrAudioOrVedioEnabled = true
@@ -2411,13 +2429,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
   }
 
-  async saveDetails(name: string, topicDescription: string, thumbnail: string, isNewTab: any, content: string) {
+  async saveDetails(name: string, topicDescription: string, thumbnail: string, isNewTab: any, isShowBtn: any, content: string) {
     let meta: any = {}
     let requestBody: any
     // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
     //   console.log(resData)
     // })
-    let iframeSupported
+    let iframeSupported, showDownloadBtn
     // if (topicDescription != '') {
     if (this.timeToSeconds() == 0 && content !== 'application/json') {
       this.snackBar.openFromComponent(NotificationComponent, {
@@ -2431,6 +2449,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         iframeSupported = 'Yes'
       else
         iframeSupported = 'No'
+      if (isShowBtn)
+        showDownloadBtn = 'Yes'
+      else
+        showDownloadBtn = 'No'
       if (this.acceptType === '.zip') {
         iframeSupported = 'Yes'
       }
@@ -2443,6 +2465,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       meta["duration"] = this.timeToSeconds().toString()
       // meta["gatingEnabled"] = isGating
       meta["isIframeSupported"] = iframeSupported
+      meta["showDownloadBtn"] = showDownloadBtn
 
 
       var res = this.editResourceLinks.match(/^(?:https?:\/\/)(?:www\.)(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/)
@@ -3597,11 +3620,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         })
       } else {
         this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
-        let iframeSupported
+        let iframeSupported, showDownloadBtn
         if (this.resourcePdfForm.value.isIframeSupported)
           iframeSupported = 'Yes'
         else
           iframeSupported = 'No'
+        if (this.resourcePdfForm.value.showDownloadBtn)
+          showDownloadBtn = 'Yes'
+        else
+          showDownloadBtn = 'No'
 
         if (this.acceptType === '.zip') {
           iframeSupported = 'Yes'
@@ -3618,6 +3645,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           appIcon: this.resourcePdfForm.value.appIcon,
           thumbnail: this.resourcePdfForm.value.thumbnail,
           isIframeSupported: iframeSupported,
+          showDownloadBtn,
           gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
           duration: this.resourcePdfForm.value.duration,
           versionKey: this.updatedVersionKey,
@@ -3640,6 +3668,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       appIcon: '',
       thumbnail: '',
       isIframeSupported: '',
+      showDownloadBtn: '',
       isgatingEnabled: '',
       duration: ''
     })
@@ -3651,6 +3680,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       appIcon: '',
       thumbnail: '',
       isIframeSupported: '',
+      showDownloadBtn: '',
       isgatingEnabled: '',
       duration: ''
     })
@@ -3662,6 +3692,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.topicDescription = ''
     this.editResourceLinks = ''
     this.isNewTab = false
+    this.isShowBtn = false
     this.isGating = false
     this.thumbnail = ''
     this.hours = 0

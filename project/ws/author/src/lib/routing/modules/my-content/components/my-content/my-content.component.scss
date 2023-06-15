@@ -9,7 +9,9 @@
   right: 0;
   min-height: calc(105vh - 164px);
 }
-
+.overflowY{
+  overflow-y: scroll !important;
+}
 .vertical-align {
   vertical-align: text-bottom;
 }
