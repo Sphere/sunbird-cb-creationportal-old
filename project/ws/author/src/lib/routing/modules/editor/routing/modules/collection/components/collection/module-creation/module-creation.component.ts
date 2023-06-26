@@ -2276,7 +2276,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   editAssessmentRes(content?: any) {
     console.log("content", content, this.moduleName)
-    if (content.name !== this.moduleName) {
+    if (content.name !== this.moduleName && this.moduleName) {
       this.loaderService.changeLoadState(true)
       const requestBody: any = {
         name: this.moduleName,
@@ -2315,33 +2315,30 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     obj["name"] = 'assessment'
     obj["description"] = 'assessment'
     console.log("obj: " + JSON.stringify(obj))
-    const requestBody: any = {
-      name: this.resourceLinkForm.value.name,
-      versionKey: this.updatedVersionKey,
-    }
-
-    const body = {
-      request: {
-        content: requestBody
+    if (this.resourceLinkForm.value.name) {
+      const requestBody: any = {
+        name: this.resourceLinkForm.value.name,
+        versionKey: this.updatedVersionKey,
       }
-    }
-    this.editorService.updateNewContentV3(body, this.content.identifier).subscribe(
-      async (info: any) => {
-        // tslint:disable-next-line:no-console
-        console.log('info', info, this.content)
-        if (info) {
-          this.editItem = ''
-          this.initService.updateAssessment(obj)
-          this.loaderService.changeLoadState(false)
+
+      const body = {
+        request: {
+          content: requestBody
         }
-      })
-
-
-
-
-
-
-
+      }
+      this.editorService.updateNewContentV3(body, this.content.identifier).subscribe(
+        async (info: any) => {
+          // tslint:disable-next-line:no-console
+          console.log('info', info, this.content)
+          if (info) {
+            this.editItem = ''
+            this.initService.updateAssessment(obj)
+            this.loaderService.changeLoadState(false)
+          }
+        })
+    } else {
+      this.initService.updateAssessment(obj)
+    }
   }
 
 
