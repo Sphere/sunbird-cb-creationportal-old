@@ -75,6 +75,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   quizData!: any
   bucket: string = ''
   validPercentage = false
+  resourceName!: string
   /**
    * reviwer and publisher cannot add or delete or edit quizs but can rearrange them
    */
@@ -128,6 +129,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       (data: any) => {
         if (data) {
           this.metaContentService.currentContent = data.identifier
+          console.log("data: ", data)
           this.ngOnInit()
         }
       })
@@ -282,7 +284,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
               // const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
 
               let quizContent = await this.editorService.readcontentV3(this.metaContentService.currentContent).toPromise()
-              // console.log(this.metaContentService.currentContent)
+              this.resourceName = quizContent ? quizContent.name : 'Resource'
+              console.log("quizContent", quizContent, this.metaContentService.currentContent, this.resourceName)
               // console.log(quizContent)
               if (quizContent && quizContent.mimeType === 'application/json') {
                 const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?

@@ -95,20 +95,18 @@
                 [canEdit]="canEditJson"></ws-auth-question-editor-sidebar>
             </mat-sidenav>
             <mat-sidenav-content>
+              <div *ngIf="resourceName" class="headerpadding resourceName font-weight-bold" i18n>
+                {{resourceName}}</div>
               <div *ngIf="questionsArr.length">
-                <!-- <mat-card-title class="w-full h-6 text-center ws-mat-primary-background text-white h-12 rounded flex items-center justify-center"
-                                *ngIf="selectedQuizIndex !== undefined && canEditJson">
-                                <span i18n>Quiz-</span>{{selectedQuizIndex + 1}}
-                            </mat-card-title> -->
-                <ws-auth-question-editor *ngIf="questionsArr.length && canEditJson" [submitPressed]="canValidate">
-                </ws-auth-question-editor>
-                <mat-form-field appearance="outline" style="padding: 5px 15px 0px 25px">
+                <div class="headerpadding font-weight-bold margin-top-s" i18n>{{isQuiz?'Assessment':'Quiz'}} Details
+                </div>
+                <mat-form-field appearance="outline" style="padding: 5px 15px 0px 0.75rem">
                   <label class="starlabel">Pass Percentage</label>
                   <input matInput placeholder="Enter pass percentage" max="100" [(ngModel)]="passPercentage"
                     (change)="addTodo(passPercentage, 'passPercentage')" type="number" />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <label class="starlabel">Assessment Duration (Minutes)</label>
+                  <label class="starlabel">{{isQuiz?'Assessment':'Quiz'}} Duration (Minutes)</label>
                   <input matInput type="number" class="form-control" placeholder="Enter duration" min="2"
                     [(ngModel)]="assessmentDuration" (change)="addTodo(assessmentDuration, 'assessmentDuration')" />
                 </mat-form-field>
@@ -117,6 +115,13 @@
                   <input matInput type="number" class="form-control" placeholder="Enter Random Question Count"
                     [(ngModel)]="randomCount" (change)="addTodo(randomCount, 'randomCount')" />
                 </mat-form-field>
+                <!-- <mat-card-title class="w-full h-6 text-center ws-mat-primary-background text-white h-12 rounded flex items-center justify-center"
+                                *ngIf="selectedQuizIndex !== undefined && canEditJson">
+                                <span i18n>Quiz-</span>{{selectedQuizIndex + 1}}
+                            </mat-card-title> -->
+                <ws-auth-question-editor *ngIf="questionsArr.length && canEditJson" [submitPressed]="canValidate">
+                </ws-auth-question-editor>
+
                 <div class="flex justify-between px-1 pb-3" *ngIf="questionsArr && canEditJson">
                   <button class=" ws-mat-primary-background mat-elevation-z6 margin-left-s" (click)="changeQuiz(-1)"
                     [disabled]="selectedQuizIndex === 0"
