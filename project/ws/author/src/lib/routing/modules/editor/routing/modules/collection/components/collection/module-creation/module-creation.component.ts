@@ -2326,7 +2326,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           content: requestBody
         }
       }
-      this.editorService.updateNewContentV3(body, this.content.identifier).subscribe(
+      this.editorService.updateNewContentV3(body, this.currentContent).subscribe(
         async (info: any) => {
           // tslint:disable-next-line:no-console
           console.log('info', info, this.content)
