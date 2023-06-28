@@ -785,12 +785,12 @@
             </span>
           </div>
         </div>
+        <mat-form-field appearance="fill" class="margin-top-s field-edit-width">
+          <mat-label>(Optional) CNE points</mat-label>
+          <input matInput formControlName="cneName" placeholder="(Optional) CNE points" />
+          <mat-hint class="mt-hint">Note: CNE Points will be approved by INC</mat-hint>
+        </mat-form-field>
         <div class="form-edit-int" *ngIf="addedCompetency?.length > 0">
-          <mat-form-field appearance="fill" class="margin-top-s field-edit-width">
-            <mat-label>(Optional) CNE points</mat-label>
-            <input matInput formControlName="cneName" placeholder="(Optional) CNE points" />
-            <mat-hint class="mt-hint">Note: CNE Points will be approved by INC</mat-hint>
-          </mat-form-field>
           <div class="form-edit-width" id="competencies" *ngIf="addedCompetency?.length > 0">
             <p><strong>Competencies List</strong></p>
             <div *ngFor="let comp of addedCompetency" style="width: 450px; margin-bottom: 10px">
