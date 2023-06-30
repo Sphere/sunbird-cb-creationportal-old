@@ -2275,18 +2275,70 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   editAssessmentRes(content?: any) {
-    this.initService.updateAssessment(content)
+    console.log("content", content, this.moduleName)
+    if (content.name !== this.moduleName && this.moduleName) {
+      this.loaderService.changeLoadState(true)
+      const requestBody: any = {
+        name: this.moduleName,
+        versionKey: this.updatedVersionKey,
+      }
+
+      const body = {
+        request: {
+          content: requestBody
+        }
+      }
+      this.editorService.updateNewContentV3(body, this.content.identifier).subscribe(
+        async (info: any) => {
+          // tslint:disable-next-line:no-console
+          console.log('info', info, this.content)
+          if (info) {
+            this.editItem = ''
+            this.initService.updateAssessment(content)
+            this.loaderService.changeLoadState(false)
+          }
+        })
+    } else {
+      this.initService.updateAssessment(content)
+    }
+
+
   }
 
-  addAssessment() {
+  async addAssessment() {
+    this.loaderService.changeLoadState(true)
+
     this.viewMode = 'assessment'
     this.addResourceModule["viewMode"] = 'assessment'
     let obj: any = {}
     obj["type"] = 'assessment'
     obj["name"] = 'assessment'
     obj["description"] = 'assessment'
-    this.initService.updateAssessment(obj)
+    console.log("obj: " + JSON.stringify(obj))
+    if (this.resourceLinkForm.value.name) {
+      const requestBody: any = {
+        name: this.resourceLinkForm.value.name,
+        versionKey: this.updatedVersionKey,
+      }
 
+      const body = {
+        request: {
+          content: requestBody
+        }
+      }
+      this.editorService.updateNewContentV3(body, this.currentContent).subscribe(
+        async (info: any) => {
+          // tslint:disable-next-line:no-console
+          console.log('info', info, this.content)
+          if (info) {
+            this.editItem = ''
+            this.initService.updateAssessment(obj)
+            this.loaderService.changeLoadState(false)
+          }
+        })
+    } else {
+      this.initService.updateAssessment(obj)
+    }
   }
 
 
