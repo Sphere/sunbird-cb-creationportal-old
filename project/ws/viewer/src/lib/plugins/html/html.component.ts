@@ -1,26 +1,32 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, ViewChild, OnDestroy } from '@angular/core'
+import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, ViewChild, AfterViewInit, HostListener } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
-import { Router } from '@angular/router'
-import { NsContent } from '@ws-widget/collection'
-import { ConfigurationsService, EventService } from '@ws-widget/utils'
+import { ActivatedRoute, Router } from '@angular/router'
+import {
+  NsContent,
+  //WidgetContentService
+} from '@ws-widget/collection'
+import { ConfigurationsService, EventService, TelemetryService } from '@ws-widget/utils'
 import { TFetchStatus } from '@ws-widget/utils/src/public-api'
 import { MobileAppsService } from '../../../../../../../src/app/services/mobile-apps.service'
-import { SCORMAdapterService } from './SCORMAdapter/scormAdapter'
-/* tslint:disable */
-import _ from 'lodash'
-/* tslint:enable */
+import { SCORMAdapterService } from 'project/ws/viewer/src/lib/plugins/html/SCORMAdapter/scormAdapter'
+
+// import { Interval, Observable, Subscription } from 'rxjs'
+//import { ViewerUtilService } from '../../../../../../../project/ws/viewer/src/lib/viewer-util.service'
 
 @Component({
   selector: 'viewer-plugin-html',
   templateUrl: './html.component.html',
   styleUrls: ['./html.component.scss'],
 })
-export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
+export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
+
+  // private mobileOpenInNewTab!: any
+  @ViewChild('iframeElem', { static: false }) iframeElem!: ElementRef<HTMLIFrameElement>
   @ViewChild('mobileOpenInNewTab', { read: ElementRef, static: false }) mobileOpenInNewTab !: ElementRef<HTMLAnchorElement>
   @Input() htmlContent: NsContent.IContent | null = null
   iframeUrl: SafeResourceUrl | null = null
-  iframeName = `piframe_${Date.now()}`
+
   showIframeSupportWarning = false
   showIsLoadingMessage = false
   showUnBlockMessage = false
@@ -29,43 +35,160 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
   intranetUrlPatterns: string[] | undefined = []
   isIntranetUrl = false
   progress = 100
+  iframeName = `piframe_${Date.now()}`
+  urlContains = ''
+  mimeType = ''
+
+  @HostListener('window:blur', ['$event'])
+  onBlur(): void {
+    if (this.urlContains.includes('youtube') && this.htmlContent !== null) {
+      // const collectionId = this.activatedRoute.snapshot.queryParams.collectionId ?
+      //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier
+      // const batchId = this.activatedRoute.snapshot.queryParams.batchId ?
+      //   this.activatedRoute.snapshot.queryParams.batchId : this.htmlContent.identifier
+
+      // this.telemetrySvc.start('youtube', 'youtube-start', this.activatedRoute.snapshot.queryParams.collectionId ?
+      //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier)
+
+      // setTimeout(() => {
+      //   const data2 = {
+      //     current: 10,
+      //     max_size: 10,
+      //     mime_type: this.mimeType,
+      //   }
+      //   // @ts-ignore: Object is possibly 'null'.
+      //   this.viewerSvc.realTimeProgressUpdate(this.htmlContent.identifier, data2, collectionId, batchId).subscribe((data: any) => {
+      //     console.log(data.result.contentList)
+      //     let result = data.result
+      //     result["type"] = 'youtube'
+      //     this.contentSvc.changeMessage(result)
+      //   })
+
+      // }, 50)
+      // const data1: any = {
+      //   courseID: this.activatedRoute.snapshot.queryParams.collectionId ?
+      //     this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier,
+      //   contentId: this.htmlContent.identifier,
+      //   name: this.htmlContent.name,
+      //   moduleId: this.htmlContent!.parent ? this.htmlContent.parent : undefined,
+      // }
+      // this.telemetrySvc.end('youtube', 'youtube-close', this.activatedRoute.snapshot.queryParams.collectionId ?
+      //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier, data1)
+      //this.contentSvc.changeMessage('youtube')
+    }
+  }
+
   constructor(
     private domSanitizer: DomSanitizer,
     public mobAppSvc: MobileAppsService,
     private scormAdapterService: SCORMAdapterService,
+    // private http: HttpClient,
     private router: Router,
     private configSvc: ConfigurationsService,
     private snackBar: MatSnackBar,
     private events: EventService,
+    //private contentSvc: WidgetContentService,
+    //private viewerSvc: ViewerUtilService,
+    private activatedRoute: ActivatedRoute,
+    private telemetrySvc: TelemetryService,
+
   ) {
     (window as any).API = this.scormAdapterService
     // if (window.addEventListener) {
     window.addEventListener('message', this.receiveMessage.bind(this))
-    // }
-    // else {
-    //   (<any>window).attachEvent('onmessage', this.receiveMessage.bind(this))
-    // }
-    // window.addEventListener('message', function (event) {
-    //   // tslint:disable-next-line:no-console
-    //   console.log('message', event)
-    // })
-    // window.addEventListener('onmessage', function (event) {
-    //   // tslint:disable-next-line:no-console
-    //   console.log('onmessage===>', event)
-    // })
   }
 
   ngOnInit() {
-    if (this.htmlContent && this.htmlContent.identifier) {
-      this.scormAdapterService.contentId = this.htmlContent.identifier
-      this.scormAdapterService.loadData()
-    }
+    // this.mobAppSvc.simulateMobile()
+    // if (this.htmlContent && this.htmlContent.identifier) {
+    //   console.log(this.htmlContent.identifier)
+    //   this.scormAdapterService.contentId = this.htmlContent.identifier
+    //   // this.scormAdapterService.loadData()
+    //   this.scormAdapterService.loadDataV2()
+    // }
+
   }
+  ngAfterViewInit() {
+  }
+
   ngOnDestroy() {
     window.removeEventListener('message', this.receiveMessage)
     // window.removeEventListener('onmessage', this.receiveMessage)
   }
+
+  executeForms() {
+    if (this.urlContains.includes('docs.google') && this.htmlContent !== null) {
+      // const collectionId = this.activatedRoute.snapshot.queryParams.collectionId ?
+      //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier
+      // const batchId = this.activatedRoute.snapshot.queryParams.batchId ?
+      //   this.activatedRoute.snapshot.queryParams.batchId : this.htmlContent.identifier
+      // setTimeout(() => {
+      //   const data2 = {
+      //     current: 10,
+      //     max_size: 10,
+      //     mime_type: this.mimeType,
+      //   }
+      //   // @ts-ignore: Object is possibly 'null'.
+      //   this.viewerSvc.realTimeProgressUpdate(this.htmlContent.identifier, data2, collectionId, batchId).subscribe((data: any) => {
+      //     console.log(data.result.contentList)
+      //     let result = data.result
+      //     result["type"] = 'docs.google'
+      //     //  this.contentSvc.changeMessage(result)
+      //   })
+      // }, 50)
+
+      // const data1: any = {
+      //   courseID: this.activatedRoute.snapshot.queryParams.collectionId ?
+      //     this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier,
+      //   contentId: this.htmlContent.identifier,
+      //   name: this.htmlContent.name,
+      //   moduleId: this.htmlContent!.parent ? this.htmlContent.parent : undefined,
+      // }
+      // this.telemetrySvc.end('docs.google', 'docs.google-close', this.activatedRoute.snapshot.queryParams.collectionId ?
+      //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier, data1)
+
+      //this.contentSvc.changeMessage('docs.google')
+    }
+  }
   ngOnChanges() {
+    if (this.htmlContent && this.htmlContent.identifier) {
+      this.urlContains = this.htmlContent.artifactUrl
+      //const courseId = this.activatedRoute.snapshot.queryParams.collectionId ?
+      //this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier
+      // const obj = {
+      //   resourceID: this.htmlContent.identifier,
+      //   courseID: courseId,
+      //   moduleID: this.htmlContent.parent,
+      // }
+      //  this.telemetrySvc.end('player', 'view', '', obj)
+    }
+
+    if (this.urlContains.includes('docs.google') && this.htmlContent !== null) {
+      this.telemetrySvc.start('docs.google', 'docs.google-start', this.activatedRoute.snapshot.queryParams.collectionId ?
+        this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier)
+      this.executeForms()
+    }
+
+    if (this.htmlContent && this.htmlContent.identifier && this.htmlContent.mimeType === 'application/vnd.ekstep.html-archive') {
+
+      // this.telemetrySvc.start('scorm', 'scorm-start', this.activatedRoute.snapshot.queryParams.collectionId ?
+      //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier)
+
+      //this.contentSvc.changeMessage('scorm')
+      this.scormAdapterService.contentId = this.htmlContent.identifier
+      // this.scormAdapterService.loadData()
+      this.scormAdapterService.loadDataV2()
+      // const data1: any = {
+      //   courseID: this.activatedRoute.snapshot.queryParams.collectionId ?
+      //     this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier,
+      //   contentId: this.htmlContent.identifier,
+      //   name: this.htmlContent.name,
+      //   moduleId: this.htmlContent!.parent ? this.htmlContent.parent : undefined,
+      // }
+      // this.telemetrySvc.end('scorm', 'scorm-close', this.activatedRoute.snapshot.queryParams.collectionId ?
+      //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier, data1)
+    }
+
     this.isIntranetUrl = false
     this.progress = 100
     this.pageFetchStatus = 'fetching'
@@ -77,14 +200,12 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
     let iframeSupport: boolean | string | null =
       this.htmlContent && this.htmlContent.isIframeSupported
     if (this.htmlContent && this.htmlContent.artifactUrl) {
-      // if (this.htmlContent.artifactUrl.startsWith('http://')) {
-      //   this.htmlContent.isIframeSupported = 'No'
-      // }
-
+      if (this.htmlContent.artifactUrl.startsWith('http://') && this.htmlContent.isExternal) {
+        this.htmlContent.isIframeSupported = 'No'
+      }
       if (typeof iframeSupport !== 'boolean') {
         iframeSupport = this.htmlContent.isIframeSupported.toLowerCase()
-        // if (iframeSupport === 'no') {
-        if (iframeSupport === 'yes' && this.htmlContent.mimeType !== 'application/vnd.ekstep.html-archive') {
+        if (iframeSupport === 'no') {
           this.showIframeSupportWarning = true
           setTimeout(
             () => {
@@ -102,6 +223,45 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
           this.showIframeSupportWarning = true
         } else {
           this.showIframeSupportWarning = false
+          if (this.htmlContent.mimeType === 'text/x-url') {
+            // const collectionId = this.activatedRoute.snapshot.queryParams.collectionId ?
+            //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier
+            // const batchId = this.activatedRoute.snapshot.queryParams.batchId ?
+            //   this.activatedRoute.snapshot.queryParams.batchId : this.htmlContent.identifier
+
+            // this.telemetrySvc.start('html/x-url', 'html/x-url-start', this.activatedRoute.snapshot.queryParams.collectionId ?
+            //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier)
+
+            // const data1 = {
+            //   current: 1,
+            //   max_size: 1,
+            //   mime_type: this.htmlContent.mimeType,
+            // }
+
+            // setTimeout(() => {
+            //   if (this.htmlContent) {
+            //     this.viewerSvc
+            //       .realTimeProgressUpdate(this.htmlContent.identifier, data1, collectionId, batchId).subscribe((data: any) => {
+            //         console.log(data.result.contentList)
+            //         let result = data.result
+            //         result["type"] = 'html'
+            //         this.contentSvc.changeMessage(result)
+            //       })
+            //     //this.contentSvc.changeMessage('html')
+            //   }
+            // }, 50)
+
+            // const data2: any = {
+            //   courseID: this.activatedRoute.snapshot.queryParams.collectionId ?
+            //     this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier,
+            //   contentId: this.htmlContent.identifier,
+            //   name: this.htmlContent.name,
+            //   moduleId: this.htmlContent!.parent ? this.htmlContent.parent : undefined,
+            // }
+            // this.telemetrySvc.end('html/x-url', 'html/x-url-close', this.activatedRoute.snapshot.queryParams.collectionId ?
+            //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier, data2)
+
+          }
         }
       }
       if (this.intranetUrlPatterns && this.intranetUrlPatterns.length) {
@@ -113,24 +273,13 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
           }
         })
       }
-      // if (this.htmlContent.isInIntranet || this.isIntranetUrl) {
-      //   this.checkIfIntranet().subscribe(
-      //     data => {
-      //       //console.log(data)
-      //       this.isUserInIntranet = data ? true : false
-      //       //console.log(this.isUserInIntranet)
-      //     },
-      //     () => {
-      //       this.isUserInIntranet = false
-      //       //console.log(this.isUserInIntranet)
-      //     },
-      //   )
-      // }
+
       this.showIsLoadingMessage = false
+
       if (this.htmlContent.isIframeSupported !== 'No') {
         setTimeout(
           () => {
-            if (this.pageFetchStatus === 'fetching') {
+            if (this.pageFetchStatus === 'fetching' && !this.urlContains.includes('docs.google')) {
               this.showIsLoadingMessage = true
             }
           },
@@ -139,46 +288,112 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       if (this.htmlContent.mimeType === 'application/vnd.ekstep.html-archive') {
-        var url: any
-        if (this.htmlContent.status !== 'Live') {
-          url = this.htmlContent.streamingUrl
-          // if (this.htmlContent.entryPoint) {
-          //   url = url + this.htmlContent.entryPoint
-          // }
-          // tslint:disable-next-line:no-console
-          console.log(url)
-          this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
-        } else {
-          if (this.htmlContent.streamingUrl) {
-            //url = `${this.htmlContent.streamingUrl}?timestamp='${new Date().getTime()}`
-            let streamingUrl = this.htmlContent.streamingUrl
-            streamingUrl = streamingUrl.includes(
-              'https://sunbirdcontent-stage.s3-ap-south-1.amazonaws.com'
-            )
-              ? streamingUrl.substring(56)
-              : streamingUrl.substring(50)
-            const entryPoint = this.htmlContent.entryPoint || ''
-            const newUrl = `/apis/proxies/v8/getContents/${streamingUrl}${entryPoint}`
-            this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(`${newUrl}`)
-          }
+        this.mimeType = this.htmlContent.mimeType
+        // if (this.htmlContent.status !== 'Live') {
+        //   if (this.htmlContent && this.htmlContent.artifactUrl) {
+        //     this.contentSvc
+        //       .fetchHierarchyContent(this.htmlContent.identifier)
+        //       .toPromise()
+        //       .then((res: any) => {
+
+        //         let url = res['result']['content']['streamingUrl']
+        //         // if (res['result']['content']['entryPoint']) {
+        //         //   url = url + res['result']['content']['entryPoint']
+
+        //         // }
+        //         this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
+        //         console.log(this.iframeUrl)
+        //       })
+        //       .catch((err: any) => {
+        //         /* tslint:disable-next-line */
+        //         console.log(err)
+        //       })
+        //   }
+        // } else {
+        if (this.htmlContent && this.htmlContent.artifactUrl) {
+
+          // const streamingUrl = this.htmlContent.streamingUrl.substring(51)
+          let streamingUrl = this.htmlContent.streamingUrl || ''
+          streamingUrl = streamingUrl.includes(
+            'https://sunbirdcontent-stage.s3-ap-south-1.amazonaws.com'
+          )
+            ? streamingUrl.substring(56)
+            : streamingUrl.substring(50)
+          //const entryPoint = this.htmlContent.entryPoint || ''
+          const newUrl = `/apis/proxies/v8/getContents/${streamingUrl}`
+          this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(`${newUrl}`)
+
+          // let artifactUrl = this.htmlContent.streamingUrl.substring(51)
+          // this.viewerSvc.scormUpdate(this.htmlContent.artifactUrl).toPromise()
+          //   .then((res: string) => {
+          //     /* tslint:disable-next-line */
+          //     console.log(res)
+          //     console.log(res['result']['content']['streamingUrl'].substring(51))
+          //     this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(`${this.htmlContent.artifactUrl}`)
+          //   })
+          //   .catch((err: any) => {
+          //     /* tslint:disable-next-line */
+          //     console.log(err)
+          //   })
+          // this.contentSvc
+          //   .fetchHierarchyContent(this.htmlContent.identifier)
+          //   .toPromise()
+          //   .then((res: any) => {
+          //     this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(`${res['result']['content']['streamingUrl']}`)
+          //   })
+          //   .catch((err: any) => {
+          //     /* tslint:disable-next-line */
+          //     console.log(err)
+          //   })
+          //}
         }
-        //this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
+
+        // if (this.htmlContent.entryPoint && this.htmlContent.entryPoint.includes('lms') === false) {
+        //   const collectionId = this.activatedRoute.snapshot.queryParams.collectionId ?
+        //     this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier
+        //   const batchId = this.activatedRoute.snapshot.queryParams.batchId ?
+        //     this.activatedRoute.snapshot.queryParams.batchId : this.htmlContent.identifier
+
+        //   this.telemetrySvc.start('html/lms', 'html/lms-start', this.activatedRoute.snapshot.queryParams.collectionId ?
+        //     this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier)
+
+        //   const data1 = {
+        //     current: 1,
+        //     max_size: 1,
+        //     mime_type: this.mimeType,
+        //   }
+
+        //   setTimeout(() => {
+        //     if (this.htmlContent) {
+        //       this.viewerSvc
+        //         .realTimeProgressUpdate(this.htmlContent.identifier, data1, collectionId, batchId).subscribe((data: any) => {
+        //           console.log(data.result.contentList)
+        //           let result = data.result
+        //           result["type"] = 'html'
+        //           this.contentSvc.changeMessage(result)
+        //         })
+        //       //this.contentSvc.changeMessage('html')
+        //     }
+        //   }, 50)
+
+        //   const data2: any = {
+        //     courseID: this.activatedRoute.snapshot.queryParams.collectionId ?
+        //       this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier,
+        //     contentId: this.htmlContent.identifier,
+        //     name: this.htmlContent.name,
+        //     moduleId: this.htmlContent!.parent ? this.htmlContent.parent : undefined,
+        //   }
+        //   this.telemetrySvc.end('html/lms', 'html/lms-close', this.activatedRoute.snapshot.queryParams.collectionId ?
+        //     this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier, data2)
+
+        // }
+
       } else {
-        //let urls = this.htmlContent.artifactUrl.replace('watch?v=', 'embed/')
-        this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.htmlContent.artifactUrl)
+        this.mimeType = this.htmlContent.mimeType
+        this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(
+          this.htmlContent.artifactUrl)
       }
 
-      // testing purpose only
-      // setTimeout(
-      //   () => {
-      //     const ifram = document.getElementsByClassName('html-iframe')[0]
-      //     if (ifram && this.htmlContent) {
-      //       _.set(ifram, 'src',
-      //         `${this.htmlContent.artifactUrl}?timestamp='${new Date().getTime()}`)
-      //     }
-      //   },
-      //   1000,
-      // )
     } else if (this.htmlContent && this.htmlContent.artifactUrl === '') {
       this.iframeUrl = null
       this.pageFetchStatus = 'artifactUrlMissing'
@@ -188,13 +403,30 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  // backToDetailsPage() {
+  //   this.router.navigate([
+  //     `/app/toc/${this.htmlContent ? this.htmlContent.identifier : ''}/overview`,
+  //   ])
+  // }
+
   backToDetailsPage() {
-    this.router.navigate([
-      `/app/toc/${this.htmlContent ? this.htmlContent.identifier : ''}/overview`,
-    ])
+    this.router.navigate(
+      [`/app/toc/${this.htmlContent ? this.htmlContent.identifier : ''}/overview`],
+      { queryParams: { primaryCategory: this.htmlContent ? this.htmlContent.primaryCategory : '' } })
+  }
+
+  raiseTelemetry(data: any) {
+    if (this.htmlContent) {
+      /* tslint:disable-next-line */
+      console.log(this.htmlContent.identifier)
+      this.events.raiseInteractTelemetry(data.event, 'scrom', {
+        contentId: this.htmlContent.identifier,
+        ...data,
+      })
+    }
   }
   receiveMessage(msg: any) {
-    // // tslint:disable-next-line:no-console
+    // /* tslint:disable-next-line */
     // console.log("msg=>", msg)
     if (msg.data) {
       this.raiseTelemetry(msg.data)
@@ -205,15 +437,8 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
       })
     }
   }
+
   openInNewTab() {
-
-    let openInNewWindowUrl = ''
-
-    if (this.htmlContent && this.htmlContent.mimeType === 'text/x-url') {
-      openInNewWindowUrl = this.htmlContent.artifactUrl
-    } else if (this.htmlContent && this.htmlContent.streamingUrl) {
-      openInNewWindowUrl = this.htmlContent.streamingUrl
-    }
     if (this.htmlContent) {
       if (this.mobAppSvc && this.mobAppSvc.isMobile) {
         // window.open(this.htmlContent.artifactUrl)
@@ -227,8 +452,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
         const width = window.outerWidth
         const height = window.outerHeight
         const isWindowOpen = window.open(
-          // this.htmlContent.streamingUrl,
-          openInNewWindowUrl,
+          this.htmlContent.artifactUrl,
           '_blank',
           `toolbar=yes,
              scrollbars=yes,
@@ -243,7 +467,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
         )
         if (isWindowOpen === null) {
           const msg = 'The pop up window has been blocked by your browser, please unblock to continue.'
-          this.snackBar.open(msg, 'X')
+          this.snackBar.open(msg)
         }
       }
     }
@@ -266,17 +490,6 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy {
           this.pageFetchStatus = 'done'
           this.showIsLoadingMessage = false
         }
-      })
-    }
-  }
-
-  raiseTelemetry(data: any) {
-    if (this.htmlContent) {
-      // tslint:disable-next-line:no-console
-      console.log(this.htmlContent.identifier)
-      this.events.raiseInteractTelemetry(data.event, 'scrom', {
-        contentId: this.htmlContent.identifier,
-        ...data,
       })
     }
   }

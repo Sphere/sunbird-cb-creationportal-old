@@ -140,7 +140,13 @@ export class WidgetContentService {
     const url = API_END_POINTS.USER_CONTINUE_LEARNING
     return this.http.post<any>(url, content)
   }
-
+  fetchHierarchyContent(contentId: string): Observable<NsContent.IContent> {
+    const url = `/apis/proxies/v8/action/content/v3/hierarchy/${contentId}?hierarchyType=detail&mode=edit`
+    const apiData = this.http
+      .get<NsContent.IContent>(url)
+      .pipe(retry(1))
+    return apiData
+  }
   setS3Cookie(
     contentId: string,
     // _path: string,

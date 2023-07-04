@@ -26,7 +26,7 @@
     $image-height: 65px;
     height: $image-height;
     width: (16 / 9) * $image-height;
-    margin: 0 $size-s;
+    margin: 5px $size-s;
     filter: drop-shadow(0 0 4px rgba(0, 0, 0, .15));
     border-radius: 10px;
   }

@@ -147,9 +147,9 @@
 
 <ng-template let-content #TocContentList>
   <!-- <div class="resource-container margin-left-xl"> -->
-  <div class="resource-container">
-    <img i18n-alt alt="thumbnail" class="viewer-toc-thumbnail align-self-start margin-auto mat-app-background"
-      [src]="content.thumbnailUrl" [wsUtilsDefaultThumbnail]="defaultThumbnail" />
+  <div class="resource-container" [ngClass]="{ 'content-active-bg': pathSet.has(content.identifier) }">
+    <!-- <img i18n-alt alt="thumbnail" class="viewer-toc-thumbnail align-self-start margin-auto mat-app-background"
+      [src]="content.thumbnailUrl" [wsUtilsDefaultThumbnail]="defaultThumbnail" /> -->
     <!--  <ws-widget-display-content-type-icon class="flex margin-left-xs" [displayContentType]="content?.type">
     </ws-widget-display-content-type-icon> -->
     <div class="resource-meta width-expand">
@@ -164,9 +164,49 @@
           <img *ngIf="isGetingEnabled" class="lock-style" src="cbp-assets/images/lock.png">
         </h1>
       </a>
-      <span class="bold" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms'
-        }}</span>
-      <span class="bold" *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
+      <div [ngSwitch]="content.mimeType">
+        <div *ngSwitchCase="'application/pdf'">
+          <img src="cbp-assets/images/pdf-icon.png">
+          <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform:
+            'hms'
+            }}</span>
+          <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
+        </div>
+        <div *ngSwitchCase="'audio/mpeg'">
+          <img style="width: 14px; height: 17px;background-color: black;" src="cbp-assets/images/audio-img.svg">
+          <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform:
+            'hms'
+            }}</span>
+          <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
+        </div>
+        <div *ngSwitchCase="'video/mp4'">
+          <img style="width: 14px; height: 17px;" src="cbp-assets/images/vedio-img.svg">
+          <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform:
+            'hms'
+            }}</span>
+          <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
+        </div>
+        <div *ngSwitchCase="'application/vnd.ekstep.html-archive'">
+          <img style="width: 14px; height: 17px;background-color: black;" src="cbp-assets/images/SCROM-img.svg">
+          <span style="margin-left: 10px; margin-right: 10px;" *ngIf="content?.duration > 0">{{ content?.duration |
+            pipeDurationTransform:
+            'hms'
+            }}</span>
+          <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
+          <button mat-raised-button color="primary" (click)="showAlert()">
+            Debug
+          </button>
+
+        </div>
+        <div *ngSwitchCase="'text/x-url'">
+          <img style="width: 14px; height: 17px;" src="cbp-assets/images/link-icon.png">
+          <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform:
+            'hms'
+            }}</span>
+          <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
+        </div>
+      </div>
+
     </div>
   </div>
 </ng-template>

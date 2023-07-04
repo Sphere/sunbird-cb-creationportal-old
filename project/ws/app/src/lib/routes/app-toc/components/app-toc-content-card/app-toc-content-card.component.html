@@ -121,7 +121,7 @@
     </div> -->
 
     <div class="card-collection">
-      <img class="card-thumbnail ws-mat-primary-lite-background" [src]="content?.appIcon" alt="Thumbnail"
+      <img class="card-thumbnail ws-mat-primary-lite-background" [src]="content?.thumbnail" alt="Thumbnail"
         (click)="viewChildren = !viewChildren" [wsUtilsDefaultThumbnail]="defaultThumbnail" />
       <div class="flex flex-between width-expand">
         <div class="text-truncate cursor-pointer 1" (click)="viewChildren = !viewChildren">
@@ -274,7 +274,7 @@
         </button>
       </div>
     </div> -->
-    <img class="card-thumbnail ws-mat-primary-lite-background" [src]="content?.appIcon" alt="Thumbnail"
+    <img class="card-thumbnail ws-mat-primary-lite-background" [src]="content?.thumbnail" alt="Thumbnail"
       (click)="viewChildren = !viewChildren" [wsUtilsDefaultThumbnail]="defaultThumbnail" />
     <div class="flex flex-between width-expand">
       <a [routerLink]="resourceLink.url" [queryParams]="resourceLink.queryParams">
