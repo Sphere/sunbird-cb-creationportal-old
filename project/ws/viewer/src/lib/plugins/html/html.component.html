@@ -44,7 +44,7 @@
       This content can only be viewed in Intranet.
     </h2>
     <mat-divider></mat-divider>
-    <mat-progress-bar mode="determinate" *ngIf="progress > 0 && htmlContent?.isIframeSupported.toLowerCase() === 'no'"
+    <mat-progress-bar mode="determinate" *ngIf="progress > 0 && htmlContent?.isIframeSupported?.toLowerCase() === 'no'"
       [value]="progress"></mat-progress-bar>
 
     <div class="flex flex-between padding-top-s">
@@ -82,7 +82,7 @@
   </h2>
 </div>
 
-<div class="container-v2" *ngIf="htmlContent && htmlContent.isIframeSupported === 'Yes'">
+<div class="container-v2" *ngIf="htmlContent && htmlContent.isIframeSupported === 'Yes' || iframeSupport === 'Yes'">
   <iframe #iframeElem title="HTML Content Viewer" i18n-title [src]="iframeUrl"
     (load)="onIframeLoadOrError('load',iframeElem,$event)" (error)="onIframeLoadOrError('error')"
     allow="fullscreen; accelerometer; autoplay; encrypted-media; gyroscope; microphone; camera;"

@@ -38,6 +38,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
   iframeName = `piframe_${Date.now()}`
   urlContains = ''
   mimeType = ''
+  iframeSupport: any
 
   @HostListener('window:blur', ['$event'])
   onBlur(): void {
@@ -199,13 +200,16 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
 
     let iframeSupport: boolean | string | null =
       this.htmlContent && this.htmlContent.isIframeSupported
+
     if (this.htmlContent && this.htmlContent.artifactUrl) {
       if (this.htmlContent.artifactUrl.startsWith('http://') && this.htmlContent.isExternal) {
         this.htmlContent.isIframeSupported = 'No'
       }
       if (typeof iframeSupport !== 'boolean') {
-        iframeSupport = this.htmlContent.isIframeSupported.toLowerCase()
-        if (iframeSupport === 'no') {
+        console.log(this.htmlContent.isIframeSupported)
+        iframeSupport = this.htmlContent.isIframeSupported ? this.htmlContent.isIframeSupported : 'Yes'
+        this.iframeSupport = iframeSupport
+        if (iframeSupport === 'No') {
           this.showIframeSupportWarning = true
           setTimeout(
             () => {
@@ -219,7 +223,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
             },
             30,
           )
-        } else if (iframeSupport === 'maybe') {
+        } else if (iframeSupport === 'Maybe') {
           this.showIframeSupportWarning = true
         } else {
           this.showIframeSupportWarning = false
@@ -320,7 +324,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
             ? streamingUrl.substring(56)
             : streamingUrl.substring(50)
           //const entryPoint = this.htmlContent.entryPoint || ''
-          const newUrl = `/apis/proxies/v8/getContents/${streamingUrl}`
+          const newUrl = `/apis/proxies/v8/getContents${streamingUrl}`
           this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(`${newUrl}`)
 
           // let artifactUrl = this.htmlContent.streamingUrl.substring(51)
