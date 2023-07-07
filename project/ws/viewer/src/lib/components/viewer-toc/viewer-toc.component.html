@@ -75,7 +75,7 @@
 
 
             <div class="content-duration">
-              <h3 class="mat-caption margin-remove width-max-content bold">
+              <h3 class="mat-caption margin-remove width-max-content bold" style="font-size: 14px;">
                 {{ node.duration | pipeDurationTransform: 'hms' }}
               </h3>
             </div>
@@ -193,7 +193,10 @@
             'hms'
             }}</span>
           <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
-          <button mat-raised-button color="primary" (click)="showAlert()">
+          <button style="float: right;
+    margin-right: 10px;
+    height: 30px;
+    border-radius: 20px;" mat-raised-button color="primary" (click)="showAlert()">
             Debug
           </button>
 

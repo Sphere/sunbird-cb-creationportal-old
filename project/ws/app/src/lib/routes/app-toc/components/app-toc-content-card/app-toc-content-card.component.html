@@ -283,29 +283,45 @@
           <div class="flex items-center">
             <ng-container *ngIf="content?.mimeType">
               <div class="pr-1" [ngSwitch]="content?.mimeType | lowercase">
+
                 <div *ngSwitchCase="'application/pdf'">
                   <img src="cbp-assets/images/pdf-icon.png"> PDF
                 </div>
-                <div *ngSwitchCase="'audio/mpeg' || 'application/x-mpegURL'">
-                  <img src="cbp-assets/images/video-icon.png"> Audio
+                <div *ngSwitchCase="'audio/mpeg'">
+                  <img style="width: 14px; height: 17px;background-color: black;" src="cbp-assets/images/audio-img.svg">
+                  Audio
+                </div>
+                <div *ngSwitchCase="'application/x-mpegURL'">
+                  <img style="width: 14px; height: 17px;background-color: black;" src="cbp-assets/images/audio-img.svg">
+                  Audio
                 </div>
                 <div *ngSwitchCase="'video/mp4'">
                   <img src="cbp-assets/images/video-icon.png"> Video
                 </div>
-                <div
-                  *ngSwitchCase="'application/html' || 'application/vnd.ekstep.html-archive'|| 'application/web-module'">
-                  <img src="cbp-assets/images/video-icon.png"> SCORM
+                <div *ngSwitchCase="'application/html'">
+                  <img src="cbp-assets/images/SCROM-img.svg"> SCORM
+                </div>
+
+                <div *ngSwitchCase="'application/web-module'">
+                  <img src="cbp-assets/images/SCROM-img.svg"> SCORM
                 </div>
                 <div *ngSwitchCase="'application/vnd.ekstep.html-archive' ">
-                  <img src="cbp-assets/images/link-icon.png"> SCORM
+                  <img style="width: 14px; height: 17px;background-color: black;" src="cbp-assets/images/SCROM-img.svg">
+                  SCORM
                 </div>
-                <div *ngSwitchCase="'video/x-youtube' || 'text/x-url' ">
+                <div *ngSwitchCase="'video/x-youtube'">
                   <img src="cbp-assets/images/link-icon.png"> Link
                 </div>
-                <div *ngSwitchCase=" 'application/quiz' || 'application/json'">
-                  <img src="cbp-assets/images/link-icon.png"> Assessment
+                <div *ngSwitchCase="'text/x-url' ">
+                  <img src="cbp-assets/images/link-icon.png"> Link
                 </div>
-                <div *ngSwitchDefault><img src="cbp-assets/images/link-icon.png"> Link</div>
+                <div *ngSwitchCase="'application/quiz'">
+                  Quiz
+                </div>
+                <div *ngSwitchCase="'application/json'">
+                  Assessment
+                </div>
+                <!-- <div *ngSwitchDefault><img src="cbp-assets/images/link-icon.png"> Link</div> -->
               </div>
 
             </ng-container>
