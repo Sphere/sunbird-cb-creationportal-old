@@ -3161,7 +3161,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       // update the id
       this.editorStore.currentContent = newCreatedLexid
     }
-    // this.loaderService.changeLoad.next(false)
+    this.loaderService.changeLoad.next(false)
     this.subAction({ type: 'editContent', identifier: this.editorService.newCreatedLexid, nodeClicked: false })
     //this.save()
   }

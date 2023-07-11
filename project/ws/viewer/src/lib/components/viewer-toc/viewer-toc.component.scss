@@ -31,9 +31,14 @@
 }
 
 .content-active {
-  color: orange;
+  color:#154976;
   font-size: 1.02rem;
 }
+ .content-active-bg {
+  border-bottom: 1px solid #e7f2fa;
+  background-color: #e7f2fa;
+ }
+
 
 .content-duration {
   margin: 0 $size-xs;
@@ -87,7 +92,7 @@ app-content-icon {
 }
 
 .resource-container {
-  margin-left: 2rem;
+  //margin-left: 2rem;
   display: flex !important;
   align-items: center;
   justify-content: space-between;
@@ -118,10 +123,13 @@ app-content-icon {
 }
 
 .module-border{
-  box-shadow: 0 0 4px rgb(0 0 0 / 15%);
-  border-radius: 10px;
-  margin: 8px;
-  padding: 2px;
+    box-shadow: 0 0 4px rgba(0,0,0,.15);
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 3px !important;
+    margin-right: 5px !important;
+    margin-bottom: 2px !important;
+    background: none !important;
 }
 
 .lock-style{

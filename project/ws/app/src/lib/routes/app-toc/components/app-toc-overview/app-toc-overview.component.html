@@ -1,4 +1,4 @@
-<div class="flex flex-between flex-wrapped mt-4">
+<div class="flex-between flex-wrapped mt-4">
   <div class="meta-section">
     <!-- Description : Conditional : If not shown here, will be shown over banner -->
     <div *ngIf="
@@ -7,21 +7,21 @@
         showSubtitleOnBanner &&
         content?.description
       " class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.description?.displayName }}</h2>
+      <h2 style="font-weight:bold">{{ tocConfig?.overview?.description?.displayName }}</h2>
       <mat-card-content>
         <div class="mat-subheading-1" [innerHTML]="content?.description"></div>
       </mat-card-content>
     </div>
     <!-- Content Body -->
     <div *ngIf="tocConfig?.overview?.body?.enabled && content?.instructions" class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.body?.displayName }}</h2>
+      <h2 style="font-weight:bold">{{ tocConfig?.overview?.body?.displayName }}</h2>
       <mat-card-content>
         <div class="break-words" [innerHTML]="content?.instructions"></div>
       </mat-card-content>
     </div>
     <!-- Learning objective -->
     <div *ngIf="tocConfig?.overview?.learningObjective?.enabled && content?.learningObjective" class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.learningObjective?.displayName }}</h2>
+      <h2 style="font-weight:bold">{{ tocConfig?.overview?.learningObjective?.displayName }}</h2>
       <mat-card-content>
         <p class="mat-subheading-1" [innerHTML]="content?.learningObjective"></p>
       </mat-card-content>
@@ -152,7 +152,7 @@
     <!-- Skills -->
     <div *ngIf="tocConfig?.overview?.skills?.enabled && content?.skills?.length"
       class="unit-meta-item mat-app-background">
-      <h2>{{ tocConfig?.overview?.skills?.displayName }}</h2>
+      <h2 style="font-weight: bolder">{{ tocConfig?.overview?.skills?.displayName }}</h2>
       <mat-chip-list>
         <mat-chip *ngFor="let skill of content?.skills">{{ skill.name }}</mat-chip>
       </mat-chip-list>
@@ -292,8 +292,10 @@
     </ws-widget-player-brief> -->
   </div>
 </div>
-<div style="font-weight:bold">
-  <h2 class="margin-bottom-m">License terms</h2>
+<div style="
+    margin-bottom: 20px;
+">
+  <h2 style="font-weight:bold" class="margin-bottom-m">License terms</h2>
   <p>CC BY</p>
   <p>This license allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, so
     long as

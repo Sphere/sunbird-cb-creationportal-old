@@ -21,6 +21,7 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
 import { PlayerStateService } from '../../player-state.service'
 import { ViewerDataService } from '../../viewer-data.service'
 import { ViewerUtilService } from '../../viewer-util.service'
+import { SCORMAdapterService } from 'project/ws/viewer/src/lib/plugins/html/SCORMAdapter/scormAdapter'
 interface IViewerTocCard {
   identifier: string
   viewerUrl: string
@@ -30,6 +31,7 @@ interface IViewerTocCard {
   type: string
   complexity: string
   children: null | IViewerTocCard[]
+  mimeType: string
 }
 
 export type TCollectionCardType = 'content' | 'playlist' | 'goals'
@@ -68,6 +70,7 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
     private contentProgressSvc: ContentProgressService,
     private playerStateService: PlayerStateService,
     private editorService: EditorService,
+    private scormAdapterService: SCORMAdapterService,
   ) {
     this.nestedTreeControl = new NestedTreeControl<IViewerTocCard>(this._getChildren)
     this.nestedDataSource = new MatTreeNestedDataSource()
@@ -291,13 +294,16 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
       duration: content.duration,
       type: content.resourceType ? content.resourceType : content.contentType,
       complexity: content.complexityLevel,
+      mimeType: content.mimeType,
       children:
         Array.isArray(content.children) && content.children.length
           ? content.children.map(child => this.convertContentToIViewerTocCard(child))
           : null,
     }
   }
-
+  showAlert() {
+    this.scormAdapterService.LMSCommit()
+  }
   private createCollectionCard(
     collection: NsContent.IContent | NsContent.IContentMinimal,
   ): ICollectionCard {

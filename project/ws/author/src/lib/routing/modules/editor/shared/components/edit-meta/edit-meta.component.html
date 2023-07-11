@@ -785,16 +785,17 @@
             </span>
           </div>
         </div>
-        <mat-form-field appearance="fill" class="margin-top-s field-edit-width">
-          <mat-label>(Optional) CNE points</mat-label>
-          <input matInput formControlName="cneName" placeholder="(Optional) CNE points" />
-          <mat-hint class="mt-hint">Note: CNE Points will be approved by INC</mat-hint>
-        </mat-form-field>
-        <div class="form-edit-int" *ngIf="addedCompetency?.length > 0">
-          <div class="form-edit-width" id="competencies" *ngIf="addedCompetency?.length > 0">
-            <p><strong>Competencies List</strong></p>
-            <div *ngFor="let comp of addedCompetency" style="width: 450px; margin-bottom: 10px">
-              <div style="
+        <div>
+          <mat-form-field appearance="fill" class="margin-top-s field-edit-width" style="float: left;">
+            <mat-label>(Optional) CNE points</mat-label>
+            <input matInput formControlName="cneName" placeholder="(Optional) CNE points" />
+            <mat-hint class="mt-hint">Note: CNE Points will be approved by INC</mat-hint>
+          </mat-form-field>
+          <div class="form-edit-int" *ngIf="addedCompetency?.length > 0" style="    margin-left: 65px;">
+            <div style="margin-left: 62px;" id="competencies" *ngIf="addedCompetency?.length > 0">
+              <p><strong>Competencies List</strong></p>
+              <div *ngFor="let comp of addedCompetency" style="margin-bottom: 10px">
+                <div style="
                   background: #ffffff;
                   box-shadow: 0px 0px 4px rgb(0 0 0 / 15%);
                   border-radius: 16px;
@@ -802,11 +803,12 @@
                   margin-left: 5px;
                   margin-right: 5px;
                 ">
-                <p style="float: left">{{comp.Code}} - {{ comp.competencyName }}</p>
-                <mat-icon style="color: #1c5d95; cursor: pointer; float: right" class="icons-list"
-                  (click)="deleteCompetancy(comp)">delete</mat-icon>
-                <p *ngIf="comp.level" style="color: #1c5d95; clear: left">Level {{ comp.level }}</p>
-                <p *ngIf="!comp.level" style="color: #1c5d95; clear: left"></p>
+                  <p style="float: left">{{comp.Code}} - {{ comp.competencyName }}</p>
+                  <mat-icon style="color: #1c5d95; cursor: pointer; float: right" class="icons-list"
+                    (click)="deleteCompetancy(comp)">delete</mat-icon>
+                  <p *ngIf="comp.level" style="color: #1c5d95; clear: left">Level {{ comp.level }}</p>
+                  <p *ngIf="!comp.level" style="color: #1c5d95; clear: left"></p>
+                </div>
               </div>
             </div>
           </div>

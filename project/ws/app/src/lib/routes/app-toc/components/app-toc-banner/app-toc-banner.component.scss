@@ -43,11 +43,18 @@
 .fluid-width {
   width: 100%;
 }
+.blue-link {
+     color: #5996e6 !important;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+}
 
 .header-synopsis {
   height: 100%;
-  padding: 29px 10rem 0px 10rem;
-  background: #fbf5f2;
+  padding: 15px 10rem 0px 10rem;
+  //background: #fbf5f2;
   box-sizing: border-box;
 
   .apIcon {
