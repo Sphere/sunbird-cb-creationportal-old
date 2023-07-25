@@ -101,7 +101,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   backToCourse?: Subscription
   isModulePageEnabled: boolean = false;
-
+  isReviewChecklistEnabled: boolean = false;
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -122,6 +122,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     // private contentSvc: WidgetContentService,
     private _configurationsService: ConfigurationsService,
   ) {
+    if (sessionStorage.getItem('isReviewChecklist')) {
+      this.dialog.closeAll()
+      sessionStorage.removeItem('isReviewChecklist')
+      this.isReviewChecklistEnabled = true
+    }
     this.callSaveFn = this.headerService.isSavePressed
     this.rootSvc.showNavbarDisplay$.next(false)
     this.headerService.headerSaveData.subscribe(data => {

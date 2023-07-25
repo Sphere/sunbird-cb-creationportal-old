@@ -1,11 +1,41 @@
 @import 'ws-common';
 @import 'ws-mixins';
-
+.info-msg{
+  display: flex;
+  align-items: center;
+  margin: 0px !important;
+}
 .width-expand {
   flex: 1;
   min-width: 1px;
 }
+.mode-block{
+  color: #1C5D95;
+  /* Header 3 */
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.4px;
+}
+.review-block{
+  background: #F7FBFE;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 10px;
+    height: 66px;
+    padding: 0px 63px;
 
+}
+.review-checkBox{
+  color: #1C5D95;
+font-family: Roboto;
+font-size: 16px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
 .viewer-sidenav-container {
   height: calc(100vh - 56px);
 }

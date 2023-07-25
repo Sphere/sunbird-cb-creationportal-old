@@ -35,6 +35,7 @@ export const INIT = `${AUTHORING_SEARCH_BASE}/v1/`
 export const UPLOAD_APPICON = `${CONTENT_FILE_BASE}TestAuth/`
 export const STREAM_FILES = `/assets/`
 export const NON_STREAM_FILES = `/artifacts/`
+export const GET_JSON = `/apis/protected/v8/scroing/getTemplate/`
 
 export const EMPLOYEE_LIST = `${AUTHORING_SEARCH_BASE}v1/autoComplete/`
 

@@ -34,7 +34,7 @@ import { ISearchContent, ISearchResult } from '../../../../interface/search'
 import { environment } from '../../../../../../../../../src/environments/environment'
 // import { HttpHeaders } from '@angular/common/http'
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class EditorService {
   accessPath: string[] = []
   newCreatedLexid!: string

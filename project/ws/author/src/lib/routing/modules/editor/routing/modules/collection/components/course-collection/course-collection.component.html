@@ -113,9 +113,24 @@
       <ws-auth-web-module-editor *ngIf="!showAddchapter && viewMode === 'webmodule'" (data)="action($event)">
       </ws-auth-web-module-editor>
       <ws-auth-edit-meta [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" (data)="action($event)"
-        *ngIf="!showAddchapter && viewMode === 'meta'">
+        *ngIf="!showAddchapter && viewMode === 'meta'&&!isReviewChecklistEnabled">
       </ws-auth-edit-meta>
       <!--  [class.hidden]="viewMode !== 'meta'" -->
+
+      <div *ngIf="isReviewChecklistEnabled">
+        <div class="flex review-block" style="padding: 0px 45px;">
+          <h3 class="info-msg" i18n>
+            <img style="margin-right: 10px;" loading="lazy" src="\cbp-assets\icons\simple-icons_codereview.svg"
+              alt="clock"><span class="mode-block" style="vertical-align: super;" i18n>You
+              are in review mode</span>
+          </h3>
+        </div>
+        <!-- <ws-auth-content-quality type="" (data)="action($event)"></ws-auth-content-quality> -->
+        <ws-auth-content-quality [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" type=""
+          *ngIf="isReviewChecklistEnabled" (data)="action($event)"></ws-auth-content-quality>
+      </div>
+
+
 
       <!-- <ws-auth-edit-meta [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" (data)="action($event)"
         *ngIf="!showAddchapter && viewMode !== 'meta' && showResource == true"

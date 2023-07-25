@@ -5,6 +5,7 @@ import { IFormMeta } from './../interface/form'
 import { IConditionsV2 } from '../interface/conditions-v2'
 import { IMetaUnit } from '../routing/modules/editor/interface/meta'
 import { Subject } from 'rxjs'
+import { NSIQuality } from '../routing/modules/editor/interface/content-quality'
 
 interface IPermission {
   conditions: IConditionsV2
@@ -20,10 +21,14 @@ interface IPermission {
  */
 @Injectable()
 export class AuthInitService {
+  contentQuality!: NSIQuality.IContentQualityConfig
+
   private messageSource = new Subject<any>()
   public currentMessage = this.messageSource.asObservable()
   private publishSource = new Subject<any>()
   public publishMessage = this.publishSource.asObservable()
+  private reviewSource = new Subject<any>()
+  public reviewMessage = this.reviewSource.asObservable()
 
   private backToHomeSource = new Subject<any>()
   public backToHomeMessage = this.backToHomeSource.asObservable()
@@ -82,6 +87,9 @@ export class AuthInitService {
   }
   publishData(message: any) {
     this.publishSource.next(message)
+  }
+  reviewCheck(message: any) {
+    this.reviewSource.next(message)
   }
   uploadData(message: any) {
     this.uploadSource.next(message)
