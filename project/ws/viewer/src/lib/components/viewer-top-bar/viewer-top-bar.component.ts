@@ -6,6 +6,8 @@ import { Subscription } from 'rxjs'
 import { ViewerDataService } from '../../viewer-data.service'
 import { NsContent } from '@ws-widget/collection/src/lib/_services/widget-content.model'
 import { AccessControlService } from '../../../../../author/src/lib/modules/shared/services/access-control.service'
+import { MatDialog } from '@angular/material/dialog'
+import { ReviewDialogComponent } from '@ws/viewer/src/lib/components/review-checklist/review-dialog.component'
 
 @Component({
   selector: 'viewer-viewer-top-bar',
@@ -43,6 +45,7 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     private valueSvc: ValueService,
     private router: Router,
     private accessService: AccessControlService,
+    public dialog: MatDialog,
   ) {
     this.valueSvc.isXSmall$.subscribe(isXSmall => {
       this.logo = !isXSmall
@@ -119,9 +122,23 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
 
   }
 
-  sendForReview() {
-    sessionStorage.setItem('isReviewClicked', 'true')
-    this.router.navigateByUrl(`/author/editor/${this.activatedRoute.snapshot.queryParams.collectionId}`)
-    console.log(this.activatedRoute.snapshot.queryParams.collectionId)
+  sendForReview(value: string) {
+    console.log("value: ", value)
+    if (value == 'review') {
+      const dialogRef = this.dialog.open(ReviewDialogComponent, {
+        width: '480px',
+        height: '275px',
+        data: "yes",
+      })
+      dialogRef.afterClosed().subscribe((d) => {
+        console.log("d", d)
+      })
+    } else {
+      sessionStorage.setItem('isReviewClicked', 'true')
+
+      this.router.navigateByUrl(`/author/editor/${this.activatedRoute.snapshot.queryParams.collectionId}`)
+      console.log(this.activatedRoute.snapshot.queryParams.collectionId)
+    }
+
   }
 }
