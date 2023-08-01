@@ -170,6 +170,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
           } else if (this.showAddchapter) {
             if (this.viewMode === 'meta' && this.clickedNext) {
+              console.log("fadfasdf")
+              this.initService.isEditMetaPageAction('backFromModulePage')
               this.clickedNext = false
               this.showAddchapter = false
               this.isModulePageEnabled = false
@@ -253,6 +255,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           //this.save()
         }
       })
+    if (this.viewMode == 'meta' && !this.clickedNext && !this.showAddchapter && !this.isReviewChecklistEnabled) {
+      console.log("this.viewMeta", this.viewMode, this.clickedNext, this.showAddchapter, this.isReviewChecklistEnabled)
+      console.log("fasrwerweeeeeeeee")
+      this.initService.isEditMetaPageAction('backFromModulePage')
+
+    }
     this.initService.updateAssessmentMessage.subscribe(
       (data: any) => {
         if (data) {
@@ -300,6 +308,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.routerValuesCall()
+
     this.courseId = this.storeService.parentNode[0]
     this.parentNodeId = this.storeService.currentParentNode
 

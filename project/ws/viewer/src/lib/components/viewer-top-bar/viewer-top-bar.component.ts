@@ -36,6 +36,8 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
   isPreview = false
   forChannel = false
   isPublisher!: boolean
+  isReviewer!: boolean
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private domSanitizer: DomSanitizer,
@@ -123,8 +125,10 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
   }
 
   sendForReview(value: string) {
-    console.log("value: ", value)
-    if (value == 'review') {
+    this.isReviewer = this.accessService.hasRole(['content_reviewer'])
+
+    console.log("value: ", value, this.isReviewer)
+    if (value == 'review' && this.isReviewer) {
       const dialogRef = this.dialog.open(ReviewDialogComponent, {
         width: '480px',
         height: '275px',

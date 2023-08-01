@@ -21,13 +21,17 @@ export class CourseHeaderComponent implements OnInit {
   @Output() action = new EventEmitter<string>()
   @Output() subAction = new EventEmitter<{ type: string; identifier: string; nodeClicked?: boolean }>()
   @Input() isModelHeaderView: boolean = false;
-
+  isEditMetaPage: boolean = false;
   requiredConfig: IActionButton[] = []
   backNav: boolean = false
   constructor(private configSvc: ConfigurationsService, private domSanitizer: DomSanitizer,
     private headerService: HeaderServiceService,
     private initService: AuthInitService,
     private store: CollectionStoreService) {
+    this.initService.isEditMetaPageClickedClickedMessage.subscribe((message) => {
+      console.log("message: ", message)
+      this.isEditMetaPage = true
+    })
     this.headerService.showCourseHeader.subscribe(data => {
       this.courseNameHeader = data
     })

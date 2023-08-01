@@ -16,7 +16,10 @@
     <div *ngIf="this.backNav" style="display: flex; flex-direction: row;">
       <mat-icon style="color: #FAFAFA; margin-top: 4px;" class="cursor-pointer margin-left-m"
         (click)="backNavigation()">arrow_back</mat-icon>
-      <span style="font-size: 16px;" class="mt-name margin-left-s white-icon">Back to Course Builder</span>
+      <span *ngIf="!isEditMetaPage" style="font-size: 16px;" class="mt-name margin-left-s white-icon">Back to Course
+        Builder</span>
+      <span *ngIf="isEditMetaPage" style="font-size: 16px;" class="mt-name margin-left-s white-icon">Back to
+        dashboard</span>
     </div>
 
 

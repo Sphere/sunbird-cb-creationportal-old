@@ -65,6 +65,9 @@ export class AuthInitService {
   private isBackButtonFromAssessmentClicked = new Subject<any>()
   public isBackButtonFromAssessmentClickedMessage = this.isBackButtonFromAssessmentClicked.asObservable()
 
+  private isEditMetaPageClicked = new Subject<any>()
+  public isEditMetaPageClickedClickedMessage = this.isEditMetaPageClicked.asObservable()
+
   authConfig!: IFormMeta
   authMetaV2!: { [key: string]: IMetaUnit<any> }
   ordinals: any
@@ -123,6 +126,10 @@ export class AuthInitService {
   }
   isBackButtonClickedFromAssessmentAction(message: any) {
     this.isBackButtonFromAssessmentClicked.next(message)
+  }
+  isEditMetaPageAction(message: any) {
+    console.log("rwqweqweqwe")
+    this.isEditMetaPageClicked.next(message)
   }
   backToHome(message: any) {
     this.backToHomeSource.next(message)
