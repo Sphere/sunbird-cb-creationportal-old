@@ -5,6 +5,9 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { NSContent } from '@ws/author/src/lib/interface/content'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { Router } from '@angular/router'
+import { ContentQualityService } from '../../../../../../../author/src/lib/routing/modules/editor/shared/services/content-quality.service'
+import { NSIQuality } from '../../../../../../../author/src/lib/routing/modules/editor/interface/content-quality'
+import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 
 @Component({
   selector: 'ws-auth-root-comments-dialog',
@@ -22,13 +25,17 @@ export class CommentsDialogComponent implements OnInit {
   showPublishResourceBtn = false
   courseEdited: any
   isModule: boolean = false
+  role!: any
+  qualityResponse!: NSIQuality.IQualityResponse
   constructor(
+    private _qualityService: ContentQualityService,
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<CommentsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: NSContent.IContentMeta,
     private authInitService: AuthInitService,
     private editorService: EditorService,
-    private router: Router
+    private router: Router,
+    private accessService: AccessControlService
   ) {
     this.authInitService.publishMessage.subscribe(
       async (result: any) => {
@@ -91,6 +98,24 @@ export class CommentsDialogComponent implements OnInit {
 
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
     this.contentMeta = this.data
+    const reqObj = {
+      resourceId: this.data.identifier,
+      resourceType: 'content',
+      // userId: this._configurationsService.userProfile.userId,
+      getLatestRecordEnabled: true,
+    }
+    this.role = this.accessService.hasRole(['content_publisher'])
+    if (this.role) {
+      this._qualityService.fetchresult(reqObj).subscribe((result: any) => {
+        if (result && result.result && result.result.resources) {
+          const rse = result.result.resources || []
+          if (rse.length === 1) {
+            this.qualityResponse = rse[0]
+          }
+        }
+      })
+    }
+
     // console.log("this.contentMeta", this.contentMeta)
     // to check if the course is having topics
     for (const element of this.contentMeta.children) {
@@ -173,7 +198,14 @@ export class CommentsDialogComponent implements OnInit {
     })
     this.history = (this.contentMeta.comments || []).reverse()
   }
-
+  get getQualityPercent() {
+    if (this.role) {
+      const score = this.qualityResponse.finalWeightedScore || 0
+      return score.toFixed(1)
+    } else {
+      return
+    }
+  }
   showError(formControl: AbstractControl) {
     if (formControl.invalid && !formControl.pristine) {
       if (this.isSubmitPressed) {

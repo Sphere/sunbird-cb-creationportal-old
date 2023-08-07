@@ -810,7 +810,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       if (contentAction !== 'publishResources') {
         const dialogRef = this.dialog.open(CommentsDialogComponent, {
           width: '750px',
-          height: '450px',
+          height: '485px',
           data: this.contentService.getOriginalMeta(this.currentParentId),
         })
 

@@ -30,8 +30,10 @@
     <div class="flex flex-between flex-wrap-reverse">
       <div class="header-left">
         <div class="header-synopsis">
-          <button [routerLink]="['/author/editor/' + content?.identifier  + '/collection']" mat-icon-button
-            [disableRipple]="true" class="back-icon"><mat-icon>chevron_left</mat-icon></button>
+          <button *ngIf="!isReviewer" [routerLink]="['/author/editor/' + content?.identifier  + '/collection']"
+            mat-icon-button [disableRipple]="true" class="back-icon"><mat-icon>chevron_left</mat-icon></button>
+          <button *ngIf="isReviewer" [routerLink]="'/author/cbp'" mat-icon-button [disableRipple]="true"
+            class="back-icon"><mat-icon>chevron_left</mat-icon></button>
           <div style="float:right">
             <img loading="lazy" src=".\cbp-assets\images\clock.svg" alt="clock"> {{ content?.duration |
             pipeDurationTransform: 'hms' }}

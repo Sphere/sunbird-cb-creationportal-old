@@ -3,6 +3,7 @@
     <mat-icon style="cursor: pointer;" mat-dialog-close mat-raised-button i18n>close</mat-icon>
   </div>
   <h2 class="text-bold">Publishing Course: {{contentMeta.name}}</h2>
+  <h4 *ngIf="qualityResponse" class="text-bold">Reviewer Checklist Score: {{getQualityPercent}}%</h4>
   <p class="publish-course-note">Note: Status of all the resources has to be live, before publishing the course</p>
   <div style="float: right; margin-top: -42px;">
     <button style="font-size: 14px !important;" class="margin-left-s
