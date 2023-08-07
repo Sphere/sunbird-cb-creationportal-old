@@ -287,7 +287,7 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
 
   get getQualityPercent() {
     const score = this.qualityResponse.finalWeightedScore || 0
-    return score.toFixed(2)
+    return score.toFixed(1)
   }
   getFirstHeadingName(idx: number) {
     return this.qualityResponse.criteriaModels[idx || 0].criteria

@@ -140,10 +140,10 @@
           <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Start Review Cheklist
           </span>
         </button>
-        <button mat-raised-button type="button" (click)="skip()" class="skip-btn">
+        <!-- <button mat-raised-button type="button" (click)="skip()" class="skip-btn">
           <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Skip
           </span>
-        </button>
+        </button> -->
       </div>
     </mat-card-actions>
   </mat-card>
@@ -180,14 +180,14 @@
 <ng-template #result>
   <mat-card class="result-container">
     <!-- {{qualityResponse | json}} -->
-    <mat-card-title class="margin-left-s">
+    <!-- <mat-card-title class="margin-left-s">
       <span class="mat-title text-dark result-txt" id="content-result">Result:</span>
       <span *ngIf="minPassPercentage<=getQualityPercent && qualityResponse.qualifiedMinCriteria"
         class="mat-title green-txt result-txt" id="content-result"> Qualified</span>
       <span *ngIf="minPassPercentage>=getQualityPercent && !qualityResponse.qualifiedMinCriteria"
         class="mat-title text-danger result-txt" id="content-result"> Failed</span>
 
-    </mat-card-title>
+    </mat-card-title> -->
     <mat-card-content class="margin-top-xs mobile-break">
       <!-- {{qualityResponse | json}} -->
       <!-- <span class="mat-subtitle" id="content-result" *ngIf="!qualityResponse.qualifiedMinCriteria">

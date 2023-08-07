@@ -59,9 +59,9 @@
         pointer: data.contentType !== 'Knowledge Board',
         cursor: data.contentType === 'Knowledge Board'
       }" [routerLink]="
-        data.contentType !== 'Knowledge Board'
+        data.contentType !== 'Knowledge Board'&&!isReviewer
           ? ['/author/editor/' + data.identifier + '/collection']
-          : []
+          : (data | pipeContentRoute : true).url
       " [queryParamsHandling]="data.contentType === 'Knowledge Board' ? 'preserve' : ''">
       <img class="" role="link" [src]="data.appIcon" (error)="changeToDefaultImg($event)" [alt]="data.name" />
       <!--<img class="" role="link" [src]="data.appIcon" (error)="changeToDefaultImg($event)" [alt]="data.name" /> -->
@@ -162,15 +162,15 @@
     <!-- <span i18n>Unpublish content</span> -->
     <span i18n>Retire content</span>
   </a>
-  <a *ngIf="showMenuItem('review')" mat-menu-item (click)="takeAction('review')">
+  <a *ngIf="showMenuItem('review')" mat-menu-item [routerLink]="(data | pipeContentRoute : true).url">
     <mat-icon>rate_review</mat-icon>
     <span i18n>Review</span>
   </a>
-  <a *ngIf="showMenuItem('preview')" mat-menu-item [routerLink]="(data | pipeContentRoute : true).url"
+  <!-- <a *ngIf="showMenuItem('preview')" mat-menu-item [routerLink]="(data | pipeContentRoute : true).url"
     [title]="data.name" aria-label="Content" i18n-aria-label="Content | Click to view">
     <mat-icon>remove_red_eye</mat-icon>
     <span i18n>Preview</span>
-  </a>
+  </a> -->
   <a *ngIf="showMenuItem('moveToDraft') && this.data.status == 'Live'" mat-menu-item
     (click)="takeAction('moveToDraft')">
     <mat-icon>reply</mat-icon>

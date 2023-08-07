@@ -22,6 +22,7 @@ export class ContentCardComponent implements OnInit {
   CourseStatusName: string = ''
   @Output() action = new EventEmitter<any>()
   isBaseContent: Boolean = true
+  isReviewer: Boolean = false
   constructor(private accessService: AccessControlService,
     private authInitService: AuthInitService,
     private router: Router,
@@ -29,6 +30,11 @@ export class ContentCardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    if (this.accessService.hasRole(['content_reviewer'])) {
+      this.isReviewer = true
+    } else {
+      this.isReviewer = false
+    }
     if ((this.router.url).includes('published')) {
       this.pageName = true
     }
