@@ -21,6 +21,9 @@ export class CourseHeaderComponent implements OnInit {
   @Output() action = new EventEmitter<string>()
   @Output() subAction = new EventEmitter<{ type: string; identifier: string; nodeClicked?: boolean }>()
   @Input() isModelHeaderView: boolean = false;
+  @Input() backToDashboard: boolean = false;
+
+
   isEditMetaPage: boolean = false;
   requiredConfig: IActionButton[] = []
   backNav: boolean = false
@@ -28,16 +31,24 @@ export class CourseHeaderComponent implements OnInit {
     private headerService: HeaderServiceService,
     private initService: AuthInitService,
     private store: CollectionStoreService) {
-    this.initService.isEditMetaPageClickedClickedMessage.subscribe((message) => {
-      console.log("message: ", message)
-      this.isEditMetaPage = true
-    })
     this.headerService.showCourseHeader.subscribe(data => {
       this.courseNameHeader = data
     })
   }
 
   ngOnInit() {
+    if (this.backToDashboard) {
+      this.isEditMetaPage = true
+    } else {
+      this.isEditMetaPage = false
+    }
+    this.initService.isEditMetaPageClickedClickedMessage.subscribe((message) => {
+      if (!message) {
+        this.isEditMetaPage = false
+      } else {
+        this.isEditMetaPage = true
+      }
+    })
     if (this.configSvc.instanceConfig) {
       this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
         this.configSvc.instanceConfig.logos.app,

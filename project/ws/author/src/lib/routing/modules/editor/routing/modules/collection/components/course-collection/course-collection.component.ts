@@ -102,6 +102,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   backToCourse?: Subscription
   isModulePageEnabled: boolean = false;
   isReviewChecklistEnabled: boolean = false;
+  backToDashboard: boolean = false;
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -134,6 +135,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         this.save()
       }
     })
+    if (!this.showAddchapter) {
+      if (this.viewMode === 'meta' && !this.clickedNext) {
+        this.backToDashboard = true
+        this.initService.isEditMetaPageAction('backFromModulePage')
+      }
+    }
     this.changeMessageSubscription = this.initService.currentMessage.subscribe(
       (data: any) => {
         if (data === 'publishResources') {
@@ -2530,6 +2537,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   // }
 
   triggerSave() {
+    if (this.showAddchapter) {
+      if (!this.clickedNext) {
+        this.backToDashboard = false
+        this.initService.isEditMetaPageAction(this.backToDashboard)
+      }
+    }
     const nodesModified: any = {}
     let isRootPresent = false
 
