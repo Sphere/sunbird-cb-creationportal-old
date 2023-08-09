@@ -12,6 +12,36 @@
   color: #000000;
   font-size: 18px;
 }
+
+
+.mat-tab-label .mat-tab-label-content{
+/* Header 3 */
+font-family: Roboto !important;
+font-size: 20px !important;
+font-style: normal !important;
+font-weight: 400 !important;
+line-height: 24px !important; /* 120% */
+letter-spacing: -0.4px !important;
+}
+::ng-deep .mat-tab-label-active{
+// .mat-tab-label-content{
+  opacity: 1;
+  border-bottom-color: #1C5D95 !important;
+  color: #1C5D95  !important;
+// }
+}
+::ng-deep .mat-tab-label-container{
+  .mat-tab-label{
+    /* Header 3 */
+    font-family: Roboto !important;
+    font-size: 18px !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    line-height: 24px !important; /* 120% */
+    letter-spacing: -0.4px !important;
+  }
+}
+
 ::ng-deep .mat-tab-header {
   /* Your custom styles for the tab header */
   /* Header 3 */

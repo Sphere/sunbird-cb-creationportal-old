@@ -1,6 +1,6 @@
 <div class="flex flex-between flex-wrap-reverse">
   <div class="header-left">
-    <div class="header-synopsis" *ngIf="qualityResponse">
+    <div class="header-synopsis" *ngIf="qualityResponse&&!loading">
       <div class="flex flex-column">
         <a [routerLink]="'/author/cbp'">
           <img class="answer-icon mt-4 mb-4" src="cbp-assets/icons/akar-icons_arrow-left.svg" />
@@ -33,7 +33,7 @@
       </mat-tab-group>
     </div>
     <div class="header-synopsis">
-      <div *ngIf="!qualityResponse" class="no-data-message">
+      <div *ngIf="!qualityResponse&&!loading" class="no-data-message">
         <p>No data found.</p>
       </div>
     </div>
