@@ -157,6 +157,10 @@
     <mat-icon>publish</mat-icon>
     <span i18n>Publish</span>
   </a>
+  <a *ngIf="showMenuItem('publish')" mat-menu-item [routerLink]="'/author/reviewerChecklist/' + data.identifier">
+    <mat-icon>check_circle</mat-icon>
+    <span i18n>Reviewer Checklist</span>
+  </a>
   <a *ngIf="showMenuItem('unpublish')" mat-menu-item (click)="takeAction('unpublish')">
     <mat-icon>reply</mat-icon>
     <!-- <span i18n>Unpublish content</span> -->

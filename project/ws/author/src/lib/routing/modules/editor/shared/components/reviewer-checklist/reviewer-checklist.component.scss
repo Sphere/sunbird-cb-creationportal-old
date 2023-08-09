@@ -1,0 +1,113 @@
+.checklist-container{
+  overflow: scroll;
+  height: 400px;
+}
+::ng-deep .mat-tab-header {
+  margin-bottom: 15px; /* Add the desired margin value at the bottom of the tab header */
+}
+.no-data-message {
+  text-align: center;
+  padding: 20px;
+
+  color: #000000;
+  font-size: 18px;
+}
+::ng-deep .mat-tab-header {
+  /* Your custom styles for the tab header */
+  /* Header 3 */
+font-family: Roboto !important;
+font-size: 20px !important;
+font-style: normal !important;
+font-weight: 400 !important;
+line-height: 24px !important; /* 120% */
+letter-spacing: -0.4px !important;
+}
+::ng-deep .mat-tab-label-active, .mat-tab-label-active:focus{
+  opacity: 1;
+  border-bottom-color: #1C5D95 !important;
+  color: #1C5D95  !important;
+}
+.review-text-name{
+  color: #000;
+
+/* Header 1 */
+font-family: Roboto;
+font-size: 32px;
+font-style: normal;
+font-weight: 400;
+line-height: 38.4px; /* 120% */
+letter-spacing: -0.64px;
+}
+.header-left {
+  flex: 1;
+  min-width: 50%;
+}
+.header-synopsis {
+  height: 100%;
+  padding: 15px 9rem 0px 9rem;
+  //background: #fbf5f2;
+  box-sizing: border-box;
+}
+.question-container{
+  color: #000;
+
+/* Header 3 */
+font-family: Roboto;
+font-size: 18px;
+font-style: normal;
+font-weight: 400;
+line-height: 24px;
+letter-spacing: -0.4px;
+  width: 1015px;
+  height: auto;
+  flex-shrink: 0;
+  border-radius: 15px;
+  background: #FFF;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
+  margin: 5px;
+}
+.answer-container{
+  display: flex;
+  justify-content: center;
+  width: 100px;
+  height: auto;
+  flex-shrink: 0;
+  border-radius: 15px;
+  background: #FFF;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
+    margin: 5px;
+align-items: center;
+}
+.answer-icon{
+  width: 24px;
+height: 24px;
+}
+.mat-tab-header{
+  margin-bottom: 10px;
+}
+.mat-tab-label-content{
+  color: #989898;
+
+/* Header 3 */
+font-family: Roboto;
+font-size: 20px !important;
+font-style: normal !important;
+font-weight: 400 !important;
+line-height: 24px !important;  /* 120% */
+letter-spacing: -0.4px !important;
+}
+/* Styling the scrollbar track */
+::-webkit-scrollbar {
+  width: 5px; /* Set the width of the scrollbar */
+}
+
+/* Styling the scrollbar thumb (the draggable handle) */
+::-webkit-scrollbar-thumb {
+  background-color: #888; /* Color of the scrollbar thumb */
+  border-radius: 5px; /* Rounded corners for the thumb */
+}
+
+/* Styling the scrollbar track (background) */
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Color of the scrollbar track */
+}

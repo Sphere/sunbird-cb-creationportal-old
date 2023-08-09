@@ -231,6 +231,10 @@ export class CommentsDialogComponent implements OnInit {
       // this.commentsForm.controls['action'].markAsTouched()
     }
   }
+  viewDetails() {
+    this.dialogRef.close(this.commentsForm)
+    this.router.navigate(['/author/reviewerChecklist/' + this.contentMeta.identifier])
+  }
   refreshCourse() {
     const url = this.router.url
     const id = url.split('/')
