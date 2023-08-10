@@ -149,6 +149,10 @@
     <mat-icon>edit</mat-icon>
     <span i18n>Edit</span>
   </a>
+  <a *ngIf="showMenuItem('edit')" mat-menu-item (click)="uploadCertificate(data)">
+    <mat-icon>cloud_upload</mat-icon>
+    <span i18n>Upload Certificate</span>
+  </a>
   <a *ngIf="showMenuItem('delete')" mat-menu-item (click)="takeAction('delete')">
     <mat-icon>delete</mat-icon>
     <span i18n>Delete </span>

@@ -3,6 +3,8 @@ import { AccessControlService } from '@ws/author/src/lib/modules/shared/services
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { Router } from '@angular/router'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+import { MatDialog } from '@angular/material/dialog'
+import { CertificateDialogComponent } from '@ws/author/src/lib/modules/shared/components/certificate-upload-dialog/certificate-upload-dialog.component'
 
 @Component({
   selector: 'ws-auth-root-content-card',
@@ -27,6 +29,7 @@ export class ContentCardComponent implements OnInit {
     private authInitService: AuthInitService,
     private router: Router,
     private editorService: EditorService,
+    public dialog: MatDialog,
   ) { }
 
   ngOnInit() {
@@ -176,6 +179,19 @@ export class ContentCardComponent implements OnInit {
       this.router.navigateByUrl(`/author/editor/${data.identifier}`)
     }
     this.authInitService.editCourse(actionType)
+  }
+  uploadCertificate(data: any) {
+    console.log("data: ", JSON.stringify(data))
+    const dialogRef = this.dialog.open(CertificateDialogComponent, {
+      width: '1085px',
+      height: '645px',
+      data,
+    })
+    // You can subscribe to the afterClosed() observable to do something when the dialog is closed.
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed', result)
+      // You can perform any actions you need here after the dialog is closed.
+    })
   }
 
   changeToDefaultImg($event: any) {
