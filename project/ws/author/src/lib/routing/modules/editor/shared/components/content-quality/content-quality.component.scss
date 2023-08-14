@@ -2,6 +2,17 @@
 @import 'ws-mixins';
   $colorBlack040: rgba(0, 0, 0, 0.040);
 
+.green {
+  color: green;
+}
+
+.orange {
+  color: orange;
+}
+
+.red {
+  color: red;
+}
 .reviewer-container{
   padding: 0px 45px;
   height: 538px;
@@ -173,7 +184,9 @@ height: 538px;
 .active-page {
   background: #ffffff !important;
   color: #fff;
-  border: 1px solid #2E6491;
+  // border: 1px solid #2E6491;
+  border: 2px groove #2E6491;
+  // border: 2px ridge #2E6491;
 }
 
 .btn-n {
@@ -291,7 +304,7 @@ letter-spacing: -0.8px !important;
   color: #ff0000 !important;
 }
 .percentage-text{
-  color: #1C5D95 !important;
+  // color: #1C5D95 !important;
 
 /* Display 1 */
 font-family: Roboto !important;
