@@ -30,6 +30,7 @@ export class ContentCardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
     if (this.accessService.hasRole(['content_reviewer'])) {
       this.isReviewer = true
     } else {

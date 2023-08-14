@@ -170,11 +170,11 @@
     <mat-icon>rate_review</mat-icon>
     <span i18n>Review</span>
   </a>
-  <!-- <a *ngIf="showMenuItem('preview')" mat-menu-item [routerLink]="(data | pipeContentRoute : true).url"
+  <a *ngIf="showMenuItem('preview')&&!isReviewer" mat-menu-item [routerLink]="(data | pipeContentRoute : true).url"
     [title]="data.name" aria-label="Content" i18n-aria-label="Content | Click to view">
     <mat-icon>remove_red_eye</mat-icon>
     <span i18n>Preview</span>
-  </a> -->
+  </a>
   <a *ngIf="showMenuItem('moveToDraft') && this.data.status == 'Live'" mat-menu-item
     (click)="takeAction('moveToDraft')">
     <mat-icon>reply</mat-icon>
