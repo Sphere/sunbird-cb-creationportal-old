@@ -74,7 +74,7 @@ export class CertificateDialogComponent implements OnInit {
       // Update or add recipient name
       let recipientText = svgDoc.querySelector('text[id="${recipientName}"] tspan')
       if (recipientText) {
-        recipientText.textContent = newRecipientName
+        recipientText.textContent = this.newRecipientName
       } else {
         const newTextElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "text")
         newTextElement.setAttribute("id", "recipientName")
@@ -88,7 +88,7 @@ export class CertificateDialogComponent implements OnInit {
         const tspanElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "tspan")
         tspanElement.setAttribute("x", "600")
         tspanElement.setAttribute("y", "440")
-        tspanElement.textContent = newRecipientName
+        tspanElement.textContent = this.newRecipientName
 
         newTextElement.appendChild(tspanElement)
         svgDoc.documentElement.appendChild(newTextElement)

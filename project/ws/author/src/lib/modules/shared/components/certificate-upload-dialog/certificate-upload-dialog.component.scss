@@ -4,7 +4,7 @@
   max-height: fit-content;
 }
 .header-text{
-  display: flex-end;
+  display: flex;
 justify-content: space-between;
 margin-bottom: 10px;
 }
@@ -35,7 +35,7 @@ margin-bottom: 10px;
 
 }
 .upload-block{
-  display: flex-end;
+  display: flex;
   flex-direction: column;
   align-items: center;
     justify-content: center;
@@ -49,7 +49,7 @@ background: #FFF;
 box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
 }
 .upload-btn{
-  display: flex-end;
+  display: flex;
 width: 146px;
 padding: 7px 24px;
 justify-content: center;
@@ -80,7 +80,7 @@ background: #E0E0E0;
 box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
 }
 .upload-container-body{
-  display: flex-end;
+  display: flex;
   margin: 10px 0px;
   justify-content: space-between;
 }
@@ -90,18 +90,18 @@ box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
   gap: 5px;
 }
 .preview-center{
-    display: flex-end;
+    display: flex;
   justify-content: center;
   align-items: center;
   height: 325px;
 }
 .cert-block{
-  display: flex-end;
+  display: flex;
     justify-content: end;
     margin-top: 29px;
 }
 .add-certificate-btn{
-  display: flex-end;
+  display: flex;
 width: 194px;
 padding: 8px 32px;
 justify-content: center;
