@@ -49,6 +49,7 @@ export class CertificateDialogComponent implements OnInit {
       const day = date.getDate().toString().padStart(2, '0')
       const month = (date.getMonth() + 1).toString().padStart(2, '0')
       const year = date.getFullYear()
+      const rmNumber = '#09123'
 
       const newIssuedDate = `${day}-${month}-${year}`
       // let qrCode = "https://ibb.co/wNbdr4m"
@@ -104,6 +105,29 @@ export class CertificateDialogComponent implements OnInit {
         newImageElement.setAttribute("xlink:href", newQrCodeImage)
 
         svgDoc.documentElement.appendChild(newImageElement)
+      }
+
+      // Update or add issued date
+      let rmNumbers = svgDoc.querySelector('text[id="${rmNumber}"] tspan')
+      if (rmNumbers) {
+        rmNumbers.textContent = rmNumber
+      } else {
+        const rmNumbersTextElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "text")
+        rmNumbersTextElement.setAttribute("id", "issuedDate")
+        rmNumbersTextElement.setAttribute("fill", "black")
+        rmNumbersTextElement.setAttribute("xml:space", "preserve")
+        rmNumbersTextElement.setAttribute("style", "white-space: pre")
+        rmNumbersTextElement.setAttribute("font-family", "Roboto")
+        rmNumbersTextElement.setAttribute("font-size", "20")
+        rmNumbersTextElement.setAttribute("letter-spacing", "0em")
+
+        const tspanElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "tspan")
+        tspanElement.setAttribute("x", "600")
+        tspanElement.setAttribute("y", "460")
+        tspanElement.textContent = rmNumber
+
+        rmNumbersTextElement.appendChild(tspanElement)
+        svgDoc.documentElement.appendChild(rmNumbersTextElement)
       }
 
       // Update or add issued date
