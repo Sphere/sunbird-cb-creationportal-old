@@ -86,7 +86,14 @@ export class UploadService {
   //     false,
   //   )
   // }
-
+  templateToBatch(data: any): Observable<any> {
+    return this.apiService.patch<any>(
+      // tslint:disable-next-line:max-line-length
+      // ${CONTENT_BASE}${this.accessService.rootOrg.replace(/ /g, '_')}/${this.accessService.org.replace(/ /g, '_')}/Public/${contentData.contentId.replace('.img', '')}${contentData.contentType}
+      `apis/protected/v8/creatorCertificateTemplate/template/add`,
+      data
+    )
+  }
   upload(
     data: FormData,
     contentData: NSApiRequest.IContentData,

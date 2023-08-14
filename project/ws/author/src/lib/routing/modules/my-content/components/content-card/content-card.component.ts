@@ -181,7 +181,7 @@ export class ContentCardComponent implements OnInit {
     this.authInitService.editCourse(actionType)
   }
   uploadCertificate(data: any) {
-    console.log("data: ", JSON.stringify(data))
+    console.log(data)
     const dialogRef = this.dialog.open(CertificateDialogComponent, {
       width: '1085px',
       height: '645px',

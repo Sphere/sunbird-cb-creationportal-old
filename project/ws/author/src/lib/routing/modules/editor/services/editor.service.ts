@@ -88,6 +88,45 @@ export class EditorService {
         }),
       )
   }
+  createTemplate(data: any): Observable<any> {
+    console.log(data)
+    let randomNumber = ''
+    // tslint:disable-next-line: no-increment-decrement
+    for (let i = 0; i < 16; i++) {
+      randomNumber += Math.floor(Math.random() * 10)
+    }
+    const requestBody: any = {
+      request: {
+        content: {
+          "name": data.name,
+          code: randomNumber,
+          mimeType: "image/svg+xml",
+          createdBy: this.accessService.userId,
+          createdFor: [(this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId) ? this.configSvc.userProfile.rootOrgId : ''],
+          creator: this.accessService.userName,
+          "contentType": "Asset",
+          "primaryCategory": "Asset",
+          "generateDIALCodes": "No",
+          "dialcodeRequired": "No",
+          framework: environment.framework,
+        }
+      }
+    }
+    return this.http
+      .post<NSApiRequest.ICreateMetaRequestV2>(
+        // tslint:disable-next-line:max-line-length
+        //`${AUTHORING_BASE}content/v3/create`,
+        'apis/proxies/v8/action/content/v3/create',
+        requestBody,
+      )
+      .pipe(
+        map((data: any) => {
+          console.log(data)
+          this.resourseID = data.result.identifier
+          return data
+        }),
+      )
+  }
 
   createV2(meta: NSApiRequest.ICreateMetaRequestGeneralV2): Observable<string> {
     let randomNumber = ''
