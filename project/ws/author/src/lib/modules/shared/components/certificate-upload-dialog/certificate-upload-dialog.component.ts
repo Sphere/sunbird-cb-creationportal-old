@@ -107,7 +107,7 @@ export class CertificateDialogComponent implements OnInit {
         svgDoc.documentElement.appendChild(newImageElement)
       }
 
-      // Update or add issued date
+      // Update or add rnNumber date
       let rmNumbers = svgDoc.querySelector('text[id="${rmNumber}"] tspan')
       if (rmNumbers) {
         rmNumbers.textContent = rmNumber
