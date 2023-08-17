@@ -5,6 +5,9 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
 import { UploadService } from 'project/ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
+import { SuccessDialogComponent } from '../success-dialog/success-dialog.component'
+import { MatDialog } from '@angular/material'
+
 @Component({
   selector: 'ws-auth-root-certificate-upload-dialog',
   templateUrl: './certificate-upload-dialog.component.html',
@@ -21,6 +24,7 @@ export class CertificateDialogComponent implements OnInit {
     private loader: LoaderService,
     private uploadService: UploadService,
     private editorService: EditorService,
+    private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data?: NSContent.IContentMeta,
 
   ) {
@@ -234,6 +238,11 @@ export class CertificateDialogComponent implements OnInit {
                 if (res.params.status === 'successful') {
                   this.loader.changeLoad.next(false)
                   this.dialogRef.close()
+                  this.dialog.open(SuccessDialogComponent, {
+                    width: '450px',
+                    height: '300x',
+                    data: { 'message': 'Course Certificate successfully attached', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': '', 'cert_upload': 'Yes' },
+                  })
                 }
               })
             }

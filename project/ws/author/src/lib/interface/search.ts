@@ -44,6 +44,7 @@ export interface ISearchContent {
   color: string
   message: string
   paddings: any
+  cert_upload: string
 
 }
 
