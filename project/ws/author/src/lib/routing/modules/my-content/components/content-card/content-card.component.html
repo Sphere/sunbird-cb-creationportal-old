@@ -149,8 +149,8 @@
     <mat-icon>edit</mat-icon>
     <span i18n>Edit</span>
   </a>
-  <a *ngIf="showMenuItem('edit') && data.status === 'Live' && data.createdBy === userId" mat-menu-item
-    (click)="uploadCertificate(data)">
+  <a *ngIf="showMenuItem('edit') && data.issueCertification===true && data.status === 'Live' && data.createdBy === userId"
+    mat-menu-item (click)="uploadCertificate(data)">
     <mat-icon>cloud_upload</mat-icon>
     <span i18n>Upload Certificate</span>
   </a>

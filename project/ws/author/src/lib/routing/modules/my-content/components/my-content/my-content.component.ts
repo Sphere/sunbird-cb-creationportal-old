@@ -96,8 +96,15 @@ export class MyContentComponent implements OnInit, OnDestroy {
   isSelectedReviewCourse: boolean = false;
   isSelectedPublishCourse: boolean = false;
   isSelectedToPublishCourse: boolean = false;
+  isSelectedAllCourse: boolean = false
+  isSelectedCourseWithoutCertificate: boolean = false
+  isSelectedCourseWithCertificate: boolean = false
   isSelectedRetiredCourse: boolean = false;
+  isSelectedCertificate: boolean = false
   link: string = ''
+  isContentExpanded: boolean = false
+  isCouseExpanded: boolean = false
+
   @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<
     any
   >
@@ -176,7 +183,47 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.allowExpiry = this.accessService.authoringConfig.allowExpiry
     this.allowReview = this.canShow('review') && this.accessService.authoringConfig.allowReview
     this.allowPublish = this.canShow('publish') && this.accessService.authoringConfig.allowPublish
-    if (this.allowPublish) {
+    this.isContentExpanded = true
+    if (this.status === 'allCourses' || this.status === 'coursesWithoutCertificate' || this.status === 'courseWithCertificate') {
+      this.links = ['All Courses', 'Courses without certificate', 'Courses with certificate']
+      this.isContentExpanded = false
+      this.isCouseExpanded = true
+      this.isSelectedColor = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedToPublishCourse = false
+      if (this.status === 'allCourses') {
+        this.link = 'All Courses'
+        this.activeLink = 'All Courses'
+        this.isSelectedAllCourse = true
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+      } else if (this.status === 'coursesWithoutCertificate') {
+        this.link = 'Courses without certificate'
+        this.activeLink = 'Courses without certificate'
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = true
+        this.isSelectedCourseWithCertificate = false
+      } else if (this.status === 'courseWithCertificate') {
+        this.link = 'Courses with certificate'
+        this.activeLink = 'Courses with certificate'
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = true
+      }
+
+    } else if (this.status === 'Draft') {
+      this.link = 'Draft'
+      this.links = ['Draft', 'Sent for review', 'Published Courses', 'Retired']
+      this.activeLink = 'Draft'
+      this.isSelectedColor = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+    } else if (this.allowPublish) {
       this.link = 'Courses to publish'
       this.links = ['Courses to publish', 'Published Courses']
       this.activeLink = this.links[0]
@@ -184,7 +231,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedReviewCourse = false
       this.isSelectedPublishCourse = false
       this.isSelectedToPublishCourse = true
-
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
     } else if (this.allowReview) {
       this.link = 'Sent for review'
       this.links = ['Sent for review', 'Published Courses', 'Retired']
@@ -193,6 +242,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedReviewCourse = true
       this.isSelectedPublishCourse = false
       this.isSelectedToPublishCourse = true
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
     }
     else if (this.allowAuthorContentCreate) {
       this.link = 'Draft'
@@ -202,6 +254,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedReviewCourse = false
       this.isSelectedPublishCourse = false
       this.isSelectedToPublishCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
     }
   }
 
@@ -209,12 +264,25 @@ export class MyContentComponent implements OnInit, OnDestroy {
   onClickReviewCourse(status: string) {
     this.link = status
     this.activeLink = status
+    if (status == 'All Courses' || status == 'Courses without certificate' || status == 'Courses with certificate') {
+      this.links = ['All Courses', 'Courses without certificate', 'Courses with certificate']
+    } else if (this.allowAuthorContentCreate) {
+      this.links = ['Draft', 'Sent for review', 'Published Courses', 'Retired']
+    } else if (this.allowReview) {
+      this.links = ['Sent for review', 'Published Courses', 'Retired']
+    } else if (this.allowPublish) {
+      this.links = ['Courses to publish', 'Published Courses']
+    }
     if (status == 'Sent for review') {
       this.isSelectedColor = false
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = true
       this.isSelectedToPublishCourse = false
       this.isSelectedRetiredCourse = false
+      this.isSelectedCertificate = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
     }
     else if (status == 'Courses to publish') {
       this.isSelectedColor = false
@@ -222,6 +290,11 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedPublishCourse = false
       this.isSelectedToPublishCourse = true
       this.isSelectedRetiredCourse = false
+      this.isSelectedCertificate = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+
     }
     else if (status == 'Published') {
       this.isSelectedColor = false
@@ -229,6 +302,11 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedPublishCourse = true
       this.isSelectedToPublishCourse = false
       this.isSelectedRetiredCourse = false
+      this.isSelectedCertificate = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+
     }
     else if (status == 'Retired') {
       this.isSelectedColor = false
@@ -236,6 +314,11 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedPublishCourse = false
       this.isSelectedToPublishCourse = false
       this.isSelectedRetiredCourse = true
+      this.isSelectedCertificate = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+
     }
     else if (status == 'Draft') {
       this.isSelectedColor = true
@@ -243,6 +326,45 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedReviewCourse = false
       this.isSelectedToPublishCourse = false
       this.isSelectedRetiredCourse = false
+      this.isSelectedCertificate = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+
+
+    }
+    else if (status == 'All Courses') {
+      this.isSelectedColor = true
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = true
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+
+    }
+    else if (status == 'Courses without certificate') {
+      this.isSelectedColor = true
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = true
+      this.isSelectedCourseWithCertificate = false
+
+    }
+
+    else if (status == 'Courses with certificate') {
+      this.isSelectedColor = true
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = true
 
     }
 
@@ -261,6 +383,10 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isSelectedToPublishCourse = false
         this.isSelectedReviewCourse = false
         this.isSelectedRetiredCourse = false
+        this.isSelectedCertificate = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'draft' } })
         break
 
@@ -272,6 +398,11 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isSelectedToPublishCourse = false
         this.isSelectedReviewCourse = true
         this.isSelectedRetiredCourse = false
+        this.isSelectedCertificate = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'inreview' } })
         break
 
@@ -283,6 +414,11 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isSelectedPublishCourse = false
         this.isSelectedToPublishCourse = true
         this.isSelectedRetiredCourse = false
+        this.isSelectedCertificate = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'reviewed' } })
         break
 
@@ -294,6 +430,10 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isSelectedPublishCourse = true
         this.isSelectedToPublishCourse = false
         this.isSelectedRetiredCourse = false
+        this.isSelectedCertificate = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'published' } })
         break
 
@@ -307,7 +447,50 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isSelectedPublishCourse = false
         this.isSelectedToPublishCourse = false
         this.isSelectedRetiredCourse = true
+        this.isSelectedCertificate = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'unpublished' } })
+        break
+      case 'All Courses':
+        this.link = 'All Courses'
+        this.activeLink = 'All Courses'
+        this.isSelectedColor = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedAllCourse = true
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'allCourses' } })
+        break
+      case 'Courses without certificate':
+        this.link = 'Courses without certificate'
+        this.activeLink = 'Courses without certificate'
+        this.isSelectedColor = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = true
+        this.isSelectedCourseWithCertificate = false
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'coursesWithoutCertificate' } })
+        break
+      case 'Courses with certificate':
+        this.link = 'Courses with certificate'
+        this.activeLink = 'Courses with certificate'
+        this.isSelectedColor = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = true
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'courseWithCertificate' } })
         break
     }
 
@@ -325,6 +508,12 @@ export class MyContentComponent implements OnInit, OnDestroy {
         return ['Review']
       case 'published':
       case 'expiry':
+        return ['Live']
+      case 'allCourses':
+        return ['Live']
+      case 'coursesWithoutCertificate':
+        return ['Live']
+      case 'courseWithCertificate':
         return ['Live']
       case 'publish':
         return ['Review']
@@ -351,6 +540,10 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'publish':
       case 'processing':
       case 'unpublished':
+      case 'issueCertification':
+      case 'allCourses':
+      case 'coursesWithoutCertificate':
+      case 'courseWithCertificate':
       case 'deleted':
         this.currentAction = 'author'
         break
@@ -655,6 +848,12 @@ export class MyContentComponent implements OnInit, OnDestroy {
       },
     }
     requestData.request.filters['status'] = this.fetchStatus()
+    if (this.status == 'coursesWithoutCertificate') {
+      requestData.request.filters['issueCertification'] = false
+    } else if (this.status == 'courseWithCertificate') {
+      requestData.request.filters['issueCertification'] = true
+    }
+
     // requestData.request.filters['contentType'] = ['Collection', 'Course', 'Learning Path']
     requestData.request.filters['contentType'] = ['Course', 'Learning Path']
 
@@ -699,6 +898,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
     //   requestData.request.filters.publisherDetails.push(this.userId)
     // }
     switch (this.status) {
+      case 'allCourses':
+      case 'coursesWithoutCertificate':
+      case 'courseWithCertificate':
       case 'published':
         if (this.accessService.hasRole(['content_creator'])) {
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''

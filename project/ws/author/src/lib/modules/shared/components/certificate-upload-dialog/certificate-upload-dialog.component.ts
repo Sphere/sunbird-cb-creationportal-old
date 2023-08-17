@@ -117,7 +117,7 @@ export class CertificateDialogComponent implements OnInit {
         rmNumbers.textContent = rmNumber
       } else {
         const rmNumbersTextElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "text")
-        rmNumbersTextElement.setAttribute("id", "issuedDate")
+        rmNumbersTextElement.setAttribute("id", "rmNumber")
         rmNumbersTextElement.setAttribute("fill", "black")
         rmNumbersTextElement.setAttribute("xml:space", "preserve")
         rmNumbersTextElement.setAttribute("style", "white-space: pre")

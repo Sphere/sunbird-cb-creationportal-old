@@ -94,12 +94,13 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
     </ng-container>
     <ng-container *ngIf="!isNewDesign">
       <mat-accordion expanded *ngIf="allowAuthor">
-        <mat-expansion-panel [expanded]="true" [disabled]="isDisabled" style="cursor: pointer" class="no-shadow"
-          hideToggle>
+        <mat-expansion-panel [expanded]="isContentExpanded" [disabled]="isDisabled" style="cursor: pointer"
+          class="no-shadow" hideToggle>
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title>
               <span class="font-weight-500 head-content-title" (click)="onClickReviewCourse('Draft')"
-                [ngClass]="{ 'head-content-title': isSelectedColor }" i18n>My Content</span>
+                [ngClass]="{ 'head-content-title': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse }"
+                i18n>My Content</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <!-- Shown when logged in as admin-->
@@ -153,6 +154,31 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             <mat-list-item *ngIf="!allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
               <a [ngClass]="{ 'head-content-title': isSelectedRetiredCourse }" (click)="onClickReviewCourse('Retired')"
                 i18n>Retired</a>
+            </mat-list-item>
+          </mat-list>
+        </mat-expansion-panel>
+        <mat-expansion-panel *ngIf="allowAuthorContentCreate" [expanded]="isCouseExpanded" [disabled]="isDisabled"
+          style="cursor: pointer" class="no-shadow" hideToggle>
+          <mat-expansion-panel-header class="left-panel-header">
+            <mat-panel-title>
+              <span class="font-weight-500 head-content-title" (click)="onClickReviewCourse('All Courses')"
+                [ngClass]="{ 'head-content-title': isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate }"
+                i18n>Manage Courses</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <!-- Shown when logged in as admin-->
+          <mat-list role="list">
+            <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
+              <a [ngClass]="{ 'head-content-title': isSelectedAllCourse }" style="cursor: pointer"
+                (click)="onClickReviewCourse('All Courses')" i18n>All Courses</a>
+            </mat-list-item>
+            <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
+              <a [ngClass]="{ 'head-content-title': isSelectedCourseWithoutCertificate }" style="cursor: pointer"
+                (click)="onClickReviewCourse('Courses without certificate')" i18n>Course Without Certificate</a>
+            </mat-list-item>
+            <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
+              <a [ngClass]="{ 'head-content-title': isSelectedCourseWithCertificate }" style="cursor: pointer"
+                (click)="onClickReviewCourse('Courses with certificate')" i18n>Course With Certificate</a>
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
