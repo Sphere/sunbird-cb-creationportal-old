@@ -85,6 +85,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
+    console.log("content", this.content)
     if (this.authAccessService.hasRole(['content_reviewer'])) {
       this.isReviewer = true
     } else {

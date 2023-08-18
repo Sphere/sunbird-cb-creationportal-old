@@ -10,7 +10,8 @@
     <img loading="lazy" src=".\cbp-assets\images\preview-icon.svg" alt="clock"> <span style="vertical-align: super;">You
       are in draft mode</span>
   </h3>
-  <h3 class="margin-remove-bottom pt-4 info-msg" i18n *ngIf="content?.status === 'InReview'">
+  <h3 class="margin-remove-bottom pt-4 info-msg" i18n
+    *ngIf="content?.status === 'Review'&&content?.reviewStatus==='InReview'">
     <img loading="lazy" src=".\cbp-assets\images\preview-icon.svg" alt="clock"><span style="vertical-align: super;">You
       are in review mode</span>
   </h3>

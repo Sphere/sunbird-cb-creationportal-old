@@ -9,7 +9,8 @@
   'orange': getQualityPercent > 30 && getQualityPercent <= 70,
   'red': getQualityPercent <= 30
 }">{{getQualityPercent}}%</span></h4>
-    <button style="font-size: 14px !important;" class="view-info-btn" (click)="viewDetails()" i18n>
+    <button title="View checklist" style="font-size: 14px !important;" class="view-info-btn" (click)="viewDetails()"
+      i18n>
       <mat-icon>info</mat-icon>
     </button>
   </div>
