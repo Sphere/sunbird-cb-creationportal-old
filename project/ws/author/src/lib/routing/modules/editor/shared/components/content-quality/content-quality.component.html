@@ -201,10 +201,10 @@
       </span> -->
       <div class="flex flex-1 flex-column">
         <div class="flex flex-1">
-          <span [ngClass]="{
-  'green mat-title margin-top-s percentage-text margin-left-s': getQualityPercent > 70,
-  'orange mat-title margin-top-s percentage-text margin-left-s': getQualityPercent > 30 && getQualityPercent <= 70,
-  'red mat-title margin-top-s percentage-text margin-left-s': getQualityPercent <= 30
+          <span class="mat-title margin-top-s percentage-text margin-left-s" [ngClass]="{
+  'green': getQualityPercent > 70,
+  'orange': getQualityPercent > 30 && getQualityPercent <= 70,
+  'red': getQualityPercent <= 30
 }">{{getQualityPercent}}%</span>
         </div>
         <!-- <div class=" flex flex-075">
