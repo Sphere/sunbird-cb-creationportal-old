@@ -64,4 +64,8 @@ export class ReviewerChecklist implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
 
   }
+  get getQualityPercent() {
+    const score = this.qualityResponse.finalWeightedScore || 0
+    return score.toFixed(1)
+  }
 }
