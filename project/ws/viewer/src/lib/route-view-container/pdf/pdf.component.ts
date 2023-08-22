@@ -46,8 +46,7 @@ export class PdfComponent implements OnInit {
     this.isTypeOfCollection = this.activatedRoute.snapshot.queryParams.collectionType ? true : false
 
     this.viewerDataServiceSubscription = this.viewerDataSvc.playerState.subscribe(data => {
-      // this.prevResourceUrl = data.prevResource
-      // this.nextResourceUrl = data.nextResource
+      console.log(data)
     })
   }
 }
