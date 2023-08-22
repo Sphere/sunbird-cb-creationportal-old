@@ -5,7 +5,7 @@ import { Router } from '@angular/router'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { MatDialog } from '@angular/material/dialog'
 import { CertificateDialogComponent } from '@ws/author/src/lib/modules/shared/components/certificate-upload-dialog/certificate-upload-dialog.component'
-
+import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
 @Component({
   selector: 'ws-auth-root-content-card',
   templateUrl: './content-card.component.html',
@@ -30,6 +30,7 @@ export class ContentCardComponent implements OnInit {
     private router: Router,
     private editorService: EditorService,
     public dialog: MatDialog,
+    private loader: LoaderService,
   ) { }
 
   ngOnInit() {
@@ -183,16 +184,38 @@ export class ContentCardComponent implements OnInit {
   }
   uploadCertificate(data: any) {
     console.log(data)
-    const dialogRef = this.dialog.open(CertificateDialogComponent, {
-      width: '1085px',
-      height: '645px',
-      data,
+    this.loader.changeLoad.next(true)
+    const req = {
+      request: {
+        filters: {
+          courseId: data.identifier,
+          status: ['0', '1', '2'],
+        },
+        sort_by: { createdDate: 'desc' },
+      },
+    }
+    this.editorService.getBatchforCert(req).subscribe((res: any) => {
+      console.log(res)
+      let cert = res
+      if (cert[0].cert_templates != null) {
+        this.loader.changeLoad.next(false)
+        console.log(Object.keys(cert[0]['cert_templates']).length)
+      } else {
+        this.loader.changeLoad.next(false)
+        const dialogRef = this.dialog.open(CertificateDialogComponent, {
+          width: '1085px',
+          height: '645px',
+          data,
+        })
+        // You can subscribe to the afterClosed() observable to do something when the dialog is closed.
+        dialogRef.afterClosed().subscribe(result => {
+          console.log('The dialog was closed', result)
+          // You can perform any actions you need here after the dialog is closed.
+        })
+      }
     })
-    // You can subscribe to the afterClosed() observable to do something when the dialog is closed.
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed', result)
-      // You can perform any actions you need here after the dialog is closed.
-    })
+
+
   }
 
   changeToDefaultImg($event: any) {

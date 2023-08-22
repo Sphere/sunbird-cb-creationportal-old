@@ -10,7 +10,8 @@
     <div class="upload-container-body">
       <div class="upload-block" (click)="uploadThumbnail.click()">
         <img class="upload-icon" src="cbp-assets/icons/fluent_certificate-24-filled.svg" alt="Upload icon" />
-        <button class="upload-btn"><img src="cbp-assets/icons/charm_upload.svg" /> Upload File</button>
+        <button class="upload-btn" style="cursor: pointer;"><img src="cbp-assets/icons/charm_upload.svg" /> Upload
+          File</button>
         <input type="file" (change)="onFileSelected($event)" #uploadThumbnail style="display: none"
           accept="image/svg+xml" />
       </div>
