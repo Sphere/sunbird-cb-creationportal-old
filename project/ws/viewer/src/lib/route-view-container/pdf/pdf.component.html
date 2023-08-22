@@ -7,6 +7,9 @@
             <div id="fullScreenContainer" class="video-player">
               <ng-container *ngIf="isFetchingDataComplete" [wsResolverWidget]="widgetResolverPdfData"></ng-container>
               <div class="player-nav-links">
+                <div #navpdf class="pdf">
+                  <app-player-navigation-widget></app-player-navigation-widget>
+                </div>
                 <!-- <div class="flex justify-between html">
                   <div class="prev-button">
                     <a mat-button class="width-auto" [routerLink]="prevResourceUrl" queryParamsHandling="preserve"

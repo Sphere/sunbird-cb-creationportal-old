@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, Input, OnInit, ElementRef, ViewChild } from '@angular/core'
 import { NsContent, NsDiscussionForum } from '@ws-widget/collection'
 import { NsWidgetResolver } from '@ws-widget/resolver'
 import { ActivatedRoute } from '@angular/router'
@@ -31,8 +31,9 @@ export class PdfComponent implements OnInit {
   isTypeOfCollection = false
   isRestricted = false
   viewerDataServiceSubscription: any
-  prevResourceUrl: string | null = null
-  nextResourceUrl: string | null = null
+  // prevResourceUrl: string | null = null
+  // nextResourceUrl: string | null = null
+  @ViewChild('navpdf', { static: false }) navpdf!: ElementRef
 
   constructor(private activatedRoute: ActivatedRoute, private configSvc: ConfigurationsService,
     private viewerDataSvc: PlayerStateService) { }
@@ -45,8 +46,8 @@ export class PdfComponent implements OnInit {
     this.isTypeOfCollection = this.activatedRoute.snapshot.queryParams.collectionType ? true : false
 
     this.viewerDataServiceSubscription = this.viewerDataSvc.playerState.subscribe(data => {
-      this.prevResourceUrl = data.prevResource
-      this.nextResourceUrl = data.nextResource
+      // this.prevResourceUrl = data.prevResource
+      // this.nextResourceUrl = data.nextResource
     })
   }
 }

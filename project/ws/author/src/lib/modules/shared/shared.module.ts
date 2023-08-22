@@ -63,6 +63,8 @@ import { StatusTrackComponent } from './components/status-track/status-track.com
 import { FeedbackFormComponent } from './components/feedback-form/feedback-form.component'
 import { SuccessDialogComponent } from './components/success-dialog/success-dialog.component'
 import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-popup.component'
+import { PlayerNavigationWidgetComponent } from '../../../../../../../library/ws-widget/collection/src/lib/player-navigation-widget/player-navigation-widget.component'
+
 @NgModule({
   declarations: [
     RelativeUrlPipe,
@@ -86,7 +88,8 @@ import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-po
     StatusTrackComponent,
     FeedbackFormComponent,
     SuccessDialogComponent,
-    CompetencyPopupComponent
+    CompetencyPopupComponent,
+    PlayerNavigationWidgetComponent
   ],
   imports: [
     CommonModule,
@@ -178,6 +181,7 @@ import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-po
     StatusTrackComponent,
     FeedbackFormComponent,
     SuccessDialogComponent,
+    PlayerNavigationWidgetComponent
   ],
   providers: [
     ApiService,

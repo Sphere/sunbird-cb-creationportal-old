@@ -12,7 +12,8 @@
               </viewer-plugin-html>
 
               <div class="player-nav-links">
-                <div class="flex justify-between html">
+                <app-player-navigation-widget></app-player-navigation-widget>
+                <!-- <div class="flex justify-between html">
                   <div class="prev-button">
                     <a mat-button class="width-auto" [routerLink]="prevResourceUrl" queryParamsHandling="preserve"
                       accesskey="<" [disabled]="!prevResourceUrl">
@@ -27,8 +28,6 @@
 
                   <div class="next-button" (click)="navigatetoOverview
                   ()">
-                    <!-- <span class="title" *ngIf="nextTitle"><span class="fs-small">Next
-                        Chapter</span>{{ (nextTitle.length>22) ? (nextTitle | slice: 0:22)+'..' : (nextTitle) }}</span> -->
                     <a mat-button class="width-auto mr-10" [routerLink]="nextResourceUrl" queryParamsHandling="preserve"
                       accesskey=">">
                       <span class="material-icons align-right-arrow">
@@ -36,7 +35,7 @@
                       </span>
                     </a>
                   </div>
-                </div>
+                </div> -->
               </div>
 
 
