@@ -211,6 +211,7 @@ import { CertificateStatusDialogComponentDialogComponent } from './components/ce
     StatusTrackComponent,
     FeedbackFormComponent,
     SuccessDialogComponent,
+    PlayerNavigationWidgetComponent,
     CertificateStatusDialogComponentDialogComponent
   ],
 })
