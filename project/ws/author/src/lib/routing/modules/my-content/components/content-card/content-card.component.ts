@@ -5,6 +5,8 @@ import { Router } from '@angular/router'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { MatDialog } from '@angular/material/dialog'
 import { CertificateDialogComponent } from '@ws/author/src/lib/modules/shared/components/certificate-upload-dialog/certificate-upload-dialog.component'
+import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
+import { CertificateStatusDialogComponentDialogComponent } from '../../../../../modules/shared/components/cert-upload-status-dialog/cert-upload-status-dialogcomponent'
 
 @Component({
   selector: 'ws-auth-root-content-card',
@@ -30,6 +32,7 @@ export class ContentCardComponent implements OnInit {
     private router: Router,
     private editorService: EditorService,
     public dialog: MatDialog,
+    private loader: LoaderService,
   ) { }
 
   ngOnInit() {
@@ -183,16 +186,47 @@ export class ContentCardComponent implements OnInit {
   }
   uploadCertificate(data: any) {
     console.log(data)
-    const dialogRef = this.dialog.open(CertificateDialogComponent, {
-      width: '1085px',
-      height: '645px',
-      data,
+    this.loader.changeLoad.next(true)
+    const req = {
+      request: {
+        filters: {
+          courseId: data.identifier,
+          status: ['0', '1', '2'],
+        },
+        sort_by: { createdDate: 'desc' },
+      },
+    }
+    this.editorService.getBatchforCert(req).subscribe((res: any) => {
+      console.log(res)
+      let cert = res
+      if (cert && cert[0] && cert[0].cert_templates != null) {
+        this.loader.changeLoad.next(false)
+        console.log(Object.keys(cert[0]['cert_templates']).length)
+        if (Object.keys(cert[0]['cert_templates']).length) {
+          this.dialog.open(CertificateStatusDialogComponentDialogComponent, {
+            width: '450px',
+            height: '300x',
+            data: {
+              'message': 'There is already a certificate assigned to this course. To modify it please contact Aastrika support at support@aastrika.org from  your registered email id.', 'icon': 'info', 'color': '#f44336', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': '', 'cert_upload': 'Yes'
+            },
+          })
+        }
+      } else {
+        this.loader.changeLoad.next(false)
+        const dialogRef = this.dialog.open(CertificateDialogComponent, {
+          width: '1085px',
+          height: '645px',
+          data,
+        })
+        // You can subscribe to the afterClosed() observable to do something when the dialog is closed.
+        dialogRef.afterClosed().subscribe(result => {
+          console.log('The dialog was closed', result)
+          // You can perform any actions you need here after the dialog is closed.
+        })
+      }
     })
-    // You can subscribe to the afterClosed() observable to do something when the dialog is closed.
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed', result)
-      // You can perform any actions you need here after the dialog is closed.
-    })
+
+
   }
 
   changeToDefaultImg($event: any) {

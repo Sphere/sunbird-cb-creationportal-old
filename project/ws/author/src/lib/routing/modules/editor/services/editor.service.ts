@@ -88,6 +88,21 @@ export class EditorService {
         }),
       )
   }
+  getBatchforCert(req: any): Observable<any> {
+    // return this.http
+    //   .get<any>(
+    //     // tslint:disable-next-line:max-line-length
+    //     `/api/course/v1/batch/read/${id}`,
+    //   )
+    return this.http
+      .post<any>('apis/proxies/v8/learner/course/v1/batch/list', req)
+      .pipe(
+        retry(1),
+        map(
+          (data: any) => data.result.response.content
+        )
+      )
+  }
   createTemplate(data: any): Observable<any> {
     console.log(data)
     let randomNumber = ''

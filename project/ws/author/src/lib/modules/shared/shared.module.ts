@@ -64,6 +64,7 @@ import { FeedbackFormComponent } from './components/feedback-form/feedback-form.
 import { SuccessDialogComponent } from './components/success-dialog/success-dialog.component'
 import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-popup.component'
 import { PlayerNavigationWidgetComponent } from '../../../../../../../library/ws-widget/collection/src/lib/player-navigation-widget/player-navigation-widget.component'
+import { CertificateStatusDialogComponentDialogComponent } from './components/cert-upload-status-dialog/cert-upload-status-dialogcomponent'
 
 @NgModule({
   declarations: [
@@ -89,7 +90,8 @@ import { PlayerNavigationWidgetComponent } from '../../../../../../../library/ws
     FeedbackFormComponent,
     SuccessDialogComponent,
     CompetencyPopupComponent,
-    PlayerNavigationWidgetComponent
+    PlayerNavigationWidgetComponent,
+    CertificateStatusDialogComponentDialogComponent
   ],
   imports: [
     CommonModule,
@@ -181,7 +183,8 @@ import { PlayerNavigationWidgetComponent } from '../../../../../../../library/ws
     StatusTrackComponent,
     FeedbackFormComponent,
     SuccessDialogComponent,
-    PlayerNavigationWidgetComponent
+    PlayerNavigationWidgetComponent,
+    CertificateStatusDialogComponentDialogComponent
   ],
   providers: [
     ApiService,
@@ -208,6 +211,7 @@ import { PlayerNavigationWidgetComponent } from '../../../../../../../library/ws
     StatusTrackComponent,
     FeedbackFormComponent,
     SuccessDialogComponent,
+    CertificateStatusDialogComponentDialogComponent
   ],
 })
 export class SharedModule { }

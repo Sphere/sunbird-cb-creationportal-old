@@ -200,51 +200,58 @@ export class CertificateDialogComponent implements OnInit {
           (data: any) => {
             console.log(data)
             if (data.status === "successful") {
-              let obj = {
-                request: {
-                  batch: {
-                    // @ts-ignore: Unreachable code error
-                    "batchId": this.data["batches"][0].batchId,
-                    // @ts-ignore: Unreachable code error
-                    "courseId": this.data.identifier,
-                    "template": {
-                      "template": data.artifactUrl,
-                      "previewUrl": data.artifactURL,
-                      "identifier": data.identifier,
-                      "criteria": {
-                        "enrollment": {
-                          "status": 2
+              // @ts-ignore: Unreachable code error
+              if (this.data["batches"]) {
+                let obj = {
+                  request: {
+                    batch: {
+                      // @ts-ignore: Unreachable code error
+                      "batchId": this.data["batches"][0].batchId,
+                      // @ts-ignore: Unreachable code error
+                      "courseId": this.data.identifier,
+                      "template": {
+                        "template": data.artifactUrl,
+                        "previewUrl": data.artifactURL,
+                        "identifier": data.identifier,
+                        "criteria": {
+                          "enrollment": {
+                            "status": 2
+                          },
                         },
-                      },
-                      "name": "Completion Certificate",
-                      "issuer": {
-                        "name": "in",
-                        "url": "https://sphere.aastrika.org/"
-                      },
-                      "signatoryList": [
-                        {
-                          "image": "https://www.aastrika.org/wp-content/uploads/2022/12/aastrika-foundation-logo-header.svg",
-                          "name": "aastrika-foundation",
-                          "id": "in",
-                          "designation": "Home"
-                        }
-                      ]
+                        "name": "Completion Certificate",
+                        "issuer": {
+                          "name": "in",
+                          "url": "https://sphere.aastrika.org/"
+                        },
+                        "signatoryList": [
+                          {
+                            "image": "https://www.aastrika.org/wp-content/uploads/2022/12/aastrika-foundation-logo-header.svg",
+                            "name": "aastrika-foundation",
+                            "id": "in",
+                            "designation": "Home"
+                          }
+                        ]
+                      }
                     }
                   }
                 }
+                this.uploadService.templateToBatch(obj).subscribe((res1: any) => {
+                  console.log(res1)
+                  if (res.params.status === 'successful') {
+                    this.loader.changeLoad.next(false)
+                    this.dialogRef.close()
+                    this.dialog.open(SuccessDialogComponent, {
+                      width: '450px',
+                      height: '300x',
+                      data: { 'message': 'Course Certificate successfully attached', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': '', 'cert_upload': 'Yes' },
+                    })
+                  }
+                })
+              } else {
+                this.loader.changeLoad.next(false)
+                //add error notification about batch not present
               }
-              this.uploadService.templateToBatch(obj).subscribe((res1: any) => {
-                console.log(res1)
-                if (res.params.status === 'successful') {
-                  this.loader.changeLoad.next(false)
-                  this.dialogRef.close()
-                  this.dialog.open(SuccessDialogComponent, {
-                    width: '450px',
-                    height: '300x',
-                    data: { 'message': 'Course Certificate successfully attached', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': '', 'cert_upload': 'Yes' },
-                  })
-                }
-              })
+
             }
           })
       }
