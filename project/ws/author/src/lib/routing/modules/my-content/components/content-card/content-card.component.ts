@@ -6,6 +6,8 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
 import { MatDialog } from '@angular/material/dialog'
 import { CertificateDialogComponent } from '@ws/author/src/lib/modules/shared/components/certificate-upload-dialog/certificate-upload-dialog.component'
 import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
+import { CertificateStatusDialogComponentDialogComponent } from '../../../../../modules/shared/components/cert-upload-status-dialog/cert-upload-status-dialogcomponent'
+
 @Component({
   selector: 'ws-auth-root-content-card',
   templateUrl: './content-card.component.html',
@@ -197,9 +199,18 @@ export class ContentCardComponent implements OnInit {
     this.editorService.getBatchforCert(req).subscribe((res: any) => {
       console.log(res)
       let cert = res
-      if (cert[0].cert_templates != null) {
+      if (cert && cert[0] && cert[0].cert_templates != null) {
         this.loader.changeLoad.next(false)
         console.log(Object.keys(cert[0]['cert_templates']).length)
+        if (Object.keys(cert[0]['cert_templates']).length) {
+          this.dialog.open(CertificateStatusDialogComponentDialogComponent, {
+            width: '450px',
+            height: '300x',
+            data: {
+              'message': 'There is already a certificate assigned to this course. To modify it please contact Aastrika support at support@aastrika.com from  your registered email id.', 'icon': 'info', 'color': '#f44336', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': '', 'cert_upload': 'Yes'
+            },
+          })
+        }
       } else {
         this.loader.changeLoad.next(false)
         const dialogRef = this.dialog.open(CertificateDialogComponent, {
