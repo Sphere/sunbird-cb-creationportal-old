@@ -207,7 +207,7 @@ export class ContentCardComponent implements OnInit {
             width: '450px',
             height: '300x',
             data: {
-              'message': 'There is already a certificate assigned to this course. To modify it please contact Aastrika support at support@aastrika.com from  your registered email id.', 'icon': 'info', 'color': '#f44336', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': '', 'cert_upload': 'Yes'
+              'message': 'There is already a certificate assigned to this course. To modify it please contact Aastrika support at support@aastrika.org from  your registered email id.', 'icon': 'info', 'color': '#f44336', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': '', 'cert_upload': 'Yes'
             },
           })
         }
