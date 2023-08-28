@@ -249,7 +249,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
       <mat-sidenav-content class="sidenav-content">
         <nav mat-tab-nav-bar class="mat-nav-container">
           <a class="tab-links-data nav-tab-links" mat-tab-link *ngFor="let link of links"
-            (click)="navigateContents(link)" [active]="activeLink == link">
+            (click)="navigateContents(link)" [ngClass]="{'activeTab':link==activeLink}">
             {{ link }}
           </a>
 
