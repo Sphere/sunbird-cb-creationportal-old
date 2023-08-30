@@ -1,5 +1,6 @@
-<ws-author-course-header [backToDashboard]="backToDashboard" [isModelHeaderView]="isModelHeaderView"
-  [buttonConfig]="actionButton" (action)="action($event)" (subAction)="subAction($event)">
+<ws-author-course-header [backToDashboard]="backToDashboard" [clickedNext]="clickedNext"
+  [isModelHeaderView]="isModelHeaderView" [buttonConfig]="actionButton" (action)="action($event)"
+  (subAction)="subAction($event)">
 </ws-author-course-header>
 
 <mat-drawer-container autosize="true" id="auth-toc" class="example-container">
@@ -136,7 +137,7 @@
         *ngIf="!showAddchapter && viewMode !== 'meta' && showResource == true"
         (courseEditFormSubmit)="courseEditFormSubmit($event)">
       </ws-auth-edit-meta> -->
-      <ws-author-module-creation *ngIf="clickedNext"></ws-author-module-creation>
+      <ws-author-module-creation [clickedNext]="clickedNext" *ngIf="clickedNext"></ws-author-module-creation>
     </mat-sidenav-container>
   </mat-drawer-content>
 </mat-drawer-container>

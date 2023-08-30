@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter } from '@angular/core'
+import { Component, OnInit, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter, Input } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 // import { ConfigurationsService,  } from '@ws-widget/utils'
@@ -236,6 +236,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   editItem: string = ''
   resourceDurat: any = []
   sumDuration: any
+  @Input() clickedNext: boolean = false;
 
   constructor(public dialog: MatDialog,
     private contentService: EditorContentService,
@@ -263,6 +264,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     private breakpointObserver: BreakpointObserver,
 
   ) {
+    if (sessionStorage.getItem('isReviewClicked')) {
+      sessionStorage.removeItem('isReviewClicked')
+      sessionStorage.setItem('isSettingsPageFromPreview', '1')
+      sessionStorage.setItem('isSettingsPage', '1')
+      this.isSettingsPage = true
+    }
     this.resourceLinkForm = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.minLength(1)]),
       instructions: new FormControl(''),
@@ -336,8 +343,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     )
     // this.isSettingsPage = false
     this.routerValuesCalls()
-    if (sessionStorage.getItem('isReviewClicked')) {
+    if (sessionStorage.getItem('isReviewClicked') && this.clickedNext) {
       sessionStorage.removeItem('isReviewClicked')
+      sessionStorage.setItem('isSettingsPageFromPreview', '1')
+      sessionStorage.setItem('isSettingsPage', '1')
       this.isSettingsPage = true
     }
   }

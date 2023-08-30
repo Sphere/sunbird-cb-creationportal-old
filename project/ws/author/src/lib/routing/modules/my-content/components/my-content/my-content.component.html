@@ -355,7 +355,8 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 </div>
               </div>
             </div>
-            <div [ngClass]="{ 'overflowY': cardContent&&cardContent.length > 5 }" style="max-height: 55vh">
+            <div [ngClass]="{ 'overflowY': cardContent&&cardContent.length > 5 }"
+              style="max-height: 55vh;overflow: auto;">
               <div *ngIf="cardContent" class="flex flex-wrapped flex-dynamic margin-xs class-here">
                 <ng-template #oldDesign>
                   <div [ngClass]="listview == true ? 'full-width-field' : 'margin-l'"
