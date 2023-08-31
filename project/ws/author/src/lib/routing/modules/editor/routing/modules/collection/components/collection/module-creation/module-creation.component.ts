@@ -50,7 +50,8 @@ import { QuizStoreService } from '../../../../quiz/services/store.service'
 import { QuizResolverService } from '../../../../quiz/services/resolver.service'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
 import { map } from 'rxjs/operators'
-
+//import { M } from '@angular/cdk/keycodes'
+//import { CdkDragDrop } from '@angular/cdk/drag-drop'
 @Component({
   selector: 'ws-author-module-creation',
   templateUrl: './module-creation.component.html',
@@ -67,7 +68,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   @Output() actions = new EventEmitter<{ action: string; type?: string }>()
   treeControl!: FlatTreeControl<IContentTreeNode>
   expandedNodes = new Set<number>()
-
+  dragEle1: any
+  dragEle2: any
+  dragEle3: any
   contentList: any[] = [
     {
       name: 'Link',
@@ -3752,7 +3755,247 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.seconds = 0
 
   }
+  dragDrop(type1: any, type2: any, type3: string) {
+    console.log(type1, type1.parent, type2, type3)
+    this.dragEle1 = type1
+    this.dragEle2 = type2
+    this.dragEle3 = type3
+  }
 
+  compute(data?: any) {
+    let dataCheck = data
+    console.log(data, 'ooo')
+    var tmpList = this.courseData!.children
+    let found = tmpList.filter((child: any) => {
+      return child.identifier === data
+    })
+    console.log(found)
+    if (found.length === 0) {
+      let found1 = tmpList.map((ch: any) => {
+        if (ch && ch.children) {
+          ch.children!.filter((child1: any) => {
+            console.log(child1, data, dataCheck)
+            if (child1.identifier === data) {
+              return child1
+            }
+          }
+          )
+        }
+      })
+      console.log(found1)
+      return found1
+    } else {
+      return found
+    }
+  }
+  async drop(event: any) {
+    this.loader.changeLoad.next(true)
+    console.log(event)
+    let dataList = this.courseData
+    let identfs: any[] = []
+    //1.push all identifiers to array of strings
+    dataList.children.forEach((element: any) => {
+      identfs.push(element.identifier)
+      if (element.children && element.children.length > 0) {
+        element.children.forEach((subElement: any) => {
+          identfs.push(subElement.identifier)
+        })
+      }
+    })
+    console.log(identfs)
+
+    //2.find identifier based on current and dropIndex
+    let currentPosition = identfs[event.currentIndex]
+    let prevPosition = identfs[event.previousIndex]
+
+    let currentIndex = identfs.indexOf(currentPosition)
+    let previousIndex = identfs.indexOf(prevPosition)
+    console.log('identfs-current', currentIndex, currentPosition)
+    console.log('identfs-previous', previousIndex, prevPosition)
+
+    //find parent identifier of currentDrag and prevDrag
+    var tmpList = this.courseData!.children
+    this.storeService.parentData = this.courseData
+    let currentFound = tmpList.find((el: any) => el.identifier === currentPosition)
+    let previousFound = tmpList.find((el: any) => el.identifier === prevPosition)
+    console.log('previous', previousFound)
+    console.log('current', currentFound)
+    if (currentFound == undefined) {
+      tmpList.map((ch: any) => {
+        if (ch && ch.children) {
+          ch.children!.map((child: any) => {
+            if (child.identifier === currentPosition && child.parent !== this.courseData.identifier) {
+              console.log(child.identifier, child.parent)
+              currentFound = child
+            }
+          })
+        }
+      })
+    }
+    if (previousFound == undefined) {
+      tmpList.map((ch: any) => {
+        if (ch && ch.children) {
+          ch.children!.map((child: any) => {
+            if (child.identifier === prevPosition && child.parent !== this.courseData.identifier) {
+              console.log(child.identifier, child.parent)
+              previousFound = child
+            }
+          })
+        }
+      })
+    }
+    console.log(currentFound)
+    console.log(previousFound)
+    let hierarchy = this.storeService.getTreeHierarchy()
+    console.log(hierarchy, 'init')
+
+    if (previousIndex > currentIndex) {
+      if (previousFound && currentFound && previousFound.parent === this.courseData.identifier &&
+        currentFound.parent === this.courseData.identifier && currentFound.contentType === "Resource" && previousFound.contentType === "Resource") {
+        console.log('1')
+        let parentData = hierarchy[this.courseData.identifier]
+        let prevIndex = parentData["children"].indexOf(previousFound.identifier)
+        //parentData["children"].splice(prevIndex, 0, currentFound.identifier)
+        //parentData["children"].splice(prevIndex + 1, 1)
+        let currIndex = parentData["children"].indexOf(currentFound.identifier)
+        parentData["children"].splice(prevIndex, 1)
+        parentData["children"].splice(currIndex, 0, previousFound.identifier)
+        //parentData["children"].splice(prevIndex, 1)
+        console.log(parentData["children"])
+      } else {
+        let prevContent = previousFound//this.compute(previousFound.identifier)
+        let currentContent = currentFound//this.compute(currentFound.identifier)
+        console.log(prevContent, currentContent, currentFound, currentContent["0"])
+
+        let prevData = prevContent["0"] === undefined ? previousFound : prevContent[0]
+        let currData = currentContent["0"] === undefined ? currentFound : currentContent[0]
+        if (currData.contentType === "CourseUnit" && prevData.contentType === 'Resource') {
+          let cCourseData = hierarchy[currData.identifier]
+          console.log(cCourseData["children"])
+          if (cCourseData["children"].length == 0) {
+            cCourseData["children"].push(previousFound.identifier)
+          } else {
+            let cIndex = cCourseData["children"].indexOf(currData.identifier)
+            cCourseData["children"].splice(cIndex, 0, previousFound.identifier)
+          }
+        } else {
+          if (currData.contentType === 'Resource' && prevData.contentType === 'Resource') {
+            let cCourseData = hierarchy[currData.parent]
+            let cIndex = cCourseData["children"].indexOf(currData.identifier)
+            cCourseData["children"].splice(cIndex, 0, previousFound.identifier)
+          }
+        }
+        if (prevData.contentType === 'Resource') {
+          let pCourseData = hierarchy[prevData.parent]
+          let pIndex = pCourseData["children"].indexOf(previousFound.identifier)
+          pCourseData["children"].splice(pIndex, 1)
+        }
+        if (prevData.contentType === 'CourseUnit') {
+          let pCourseData = hierarchy[prevData.parent]
+          let cIndex = pCourseData["children"].indexOf(currData.identifier)
+          let pIndex = pCourseData["children"].indexOf(previousFound.identifier)
+          pCourseData["children"].splice(pIndex, 1)
+          pCourseData["children"].splice(cIndex, 0, previousFound.identifier)
+        }
+        console.log(hierarchy)
+      }
+    } else if (previousIndex < currentIndex) {
+      console.log('2')
+      if (previousFound && currentFound && previousFound.parent === this.courseData.identifier &&
+        currentFound.parent === this.courseData.identifier && currentFound.contentType === "Resource" && previousFound.contentType === "Resource") {
+        let parentData = hierarchy[this.courseData.identifier]
+        let prevIndex = parentData["children"].indexOf(previousFound.identifier)
+        let currIndex = parentData["children"].indexOf(currentFound.identifier)
+        parentData["children"].splice(prevIndex, 1)
+        parentData["children"].splice(currIndex, 0, previousFound.identifier)
+        console.log(parentData["children"])
+      } else {
+        console.log('here123')
+        let prevContent = previousFound//this.compute(previousFound.identifier)
+        let currentContent = currentFound//this.compute(currentFound.identifier)
+
+        console.log(prevContent, currentContent)
+        let prevData = prevContent["0"] === undefined ? previousFound : prevContent[0]
+        let currData = currentContent["0"] === undefined ? currentFound : currentContent[0]
+
+        if (currData.contentType === "CourseUnit" && prevData.contentType === 'Resource') {
+
+          let cCourseData = hierarchy[currData.identifier]
+          console.log(cCourseData["children"])
+          if (cCourseData["children"].length == 0) {
+            cCourseData["children"].push(previousFound.identifier)
+          } else {
+            let cIndex = cCourseData["children"].indexOf(currData.identifier)
+            cCourseData["children"].splice(cIndex, 0, previousFound.identifier)
+          }
+        } else {
+          if (currData.contentType === 'Resource' && prevData.contentType === 'Resource') {
+            let cCourseData = hierarchy[currData.parent]
+            console.log(cCourseData)
+            let cIndex = cCourseData["children"].indexOf(currData.identifier)
+            cCourseData["children"].splice(cIndex, 0, previousFound.identifier)
+            console.log(cCourseData)
+          }
+        }
+        if (prevData.contentType === 'Resource') {
+          let pCourseData = hierarchy[prevData.parent]
+          let pIndex = pCourseData["children"].indexOf(previousFound.identifier)
+          pCourseData["children"].splice(pIndex, 1)
+          console.log(pCourseData)
+        }
+        if (prevData.contentType === 'CourseUnit') {
+
+          let pCourseData = hierarchy[prevData.parent]
+          let cIndex = pCourseData["children"].indexOf(currData.identifier)
+          let pIndex = pCourseData["children"].indexOf(previousFound.identifier)
+          pCourseData["children"].splice(pIndex, 1)
+          pCourseData["children"].splice(cIndex, 0, previousFound.identifier)
+
+        }
+        console.log(hierarchy)
+        //console.log(currData["children"])
+      }
+    } else {
+      console.log('same')
+      let currentPosition = identfs[event.currentIndex]
+      let prevPosition = identfs[event.previousIndex]
+      if (currentPosition === prevPosition) {
+        if (prevPosition === identfs[identfs.length - 1]) {
+          let parentData = hierarchy[this.courseData.identifier]
+          parentData["children"].push(prevPosition)
+          if (currentFound.contentType === 'Resource') {
+            let pCourseData = hierarchy[currentFound.parent]
+            console.log(pCourseData)
+            let pIndex = pCourseData["children"].indexOf(currentFound.identifier)
+            pCourseData["children"].splice(pIndex, 1)
+          }
+        }
+      }
+    }
+
+    //drag resource to courseunit index its-self
+    console.log(hierarchy, 'final--------')
+
+    const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+      request: {
+        data: {
+          nodesModified: this.editorStore.getNewNodeModifyData(),
+          hierarchy: hierarchy,
+        },
+      },
+    }
+
+    console.log(requestBodyV2, "data")
+    await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+      this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+        this.loaderService.changeLoad.next(false)
+        this.courseData = data
+      })
+    })
+  }
+  dragEnd(event: any) {
+    console.log(event)
+  }
   async triggerUpload() {
     if (!this.file) {
       this.snackBar.openFromComponent(NotificationComponent, {

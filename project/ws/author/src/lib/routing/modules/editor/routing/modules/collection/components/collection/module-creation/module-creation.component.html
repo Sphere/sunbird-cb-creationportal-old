@@ -19,10 +19,12 @@
             edit</mat-icon>
           <span class="margin-left-s text-small" matTooltip="Course Duration">{{mainCourseDuration}}</span>
         </mat-toolbar>
-        <div class="model-left-create-content">
-          <div class="module-container" *ngFor="let module of courseData?.children">
+        <div class="model-left-create-content div-1" cdkDropList (cdkDropListDropped)="drop($event)">
+          <div class="module-container" *ngFor="let module of courseData?.children;index as i">
             <div class="mod-heading" *ngIf="module.primaryCategory === 'Course Unit'"
-              [ngClass]="editItem === module.identifier ? 'edit-item' : ''">
+              [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
+              (cdkDragStarted)="dragDrop(module,module.identifier, 'Module')" style="cursor: pointer;"
+              (cdkDragReleased)="dragEnd($event)" cdkDrag>
               <h2 class="module-text" style="margin: 0px !important">{{module.name !== '' ?
                 module.name : "no title1"}}
               </h2>
@@ -36,10 +38,12 @@
               </span>
             </div>
             <div *ngIf="module?.children?.length > 0">
-              <div *ngFor="let resource of module.children" class="heading-resource"
-                [ngClass]="editItem === resource.identifier ? 'edit-item' : ''">
-                <mat-icon class="cursor-pointer">more_vert</mat-icon> <span style="white-space: normal;"
-                  class="resourse-text">{{resource.name}}</span>
+              <div *ngFor="let resource of module.children;index as l" class="heading-resource resource-1"
+                style="cursor:pointer" [ngClass]="editItem === resource.identifier ? 'edit-item' : ''"
+                (cdkDragStarted)="dragDrop(resource,resource.identifier, 'resourceInsideModule')"
+                style="cursor: pointer;" (cdkDragReleased)="dragEnd($event)" cdkDrag>
+                <mat-icon class="cursor-pointer">more_vert</mat-icon>
+                <span style="white-space: normal;" class="resourse-text">{{resource.name}}--{{i}}--{{l}}</span>
                 <span fxFlex style="flex: 1 1 auto;"></span>
                 <span style="display:flex;flex-direction: row;">
                   <mat-icon class="material-icons margin-left-m text-medium brand-color"
@@ -51,10 +55,12 @@
                 </span>
               </div>
             </div>
-            <div *ngIf="module.primaryCategory !== 'Course Unit'" class="heading-resource"
-              [ngClass]="editItem === module.identifier ? 'edit-item' : ''">
+            <div *ngIf="module.primaryCategory !== 'Course Unit'" class="heading-resource resource-2"
+              [ngClass]="editItem === module.identifier ? 'edit-item' : ''" matTooltip="dragDrop"
+              (cdkDragStarted)="dragDrop(module,module.identifier, 'resource')" style="cursor: pointer;"
+              (cdkDragReleased)="dragEnd($event)" cdkDrag>
               <mat-icon class="cursor-pointer">more_vert</mat-icon> <span title="{{module.name}}" class="resourse-text"
-                style="white-space: normal;">{{ module.name}}</span>
+                style="white-space: normal;">{{ module.name}}-{{i}}</span>
               <span fxFlex style="flex: 1 1 auto;"></span>
               <span style="display:flex;flex-direction: row;">
                 <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)="editContent(module)">
@@ -71,12 +77,14 @@
           </div>
 
           <!--module & resources left canvas-->
-          <div class="model-text model-left-content" *ngIf="!showAddModuleForm">
+          <div class="model-text model-left-content" *ngIf="!showAddModuleForm" cdkDropList
+            (cdkDropListDropped)="drop($event)">
             <span>Modules and Resources will be visible here once you start adding them.</span>
           </div>
           <!-- <ws-author-auth-toc></ws-author-auth-toc> -->
           <!--module left canvas creation-->
-          <div class="model-left-create-content" *ngIf="showAddModuleForm">
+          <div class="model-left-create-content div-2" *ngIf="showAddModuleForm" cdkDropList
+            (cdkDropListDropped)="drop($event)">
             <div class="module-container" *ngFor="let module of moduleNames">
               <div class="mod-heading">
                 <h2 class="module-text" style="margin: 0px !important;">{{module.name !== '' ? module.name : "no
@@ -92,9 +100,12 @@
                 </span>
               </div>
               <div *ngIf="isOnClickOfResourceTypeEnabled">
-                <div *ngFor="let resource of resourceNames" class="heading-resource">
-                  <mat-icon class="cursor-pointer">more_vert</mat-icon> <span class="resourse-text"
-                    style="white-space: normal;">{{resource.name}}</span>
+                <div *ngFor="let resource of resourceNames" class="heading-resource resource-3">
+                  <div class="custom-placeholder border border-solid" *cdkDragPlaceholder></div>
+                  <mat-icon class="cursor-pointer" matTooltip="dragDrop" cdkDrag
+                    cdkDragBoundary=".model-left-create-content div-3"
+                    (click)="dragDrop(resource,resource.identifier, 'resource')">more_vert</mat-icon> <span
+                    class="resourse-text" style="white-space: normal;">{{resource.name}}-b</span>
                   <span fxFlex style="flex: 1 1 auto;"></span>
                   <span style="display:flex;flex-direction: row;">
                     <mat-icon class="material-icons margin-left-m text-medium brand-color"

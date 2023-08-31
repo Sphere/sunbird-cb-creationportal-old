@@ -126,6 +126,48 @@ export class EditorContentService {
     return obj
   }
 
+  getNewNodeModifyData() {
+    const nodesModify: any = {}
+    const parentData = this.getOriginalMeta(this.parentContent)
+    // tslint:disable-next-line:no-console
+    console.log(parentData)
+    if (parentData) {
+      nodesModify[parentData.identifier] = {
+        isNew: false,
+        root: true,
+        objectType: 'Content',
+        contentType: 'Course',
+        // metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
+      }
+      parentData.children.forEach((element: any) => {
+        if ((element.contentType === 'Collection' || element.contentType === 'CourseUnit')) {
+          nodesModify[element.identifier] = {
+            isNew: false,
+            root: false,
+            // objectType: 'Content',
+            // contentType: 'Course',
+            // tslint:disable-next-line:max-line-length
+            //metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey', 'resourceType']) : undefined,
+          }
+        }
+        if (element.children && element.children.length > 0) {
+          parentData.children.forEach((subEle: any) => {
+            if ((subEle.contentType === 'Collection' || subEle.contentType === 'CourseUnit')) {
+              nodesModify[subEle.identifier] = {
+                isNew: false,
+                root: false,
+                // objectType: 'Content',
+                // contentType: 'Course',
+                // tslint:disable-next-line:max-line-length
+                //metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey', 'resourceType']) : undefined,
+              }
+            }
+          })
+        }
+      })
+    }
+    return nodesModify
+  }
   getNodeModifyData() {
     const nodesModify: any = {}
     const parentData = this.getOriginalMeta(this.parentContent)
