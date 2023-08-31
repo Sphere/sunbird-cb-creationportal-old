@@ -1,6 +1,9 @@
 <div class="margin-m">
   <div mat-dialog-content>
     <h3>
+      <ng-container i18n *ngIf="data === 'skip'">
+        Are you sure you want to skip the review checklist?
+      </ng-container>
       <ng-container i18n *ngIf="data === 'delete'">
         Are you sure you want to delete it?
       </ng-container>

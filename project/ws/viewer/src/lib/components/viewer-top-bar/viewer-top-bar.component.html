@@ -1,5 +1,5 @@
 <mat-toolbar [color]="pageNavbar.color" [ngStyle]="pageNavbar?.styles"
-  class="mat-primary mat-elevation-z3 viewer-navbar" style="margin-bottom: 1.5rem;">
+  class="mat-primary mat-elevation-z3 viewer-navbar">
   <!-- <ws-widget-btn-page-back-nav *ngIf="!isPreview" [widgetData]="{
       url: isTypeOfCollection
         ? collectionType === 'Playlist'
@@ -42,9 +42,11 @@
   <span class="spacer width-1-1"></span>
   <mat-icon class="material-icons white-icon margin-right-l pointer" routerLink="/author/home">arrow_back</mat-icon>
   <span class="text-style margin-right-l pointer" routerLink="/author/home">Back to Dashboard</span>
-  <span class="text-style margin-right-l pointer" (click)="sendForReview()" *ngIf="!isPublisher">Finish Review</span>
-  <span class="text-style margin-right-l pointer" (click)="sendForReview()" *ngIf="isPublisher">Finish Publish</span>
-  <mat-icon class="material-icons white-icon pointer" (click)="sendForReview()">arrow_forward</mat-icon>
+  <span class="text-style margin-right-l pointer flex-cls" (click)="sendForReview('review')" *ngIf="!isPublisher">Finish
+    Review <mat-icon class="material-icons white-icon pointer margin-left-l">arrow_forward</mat-icon></span>
+  <span class="text-style margin-right-l pointer flex-cls" (click)="sendForReview('publish')" *ngIf="isPublisher">Finish
+    Publish <mat-icon class="material-icons white-icon pointer margin-left-l">arrow_forward</mat-icon></span>
+
   <!-- </a> -->
   <!--   <a href="javascript:void(0)" mat-icon-button *ngIf="isTypeOfCollection" role="link" class="width-auto"
     [ngClass]="{'xsmall': !logo}" (click)="toggleSideBar()" accesskey="M">

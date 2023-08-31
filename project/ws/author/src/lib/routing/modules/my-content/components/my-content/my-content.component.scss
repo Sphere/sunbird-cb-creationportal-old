@@ -1,6 +1,11 @@
 @import 'ws-common';
 @import 'ws-mixins';
 
+.activeTab{
+border-bottom: 2px solid #14446C ;
+color: #14446C !important;
+opacity: 1;
+}
 .nav-container {
   position: relative;
   top: 0;
@@ -66,7 +71,7 @@
     .no-data-msg-text {
       font-size: 24px;
       font-weight: 400;
-      font-family: sans-serif;
+      font-family: Roboto;
       color: #898989;
     }
   }
@@ -143,7 +148,7 @@
     .tab-links-data {
       top: 16px;
       font-weight: 400;
-      font-family: sans-serif;
+      font-family: Roboto;
     }
 
   }
@@ -152,7 +157,7 @@
     border-radius: 22px;
     background-color: #1C5D95 !important;
     color: white;
-    font-family: serif;
+    font-family: Roboto;
     padding-right: 27px;
      position: relative;
     //bottom: 8px;
@@ -167,7 +172,7 @@
     .tab-links-data {
       top: 16px;
       font-weight: 400;
-      font-family: sans-serif;
+      font-family: Roboto;
     }
 
   }
@@ -176,7 +181,7 @@
     border-radius: 22px;
     background-color: #1C5D95 !important;
     color: white;
-    font-family: serif;
+    font-family: Roboto;
     padding-right: 27px;
      position: relative;
     //bottom: 8px;
@@ -290,7 +295,7 @@ ws-auth-content-card-v2 {
     .no-data-msg-text {
       font-size: 24px;
       font-weight: 400;
-      font-family: sans-serif;
+      font-family: Roboto;
       color: #898989;
     }
   }
@@ -339,8 +344,10 @@ ws-auth-content-card-v2 {
     color: #1C5D95 !important;
 }
 .nav-tab-links{
-  padding-bottom: 45px !important;
+  padding-bottom: 25px !important;
   padding-top: 23px !important;
+
+  margin-bottom: 16px;
 }
 .left-panel-header{
   padding-left: 2px !important;

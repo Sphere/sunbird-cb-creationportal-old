@@ -40,6 +40,8 @@ import { MatTreeModule } from '@angular/material/tree'
 import { ImageCropModule } from '@ws-widget/utils/src/public-api'
 import { AuthEditorStepsComponent } from './components/auth-editor-steps/auth-editor-steps.component'
 import { CommentsDialogComponent } from './components/comments-dialog/comments-dialog.component'
+import { CertificateDialogComponent } from './components/certificate-upload-dialog/certificate-upload-dialog.component'
+
 import { CommentsComponent } from './components/comments/comments.component'
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component'
 import { ErrorParserComponent } from './components/error-parser/error-parser.component'
@@ -61,12 +63,16 @@ import { StatusTrackComponent } from './components/status-track/status-track.com
 import { FeedbackFormComponent } from './components/feedback-form/feedback-form.component'
 import { SuccessDialogComponent } from './components/success-dialog/success-dialog.component'
 import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-popup.component'
+import { PlayerNavigationWidgetComponent } from '../../../../../../../library/ws-widget/collection/src/lib/player-navigation-widget/player-navigation-widget.component'
+import { CertificateStatusDialogComponentDialogComponent } from './components/cert-upload-status-dialog/cert-upload-status-dialogcomponent'
+
 @NgModule({
   declarations: [
     RelativeUrlPipe,
     CommentsComponent,
     NotificationComponent,
     CommentsDialogComponent,
+    CertificateDialogComponent,
     IprDialogComponent,
     ConfirmDialogComponent,
     AuthEditorStepsComponent,
@@ -83,7 +89,9 @@ import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-po
     StatusTrackComponent,
     FeedbackFormComponent,
     SuccessDialogComponent,
-    CompetencyPopupComponent
+    CompetencyPopupComponent,
+    PlayerNavigationWidgetComponent,
+    CertificateStatusDialogComponentDialogComponent
   ],
   imports: [
     CommonModule,
@@ -147,6 +155,7 @@ import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-po
     MatSnackBarModule,
     NotificationComponent,
     CommentsDialogComponent,
+    CertificateDialogComponent,
     CompetencyPopupComponent,
     ConfirmDialogComponent,
     MatSelectModule,
@@ -174,6 +183,8 @@ import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-po
     StatusTrackComponent,
     FeedbackFormComponent,
     SuccessDialogComponent,
+    PlayerNavigationWidgetComponent,
+    CertificateStatusDialogComponentDialogComponent
   ],
   providers: [
     ApiService,
@@ -189,6 +200,7 @@ import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-po
     NotificationComponent,
     IprDialogComponent,
     CommentsDialogComponent,
+    CertificateDialogComponent,
     CompetencyPopupComponent,
     ConfirmDialogComponent,
     ErrorParserComponent,
@@ -199,6 +211,8 @@ import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-po
     StatusTrackComponent,
     FeedbackFormComponent,
     SuccessDialogComponent,
+    PlayerNavigationWidgetComponent,
+    CertificateStatusDialogComponentDialogComponent
   ],
 })
 export class SharedModule { }

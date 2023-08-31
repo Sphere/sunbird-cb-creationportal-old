@@ -9,6 +9,8 @@ import { AuthHomeComponent } from './routing/modules/home/components/home/home.c
 import { ContentAndDataReadMultiLangTOCResolver } from './services/content-and-data-read-multi-lang.service'
 import { ContentTOCResolver } from './services/content-resolve.service'
 import { InitResolver } from './services/init-resolve.service'
+import { ReviewerChecklist } from '../../../author/src/lib/routing/modules/editor/shared/components/reviewer-checklist/reviewer-checklist.component'
+
 
 const routes: Routes = [
   {
@@ -17,6 +19,10 @@ const routes: Routes = [
     resolve: {
       script: InitResolver,
     },
+  },
+  {
+    path: 'reviewerChecklist/:id',
+    component: ReviewerChecklist,
   },
   {
     path: 'editor',

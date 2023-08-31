@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@angular/core'
 import { ConfigurationsService, NsInstanceConfig } from '@ws-widget/utils'
 import { NSContent } from '@ws/author/src/lib/interface/content'
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AccessControlService {
   downloadRegex = new RegExp(`(https://.*?/content-store/.*?)(\\\)?\\\\?['"])`, 'gm')
   constructor(

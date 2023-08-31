@@ -68,6 +68,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     [key: string]: { hasError: boolean; contents: NsCohorts.ICohortsContent[], count: Number }
   } = {}
   cohortTypesEnum = NsCohorts.ECohortTypes
+  isReviewer: Boolean = false
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -84,6 +85,12 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
+    console.log("content", this.content)
+    if (this.authAccessService.hasRole(['content_reviewer'])) {
+      this.isReviewer = true
+    } else {
+      this.isReviewer = false
+    }
     this.route.data.subscribe(data => {
       this.tocConfig = data.pageData.data
       if (this.content && this.isPostAssessment) {

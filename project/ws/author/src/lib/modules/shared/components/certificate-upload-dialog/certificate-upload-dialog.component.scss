@@ -1,0 +1,129 @@
+.upload-main-block{
+  // overflow: hidden;
+  padding: 20px 30px !important;
+  max-height: fit-content;
+}
+.header-text{
+  display: flex;
+justify-content: space-between;
+margin-bottom: 10px;
+}
+
+.upload-text{
+  color: #000;
+
+/* Header 2 */
+font-family: Roboto;
+font-size: 24px;
+font-style: normal;
+font-weight: 400;
+line-height: 28.8px; /* 120% */
+letter-spacing: -0.48px;
+margin-bottom: 5px;
+}
+.accepted-format-txt{
+  color: #000;
+
+/* Body */
+font-family: Roboto;
+font-size: 16px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+letter-spacing: -0.32px;
+margin-bottom: 10px;
+
+}
+.upload-block{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+    justify-content: center;
+    /* justify-content: space-around; */
+    gap: 15px;
+  width: 251px;
+height: 202px;
+flex-shrink: 0;
+border-radius: 6px;
+background: #FFF;
+box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
+}
+.upload-btn{
+  display: flex;
+width: 146px;
+padding: 7px 24px;
+justify-content: center;
+align-items: center;
+gap: 8px;
+border-radius: 50px;
+background: #1C5D95;
+color: #FFF;
+font-family: Roboto;
+font-size: 14px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+border: none !important;
+
+}
+.upload-icon{
+  width: 69px !important;
+height: 69px !important;
+flex-shrink: 0 !important;
+}
+.preview-block{
+  width: 700px;
+height: 418.963px;
+flex-shrink: 0;
+border-radius: 6px;
+background: #E0E0E0;
+box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
+}
+.upload-container-body{
+  display: flex;
+  margin: 10px 0px;
+  justify-content: space-between;
+}
+.preview-text{
+  padding: 10px 0px 0px 10px;
+  align-items: center;
+  gap: 5px;
+}
+.preview-center{
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 325px;
+}
+.cert-block{
+  display: flex;
+    justify-content: end;
+    margin-top: 29px;
+}
+.add-certificate-btn{
+  display: flex;
+width: 194px;
+padding: 8px 32px;
+justify-content: center;
+align-items: center;
+gap: 8px;
+border-radius: 50px;
+background: #1C5D95;
+color: #FFF;
+font-family: Roboto;
+font-size: 16px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+border:none;
+}
+.preview-img{
+   max-width: 100%;
+  max-height: 300px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+}
+.svg-image{
+  width: 700px;
+  height: 418.963px;
+}

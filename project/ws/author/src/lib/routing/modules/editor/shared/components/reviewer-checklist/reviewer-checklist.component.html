@@ -1,0 +1,48 @@
+<div class="flex flex-between flex-wrap-reverse">
+  <div class="header-left">
+    <div class="header-synopsis" *ngIf="qualityResponse&&!loading">
+      <div class="flex flex-column">
+        <a [routerLink]="'/author/cbp'">
+          <img class="answer-icon mt-4 mb-4" src="cbp-assets/icons/akar-icons_arrow-left.svg" />
+        </a>
+        <span *ngIf="content" class="review-text-name">Review Checklist : {{content.name}}</span>
+        <span *ngIf="content" style="font-size: 24px;">The score is: <span
+            class="mat-title margin-top-s percentage-text" [ngClass]="{
+          'green': getQualityPercent > 70,
+          'orange': getQualityPercent > 30 && getQualityPercent <= 70,
+          'red': getQualityPercent <= 30
+        }">{{getQualityPercent}}%</span></span>
+
+      </div>
+
+      <mat-tab-group>
+        <mat-tab *ngFor="let model of qualityResponse.criteriaModels; let idx = index">
+          <ng-template mat-tab-label class="tab-header"> {{model.criteria}} </ng-template>
+
+          <div class="checklist-container">
+            <div *ngFor="let question of model.qualifiers;">
+              <div class="flex">
+                <mat-card class="question-container">{{question.description}}</mat-card>
+                <mat-card *ngIf="question.evaluated=='Yes'" class="answer-container">
+                  <img class="answer-icon" src="cbp-assets/icons/mdi_tick.svg" />
+                </mat-card>
+                <mat-card *ngIf="question.evaluated=='No'" class="answer-container">
+                  <img class="answer-icon" src="cbp-assets/icons/gridicons_cross.svg" />
+                </mat-card>
+                <mat-card *ngIf="question.evaluated=='Not Applicable'" class="answer-container">
+                  <span>May be</span>
+                </mat-card>
+              </div>
+            </div>
+
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+    <div class="header-synopsis">
+      <div *ngIf="!qualityResponse&&!loading" class="no-data-message">
+        <p>No data found.</p>
+      </div>
+    </div>
+  </div>
+</div>

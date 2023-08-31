@@ -24,6 +24,8 @@ import { CKEditorResolverService } from './services/ckeditor-resolve.service'
 import { AuthNavBarToggleService } from './services/auth-nav-bar-toggle.service'
 import { WorkFlowService } from './services/work-flow.service'
 import { DepartmentResolver } from './services/department-resolv.servive'
+import { QualityJSONResolver } from './services/quality-json-resolver.service'
+import { ReviewerChecklist } from '../lib/routing/modules/editor/shared/components/reviewer-checklist/reviewer-checklist.component'
 
 /**
  * This function is used internal to get a string instance of the `<base href="" />` value from `index.html`.
@@ -41,7 +43,7 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
 }
 
 @NgModule({
-  declarations: [AuthRootComponent, AuthNavigationComponent, TocComponent, ViewerComponent],
+  declarations: [AuthRootComponent, AuthNavigationComponent, TocComponent, ViewerComponent, ReviewerChecklist],
   imports: [
     CommonModule,
     SharedModule,
@@ -70,6 +72,7 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
       deps: [PlatformLocation],
     },
     AuthNavBarToggleService,
+    QualityJSONResolver
   ],
 })
 export class WsAuthorRootModule { }

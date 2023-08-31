@@ -5,6 +5,7 @@ import { IFormMeta } from './../interface/form'
 import { IConditionsV2 } from '../interface/conditions-v2'
 import { IMetaUnit } from '../routing/modules/editor/interface/meta'
 import { Subject } from 'rxjs'
+import { NSIQuality } from '../routing/modules/editor/interface/content-quality'
 
 interface IPermission {
   conditions: IConditionsV2
@@ -20,10 +21,14 @@ interface IPermission {
  */
 @Injectable()
 export class AuthInitService {
+  contentQuality!: NSIQuality.IContentQualityConfig
+
   private messageSource = new Subject<any>()
   public currentMessage = this.messageSource.asObservable()
   private publishSource = new Subject<any>()
   public publishMessage = this.publishSource.asObservable()
+  private reviewSource = new Subject<any>()
+  public reviewMessage = this.reviewSource.asObservable()
 
   private backToHomeSource = new Subject<any>()
   public backToHomeMessage = this.backToHomeSource.asObservable()
@@ -60,6 +65,9 @@ export class AuthInitService {
   private isBackButtonFromAssessmentClicked = new Subject<any>()
   public isBackButtonFromAssessmentClickedMessage = this.isBackButtonFromAssessmentClicked.asObservable()
 
+  private isEditMetaPageClicked = new Subject<any>()
+  public isEditMetaPageClickedClickedMessage = this.isEditMetaPageClicked.asObservable()
+
   authConfig!: IFormMeta
   authMetaV2!: { [key: string]: IMetaUnit<any> }
   ordinals: any
@@ -82,6 +90,9 @@ export class AuthInitService {
   }
   publishData(message: any) {
     this.publishSource.next(message)
+  }
+  reviewCheck(message: any) {
+    this.reviewSource.next(message)
   }
   uploadData(message: any) {
     this.uploadSource.next(message)
@@ -115,6 +126,10 @@ export class AuthInitService {
   }
   isBackButtonClickedFromAssessmentAction(message: any) {
     this.isBackButtonFromAssessmentClicked.next(message)
+  }
+  isEditMetaPageAction(message: any) {
+    console.log("rwqweqweqwe")
+    this.isEditMetaPageClicked.next(message)
   }
   backToHome(message: any) {
     this.backToHomeSource.next(message)

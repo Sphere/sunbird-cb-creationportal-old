@@ -15,7 +15,7 @@ import { AccessControlService } from './../modules/shared/services/access-contro
 import { CKEditorResolverService } from './ckeditor-resolve.service'
 import { AuthInitService } from './init.service'
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class InitResolver implements Resolve<NSContent.IContentMeta> {
   constructor(
     private apiService: ApiService,

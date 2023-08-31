@@ -152,3 +152,80 @@
   height: 100vh;
   width: 100vw;
 }
+
+
+#fullScreenContainer {
+  // min-height: 75vh;
+  // width: 99%;
+  // position: relative;
+  // margin: 0 8px 0 -7px;
+  // padding: 0 7px;
+  width: 100.6%;
+  height: 75vh;
+  position: relative;
+  min-height: 75vh;
+  margin: 0 0 0 -11px;
+  padding: 0 9px;
+
+
+  @include breakpoint-xs {
+    width: 103.6%;
+    height: 45vh !important;
+    position: relative;
+    min-height: 45vh !important;
+    margin: 0px 0 0 -7px;
+    padding: 0px 9px;
+
+  }
+}
+
+#fullScreenContainer>div {
+  left: 5px;
+}
+
+.prev-button .width-auto {
+  left: -13px;
+
+  @include breakpoint-xs {
+    left: -7px;
+    top: -5px;
+  }
+
+  @include breakpoint-s {
+    left: -8px;
+  }
+}
+
+.player-nav-links {
+  @include breakpoint-xs {
+    width: 96%;
+  }
+
+  @include breakpoint-s {
+    width: 97%;
+  }
+}
+
+.next-button .width-auto {
+  right: -12px;
+
+  @include breakpoint-xs {
+    right: 2px;
+  }
+}
+
+.next-button .title {
+  margin-right: -3px;
+}
+
+.prev-button .title {
+  margin-left: -12px !important;
+
+  @include breakpoint-xs {
+    margin-left: -8px !important;
+  }
+
+  @include breakpoint-s {
+    margin-left: -8px !important;
+  }
+}

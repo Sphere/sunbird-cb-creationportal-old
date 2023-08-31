@@ -3,6 +3,17 @@
     <mat-icon style="cursor: pointer;" mat-dialog-close mat-raised-button i18n>close</mat-icon>
   </div>
   <h2 class="text-bold">Publishing Course: {{contentMeta.name}}</h2>
+  <div *ngIf="qualityResponse" class="percentage-container">
+    <h4 class="percentage-text text-bold">Reviewer Checklist Score: <span [ngClass]="{
+  'green': getQualityPercent > 70,
+  'orange': getQualityPercent > 30 && getQualityPercent <= 70,
+  'red': getQualityPercent <= 30
+}">{{getQualityPercent}}%</span></h4>
+    <button title="View checklist" style="font-size: 14px !important;" class="view-info-btn" (click)="viewDetails()"
+      i18n>
+      <mat-icon>info</mat-icon>
+    </button>
+  </div>
   <p class="publish-course-note">Note: Status of all the resources has to be live, before publishing the course</p>
   <div style="float: right; margin-top: -42px;">
     <button style="font-size: 14px !important;" class="margin-left-s

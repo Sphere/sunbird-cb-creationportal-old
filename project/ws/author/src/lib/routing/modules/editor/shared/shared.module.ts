@@ -21,6 +21,7 @@ import { BaseComponent } from './components/editor/base/base.component'
 import { EditMetaV2Component } from './components/editor/edit-meta-v2/edit-meta-v2.component'
 import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal.component'
 import { CourseSettingsComponent } from './components/course-settings/course-settings.component'
+import { ContentQualityService } from './services/content-quality.service'
 
 @NgModule({
   declarations: [
@@ -61,6 +62,6 @@ import { CourseSettingsComponent } from './components/course-settings/course-set
     CourseSettingsComponent
   ],
   entryComponents: [AuthPickerComponent],
-  providers: [UploadService, BackNavigateService],
+  providers: [UploadService, BackNavigateService, ContentQualityService],
 })
 export class EditorSharedModule { }

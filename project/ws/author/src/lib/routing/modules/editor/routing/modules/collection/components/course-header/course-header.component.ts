@@ -6,6 +6,7 @@ import { HeaderServiceService } from './../../../../../../../../../../../../../s
 import { IActionButtonConfig, IActionButton } from '@ws/author/src/lib/interface/action-button'
 import { CollectionStoreService } from '../../services/store.service'
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+import { Subscription } from 'rxjs'
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -21,7 +22,12 @@ export class CourseHeaderComponent implements OnInit {
   @Output() action = new EventEmitter<string>()
   @Output() subAction = new EventEmitter<{ type: string; identifier: string; nodeClicked?: boolean }>()
   @Input() isModelHeaderView: boolean = false;
+  @Input() backToDashboard: boolean = false;
+  @Input() clickedNext: boolean = false;
 
+
+  activeSubscription?: Subscription
+  isEditMetaPage: boolean = false;
   requiredConfig: IActionButton[] = []
   backNav: boolean = false
   constructor(private configSvc: ConfigurationsService, private domSanitizer: DomSanitizer,
@@ -31,9 +37,38 @@ export class CourseHeaderComponent implements OnInit {
     this.headerService.showCourseHeader.subscribe(data => {
       this.courseNameHeader = data
     })
+    if (sessionStorage.getItem('isSettingsPageFromPreview')) {
+      sessionStorage.removeItem('isSettingsPageFromPreview')
+      this.isEditMetaPage = false
+    }
   }
 
   ngOnInit() {
+
+    if (sessionStorage.getItem('isSettingsPageFromPreview')) {
+      sessionStorage.removeItem('isSettingsPageFromPreview')
+      this.isEditMetaPage = false
+    } else if (this.backToDashboard && !this.clickedNext) {
+      this.isEditMetaPage = true
+    } else {
+      this.isEditMetaPage = false
+    }
+
+    this.activeSubscription = this.initService.isEditMetaPageClickedClickedMessage.subscribe((message) => {
+      if (sessionStorage.getItem('isSettingsPageFromPreview') && !this.clickedNext) {
+        sessionStorage.removeItem('isSettingsPageFromPreview')
+        this.isEditMetaPage = false
+      } else if (!message) {
+        this.isEditMetaPage = false
+      } else {
+        this.isEditMetaPage = true
+      }
+
+    })
+    if (sessionStorage.getItem('isSettingsPageFromPreview')) {
+      sessionStorage.removeItem('isSettingsPageFromPreview')
+      this.isEditMetaPage = false
+    }
     if (this.configSvc.instanceConfig) {
       this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
         this.configSvc.instanceConfig.logos.app,
@@ -67,5 +102,10 @@ export class CourseHeaderComponent implements OnInit {
   }
   showCourseSettings() {
     this.subAction.emit({ type: 'editContent', identifier: this.store.parentNode[0], nodeClicked: true })
+  }
+  ngOnDestroy() {
+    if (this.activeSubscription) {
+      this.activeSubscription.unsubscribe()
+    }
   }
 }

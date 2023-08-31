@@ -101,7 +101,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   backToCourse?: Subscription
   isModulePageEnabled: boolean = false;
-
+  isReviewChecklistEnabled: boolean = false;
+  backToDashboard: boolean = false;
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -122,6 +123,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     // private contentSvc: WidgetContentService,
     private _configurationsService: ConfigurationsService,
   ) {
+    if (sessionStorage.getItem('isReviewChecklist')) {
+      this.dialog.closeAll()
+      sessionStorage.removeItem('isReviewChecklist')
+      this.isReviewChecklistEnabled = true
+    }
     this.callSaveFn = this.headerService.isSavePressed
     this.rootSvc.showNavbarDisplay$.next(false)
     this.headerService.headerSaveData.subscribe(data => {
@@ -129,6 +135,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         this.save()
       }
     })
+    if (!this.showAddchapter) {
+      if (this.viewMode === 'meta' && !this.clickedNext) {
+        this.backToDashboard = true
+        this.initService.isEditMetaPageAction('backFromModulePage')
+      }
+    }
     this.changeMessageSubscription = this.initService.currentMessage.subscribe(
       (data: any) => {
         if (data === 'publishResources') {
@@ -165,6 +177,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
           } else if (this.showAddchapter) {
             if (this.viewMode === 'meta' && this.clickedNext) {
+              console.log("fadfasdf")
+              this.initService.isEditMetaPageAction('backFromModulePage')
               this.clickedNext = false
               this.showAddchapter = false
               this.isModulePageEnabled = false
@@ -248,6 +262,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           //this.save()
         }
       })
+    if (this.viewMode == 'meta' && !this.clickedNext && !this.showAddchapter && !this.isReviewChecklistEnabled) {
+      console.log("this.viewMeta", this.viewMode, this.clickedNext, this.showAddchapter, this.isReviewChecklistEnabled)
+      console.log("fasrwerweeeeeeeee")
+      this.initService.isEditMetaPageAction('backFromModulePage')
+
+    }
     this.initService.updateAssessmentMessage.subscribe(
       (data: any) => {
         if (data) {
@@ -295,6 +315,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.routerValuesCall()
+
     this.courseId = this.storeService.parentNode[0]
     this.parentNodeId = this.storeService.currentParentNode
 
@@ -789,7 +810,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       if (contentAction !== 'publishResources') {
         const dialogRef = this.dialog.open(CommentsDialogComponent, {
           width: '750px',
-          height: '450px',
+          height: '485px',
           data: this.contentService.getOriginalMeta(this.currentParentId),
         })
 
@@ -2516,6 +2537,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   // }
 
   triggerSave() {
+    if (this.showAddchapter) {
+      if (!this.clickedNext) {
+        this.backToDashboard = false
+        this.initService.isEditMetaPageAction(this.backToDashboard)
+      }
+    }
     const nodesModified: any = {}
     let isRootPresent = false
 

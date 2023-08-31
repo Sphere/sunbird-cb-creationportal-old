@@ -34,29 +34,32 @@ export class SuccessDialogComponent implements OnInit {
     }, 500)
   }
   routeToDashboard() {
-    this.editorService.readcontentV3(this.data.id).subscribe(async (data: any) => {
-      // tslint:disable-next-line:no-console
-      console.log(data)
-      if (data.status === 'Live' || data.status === 'Processing' && data.batches == undefined) {
-        let obj = {
-          "request": {
-            "courseId": this.data.id,
-            "name": "Open Batch",
-            "description": "Open Batch",
-            "enrollmentType": "open",
-            "startDate": moment(new Date()).format("YYYY-MM-DD"),
-            "endDate": "2031-01-01",
-            "enrollmentEndDate": "2030-12-01",
-            "createdBy": this._configurationsService.userProfile!.userId
-          }
-        }
-        // tslint:disable-next-line:no-console
-        console.log(obj)
-        let data = await this.editorService.createBatch(obj).toPromise().catch(_error => { })
+    if (!this.data.cert_upload && this.data.cert_upload != 'Yes') {
+      this.editorService.readcontentV3(this.data.id).subscribe(async (data: any) => {
         // tslint:disable-next-line:no-console
         console.log(data)
-      }
-    })
+        if (data.status === 'Live' || data.status === 'Processing' && data.batches == undefined) {
+          let obj = {
+            "request": {
+              "courseId": this.data.id,
+              "name": "Open Batch",
+              "description": "Open Batch",
+              "enrollmentType": "open",
+              "startDate": moment(new Date()).format("YYYY-MM-DD"),
+              "endDate": "2031-01-01",
+              "enrollmentEndDate": "2030-12-01",
+              "createdBy": this._configurationsService.userProfile!.userId
+            }
+          }
+          // tslint:disable-next-line:no-console
+          console.log(obj)
+          let data = await this.editorService.createBatch(obj).toPromise().catch(_error => { })
+          // tslint:disable-next-line:no-console
+          console.log(data)
+        }
+      })
+    }
+
     this.dialog.closeAll()
     this.router.navigate(['author', 'cbp'])
   }

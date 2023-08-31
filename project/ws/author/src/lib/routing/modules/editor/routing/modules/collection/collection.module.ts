@@ -19,12 +19,17 @@ import { QuizModule } from './../quiz/quiz.module'
 import { CourseHeaderComponent } from './components/course-header/course-header.component'
 import { BtnPageBackModule } from '@ws-widget/collection'
 import { WebPageModule } from './../web-page/web-page.module'
+import { ContentQualityComponent } from '../../../shared/components/content-quality/content-quality.component'
 
 import {
   MatToolbarModule,
   MatIconModule,
   MatButtonModule,
   MatTooltipModule,
+  MatCheckboxModule,
+  MatProgressBarModule,
+  MatRadioModule,
+  MatTableModule
 } from '@angular/material'
 import { ResourceModuleComponent } from './components/collection/resource-module/resource-module.component'
 import { ModuleCreationComponent } from './components/collection/module-creation/module-creation.component'
@@ -40,7 +45,8 @@ import { ModuleCreationComponent } from './components/collection/module-creation
     AuthTocComponent,
     CourseHeaderComponent,
     ResourceModuleComponent,
-    ModuleCreationComponent
+    ModuleCreationComponent,
+    ContentQualityComponent
   ],
   imports: [
     CommonModule,
@@ -59,6 +65,10 @@ import { ModuleCreationComponent } from './components/collection/module-creation
     MatTooltipModule,
     BtnPageBackModule,
     WebPageModule,
+    MatCheckboxModule,
+    MatProgressBarModule,
+    MatRadioModule,
+    MatTableModule
   ],
 })
 export class CollectionModule { }
