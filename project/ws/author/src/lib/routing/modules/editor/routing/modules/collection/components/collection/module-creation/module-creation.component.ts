@@ -3833,7 +3833,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       tmpList.map((ch: any) => {
         if (ch && ch.children) {
           ch.children!.map((child: any) => {
-            if (child.identifier === currentPosition && child.parent !== this.courseData.identifier) {
+            if (child.identifier === currentPosition) {
               console.log(child.identifier, child.parent)
               currentFound = child
             }
@@ -3845,7 +3845,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       tmpList.map((ch: any) => {
         if (ch && ch.children) {
           ch.children!.map((child: any) => {
-            if (child.identifier === prevPosition && child.parent !== this.courseData.identifier) {
+            if (child.identifier === prevPosition) {
               console.log(child.identifier, child.parent)
               previousFound = child
             }
@@ -3896,7 +3896,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }
         if (prevData.contentType === 'Resource') {
           let pCourseData = hierarchy[prevData.parent]
-          let pIndex = pCourseData["children"].indexOf(previousFound.identifier)
+          let pIndex = pCourseData["children"].lastIndexOf(previousFound.identifier)
           pCourseData["children"].splice(pIndex, 1)
         }
         if (prevData.contentType === 'CourseUnit') {
@@ -3938,7 +3938,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             cCourseData["children"].splice(cIndex, 0, previousFound.identifier)
           }
         } else {
-          if (currData.contentType === 'Resource' && prevData.contentType === 'Resource') {
+          if (currData.contentType === 'Resource'
+            && prevData.contentType === 'Resource'
+          ) {
             let cCourseData = hierarchy[currData.parent]
             console.log(cCourseData)
             let cIndex = cCourseData["children"].indexOf(currData.identifier)
@@ -3948,7 +3950,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }
         if (prevData.contentType === 'Resource') {
           let pCourseData = hierarchy[prevData.parent]
-          let pIndex = pCourseData["children"].indexOf(previousFound.identifier)
+          let pIndex = pCourseData["children"].lastIndexOf(previousFound.identifier)
           pCourseData["children"].splice(pIndex, 1)
           console.log(pCourseData)
         }
@@ -3969,7 +3971,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       let currentPosition = identfs[event.currentIndex]
       let prevPosition = identfs[event.previousIndex]
       if (currentPosition === prevPosition) {
-        if (prevPosition === identfs[identfs.length - 1]) {
+        if (identfs.includes(prevPosition)) {
           let parentData = hierarchy[this.courseData.identifier]
           parentData["children"].push(prevPosition)
           if (currentFound.contentType === 'Resource') {

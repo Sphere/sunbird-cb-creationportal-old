@@ -43,7 +43,7 @@
                 (cdkDragStarted)="dragDrop(resource,resource.identifier, 'resourceInsideModule')"
                 style="cursor: pointer;" (cdkDragReleased)="dragEnd($event)" cdkDrag>
                 <mat-icon class="cursor-pointer">more_vert</mat-icon>
-                <span style="white-space: normal;" class="resourse-text">{{resource.name}}--{{i}}--{{l}}</span>
+                <span style="white-space: normal;" class="resourse-text">{{resource.name}}</span>
                 <span fxFlex style="flex: 1 1 auto;"></span>
                 <span style="display:flex;flex-direction: row;">
                   <mat-icon class="material-icons margin-left-m text-medium brand-color"
@@ -60,7 +60,7 @@
               (cdkDragStarted)="dragDrop(module,module.identifier, 'resource')" style="cursor: pointer;"
               (cdkDragReleased)="dragEnd($event)" cdkDrag>
               <mat-icon class="cursor-pointer">more_vert</mat-icon> <span title="{{module.name}}" class="resourse-text"
-                style="white-space: normal;">{{ module.name}}-{{i}}</span>
+                style="white-space: normal;">{{ module.name}}</span>
               <span fxFlex style="flex: 1 1 auto;"></span>
               <span style="display:flex;flex-direction: row;">
                 <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)="editContent(module)">
@@ -79,7 +79,7 @@
           <!--module & resources left canvas-->
           <div class="model-text model-left-content" *ngIf="!showAddModuleForm" cdkDropList
             (cdkDropListDropped)="drop($event)">
-            <span>Modules and Resources will be visible here once you start adding them.</span>
+            <span>Modules and Resources will be visible above, once you start adding them.</span>
           </div>
           <!-- <ws-author-auth-toc></ws-author-auth-toc> -->
           <!--module left canvas creation-->
@@ -105,7 +105,7 @@
                   <mat-icon class="cursor-pointer" matTooltip="dragDrop" cdkDrag
                     cdkDragBoundary=".model-left-create-content div-3"
                     (click)="dragDrop(resource,resource.identifier, 'resource')">more_vert</mat-icon> <span
-                    class="resourse-text" style="white-space: normal;">{{resource.name}}-b</span>
+                    class="resourse-text" style="white-space: normal;">{{resource.name}}</span>
                   <span fxFlex style="flex: 1 1 auto;"></span>
                   <span style="display:flex;flex-direction: row;">
                     <mat-icon class="material-icons margin-left-m text-medium brand-color"
