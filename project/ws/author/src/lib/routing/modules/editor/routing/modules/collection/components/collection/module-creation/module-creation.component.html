@@ -40,6 +40,7 @@
             <div *ngIf="module?.children?.length > 0">
               <div *ngFor="let resource of module.children;index as l" class="heading-resource resource-1"
                 style="cursor:pointer" [ngClass]="editItem === resource.identifier ? 'edit-item' : ''"
+                matTooltip="dragDrop" [matTooltipPosition]="'left'"
                 (cdkDragStarted)="dragDrop(resource,resource.identifier, 'resourceInsideModule')"
                 style="cursor: pointer;" (cdkDragReleased)="dragEnd($event)" cdkDrag>
                 <mat-icon class="cursor-pointer">more_vert</mat-icon>
@@ -102,7 +103,7 @@
               <div *ngIf="isOnClickOfResourceTypeEnabled">
                 <div *ngFor="let resource of resourceNames" class="heading-resource resource-3">
                   <div class="custom-placeholder border border-solid" *cdkDragPlaceholder></div>
-                  <mat-icon class="cursor-pointer" matTooltip="dragDrop" cdkDrag
+                  <mat-icon class="cursor-pointer" matTooltip="dragDrop" [matTooltipPosition]="'left'" cdkDrag
                     cdkDragBoundary=".model-left-create-content div-3"
                     (click)="dragDrop(resource,resource.identifier, 'resource')">more_vert</mat-icon> <span
                     class="resourse-text" style="white-space: normal;">{{resource.name}}</span>

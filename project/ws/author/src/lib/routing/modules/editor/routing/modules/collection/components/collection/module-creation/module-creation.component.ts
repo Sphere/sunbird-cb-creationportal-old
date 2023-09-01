@@ -3884,8 +3884,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           if (cCourseData["children"].length == 0) {
             cCourseData["children"].push(previousFound.identifier)
           } else {
-            let cIndex = cCourseData["children"].indexOf(currData.identifier)
-            cCourseData["children"].splice(cIndex, 0, previousFound.identifier)
+            let courseData = hierarchy[currData.parent]
+            let cIndex = courseData["children"].indexOf(currData.identifier)
+            courseData["children"].splice(cIndex, 0, previousFound.identifier)
           }
         } else {
           if (currData.contentType === 'Resource' && prevData.contentType === 'Resource') {
@@ -3934,8 +3935,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           if (cCourseData["children"].length == 0) {
             cCourseData["children"].push(previousFound.identifier)
           } else {
-            let cIndex = cCourseData["children"].indexOf(currData.identifier)
-            cCourseData["children"].splice(cIndex, 0, previousFound.identifier)
+
+            let courseData = hierarchy[currData.parent]
+            let cIndex = courseData["children"].indexOf(currData.identifier)
+            courseData["children"].splice(cIndex, 0, previousFound.identifier)
+            // let cIndex = cCourseData["children"].indexOf(currData.identifier)
+            // cCourseData["children"].splice(cIndex, 0, previousFound.identifier)
           }
         } else {
           if (currData.contentType === 'Resource'
