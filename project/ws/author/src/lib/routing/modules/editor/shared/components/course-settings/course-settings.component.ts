@@ -52,6 +52,7 @@ import { NSApiRequest } from '../../../../../../interface/apiRequest'
 // import { NSApiResponse } from '../../../../../../interface/apiResponse'
 //import { environment } from '../../../../../../../../../../../src/environments/environment'
 import { HttpClient } from '@angular/common/http'
+import { isNumber } from 'lodash'
 @Component({
   selector: 'ws-auth-course-settings',
   templateUrl: './course-settings.component.html',
@@ -83,6 +84,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   editorsCtrl!: FormControl
   creatorDetailsCtrl!: FormControl
   audienceCtrl!: FormControl
+  rolesMappedCtrl!: FormControl
   jobProfileCtrl!: FormControl
   regionCtrl!: FormControl
   accessPathsCtrl!: FormControl
@@ -93,6 +95,10 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   resourceTypes: string[] = []
   employeeList: any[] = []
   audienceList: any[] = []
+  rolesMappedListData!: any
+  rolesMappedListValuesData!: any
+  rolesArray!: any
+  rolesMappedList: any[] = []
   jobProfileList: any[] = []
   regionList: any[] = []
   accessPathList: any[] = []
@@ -137,6 +143,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   @ViewChild('editorsView', { static: false }) editorsView!: ElementRef
   @ViewChild('creatorDetailsView', { static: false }) creatorDetailsView!: ElementRef
   @ViewChild('audienceView', { static: false }) audienceView!: ElementRef
+  @ViewChild('rolesMappedView', { static: false }) rolesMappedView!: ElementRef
   @ViewChild('jobProfileView', { static: false }) jobProfileView!: ElementRef
   @ViewChild('regionView', { static: false }) regionView!: ElementRef
   @ViewChild('accessPathsView', { static: false }) accessPathsView!: ElementRef
@@ -151,6 +158,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   moduleName: string = 'undefined title';
   isSaveModuleFormEnable: boolean = false;
   moduleButtonName: string = 'Create';
+  roles$!: Observable<any[]>
 
   constructor(
     private formBuilder: FormBuilder,
@@ -191,16 +199,39 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       // tslint:disable-next-line: align
     }, 100)
   }
+  rolesSubscription!: Subscription
+
   contentForm!: FormGroup
   ngOnInit() {
     const url = this.router.url
     const id = url.split('/')
     this.contentService.currentContentID = id[3]
     this.contentService.changeActiveCont.next(id[3])
+    // this.roles$ = this.editorService.rolesMappingAPI().subscribe(async (data: any) => {
+    //   if (data) {
+    //     this.rolesArray = await Object.entries(data).map(([key, value]) => ({ [key]: value }))
+    //     this.rolesMappedListData = await Object.keys(data)
+    //     console.log("yes here", Object.keys(data), this.rolesMappedListData)
 
+    //   }
+    // })
+
+    this.roles$ = this.editorService.rolesMappingAPI() // Assign the observable
+
+    this.rolesSubscription = this.roles$.subscribe(async (data: any) => {
+      if (data) {
+        this.rolesArray = await Object.entries(data).map(([key, value]) => ({ [key]: value }))
+        this.rolesMappedListData = await Object.keys(data)
+        this.rolesMappedList = await Object.keys(data)
+
+        console.log("yes here", data, this.rolesArray, this.rolesMappedListData)
+      }
+    })
     this.isSiemens = this.accessService.rootOrg.toLowerCase() === 'siemens'
     this.ordinals = this.authInitService.ordinals
     this.audienceList = this.ordinals.audience
+    this.rolesMappedList = this.rolesMappedListData
+
     this.jobProfileList = this.ordinals.jobProfile
     this.complexityLevelList = this.ordinals.audience
 
@@ -215,6 +246,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     this.keywordsCtrl = new FormControl('')
 
     this.audienceCtrl = new FormControl()
+    this.rolesMappedCtrl = new FormControl()
     this.jobProfileCtrl = new FormControl()
     this.regionCtrl = new FormControl()
     this.accessPathsCtrl = new FormControl()
@@ -347,6 +379,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       )
 
     this.audienceCtrl.valueChanges.subscribe(() => this.fetchAudience())
+    this.rolesMappedCtrl.valueChanges.subscribe(() => this.fetchRolesMapped())
 
     this.jobProfileCtrl.valueChanges.subscribe(() => this.fetchJobProfile())
 
@@ -404,8 +437,14 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       }
     }
   }
+  getKeys(index: number): string[] {
+    return Object.keys(this.rolesMappedListData[index])
+  }
 
   ngOnDestroy() {
+    if (this.rolesSubscription) {
+      this.rolesSubscription.unsubscribe()
+    }
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe()
     }
@@ -658,12 +697,16 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
   storeData() {
     try {
+      debugger
       // tslint:disable-next-line:no-console
       console.log("cameherer")
       const originalMeta = this.contentService.getOriginalMeta(this.contentMeta.identifier)
       // console.log("originalMeta", originalMeta, this.contentMeta.identifier)
       if (originalMeta && this.isEditEnabled) {
         const expiryDate = this.contentForm.value.expiryDate
+        if (this.contentForm.value.rolesMapped == null) {
+          this.contentForm.value.rolesMapped = []
+        }
         const currentMeta: NSContent.IContentMeta = JSON.parse(JSON.stringify(this.contentForm.value))
         const exemptArray = ['application/quiz', 'application/x-mpegURL', 'audio/mpeg', 'video/mp4',
           'application/vnd.ekstep.html-archive', 'application/json']
@@ -787,6 +830,13 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         }
         // tslint:disable-next-line:no-console
         console.log("originalMeta", meta)
+        if (meta['rolesMapped']) {
+          const keysToFind = meta['rolesMapped']
+          const rolesId = this.getValuesForKeys(keysToFind)
+          console.log("rolesId", rolesId)
+          meta['rolesMapped'] = rolesId
+          console.log("roles", rolesId)
+        }
 
         // console.log('meta', meta, this.contentMeta.identifier)
         this.contentService.setUpdatedMeta(meta, this.contentMeta.identifier)
@@ -801,6 +851,62 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       // this.contentService.parentContent
     }
   }
+  getKeyByValue(role: any) {
+    for (const key in this.rolesArray) {
+      if (isNumber(role)) {
+        if (this.rolesArray.hasOwnProperty(key) && this.rolesArray[key] === role) {
+          console.log("fasdf", key)
+        }
+      }
+    }
+    return null // Return null if the value is not found
+  }
+  getRole(role: any) {
+    // console.log("this.rolesArray", role)
+    for (const item of this.rolesArray) {
+      if (isNumber(role)) {
+        const keys = Object.values(item)
+        console.log("items", item, keys)
+        if (this.rolesArray.hasOwnProperty(item) && this.rolesArray[item] === role) {
+          console.log("item has role", item)
+          // return item
+        }
+        // if (keys.length === 1 && item[keys[0]] === role) {
+        //   return keys[0]
+        // }
+      }
+
+    }
+    return null // Return null if value is not found
+  }
+  getValuesForKeys(keysToFind: any) {
+    keysToFind
+    const values: any = []
+    keysToFind.forEach((key: any) => {
+      key = key.split(':')[0]
+      const item = this.rolesArray.find((item: any) => Object.keys(item)[0] === key)
+      console.log("keysToFind: ", this.rolesArray, item, Object.values(item))
+
+      if (item) {
+        values.push(Object.keys(item) + ':' + Object.values(item))
+      }
+    })
+    let mergedArray: any = []
+    if (values.length > 0) {
+      mergedArray = [].concat(...values)
+
+    }
+    return mergedArray
+  }
+  getValueByKey(keyToFind: any) {
+    for (const item of this.rolesArray) {
+      if (item.hasOwnProperty(keyToFind)) {
+        return item[keyToFind]
+      }
+    }
+    return null // Return null if key is not found
+  }
+
   // emitSaveData(flag: boolean) {
   //   if (flag) {
   //     //this.saveParent = 1
@@ -901,10 +1007,16 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
   addToFormControl(event: MatAutocompleteSelectedEvent, fieldName: string): void {
     const value = (event.option.value || '').trim()
-    if (value && this.contentForm.controls[fieldName].value.indexOf(value) === -1) {
+    if (this.contentForm.controls['rolesMapped'] == null) {
+      this.contentForm.controls['rolesMapped'].value = []
+    }
+    console.log("addToFormControl", this.contentForm.controls['rolesMapped'], this.contentForm.controls[fieldName], this.contentForm.controls[fieldName].value)
+
+    if (value) {
       this.contentForm.controls[fieldName].value.push(value)
       this.contentForm.controls[fieldName].setValue(this.contentForm.controls[fieldName].value)
     }
+    console.log("addToFormControl2", this.contentForm.controls[fieldName].value)
 
     this[`${fieldName}View` as keyof CourseSettingsComponent].nativeElement.value = ''
     this[`${fieldName}Ctrl` as keyof CourseSettingsComponent].setValue(null)
@@ -1477,6 +1589,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   private fetchAudience() {
+    console.log("fasdfaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     if ((this.audienceCtrl.value || '').trim()) {
       this.audienceList = this.ordinals.audience.filter(
         (v: any) => v.toLowerCase().indexOf(this.audienceCtrl.value.toLowerCase()) > -1,
@@ -1484,6 +1597,18 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     } else {
       this.audienceList = this.ordinals.audience.slice()
     }
+  }
+  private fetchRolesMapped() {
+    console.log("this.rolesMappedCtrl", this.rolesMappedListData)
+    if ((this.rolesMappedCtrl.value || '').trim()) {
+      debugger
+      this.rolesMappedList = this.rolesMappedListData.filter(
+        (v: any) => v.toLowerCase().indexOf(this.rolesMappedCtrl.value.toLowerCase()) > -1,
+      )
+    } else {
+      this.rolesMappedList = this.rolesMappedListData.slice()
+    }
+    console.log("this.rolesMappedList", this.rolesMappedList)
   }
 
   private fetchJobProfile() {
@@ -1529,6 +1654,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       appIcon: [],
       artifactUrl: [],
       audience: [],
+      rolesMapped: [[]],
       body: [],
       catalogPaths: [],
       category: [],

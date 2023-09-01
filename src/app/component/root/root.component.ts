@@ -23,7 +23,6 @@ import {
   ValueService,
   WsEvents,
 } from '@ws-widget/utils'
-import { delay } from 'rxjs/operators'
 import { MobileAppsService } from '../../services/mobile-apps.service'
 import { RootService } from './root.service'
 // import { SwUpdate } from '@angular/service-worker'
@@ -114,7 +113,7 @@ export class RootComponent implements OnInit, AfterViewInit {
         }
       }
     })
-    this.rootSvc.showNavbarDisplay$.pipe(delay(500)).subscribe(display => {
+    this.rootSvc.showNavbarDisplay$.subscribe(display => {
       this.showNavbar = display
     })
   }

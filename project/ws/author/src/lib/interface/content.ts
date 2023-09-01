@@ -234,6 +234,7 @@ export namespace NSContent {
     interactivityLevel: string
     complexityLevel: string
     audience: string[]
+    rolesMapped: string[]
     duration: any
     size: number
     mimeType: string
