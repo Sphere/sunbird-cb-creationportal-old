@@ -3773,7 +3773,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   compute(data?: any) {
     let dataCheck = data
-    console.log(data, 'ooo')
     var tmpList = this.courseData!.children
     let found = tmpList.filter((child: any) => {
       return child.identifier === data
