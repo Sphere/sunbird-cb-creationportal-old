@@ -169,7 +169,7 @@
       <div class="flex-row-item">
         <p class="margin-left-l margin-top-l course-settings-title">Learner Settings</p>
 
-        <div class="margin-top-l margin-right-l">
+        <!-- <div class="margin-top-l margin-right-l">
           <div class="margin-top-xs margin-left-xl flex-1"
             [ngClass]="{ disable: checkCondition('audience', 'disabled') }">
             <label>
@@ -202,6 +202,45 @@
                   </mat-option>
                 </mat-autocomplete>
                 <mat-error class="error-font" *ngIf="showError('audience')" i18n>Audience is mandatory
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+        </div> -->
+        <div class="margin-top-l margin-right-l">
+          <div class="margin-top-xs margin-left-xl flex-1"
+            [ngClass]="{ disable: checkCondition('rolesMapped', 'disabled') }">
+            <label>
+              <div class="margin-top-xs flex flex-middle">
+                <b i18n>Roles Mapped</b>
+              </div>
+            </label>
+            <div class="margin-top-xs" *ngIf="roles$ | async as roles;">
+              <mat-form-field appearance="outline" class="margin-top-xs width-90"
+                [ngClass]="{ 'mat-form-field-invalid': showError('rolesMapped') }">
+                <mat-chip-list #rolesMappedChipList i18n-aria-label aria-label="Roles Mapped selection">
+                  <mat-chip style="color: white !important;
+                            background-color: #0074b6 !important;"
+                    *ngFor="let role of contentForm.controls.rolesMapped.value" [selectable]="selectable"
+                    [removable]="removable" (removed)="removeFromFormControl(role.split(':')[0], 'rolesMapped')">
+                    {{ role.split(':')[0] }}
+                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                  </mat-chip>
+                  <input i18n-placeholder placeholder="Select" #rolesMappedView [formControl]="rolesMappedCtrl"
+                    [matChipInputFor]="rolesMappedChipList" [matAutocomplete]="rolesMappedAuto"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
+                    (matChipInputTokenEnd)="removeField($event)" />
+                </mat-chip-list>
+                <mat-autocomplete #rolesMappedAuto="matAutocomplete"
+                  (optionSelected)="addToFormControl($event, 'rolesMapped')">
+                  <mat-option *ngIf="!checkCondition('rolesMapped', 'required')" i18n [value]="null">None
+                  </mat-option>
+                  <mat-option *ngFor="let role of rolesMappedList" [value]="role">
+                    {{ role }}
+                  </mat-option>
+                </mat-autocomplete>
+                <mat-error class="error-font" *ngIf="showError('rolesMapped')" i18n>Roles Mapped is mandatory
                 </mat-error>
               </mat-form-field>
             </div>

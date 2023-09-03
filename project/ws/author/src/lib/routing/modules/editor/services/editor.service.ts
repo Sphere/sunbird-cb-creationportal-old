@@ -593,5 +593,14 @@ export class EditorService {
   sendEmailNotificationAPI(requestBody: any): Observable<any> {
     return this.apiService.post<any>(EMAIL_NOTIFICATION, requestBody)
   }
+  rolesMappingAPI(): Observable<any> {
+    return this.apiService.get<any>(
+      `apis/public/v8/competencyAssets/rolesMappingData`
+    ).pipe(
+      map((data: any) => {
+        return data.response
+      })
+    )
+  }
 
 }
