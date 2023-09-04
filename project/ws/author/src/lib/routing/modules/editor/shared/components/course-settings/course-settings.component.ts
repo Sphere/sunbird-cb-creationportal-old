@@ -1007,9 +1007,9 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
   addToFormControl(event: MatAutocompleteSelectedEvent, fieldName: string): void {
     const value = (event.option.value || '').trim()
-    if (this.contentForm.controls['rolesMapped'] == null) {
-      this.contentForm.controls['rolesMapped'].value = []
-    }
+    // if (this.contentForm.controls['rolesMapped'] == null) {
+    //   this.contentForm.controls['rolesMapped'].value = []
+    // }
     console.log("addToFormControl", this.contentForm.controls['rolesMapped'], this.contentForm.controls[fieldName], this.contentForm.controls[fieldName].value)
 
     if (value) {
