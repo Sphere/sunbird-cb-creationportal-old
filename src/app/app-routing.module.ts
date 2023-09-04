@@ -29,7 +29,8 @@ import { InitResolver } from '@ws/author/src/lib/services/init-resolve.service'
 // 💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥
 // Please declare routes in alphabetical order
 // 😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵
-
+import { OrgComponent } from '../../project/ws/app/src/lib/routes/org/components/org/org.component'
+import { OrgServiceService } from '../../project/ws/app/src/lib/routes/org/org-service.service'
 const routes: Routes = [
 
   {
@@ -139,6 +140,13 @@ const routes: Routes = [
       // ],
     },
     canActivate: [GeneralGuard],
+  },
+  {
+    path: 'app/org-details',
+    component: OrgComponent,
+    resolve: {
+      orgData: OrgServiceService,
+    },
   },
   // {
   //   path: 'app/person-profile',

@@ -225,6 +225,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         this.rolesMappedList = await Object.keys(data)
 
         console.log("yes here", data, this.rolesArray, this.rolesMappedListData)
+        // this.getFilterData(this.rolesMappedList, this.contentForm.controls.rolesMapped.value)
       }
     })
     this.isSiemens = this.accessService.rootOrg.toLowerCase() === 'siemens'
@@ -409,7 +410,21 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     //   switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
     // )
   }
+  getFilterData(firstArray: any, secondArray: any) {
+    const valuesNotInSecondArray = firstArray.filter((key: any) => {
+      const keyFoundInSecondArray = secondArray.some((item: any) => {
+        const [itemKey] = item.split(':')
+        return key === itemKey
+      })
 
+      return !keyFoundInSecondArray
+    })
+
+    console.log(valuesNotInSecondArray)
+    this.rolesMappedListData = valuesNotInSecondArray
+
+    this.rolesMappedList = valuesNotInSecondArray
+  }
   enableClick(): void {
     this.isEnableTitle = false
   }

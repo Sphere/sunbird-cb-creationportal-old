@@ -213,7 +213,7 @@
             [ngClass]="{ disable: checkCondition('rolesMapped', 'disabled') }">
             <label>
               <div class="margin-top-xs flex flex-middle">
-                <b i18n>Roles Mapped</b>
+                <b i18n>Position Mapped</b>
               </div>
             </label>
             <div class="margin-top-xs" *ngIf="roles$ | async as roles;">
@@ -248,11 +248,11 @@
 
         </div>
 
-        <div class="margin-top-xl margin-right-l">
+        <!-- <div class="margin-top-l margin-right-l" style="margin-top: 25px;">
           <div class="margin-top-xs margin-left-xl flex-1"
             [ngClass]="{ disable: checkCondition('complexityLevel', 'disabled') }">
-            <div class="margin-top-l">
-              <mat-form-field appearance="outline" class="margin-top-s"
+            <div class="margin-top-xs">
+              <mat-form-field style="margin-top: 51px !important;" appearance="outline" class="margin-top-s"
                 [ngClass]="{ 'mat-form-field-invalid': showError('complexityLevel') }">
                 <mat-select formControlName="complexityLevel" i18n-placeholder placeholder="Learning Level">
                   <mat-option *ngIf="!checkCondition('complexityLevel', 'required')" i18n [value]="null">None
@@ -265,14 +265,14 @@
               </mat-form-field>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <div class="margin-top-xl margin-right-l">
           <div class="margin-top-xs margin-left-xl flex-1"
             [ngClass]="{ disable: checkCondition('keywords', 'disabled') }">
             <div class="margin-top-xs flex margin-right-xl">
-              <mat-form-field class="keywords-chip-list margin-top-xs flex-grow80" appearance="outline"
-                [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
+              <mat-form-field style="margin-top: 51px !important;" class="keywords-chip-list margin-top-xs flex-grow80"
+                appearance="outline" [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
                 <mat-chip-list #keywords aria-label="Keyword selection">
                   <mat-chip style="color: white !important;
                     background-color: #0074b6 !important;" *ngFor="let key of contentForm.controls.keywords.value"
