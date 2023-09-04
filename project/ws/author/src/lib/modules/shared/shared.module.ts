@@ -65,6 +65,7 @@ import { SuccessDialogComponent } from './components/success-dialog/success-dial
 import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-popup.component'
 import { PlayerNavigationWidgetComponent } from '../../../../../../../library/ws-widget/collection/src/lib/player-navigation-widget/player-navigation-widget.component'
 import { CertificateStatusDialogComponentDialogComponent } from './components/cert-upload-status-dialog/cert-upload-status-dialogcomponent'
+import { UserIndexConfirmComponent } from './components/user-index-confirm/user-index-confirm.component'
 
 @NgModule({
   declarations: [
@@ -91,7 +92,8 @@ import { CertificateStatusDialogComponentDialogComponent } from './components/ce
     SuccessDialogComponent,
     CompetencyPopupComponent,
     PlayerNavigationWidgetComponent,
-    CertificateStatusDialogComponentDialogComponent
+    CertificateStatusDialogComponentDialogComponent,
+    UserIndexConfirmComponent
   ],
   imports: [
     CommonModule,
@@ -183,6 +185,7 @@ import { CertificateStatusDialogComponentDialogComponent } from './components/ce
     StatusTrackComponent,
     FeedbackFormComponent,
     SuccessDialogComponent,
+    UserIndexConfirmComponent,
     PlayerNavigationWidgetComponent,
     CertificateStatusDialogComponentDialogComponent
   ],
@@ -211,6 +214,7 @@ import { CertificateStatusDialogComponentDialogComponent } from './components/ce
     StatusTrackComponent,
     FeedbackFormComponent,
     SuccessDialogComponent,
+    UserIndexConfirmComponent,
     PlayerNavigationWidgetComponent,
     CertificateStatusDialogComponentDialogComponent
   ],

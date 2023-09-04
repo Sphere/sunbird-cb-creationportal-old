@@ -78,13 +78,12 @@
           </div>
 
           <!--module & resources left canvas-->
-          <div class="model-text model-left-content" *ngIf="!showAddModuleForm" cdkDropList
-            (cdkDropListDropped)="drop($event)">
+          <div class="model-text model-left-content" cdkDropList (cdkDropListDropped)="drop($event)">
             <span>Modules and Resources will be visible above, once you start adding them.</span>
           </div>
           <!-- <ws-author-auth-toc></ws-author-auth-toc> -->
           <!--module left canvas creation-->
-          <div class="model-left-create-content div-2" *ngIf="showAddModuleForm" cdkDropList
+          <div class="model-left-create-content div-2" *ngIf="showAddModuleForm && moduleNames.length >0" cdkDropList
             (cdkDropListDropped)="drop($event)">
             <div class="module-container" *ngFor="let module of moduleNames">
               <div class="mod-heading">

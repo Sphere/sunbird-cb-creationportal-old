@@ -1,0 +1,10 @@
+<mat-dialog-content>
+  <button mat-button style="float: right;" [mat-dialog-close]="false"><mat-icon>close</mat-icon></button>
+  <h4 class="course-live">
+    {{data.message}}
+  </h4>
+</mat-dialog-content>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancel('current')">No Thanks</button>
+  <button mat-button (click)="onCancel('New')" cdkFocusInitial>Ok</button>
+</div>

@@ -50,6 +50,7 @@ import { QuizStoreService } from '../../../../quiz/services/store.service'
 import { QuizResolverService } from '../../../../quiz/services/resolver.service'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
 import { map } from 'rxjs/operators'
+import { UserIndexConfirmComponent } from '@ws/author/src/lib/modules/shared/components/user-index-confirm/user-index-confirm.component'
 //import { M } from '@angular/cdk/keycodes'
 //import { CdkDragDrop } from '@angular/cdk/drag-drop'
 @Component({
@@ -241,7 +242,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   sumDuration: any
   @Input() clickedNext: boolean = false;
 
-  constructor(public dialog: MatDialog,
+  constructor(
+    public dialog: MatDialog,
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
     private router: Router,
@@ -3945,11 +3947,67 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           if (currData.contentType === 'Resource'
             && prevData.contentType === 'Resource'
           ) {
-            let cCourseData = hierarchy[currData.parent]
-            console.log(cCourseData)
-            let cIndex = cCourseData["children"].indexOf(currData.identifier)
-            cCourseData["children"].splice(cIndex, 0, previousFound.identifier)
-            console.log(cCourseData)
+
+            console.log(identfs[identfs.length - 1] === currData.identifier)
+            if (identfs[identfs.length - 1] === currData.identifier) {
+              let cCourseData1 = hierarchy[this.courseData.identifier]
+              this.loaderService.changeLoad.next(false)
+              const dialogRef = this.dialog.open(UserIndexConfirmComponent, {
+                width: '450px',
+                height: '450x',
+                data: { 'message': 'Do you want to place this selection outise the list or on the last resource?', 'id': this.contentService.parentContent },
+              })
+
+              dialogRef.afterClosed().subscribe(async result => {
+                console.log(result)
+                this.loaderService.changeLoad.next(true)
+
+                if (result === 'New') {
+                  cCourseData1["children"].push(prevPosition)
+                  console.log(cCourseData1)
+                } else {
+                  let cCourseData2 = hierarchy[currData.parent]
+                  console.log(cCourseData2["children"])
+                  let cIndex = cCourseData2["children"].indexOf(currData.identifier)
+                  console.log(cIndex)
+                  cCourseData2["children"].splice(cIndex + 1, 0, previousFound.identifier)
+                }
+                if (prevData.contentType === 'Resource') {
+                  let pCourseData = hierarchy[prevData.parent]
+                  console.log(pCourseData["children"])
+                  let pIndex = pCourseData["children"].indexOf(previousFound.identifier)
+                  console.log(pIndex)
+                  pCourseData["children"].splice(pIndex, 1)
+                  console.log(pCourseData)
+                }
+                console.log(hierarchy, 'final123--------')
+
+                const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+                  request: {
+                    data: {
+                      nodesModified: this.editorStore.getNewNodeModifyData(),
+                      hierarchy: hierarchy,
+                    },
+                  },
+                }
+
+                console.log(requestBodyV2, "data123")
+                await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+                  this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                    this.loaderService.changeLoad.next(false)
+                    this.courseData = data
+                  })
+                })
+              })
+              return
+            } else {
+              let cCourseData = hierarchy[currData.parent]
+              console.log(cCourseData)
+              let cIndex = cCourseData["children"].indexOf(currData.identifier)
+              cCourseData["children"].splice(cIndex, 0, previousFound.identifier)
+              console.log(cCourseData)
+            }
+
           }
         }
         if (prevData.contentType === 'Resource') {
