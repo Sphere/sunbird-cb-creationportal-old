@@ -6,8 +6,8 @@ import { CommonModule } from '@angular/common'
 import { HorizontalScrollerModule } from '@ws-widget/utils'
 import { WidgetResolverModule } from '@ws-widget/resolver'
 import { CardContentModule, PipeContentRoutePipe } from '@ws-widget/collection'
-import { InfiniteScrollModule } from 'ngx-infinite-scroll'
-import { MdePopoverModule } from '@material-extended/mde'
+// import { InfiniteScrollModule } from 'ngx-infinite-scroll'
+// import { MdePopoverModule } from '@material-extended/mde'
 
 import {
   MatCardModule,
@@ -20,10 +20,10 @@ import {
   MatTooltipModule,
   MatTabsModule,
 } from '@angular/material'
-import { AllCoursesComponent } from './components/all-courses/all-courses.component'
+// import { AllCoursesComponent } from './components/all-courses/all-courses.component'
 
 @NgModule({
-  declarations: [AllCoursesComponent],
+  declarations: [],
   imports: [
     CommonModule,
     // OrgRoutingModule,
@@ -39,8 +39,8 @@ import { AllCoursesComponent } from './components/all-courses/all-courses.compon
     HorizontalScrollerModule,
     WidgetResolverModule,
     CardContentModule,
-    InfiniteScrollModule,
-    MdePopoverModule,
+    // InfiniteScrollModule,
+    // MdePopoverModule,
   ],
   providers: [PipeContentRoutePipe],
 })

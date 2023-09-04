@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core'
 import { Routes, RouterModule } from '@angular/router'
 // import { OrgComponent } from './components/org/org.component'
 // import { OrgServiceService } from './org-service.service'
-import { AllCoursesComponent } from './components/all-courses/all-courses.component'
 
 const routes: Routes = []
 
@@ -17,11 +16,11 @@ const routes: Routes = []
       //   },
       //   children: routes,
       // },
-      {
-        path: 'all-courses',
-        component: AllCoursesComponent,
-        children: routes,
-      },
+      // {
+      //   path: 'all-courses',
+      //   component: AllCoursesComponent,
+      //   children: routes,
+      // },
     ]),
   ],
   exports: [RouterModule],
