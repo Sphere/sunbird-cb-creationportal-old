@@ -697,7 +697,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
   storeData() {
     try {
-      debugger
       // tslint:disable-next-line:no-console
       console.log("cameherer")
       const originalMeta = this.contentService.getOriginalMeta(this.contentMeta.identifier)
@@ -1601,7 +1600,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   private fetchRolesMapped() {
     console.log("this.rolesMappedCtrl", this.rolesMappedListData)
     if ((this.rolesMappedCtrl.value || '').trim()) {
-      debugger
       this.rolesMappedList = this.rolesMappedListData.filter(
         (v: any) => v.toLowerCase().indexOf(this.rolesMappedCtrl.value.toLowerCase()) > -1,
       )
