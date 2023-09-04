@@ -62,6 +62,7 @@ import { AppTocResolverService } from '@ws/author'
 import { AuthInitService } from '../../project/ws/author/src/lib/services/init.service'
 // import { ServiceWorkerModule } from '@angular/service-worker'
 // import { environment } from '../environments/environment'
+import { OrgComponent } from '../../project/ws/app/src/lib/routes/org/components/org/org.component'
 
 @Injectable()
 export class HammerConfig extends GestureConfig {
@@ -95,6 +96,7 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     DialogConfirmComponent,
     LoginRootComponent,
     LoginRootDirective,
+    OrgComponent
   ],
   imports: [
     FormsModule,
