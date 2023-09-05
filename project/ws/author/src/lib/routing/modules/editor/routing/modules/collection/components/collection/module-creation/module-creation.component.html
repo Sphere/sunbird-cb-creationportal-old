@@ -24,7 +24,7 @@
             <div class="mod-heading" *ngIf="module.primaryCategory === 'Course Unit'"
               [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
               (cdkDragStarted)="dragDrop(module,module.identifier, 'Module')" style="cursor: pointer;"
-              (cdkDragReleased)="dragEnd($event)" cdkDrag>
+              (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
               <h2 class="module-text" style="margin: 0px !important">{{module.name !== '' ?
                 module.name : "no title1"}}
               </h2>
@@ -42,7 +42,7 @@
                 style="cursor:pointer" [ngClass]="editItem === resource.identifier ? 'edit-item' : ''"
                 matTooltip="dragDrop" [matTooltipPosition]="'left'"
                 (cdkDragStarted)="dragDrop(resource,resource.identifier, 'resourceInsideModule')"
-                style="cursor: pointer;" (cdkDragReleased)="dragEnd($event)" cdkDrag>
+                style="cursor: pointer;" (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
                 <mat-icon class="cursor-pointer">more_vert</mat-icon>
                 <span style="white-space: normal;" class="resourse-text">{{resource.name}}</span>
                 <span fxFlex style="flex: 1 1 auto;"></span>
@@ -59,7 +59,7 @@
             <div *ngIf="module.primaryCategory !== 'Course Unit'" class="heading-resource resource-2"
               [ngClass]="editItem === module.identifier ? 'edit-item' : ''" matTooltip="dragDrop"
               (cdkDragStarted)="dragDrop(module,module.identifier, 'resource')" style="cursor: pointer;"
-              (cdkDragReleased)="dragEnd($event)" cdkDrag>
+              (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
               <mat-icon class="cursor-pointer">more_vert</mat-icon> <span title="{{module.name}}" class="resourse-text"
                 style="white-space: normal;">{{ module.name}}</span>
               <span fxFlex style="flex: 1 1 auto;"></span>
@@ -103,7 +103,7 @@
                 <div *ngFor="let resource of resourceNames" class="heading-resource resource-3">
                   <div class="custom-placeholder border border-solid" *cdkDragPlaceholder></div>
                   <mat-icon class="cursor-pointer" matTooltip="dragDrop" [matTooltipPosition]="'left'" cdkDrag
-                    cdkDragBoundary=".model-left-create-content div-3"
+                    cdkDragBoundary=".model-left-create-content div-3" cdkDragLockAxis="y"
                     (click)="dragDrop(resource,resource.identifier, 'resource')">more_vert</mat-icon> <span
                     class="resourse-text" style="white-space: normal;">{{resource.name}}</span>
                   <span fxFlex style="flex: 1 1 auto;"></span>

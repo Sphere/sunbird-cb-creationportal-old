@@ -3910,7 +3910,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }
         console.log(hierarchy)
       }
-    } else if (previousIndex < currentIndex) {
+    } else if (previousIndex <= currentIndex) {
       console.log('2')
       if (previousFound && currentFound && previousFound.parent === this.courseData.identifier &&
         currentFound.parent === this.courseData.identifier && currentFound.contentType === "Resource" && previousFound.contentType === "Resource") {
@@ -3955,7 +3955,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               const dialogRef = this.dialog.open(UserIndexConfirmComponent, {
                 width: '450px',
                 height: '450x',
-                data: { 'message': 'Do you want to place this selection outise the list or on the last resource?', 'id': this.contentService.parentContent },
+                data: { 'message': 'Do you want to place this selection outside the collection list or within the last Module?', 'id': this.contentService.parentContent },
               })
 
               dialogRef.afterClosed().subscribe(async result => {

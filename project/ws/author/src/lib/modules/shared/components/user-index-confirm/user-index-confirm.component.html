@@ -5,6 +5,7 @@
   </h4>
 </mat-dialog-content>
 <div mat-dialog-actions>
-  <button mat-button (click)="onCancel('current')">No Thanks</button>
-  <button mat-button (click)="onCancel('New')" cdkFocusInitial>Ok</button>
+  <button class="buttonColor yesButtonColor" mat-raised-button (click)="onCancel('current')">No, within Module</button>
+  <button class="buttonColor yesButtonColor" mat-raised-button (click)="onCancel('New')" cdkFocusInitial>Yes,
+    Outside</button>
 </div>
