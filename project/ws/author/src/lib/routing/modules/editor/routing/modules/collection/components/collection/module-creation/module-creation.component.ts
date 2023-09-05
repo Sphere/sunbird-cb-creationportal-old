@@ -4004,15 +4004,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               let cCourseData = hierarchy[currData.parent]
               console.log(cCourseData)
               let cIndex = cCourseData["children"].indexOf(currData.identifier)
-              cCourseData["children"].splice(cIndex, 0, previousFound.identifier)
-              console.log(cCourseData)
+              console.log(cIndex)
+              cCourseData["children"].splice(cIndex + 1, 0, previousFound.identifier)
+              console.log(cCourseData["children"], 'pppp')
             }
 
           }
         }
         if (prevData.contentType === 'Resource') {
           let pCourseData = hierarchy[prevData.parent]
-          let pIndex = pCourseData["children"].lastIndexOf(previousFound.identifier)
+          let pIndex = pCourseData["children"].indexOf(previousFound.identifier)
           pCourseData["children"].splice(pIndex, 1)
           console.log(pCourseData)
         }
