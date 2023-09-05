@@ -227,7 +227,7 @@
                     {{ role.split(':')[0] }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                   </mat-chip>
-                  <input i18n-placeholder placeholder="Select" #rolesMappedView [formControl]="rolesMappedCtrl"
+                  <input i18n-placeholder placeholder="Select Roles" #rolesMappedView [formControl]="rolesMappedCtrl"
                     [matChipInputFor]="rolesMappedChipList" [matAutocomplete]="rolesMappedAuto"
                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
                     (matChipInputTokenEnd)="removeField($event)" />
@@ -271,7 +271,7 @@
           <div class="margin-top-xs margin-left-xl flex-1"
             [ngClass]="{ disable: checkCondition('keywords', 'disabled') }">
             <div class="margin-top-xs flex margin-right-xl">
-              <mat-form-field style="margin-top: 51px !important;" class="keywords-chip-list margin-top-xs flex-grow80"
+              <mat-form-field style="margin-top: 19px !important;" class="keywords-chip-list margin-top-xs flex-grow80"
                 appearance="outline" [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
                 <mat-chip-list #keywords aria-label="Keyword selection">
                   <mat-chip style="color: white !important;
