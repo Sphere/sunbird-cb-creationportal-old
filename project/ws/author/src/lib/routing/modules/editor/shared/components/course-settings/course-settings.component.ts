@@ -224,7 +224,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         this.rolesMappedListData = await Object.keys(data)
         this.rolesMappedList = await Object.keys(data)
 
-        console.log("yes here", data, this.rolesArray, this.rolesMappedListData)
+        // console.log("yes here", data, this.rolesArray, this.rolesMappedListData)
         // this.getFilterData(this.rolesMappedList, this.contentForm.controls.rolesMapped.value)
       }
     })
@@ -713,7 +713,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   storeData() {
     try {
       // tslint:disable-next-line:no-console
-      console.log("cameherer")
+      // console.log("cameherer")
       const originalMeta = this.contentService.getOriginalMeta(this.contentMeta.identifier)
       // console.log("originalMeta", originalMeta, this.contentMeta.identifier)
       if (originalMeta && this.isEditEnabled) {
@@ -806,7 +806,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             }+0000`
         }
         // tslint:disable-next-line:no-console
-        console.log("currentMeta", currentMeta)
+        // console.log("currentMeta", currentMeta)
         Object.keys(currentMeta).map(v => {
           if (
             v !== 'versionKey' && v !== 'visibility' &&
@@ -843,13 +843,13 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
           delete meta.artifactUrl
         }
         // tslint:disable-next-line:no-console
-        console.log("originalMeta", meta)
+        // console.log("originalMeta", meta)
         if (meta['rolesMapped']) {
           const keysToFind = meta['rolesMapped']
           const rolesId = this.getValuesForKeys(keysToFind)
-          console.log("rolesId", rolesId)
+          // console.log("rolesId", rolesId)
           meta['rolesMapped'] = rolesId
-          console.log("roles", rolesId)
+          // console.log("roles", rolesId)
         }
 
         // console.log('meta', meta, this.contentMeta.identifier)
@@ -869,7 +869,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     for (const key in this.rolesArray) {
       if (isNumber(role)) {
         if (this.rolesArray.hasOwnProperty(key) && this.rolesArray[key] === role) {
-          console.log("fasdf", key)
+          // console.log("fasdf", key)
         }
       }
     }
@@ -899,7 +899,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     keysToFind.forEach((key: any) => {
       key = key.split(':')[0]
       const item = this.rolesArray.find((item: any) => Object.keys(item)[0] === key)
-      console.log("keysToFind: ", this.rolesArray, item, Object.values(item))
+      // console.log("keysToFind: ", this.rolesArray, item, Object.values(item))
 
       if (item) {
         values.push(Object.keys(item) + ':' + Object.values(item))
@@ -933,7 +933,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
   updateContentService(meta: string, value: any, event = false) {
     // tslint:disable-next-line:no-console
-    console.log("updateContentService")
+    // console.log("updateContentService")
     this.contentForm.controls[meta].setValue(value, { events: event })
     this.contentService.setUpdatedMeta({ [meta]: value } as any, this.contentMeta.identifier)
   }
@@ -993,7 +993,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       )
     }
     // tslint:disable-next-line:no-console
-    console.log(this.contentForm.controls.creatorDetails)
+    // console.log(this.contentForm.controls.creatorDetails)
 
     // Reset the input value
     if (input) {
@@ -1003,7 +1003,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   updateMyValue(event: any) {
     if (event) {
       // tslint:disable-next-line:no-console
-      console.log(event.checked)
+      // console.log(event.checked)
       this.contentForm.controls.gatingEnabled.setValue(
         event.checked
       )
@@ -1024,16 +1024,17 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     // if (this.contentForm.controls['rolesMapped'] == null) {
     //   this.contentForm.controls['rolesMapped'].value = []
     // }
-    console.log("addToFormControl", this.contentForm.controls['rolesMapped'], this.contentForm.controls[fieldName], this.contentForm.controls[fieldName].value)
+    // console.log("addToFormControl", this.contentForm.controls['rolesMapped'], this.contentForm.controls[fieldName], this.contentForm.controls[fieldName].value)
 
     if (value) {
       this.contentForm.controls[fieldName].value.push(value)
       this.contentForm.controls[fieldName].setValue(this.contentForm.controls[fieldName].value)
     }
-    console.log("addToFormControl2", this.contentForm.controls[fieldName].value)
+    // console.log("addToFormControl2", this.contentForm.controls[fieldName].value)
 
     this[`${fieldName}View` as keyof CourseSettingsComponent].nativeElement.value = ''
     this[`${fieldName}Ctrl` as keyof CourseSettingsComponent].setValue(null)
+    this[`${fieldName}View` as keyof CourseSettingsComponent].nativeElement.blur()
   }
 
   removeFromFormControl(keyword: any, fieldName: string): void {
@@ -1603,7 +1604,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   private fetchAudience() {
-    console.log("fasdfaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+    // console.log("fasdfaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     if ((this.audienceCtrl.value || '').trim()) {
       this.audienceList = this.ordinals.audience.filter(
         (v: any) => v.toLowerCase().indexOf(this.audienceCtrl.value.toLowerCase()) > -1,
@@ -1613,7 +1614,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     }
   }
   private fetchRolesMapped() {
-    console.log("this.rolesMappedCtrl", this.rolesMappedListData)
+    // console.log("this.rolesMappedCtrl", this.rolesMappedListData)
     if ((this.rolesMappedCtrl.value || '').trim()) {
       this.rolesMappedList = this.rolesMappedListData.filter(
         (v: any) => v.toLowerCase().indexOf(this.rolesMappedCtrl.value.toLowerCase()) > -1,
@@ -1621,7 +1622,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     } else {
       this.rolesMappedList = this.rolesMappedListData.slice()
     }
-    console.log("this.rolesMappedList", this.rolesMappedList)
+    // console.log("this.rolesMappedList", this.rolesMappedList)
   }
 
   private fetchJobProfile() {
