@@ -359,7 +359,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-          this.router.navigateByUrl('/author/cbp')
+          this.router.navigateByUrl('/author/home')
         },
         error => {
           if (error.status === 409) {
@@ -481,6 +481,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
         case 'InReview':
           return Notify.REVIEW_SUCCESS
         case 'Reviewed':
+        case 'Review':
           return Notify.PUBLISH_SUCCESS
         default:
           return ''
@@ -493,6 +494,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
       case 'InReview':
         return Notify.REVIEW_FAIL
       case 'Reviewed':
+      case 'Review':
         return Notify.PUBLISH_FAIL
       default:
         return ''
@@ -550,7 +552,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
         break
 
       case 'close':
-        this.router.navigateByUrl('/author/cbp')
+        this.router.navigateByUrl('/author/home')
         break
     }
   }
@@ -571,7 +573,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
         if (this.contents.length) {
           this.contentService.changeActiveCont.next(this.contents[0].identifier)
         } else {
-          this.router.navigateByUrl('/author/cbp')
+          this.router.navigateByUrl('/author/home')
         }
       },
       error => {
@@ -600,14 +602,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
 
   fullScreenToggle = () => {
     const doc: any = document
-    let elm: any = doc.getElementById('upload-container')
-    if (!elm) {
-      elm = doc.getElementById('edit-meta')
-    }
-    if (!elm) {
-      elm = doc.getElementById('auth-root')
-    }
-
+    const elm: any = doc.getElementById('upload-container')
     if (elm.requestFullscreen) {
       !doc.fullscreenElement ? elm.requestFullscreen() : doc.exitFullscreen()
     } else if (elm.mozRequestFullScreen) {
@@ -627,6 +622,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
       case 'InReview':
         return 'review'
       case 'Reviewed':
+      case 'Review':
         return 'publish'
       default:
         return 'sendForReview'

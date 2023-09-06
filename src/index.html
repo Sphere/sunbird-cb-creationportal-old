@@ -3,11 +3,12 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>CBP- iGOT</title>
+  <!-- <title>CBP- iGOT</title> -->
+  <title>Sphere Creator</title>
   <base href="/" />
   <meta id="id-app-description" name="Description"
-    content="CBP- iGOT 2.0 is a learning platform aimed at promoting capacity development among civil services. It is a solution built to be ‘fit for purpose’ to meet the exact learning needs of the civil services. iGOT 2.0 will help create impactful and relevant learning paths to achieve the outcomes relevant to their career aspirations." />
-  <meta name="viewport" content="user-scalable=yes, width=device-width, initial-scale=1" />
+    content="Sphere Creator 1.0 is a learning platform aimed at promoting capacity development among civil services. It is a solution built to be ‘fit for purpose’ to meet the exact learning needs of the civil services. Sphere Creator 2.0 will help create impactful and relevant learning paths to achieve the outcomes relevant to their career aspirations." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta http-equiv="cache-control" content="no-cache" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="-1" />
@@ -17,8 +18,11 @@
   <link id="id-app-fav-icon" rel="icon" type="image/png" href="favicon.png" />
   <link id="id-app-webmanifest" rel="manifest" />
   <meta id="id-app-theme-color" name="theme-color" content="#000" />
-  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+  <!-- <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" /> -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="/assets/theme-igot.css">
+  <script rel="preload" src="/assets/env.js" as="script"></script>
 </head>
 
 <body class="mat-app-background mat-body mat-typography custom-scroll">
@@ -29,6 +33,10 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+      }
+
+      body {
+        font-family: 'Roboto' !important;
       }
 
       .loader-ripple {
@@ -78,11 +86,11 @@
   <noscript>Please enable JavaScript to continue using this application.</noscript>
 </body>
 <script>
-  var MATCHING_IE = navigator.userAgent.match(/(msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+  var MATCHING_IE = navigator.userAgent.match(/(msie|trident(?=\/))\/?\s*(\d+)/i) || []
   if (/trident/i.test(MATCHING_IE[1])) {
     // tslint:disable-next-line: max-line-length
     document.body.innerHTML =
-      '<h1 style="margin-top: 50px; text-align: center">IE 11 and lesser version browsers are not supported.</h1><h3 style="margin-top: 16px; text-align: center">For best experience, use Google Chrome</h3>';
+      '<h1 style="margin-top: 50px; text-align: center">IE 11 and lesser version browsers are not supported.</h1><h3 style="margin-top: 16px; text-align: center">For best experience, use Google Chrome</h3>'
   }
 
 </script>

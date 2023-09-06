@@ -81,8 +81,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     private quizSvc: QuizService,
   ) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   scroll(qIndex: number) {
     if (!this.sidenavOpenDefault) {
@@ -209,8 +208,76 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  // submitQuiz() {
+  //   this.raiseTelemetry('quiz', null, 'submit')
+  //   this.isSubmitted = true
+  //   this.ngOnDestroy()
+  //   if (!this.quizJson.isAssessment) {
+  //     this.viewState = 'review'
+  //     this.calculateResults()
+  //   } else {
+  //     this.viewState = 'answer'
+  //   }
+  //   const submitQuizJson = JSON.parse(JSON.stringify(this.quizJson))
+  //   this.fetchingResultsStatus = 'fetching'
+  //   const requestData: NSQuiz.IQuizSubmitRequest = this.quizSvc.createAssessmentSubmitRequest(
+  //     this.identifier,
+  //     this.name,
+  //     {
+  //       ...submitQuizJson,
+  //       timeLimit: this.quizJson.timeLimit * 1000,
+  //     },
+  //     this.questionAnswerHash,
+  //   )
+
+  //   const sanitizedRequestData: NSQuiz.IQuizSubmitRequest = this.quizSvc.sanitizeAssessmentSubmitRequest(requestData)
+
+  //   this.quizSvc.submitQuizV2(sanitizedRequestData).subscribe(
+  //     (res: NSQuiz.IQuizSubmitResponse) => {
+  //       if (this.quizJson.isAssessment) {
+  //         this.isIdeal = true
+  //       }
+  //       this.fetchingResultsStatus = 'done'
+  //       this.numCorrectAnswers = res.correct
+  //       this.numIncorrectAnswers = res.inCorrect
+  //       this.numUnanswered = res.blank
+  //       this.passPercentage = res.passPercent
+  //       this.result = res.result
+  //       if (this.result >= this.passPercentage) {
+  //         this.isCompleted = true
+  //       }
+  //       // const result = {
+  //       //   result: (this.numCorrectAnswers * 100.0) / this.processedContent.quiz.questions.length,
+  //       //   total: this.processedContent.quiz.questions.length,
+  //       //   blank: res.blank,
+  //       //   correct: res.correct,
+  //       //   inCorrect: res.inCorrect,
+  //       //   passPercentage: res.passPercent,
+  //       // }
+  //       // this.quizSvc.firePlayerTelemetryEvent(
+  //       //   this.processedContent.content.identifier,
+  //       //   this.collectionId,
+  //       //   MIME_TYPE.quiz,
+  //       //   result,
+  //       //   this.isCompleted,
+  //       //   'DONE',
+  //       //   this.isIdeal,
+  //       //   true,
+  //       // )
+  //       const top = document.getElementById('quiz-end')
+  //       if (top !== null) {
+  //         top.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  //       }
+  //     },
+  //     (_error: any) => {
+  //       this.fetchingResultsStatus = 'error'
+  //     },
+  //   )
+  //   // this.fetchingResultsStatus = 'done'
+  // }
+
   submitQuiz() {
-    this.raiseTelemetry('quiz', null, 'submit')
+    // this.raiseTelemetry('quiz', null, 'submit')
     this.isSubmitted = true
     this.ngOnDestroy()
     if (!this.quizJson.isAssessment) {
@@ -219,17 +286,29 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.viewState = 'answer'
     }
+    const top = document.getElementById('quiz-end')
+    if (top !== null) {
+      top.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+
+    this.fetchingResultsStatus = 'done'
+
+    /** ------------start------------------- */
+
     const submitQuizJson = JSON.parse(JSON.stringify(this.quizJson))
     this.fetchingResultsStatus = 'fetching'
     const requestData: NSQuiz.IQuizSubmitRequest = this.quizSvc.createAssessmentSubmitRequest(
       this.identifier,
       this.name,
+      this.collectionId,
       {
         ...submitQuizJson,
         timeLimit: this.quizJson.timeLimit * 1000,
       },
       this.questionAnswerHash,
     )
+
+    requestData['artifactUrl'] = this.artifactUrl
 
     const sanitizedRequestData: NSQuiz.IQuizSubmitRequest = this.quizSvc.sanitizeAssessmentSubmitRequest(requestData)
 
@@ -265,16 +344,18 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         //   this.isIdeal,
         //   true,
         // )
-        const top = document.getElementById('quiz-end')
-        if (top !== null) {
-          top.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        const topq = document.getElementById('quiz-end')
+        if (topq !== null) {
+          topq.scrollIntoView({ behavior: 'smooth', block: 'start' })
         }
       },
       (_error: any) => {
         this.fetchingResultsStatus = 'error'
       },
     )
-    // this.fetchingResultsStatus = 'done'
+
+    /** ------------end------------------- */
+
   }
 
   showAnswers() {

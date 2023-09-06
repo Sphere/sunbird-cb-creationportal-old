@@ -1,3 +1,36 @@
 button {
   margin-left: 5px;
 }
+
+::ng-deep .theme-igot.day-mode .mat-form-field-appearance-outline .mat-form-field-infix {
+    padding: 0.3em 0 !important;
+}
+
+.edit-card{
+  display: flex;
+  margin-left: 0px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  box-sizing: border-box;
+  cursor: grab;
+  padding: 0px;
+}
+
+.scroll{
+  max-height: 18rem;
+  overflow-x: scroll;
+}
+.buttonColor{
+  border: 1px #1C5D95 solid !important;
+  border-radius: 30px !important;
+  font-family: Roboto !important;
+}
+.yesButtonColor{
+  background-color: #1C5D95 !important;
+  color: white !important;
+}
+
+.noButtonColor{
+  background-color: white !important;
+  color: #1C5D95 !important;
+}

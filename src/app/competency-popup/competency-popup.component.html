@@ -1,0 +1,51 @@
+<mat-dialog-content>
+  <div style="float: right;">
+    <mat-icon style="cursor: pointer;" mat-dialog-close mat-raised-button i18n>close</mat-icon>
+  </div>
+  <h2 class="text-bold">Add Competency</h2>
+  <div class="fixTableHead">
+    <mat-form-field appearance="fill" style="width:100%">
+      <mat-select [(ngModel)]="proficiency" placeholder="Select Competency"
+        (selectionChange)="eventSelection($event.value)">
+        <input placeholder="Search Competency" matInput class="module-input" (keyup)="onKey($event.target.value)">
+        <mat-option *ngFor="let list of proficiencyList" [value]="list">
+          {{ list.additionalProperties?list.additionalProperties.Code:''}} - {{list.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div *ngIf="!disableLevel" class="fixTableHead">
+    <h4>Select Proficiencies</h4>
+    <!-- <mat-form-field appearance="fill"> -->
+    <section *ngFor="let list of levelList;let i=index">
+      <mat-checkbox [checked]="list.selected" (change)="listSelection(levelList,i,$event)"
+        class="leading-none mb-10">{{list.name}}
+      </mat-checkbox>
+    </section>
+    <!-- <mat-select [(ngModel)]="selectLevel" placeholder="Select Level" (selectionChange)="listSelection($event.value)">
+        <mat-option *ngFor="let list of levelList" [value]="list">
+          {{ list.name }}</mat-option>
+      </mat-select> -->
+    <!-- </mat-form-field> -->
+  </div>
+
+  <div class="">
+    <!-- <div style="float: left;">
+      <button mat-raised-button i18n class="margin-top-s save-btn-mt send-to-creator-link" (click)="moveCourseToDraft()"
+        color="#1C5D95" i18n>
+        Send to Creator’s draft
+      </button>
+    </div> -->
+    <div style="margin: 10px 0px;">
+      <!-- <button i18n class="refresh-button" id="refresh" (click)="refreshCourse()">
+        <mat-icon style="margin-top: 4px;">refresh</mat-icon>
+      </button> -->
+      <button [mat-dialog-close]="true" mat-raised-button (click)="addCompetency(proficiency, selectLevel, false)">
+        Cancel
+      </button>
+      <button class="" style="margin-left: 10px;" (click)="addCompetency(proficiency, selectLevel, true)"
+        mat-raised-button [disabled]="!(proficiency?.id && (hasOneChecked||disableLevel))">
+        Ok
+      </button>
+    </div>
+  </div>
+</mat-dialog-content>

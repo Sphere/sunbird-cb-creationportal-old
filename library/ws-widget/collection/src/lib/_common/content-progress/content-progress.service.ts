@@ -37,11 +37,11 @@ export class ContentProgressService {
   }
   private fetchProgressHash() {
     this.isFetchingProgress = true
-    this.http.get<{ [id: string]: number }>(API_END_POINTS.PROGRESS_HASH).subscribe(data => {
-      this.progressHash = data
-      this.isFetchingProgress = false
-      this.progressHashSubject.next(data)
-    })
+    // this.http.get<{ [id: string]: number }>(API_END_POINTS.PROGRESS_HASH).subscribe(data => {
+    //   this.progressHash = data
+    //   this.isFetchingProgress = false
+    //   this.progressHashSubject.next(data)
+    // })
   }
   private get shouldFetchProgress(): boolean {
     return Boolean(this.progressHash === null && !this.isFetchingProgress)

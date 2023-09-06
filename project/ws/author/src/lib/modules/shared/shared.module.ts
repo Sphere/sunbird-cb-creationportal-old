@@ -37,9 +37,11 @@ import { MatStepperModule } from '@angular/material/stepper'
 import { MatTabsModule } from '@angular/material/tabs'
 import { MatToolbarModule } from '@angular/material/toolbar'
 import { MatTreeModule } from '@angular/material/tree'
-import { ImageCropModule, PipeOrderByModule } from '@ws-widget/utils/src/public-api'
+import { ImageCropModule } from '@ws-widget/utils/src/public-api'
 import { AuthEditorStepsComponent } from './components/auth-editor-steps/auth-editor-steps.component'
 import { CommentsDialogComponent } from './components/comments-dialog/comments-dialog.component'
+import { CertificateDialogComponent } from './components/certificate-upload-dialog/certificate-upload-dialog.component'
+
 import { CommentsComponent } from './components/comments/comments.component'
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component'
 import { ErrorParserComponent } from './components/error-parser/error-parser.component'
@@ -59,7 +61,11 @@ import { DraftDialogComponent } from './components/draft-dialog/draft-dialog.com
 import { ShowHideToolTipDirective } from './directives/show-hide-tool-tip.directive'
 import { StatusTrackComponent } from './components/status-track/status-track.component'
 import { FeedbackFormComponent } from './components/feedback-form/feedback-form.component'
-import { StatusContentDisplayComponent } from './components/status-content-display/status-content-display.component'
+import { SuccessDialogComponent } from './components/success-dialog/success-dialog.component'
+import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-popup.component'
+import { PlayerNavigationWidgetComponent } from '../../../../../../../library/ws-widget/collection/src/lib/player-navigation-widget/player-navigation-widget.component'
+import { CertificateStatusDialogComponentDialogComponent } from './components/cert-upload-status-dialog/cert-upload-status-dialogcomponent'
+import { UserIndexConfirmComponent } from './components/user-index-confirm/user-index-confirm.component'
 
 @NgModule({
   declarations: [
@@ -67,6 +73,7 @@ import { StatusContentDisplayComponent } from './components/status-content-displ
     CommentsComponent,
     NotificationComponent,
     CommentsDialogComponent,
+    CertificateDialogComponent,
     IprDialogComponent,
     ConfirmDialogComponent,
     AuthEditorStepsComponent,
@@ -82,7 +89,11 @@ import { StatusContentDisplayComponent } from './components/status-content-displ
     ShowHideToolTipDirective,
     StatusTrackComponent,
     FeedbackFormComponent,
-    StatusContentDisplayComponent,
+    SuccessDialogComponent,
+    CompetencyPopupComponent,
+    PlayerNavigationWidgetComponent,
+    CertificateStatusDialogComponentDialogComponent,
+    UserIndexConfirmComponent
   ],
   imports: [
     CommonModule,
@@ -119,7 +130,6 @@ import { StatusContentDisplayComponent } from './components/status-content-displ
     MatProgressBarModule,
     ImageCropModule,
     PipeContentRouteModule,
-    PipeOrderByModule,
   ],
   exports: [
     MatIconModule,
@@ -147,6 +157,8 @@ import { StatusContentDisplayComponent } from './components/status-content-displ
     MatSnackBarModule,
     NotificationComponent,
     CommentsDialogComponent,
+    CertificateDialogComponent,
+    CompetencyPopupComponent,
     ConfirmDialogComponent,
     MatSelectModule,
     MatChipsModule,
@@ -172,7 +184,10 @@ import { StatusContentDisplayComponent } from './components/status-content-displ
     ShowHideToolTipDirective,
     StatusTrackComponent,
     FeedbackFormComponent,
-    StatusContentDisplayComponent,
+    SuccessDialogComponent,
+    UserIndexConfirmComponent,
+    PlayerNavigationWidgetComponent,
+    CertificateStatusDialogComponentDialogComponent
   ],
   providers: [
     ApiService,
@@ -188,6 +203,8 @@ import { StatusContentDisplayComponent } from './components/status-content-displ
     NotificationComponent,
     IprDialogComponent,
     CommentsDialogComponent,
+    CertificateDialogComponent,
+    CompetencyPopupComponent,
     ConfirmDialogComponent,
     ErrorParserComponent,
     DeleteDialogComponent,
@@ -196,6 +213,10 @@ import { StatusContentDisplayComponent } from './components/status-content-displ
     DraftDialogComponent,
     StatusTrackComponent,
     FeedbackFormComponent,
+    SuccessDialogComponent,
+    UserIndexConfirmComponent,
+    PlayerNavigationWidgetComponent,
+    CertificateStatusDialogComponentDialogComponent
   ],
 })
 export class SharedModule { }

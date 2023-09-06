@@ -19,8 +19,14 @@ import { BtnContentLikeComponent } from './btn-content-like/btn-content-like.com
 import { BtnContentLikeModule } from './btn-content-like/btn-content-like.module'
 import { BtnContentMailMeComponent } from './btn-content-mail-me/btn-content-mail-me.component'
 import { BtnContentMailMeModule } from './btn-content-mail-me/btn-content-mail-me.module'
-// import { BtnContentShareComponent } from './btn-content-share/btn-content-share.component'
-// import { BtnContentShareModule } from './btn-content-share/btn-content-share.module'
+import { BtnContentShareComponent } from './btn-content-share/btn-content-share.component'
+import { BtnContentShareModule } from './btn-content-share/btn-content-share.module'
+import { BtnContentDownloadComponent } from './btn-content-download/btn-content-download.component'
+import { BtnContentDownloadModule } from './btn-content-download/btn-content-download.module'
+
+import { BtnGoalsComponent } from './btn-goals/btn-goals.component'
+import { BtnGoalsModule } from './btn-goals/btn-goals.module'
+
 import { BtnFeatureComponent } from './btn-feature/btn-feature.component'
 import { BtnFeatureModule } from './btn-feature/btn-feature.module'
 import { BtnFullscreenComponent } from './btn-fullscreen/btn-fullscreen.component'
@@ -108,8 +114,8 @@ import { PlayerVideoComponent } from './player-video/player-video.component'
 import { PlayerVideoModule } from './player-video/player-video.module'
 import { PlayerWebPagesComponent } from './player-web-pages/player-web-pages.component'
 import { PlayerWebPagesModule } from './player-web-pages/player-web-pages.module'
-// import { PlayerYoutubeComponent } from './player-youtube/player-youtube.component'
-// import { PlayerYoutubeModule } from './player-youtube/player-youtube.module'
+import { PlayerYoutubeComponent } from './player-youtube/player-youtube.component'
+import { PlayerYoutubeModule } from './player-youtube/player-youtube.module'
 import { ReleaseNotesComponent } from './release-notes/release-notes.component'
 import { ReleaseNotesModule } from './release-notes/release-notes.module'
 import { SelectorResponsiveComponent } from './selector-responsive/selector-responsive.component'
@@ -151,9 +157,11 @@ export const WIDGET_REGISTERED_MODULES = [
   BtnCatalogModule,
   BtnChannelAnalyticsModule,
 
+  BtnContentDownloadModule,
+  BtnGoalsModule,
   BtnContentLikeModule,
   BtnContentMailMeModule,
-  // BtnContentShareModule,
+  BtnContentShareModule,
   BtnFullscreenModule,
   BtnMailUserModule,
   BtnPageBackNavModule,
@@ -190,7 +198,7 @@ export const WIDGET_REGISTERED_MODULES = [
   PlayerSlidesModule,
   PlayerVideoModule,
   PlayerWebPagesModule,
-  // PlayerYoutubeModule,
+  PlayerYoutubeModule,
   ReleaseNotesModule,
   SlidersModule,
   ElementHtmlModule,
@@ -249,13 +257,28 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
+    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentDownload,
+    component: BtnContentDownloadComponent,
+  },
+  {
+    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentLike,
     component: BtnContentLikeComponent,
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
+    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.goals,
+    component: BtnGoalsComponent,
+  },
+  {
+    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentMailMe,
     component: BtnContentMailMeComponent,
+  },
+  {
+    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
+    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentShare,
+    component: BtnContentShareComponent,
   },
   // {
   //   widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
@@ -393,11 +416,11 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     widgetSubType: ROOT_WIDGET_CONFIG.player.webPages,
     component: PlayerWebPagesComponent,
   },
-  // {
-  //   widgetType: ROOT_WIDGET_CONFIG.player._type,
-  //   widgetSubType: ROOT_WIDGET_CONFIG.player.youtube,
-  //   component: PlayerYoutubeComponent,
-  // },
+  {
+    widgetType: ROOT_WIDGET_CONFIG.player._type,
+    widgetSubType: ROOT_WIDGET_CONFIG.player.youtube,
+    component: PlayerYoutubeComponent,
+  },
   {
     widgetType: ROOT_WIDGET_CONFIG.releaseNotes._type,
     widgetSubType: ROOT_WIDGET_CONFIG.releaseNotes.user,

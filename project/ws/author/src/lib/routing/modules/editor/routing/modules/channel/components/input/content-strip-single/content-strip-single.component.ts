@@ -101,12 +101,12 @@ export class ContentStripSingleComponent implements OnInit {
       enablePreselected: true,
       availableFilters: ['contentType'],
     }
-    this.filteredOptions$ = this.keywordsCtrl.valueChanges.pipe(
-      startWith(this.keywordsCtrl.value),
-      debounceTime(500),
-      distinctUntilChanged(),
-      switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
-    )
+    // this.filteredOptions$ = this.keywordsCtrl.valueChanges.pipe(
+    //   startWith(this.keywordsCtrl.value),
+    //   debounceTime(500),
+    //   distinctUntilChanged(),
+    //   switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
+    // )
 
     this.language = []
     if (this.content.request) {

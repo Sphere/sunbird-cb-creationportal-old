@@ -8,7 +8,9 @@ import { IFormMeta } from './../../../../interface/form'
 import { AuthInitService } from './../../../../services/init.service'
 import { EditorService } from './editor.service'
 import { IAssessmentDetails } from '../routing/modules/iap-assessment/interface/iap-assessment.interface'
-import { isArray } from 'lodash'
+// import { isArray } from 'lodash'
+import * as _ from 'lodash'
+
 @Injectable()
 export class EditorContentService {
   originalContent: { [key: string]: NSContent.IContentMeta } = {}
@@ -17,14 +19,40 @@ export class EditorContentService {
   public currentContent!: string
   public parentContent!: string
   public isSubmitted = false
+  public currentContentData!: any
+  public currentContentID!: string
   public changeActiveCont = new BehaviorSubject<string>('')
   public onContentChange = new BehaviorSubject<string>('')
+
+  listOfFiles: { [key: string]: File } = {}
+  listOfUpdatedIPR: { [key: string]: boolean } = {}
 
   constructor(
     private accessService: AccessControlService,
     private editorService: EditorService,
     private authInitService: AuthInitService,
   ) { }
+
+  getListOfFiles() {
+    return this.listOfFiles
+  }
+
+  updateListOfFiles(id: string, f: File) {
+    this.listOfFiles[id] = f
+  }
+
+  getListOfUpdatedIPR() {
+    return this.listOfUpdatedIPR
+  }
+
+  updateListOfUpdatedIPR(id: string, v: boolean) {
+    this.listOfUpdatedIPR[id] = v
+  }
+
+  removeListOfFilesAndUpdatedIPR(id: string) {
+    delete this.listOfFiles[id]
+    delete this.listOfUpdatedIPR[id]
+  }
 
   getOriginalMeta(id: string): NSContent.IContentMeta {
     return this.originalContent[id]
@@ -70,6 +98,7 @@ export class EditorContentService {
   }
 
   setOriginalMeta(meta: NSContent.IContentMeta) {
+
     this.originalContent[meta.identifier] = JSON.parse(JSON.stringify(meta))
   }
 
@@ -82,10 +111,172 @@ export class EditorContentService {
     this.originalContent[id].versionKey = versionKey
   }
 
+  cleanProperties(objParam: any) {
+    const propertiesTobeExcluded: any = []
+    const obj = { ...objParam }
+    let propNames = Object.getOwnPropertyNames(obj)
+    propNames = propNames.filter(el => !propertiesTobeExcluded.includes(el))
+    for (const prop of propNames) {
+      const propName = prop
+      // tslint:disable-next-line: max-line-length
+      if (obj[propName] === null || obj[propName] === undefined || obj[propName] === '' || (_.isArray(obj[propName]) && obj[propName].length === 0)) {
+        delete obj[propName]
+      }
+    }
+    return obj
+  }
+
+  getNewNodeModifyData() {
+    const nodesModify: any = {}
+    const parentData = this.getOriginalMeta(this.parentContent)
+    // tslint:disable-next-line:no-console
+    console.log(parentData)
+    if (parentData) {
+      nodesModify[parentData.identifier] = {
+        isNew: false,
+        root: true,
+        objectType: 'Content',
+        contentType: 'Course',
+        // metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
+      }
+      parentData.children.forEach((element: any) => {
+        if ((element.contentType === 'Collection' || element.contentType === 'CourseUnit')) {
+          nodesModify[element.identifier] = {
+            isNew: false,
+            root: false,
+            // objectType: 'Content',
+            // contentType: 'Course',
+            // tslint:disable-next-line:max-line-length
+            //metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey', 'resourceType']) : undefined,
+          }
+        }
+        if (element.children && element.children.length > 0) {
+          parentData.children.forEach((subEle: any) => {
+            if ((subEle.contentType === 'Collection' || subEle.contentType === 'CourseUnit')) {
+              nodesModify[subEle.identifier] = {
+                isNew: false,
+                root: false,
+                // objectType: 'Content',
+                // contentType: 'Course',
+                // tslint:disable-next-line:max-line-length
+                //metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey', 'resourceType']) : undefined,
+              }
+            }
+          })
+        }
+      })
+    }
+    return nodesModify
+  }
+  getNodeModifyData() {
+    const nodesModify: any = {}
+    const parentData = this.getOriginalMeta(this.parentContent)
+    // tslint:disable-next-line:no-console
+    console.log(parentData)
+    // console.log(this.upDatedContent)
+    // console.log((Object.keys(this.upDatedContent)[0]))
+    // const id = Object.keys(this.upDatedContent)[this.currentContent]
+    const id = this.currentContentID
+    // tslint:disable-next-line:no-console
+    console.log(this.upDatedContent[id])
+    let data = this.cleanProperties(this.upDatedContent[id])
+    data = this.currentContentData
+    if (data && data.duration === 0 || data && data.duration) {
+      // tslint:disable-next-line:max-line-length
+      data.duration = _.isNumber(data.duration) ? data.duration.toString() : data.duration
+    }
+
+    if (parentData) {
+      nodesModify[parentData.identifier] = {
+        isNew: false,
+        root: true,
+        objectType: 'Content',
+        contentType: 'Course',
+        // metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
+      }
+      parentData.children.forEach((element: any) => {
+        if ((element.contentType === 'Collection' || element.contentType === 'CourseUnit') && element.identifier === id) {
+          nodesModify[element.identifier] = {
+            isNew: false,
+            root: false,
+            // objectType: 'Content',
+            // contentType: 'Course',
+            // tslint:disable-next-line:max-line-length
+            metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey', 'resourceType']) : undefined,
+          }
+        }
+        if (element.children && element.children.length > 0) {
+          parentData.children.forEach((subEle: any) => {
+            if ((subEle.contentType === 'Collection' || subEle.contentType === 'CourseUnit') && subEle.identifier === id) {
+              nodesModify[subEle.identifier] = {
+                isNew: false,
+                root: false,
+                // objectType: 'Content',
+                // contentType: 'Course',
+                // tslint:disable-next-line:max-line-length
+                metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey', 'resourceType']) : undefined,
+              }
+            }
+          })
+        }
+      })
+    }
+    return nodesModify
+  }
+  resetStatus() {
+    let isDraftPresent
+    Object.keys(this.originalContent).map(v => {
+      isDraftPresent = this.originalContent[v].status === 'Draft'
+    })
+    return isDraftPresent
+  }
+  changeStatusDraft() {
+    Object.keys(this.originalContent).map(v => {
+      this.originalContent[v].status = 'Draft'
+    })
+  }
+
+  resetOriginalMetaWithHierarchy(meta: any) {
+    meta.creatorContacts =
+      this.jsonVerify(meta.creatorContacts) ? JSON.parse(meta.creatorContacts) : []
+    meta.trackContacts =
+      this.jsonVerify(meta.reviewer) ? JSON.parse(meta.reviewer) : []
+    meta.creatorDetails =
+      this.jsonVerify(meta.creatorDetails) ? JSON.parse(meta.creatorDetails) : []
+    meta.publisherDetails = this.jsonVerify(meta.publisherDetails) ?
+      JSON.parse(meta.publisherDetails) : []
+    this.originalContent[meta.identifier] = meta
+    if (meta.children && meta.children.length > 0) {
+      meta.children.forEach((element: any) => {
+        this.resetOriginalMetaWithHierarchy(element)
+      })
+    }
+  }
+
+  // setUpdatedMeta(meta: NSContent.IContentMeta, id: string, emit = true) {
+  //   this.upDatedContent[id] = {
+  //     ...(this.upDatedContent[id] ? this.upDatedContent[id] : {}),
+  //     ...JSON.parse(JSON.stringify(meta)),
+  //   }
+  //   this.setOriginalMeta(meta)
+  //   if (emit) {
+  //     this.onContentChange.next(id)
+  //   }
+  // }
+
   setUpdatedMeta(meta: NSContent.IContentMeta, id: string, emit = true) {
     this.upDatedContent[id] = {
       ...(this.upDatedContent[id] ? this.upDatedContent[id] : {}),
       ...JSON.parse(JSON.stringify(meta)),
+    }
+
+    if (Object.keys(meta).length === 0) { // empty
+      this.setOriginalMeta(meta)
+    } else {
+      this.originalContent[id] = {
+        ...(this.originalContent[id] ? this.originalContent[id] : {}),
+        ...JSON.parse(JSON.stringify(meta)),
+      }
     }
     if (emit) {
       this.onContentChange.next(id)
@@ -124,7 +315,7 @@ export class EditorContentService {
     return isPresent
   }
 
-  getParentUpdatedMeta(): NSContent.IContentMeta {
+  private getParentUpdatedMeta(): NSContent.IContentMeta {
     const meta = {} as any
     const parentMeta = this.getUpdatedMeta(this.parentContent)
     Object.keys(this.authInitService.authConfig).map(v => {
@@ -144,6 +335,9 @@ export class EditorContentService {
     return meta
   }
 
+  parentUpdatedMeta() {
+    return this.getParentUpdatedMeta()
+  }
   createInAnotherLanguage(
     language: string,
     meta = {},
@@ -169,7 +363,6 @@ export class EditorContentService {
     delete requestBody.status
     delete requestBody.categoryType
     delete requestBody.accessPaths
-
     return this.editorService
       .createAndReadContent(requestBody)
       .pipe(tap(v => this.setOriginalMeta(v)))
@@ -177,9 +370,14 @@ export class EditorContentService {
 
   isValid(id: string): boolean {
     let isValid = true
+    const arr = ['competencies', 'draftImage', 'source', 'purpose', 'appIcon', 'license']
+
     Object.keys(this.authInitService.authConfig).map(v => {
-      if (this.checkCondition(id, v, 'required') && !this.isPresent(v, id)) {
-        isValid = false
+      if (!arr.includes(v)) {
+        if (this.checkCondition(id, v, 'required') && !this.isPresent(v, id)) {
+          // console.log('checkCondition  ', v)
+          isValid = true
+        }
       }
     })
     return isValid
@@ -278,7 +476,7 @@ export class EditorContentService {
       }
     } catch (ex) {
       // tslint:disable-next-line: no-console
-      // console.log(ex)
+      // console.log(ex);
       returnValue = false
     }
     return returnValue
@@ -311,14 +509,14 @@ export class EditorContentService {
    * @returns {boolean}  True if passed the evaluation
    * @memberof EditorContentService
    */
-  checkConditionV2(content: NSContent.IContentMeta, conditions?: IConditionsV2): boolean {
+  checkConditionV2(content: NSContent.IContentMeta, conditions?: IConditionsV2, title?: string): boolean {
     if (conditions) {
       let returnValue = true
       if (conditions.notFit && conditions.notFit.length) {
-        returnValue = !this.checkUniqueCondition(content, conditions.notFit as any)
+        returnValue = !this.checkUniqueCondition(content, conditions.notFit as any, title)
       }
       if (returnValue && conditions.fit && conditions.fit.length) {
-        returnValue = this.checkUniqueCondition(content, conditions.fit as any)
+        returnValue = this.checkUniqueCondition(content, conditions.fit as any, title)
       }
       return returnValue
     }
@@ -336,6 +534,7 @@ export class EditorContentService {
   checkUniqueCondition(
     content: NSContent.IContentMeta,
     conditions: { [key in keyof NSContent.IContentMeta]: any[] }[],
+    title?: string
   ): boolean {
     try {
       return conditions.some(condition => {
@@ -348,6 +547,20 @@ export class EditorContentService {
           ) {
             isLocalPassed = false
           }
+
+          if (title === 'Review') {
+            if (content['reviewStatus' as keyof NSContent.IContentMeta] === 'InReview') {
+              isLocalPassed = true
+            } else {
+              isLocalPassed = false
+            }
+          } else if (title === 'Publish'
+            && content[meta as keyof NSContent.IContentMeta] === 'Review'
+            && content['reviewStatus' as keyof NSContent.IContentMeta] === 'Reviewed'
+          ) {
+            isLocalPassed = true
+          }
+
         })
         return isLocalPassed
       })
@@ -358,18 +571,6 @@ export class EditorContentService {
     }
   }
 
-  cleanProperties(objParam: any) {
-    const propertiesTobeExcluded: any = []
-    const obj = { ...objParam }
-    let propNames = Object.getOwnPropertyNames(obj)
-    propNames = propNames.filter(el => !propertiesTobeExcluded.includes(el))
-    for (const prop of propNames) {
-      const propName = prop
-      // tslint:disable-next-line: max-line-length
-      if (obj[propName] === null || obj[propName] === undefined || obj[propName] === '' || (isArray(obj[propName]) && obj[propName].length === 0)) {
-        delete obj[propName]
-      }
-    }
-    return obj
-  }
+  jsonVerify(s: string) { try { JSON.parse(s); return true } catch (e) { return false } }
+
 }

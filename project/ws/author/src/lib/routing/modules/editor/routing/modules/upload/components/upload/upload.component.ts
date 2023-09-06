@@ -20,33 +20,25 @@ import { of } from 'rxjs'
 import { mergeMap, tap, catchError } from 'rxjs/operators'
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
 import { NotificationService } from '@ws/author/src/lib/services/notification.service'
-import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper'
 
 @Component({
   selector: 'ws-auth-upload',
   templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.scss'],
-  providers: [{
-    provide: STEPPER_GLOBAL_OPTIONS, useValue: { displayDefaultIndicatorType: false },
-  }],
 })
 export class UploadComponent implements OnInit, OnDestroy {
   contents: NSContent.IContentMeta[] = []
   currentContent = ''
-  currentStep = 1
+  currentStep = 2
   allLanguages!: any[]
   disableCursor = false
   previewMode = false
   canTransCode = true
+  showSettingButtons = true
   isChanged = false
   isSubmitPressed = false
   mimeTypeRoute = ''
   isMobile = false
-  workFlow = [{ isActive: false, isCompleted: true, name: 'Upload', step: 1 },
-  { isActive: true, isCompleted: false, name: 'Basic Details', step: 2 },
-  { isActive: false, isCompleted: true, name: 'Classification', step: 3 },
-  { isActive: false, isCompleted: true, name: 'Intended for', step: 4 },
-  ]
   constructor(
     private authInitService: AuthInitService,
     private contentService: EditorContentService,
@@ -60,6 +52,7 @@ export class UploadComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.showSettingButtons = this.accessService.rootOrg === 'client1'
     this.allLanguages = this.authInitService.ordinals.subTitles
     this.canTransCode =
       this.authInitService.ordinals.canTransCode &&
@@ -94,7 +87,6 @@ export class UploadComponent implements OnInit, OnDestroy {
       return
     }
     if (step === 1) {
-      this.currentStep = 1
       this.disableCursor = true
     } else if (
       this.currentStep === 2 &&
@@ -111,6 +103,7 @@ export class UploadComponent implements OnInit, OnDestroy {
       this.currentStep = step
     }
   }
+
   createInAnotherLanguage(language: string) {
     this.loaderService.changeLoad.next(true)
     const meta = { artifactUrl: '' }
@@ -331,7 +324,7 @@ export class UploadComponent implements OnInit, OnDestroy {
           if (this.contents.length) {
             this.contentService.changeActiveCont.next(this.contents[0].identifier)
           } else {
-            this.router.navigateByUrl('/author/cbp')
+            this.router.navigateByUrl('/author/home')
           }
         },
         error => {
@@ -404,6 +397,10 @@ export class UploadComponent implements OnInit, OnDestroy {
     this.previewMode = false
   }
 
+  toggleSettingButtons() {
+    this.showSettingButtons = !this.showSettingButtons
+  }
+
   triggerSave(meta: NSContent.IContentMeta, id: string) {
     const requestBody: NSApiRequest.IContentUpdate = {
       hierarchy: {},
@@ -449,13 +446,8 @@ export class UploadComponent implements OnInit, OnDestroy {
 
   action(type: string) {
     switch (type) {
-      case 'back':
-        this.currentStep = 1
-        break
-
       case 'next':
         this.currentStep += 1
-        // this.goForward()
         break
 
       case 'preview':
@@ -498,18 +490,14 @@ export class UploadComponent implements OnInit, OnDestroy {
             if (this.contents.length) {
               this.contentService.changeActiveCont.next(this.contents[0].identifier)
             } else {
-              this.router.navigateByUrl('/author/cbp')
+              this.router.navigateByUrl('/author/home')
             }
           }
         })
         break
 
       case 'close':
-        this.router.navigateByUrl('/author/cbp')
-        break
-
-      case 'fulls':
-        this.fullScreenToggle()
+        this.router.navigateByUrl('/author/home')
         break
     }
   }
@@ -536,7 +524,7 @@ export class UploadComponent implements OnInit, OnDestroy {
         if (this.contents.length) {
           this.contentService.changeActiveCont.next(this.contents[0].identifier)
         } else {
-          this.router.navigateByUrl('/author/cbp')
+          this.router.navigateByUrl('/author/home')
         }
       },
       error => {
@@ -565,13 +553,7 @@ export class UploadComponent implements OnInit, OnDestroy {
 
   fullScreenToggle = () => {
     const doc: any = document
-    let elm: any = doc.getElementById('upload-container')
-    if (!elm) {
-      elm = doc.getElementById('edit-meta')
-    }
-    if (!elm) {
-      elm = doc.getElementById('auth-root')
-    }
+    const elm: any = doc.getElementById('upload-container')
     if (elm.requestFullscreen) {
       !doc.fullscreenElement ? elm.requestFullscreen() : doc.exitFullscreen()
     } else if (elm.mozRequestFullScreen) {

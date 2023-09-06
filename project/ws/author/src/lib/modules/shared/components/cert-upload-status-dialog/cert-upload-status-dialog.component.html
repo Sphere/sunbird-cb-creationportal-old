@@ -1,0 +1,23 @@
+<mat-dialog-content>
+  <div class="margin-m">
+    <div mat-dialog-content>
+      <div>
+        <mat-icon class="check-circle" [ngClass]="data.icon === 'cached' ? 'padding-cached' : 'padding-check-circle'"
+          [ngStyle]="{'background-color':data.backgroundColor,'color':data.color,'padding':data.paddings}">{{data.icon}}</mat-icon>
+        <h2 class="course-live">
+          {{data.message}}
+        </h2>
+      </div>
+
+    </div>
+  </div>
+  <div class="margin-top-s margin-bottom-s">
+    <div class="margin-bottom-s" style="float: right;">
+      <button (click)="routeToDashboard()" class="margin-left-s
+            text-white ws-mat-primary-background  mat-button-base save-btn-mt ok-button" style="margin-right: 10px;"
+        mat-raised-button i18n>
+        Ok
+      </button>
+    </div>
+  </div>
+</mat-dialog-content>

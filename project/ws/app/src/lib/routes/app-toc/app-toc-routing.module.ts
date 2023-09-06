@@ -11,6 +11,9 @@ import { ContentCertificationResolver } from './routes/app-toc-certification/res
 import { AppTocContentsComponent } from './routes/app-toc-contents/app-toc-contents.component'
 import { AppTocHomeComponent } from './routes/app-toc-home/app-toc-home.component'
 import { AppTocSinglePageComponent as AppTocSinglePageRootComponent } from './routes/app-toc-single-page/app-toc-single-page.component'
+import { AppTocCohortsComponent } from './components/app-toc-cohorts/app-toc-cohorts.component'
+import { LicenseComponent } from './components/license/license.component'
+import { AppTocOverviewComponent as AppTocOverviewRootComponent } from './routes/app-toc-overview/app-toc-overview.component'
 
 const routes: Routes = [
   {
@@ -46,13 +49,18 @@ const routes: Routes = [
       },
       {
         path: 'overview',
-        component: AppTocSinglePageRootComponent,
+        // component: AppTocSinglePageRootComponent,
+        component: AppTocOverviewRootComponent,
         // pathMatch: 'full',
         // redirectTo: 'single-page-view',
       },
       {
         path: 'discussion',
         component: AppTocDiscussionComponent,
+      },
+      {
+        path: 'details',
+        component: AppTocCohortsComponent,
       },
       {
         path: 'single-page-view',
@@ -75,10 +83,19 @@ const routes: Routes = [
         },
       },
       {
+        path: 'license',
+        component: LicenseComponent,
+      },
+      {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'single-page-view',
+        redirectTo: 'overview',
       },
+      // {
+      //   path: '',
+      //   pathMatch: 'full',
+      //   redirectTo: 'single-page-view',
+      // },
     ],
   },
   {

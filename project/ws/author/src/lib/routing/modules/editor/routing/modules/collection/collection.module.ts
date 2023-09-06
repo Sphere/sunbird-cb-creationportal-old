@@ -13,12 +13,26 @@ import { AuthEditorOptionsComponent } from './components/auth-editor-options/aut
 import { AuthTableOfContentsComponent } from './components/auth-table-of-contents/auth-table-of-contents.component'
 import { AuthTableTreeLabelComponent } from './components/auth-table-tree-label/auth-table-tree-label.component'
 import { CollectionComponent } from './components/collection/collection.component'
-import { WebPageModule } from '../web-page/web-page.module'
-// import { IapAssessmentModule } from '../iap-assessment/iap-assessment.module'
-import { QuizModule } from '../quiz/quiz.module'
-import { MatTabsModule } from '@angular/material'
-import { CreateModule } from '../../../../create/create.module'
-import { PickNameComponent } from './components/auth-table-of-contents/pick-name/pick-name.component'
+import { CourseCollectionComponent } from './components/course-collection/course-collection.component'
+import { AuthTocComponent } from './components/auth-toc/auth-toc.component'
+import { QuizModule } from './../quiz/quiz.module'
+import { CourseHeaderComponent } from './components/course-header/course-header.component'
+import { BtnPageBackModule } from '@ws-widget/collection'
+import { WebPageModule } from './../web-page/web-page.module'
+import { ContentQualityComponent } from '../../../shared/components/content-quality/content-quality.component'
+
+import {
+  MatToolbarModule,
+  MatIconModule,
+  MatButtonModule,
+  MatTooltipModule,
+  MatCheckboxModule,
+  MatProgressBarModule,
+  MatRadioModule,
+  MatTableModule
+} from '@angular/material'
+import { ResourceModuleComponent } from './components/collection/resource-module/resource-module.component'
+import { ModuleCreationComponent } from './components/collection/module-creation/module-creation.component'
 
 @NgModule({
   declarations: [
@@ -27,7 +41,12 @@ import { PickNameComponent } from './components/auth-table-of-contents/pick-name
     AuthEditorOptionsComponent,
     AuthTableTreeLabelComponent,
     AuthCollectionMatmenuComponent,
-    PickNameComponent,
+    CourseCollectionComponent,
+    AuthTocComponent,
+    CourseHeaderComponent,
+    ResourceModuleComponent,
+    ModuleCreationComponent,
+    ContentQualityComponent
   ],
   imports: [
     CommonModule,
@@ -39,11 +58,17 @@ import { PickNameComponent } from './components/auth-table-of-contents/pick-name
     AuthViewerModule,
     UploadModule,
     CurateModule,
-    MatTabsModule,
-    WebPageModule,
     QuizModule,
-    CreateModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    BtnPageBackModule,
+    WebPageModule,
+    MatCheckboxModule,
+    MatProgressBarModule,
+    MatRadioModule,
+    MatTableModule
   ],
-  entryComponents: [PickNameComponent],
 })
 export class CollectionModule { }

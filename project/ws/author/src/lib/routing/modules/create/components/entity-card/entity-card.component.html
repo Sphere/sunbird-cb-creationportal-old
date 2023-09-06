@@ -1,42 +1,39 @@
-<div class="card-container" [ngClass]="{
+<div  [ngClass]="{
     op60: notEnabled === true
   }">
-  <mat-card class="mat-elevation-z6 flex flex-1 flex-column" [ngClass]="{'expanded': childEntity.length>0}">
-    <div class="entity-container" [id]="entity.id" [attr.name]='entity.id' (click)="entityClicked(entity)">
-      <!--  -->
+  <div class=" flex flex-1 flex-column" [ngClass]="{'expanded': childEntity.length>0}">
+    <div class="entity-container" (click)="entityClicked(entity)" [id]="entity.id" [attr.name]='entity.id'>
       <div class="flex flex-1">
-        <div class="type-container">
-          <mat-icon *ngIf="entity.name === 'Resource'" class="mr-1 custom-icon resource rotate-90">{{ entity.icon }}
-          </mat-icon>
-          <mat-icon *ngIf="entity.name === 'Module'" class="mr-1 custom-icon module rotate-90">{{ entity.icon }}
-          </mat-icon>
-          <mat-icon *ngIf="entity.name === 'Course'" class="mr-1 custom-icon course rotate-90">{{ entity.icon }}
-          </mat-icon>
-          <mat-icon *ngIf="entity.name === 'Program'" class="mr-1 custom-icon program rotate-90">{{ entity.icon }}
-          </mat-icon>
-        </div>
-        <div class="flex flex-1 margin-remove ws-mat-primary-text">
-          <span class="mat-title mb-0">{{ entity.name }}</span>
+        <!-- <div class="icon-container ws-mat-primary-background-op30"> -->
+          <!-- <mat-icon class="ws-mat-primary-text">{{ entity.icon }}</mat-icon> -->
+          <!-- <img [src]="entity.icon" [id]="'card_' + entity.id" class="ws-mat-primary-text" [alt]="entity.name"
+            [title]="entity.name" /> -->
+          <!-- [wsUtilsDefaultThumbnail]="defaultThumbnail" -->
+
+        <!-- </div> -->
+        <div >
+          <span class="mat-title"  matTooltip="{{ entity.description }}">{{ entity.name }}</span>
         </div>
       </div>
-      <div class="badge-data ml-8p">
-        <div class="mat-body">{{ entity.description }}</div>
-      </div>
+      <!-- <div class="badge-data">
+        <div class="mat-body margin-top-s">{{ entity.description }}</div>
+      </div> -->
     </div>
 
-    <div class="margin-top-s animated new-class" *ngIf="childEntity.length && resourceClicked">
+    <div class="animated" *ngIf="childEntity.length && resourceClicked">
       <ng-container *ngFor="let option of childEntity; let idx = index">
+        <!-- {{option | json}} -->
         <ng-container *ngIf="option.available">
-          <!-- margin-left-s margin-bottom-s padding-top-s -->
-          <div class="flex flex-middle pointer mw-110" (click)="entityClicked(option)"
-            [ngClass]="{ op60: !option.enabled }" [id]="option.id" [attr.name]="option.id">
-            <mat-icon class="ws-mat-accent-text">{{ option.icon }}</mat-icon>
-            <p class="ws-mat-accent-text new-font margin-left-xs margin-remove-bottom">{{ option.name }}</p>
-          </div>
+          <!-- <div class="flex flex-middle margin-left-l margin-bottom-s pointer"
+            (click)="entityClicked(option)" [ngClass]="{ op60: !option.enabled }" [id]="option.id"
+            [attr.name]="option.id">
+            <mat-icon class="ws-mat-primary-text">{{ option.icon }}</mat-icon>
+            <p class="margin-left-m margin-remove-bottom">{{ option.name }}</p>
+          </div> -->
           <!-- <mat-divider class="margin-bottom-m divider cursor-disable" *ngIf="idx < childEntity?.length - 1">
-              </mat-divider>-->
+          </mat-divider> -->
         </ng-container>
       </ng-container>
     </div>
-  </mat-card>
+  </div>
 </div>

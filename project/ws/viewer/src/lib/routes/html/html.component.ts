@@ -211,7 +211,7 @@ export class HtmlComponent implements OnInit, OnDestroy {
     })
   }
 
-  async  ngOnDestroy() {
+  async ngOnDestroy() {
     if (this.htmlData) {
       if (!this.subApp || this.activatedRoute.snapshot.queryParams.collectionId) {
         await this.saveContinueLearning(this.htmlData)
@@ -327,9 +327,9 @@ export class HtmlComponent implements OnInit, OnDestroy {
         return
       }
     }
-    if ((this.htmlData || ({} as any)).isIframeSupported.toLowerCase() !== 'yes') {
-      return
-    }
+    // if ((this.htmlData || ({} as any)).isIframeSupported.toLowerCase() !== 'yes') {
+    //   return
+    // }
     if (this.htmlData) {
       if (this.htmlData.sourceName === 'Cross Knowledge') {
         return

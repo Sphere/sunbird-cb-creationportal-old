@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, AfterViewChecked, HostListener, ElementRef, ViewChild } from '@angular/core'
+import { Component, OnDestroy, OnInit, AfterViewChecked, HostListener, ElementRef, ViewChild } from '@angular/core'
 import { ActivatedRoute, Data } from '@angular/router'
 import { NsContent, WidgetContentService } from '@ws-widget/collection'
 import { NsWidgetResolver } from '@ws-widget/resolver'
@@ -20,7 +20,7 @@ export enum ErrorType {
   templateUrl: './app-toc-home.component.html',
   styleUrls: ['./app-toc-home.component.scss'],
 })
-export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked, AfterViewInit {
+export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked {
   banners: NsAppToc.ITocBanner | null = null
   content: NsContent.IContent | null = null
   errorCode: NsAppToc.EWsTocErrorCode | null = null
@@ -95,6 +95,24 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked,
     }
     if (this.route) {
       this.routeSubscription = this.route.data.subscribe((data: Data) => {
+
+        // CHecking for JSON DATA
+        if (this.checkJson(data.content.data.creatorContacts)) {
+          data.content.data.creatorContacts = JSON.parse(data.content.data.creatorContacts)
+        }
+
+        if (this.checkJson(data.content.data.creatorDetails)) {
+          data.content.data.creatorDetails = JSON.parse(data.content.data.creatorDetails)
+        }
+
+        if (this.checkJson(data.content.data.reviewer)) {
+          data.content.data.reviewer = JSON.parse(data.content.data.reviewer)
+        }
+
+        if (this.checkJson(data.content.data.publisherDetails)) {
+          data.content.data.publisherDetails = JSON.parse(data.content.data.publisherDetails)
+        }
+
         this.banners = data.pageData.data.banners
         this.tocSvc.subtitleOnBanners = data.pageData.data.subtitleOnBanners || false
         this.tocSvc.showDescription = data.pageData.data.showDescription || false
@@ -107,9 +125,9 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked,
       this.currentFragment = fragment || 'overview'
     })
   }
-  ngAfterViewInit() {
-    this.elementPosition = this.menuElement.nativeElement.parentElement.offsetTop
-  }
+  // ngAfterViewInit() {
+  //   this.elementPosition = this.menuElement.nativeElement.parentElement.offsetTop
+  // }
   ngOnDestroy() {
     if (this.routeSubscription) {
       this.routeSubscription.unsubscribe()
@@ -126,6 +144,15 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked,
         })
       }
     } catch (e) { }
+  }
+
+  checkJson(str: any) {
+    try {
+      JSON.parse(str)
+    } catch (e) {
+      return false
+    }
+    return true
   }
 
   get enableAnalytics(): boolean {

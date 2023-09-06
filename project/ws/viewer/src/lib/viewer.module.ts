@@ -14,6 +14,10 @@ import {
   MatProgressSpinnerModule,
   MatSnackBarModule,
   MatTabsModule,
+  MatCheckboxModule,
+  MatProgressBarModule,
+  MatRadioModule,
+  MatTableModule
 } from '@angular/material'
 
 import { ViewerRoutingModule } from './viewer-routing.module'
@@ -45,10 +49,15 @@ import { WidgetResolverModule } from '@ws-widget/resolver'
 import { ViewerComponent } from './viewer.component'
 import { ViewerTocComponent } from './components/viewer-toc/viewer-toc.component'
 import { ViewerTopBarModule } from './components/viewer-top-bar/viewer-top-bar.module'
+import { ReviewDialogComponent } from './components/review-checklist/review-dialog.component'
+import { MatDialogModule } from '@angular/material/dialog'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 
 @NgModule({
-  declarations: [ViewerComponent, ViewerTocComponent],
+  declarations: [ViewerComponent, ViewerTocComponent, ReviewDialogComponent],
   imports: [
+    FormsModule,
+    ReactiveFormsModule,
     CommonModule,
     MatCardModule,
     MatSidenavModule,
@@ -82,6 +91,14 @@ import { ViewerTopBarModule } from './components/viewer-top-bar/viewer-top-bar.m
     MatTabsModule,
     // PlayerBriefModule,
     ViewerTopBarModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatProgressBarModule,
+    MatRadioModule,
+    MatTableModule
+  ],
+  entryComponents: [
+    ReviewDialogComponent
   ],
 })
 export class ViewerModule { }

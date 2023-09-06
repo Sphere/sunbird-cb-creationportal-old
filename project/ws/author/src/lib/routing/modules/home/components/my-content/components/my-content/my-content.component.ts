@@ -123,9 +123,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.courseTaken = {
       mandatoryCourseCompleted: true,
     }
-    this.isAdmin = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor', 'content-creator'])
-    this.isReviewer = this.accessService.hasRole(['reviewer'])
-    this.isPublisher = this.accessService.hasRole(['publisher'])
+    this.isAdmin = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor', 'content_creator'])
+    this.isReviewer = this.accessService.hasRole(['content_reviewer'])
+    this.isPublisher = this.accessService.hasRole(['content_publisher'])
     if (this.configService.userRoles) {
       this.myRoles = this.configService.userRoles
     }
@@ -293,10 +293,10 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isAdmin,
     )
     let isUserRecordEnabled = true
-    const adminOnlyRoles = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor', 'content-creator'])
+    const adminOnlyRoles = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor', 'content_creator'])
     if (adminOnlyRoles && isUserRecordEnabled) {
       isUserRecordEnabled = true
-    } else if (this.accessService.hasRole(['reviewer', 'publisher'])) {
+    } else if (this.accessService.hasRole(['content_reviewer', 'content_publisher'])) {
       isUserRecordEnabled = false
     }
     const requestData = {

@@ -1,0 +1,316 @@
+<form [formGroup]="contentForm">
+  <div class="inner-section">
+    <div class="flex-container">
+
+      <div class="flex-row-item">
+        <span class="margin-left-l margin-top-l course-settings-header">Course Settings</span>
+
+      </div>
+    </div>
+
+    <!-- <div class="flex-container">
+    </div> -->
+    <div class="flex-row-container">
+
+      <div class="flex-row-item">
+        <p class="margin-left-l margin-top-l course-settings-title">Organization Settings</p>
+        <!--Reviewers-->
+        <div class="margin-top-l margin-left-l" [ngClass]="{ disable: checkCondition('trackContacts', 'disabled') }">
+          <label>
+            <div class="margin-top-xs">
+              <b [ngClass]="{ required: checkCondition('trackContacts', 'required') }" i18n>Reviewers</b>
+            </div>
+          </label>
+          <div class="margin-top-xs">
+            <mat-form-field appearance="outline" class="margin-top-xs" class="margin-top-xs"
+              [ngClass]="{ 'mat-form-field-invalid': showError('trackContacts') }">
+              <mat-chip-list #reviewerChipList i18n-aria-label aria-label="Reviewer selection">
+                <!-- <mat-chip *ngFor="let author of parseJsonData(contentForm.controls.trackContacts.value)" -->
+
+                <mat-chip style="color: white !important;
+                  background-color: #0074b6 !important;"
+                  *ngFor="let author of contentForm.controls.trackContacts.value" [selectable]="selectable"
+                  [removable]="removable" (removed)="removeEmployee(author, 'trackContacts')" class="selectedOption">
+                  {{ author.name }}
+                  <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                </mat-chip>
+                <input formControlName="trackContacts" i18n-placeholder placeholder="Search by mail" #trackContactsView
+                  [formControl]="trackContactsCtrl" [matChipInputFor]="reviewerChipList"
+                  [matAutocomplete]="reivewerAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
+              </mat-chip-list>
+              <mat-autocomplete #reivewerAuto="matAutocomplete" (optionSelected)="addEmployee($event, 'trackContacts')">
+                <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
+                <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
+                  No user found. Please check the value entered.</mat-option>
+                <mat-option *ngFor="let author of employeeList" [value]="author">
+                  {{ author.displayName }} | {{ author.mail }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error class="error-font" *ngIf="showError('trackContacts')" i18n>Reviewer is mandatory
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        <!--Publishers-->
+        <div class="margin-top-l margin-left-l" [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
+          <!--Show in popup--> <label>
+            <div class="margin-top-xs">
+              <b [ngClass]="{ required: checkCondition('publisherDetails', 'required') }" i18n>Publishers</b>
+            </div>
+          </label>
+          <div class="margin-top-xs">
+            <mat-form-field appearance="outline" class="margin-top-xs" class="margin-top-xs"
+              [ngClass]="{ 'mat-form-field-invalid': showError('publisherDetails') }">
+              <mat-chip-list #publisherChipList aria-label="Publisher selection">
+                <mat-chip style="color: white !important;
+                  background-color: #0074b6 !important;"
+                  *ngFor="let author of contentForm.controls.publisherDetails.value" [selectable]="selectable"
+                  [removable]="removable" (removed)="removeEmployee(author, 'publisherDetails')" class="selectedOption">
+                  {{ author.name }}
+                  <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                </mat-chip>
+                <input formControlName="publisherDetails" i18n-placeholder placeholder="Search by mail"
+                  #publisherDetailsView [formControl]="publisherDetailsCtrl" [matChipInputFor]="publisherChipList"
+                  [matAutocomplete]="publisherAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
+              </mat-chip-list>
+              <mat-autocomplete #publisherAuto="matAutocomplete"
+                (optionSelected)="addEmployee($event, 'publisherDetails')">
+                <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
+                <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
+                  No user found. Please check the value entered.</mat-option>
+                <mat-option *ngFor="let author of employeeList" [value]="author">
+                  {{ author.displayName }} | {{ author.mail }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error class="error-font" *ngIf="showError('publisherDetails')" i18n>Publisher is mandatory
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <!--Show in popup-->
+        </div>
+        <!--Authors-->
+        <div class="margin-top-l margin-left-l" [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
+          <div class="margin-top-xs">
+            <mat-form-field appearance="outline" class="margin-top-xs" class="margin-top-xs"
+              [ngClass]="{ 'mat-form-field-invalid': showError('creatorDetails') }">
+              <mat-chip-list #creatorDetailsChipList aria-label="Original Author selection">
+                <mat-chip style="color: white !important;
+                  background-color: #0074b6 !important;"
+                  *ngFor="let author of contentForm.controls.creatorDetails.value" [selectable]="selectable"
+                  [removable]="removable" (removed)="removeCreatorDetails(author)">
+                  {{ author.name }}
+                  <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                </mat-chip>
+                <input i18n-placeholder placeholder="Add Author" #creatorDetailsView [formControl]="creatorDetailsCtrl"
+                  [matChipInputFor]="creatorDetailsChipList" [matAutocomplete]="originalAuthorsAuto"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
+                  (matChipInputTokenEnd)="addCreatorDetails($event)" />
+              </mat-chip-list>
+              <mat-autocomplete #originalAuthorsAuto="matAutocomplete"
+                (optionSelected)="addEmployee($event, 'creatorDetails')">
+                <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
+                <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
+                  No user found. Please check the value entered.</mat-option>
+                <mat-option *ngFor="let author of employeeList" [value]="author">
+                  {{ author.displayName }} | {{ author.mail }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error class="error-font" *ngIf="showError('creatorDetails')" i18n>Original Authors is mandatory
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="margin-left-l">
+          <p class="course-settings-title">Course Duration(hours : minutes : seconds): {{mainCourseDuration}}</p>
+        </div>
+      </div>
+
+      <!-- <div class="flex-row-item">
+        <p class="margin-left-l margin-top-l course-settings-title">Course Setup</p>
+
+
+        <div class="margin-top-xl margin-right-l">
+          <div class="margin-top-xs margin-left-l">
+            <div class="flex flex-middle margin-top-xs">
+              <mat-checkbox (change)="updateMyValue($event)" [formControl]="gatingEnabled"></mat-checkbox>
+              <p class="margin-left-xs read-and-agree-top-margin margin-remove-bottom cons-text">
+                Enable Step-by-Step Learning
+              </p>
+            </div>
+            <mat-hint>Note: Learners will be able to access modules in a sequntial manner only</mat-hint>
+
+          </div>
+        </div>
+        <div class="margin-top-l margin-right-l">
+          <div class="margin-top-xs margin-left-l">
+            <div class="flex flex-middle margin-top-xs">
+              <mat-checkbox class="example-margin" [formControl]="activateLink">Activate preview link</mat-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="margin-top-l margin-right-l">
+          <div class="margin-top-xs margin-left-l">
+            <div class="flex flex-middle margin-top-xs">
+              <mat-form-field appearance="outline" class="margin-top-xs width-90">
+                <input (change)="updateMyValue($event.target.value)" matInput i18n-placeholder
+                  formControlName="previewLinkFormControl" [formControl]="previewLinkFormControl"
+                  placeholder="www.previewlink.com" />
+                <mat-icon matSuffix><span class="material-icons" style="color: #808080;">
+                    file_copy
+                  </span></mat-icon>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+      <div class="flex-row-item">
+        <p class="margin-left-l margin-top-l course-settings-title">Learner Settings</p>
+
+        <!-- <div class="margin-top-l margin-right-l">
+          <div class="margin-top-xs margin-left-xl flex-1"
+            [ngClass]="{ disable: checkCondition('audience', 'disabled') }">
+            <label>
+              <div class="margin-top-xs flex flex-middle">
+                <b i18n>Audience</b>
+              </div>
+            </label>
+            <div class="margin-top-xs">
+              <mat-form-field appearance="outline" class="margin-top-xs width-90"
+                [ngClass]="{ 'mat-form-field-invalid': showError('audience') }">
+                <mat-chip-list #audienceChipList i18n-aria-label aria-label="Audience selection">
+                  <mat-chip style="color: white !important;
+                    background-color: #0074b6 !important;" *ngFor="let job of contentForm.controls.audience.value"
+                    [selectable]="selectable" [removable]="removable"
+                    (removed)="removeFromFormControl(job, 'audience')">
+                    {{ job }}
+                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                  </mat-chip>
+                  <input i18n-placeholder placeholder="Select" #audienceView [formControl]="audienceCtrl"
+                    [matChipInputFor]="audienceChipList" [matAutocomplete]="audienceAuto"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
+                    (matChipInputTokenEnd)="removeField($event)" />
+                </mat-chip-list>
+                <mat-autocomplete #audienceAuto="matAutocomplete"
+                  (optionSelected)="addToFormControl($event, 'audience')">
+                  <mat-option *ngIf="!checkCondition('audience', 'required')" i18n [value]="null">None
+                  </mat-option>
+                  <mat-option *ngFor="let job of audienceList" [value]="job">
+                    {{ job }}
+                  </mat-option>
+                </mat-autocomplete>
+                <mat-error class="error-font" *ngIf="showError('audience')" i18n>Audience is mandatory
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+        </div> -->
+        <div class="margin-top-l margin-right-l">
+          <div class="margin-top-xs margin-left-xl flex-1"
+            [ngClass]="{ disable: checkCondition('rolesMapped', 'disabled') }">
+            <label>
+              <div class="margin-top-xs flex flex-middle">
+                <b i18n>Position Mapped</b>
+              </div>
+            </label>
+            <div class="margin-top-xs" *ngIf="roles$ | async as roles;">
+              <mat-form-field appearance="outline" class="margin-top-xs width-90"
+                [ngClass]="{ 'mat-form-field-invalid': showError('rolesMapped') }">
+                <mat-chip-list #rolesMappedChipList i18n-aria-label aria-label="Roles Mapped selection">
+                  <mat-chip style="color: white !important;
+                            background-color: #0074b6 !important;"
+                    *ngFor="let role of contentForm.controls.rolesMapped.value" [selectable]="selectable"
+                    [removable]="removable" (removed)="removeFromFormControl(role.split(':')[0], 'rolesMapped')">
+                    {{ role.split(':')[0] }}
+                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                  </mat-chip>
+                  <input i18n-placeholder placeholder="Select Roles" #rolesMappedView [formControl]="rolesMappedCtrl"
+                    [matChipInputFor]="rolesMappedChipList" [matAutocomplete]="rolesMappedAuto"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
+                    (matChipInputTokenEnd)="removeField($event)" />
+                </mat-chip-list>
+                <mat-autocomplete #rolesMappedAuto="matAutocomplete"
+                  (optionSelected)="addToFormControl($event, 'rolesMapped')">
+                  <mat-option *ngIf="!checkCondition('rolesMapped', 'required')" i18n [value]="null">None
+                  </mat-option>
+                  <mat-option *ngFor="let role of rolesMappedList" [value]="role">
+                    {{ role }}
+                  </mat-option>
+                </mat-autocomplete>
+                <mat-error class="error-font" *ngIf="showError('rolesMapped')" i18n>Roles Mapped is mandatory
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- <div class="margin-top-l margin-right-l" style="margin-top: 25px;">
+          <div class="margin-top-xs margin-left-xl flex-1"
+            [ngClass]="{ disable: checkCondition('complexityLevel', 'disabled') }">
+            <div class="margin-top-xs">
+              <mat-form-field style="margin-top: 51px !important;" appearance="outline" class="margin-top-s"
+                [ngClass]="{ 'mat-form-field-invalid': showError('complexityLevel') }">
+                <mat-select formControlName="complexityLevel" i18n-placeholder placeholder="Learning Level">
+                  <mat-option *ngIf="!checkCondition('complexityLevel', 'required')" i18n [value]="null">None
+                  </mat-option>
+                  <mat-option *ngFor="let complexityLevel of complexityLevelList" [value]="complexityLevel">
+                    {{ complexityLevel }}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="showError('complexityLevel')" i18n>Proficiency Level is mandatory
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        </div> -->
+
+        <div class="margin-top-xl margin-right-l">
+          <div class="margin-top-xs margin-left-xl flex-1"
+            [ngClass]="{ disable: checkCondition('keywords', 'disabled') }">
+            <div class="margin-top-xs flex margin-right-xl">
+              <mat-form-field style="margin-top: 19px !important;" class="keywords-chip-list margin-top-xs flex-grow80"
+                appearance="outline" [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
+                <mat-chip-list #keywords aria-label="Keyword selection">
+                  <mat-chip style="color: white !important;
+                    background-color: #0074b6 !important;" *ngFor="let key of contentForm.controls.keywords.value"
+                    [selectable]="selectable" [removable]="removable" (removed)="removeKeyword(key)">
+                    {{ key }}
+                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                  </mat-chip>
+                  <input i18n-placeholder [formControl]="keywordsCtrl" [matAutocomplete]="auto"
+                    placeholder="Add Keywords" #keywordsView [matChipInputFor]="keywords"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
+                    (matChipInputTokenEnd)="addKeyword($event)" #keywordsSearch />
+                </mat-chip-list>
+              </mat-form-field>
+              <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption
+                (optionSelected)="optionSelected($event.option.value); keywordsView.value = ''">
+                <mat-option *ngIf="keywordsSearch.value" [value]="keywordsSearch.value">{{ keywordsSearch.value }}
+                </mat-option>
+                <mat-option *ngFor="let option of filteredOptions$ | async" [value]="option">{{ option }}
+                </mat-option>
+              </mat-autocomplete>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--added end-->
+  <div [ngClass]="{ disable: checkCondition('trackContacts', 'disabled') }" class="margin-top-xl margin-right-l">
+    <div class="grid"></div>
+    <div class="flex flex-end margin-top-l margin-bottom-l margin-right-l">
+      <button [disabled]="!contentForm.valid" mat-raised-button type="button"
+        class="settingsButton text-white ws-mat-primary-background text-white"
+        (click)="data.emit('save'); isSubmitPressed = true; ">
+        <span class="text-white" i18n>
+          Finish and send for review
+        </span>
+      </button>
+    </div>
+  </div>
+
+</form>

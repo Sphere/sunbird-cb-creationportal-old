@@ -8,7 +8,10 @@
   .unit-meta-item {
     border-radius: 2px;
     box-sizing: border-box;
-    margin-bottom: $size-m;
+    margin-bottom: 32px;
+    border-bottom: 1px solid #dfdfdf;
+    margin-top: 16px;
+    padding-bottom: 10px;
   }
 
   @include breakpoint-xs {
@@ -70,4 +73,7 @@
     height: $size;
     width: $size;
   }
+}
+.blue-link {
+    color: #5996e6!important;
 }

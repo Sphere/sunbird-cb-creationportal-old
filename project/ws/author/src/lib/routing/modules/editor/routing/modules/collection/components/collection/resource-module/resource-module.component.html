@@ -1,0 +1,194 @@
+<div class="resource-container">
+  <!-- <div>
+    <span>{{'Course Name'}}</span>
+    <span fxFlex style="flex: 1 1 auto;"></span>
+    <span style="float:right;">
+      <span>{{'Preview'}}</span>
+      <span>{{'Preview'}}</span>
+    </span>
+
+  </div> -->
+  <div class="example-container">
+    <div #drawer class="example-sidenav">
+      <div class="module-container">
+        <div class="mod-heading">
+          <h2 class="module-text">Module 1</h2>
+          <span fxFlex style="flex: 1 1 auto;"></span>
+          <span style="display:flex;flex-direction: row;">
+            <mat-icon class="icons-list">delete</mat-icon>
+            <mat-icon class="icons-list">content_copy</mat-icon>
+          </span>
+        </div>
+        <div class="mod-heading-resource">
+          <mat-icon class="cursor-pointer">more_vert</mat-icon> <span class="resourse-text">Resource1</span>
+          <span fxFlex style="flex: 1 1 auto;"></span>
+          <span style="display:flex;flex-direction: row;">
+            <mat-icon class="icons-list">delete</mat-icon>
+            <mat-icon class="icons-list">content_copy</mat-icon>
+          </span>
+
+        </div>
+
+        <button mat-raised-button class="mat-button-base link-btn-mt">
+          Add Resourse</button>
+
+      </div>
+      <div class="footer-drawer-btn">
+        <button mat-raised-button class="mat-button-base link-footer-mt">
+          Add Module</button>
+
+        <button mat-raised-button class="mat-button-base link-footer-mt">
+          Add Resourse</button>
+      </div>
+    </div>
+    <div class="content-container">
+      <div class="container-wrapper" *ngIf="isResoureCreate === false">
+        <h1 class="main-header">Select Resourse Type</h1>
+
+        <div class="learner-container" style="margin-top:5%">
+          <h3 class="learner-heading">Deliver Learning Content:</h3>
+          <div style="display:flex;">
+            <div style="padding-right:15px;" *ngFor="let content of contentList">
+              <div class="icon-contents" (click)="createResourseContent()">
+                <div class="list-boxes">
+                  <mat-icon matListItemIcon>{{content.icon}}</mat-icon>
+                </div>
+                <div class="icon-text cursor-pointer" matListItemTitle>{{content.name}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="learner-container" style="margin-top:5%">
+          <h3 class="learner-heading">Access your learner:</h3>
+          <div style="display:flex;">
+            <div style="padding-right:15px;" *ngFor="let access of accessList">
+              <div class="icon-contents">
+                <div class="list-boxes">
+                  <mat-icon matListItemIcon>{{access.icon}}</mat-icon>
+                </div>
+                <div class="icon-text cursor-pointer" matListItemTitle>{{access.name}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container-wrapper" *ngIf=isResoureCreate>
+        <h1 class="main-header">Resource Details</h1>
+        <div class="resource-details-form">
+          <form [formGroup]="resourceForm" class="resource-details-form">
+            <mat-form-field appearance="outline" class="margin-top-xs field-width">
+              <input matInput #resourceName formControlName="resourceName" maxlength="100" i18n-placeholder
+                placeholder="Name of the resource" />
+            </mat-form-field>
+            <div style="display:flex; flex-direction:row">
+              <mat-form-field appearance="outline" class="margin-top-xs field-width">
+                <input matInput #resourceLinks formControlName="resourceLinks" maxlength="100" i18n-placeholder
+                  placeholder="Link" />
+              </mat-form-field>
+              <!-- <mat-hint class="hint-text">Note: A link can be a URL or an Youtube embeded link</mat-hint> -->
+              <mat-checkbox class="check-text">Open link in new tab</mat-checkbox>
+            </div>
+
+            <div style="display:flex; flex-direction:row">
+              <span class="duration-text">Duration :</span>
+              <mat-form-field appearance="outline" class="duration-width" style="margin-right:13px;">
+                <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
+                  (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" step="1" />
+              </mat-form-field>
+              <div class="margin-top-s padding-small">:</div>
+
+              <mat-form-field appearance="outline" class="duration-width">
+                <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
+                  (keyup)="timeToSeconds()" type="number" placeholder="00" min="0" max="59" step="1" />
+              </mat-form-field>
+
+            </div>
+
+            <div class="">
+              <label>
+                <div class="flex flex-middle thumbnail-container">
+                  <p class="font-weight-bold margin-remove-bottom" [ngClass]="{ required: true }">
+                    <span i18n class="thumbnail-text">Course Thumbnail : </span>
+                  </p>
+                  <!-- <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo('appIcon')">info
+                                        </mat-icon> -->
+                </div>
+                <!-- <span i18n *ngIf="infoType === 'appIcon'">
+                                        <ul>
+                                          <li>
+                                            Maximum file size - 1 MB </li>
+                                          <li>Resolution for thumbnail - 760 px * 400 px </li>
+
+                                        </ul>
+                                      </span> -->
+              </label>
+              <div class="thumnail-row margin-top-xs">
+                <div>
+                  <img class="image max-width" height="144" width="256"
+                    src="/assets/instances/eagle/app_logos/default.png">
+                  <div class="add mat-elevation-z4 mat-app-background">
+                    <mat-icon class="add-icon mat-icon material-icons mat-icon-no-color" role="img" aria-hidden="true">
+                      add
+                    </mat-icon>
+                    <input style="display: none;" type="file">
+                  </div>
+                </div>
+                <div>
+                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)
+                </div>
+              </div>
+              <!-- <div class="thumnail-wrapper">
+                <div class="thumnail-row">
+
+
+                  <div style="display:flex;flex-direction:row;align-items:end;">
+                    <img class="image max-width" height="144" width="256" [src]=""
+                      (error)="changeToDefaultImg($event)" />
+                    <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadThumbnail.click()">
+                      <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
+                      <input type="file" #uploadThumbnail
+                        (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null"
+                        style="display: none;" [accept]="imageTypes.toString()" />
+
+                    </div> -->
+              <!-- <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadThumbnail.click()">
+                      <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
+                      <input type="file" #uploadThumbnail
+                        (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null"
+                        style="display: none;" [accept]="imageTypes.toString()" />
+                    </div> -->
+              <!-- </div> -->
+              <!-- <div style="margin-left:-45px ;">
+                    <span>
+                      <ul class="ul-list">
+                        <li class="thumbnail-info">Maximum file size: 1 MB</li>
+                        <li class="thumbnail-info">Resolution: 760 px * 400 px</li>
+                        <li class="thumbnail-info">Thumbnail Ratio: 256(w)X 150(h)</li>
+                        <li class="thumbnail-info">Files allowed: JPG, PNG</li>
+                      </ul>
+                      <p class="note-thumbnail-text"> Note: Learner will see this image <br>for your course</p>
+                    </span>
+                  </div> -->
+              <!-- </div>
+
+
+              </div> -->
+
+            </div>
+            <div>
+              <button mat-raised-button
+                class="margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom">Save</button>
+            </div>
+
+
+          </form>
+
+        </div>
+
+
+      </div>
+
+    </div>
+  </div>
+</div>

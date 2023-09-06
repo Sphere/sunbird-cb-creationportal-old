@@ -38,6 +38,15 @@ export namespace NsAppToc {
     status: string
   }
 
+  export interface IContentParentResponseV2 {
+    identifier: string,
+    children: IContentParentResponseV2[],
+    name: string,
+    description: string,
+    contentType: string,
+    status: string
+  }
+
   export interface ITocStructure {
     assessment: number
     course: number

@@ -4,7 +4,7 @@ import { IConditionsV2 } from '../../../interface/conditions-v2'
 
 @Injectable()
 export class ConditionCheckService {
-  constructor() {}
+  constructor() { }
 
   /**
    * @description Function which evaluates the given conditions decides whether the content is eligible or not
@@ -38,7 +38,7 @@ export class ConditionCheckService {
    */
   checkUniqueCondition(
     content: NSContent.IContentMeta,
-    conditions: { [key in keyof NSContent.IContentMeta]: any[] }[],
+    conditions: { [key in keyof NSContent.IContentMeta]: any[] }[]
   ): boolean {
     try {
       if ((conditions as any).includes('*')) {

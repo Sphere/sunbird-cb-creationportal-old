@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router'
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
 import { PipeLimitToPipe } from '@ws-widget/utils/src/lib/pipes/pipe-limit-to/pipe-limit-to.pipe'
 import { ValueService, ConfigurationsService } from '@ws-widget/utils'
+import { PlayerStateService } from '../../player-state.service'
 @Component({
   selector: 'viewer-html-container',
   templateUrl: './html.component.html',
@@ -26,6 +27,10 @@ export class HtmlComponent implements OnInit, OnChanges {
   isLtMedium = false
   isScormContent = false
   isRestricted = false
+  viewerDataServiceSubscription: any
+  prevResourceUrl: string | null = null
+  nextResourceUrl: string | null = null
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private domSanitizer: DomSanitizer,
@@ -33,7 +38,7 @@ export class HtmlComponent implements OnInit, OnChanges {
     private pipeLimitTo: PipeLimitToPipe,
     private valueSvc: ValueService,
     private configSvc: ConfigurationsService,
-
+    private viewerDataSvc: PlayerStateService
   ) {
 
   }
@@ -49,6 +54,12 @@ export class HtmlComponent implements OnInit, OnChanges {
       this.isRestricted =
         !this.configSvc.restrictedFeatures.has('disscussionForum')
     }
+
+    this.viewerDataServiceSubscription = this.viewerDataSvc.playerState.subscribe(data => {
+      this.prevResourceUrl = data.prevResource
+      this.nextResourceUrl = data.nextResource
+    })
+
     this.valueSvc.isLtMedium$.subscribe(isLtMd => {
       this.isLtMedium = isLtMd
     })

@@ -20,7 +20,12 @@
             "assets": [
               "src/favicon.ico",
               "src/favicon.png",
-              "src/cbp-assets"
+              "src/cbp-assets",
+              {
+                "glob": "**/*",
+                "input": "node_modules/ngx-extended-pdf-viewer/bleeding-edge/",
+                "output": "/bleeding-edge/"
+              }
             ],
             "stylePreprocessorOptions": {
               "includePaths": [

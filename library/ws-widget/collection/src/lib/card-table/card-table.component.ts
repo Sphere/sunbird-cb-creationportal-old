@@ -111,6 +111,7 @@ export class CardTableComponent extends WidgetBaseComponent
     }
   }
   buttonClick(action: string, row: any) {
+    // tslint:disable-next-line:no-console
     // console.log(action, row);
     const isDisabled = _.get(_.find(this.widgetData.actions, ac => ac.name === action), 'disabled') || false
     if (!isDisabled && this.actionsClick) {
@@ -131,6 +132,7 @@ export class CardTableComponent extends WidgetBaseComponent
     if (this.widgetData.actionsMenu && this.widgetData.actionsMenu.menus.length > 0) {
       columns.push('ActionsMenu')
     }
+    // tslint:disable-next-line:no-console
     // console.log(columns);
 
     return columns || []
@@ -245,7 +247,7 @@ export class CardTableComponent extends WidgetBaseComponent
         })
       }
     }
-    if (meta.status === 'InReview' && this.hasRole(['reviewer'])) {
+    if (meta.status === 'InReview' && this.hasRole(['content_reviewer'])) {
       if (meta.trackContacts && meta.trackContacts.length) {
         meta.trackContacts.forEach(v => {
           if (v.id === this.userId) {
@@ -259,7 +261,7 @@ export class CardTableComponent extends WidgetBaseComponent
         )
       }
     }
-    if (['Reviewed'].indexOf(meta.status) > -1 && this.hasRole(['publisher'])) {
+    if (['Reviewed'].indexOf(meta.status) > -1 && this.hasRole(['content_publisher'])) {
       if (meta.publisherDetails && meta.publisherDetails.length) {
         meta.publisherDetails.forEach(v => {
           if (v.id === this.userId) {

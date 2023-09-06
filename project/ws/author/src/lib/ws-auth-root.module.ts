@@ -23,11 +23,9 @@ import { ApiService } from './modules/shared/services/api.service'
 import { CKEditorResolverService } from './services/ckeditor-resolve.service'
 import { AuthNavBarToggleService } from './services/auth-nav-bar-toggle.service'
 import { WorkFlowService } from './services/work-flow.service'
-// import { CreateContentModule } from './routing/modules/create-content/create-component.module'
-import { QualityJSONResolver } from './services/quality-json-resolver.service'
-import { EditorSharedModule } from './routing/modules/editor/shared/shared.module'
 import { DepartmentResolver } from './services/department-resolv.servive'
-import { EditorContentService } from './routing/modules/editor/services/editor-content.service'
+import { QualityJSONResolver } from './services/quality-json-resolver.service'
+import { ReviewerChecklist } from '../lib/routing/modules/editor/shared/components/reviewer-checklist/reviewer-checklist.component'
 
 /**
  * This function is used internal to get a string instance of the `<base href="" />` value from `index.html`.
@@ -45,13 +43,11 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
 }
 
 @NgModule({
-  declarations: [AuthRootComponent, AuthNavigationComponent, TocComponent, ViewerComponent],
+  declarations: [AuthRootComponent, AuthNavigationComponent, TocComponent, ViewerComponent, ReviewerChecklist],
   imports: [
     CommonModule,
     SharedModule,
     CreateModule,
-    // CreateContentModule,
-    EditorSharedModule,
     HomeModule,
     WsAuthorRootRoutingModule,
     PipeSafeSanitizerModule,
@@ -68,7 +64,6 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
     LoaderService,
     InitResolver,
     NotificationService,
-    EditorContentService,
     WorkFlowService,
     { provide: ErrorHandler, useClass: AuthoringErrorHandler },
     {
@@ -77,7 +72,7 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
       deps: [PlatformLocation],
     },
     AuthNavBarToggleService,
-    QualityJSONResolver,
+    QualityJSONResolver
   ],
 })
 export class WsAuthorRootModule { }

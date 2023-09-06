@@ -5,6 +5,7 @@ import { Observable } from 'rxjs'
 
 const API_END_POINTS = {
   ASSESSMENT_SUBMIT_V2: `/apis/protected/v8/user/evaluate/assessment/submit/v2`,
+  ASSESSMENT_SUBMIT_N: `/apis/protected/v8/assessment/submit/v2`,
 }
 
 @Injectable({
@@ -18,12 +19,14 @@ export class QuizService {
   ) { }
 
   submitQuizV2(req: NSQuiz.IQuizSubmitRequest): Observable<NSQuiz.IQuizSubmitResponse> {
-    return this.http.post<NSQuiz.IQuizSubmitResponse>(API_END_POINTS.ASSESSMENT_SUBMIT_V2, req)
+    // return this.http.post<NSQuiz.IQuizSubmitResponse>(API_END_POINTS.ASSESSMENT_SUBMIT_V2, req)
+    return this.http.post<NSQuiz.IQuizSubmitResponse>(API_END_POINTS.ASSESSMENT_SUBMIT_N, req)
   }
 
   createAssessmentSubmitRequest(
     identifier: string,
     title: string,
+    courseId: string,
     quiz: NSQuiz.IQuiz,
     questionAnswerHash: { [questionId: string]: any[] },
   ): NSQuiz.IQuizSubmitRequest {
@@ -31,6 +34,7 @@ export class QuizService {
       ...quiz,
       identifier,
       title,
+      courseId,
     }
     quizWithAnswers.questions.map(question => {
       if (

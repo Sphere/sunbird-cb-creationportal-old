@@ -3,18 +3,28 @@ import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnDes
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms'
 import { NSContent } from '@ws/author/src/lib/interface/content'
 import { debounceTime, map } from 'rxjs/operators'
+// import { LoaderService } from '../../../../../../services/loader.service'
 import { LoaderService } from '../../../../../../services/loader.service'
-import { EditorContentService } from '../../../services/editor-content.service'
+
+import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+import { NsContent } from '@ws-widget/collection'
+
 /* tslint:disable */
 import _ from 'lodash'
 // import { AuthInitService } from '../../../../../../services/init.service'
-import { NSIQuality } from '../../../../../../interface/content-quality'
+// import { NSIQuality } from '../../../../../../../../../viewer/src/lib/interface/content-quality'
+
+import { NSIQuality } from '../../../interface/content-quality'
 // import { SelfCurationService } from '../../services/self-curation.service'
 import { ContentQualityService } from '../../services/content-quality.service'
 import { ConfigurationsService } from '../../../../../../../../../../../library/ws-widget/utils/src/public-api'
 import { ActivatedRoute } from '@angular/router'
 import { AuthInitService } from '../../../../../../services/init.service'
+
+import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 import { MatSnackBar } from '@angular/material'
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'ws-auth-content-quality',
@@ -22,6 +32,7 @@ import { MatSnackBar } from '@angular/material'
   styleUrls: ['./content-quality.component.scss'],
   /* tslint:disable */
   encapsulation: ViewEncapsulation.None,
+  providers: [EditorContentService, EditorService]
   /* tslint:enable */
 })
 export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -60,11 +71,13 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
   menus!: any
   wData: any
   displayedColumns: string[] = ['name', 'response', 'score', 'help']
+  showQuestionProgressBar = false
   // dataSource = ELEMENT_DATA
   constructor(
     // private valueSvc: ValueService,
     private changeDetector: ChangeDetectorRef,
     private contentService: EditorContentService,
+    private editorService: EditorService,
     private activateRoute: ActivatedRoute,
     private _configurationsService: ConfigurationsService,
     private breakpointObserver: BreakpointObserver,
@@ -73,12 +86,33 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
     private formBuilder: FormBuilder,
     private _qualityService: ContentQualityService,
     private snackBar: MatSnackBar,
+    private accessService: AccessControlService,
+    private router: Router,
+
   ) {
     this.getJSON()
+    console.log("this.authInitService.authAdditionalConfig", this.authInitService.authAdditionalConfig)
     if (this.authInitService.authAdditionalConfig.contentQuality) {
       this.minPassPercentage = this.authInitService.authAdditionalConfig.contentQuality.passPercentage
     }
+    const url = this.router.url
+    const id = url.split('/')
+    this.contentService.currentContentID = id[3]
+    this.contentService.changeActiveCont.next(id[3])
+    console.log("id", id)
+    this.editorService.readcontentV3(id[3]).subscribe((data: any) => {
+      console.log("data", data)
+      if (data.primaryCategory === NsContent.EPrimaryCategory.PROGRAM) {
+        this.contentService.resetOriginalMeta(data, data.identifier)
+      } else {
+        this.contentService.resetOriginalMetaWithHierarchy(data)
+      }
+      // TODO
+      // tslint:disable-next-line: align
+    })
+    // this.contentService.changeActiveCont.next(contents[0].content.identifier)
     this.contentService.changeActiveCont.subscribe(data => {
+      console.log("data", data)
       // this.currentContent = data.replace('.img', '')
       if (data) {
         this.currentContent = data
@@ -117,12 +151,13 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
   getJSON() {
     if (this.activateRoute.parent && this.activateRoute.parent.parent
       && this.activateRoute.parent.parent.snapshot && this.activateRoute.parent.parent.snapshot.data) {
-      this.fieldsToDisplay = _.map(this.activateRoute.parent.parent.snapshot.data.qualityJSON.criteria, (cr, idx) => {
+      console.log("hi there", this.activateRoute.parent.snapshot.data.qualityJSON.criteria)
+      this.fieldsToDisplay = _.map(this.activateRoute.parent.snapshot.data.qualityJSON.criteria, (cr, idx) => {
         // tslint:disable-next-line
         return ` ${this.romanize(parseInt(idx + 1))}) ${cr.criteria} `
       }).join(',')
 
-      const qData = _.map(this.activateRoute.parent.parent.snapshot.data.qualityJSON.criteria, cr => {
+      const qData = _.map(this.activateRoute.parent.snapshot.data.qualityJSON.criteria, cr => {
         return {
           type: (cr.criteria || '').replace(' ', ''),
           name: cr.criteria,
@@ -212,16 +247,21 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
   }
   fillResponseData() {
     if (this._configurationsService.userProfile) {
+      const currentContentData = this.contentService.originalContent[this.currentContent]
+      console.log("currentContentData", currentContentData)
       const reqObj = {
         resourceId: this.currentContent,
         resourceType: 'content',
-        userId: this._configurationsService.userProfile.userId,
+        // userId: this._configurationsService.userProfile.userId,
         getLatestRecordEnabled: true,
       }
       this._qualityService.fetchresult(reqObj).subscribe((result: any) => {
         if (result && result.result && result.result.resources) {
           const rse = result.result.resources || []
-          if (rse.length === 1) {
+          if (rse.length === 1 && (this.accessService.hasRole(['content_reviewer'])
+            || this.accessService.hasRole(['content_publisher'])
+            || rse[0].versionKey === currentContentData.versionKey)
+          ) {
             this.qualityResponse = rse[0]
             this.displayResult = true
             this.changeDetector.detectChanges()
@@ -247,7 +287,7 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
 
   get getQualityPercent() {
     const score = this.qualityResponse.finalWeightedScore || 0
-    return score.toFixed(2)
+    return score.toFixed(1)
   }
   getFirstHeadingName(idx: number) {
     return this.qualityResponse.criteriaModels[idx || 0].criteria
@@ -263,6 +303,9 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
     this._qualityService.getFile({ ...data }, `Content-Quality-Report`, true)
   }
   start() {
+    console.log("this.contentService.originalContent", this.contentService.originalContent)
+    const currentContentData = this.contentService.originalContent[this.currentContent]
+    console.log("currentContentData", this.currentContent, currentContentData)
     if (Object.keys(this.contentService.originalContent).length > 1) {
       if (this.questionData && this.questionData[1] && this.questionData[1].type) {
         this.selectedIndex = 1
@@ -301,7 +344,8 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
       if (this.selectedIndex > 0) {
         this.selectedIndex -= 1
         this.selectedKey = this.questionData[this.selectedIndex].type
-        this.selectedQIndex = this.questionData[this.selectedIndex].questions ?
+        this.selectedQIndex = (this.questionData[this.selectedIndex].questions &&
+          this.questionData[this.selectedIndex].questions.length > 0) ?
           this.questionData[this.selectedIndex].questions.length - 1 : 0
         this.lastQ = false
       }
@@ -328,6 +372,22 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
     }
     return returnValue
   }
+
+  isAnswered(index: number) {
+    const questionData = this.qualityForm.controls['questionsArray'].value
+    if (questionData && questionData.length > 0) {
+      if (questionData[this.selectedIndex].ques[index].options !== null) {
+        return true
+        // tslint:disable-next-line: no-else-after-return
+      } else {
+        return false
+      }
+      // tslint:disable-next-line: no-else-after-return
+    } else {
+      return false
+    }
+  }
+
   getCount(index: number): string {
     let res = '_000'
     if (index <= 9) {
@@ -363,15 +423,16 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
       })
       responses.splice(0, 1)
 
+      const currentContentData = this.contentService.originalContent[this.currentContent]
+
       const data = {
         resourceId: this.currentContent,
         templateId: 'content_scoring_template',
         resourceType: 'content',
         userId: this._configurationsService.userProfile.userId,
-        criteriaModels: responses
+        criteriaModels: responses,
+        versionKey: currentContentData.versionKey
       }
-      // console.log(data)
-
       this._qualityService.postResponse(data).subscribe(response => {
         if (response) {
           setTimeout(() => {
@@ -406,8 +467,9 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
     this.snackBar.open(`To proceed further minimum quality score must be  ${this.minPassPercentage}% or greater, and need to qualify in all the sections`)
   }
 
-  selectMenu(key: string, index: number) {
+  selectMenu(event: Event, key: string, index: number) {
     if (this.startQ) {
+      event.preventDefault()
       this.selectedKey = key
       this.selectedIndex = index
       this.selectedQIndex = 0
@@ -426,4 +488,19 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
     }
     return false
   }
+
+  questionNumberClick(index: any) {
+    this.selectedQIndex = index - 1
+    this.nextQ()
+  }
+
+  autoNextQ() {
+    this.showQuestionProgressBar = true
+    setTimeout(() => {
+      this.showQuestionProgressBar = false
+      this.nextQ()
+      this.loaderService.changeLoad.next(false)
+    }, 500)
+  }
+
 }

@@ -251,6 +251,13 @@ export namespace NsUser {
     surName?: string
     middleName?: string
     profileImage?: string
+    rootOrgId?: string
+    rootOrgName?: string
+  }
+
+  export interface INodebbUserProfile {
+    username: string
+    email: string
   }
 
   export interface IUserPidProfile {

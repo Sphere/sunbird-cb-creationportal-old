@@ -62,8 +62,11 @@ export class CollectionResolverService {
         id: this.uniqueId,
         identifier: currContent.identifier,
         category: this.getCategory(currContent),
+        primaryCategory: this.getCategory(currContent),
         childLoaded: !this.lazyLoad.has(this.getCategory(currContent)),
         children: [],
+        contentType: this.getCategory(currContent),
+        name: currContent.name,
       }
       map.set(currContent.identifier, currContent)
       uniqueIdMap.set(treeStructure.id, currContent.identifier)
@@ -84,6 +87,9 @@ export class CollectionResolverService {
             children.push(recursiveFn(v, treeStructure.id, haveAccessToChangeStructure)),
           )
         }
+        // currContent.children.forEach(v =>
+        //   children.push(recursiveFn(v, treeStructure.id, haveAccessToChangeStructure)),
+        // )
         treeStructure.children = children
       }
       flatNodeMap.set(treeStructure.id, treeStructure)
@@ -163,7 +169,7 @@ export class CollectionResolverService {
       if (content.isExternal) {
         return ICON_TYPE.externalContent
       }
-      return ICON_TYPE.htmlPicker
+      return ICON_TYPE.internalContent
     }
     if (content.mimeType === MIME_TYPE.pdf) {
       if (!content.artifactUrl) {
@@ -187,7 +193,7 @@ export class CollectionResolverService {
       return ICON_TYPE.htmlPicker
     }
     if (content.mimeType === MIME_TYPE.webModule) {
-      return ICON_TYPE.html
+      return ICON_TYPE.internalContent
     }
     if (content.mimeType === MIME_TYPE.handson) {
       return ICON_TYPE.handsOn
@@ -216,7 +222,7 @@ export class CollectionResolverService {
   hasAccess(content: NSContent.IContentMeta, parentMeta?: NSContent.IContentMeta): boolean {
     return this.contentService.hasAccess(content, false, parentMeta) &&
       content.status === 'InReview'
-      ? this.authInitService.collectionConfig.enabledRole.includes('reviewer')
+      ? this.authInitService.collectionConfig.enabledRole.includes('content_reviewer')
       : content.status === 'Reviewed'
         ? this.authInitService.collectionConfig.enabledRole.includes('publisher')
         : ['Draft', 'Live'].includes(content.status)

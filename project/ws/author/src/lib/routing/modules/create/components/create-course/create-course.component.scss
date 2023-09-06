@@ -1,0 +1,393 @@
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+    margin-top: -0.5em;
+}
+.fix-bottom {
+    // bottom: -23px;
+    position: absolute;
+}
+
+.font-weight-300 {
+    font-weight: 300;
+  }
+
+  .space-around {
+    justify-content: space-around;
+  }
+
+  // .tabs{
+  //   display: flex;
+  //   // justify-content: space-around;
+  // }
+
+  .image-border {
+    border: 2px solid;
+    border-radius: 5px;
+  }
+
+  .width-90 {
+    width: 90%;
+  }
+
+  .disable {
+    opacity: 0.3;
+    pointer-events: none;
+    cursor: none;
+  }
+
+  .not-disable {
+    opacity: 0.7;
+  }
+
+  input {
+    line-height: 1px;
+  }
+
+  .required {
+    &::after {
+      color: red;
+      content: ' *';
+    }
+  }
+
+  .max-width {
+    max-width: 256px;
+    max-height: 150px;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    position: absolute;
+    top: 110px;
+    right: 60px;
+    z-index: 3;
+  }
+
+  .small-button {
+    height: 32px;
+    width: 32px;
+    transition: 0.5s;
+    margin-right: 4px;
+  }
+
+  .small-icon {
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    height: auto;
+    width: auto;
+    transition: 0.5s;
+  }
+
+  .normal-button {
+    border-radius: 50%;
+    height: 40px;
+    display: flex;
+    width: 40px;
+    z-index: 3;
+    justify-content: center;
+  }
+
+  // forms
+
+  .photo {
+    height: 48px;
+    width: 48px;
+    background: #f2f2f2;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    left: -30px;
+    bottom: 13px;
+    cursor: pointer;
+  }
+
+  .photo-icon {
+    position: relative;
+    top: 10px;
+    left: 9px;
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+  }
+
+  .mat-form-field {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .resize-none {
+    resize: none;
+  }
+
+  .margin-left-40 {
+    margin-left: 66px;
+  }
+
+  .custom-form-control {
+    margin: 0.25em 25px;
+  }
+
+  .info {
+    opacity: 0.8;
+  }
+
+  .margin-l-l {
+    margin-left: 32px;
+
+    @media only screen and(max-width: 585px) {
+      margin-left: 0px;
+    }
+  }
+
+  .margin-r-l {
+    margin-right: 32px;
+
+    @media only screen and(max-width: 585px) {
+      margin-left: 0px;
+    }
+  }
+
+  .op30 {
+    opacity: 0.3;
+  }
+
+  .op100 {
+    opacity: 1;
+  }
+
+  .margin-top-60 {
+    margin-top: 60px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .flex-grow80 {
+    flex-grow: 0.8;
+  }
+
+  .transform {
+    transform: rotate(45deg);
+    transition: 0.3s;
+  }
+
+  .conceptsField {
+    transform: translateX(0);
+    opacity: 1;
+    transition: 0.3s;
+  }
+
+  .conceptsFieldInitial {
+    transform: translateX(-100px);
+    opacity: 0;
+    transition: 0.3s;
+  }
+
+  textarea {
+    line-height: 1.5;
+  }
+
+  //upload box
+
+  .op100 {
+    opacity: 1;
+  }
+
+  .upload-box {
+    border: 2px dashed rgba(28, 28, 28, 0.6);
+    border-radius: 2%;
+    width: 235px;
+  }
+
+  .text-white {
+    color: #fff;
+  }
+
+  ul li {
+    margin: 20px 0;
+  }
+
+  .inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+  }
+
+  .inputfile+label {
+    font-size: 1.25em;
+    color: white;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .pointer {
+    cursor: pointer;
+  }
+
+  .duration-width {
+    width: 55px;
+  }
+
+  .padding-small {
+    padding: 5px;
+  }
+
+  .numberInput::-webkit-inner-spin-button,
+  .numberInput::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .mat-button-size {
+    height: 37.5px !important;
+    cursor: pointer;
+    margin: auto;
+  }
+
+  .row-wise {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+  .mobile-break{
+    display: flex;
+    flex-direction: row;
+  }
+  .new-mobile{
+    display: flex;
+    flex-direction: column;
+  }
+  // 960
+  @media only screen and (max-width:960px) {
+    .mobile-break {
+      flex-direction: column;
+    }
+  }
+
+  @media (min-width: 961px) {
+    .width-300 {
+      width: 300
+    }
+  }
+
+  .example-container {
+    position: absolute;
+    top: 70px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+   .create-course-container{
+      width: 45vw;
+      margin-top: 19px;
+   }
+
+  .heading-text {
+    font-size: 27px !important;
+    font-weight: 400 !important;
+    font-family: Roboto  !important;
+  }
+  .desc-text {
+    font-size: 14px;
+    font-family: Roboto;
+    color: #808080;
+  }
+
+  .first-row-container {
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+  }
+  .field-width {
+    width: 48%;
+
+  }
+
+  .cons-text {
+    font-size: 14px;
+    font-weight: 400;
+    font-family: Roboto;
+  }
+  .save-btn-mt {
+    color: white !important;
+    width: 32%;
+    border-radius: 17px;
+    font-size: 14px;
+    font-family: Roboto !important;
+  }
+  .name-field {
+    font-size: 14px  !important;
+  }
+  .desc-field {
+    font-size: 14px !important;
+  }
+
+  .thumbnail-container {
+    margin-top: -13px;
+  }
+  .thumbnail-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: 808080;
+    color: #808080;
+    font-family: Roboto;
+  }
+
+  .thumnail-wrapper {
+    display: flex;
+    flex-direction: row;
+  }
+  .ul-list {
+    text-decoration: none;
+    list-style: none;
+  }
+  .thumbnail-info {
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    font-family: Roboto  !important;
+    line-height: 1.8px  !important;
+    color: #000000  !important;
+  }
+.note-thumbnail-text {
+    margin-left: 41px  !important;
+    margin-bottom: -2px;
+    font-size: 12px;
+    font-family: Roboto;
+    line-height: 16.8px;
+    color: #8B8B8B;
+}
+.grayBackground{
+    background-color: #d3d3d3 !important;
+}
+.mat-raised-button[disabled]{
+  background-color: #d3d3d3 !important;
+}
+.read-and-agree-top-margin {
+  margin-top: 5px !important;
+}
+
+.mt-hint {
+  font-size: 10px !important;
+  color: #808080  !important;
+  font-family: Roboto !important;
+  font-weight: 400 !important;
+  line-height: 14.4px !important;
+}
+
+::ng-deep .theme-igot.day-mode .ws-mat-primary-background {
+  background-color: #1c5d95!important;
+}
+
+::ng-deep .theme-igot.day-mode .mat-checkbox-checked.mat-accent .mat-checkbox-background {
+  background-color: #1c5d95!important;
+}

@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { tap } from 'rxjs/operators'
 import { HttpClient } from '@angular/common/http'
-import { NSIQuality } from '../../../../../interface/content-quality'
+import { NSIQuality } from '../../interface/content-quality'
+
 /* tslint:disable */
 import _ from 'lodash'
 /* tslint:enable */
@@ -13,7 +14,7 @@ const API_END_POINTS = {
   GET_CALC: `${PROTECTED_SLAG_V8}/scroing/calculate`,
   GET_JSON: `${PROTECTED_SLAG_V8}/scroing/struct`,
 }
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ContentQualityService {
   curationData: { [key: string]: NSIQuality.IQualityResponse } = {}
   currentContent!: string
@@ -46,7 +47,6 @@ export class ContentQualityService {
   }
 
   // fetchJSON() {
-  //   debugger
   //   // // this.http.post<NSIQuality.IContentQualityConfig>(`${API_END_POINTS.GET_JSON}`, {}).pipe(tap(v => this.setJSONStruct(v)))
   //   // return this.apiService.get<NSIQuality.IContentQualityConfig>(
   //   //   `${this.configSvc.baseUrl}/feature/auth-content-quality.json`,

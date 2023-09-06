@@ -40,6 +40,7 @@ export namespace NSQuiz {
     questions: IQuestion[]
     timeLimit: number
     title: string
+    artifactUrl?: string
   }
 
   export interface IQuizSubmitResponse {

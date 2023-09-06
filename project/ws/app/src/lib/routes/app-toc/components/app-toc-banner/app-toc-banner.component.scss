@@ -26,7 +26,7 @@
 }
 
 .fixed-width {
-  max-width: $max-width;
+  max-width: 1230px;
   display: block;
   margin: 0 auto;
   padding: 0 !important;
@@ -43,10 +43,18 @@
 .fluid-width {
   width: 100%;
 }
+.blue-link {
+     color: #5996e6 !important;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+}
 
 .header-synopsis {
   height: 100%;
-  @extend %container-padding;
+  padding: 15px 10rem 0px 10rem;
+  //background: #fbf5f2;
   box-sizing: border-box;
 
   .apIcon {
@@ -69,9 +77,7 @@
     h1 {
       // font: 48px/48px Poppins-SemiBold;
       letter-spacing: 0px;
-      color: #FFFFFF;
       // font-family: Poppins-SemiBold;
-
     }
 
     .text-truncate-title {
@@ -85,13 +91,13 @@
   .rating-number {
     // font: 24px/35px Poppins-Medium;
     letter-spacing: 0px;
-    color: #FFFFFF;
+    color: #ffffff;
   }
 
   .rating-count {
     // font: 18px/27px Poppins-regular;
     letter-spacing: 0.36px;
-    color: #FFFFFF;
+    color: #ffffff;
   }
 
   .rating mat-icon {
@@ -99,7 +105,6 @@
   }
 
   .header-meta-banner {
-    height: 135px;
     overflow: hidden;
   }
 
@@ -113,14 +118,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #34D6A4 0% 0% no-repeat padding-box;
+    background: #34d6a4 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 30px #99999933;
-    color: #fff !important;
 
     ::ng-deep.mat-button-wrapper {
       // font: 14px/21px Poppins-SemiBold;
       letter-spacing: 0px;
-      color: #FFFFFF;
       text-transform: capitalize;
     }
   }
@@ -152,7 +155,6 @@
     margin-right: $size-l;
     // font: Regular 24px/35px Poppins;
     letter-spacing: 0px;
-    color: #FFFFFF;
 
     @include breakpoint-xs {
       margin-right: 0;
@@ -235,15 +237,12 @@
   }
 }
 
-.info-msg {
-  color: #fff !important;
-  // font: 14px/20px Poppins-Regular;
-  ;
-
-  mat-icon {
-    color: #fff !important;
-  }
-}
+// .info-msg {
+//   // font: 14px/20px Poppins-Regular;
+//   mat-icon {
+//     // color: #fff !important;
+//   }
+// }
 
 .sticky-banner {
   z-index: 999;
@@ -259,4 +258,28 @@
   .overview-description {
     font: normal normal 300 14px/21px;
   }
+}
+
+.header-right {
+  min-width: 40%;
+  background-size: 100% 100%;
+}
+
+.header-left {
+  flex: 1;
+  min-width: 50%;
+}
+
+.action-icons {
+    padding: 8px;
+    width: 22px;
+    margin-top: 1px;
+    opacity: .65;
+}
+
+.certificate-button{
+  color: #1c5d95 !important;
+  border: 1px solid #1c5d95;
+  border-radius: 7rem;
+  background-color: #fbf5f2 !important;
 }

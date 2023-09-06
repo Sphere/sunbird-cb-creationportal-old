@@ -5,7 +5,7 @@ import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router'
 import {
   ContentProgressService,
   NsContent,
-  // NsGoal,
+  NsGoal,
   NsPlaylist,
   viewerRouteGenerator,
   WidgetContentService,
@@ -15,7 +15,7 @@ import { UtilityService } from '@ws-widget/utils/src/lib/services/utility.servic
 import { AccessControlService } from '@ws/author'
 import { Subscription } from 'rxjs'
 import { NsAnalytics } from '../../models/app-toc-analytics.model'
-import { NsAppToc } from '../../models/app-toc.model'
+import { NsAppToc, NsCohorts } from '../../models/app-toc.model'
 import { AppTocService } from '../../services/app-toc.service'
 import { AppTocDialogIntroVideoComponent } from '../app-toc-dialog-intro-video/app-toc-dialog-intro-video.component'
 import { MobileAppsService } from 'src/app/services/mobile-apps.service'
@@ -46,7 +46,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   reviewButton = false
   analyticsDataClient: any = null
   btnPlaylistConfig: NsPlaylist.IBtnPlaylist | null = null
-  // btnGoalsConfig: NsGoal.IBtnGoal | null = null
+  btnGoalsConfig: NsGoal.IBtnGoal | null = null
   isRegistrationSupported = false
   checkRegistrationSources: Set<string> = new Set([
     'SkillSoft Digitalization',
@@ -64,6 +64,11 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   contextPath?: string
   tocConfig: any = null
   defaultSLogo = ''
+  cohortResults: {
+    [key: string]: { hasError: boolean; contents: NsCohorts.ICohortsContent[], count: Number }
+  } = {}
+  cohortTypesEnum = NsCohorts.ECohortTypes
+  isReviewer: Boolean = false
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -80,6 +85,12 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
+    console.log("content", this.content)
+    if (this.authAccessService.hasRole(['content_reviewer'])) {
+      this.isReviewer = true
+    } else {
+      this.isReviewer = false
+    }
     this.route.data.subscribe(data => {
       this.tocConfig = data.pageData.data
       if (this.content && this.isPostAssessment) {
@@ -448,4 +459,9 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
       return true
     }
   }
+
+  showOrgprofile(orgId: string) {
+    this.router.navigate(['/app/org-details'], { queryParams: { orgId } })
+  }
+
 }

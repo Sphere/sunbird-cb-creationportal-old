@@ -124,6 +124,8 @@ export namespace NsContent {
     references?: { url: string; title: string }[]
     resumePage?: number // For player WebModule in UI
     [key: string]: any
+    streamingUrl?: string
+    entryPoint?: string
   }
 
   export interface IContentMinimal {
@@ -249,6 +251,14 @@ export namespace NsContent {
     MODULE = 'Collection',
     RESOURCE = 'Resource',
   }
+  export enum EPrimaryCategory {
+    PROGRAM = 'Program',
+    MODULE = 'Course Unit',
+    COURSE = 'Course',
+    RESOURCE = 'Learning Resource',
+    ASSESSMENT = 'Practice Question Set',
+  }
+
   export enum EMiscPlayerSupportedCollectionTypes {
     PLAYLIST = 'Playlist',
   }
@@ -272,6 +282,7 @@ export namespace NsContent {
   ]
   export enum EMimeTypes {
     COLLECTION = 'application/vnd.ekstep.content-collection',
+    ZIP = 'application/vnd.ekstep.html-archive',
     HTML = 'application/html',
     ILP_FP = 'application/ilpfp',
     IAP = 'application/iap-assessment',
@@ -292,10 +303,13 @@ export namespace NsContent {
     CLASS_DIAGRAM = 'application/class-diagram',
     CHANNEL = 'application/channel',
     COLLECTION_RESOURCE = 'resource/collection',
+    APPLICATION_JSON = 'application/json',
     // Added on UI Only
     CERTIFICATION = 'application/certification',
     PLAYLIST = 'application/playlist',
+    TEXT_WEB = 'text/x-url',
     UNKNOWN = 'application/unknown',
+
   }
   export enum EDisplayContentTypes {
     ASSESSMENT = 'ASSESSMENT',

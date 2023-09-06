@@ -1,0 +1,42 @@
+@import 'ws-mixins';
+
+.logo-dim{
+  cursor: pointer !important;
+}
+
+.app-logo {
+  width: 120px;
+  height: 60px;
+  margin-top: 10px;
+  filter: brightness(3);
+  @include breakpoint-xs {
+    max-width: 80px;
+    max-height: 30px;
+  }
+}
+
+.mr-10 {
+  margin-right: 10px;
+}
+
+.xsmall {
+  position: absolute;
+  display: block;
+  right: 0;
+}
+
+.header-spacer {
+  flex: 1 1 auto;
+}
+.custom {
+  height: 80px;
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+.border-btn {
+  border: 1px solid white;
+  border-radius: 16px;
+}
+
+::ng-deep .theme-igot.day-mode .mat-toolbar.mat-primary{
+  background-color: #1C5D95 !important;
+}

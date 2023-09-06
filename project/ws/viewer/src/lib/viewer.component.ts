@@ -5,7 +5,11 @@ import { NsWidgetResolver } from '@ws-widget/resolver'
 import { UtilityService, ValueService } from '@ws-widget/utils'
 import { Subscription } from 'rxjs'
 import { RootService } from '../../../../../src/app/component/root/root.service'
+import { ApiService } from '../../../author/src/public-api'
 import { TStatus, ViewerDataService } from './viewer-data.service'
+import { MatDialog } from '@angular/material/dialog'
+import { ReviewDialogComponent } from '@ws/viewer/src/lib/components/review-checklist/review-dialog.component'
+import { ConfigurationsService } from '@ws-widget/utils'
 
 export enum ErrorType {
   accessForbidden = 'accessForbidden',
@@ -21,13 +25,15 @@ export enum ErrorType {
   selector: 'viewer-container',
   templateUrl: './viewer.component.html',
   styleUrls: ['./viewer.component.scss'],
+  providers: [ApiService]
 })
 export class ViewerComponent implements OnInit, OnDestroy, AfterViewChecked {
+  isReviewer: boolean = false;
   fullScreenContainer: HTMLElement | null = null
   content: NsContent.IContent | null = null
   errorType = ErrorType
   private isLtMedium$ = this.valueSvc.isLtMedium$
-  sideNavBarOpened = false
+  sideNavBarOpened = true
   mode: 'over' | 'side' = 'side'
   forPreview = window.location.href.includes('/author/')
   isTypeOfCollection = true
@@ -52,8 +58,12 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewChecked {
     private rootSvc: RootService,
     private utilitySvc: UtilityService,
     private changeDetector: ChangeDetectorRef,
+    public dialog: MatDialog,
+    private configService: ConfigurationsService,
+
   ) {
     this.rootSvc.showNavbarDisplay$.next(false)
+    console.log("collectionId", this.collectionId)
   }
 
   getContentData(e: any) {
@@ -63,8 +73,19 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
     })
   }
+  showReviewChecklist() {
+    const dialogRef = this.dialog.open(ReviewDialogComponent, {
+      width: '480px',
+      height: '275px',
+      data: "yes",
+    })
+    dialogRef.afterClosed().subscribe((d) => {
+      console.log("d", d)
+    })
+  }
 
   ngOnInit() {
+    this.isReviewer = this.configService.userRoles!.has('content_reviewer')
     this.isNotEmbed = !(
       window.location.href.includes('/embed/') ||
       this.activatedRoute.snapshot.queryParams.embed === 'true'
@@ -72,7 +93,7 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.isTypeOfCollection = this.activatedRoute.snapshot.queryParams.collectionType ? true : false
     this.screenSizeSubscription = this.isLtMedium$.subscribe(isSmall => {
       // this.sideNavBarOpened = !isSmall
-      this.sideNavBarOpened = isSmall ? false : false
+      this.sideNavBarOpened = isSmall ? false : true
       this.mode = isSmall ? 'over' : 'side'
     })
     this.resourceChangeSubscription = this.dataSvc.changedSubject.subscribe(_ => {
@@ -136,7 +157,8 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   toggleSideBar() {
-    this.sideNavBarOpened = !this.sideNavBarOpened
+    this.sideNavBarOpened = true
+    // this.sideNavBarOpened = !this.sideNavBarOpened
   }
 
   minimizeBar() {

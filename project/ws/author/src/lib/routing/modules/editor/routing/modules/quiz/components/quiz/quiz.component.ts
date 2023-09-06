@@ -1,9 +1,10 @@
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core'
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, Input, Output, EventEmitter, OnChanges } from '@angular/core'
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
-import { map, mergeMap, tap, catchError } from 'rxjs/operators'
-import { forkJoin, of, Observable, Subscription } from 'rxjs'
+// import { map, mergeMap, tap, catchError } from 'rxjs/operators'
+import { map, mergeMap, catchError } from 'rxjs/operators'
+import { forkJoin, of, Observable, Subscription, EMPTY } from 'rxjs'
 import { MatDialog } from '@angular/material'
 import { ActivatedRoute, Router } from '@angular/router'
 
@@ -40,17 +41,15 @@ import { CONTENT_BASE_WEBHOST } from '@ws/author/src/lib/constants/apiEndpoints'
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
 import { FormGroup } from '@angular/forms'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
-import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper'
-
+import { isNumber } from 'lodash'
+// import { environment } from '../../../../../../../../../../../../../src/environments/environment'
 @Component({
   selector: 'ws-auth-quiz',
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.scss'],
-  providers: [QuizResolverService, {
-    provide: STEPPER_GLOBAL_OPTIONS, useValue: { displayDefaultIndicatorType: false },
-  }],
+  providers: [QuizResolverService, QuizStoreService],
 })
-export class QuizComponent implements OnInit, OnDestroy {
+export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   selectedQuizIndex!: number
   allContents: NSContent.IContentMeta[] = []
@@ -65,7 +64,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   disableCursor = false
   resourceType = ''
   isValid = true
-  currentStep = 1
+  currentStep = 2
   snackbarRef?: MatSnackBarRef<NotificationComponent>
   previewMode = false
   mimeTypeRoute: any
@@ -73,17 +72,34 @@ export class QuizComponent implements OnInit, OnDestroy {
   activeIndexSubscription?: Subscription
   questionsArr: any[] = []
   quizConfig!: any
+  quizData!: any
+  bucket: string = ''
+  validPercentage = false
+  resourceName!: string
   /**
    * reviwer and publisher cannot add or delete or edit quizs but can rearrange them
    */
+  isLoading = false
+  isEdited = false
   canEditJson = true
   mediumScreenSize = false
-  quizDuration!: string
+  quizDuration!: number
+  assessmentDuration: any
+  randomCount: any
+  passPercentage: any
+  isQuiz: string = ''
   mediumSizeBreakpoint$ = this.breakpointObserver
     .observe([Breakpoints.XSmall, Breakpoints.Small])
     .pipe(map((res: BreakpointState) => res.matches))
   mode$ = this.mediumSizeBreakpoint$.pipe(map(isMedium => (isMedium ? 'over' : 'side')))
   // @ViewChild(MatSidenavContainer) sidenavContainer: MatSidenavContainer;
+
+  @Input() isCollectionEditor = false
+  @Input() isSubmitPressed = false
+  @Output() data = new EventEmitter<string>()
+  @Input() callSave = false
+
+  @Input() isCreatorEnable = true
 
   constructor(
     private router: Router,
@@ -98,69 +114,328 @@ export class QuizComponent implements OnInit, OnDestroy {
     private uploadService: UploadService,
     private editorService: EditorService,
     private notificationSvc: NotificationService,
-    private authInitService: AuthInitService,
+    private initService: AuthInitService,
     private quizResolverSvc: QuizResolverService,
     private accessControl: AccessControlService,
-  ) { }
+  ) {
+
+    this.initService.uploadMessage.subscribe(
+      (data: any) => {
+        if (data !== 'save') {
+          this.save()
+        }
+      })
+    this.initService.updateAssessmentMessage.subscribe(
+      (data: any) => {
+        if (data) {
+          this.metaContentService.currentContent = data.identifier
+          console.log("data: ", data)
+          this.ngOnInit()
+        }
+      })
+    this.initService.isAssessmentOrQuizMessage.subscribe(
+      (data: any) => {
+        if (data == false) {
+          this.isQuiz = 'true'
+        } else {
+          this.isQuiz = 'false'
+        }
+      })
+  }
 
   ngOnDestroy() {
     this.cdr.detach()
+    if (this.activeIndexSubscription) {
+      this.activeIndexSubscription.unsubscribe()
+    }
+    if (this.activeContentSubscription) {
+      this.activeContentSubscription.unsubscribe()
+    }
   }
+
+  // ngOnInit() {
+  //   this.showSettingButtons = this.accessControl.rootOrg === 'client1'
+  //   if (this.activateRoute.parent && this.activateRoute.parent.parent) {
+  //     this.activateRoute.parent.parent.data.subscribe(v => {
+  //       let courseChildren = v.contents[0].content.children
+  //       // Children
+  //       const firstLevelChilds = courseChildren.filter((item: any) => {
+  //         return item.category === 'Collection'
+  //       })
+  //       // find assements
+  //       let firstLevelchildArray: any = []
+
+  //       firstLevelChilds.map((item: any) => {
+
+  //         firstLevelchildArray = firstLevelchildArray.concat(item.children)
+  //       })
+  //       courseChildren = courseChildren.concat(firstLevelchildArray)
+
+  //       // Children
+  //       if (courseChildren) {
+  //         courseChildren.forEach((element: NSContent.IContentMeta) => {
+  //           if (element.mimeType === 'application/quiz') {
+  //             // do a get for the data
+  //             this.allContents.push(element)
+
+  //             this.editorService.getDataForContent(element.identifier).subscribe(data => {
+  //               v.contents = data
+
+  //               this.quizStoreSvc.collectiveQuiz[element.identifier] = v.contents[0].data
+  //                 ? v.contents[0].data.questions
+  //                 : []
+
+  //               this.canEditJson = this.quizResolverSvc.canEdit(v.contents[0].content)
+  //               this.resourceType = v.contents[0].content.categoryType || 'Quiz'
+  //               this.quizDuration = v.contents[0].content.duration || 300
+  //               this.questionsArr =
+  //                 this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier] || []
+  //               this.contentLoaded = true
+  //             }
+  //             )
+
+  //           }
+  //         })
+
+  //       }
+  //       // this.canEditJson = this.quizResolverSvc.canEdit(v.contents[0].content)
+  //       // this.resourceType = v.contents[0].content.categoryType || 'Quiz'
+  //       // this.quizDuration = v.contents[0].content.duration || 300
+  //       // this.questionsArr =
+  //       //   this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier] || []
+  //       this.contentLoaded = true
+
+  //       if (!this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier]) {
+  //         this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier] = []
+  //       }
+  //     })
+  //   }
+  //   this.allLanguages = this.authInitService.ordinals.subTitles
+  //   this.loaderService.changeLoadState(true)
+  //   this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
+  //   this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
+  //     this.sideNavBarOpened = !isLtMedium
+  //     this.mediumScreenSize = isLtMedium
+  //     if (isLtMedium) {
+  //       this.showContent = false
+  //     } else {
+  //       this.showContent = true
+  //     }
+  //   })
+  //   // selected quiz index
+  //   this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
+  //     this.selectedQuizIndex = index
+  //   })
+  //   // active lex id
+  //   this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
+  //     if (!this.quizStoreSvc.collectiveQuiz[id]) {
+  //       this.quizStoreSvc.collectiveQuiz[id] = []
+  //     }
+  //     this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
+  //     this.currentId = id
+  //     this.quizStoreSvc.currentId = id
+  //     this.quizStoreSvc.changeQuiz(0)
+  //   })
+  // }
+
+  /**
+   * IGOT Reference of reading
+   * https://aastrika-sb.idc.tarento.com/assets/public/public/do_1133575688784117761150
+   * /artifact/do_1133575688784117761150_1630583149734_quiz.json
+   */
 
   ngOnInit() {
-    if (this.activateRoute.parent && this.activateRoute.parent.parent) {
-      this.activateRoute.parent.parent.data.subscribe(v => {
-        if (v.contents && v.contents.length) {
-          this.allContents.push(v.contents[0].content)
-          this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier] = v.contents[0].data
-            ? v.contents[0].data.questions
-            : []
-          this.canEditJson = this.quizResolverSvc.canEdit(v.contents[0].content)
-          this.resourceType = v.contents[0].content.categoryType || 'Quiz'
-          this.quizDuration = v.contents[0].content.duration || 300
-          this.questionsArr =
-            this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier] || []
-          this.contentLoaded = true
+    (async () => {
+      this.showSettingButtons = true
+      this.isLoading = true
+      // console.log('kk', JSON.parse(sessionStorage.assessment))
+      const code = sessionStorage.getItem('assessment') || null
+      this.isQuiz = sessionStorage.getItem('quiz') || ''
+
+
+      this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
+
+        if (code) {
+          this.loaderService.changeLoad.next(false)
+          this.isEdited = true
+          this.metaContentService.currentContent = JSON.parse(code)
+        } else {
+          this.loaderService.changeLoad.next(false)
+          this.metaContentService.currentContent = id
         }
-        if (!this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier]) {
-          this.quizStoreSvc.collectiveQuiz[v.contents[0].content.identifier] = []
+        this.allLanguages = this.initService.ordinals.subTitles
+
+        this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
+        this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
+          this.sideNavBarOpened = !isLtMedium
+          this.mediumScreenSize = isLtMedium
+          if (isLtMedium) {
+            this.showContent = false
+          } else {
+            this.showContent = true
+          }
+        })
+
+        if (this.activateRoute.parent && this.activateRoute.parent.parent) {
+          this.activateRoute.parent.parent.data.subscribe(v => {
+            // tslint:disable-next-line:no-console
+            console.log(v)
+            this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(async newData => {
+              // const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
+
+              let quizContent = await this.editorService.readcontentV3(this.metaContentService.currentContent).toPromise()
+              this.resourceName = quizContent ? quizContent.name : 'Resource'
+              console.log("quizContent", quizContent, this.metaContentService.currentContent, this.resourceName)
+              // console.log(quizContent)
+              if (quizContent && quizContent.mimeType === 'application/json') {
+                const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
+                  this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({} as any))
+                fileData.subscribe(jsonResponse => {
+                  // this.isLoading = false
+                  //console.log('jsonResponse ', jsonResponse)
+                  if (jsonResponse && Object.keys(jsonResponse).length > 1) {
+                    if (v.contents && v.contents.length) {
+                      if (jsonResponse) {
+                        v.contents[0].data = jsonResponse
+                        //this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
+                        //this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
+                        if (jsonResponse.passPercentage >= 0) {
+                          this.validPercentage = true
+                        }
+                        this.assessmentDuration = (jsonResponse.timeLimit) / 60
+                        this.passPercentage = jsonResponse.passPercentage
+                        this.randomCount = jsonResponse.randomCount
+                      }
+                      this.allContents.push(v.contents[0].content)
+                      if (v.contents[0].data) {
+                        this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data.questions
+                      } else if (newData[0] && newData[0].data && newData[0].data.questions) {
+                        this.quizStoreSvc.collectiveQuiz[id] = newData[0].data.questions
+                      } else {
+                        this.quizResolverSvc.getUpdatedData(id).subscribe(updatedData => {
+                          // this.isLoading = false
+                          if (updatedData && updatedData[0]) {
+                            this.quizStoreSvc.collectiveQuiz[id] = updatedData[0].data.questions
+                            // need to arrange
+                            this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+                            this.resourceType = quizContent.categoryType || 'Assessment'
+                            // this.timeLimit = quizContent.duration || '300'
+                            // this.passPercentage = '50'
+                            // this.quizStoreSvc.assessmentDuration = jsonResponse.timeLimit
+                            // this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
+                            this.questionsArr =
+                              this.quizStoreSvc.collectiveQuiz[id] || []
+                            this.contentLoaded = true
+                            this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
+                            this.currentId = id
+                            this.quizStoreSvc.currentId = id
+                            this.quizStoreSvc.changeQuiz(0)
+                            // need to re-arrange
+                          }
+                        })
+                        this.quizStoreSvc.collectiveQuiz[id] = []
+                      }
+
+                      // this.quizStoreSvc.collectiveQuiz[id] = v.contents[0].data
+                      //   ? v.contents[0].data.questions
+                      //   : []
+                      // tslint:disable-next-line:no-console
+                      console.log(quizContent)
+                      this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+                      this.resourceType = quizContent.categoryType || 'Assessment'
+                      this.quizDuration = quizContent.duration
+                      this.questionsArr =
+                        this.quizStoreSvc.collectiveQuiz[id] || []
+                      this.contentLoaded = true
+                    }
+                    if (!this.quizStoreSvc.collectiveQuiz[id]) {
+                      this.quizStoreSvc.collectiveQuiz[id] = []
+                    }
+                  } else {
+                    // this.isLoading = false
+                    this.assessmentDuration = ''
+                    this.passPercentage = ''
+                    this.randomCount = ''
+                    this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
+                    this.resourceType = quizContent.categoryType || 'Assessment'
+                    this.quizDuration = quizContent.duration
+                    this.questionsArr =
+                      this.quizStoreSvc.collectiveQuiz[id] || []
+                    this.contentLoaded = true
+                    if (!this.quizStoreSvc.collectiveQuiz[id]) {
+                      this.quizStoreSvc.collectiveQuiz[id] = []
+                    }
+                  }
+
+                })
+              }
+
+            })
+          })
+
+          // selected quiz index
+          this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
+            this.selectedQuizIndex = index
+            // this.isLoading = false
+          })
+          // active lex id
+          if (!this.quizStoreSvc.collectiveQuiz[id]) {
+            this.quizStoreSvc.collectiveQuiz[id] = []
+          }
+          this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
+          this.currentId = id
+          this.quizStoreSvc.currentId = id
+          this.quizStoreSvc.changeQuiz(0)
+          setTimeout(() => {
+            this.isLoading = false
+          }, 500)
         }
       })
-    }
-    this.allLanguages = this.authInitService.ordinals.subTitles
-    this.loaderService.changeLoadState(true)
-    this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
-    this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
-      this.sideNavBarOpened = !isLtMedium
-      this.mediumScreenSize = isLtMedium
-      if (isLtMedium) {
-        this.showContent = false
+    })()
+  }
+  addTodo(event: any, field: string) {
+    const meta: any = {}
+    if (field === 'passPercentage') {
+      meta['passPercentage'] = event
+      this.passPercentage = event
+      if (event >= 0) {
+        this.validPercentage = true
       } else {
-        this.showContent = true
+        this.validPercentage = false
       }
-    })
-    // selected quiz index
-    this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
-      this.selectedQuizIndex = index
-    })
-    // active lex id
-    this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
-      if (!this.quizStoreSvc.collectiveQuiz[id]) {
-        this.quizStoreSvc.collectiveQuiz[id] = []
+      if (event === null) {
+        this.validPercentage = false
       }
-      this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
-      this.currentId = id
-      this.quizStoreSvc.currentId = id
-      this.quizStoreSvc.changeQuiz(0)
-    })
+      this.quizStoreSvc.hasChanged = true
+    } else {
+      if (field === 'randomCount') {
+        meta['randomCount'] = event
+        this.randomCount = event
+        this.quizStoreSvc.hasChanged = true
+      } else {
+        meta['assessmentDuration'] = event
+        this.assessmentDuration = event
+        this.quizStoreSvc.hasChanged = true
+      }
+
+    }
+    this.metaContentService.setUpdatedMeta(meta, this.currentId, true)
   }
 
-  customStepper(step: number) {
-    // if (step === 1) {
-    //   this.disableCursor = true
-    // } else {
-    this.currentStep = step
+  ngOnChanges() {
+    // if (this.callSave) {
+    //   this.save()
     // }
+    this.assessmentDuration = ''
+    this.passPercentage = ''
+    this.randomCount = ''
+  }
+  customStepper(step: number) {
+    if (step === 1) {
+      this.disableCursor = true
+    } else {
+      this.currentStep = step
+    }
   }
 
   changeContent(data: NSContent.IContentMeta) {
@@ -228,60 +503,171 @@ export class QuizComponent implements OnInit, OnDestroy {
   }
 
   triggerSave(meta: NSContent.IContentMeta, id: string) {
-    const requestBody: NSApiRequest.IContentUpdate = {
-      hierarchy: {},
-      nodesModified: {
-        [id]: {
-          isNew: false,
-          root: true,
-          metadata: meta,
-        },
-      },
+    // const requestBody: NSApiRequest.IContentUpdate = {
+    //   hierarchy: { },
+    //   nodesModified: {
+    //     [id]: {
+    //       isNew: false,
+    //       root: true,
+    //       metadata: meta,
+    //     },
+    //   },
+    // }
+
+    // return this.editorService
+    //   .updateContent(requestBody)
+    //   .pipe(tap(() => this.metaContentService.resetOriginalMeta(meta, id)))
+    // tslint:disable-next-line:no-console
+    console.log(meta, id)
+    if (meta && id) {
+      this.metaContentService.setUpdatedMeta(meta, id)
+      //this.data.emit('save')
+      let requestBody = {
+        request: {
+          content: meta,
+        }
+      }
+      // tslint:disable-next-line:no-console
+      console.log(requestBody)
+      this.editorService.updateNewContentV3(requestBody, this.currentId).subscribe(
+        (data: any) => {
+          // tslint:disable-next-line:no-console
+          console.log(data)
+        })
     }
-    return this.editorService
-      .updateContent(requestBody)
-      .pipe(tap(() => this.metaContentService.resetOriginalMeta(meta, id)))
+    return of({})
   }
 
+  generateUrl(oldUrl: any) {
+    // @ts-ignore: Unreachable code error
+    let bucket = window["env"]["azureBucket"]
+    if (oldUrl.includes(bucket)) {
+      return oldUrl
+    }
+    // const chunk = oldUrl.split('/')
+    // const newChunk = environment.azureHost.split('/')
+    // const newLink = []
+    // for (let i = 0; i < chunk.length; i += 1) {
+    //   if (i === 2) {
+    //     newLink.push(newChunk[i])
+    //   } else if (i === 3) {
+    //     newLink.push(environment.azureBucket)
+    //   } else {
+    //     newLink.push(chunk[i])
+    //   }
+    // }
+    // const newUrl = newLink.join('/')
+    // return newUrl
+  }
+
+  // wrapperForTriggerSave() {
+  //   this.loaderService.changeLoad.next(true)
+  //   const updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+
+  //   const hasTimeChanged =
+  //     (this.metaContentService.upDatedContent[this.currentId] || { }).duration &&
+  //     this.quizDuration !== this.metaContentService.upDatedContent[this.currentId].duration
+  //   const doUploadJson = this.quizStoreSvc.hasChanged || hasTimeChanged
+  //   if (!(this.metaContentService.getUpdatedMeta(this.currentId) || { }).duration) {
+  //     this.metaContentService.setUpdatedMeta({ duration: this.quizDuration } as any, this.currentId)
+  //   }
+  //   return (doUploadJson
+  //     ? this.triggerUpload(JSON.parse(JSON.stringify(updatedQuizData)))
+  //     : of({ } as any)
+  //   ).pipe(
+  //     mergeMap(v => {
+  //       const updatedMeta = JSON.parse(
+  //         JSON.stringify(this.metaContentService.upDatedContent[this.currentId] || { }),
+  //       )
+  //       const check = this.resourceType === ASSESSMENT ? v.length && v[1] && v[1].code : true
+  //       if (v && v[0] && v[0].code && check) {
+  //         updatedMeta.artifactUrl = (v[0].authArtifactURL || v[0].artifactURL).replace(/%2F/g, '/')
+  //         this.quizDuration = this.metaContentService.getUpdatedMeta(this.currentId).duration
+  //         updatedMeta.downloadUrl = v[0].downloadURL.replace(/%2F/g, '/')
+  //         this.quizStoreSvc.hasChanged = false
+  //       }
+  //       return this.triggerSave(updatedMeta, this.currentId)
+  //     }),
+  //   )
+  // }
+
   wrapperForTriggerSave() {
-    this.loaderService.changeLoad.next(true)
-    const updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+    this.loaderService.changeLoad.next(false)
+
+    if (this.isEdited) {
+      this.currentId = this.metaContentService.parentContent
+    }
+    //let updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+    let updatedQuizData
+    if (!updatedQuizData) {
+      this.currentId = this.metaContentService.currentContent
+      updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+      if (!updatedQuizData) {
+        this.currentId = this.metaContentService.parentContent
+        updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+      }
+    }
+    this.currentId = this.metaContentService.currentContent
     const hasTimeChanged =
       (this.metaContentService.upDatedContent[this.currentId] || {}).duration &&
       this.quizDuration !== this.metaContentService.upDatedContent[this.currentId].duration
+
     const doUploadJson = this.quizStoreSvc.hasChanged || hasTimeChanged
+
     if (!(this.metaContentService.getUpdatedMeta(this.currentId) || {}).duration) {
       this.metaContentService.setUpdatedMeta({ duration: this.quizDuration } as any, this.currentId)
     }
     return (doUploadJson
       ? this.triggerUpload(JSON.parse(JSON.stringify(updatedQuizData)))
       : of({} as any)
-    ).pipe(
-      mergeMap(v => {
-        const updatedMeta = JSON.parse(
-          JSON.stringify(this.metaContentService.upDatedContent[this.currentId] || {}),
-        )
-        const check = this.resourceType === ASSESSMENT ? v.length && v[1] && v[1].code : true
-        if (v && v[0] && v[0].code && check) {
-          updatedMeta.artifactUrl = (v[0].authArtifactURL || v[0].artifactURL).replace(/%2F/g, '/')
-          this.quizDuration = this.metaContentService.getUpdatedMeta(this.currentId).duration
-          updatedMeta.downloadUrl = v[0].downloadURL.replace(/%2F/g, '/')
-          this.quizStoreSvc.hasChanged = false
-        }
-        return this.triggerSave(updatedMeta, this.currentId)
-      }),
+      // ).pipe(map(v => v.result))
+    ).pipe(mergeMap(v => {
+      // tslint:disable-next-line:no-console
+      console.log(v)
+      // tslint:disable-next-line: no-parameter-reassignment
+      v = v[0].result || v[0]
+      this.showNotification(Notify.SAVE_SUCCESS)
+      const updatedMeta = this.metaContentService.upDatedContent[this.currentId] || {}
+      // const check = this.resourceType === ASSESSMENT ? v.length && v[1] && v[1].code : true
+      // if (v && v[0] && v[0].code && check) {
+      if (v && (v.artifactUrl || v.content_url)) {
+        updatedMeta.artifactUrl = this.generateUrl(v.authArtifactUrl || v.artifactUrl)
+        updatedMeta.versionKey = v.versionKey
+        // this.quizDuration = this.metaContentService.getUpdatedMeta(this.currentId).duration
+        updatedMeta.downloadUrl = this.generateUrl(v.content_url)
+        this.quizStoreSvc.hasChanged = false
+        // this.editorService.readContentV2(this.currentId).subscribe(resData => {
+        //   this.metaContentService.resetOriginalMeta(resData, this.currentId)
+        //   this.metaContentService.resetVersionKey(resData.versionKey, resData.identifier)
+        //   this.loaderService.changeLoad.next(true)
+        // }, () => {
+        //   this.loaderService.changeLoad.next(true)
+        //   this.snackBar.open('Error Occured! Please refresh the page.')
+        // })
+        // this.metaContentService.setUpdatedMeta(updatedMeta, this.currentId)
+        // tslint:disable-next-line:no-console
+        console.log(updatedMeta, this.currentId)
+        this.editorService.readContentV2(this.currentId).subscribe(resData => {
+          updatedMeta["versionKey"] = resData.versionKey
+          updatedMeta["duration"] = isNumber(this.assessmentDuration) ?
+            (this.assessmentDuration * 60).toString() : this.assessmentDuration
+          return this.triggerSave(updatedMeta, this.currentId)
+        })
+      }
+      return EMPTY
+
+      // }
+    })
     )
   }
 
-  save(next?: string) {
+  save() {
     this.canValidate = true
-    if (this.questionsArr.length === 0) {
-      this.questionsArr = this.quizStoreSvc.collectiveQuiz[this.currentId]
-    }
     const hasMinLen = (this.resourceType !== ASSESSMENT && this.questionsArr.length)
       || (this.resourceType === ASSESSMENT && this.questionsArr.length >= this.quizConfig.minQues)
-    const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || {}).length
-      || this.quizStoreSvc.hasChanged
+    // const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || { }).length
+    //   || this.quizStoreSvc.hasChanged
+    const needSave = this.quizStoreSvc.hasChanged
     if (hasMinLen && needSave) {
       if (this.canEditJson) {
         this.checkValidity()
@@ -293,9 +679,6 @@ export class QuizComponent implements OnInit, OnDestroy {
             this.canValidate = false
             this.loaderService.changeLoad.next(false)
             this.showNotification(Notify.SAVE_SUCCESS)
-            if (next) {
-              this.action(next)
-            }
           },
           () => {
             this.canValidate = false
@@ -323,17 +706,44 @@ export class QuizComponent implements OnInit, OnDestroy {
     }
   }
 
+  // uploadJson(array: any[], fileName: string) {
+  //   this.quizDuration = this.metaContentService.getUpdatedMeta(this.currentId).duration
+  //   const quizData = {
+  //     timeLimit: this.quizDuration,
+  //     isAssessment: this.resourceType === ASSESSMENT,
+  //     questions: array,
+  //   }
+  //   // const blob = new Blob([JSON.stringify(quizData, null, 2)], { type: 'application/json' })
+  //   // const formdata = new FormData()
+  //   // formdata.append('content', blob)
+  //   return this.uploadService.encodedUpload(quizData, fileName, {
+  //     contentId: this.currentId,
+  //     contentType: CONTENT_BASE_WEBHOST,
+  //   })
+  // }
+
   uploadJson(array: any[], fileName: string) {
-    this.quizDuration = this.metaContentService.getUpdatedMeta(this.currentId).duration
+    // tslint:disable-next-line:no-console
+    console.log(this.assessmentDuration, this.passPercentage)
+    this.quizDuration = (this.metaContentService.getUpdatedMeta(this.currentId).duration &&
+      this.metaContentService.getUpdatedMeta(this.currentId).duration !== '0') ?
+      this.metaContentService.getUpdatedMeta(this.currentId).duration : this.assessmentDuration
     const quizData = {
-      timeLimit: this.quizDuration,
-      isAssessment: this.resourceType === ASSESSMENT,
+      // tslint:disable-next-line: prefer-template
+      //timeLimit: parseInt(this.quizDuration + '', 10) || 300
+      timeLimit: (this.assessmentDuration) * 60,
+      //assessmentDuration: (this.assessmentDuration) * 60 || '300',
+      passPercentage: this.passPercentage,
+      isAssessment: this.isQuiz === '' ? true : false,
+      randomCount: this.randomCount || this.questionsArr.length,
       questions: array,
     }
-    // const blob = new Blob([JSON.stringify(quizData, null, 2)], { type: 'application/json' })
-    // const formdata = new FormData()
-    // formdata.append('content', blob)
-    return this.uploadService.encodedUpload(quizData, fileName, {
+    //console.log(this.resourceType, this.resourceType === ASSESSMENT)
+    //console.log(quizData)
+    const blob = new Blob([JSON.stringify(quizData, null, 2)], { type: 'application/json' })
+    const formdata = new FormData()
+    formdata.append('content', blob)
+    return this.uploadService.encodedUploadAWS(formdata, fileName, {
       contentId: this.currentId,
       contentType: CONTENT_BASE_WEBHOST,
     })
@@ -388,7 +798,7 @@ export class QuizComponent implements OnInit, OnDestroy {
         }
       })
     })
-    // console.log(dataWithAns, dataWithOutAns)
+    this.resourceType = this.metaContentService.getUpdatedMeta(this.currentId).categoryType
     const uploadData = this.resourceType === ASSESSMENT ? dataWithOutAns : dataWithAns
     return forkJoin([
       this.uploadJson(
@@ -403,9 +813,6 @@ export class QuizComponent implements OnInit, OnDestroy {
 
   action(type: string) {
     switch (type) {
-      case 'back':
-        this.currentStep = 1
-        break
       case 'next':
         this.currentStep += 1
         break
@@ -414,9 +821,6 @@ export class QuizComponent implements OnInit, OnDestroy {
         break
       case 'save':
         this.save()
-        break
-      case 'saveAndNext':
-        this.save('next')
         break
       case 'push':
         this.takeAction()
@@ -434,16 +838,13 @@ export class QuizComponent implements OnInit, OnDestroy {
             if (this.allContents.length) {
               this.metaContentService.changeActiveCont.next(this.allContents[0].identifier)
             } else {
-              this.router.navigateByUrl('/author/cbp')
+              this.router.navigateByUrl('/author/home')
             }
           }
         })
         break
       case 'close':
-        this.router.navigateByUrl('/author/cbp')
-        break
-      case 'fulls':
-        this.fullScreenToggle()
+        this.router.navigateByUrl('/author/home')
         break
     }
   }
@@ -487,7 +888,7 @@ export class QuizComponent implements OnInit, OnDestroy {
             if (this.allContents.length) {
               this.metaContentService.changeActiveCont.next(this.allContents[0].identifier)
             } else {
-              this.router.navigateByUrl('/author/cbp')
+              this.router.navigateByUrl('/author/home')
             }
           },
           () => {
@@ -672,7 +1073,7 @@ export class QuizComponent implements OnInit, OnDestroy {
           if (this.allContents.length) {
             this.metaContentService.changeActiveCont.next(this.allContents[0].identifier)
           } else {
-            this.router.navigateByUrl('/author/cbp')
+            this.router.navigateByUrl('/author/home')
           }
         },
         error => {
@@ -768,24 +1169,5 @@ export class QuizComponent implements OnInit, OnDestroy {
         this.metaContentService.originalContent[this.currentId].creatorContacts.find(v => v.id === this.accessControl.userId)
       )
   }
-  fullScreenToggle() {
-    const doc: any = document
-    // const elm: any = doc.getElementById('auth-quiz')
-    let elm: any = doc.getElementById('auth-quiz')
-    if (!elm) {
-      elm = doc.getElementById('edit-meta')
-    }
-    if (!elm) {
-      elm = doc.getElementById('auth-root')
-    }
-    if (elm.requestFullscreen) {
-      !doc.fullscreenElement ? elm.requestFullscreen() : doc.exitFullscreen()
-    } else if (elm.mozRequestFullScreen) {
-      !doc.mozFullScreen ? elm.mozRequestFullScreen() : doc.mozCancelFullScreen()
-    } else if (elm.msRequestFullscreen) {
-      !doc.msFullscreenElement ? elm.msRequestFullscreen() : doc.msExitFullscreen()
-    } else if (elm.webkitRequestFullscreen) {
-      !doc.webkitIsFullscreen ? elm.webkitRequestFullscreen() : doc.webkitCancelFullscreen()
-    }
-  }
+  // fullScreenToggle() { }
 }

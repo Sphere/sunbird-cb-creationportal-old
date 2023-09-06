@@ -115,12 +115,12 @@ export class ContentStripV2Component implements OnInit {
       }),
     })
 
-    this.filteredOptions$ = this.keywordsCtrl.valueChanges.pipe(
-      startWith(this.keywordsCtrl.value),
-      debounceTime(500),
-      distinctUntilChanged(),
-      switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
-    )
+    // this.filteredOptions$ = this.keywordsCtrl.valueChanges.pipe(
+    //   startWith(this.keywordsCtrl.value),
+    //   debounceTime(500),
+    //   distinctUntilChanged(),
+    //   switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
+    // )
 
     this.subscription = (this.form.controls.request.get(
       'ids',
@@ -363,7 +363,7 @@ export class ContentStripV2Component implements OnInit {
       },
       widgetType: 'element',
       widgetSubType: 'elementHtml',
-      widgetHostClass: 'mat-elevation-z4',
+      widgetHostClass: '',
       widgetHostStyle: {},
       widgetInstanceId: '',
     }

@@ -1,6 +1,7 @@
 import { NSContent } from './content'
 
 export interface ISearchContent {
+  id: string
   locale: string
   subTitle: string
   sourceName: string
@@ -38,6 +39,13 @@ export interface ISearchContent {
   category: string
   categoryType: string
   versionDate: string
+  icon: string
+  backgroundColor: string
+  color: string
+  message: string
+  paddings: any
+  cert_upload: string
+
 }
 
 export interface ISearchResult {

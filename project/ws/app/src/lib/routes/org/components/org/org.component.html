@@ -1,0 +1,127 @@
+<div *ngIf="currentOrgData">
+  <div *ngIf="currentOrgData?.sourceName === 'Indian Nursing Council'" id="navy-blue-bg"
+    [ngClass]="{'mb-5': currentOrgData?.sourceName === 'Indian Nursing Council'}">
+    <div class="px-4 sm:px-20 md:px-20 xl:px-40 md:py-5  flex flex-middle main"
+      *ngIf="currentOrgData?.sourceName === 'Indian Nursing Council'">
+      <img src="../../../cbp-assets/logos/inc-logo.png" class="inc-logo"
+        (click)="goToLink('https://indiannursingcouncil.org/')" /> <span class="ml-5 mylearning">{{currentOrgData.title
+        ||
+        "e-Learning for Maternal and Newborn Health Care" }}</span>
+    </div>
+  </div>
+  <div class="banner-container" *ngIf="currentOrgData?.sourceName !== 'Indian Nursing Council'">
+    <div class="default-banner">
+      <img src="/cbp-assets/images/Frame.svg" class="default-banner-img" *ngIf="!currentOrgData.bgImage" />
+    </div>
+    <img [src]="currentOrgData.bgImage" class="banner" *ngIf="currentOrgData.bgImage" />
+    <!-- <img [src]="currentOrgData?.logo" class="logo" /> -->
+    <div class="flex-auto mr-4">
+      <div class="image-outer">
+        <img [src]="currentOrgData?.logo " alt=" Logo" class="org-logo" *ngIf="currentOrgData.logo !== ''" />
+      </div>
+    </div>
+  </div>
+
+
+  <div [ngClass]="{'mt-5': currentOrgData?.sourceName === 'Indian Nursing Council','org-body': true}">
+    <p class="org-name mb-0">
+      {{currentOrgData.sourceName}}
+    </p>
+    <p class="org-desc mb-1" [innerHTML]="currentOrgData?.about">
+    </p>
+    <!-- <div class="org-details-block">
+      <img src="/cbp-assets/icons/ion_people-sharp.svg" />
+      <div class="org-details">Nationwide Quality Of Care Network</div>
+    </div> -->
+    <div class="org-details-block" *ngIf="courseCount&&courseCount.length">
+      <img src="/cbp-assets/icons/material-symbols_book-outline.svg">
+      <div class="org-details">
+        {{courseCount === 1 ? '1 Course offered': courseCount.length + ' Courses offered'}}
+      </div>
+    </div>
+    <!-- <div class="org-details-block">
+      <img src="/cbp-assets/icons/ph_medal.svg">
+      <div class="org-details">
+        12 Competencies offered
+      </div>
+    </div> -->
+  </div>
+  <div class="course-container">
+    <div class="w-100">
+      <div class="flex flex-middle border-top">
+        <span class="course-header" i18n>Courses</span>
+      </div>
+    </div>
+
+    <div class="mt-4 course-body" *ngIf="courseData">
+      <!-- <div> -->
+      <ng-container *ngFor="let widget of courseData.slice(0,cardLimit)">
+        <div class="card-standard-container mr-8 mb-6 1 cursor-pointer">
+          <a (click)="gotoOverview(widget.identifier)" class="rounded-t" role="link" aria-label="Content"
+            i18n-aria-label="Content | Click to view">
+            <div class="flex">
+              <img [src]="widget.thumbnail" [id]="'card_' + widget.identifier"
+                class="card-img no-prog ws-mat-primary-lite-background" [alt]="widget.name" />
+              <span class="img-overlay"></span>
+              <ng-container class="source-div mt-4">
+              </ng-container>
+              <div class="course-name">
+                {{ widget.name }}
+              </div>
+            </div>
+            <div>
+              <p class="by-org-name mb-1"> by {{currentOrgData.sourceName}}</p>
+            </div>
+            <!-- <div class="rating-block">
+                <div class="rating">{{rating}}
+                </div>
+                <button mat-icon-button [color]="color" *ngFor="let ratingId of ratingArr; index as i"
+                  [id]="'star_' + i" [matTooltip]="ratingId + 1" matTooltipPosition="above">
+                  <mat-icon>
+                    {{ showIcon(i) }}
+                  </mat-icon>
+                </button>
+
+              </div> -->
+            <div class="flex cne-container">
+              <!-- <div class="flex cne-block mr-1">
+                  <img src="/cbp-assets/icons/mdi_star-four-points-outline.svg">
+                  <p class="cne-content mb-0">32 CNE Points</p>
+                </div> -->
+              <p *ngIf="widget.issueCertification" class="certified-text">Certified</p>
+            </div>
+            <!-- <div class="border-block" *ngIf="cometencyData && cometencyData[0]">
+              <hr class="border-content">
+            </div>
+            <div class="competency-block" *ngIf="cometencyData && cometencyData[0]">
+              <img src="/cbp-assets/icons/ph_medal.svg">
+              <div>
+                <span>{{cometencyData[0]?.name}}, </span>
+                <ng-container *ngFor="let competency of cometencyData; let last = last;">
+                  <span *ngIf="competency.identifier==widget.identifier">{{competency.levels}}</span>
+                  <span *ngIf="!last && competency.identifier==widget.identifier"> </span>
+                </ng-container>
+              </div>
+            </div> -->
+
+          </a>
+        </div>
+
+      </ng-container>
+
+      <!-- </div> -->
+      <div class="w-100 load-more-block" *ngIf="courseData&&courseData.length > 5">
+        <!-- <a class="blue-link float-right cursor-pointer" (click)="showMoreCourses()" i18n>View all</a> -->
+        <button class="load-more" (click)="toggleCardLimit()" *ngIf="cardLimit === 5">Load More</button>
+        <button class="load-more" (click)="toggleCardLimit()" *ngIf="cardLimit !== 5">Load Less</button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+<div class="container" *ngIf="!currentOrgData">
+  <div class="centered-div">
+    <h3 class="mt-15">No org details found</h3>
+  </div>
+</div>

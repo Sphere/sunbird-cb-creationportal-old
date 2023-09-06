@@ -1,53 +1,163 @@
-<h2 mat-dialog-title i18n>Provide comments</h2>
-<mat-dialog-content>
-  <form [formGroup]="commentsForm">
-    <mat-form-field appearance="fill" class="width-1-1">
-      <textarea rows="3" matInput placeholder=" For eg. This content is submitted/accepted/rejected because..."
-        name="name" formControlName="comments" required></textarea>
-      <mat-error i18n *ngIf="showError(commentsForm.controls.comments)"
-        i18n="Comments Error|Explains Comments is mandatory field">
-        Comments is mandatory
-      </mat-error>
-    </mat-form-field>
-    <div class="mat-form-field" *ngIf="contentMeta && contentMeta.status != 'Draft' && contentMeta.status != 'Live'">
-      <label>
-        <b i18n="Action Label|Label which explains user to enter action">Action</b>
-      </label>
-      <mat-radio-group color="primary" formControlName="action" class="example-radio-group">
-        <mat-radio-button class="example-radio-button" [value]="'accept'" i18n>
-          Accept
-        </mat-radio-button>
-        <mat-radio-button class="example-radio-button" [value]="'reject'" i18n>
-          Reject
-        </mat-radio-button>
-      </mat-radio-group>
-      <div class="mat-form-field-appearance-fill" *ngIf="showError(commentsForm.controls.action)">
-        <div class="mat-form-field-subscript-wrapper mat-error" i18n>
-          Select Action
-        </div>
-      </div>
-    </div>
-    <div class="margin-top-s right-align">
-      <button cdkFocusInitial mat-dialog-close mat-raised-button i18n>Cancel</button>
-      <button class="margin-left-s" (click)="submitData()" mat-raised-button color="primary" i18n>
-        Proceed
+<mat-dialog-content *ngIf="contentMeta && contentMeta.reviewStatus === 'Reviewed'&&contentMeta.status == 'Review'">
+  <div style=" float: right;">
+    <mat-icon style="cursor: pointer;" mat-dialog-close mat-raised-button i18n>close</mat-icon>
+  </div>
+  <h2 class="text-bold">Publishing Course: {{contentMeta.name}}</h2>
+  <div *ngIf="qualityResponse" class="percentage-container">
+    <h4 class="percentage-text text-bold">Reviewer Checklist Score: <span [ngClass]="{
+  'green': getQualityPercent > 70,
+  'orange': getQualityPercent > 30 && getQualityPercent <= 70,
+  'red': getQualityPercent <= 30
+}">{{getQualityPercent}}%</span></h4>
+    <button title="View checklist" style="font-size: 14px !important;" class="view-info-btn" (click)="viewDetails()"
+      i18n>
+      <mat-icon>info</mat-icon>
+    </button>
+  </div>
+  <p class="publish-course-note">Note: Status of all the resources has to be live, before publishing the course</p>
+  <div style="float: right; margin-top: -42px;">
+    <button style="font-size: 14px !important;" class="margin-left-s
+                    mat-button-base save-btn-mt send-to-creator-link" (click)="refreshCourse()" mat-raised-button i18n>
+      Refresh Status <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  <div class="fixTableHead">
+    <table style="border: none;">
+      <thead>
+        <th *ngIf="isModule">Modules</th>
+        <th>Resources</th>
+        <th>Status</th>
+      </thead>
+      <tbody *ngFor="let course of contentMeta.children">
+        <tr>
+          <td *ngIf="course.children">
+            {{course.name}}
+          </td>
+          <td *ngIf="course.children">
+            <div *ngFor="let sub of course.children">
+              {{sub.name}}
+            </div>
+          </td>
+          <td *ngIf="course.children">
+            <div *ngFor="let sub of course.children">
+              {{sub.status}}
+            </div>
+          </td>
+          <td *ngIf="!course.children&&isModule"></td>
+          <td *ngIf="!course.children">{{course.name}}</td>
+          <td *ngIf="!course.children">{{course.status}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="margin-bottom-s margin-top-l">
+    <div style="float: left;">
+      <button mat-raised-button i18n class="save-btn-mt send-to-creator-link" (click)="moveCourseToDraft()"
+        color="#1C5D95" i18n>
+        Send to Creator’s draft
       </button>
     </div>
-  </form>
-  <ws-auth-status-track *ngIf="showNewFlow" [isDialog]="false" [content]="contentMeta"></ws-auth-status-track>
-  <div *ngIf="contentMeta && contentMeta.comments && contentMeta.comments.length && !showNewFlow">
-    <b i18n="History|History of Comments" i18n>History</b>
-    <mat-card *ngFor="let comment of history" class="example-container margin-10">
-      <mat-card-header>
-        <mat-icon class="avatar" mat-card-avatar>account_circle</mat-icon>
-        <mat-card-title>{{ comment.name }}</mat-card-title>
-        <mat-card-subtitle>{{ comment.date | date }}</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <p>
-          {{ comment.comment }}
-        </p>
-      </mat-card-content>
-    </mat-card>
+    <div style="float: right;">
+
+      <!-- <button i18n class="refresh-button margin-left-s
+          mat-button-base save-btn-mt publish-button" id="refresh" (click)="refreshCourse()">
+        Refresh Status
+        <mat-icon style="margin-top: 4px;">refresh</mat-icon>
+      </button> -->
+      <button class="margin-left-s
+          text-white ws-mat-primary-background  mat-button-base save-btn-mt publish-button"
+        (click)="click('publishResources'); showPublishResourceBtn=true" mat-raised-button i18n
+        [disabled]="showPublishResourceBtn">
+        Publish Resources
+      </button>
+      <button class="margin-left-s
+          text-white ws-mat-primary-background  mat-button-base save-btn-mt publish-button" style="margin-right: 10px;"
+        (click)="publishCourse()" mat-raised-button i18n [disabled]="!showPublishCBPBtn">
+        Publish Course
+      </button>
+    </div>
   </div>
+</mat-dialog-content>
+
+
+<mat-dialog-content *ngIf="contentMeta && contentMeta.reviewStatus == 'InReview' && contentMeta.status === 'Review'">
+  <div class="row">
+    <div style="float: left;">
+      <h2 mat-dialog-title i18n>Reviewing Course : {{contentMeta.name}}</h2>
+    </div>
+    <div style="float: right;">
+      <mat-icon style="cursor: pointer;" mat-dialog-close mat-raised-button i18n>close</mat-icon>
+    </div>
+
+  </div>
+
+  <form [formGroup]="commentsForm">
+    <mat-form-field appearance="none" class="width-1-1 comment-field"
+      [ngClass]="showError(commentsForm.controls.comments) ? 'borderRed' : ' '">
+      <textarea style="padding:10px" matInput placeholder="Provide Comments" name="name" formControlName="comments"
+        required></textarea>
+    </mat-form-field>
+    <mat-hint i18n class="margin-top-l margin-bottom-l">
+      For eg. this content is accepted/rejected because...
+    </mat-hint>
+    <mat-error i18n *ngIf="showError(commentsForm.controls.comments)"
+      i18n="Comments Error|Explains Comments is mandatory field">
+      Comment is mandatory
+    </mat-error>
+    <div class="margin-top-l margin-bottom-l">
+      <h3 i18n>
+        Note : Accepting a course will send it to the Publisher. Rejecting a course will send it back to the creators
+        drafts.
+      </h3>
+    </div>
+    <div>
+      <div class="margin-bottom-l" style="float: left;">
+        <button [disabled]="commentsForm?.invalid" class="text-white mat-button-base save-btn-mt send-back-button"
+          (click)="moveCourseToDraft()" mat-raised-button i18n>
+          Send back to Creators draft
+        </button>
+        <button [disabled]="commentsForm?.invalid" class="margin-left-l
+                  text-white ws-mat-primary-background  mat-button-base save-btn-mt publish-button"
+          style="margin-right: 10px;" (click)="submitData()" mat-raised-button i18n>
+          Accept and send to publisher
+        </button>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-content
+  *ngIf="(contentMeta && contentMeta.reviewStatus !== 'Reviewed' || courseEdited === true ||contentMeta.status !== 'Review') && contentMeta.status === 'Draft'">
+  <h2 mat-dialog-title i18n>Send for review</h2>
+  <form [formGroup]="commentsForm">
+    <mat-form-field appearance="none" class="width-1-1 comment-field"
+      [ngClass]="showError(commentsForm.controls.comments) ? 'borderRed' : ' '">
+      <textarea style="padding:10px" matInput placeholder="Provide Comments" name="name" formControlName="comments"
+        required></textarea>
+    </mat-form-field>
+    <mat-hint i18n class="margin-top-l margin-bottom-l">
+      For eg. this content is accepted/rejected because...
+    </mat-hint>
+    <mat-error i18n *ngIf="showError(commentsForm.controls.comments)"
+      i18n="Comments Error|Explains Comments is mandatory field">
+      Comment is mandatory
+    </mat-error>
+    <ws-auth-status-track *ngIf="showNewFlow" [isDialog]="false" [content]="contentMeta"></ws-auth-status-track>
+    <div>
+      <div class="margin-bottom-l margin-top-l" style="float: left;">
+        <button [disabled]="commentsForm?.invalid" class="button-style margin-left-s
+                    text-white ws-mat-primary-background  mat-button-base save-btn-mt publish-button"
+          (click)="submitData()" mat-raised-button i18n>
+          Send
+        </button>
+        <button mat-dialog-close
+          class="button-style margin-left-s text-white mat-button-base save-btn-mt send-back-button"
+          style="margin-right: 10px;" mat-raised-button i18n>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </form>
+
 </mat-dialog-content>

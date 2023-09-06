@@ -20,6 +20,7 @@ import {
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
   MatInputModule,
   MatFormFieldModule,
+  MatListModule,
 } from '@angular/material'
 import { BrowserModule, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
@@ -58,8 +59,10 @@ import { TncPublicResolverService } from './services/tnc-public-resolver.service
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { PublicReleaseModule } from './routes/public/public-release/public-about.module'
 import { AppTocResolverService } from '@ws/author'
+import { AuthInitService } from '../../project/ws/author/src/lib/services/init.service'
 // import { ServiceWorkerModule } from '@angular/service-worker'
 // import { environment } from '../environments/environment'
+import { OrgComponent } from '../../project/ws/app/src/lib/routes/org/components/org/org.component'
 
 @Injectable()
 export class HammerConfig extends GestureConfig {
@@ -93,6 +96,7 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     DialogConfirmComponent,
     LoginRootComponent,
     LoginRootDirective,
+    OrgComponent
   ],
   imports: [
     FormsModule,
@@ -108,6 +112,7 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     StickyHeaderModule,
     ErrorResolverModule,
     // Material Imports
+    MatListModule,
     MatSliderModule,
     MatButtonModule,
     MatCardModule,
@@ -173,6 +178,7 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     { provide: OverlayContainer, useClass: FullscreenOverlayContainer },
     { provide: HAMMER_GESTURE_CONFIG, useClass: HammerConfig },
     { provide: ErrorHandler, useClass: GlobalErrorHandlingService },
+    AuthInitService
   ],
 })
 export class AppModule { }

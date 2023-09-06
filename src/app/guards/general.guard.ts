@@ -3,10 +3,11 @@ import {
   ActivatedRouteSnapshot,
   CanActivate,
   Router,
-  RouterStateSnapshot,
+  // RouterStateSnapshot,
   UrlTree,
 } from '@angular/router'
-import { ConfigurationsService, AuthKeycloakService } from '../../../library/ws-widget/utils/src/public-api'
+// import { ConfigurationsService, AuthKeycloakService } from '../../../library/ws-widget/utils/src/public-api'
+import { ConfigurationsService } from '../../../library/ws-widget/utils/src/public-api'
 
 @Injectable({
   providedIn: 'root',
@@ -15,47 +16,52 @@ export class GeneralGuard implements CanActivate {
   constructor(
     private router: Router,
     private configSvc: ConfigurationsService,
-    private authSvc: AuthKeycloakService
+    // private authSvc: AuthKeycloakService
   ) { }
 
   async canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot,
+    // state: RouterStateSnapshot,
   ): Promise<boolean | UrlTree> {
     const requiredFeatures = (next.data && next.data.requiredFeatures) || []
     const requiredRoles = (next.data && next.data.requiredRoles) || []
-    return await this.shouldAllow<boolean | UrlTree>(state, requiredFeatures, requiredRoles)
+    // return await this.shouldAllow<boolean | UrlTree>(state, requiredFeatures, requiredRoles)
+    return await this.shouldAllow<boolean | UrlTree>(requiredFeatures, requiredRoles)
   }
 
   private async shouldAllow<T>(
-    state: RouterStateSnapshot,
+    // state: RouterStateSnapshot,
     requiredFeatures: string[],
     requiredRoles: string[],
   ): Promise<T | UrlTree | boolean> {
+    // const refAppend = `?ref=${encodeURIComponent(state.url)}`
+
     /**
      * Test IF User is authenticated
      */
-    if (!this.configSvc.isAuthenticated) {
-      let refAppend = ''
-      if (state.url) {
-        refAppend = `?ref=${encodeURIComponent(state.url)}`
-      }
-      // return this.router.parseUrl(`/login${refAppend}`)
 
-      let redirectUrl
-      if (refAppend) {
-        redirectUrl = document.baseURI + refAppend
-      } else {
-        redirectUrl = document.baseURI
-      }
+    // if (!this.configSvc.isAuthenticated) {
+    //   let refAppend = ''
+    //   if (state.url) {
+    //     refAppend = `?ref=${encodeURIComponent(state.url)}`
+    //   }
+    //   // return this.router.parseUrl(`/login${refAppend}`)
 
-      try {
-        Promise.resolve(this.authSvc.login('S', redirectUrl))
-        return true
-      } catch (e) {
-        return false
-      }
-    }
+    //   let redirectUrl
+    //   if (refAppend) {
+    //     redirectUrl = document.baseURI + refAppend
+    //   } else {
+    //     redirectUrl = document.baseURI
+    //   }
+
+    //   try {
+    //     Promise.resolve(this.authSvc.login('S', redirectUrl))
+    //     return true
+    //   } catch (e) {
+    //     return false
+    //   }
+    // }
+
     // If invalid user
     if (
       this.configSvc.userProfile === null &&
@@ -82,7 +88,7 @@ export class GeneralGuard implements CanActivate {
       // ) {
       //   return this.router.parseUrl(`/app/setup/home/lang`)
       // }
-      return this.router.parseUrl(`/app/tnc`)
+      // return this.router.parseUrl(`/app/tnc`)
     }
     /**
        * Test IF User updated the profile details

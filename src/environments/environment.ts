@@ -4,11 +4,18 @@
 
 export const environment: IEnvironment = {
   production: false,
-  sitePath: 'cbp_3000',
-  organisation: 'igot-karmayogi',
-  framework: 'igot',
+  sitePath: 'cbp-sphere.aastrika.org',
+  organisation: 'aastrika',
+  framework: 'test_fw_1',
   channelId: '0131397178949058560',
-  karmYogi: 'https://igot-sunbird.idc.tarento.com/',
+  // karmYogi: 'https://igot-sunbird.idc.tarento.com/',
+  karmYogi: 'https://cbp-sphere.aastrika.org/',
+  azureHost: 'https://sunbirdcontent-stage.s3-ap-south-1.amazonaws.com',
+  azureBucket: 'content',
+  azureOldHost: 'https://staas-bbs1.cloud.gov.in',
+  azureOldBuket: 'igot',
+  cbpPortal: 'https://cbp-sphere.aastrika.org/',
+  scromContentEndpoint: 'assets/public/content/html/',
 }
 interface IEnvironment {
   production: boolean
@@ -17,6 +24,13 @@ interface IEnvironment {
   framework: string
   channelId: string
   karmYogi: string,
+  azureHost: string
+  azureBucket: string
+  azureOldHost: string
+  azureOldBuket: string
+  cbpPortal: string
+  scromContentEndpoint: string
+  // portalRoles: string[]
 }
 
 /*

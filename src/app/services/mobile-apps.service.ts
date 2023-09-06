@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { AuthKeycloakService } from '@ws-widget/utils'
+// import { AuthKeycloakService } from '@ws-widget/utils'
 import { NsContent } from '../../../library/ws-widget/collection/src/public-api'
 // tslint:disable-next-line: max-line-length
 import {
@@ -9,10 +9,10 @@ import {
   GET_PLAYERCONTENT_JSON,
   GO_OFFLINE,
   IOS_OPEN_IN_BROWSER,
-  ISAUTHENTICATED_OUTGOING,
+  // ISAUTHENTICATED_OUTGOING,
   NAVIGATION_DATA_INCOMING,
-  SESSIONID_OUTGOING,
-  TOKEN_OUTGOING,
+  // SESSIONID_OUTGOING,
+  // TOKEN_OUTGOING,
 } from '../models/mobile-events.model'
 import { NavigationExternalService } from './navigation-external.service'
 interface IWindowMobileAppModified extends Window {
@@ -31,9 +31,9 @@ declare var window: IWindowMobileAppModified
 })
 export class MobileAppsService {
   constructor(
-    private authSvc: AuthKeycloakService,
+    // private authSvc: AuthKeycloakService,
     private navigateSvc: NavigationExternalService,
-  ) {}
+  ) { }
 
   init() {
     this.setupGlobalMethods()
@@ -41,8 +41,8 @@ export class MobileAppsService {
   }
 
   public simulateMobile() {
-    window.appRef = {}
-    window.webkit = {}
+    window.appRef = { }
+    window.webkit = { }
   }
 
   get isMobile(): boolean {
@@ -70,10 +70,10 @@ export class MobileAppsService {
     return false
   }
   goOffline() {
-    this.sendDataAppToClient(GO_OFFLINE, {})
+    this.sendDataAppToClient(GO_OFFLINE, { })
   }
   viewSettings() {
-    this.sendDataAppToClient(DISPLAY_SETTING, {})
+    this.sendDataAppToClient(DISPLAY_SETTING, { })
   }
   sendViewerData(viewerData: NsContent.IContent) {
     this.sendDataAppToClient(GET_PLAYERCONTENT_JSON, viewerData)
@@ -96,11 +96,11 @@ export class MobileAppsService {
     }
 
     // Incoming Requests with outgoing data
-    window.getToken = () => this.sendDataAppToClient(TOKEN_OUTGOING, this.authSvc.token)
-    window.getToken()
-    window.getSessionId = () => this.sendDataAppToClient(SESSIONID_OUTGOING, this.authSvc.sessionId)
-    window.isAuthenticated = () =>
-      this.sendDataAppToClient(ISAUTHENTICATED_OUTGOING, this.authSvc.isAuthenticated)
+    // window.getToken = () => this.sendDataAppToClient(TOKEN_OUTGOING, this.authSvc.token)
+    // window.getToken()
+    // window.getSessionId = () => this.sendDataAppToClient(SESSIONID_OUTGOING, this.authSvc.sessionId)
+    // window.isAuthenticated = () =>
+    //   this.sendDataAppToClient(ISAUTHENTICATED_OUTGOING, this.authSvc.isAuthenticated)
   }
 
   isFunctionAvailableInAndroid(functionName: string) {

@@ -1,24 +1,22 @@
 <section *ngIf="isNotEmbed">
   <viewer-viewer-top-bar *ngIf="fullScreenContainer" [forPreview]="forPreview" [frameReference]="fullScreenContainer"
-    (toggle)="toggleSideBar()">
+    (toggle)="toggleSideBar()" (fsState)="fullScreenState($event)" [screenContent]="content">
   </viewer-viewer-top-bar>
   <viewer-viewer-top-bar *ngIf="!fullScreenContainer" [forPreview]="forPreview" [frameReference]="fullScreenContainer"
-    (toggle)="toggleSideBar()">
+    (toggle)="toggleSideBar()" [screenContent]="content">
   </viewer-viewer-top-bar>
-  <mat-sidenav-container autosize class="viewer-sidenav-container">
-    <mat-sidenav [ngClass]="isTypeOfCollection?'viewer-sidenav':'viewer-sidenav-standalone'" position="end"
-      [opened]="sideNavBarOpened" [mode]="mode">
-      <mat-tab-group>
-        <mat-tab *ngIf="isTypeOfCollection" i18n-label label="Contents">
-          <viewer-viewer-toc [forPreview]="forPreview" (hidenav)="minimizeBar()">
-          </viewer-viewer-toc>
-        </mat-tab>
-        <mat-tab i18n-label label="Details">
-          <!-- <ws-widget-player-brief [forPreview]="forPreview" [content]="content"></ws-widget-player-brief> -->
-        </mat-tab>
-      </mat-tab-group>
-    </mat-sidenav>
+  <div class="flex review-block" *ngIf="isReviewer">
+    <h3 class="info-msg" i18n>
+      <img style="margin-right: 10px;" loading="lazy" src="\cbp-assets\icons\simple-icons_codereview.svg"
+        alt="clock"><span class="mode-block" style="vertical-align: super;" i18n>You
+        are in review mode</span>
+    </h3>
+    <!-- <mat-checkbox class="review-checkBox" style="margin-left: 10px" (change)="showReviewChecklist()">Mark
+      as
+      Reviewed</mat-checkbox> -->
+  </div>
 
+  <mat-sidenav-container autosize class="viewer-sidenav-container hello" style="margin: 0 50px;">
     <mat-sidenav-content class="sidenavContent" #scrollableContent>
       <section *ngIf="status === 'error'">
         <div *ngIf="errorWidgetData?.widgetData?.errorType" [wsResolverWidget]="errorWidgetData"></div>
@@ -67,7 +65,21 @@
       </section>
       <router-outlet (activate)="getContentData($event)"></router-outlet>
     </mat-sidenav-content>
+
+    <mat-sidenav [ngClass]="isTypeOfCollection?'viewer-sidenav':'viewer-sidenav-standalone'" position="end"
+      [opened]="sideNavBarOpened" [mode]="mode">
+      <!--<mat-tab-group>
+              <mat-tab *ngIf="isTypeOfCollection" i18n-label label="Contents"> -->
+      <viewer-viewer-toc [forPreview]="forPreview" (hidenav)="minimizeBar()">
+      </viewer-viewer-toc>
+      <!--</mat-tab>
+              <mat-tab i18n-label label="Details"> -->
+      <!-- <ws-widget-player-brief [forPreview]="forPreview" [content]="content"></ws-widget-player-brief> -->
+      <!--</mat-tab>
+            </mat-tab-group> -->
+    </mat-sidenav>
   </mat-sidenav-container>
+
 </section>
 <div class="full-height-width-iframe" *ngIf="!isNotEmbed">
   <router-outlet></router-outlet>

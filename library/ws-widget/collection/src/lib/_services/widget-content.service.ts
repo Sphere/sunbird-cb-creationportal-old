@@ -13,7 +13,10 @@ const PROTECTED_SLAG_V8 = '/apis/protected/v8'
 
 const API_END_POINTS = {
   CONTENT: `${PROTECTED_SLAG_V8}/content`,
-  AUTHORING_CONTENT: `/apis/authApi/hierarchy`,
+  // AUTHORING_CONTENT: `/apis/authApi/hierarchy`,
+  AUTHORING_CONTENT: (doId: string) => `/apis/authApi/content/v3/read/${doId}?mode=edit`,
+  AUTHORING_CONTENT_HIERARCHY: (doId: string) => `/apis/proxies/v8/action/content/v3/hierarchy/${doId}?mode=edit`,
+
   CONTENT_LIKES: `${PROTECTED_SLAG_V8}/content/likeCount`,
   SET_S3_COOKIE: `${PROTECTED_SLAG_V8}/content/setCookie`,
   SET_S3_IMAGE_COOKIE: `${PROTECTED_SLAG_V8}/content/setImageCookie`,
@@ -58,7 +61,13 @@ export class WidgetContentService {
       .pipe(retry(1))
   }
   fetchAuthoringContent(contentId: string): Observable<NsContent.IContent> {
-    const url = `${API_END_POINTS.AUTHORING_CONTENT}/${contentId}`
+    // const url = `${API_END_POINTS.AUTHORING_CONTENT}/${contentId}`
+    // return this.http.get<NsContent.IContent>(url).pipe(retry(1))
+    const url = `${API_END_POINTS.AUTHORING_CONTENT(contentId)}`
+    return this.http.get<NsContent.IContent>(url).pipe(retry(1))
+  }
+  fetchAuthoringContentHierarchy(contentId: string): Observable<NsContent.IContent> {
+    const url = `${API_END_POINTS.AUTHORING_CONTENT_HIERARCHY(contentId)}`
     return this.http.get<NsContent.IContent>(url).pipe(retry(1))
   }
   fetchMultipleContent(ids: string[]): Observable<NsContent.IContent[]> {
@@ -131,7 +140,13 @@ export class WidgetContentService {
     const url = API_END_POINTS.USER_CONTINUE_LEARNING
     return this.http.post<any>(url, content)
   }
-
+  fetchHierarchyContent(contentId: string): Observable<NsContent.IContent> {
+    const url = `/apis/proxies/v8/action/content/v3/hierarchy/${contentId}?hierarchyType=detail&mode=edit`
+    const apiData = this.http
+      .get<NsContent.IContent>(url)
+      .pipe(retry(1))
+    return apiData
+  }
   setS3Cookie(
     contentId: string,
     // _path: string,

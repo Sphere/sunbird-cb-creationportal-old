@@ -6,15 +6,13 @@ import { EditorSharedModule } from '../../../shared/shared.module'
 import { FileUploadComponent } from './components/file-upload/file-upload.component'
 import { UploadComponent } from './components/upload/upload.component'
 import { UploadRoutingModule } from './upload-routing.module'
-import { MatProgressBarModule } from '@angular/material'
-import { ProfanityPopUpComponent } from './components/profanity-popup/profanity-popup'
+import { MatSidenavModule } from '@angular/material'
 import { ProfanityService } from './services/profanity.service'
 
 @NgModule({
-  declarations: [UploadComponent, FileUploadComponent, ProfanityPopUpComponent],
-  exports: [FileUploadComponent, ProfanityPopUpComponent],
-  imports: [CommonModule, SharedModule, EditorSharedModule, UploadRoutingModule, AuthViewerModule, MatProgressBarModule],
-  entryComponents: [ProfanityPopUpComponent],
+  declarations: [UploadComponent, FileUploadComponent],
+  exports: [FileUploadComponent],
+  imports: [CommonModule, SharedModule, EditorSharedModule, UploadRoutingModule, AuthViewerModule, MatSidenavModule],
   providers: [ProfanityService],
 })
 export class UploadModule { }

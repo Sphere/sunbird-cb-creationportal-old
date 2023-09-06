@@ -238,6 +238,8 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
               .upload(form, { contentId: this.id, contentType: this.location })
               .subscribe(
                 data => {
+                  // if (data.code) {
+                  //   let url = data.artifactURL
                   if (data.result) {
                     let url = data.result.artifactUrl
                     if (!this.doRegex) {
@@ -315,6 +317,8 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
               .upload(form, { contentId: this.id, contentType: this.location })
               .subscribe(
                 data => {
+                  // if (data.code) {
+                  //   let url = data.artifactURL
                   if (data.result) {
                     let url = data.result.artifactUrl
                     if (this.doRegex) {

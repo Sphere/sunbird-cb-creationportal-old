@@ -1,8 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, Input, OnInit, ElementRef, ViewChild } from '@angular/core'
 import { NsContent, NsDiscussionForum } from '@ws-widget/collection'
 import { NsWidgetResolver } from '@ws-widget/resolver'
 import { ActivatedRoute } from '@angular/router'
 import { ConfigurationsService } from '../../../../../../../library/ws-widget/utils/src/public-api'
+import { PlayerStateService } from '../../player-state.service'
 
 @Component({
   selector: 'viewer-pdf-container',
@@ -29,7 +30,13 @@ export class PdfComponent implements OnInit {
   > | null = null
   isTypeOfCollection = false
   isRestricted = false
-  constructor(private activatedRoute: ActivatedRoute, private configSvc: ConfigurationsService) { }
+  viewerDataServiceSubscription: any
+  // prevResourceUrl: string | null = null
+  // nextResourceUrl: string | null = null
+  @ViewChild('navpdf', { static: false }) navpdf!: ElementRef
+
+  constructor(private activatedRoute: ActivatedRoute, private configSvc: ConfigurationsService,
+    private viewerDataSvc: PlayerStateService) { }
 
   ngOnInit() {
     if (this.configSvc.restrictedFeatures) {
@@ -37,5 +44,9 @@ export class PdfComponent implements OnInit {
         !this.configSvc.restrictedFeatures.has('disscussionForum')
     }
     this.isTypeOfCollection = this.activatedRoute.snapshot.queryParams.collectionType ? true : false
+
+    this.viewerDataServiceSubscription = this.viewerDataSvc.playerState.subscribe(data => {
+      console.log(data)
+    })
   }
 }

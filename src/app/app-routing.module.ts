@@ -22,12 +22,17 @@ import { TncComponent } from './routes/tnc/tnc.component'
 import { TncAppResolverService } from './services/tnc-app-resolver.service'
 import { TncPublicResolverService } from './services/tnc-public-resolver.service'
 // import { AppTocResolverService } from '@ws/app/src/lib/routes/app-toc/resolvers/app-toc-resolver.service'
+// import { QualityJSONResolver } from '../../../../../../author/src/lib/services/quality-json-resolver.service'
+import { QualityJSONResolver } from '../../project/ws/author/src/lib/services/quality-json-resolver.service'
+import { InitResolver } from '@ws/author/src/lib/services/init-resolve.service'
 
 // 💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥
 // Please declare routes in alphabetical order
 // 😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵
-
+import { OrgComponent } from '../../project/ws/app/src/lib/routes/org/components/org/org.component'
+import { OrgServiceService } from '../../project/ws/app/src/lib/routes/org/org-service.service'
 const routes: Routes = [
+
   {
     path: '',
     pathMatch: 'full',
@@ -135,6 +140,13 @@ const routes: Routes = [
       // ],
     },
     canActivate: [GeneralGuard],
+  },
+  {
+    path: 'app/org-details',
+    component: OrgComponent,
+    resolve: {
+      orgData: OrgServiceService,
+    },
   },
   // {
   //   path: 'app/person-profile',
@@ -413,6 +425,10 @@ const routes: Routes = [
   },
   {
     path: 'author/viewer',
+    resolve: {
+      qualityJSON: QualityJSONResolver,
+      script: InitResolver,
+    },
     data: {
       // requiredRoles: [
       //   'content-creator',
@@ -467,6 +483,6 @@ const routes: Routes = [
     }),
   ],
   exports: [RouterModule],
-  providers: [ExploreDetailResolve],
+  providers: [ExploreDetailResolve, QualityJSONResolver],
 })
 export class AppRoutingModule { }

@@ -49,9 +49,9 @@ export class QuestionEditorComponent implements OnInit, OnChanges, OnDestroy {
       this.quizIndex = index
       const val = this.quizStoreSvc.getQuiz(index)
       this.selectedQuiz = val ? val : null
-      if (this.submitPressed && val) {
-        this.validateNdShowError(true)
-      }
+      // if (this.submitPressed && val) {
+      this.validateNdShowError(true)
+      // }
     })
   }
 
@@ -76,6 +76,7 @@ export class QuestionEditorComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
     this.quizStoreSvc.updateQuiz(this.quizIndex, updatedVal)
+    console.log("updateSelectedQuiz")
     if (updatedVal.isInValid) {
       this.validateNdShowError()
     }

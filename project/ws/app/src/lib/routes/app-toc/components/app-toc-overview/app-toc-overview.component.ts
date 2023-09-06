@@ -109,13 +109,15 @@ export class AppTocOverviewComponent implements OnInit, OnDestroy {
   }
 
   parseContentParent(content: NsAppToc.IContentParentResponse) {
-    content.collections.forEach(collection => {
-      if (!this.contentParents.hasOwnProperty(collection.contentType)) {
-        this.contentParents[collection.contentType] = []
-      }
-      this.contentParents[collection.contentType].push(collection)
-      this.parseContentParent(collection)
-    })
+    if (content && content.collections) {
+      content.collections.forEach(collection => {
+        if (!this.contentParents.hasOwnProperty(collection.contentType)) {
+          this.contentParents[collection.contentType] = []
+        }
+        this.contentParents[collection.contentType].push(collection)
+        this.parseContentParent(collection)
+      })
+    }
   }
 
   resetAndFetchTocStructure() {

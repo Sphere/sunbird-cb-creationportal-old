@@ -1,0 +1,34 @@
+<mat-dialog-content class="upload-main-block">
+  <div class="upload-container">
+    <div class="header-text">
+      <span class="upload-text" i18n>Upload Certificate</span>
+      <mat-icon style="cursor: pointer;" mat-dialog-close mat-raised-button i18n>close</mat-icon>
+    </div>
+    <div>
+      <span class="accepted-format-txt">Accepted Format :SVG; 808 px(h)x1350 px(w)</span>
+    </div>
+    <div class="upload-container-body">
+      <div class="upload-block" (click)="uploadThumbnail.click()">
+        <img class="upload-icon" src="cbp-assets/icons/fluent_certificate-24-filled.svg" alt="Upload icon" />
+        <button class="upload-btn" style="cursor: pointer;"><img src="cbp-assets/icons/charm_upload.svg" /> Upload
+          File</button>
+        <input type="file" (change)="onFileSelected($event)" #uploadThumbnail style="display: none"
+          accept="image/svg+xml" />
+      </div>
+      <div class="preview-block">
+        <span *ngIf="!svgContent" class="flex preview-text"><img
+            src="cbp-assets/icons/akar-icons_eye.svg" />Preview</span>
+        <span *ngIf="!svgContent" class="preview-center">Upload your certificate to see the preview</span>
+        <div *ngIf="svgContent">
+          <object class="svg-image" type="image/svg+xml" [attr.data]="svgContent"></object>
+        </div>
+      </div>
+    </div>
+    <div class="cert-block">
+      <button class="add-certificate-btn" (click)="createTemplate()" style="cursor: pointer;">Attach
+        Certificate</button>
+    </div>
+
+  </div>
+
+</mat-dialog-content>

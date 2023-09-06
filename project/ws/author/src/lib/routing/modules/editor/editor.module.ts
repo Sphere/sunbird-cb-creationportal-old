@@ -7,8 +7,6 @@ import { EditorComponent } from './components/editor/editor.component'
 import { EditorRoutingModule } from './editor-routing.module'
 import { SharedModule } from '@ws/author/src/lib/modules/shared/shared.module'
 import { EditorSharedModule } from './shared/shared.module'
-import { WebPageModule } from './routing/modules/web-page/web-page.module'
-import { CompetenceService } from './shared/services/competence.service'
 
 @NgModule({
   declarations: [
@@ -20,12 +18,10 @@ import { CompetenceService } from './shared/services/competence.service'
     EditorRoutingModule,
     EditorSharedModule,
     SharedModule,
-    WebPageModule,
   ],
   providers: [
-    CompetenceService,
-    CreateContentResolverService,
     EditorService,
+    CreateContentResolverService,
   ],
 })
 export class EditorModule { }

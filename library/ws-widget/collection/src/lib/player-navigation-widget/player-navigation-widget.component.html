@@ -1,0 +1,15 @@
+<div class="parent">
+  <a mat-button class="child mr-1" (click)="navigateToPreResource()" [disabled]="!prevResourceUrl">
+    <div>
+      <img src="cbp-assets/icons/go-back.svg" alt="previous">
+      Previous
+    </div>
+  </a>
+  <a mat-button class="child" (click)="navigateToNextResource()" [disabled]="!nextResourceUrl"
+    queryParamsHandling="preserve">
+    <div>
+      <img src="cbp-assets/icons/go-next.svg" alt="next">
+      Next
+    </div>
+  </a>
+</div>

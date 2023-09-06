@@ -205,7 +205,8 @@
     </a>
     <a *ngIf="showMenuItem('unpublish',rowData)" mat-menu-item (click)="takeAction('unpublish',rowData)">
       <mat-icon>reply</mat-icon>
-      <span i18n>Unpublish content</span>
+      <!-- <span i18n>Unpublish content</span> -->
+      <span i18n>Retire content</span>
     </a>
     <a *ngIf="showMenuItem('review',rowData)" mat-menu-item (click)="takeAction('review',rowData)">
       <mat-icon>rate_review</mat-icon>

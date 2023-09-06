@@ -96,6 +96,22 @@ export class UploadAudioComponent implements OnInit {
       })
       .subscribe(
         v => {
+          // if (v.code) {
+          //   this.isUploading = false
+          //   this.loaderService.changeLoad.next(false)
+          //   this.snackBar.openFromComponent(NotificationComponent, {
+          //     data: {
+          //       type: Notify.UPLOAD_SUCCESS,
+          //     },
+          //     duration: NOTIFICATION_TIME * 1000,
+          //   })
+          //   this.uploadedAudio.title = v.artifactURL.slice(v.artifactURL.lastIndexOf('/') + 1, v.artifactURL.length)
+          //   this.uploadedAudio.label = this.allLanguages.filter(e => e.srclang === this.uploadedAudio.srclang)[0].label
+          //   const splitUrl = (v.artifactURL || v.authArtifactUrl).split('/')
+          //   const hostURL = `${splitUrl[0]}//${splitUrl[2]}`
+          //   this.uploadedAudio.URL = (v.artifactURL || v.authArtifactUrl).replace(hostURL, '')
+          //   this.dialogRef.close(this.uploadedAudio)
+          // }
           if (v.result) {
             this.isUploading = false
             this.loaderService.changeLoad.next(false)

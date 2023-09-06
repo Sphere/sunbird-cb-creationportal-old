@@ -7,7 +7,7 @@
       <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
   </mat-chip-list>
-  <div class="flex-responsive">
+  <div class="flex">
     <mat-form-field class="width-expand margin-right-m" appearance="fill" floatLabel="never">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label i18n>Search content</mat-label>
@@ -41,9 +41,6 @@
             <ng-container *ngIf="content.name; else noName">{{ content.name || '' }}</ng-container>
           </h3>
         </div>
-        <p class="mat-body-2 margin-remove-bottom margin-left-xs margin-right-xs">
-          <ng-container *ngIf="content?.contentType">{{ content?.contentType }} </ng-container>
-        </p>
         <p class="margin-remove-bottom margin-left-xs margin-right-xs">
           <ng-container *ngIf="content?.duration">{{ content.duration | pipeDurationTransform: 'hms' }}
           </ng-container>

@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@angular/core'
 import { ConfigurationsService, NsInstanceConfig } from '@ws-widget/utils'
 import { NSContent } from '@ws/author/src/lib/interface/content'
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AccessControlService {
   downloadRegex = new RegExp(`(https://.*?/content-store/.*?)(\\\)?\\\\?['"])`, 'gm')
   constructor(
@@ -16,7 +16,7 @@ export class AccessControlService {
   ) { }
 
   hasRole(role: string[]): boolean {
-    let returnValue = true
+    let returnValue = false
     role.forEach(v => {
       if ((this.configService.userRoles || new Set()).has(v)) {
         returnValue = true
@@ -96,50 +96,125 @@ export class AccessControlService {
         return 'submitted'
     }
   }
+  // hasAccess(
+  //   meta: NSContent.IContentMeta,
+  //   forPreview = false,
+  //   parentMeta?: NSContent.IContentMeta,
+  // ): boolean {
+  //   if (this.hasRole(['editor', 'admin'])) {
+  //     return true
+  //   }
+  //   let returnValue = false
+  //   if (['Draft', 'Live'].indexOf(meta.status) > -1) {
+  //     if (meta.creatorContacts && meta.creatorContacts.length) {
+  //       meta.creatorContacts.forEach(v => {
+  //         if (v.id === this.userId) {
+  //           returnValue = true
+  //         }
+  //       })
+  //     }
+  //   }
+  //   if (meta.status === 'InReview' && this.hasRole(['reviewer'])) {
+  //     if (meta.trackContacts && meta.trackContacts.length) {
+  //       meta.trackContacts.forEach(v => {
+  //         if (v.id === this.userId) {
+  //           returnValue = true
+  //         }
+  //       })
+  //     }
+  //     if (!returnValue && parentMeta && parentMeta.creatorContacts && meta.creatorContacts) {
+  //       returnValue = parentMeta.creatorContacts.some(v =>
+  //         meta.creatorContacts.find(cv => cv.id === v.id),
+  //       )
+  //     }
+  //   }
+  //   if (['Reviewed'].indexOf(meta.status) > -1 && this.hasRole(['publisher'])) {
+  //     if (meta.publisherDetails && meta.publisherDetails.length) {
+  //       meta.publisherDetails.forEach(v => {
+  //         if (v.id === this.userId) {
+  //           returnValue = true
+  //         }
+  //       })
+  //     }
+  //     if (!returnValue && parentMeta && parentMeta.creatorContacts && meta.creatorContacts) {
+  //       returnValue = parentMeta.creatorContacts.some(v =>
+  //         meta.creatorContacts.find(cv => cv.id === v.id),
+  //       )
+  //     }
+  //   }
+  //   if (forPreview && meta.visibility === 'Public') {
+  //     returnValue = true
+  //   }
+  //   return returnValue
+  // }
+
   hasAccess(
     meta: NSContent.IContentMeta,
     forPreview = false,
     parentMeta?: NSContent.IContentMeta,
   ): boolean {
-    if (this.hasRole(['editor', 'admin'])) {
+    // if (this.hasRole(['editor', 'admin', 'content_creator'])) {
+    //   return true
+    // }
+    // if (this.hasRole(['editor', 'admin', 'content_creator', 'content_reviewer', 'content_publisher'])) {
+    //   return true
+    // }
+
+    if (this.hasRole(['editor', 'admin']) && this.configService.userProfileV2) {
+      if (meta.status === 'Review' && meta.createdBy === this.configService.userProfileV2.userId) {
+        return false
+      }
       return true
     }
+
     let returnValue = false
+    // if (['Draft', 'Live'].indexOf(meta.status) > -1) {
+    //   if (meta.creatorIDs && meta.creatorIDs.length) {
+    //     meta.creatorIDs.forEach(v => {
+    //       if (v === this.userId) {
+    //         returnValue = true
+    //       }
+    //     })
+    //   }
+    // }
+
     if (['Draft', 'Live'].indexOf(meta.status) > -1) {
-      if (meta.creatorContacts && meta.creatorContacts.length) {
-        meta.creatorContacts.forEach(v => {
-          if (v.id === this.userId) {
-            returnValue = true
-          }
-        })
+      if (meta.createdBy && meta.createdBy.length) {
+        if (meta.createdBy === this.userId) {
+          returnValue = true
+        }
       }
     }
-    if (meta.status === 'InReview' && this.hasRole(['reviewer'])) {
-      if (meta.trackContacts && meta.trackContacts.length) {
-        meta.trackContacts.forEach(v => {
-          if (v.id === this.userId) {
-            returnValue = true
-          }
-        })
+
+    if ((meta.reviewStatus === 'InReview' && meta.status === 'Review') && this.hasRole(['content_reviewer'])) {
+      if (meta.reviewerIDs && meta.reviewerIDs.length > 0) {
+        if (meta.reviewerIDs.includes(this.userId)) {
+          returnValue = true
+        }
       }
-      if (!returnValue && parentMeta && parentMeta.creatorContacts && meta.creatorContacts) {
-        returnValue = parentMeta.creatorContacts.some(v =>
-          meta.creatorContacts.find(cv => cv.id === v.id),
-        )
+      // if (!returnValue && parentMeta && parentMeta.creatorIDs && meta.creatorIDs) {
+      //   returnValue = parentMeta.creatorIDs.some(v =>
+      //     meta.creatorIDs.find(cv => cv === v),
+      //   )
+      // }
+      if (!returnValue && parentMeta && parentMeta.createdBy && meta.createdBy) {
+        returnValue = (parentMeta.createdBy === meta.createdBy) ? true : false
       }
     }
-    if (['Reviewed'].indexOf(meta.status) > -1 && this.hasRole(['publisher'])) {
-      if (meta.publisherDetails && meta.publisherDetails.length) {
-        meta.publisherDetails.forEach(v => {
-          if (v.id === this.userId) {
-            returnValue = true
-          }
-        })
+    // if (['Reviewed'].indexOf(meta.status) > -1 && this.hasRole(['content_publisher'])) {
+    if ((meta.reviewStatus === 'Reviewed' && meta.status === 'Review') && this.hasRole(['content_publisher'])) {
+      if (meta.publisherIDs && meta.publisherIDs.length > 0) {
+        if (meta.publisherIDs.includes(this.userId)) {
+          returnValue = true
+        }
       }
-      if (!returnValue && parentMeta && parentMeta.creatorContacts && meta.creatorContacts) {
-        returnValue = parentMeta.creatorContacts.some(v =>
-          meta.creatorContacts.find(cv => cv.id === v.id),
-        )
+      // if (!returnValue && parentMeta && parentMeta.creatorIDs && meta.creatorIDs) {
+      //   returnValue = parentMeta.creatorIDs.some(v =>
+      //     meta.creatorIDs.find(cv => cv === v),
+      //   )
+      // }
+      if (!returnValue && parentMeta && parentMeta.createdBy && meta.createdBy) {
+        returnValue = (parentMeta.createdBy === meta.createdBy) ? true : false
       }
     }
     if (forPreview && meta.visibility === 'Public') {

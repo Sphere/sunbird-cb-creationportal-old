@@ -965,6 +965,59 @@ export const AUTH_INIT: IInitialSetup = {
       } as any,
       type: 'array',
     },
+    rolesMapped: {
+      mandatoryFor: {} as any,
+      notMandatoryFor: {} as any,
+      showFor: {
+        Resource: [] as any,
+        Course: [] as any,
+        'Knowledge Board': [] as any,
+        'Knowledge Artifact': [] as any,
+        Channel: [] as any,
+      } as any,
+      notDisabledFor: {} as any,
+      disabledFor: {
+        Course: [] as any,
+        Resource: [] as any,
+        'Knowledge Board': [] as any,
+        'Knowledge Artifact': [] as any,
+        Channel: [] as any,
+      } as any,
+      notShowFor: {} as any,
+      defaultValue: {
+        Course: [{
+          condition: {
+            contentType: ['Course'],
+          } as any,
+          value: [] as any,
+        }],
+        Resource: [{
+          condition: {
+            contentType: ['Resource'],
+          } as any,
+          value: [] as any,
+        }],
+        'Knowledge Board': [{
+          condition: {
+            contentType: ['Knowledge Board'],
+          } as any,
+          value: [] as any,
+        }],
+        'Knowledge Artifact': [{
+          condition: {
+            contentType: ['Knowledge Artifact'],
+          } as any,
+          value: [] as any,
+        }],
+        Channel: [{
+          condition: {
+            contentType: ['Channel'],
+          } as any,
+          value: [] as any,
+        }],
+      } as any,
+      type: 'array',
+    },
     body: {
       mandatoryFor: {
         Course: [] as any,

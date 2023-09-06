@@ -553,7 +553,7 @@ h3.shepherd-title {
 .profile-link {
   padding-left: $size-xs;
   padding-right: 0;
-  padding-top: $size-xs;
+  padding-top: 15px;
 }
 
 // used at discussion start component
@@ -567,6 +567,11 @@ h3.shepherd-title {
   .mat-dialog-container {
     padding: 0;
     border: 0.7rem solid gray;
+  }
+}
+.cdk-overlay-container{
+  .mat-dialog-container{
+    border-radius: 30px;
   }
 }
 
@@ -588,4 +593,59 @@ h3.shepherd-title {
   mat-tab-header {
     display: none;
   }
+}
+.white-icon {
+  color: white !important;
+}
+.mat-grid-tile .mat-figure {
+   justify-content: flex-start !important ;
+   align-items: flex-start !important;
+}
+
+::ng-deep .theme-igot.day-mode .mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.theme-igot.day-mode .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
+.theme-igot.day-mode .mat-fab.mat-accent, .theme-igot.day-mode .mat-flat-button.mat-accent,
+.theme-igot.day-mode .mat-mini-fab.mat-accent, .theme-igot.day-mode .mat-raised-button.mat-accent {
+  background-color: #1c5d95 !important;
+}
+
+::ng-deep .theme-igot.day-mode .mat-form-field-outline-thick {
+  color: #1c5d95 !important;
+}
+
+a.width-auto.mat-button {
+    width: 30px;
+    min-width: 35px;
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    padding-top: 20px;
+    padding-bottom: 11px;
+    border-radius: 0 !important;
+    font-size: 18px !important;
+    z-index: 9;
+}
+
+a.width-auto.mat-button{
+    color: #fff;
+    font-size: 38px;
+}
+
+.align-left-arrow {
+    position: relative;
+    right: 15px;
+    top: -4px;
+    color: #fff;
+    font-size: 27px;
+}
+
+.prev-button .width-auto {
+    left: -26px;
+    top: -5px;
+}
+
+.align-right-arrow {
+    right: 15px;
+    position: relative;
+    top: -4px;
+    color: #fff;
+    font-size: 27px;
 }

@@ -1,7 +1,7 @@
 import { Observable, Observer } from 'rxjs'
 import { Injectable } from '@angular/core'
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CKEditorResolverService {
 
   private isExist = false

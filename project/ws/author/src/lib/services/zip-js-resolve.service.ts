@@ -1,10 +1,10 @@
 import { Observable, Observer } from 'rxjs'
 import { Injectable } from '@angular/core'
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ZipJSResolverService {
   private isExist = false
-  constructor() {}
+  constructor() { }
 
   inject(): Observable<boolean> {
     return new Observable<boolean>((observer: Observer<boolean>) => {

@@ -181,8 +181,8 @@ tocConfig?.overview?.softwareRequirements?.enabled && content?.softwareRequireme
                                 [href]="requirement.url">
                                 {{ requirement.title }}
                             </a>
-                            <a mat-stroked-button class="margin-right-s"
-                                *ngIf="!requirement?.url">{{ requirement.title }}
+                            <a mat-stroked-button class="margin-right-s" *ngIf="!requirement?.url">{{ requirement.title
+                                }}
                             </a>
                         </ng-container>
                     </div>
@@ -270,7 +270,7 @@ tocConfig?.overview?.softwareRequirements?.enabled && content?.softwareRequireme
                 </mat-accordion>
             </div>
         </div>
-        <div class="info-section right">
+        <!-- <div class="info-section right">
             <div class="rating-container mb-10">
                 <ws-widget-user-content-rating class="mb-4 block" *ngIf="content?.identifier"
                     [contentId]="content?.identifier" [isDisabled]="isPreviewMode" [forPreview]="forPreview">
@@ -359,7 +359,11 @@ tocConfig?.overview?.softwareRequirements?.enabled && content?.softwareRequireme
                     <mat-divider class="divider-transparent"
                         *ngIf="tocConfig?.atAGlance?.sourceShortName?.enabled && content?.sourceShortName">
                     </mat-divider>
-                    <!-- Structure -->
+
+
+                    // Structure
+
+
                     <div class="info-item"
                         *ngIf="tocConfig?.atAGlance?.structure?.enabled && hasTocStructure && content?.children?.length">
                         <h3 class="item-heading ws-mat-default-text">{{tocConfig?.atAGlance?.structure?.displayName}}
@@ -538,7 +542,7 @@ tocConfig?.overview?.softwareRequirements?.enabled && content?.softwareRequireme
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </section>
 

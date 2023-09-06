@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing'
 
-import { SelfCurationService } from './self-curation.service'
+import { ContentQualityService } from './content-quality.service'
 
 describe('SelfCurationService', () => {
   beforeEach(() => TestBed.configureTestingModule({}))
 
   it('should be created', () => {
-    const service: SelfCurationService = TestBed.get(SelfCurationService)
+    const service: ContentQualityService = TestBed.get(ContentQualityService)
     expect(service).toBeTruthy()
   })
 })

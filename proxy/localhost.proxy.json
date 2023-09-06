@@ -1,11 +1,14 @@
 {
   "/apis/*": {
-    "target": "https://igot-sunbird.idc.tarento.com",
+    "target": "https://cbp-aastrika-stage.tarento.com/",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true,
     "pathRewrite": {
       "/apis": "/apis"
+    },
+    "headers": {
+      "Cookie": "connect.sid=s%3Ae4zPYvviBarC7Hg5Cwwth8HqNjHQHEpY.eruzG2zCnfsgqftU%2B7Skm1cC4386UpObpDumVy5GCi8"
     }
   },
   "/content-api/*": {
@@ -54,7 +57,7 @@
     }
   },
   "/assets/*": {
-    "target": "http://127.0.0.1:8080",
+    "target": "https://cbp-aastrika-stage.tarento.com/",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true,

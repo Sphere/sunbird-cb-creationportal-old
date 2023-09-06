@@ -55,7 +55,9 @@ import {
 } from '@ws-widget/utils'
 import {
   BtnCallModule,
-  // BtnContentDownloadModule,
+  BtnContentDownloadModule,
+  BtnGoalsModule,
+  BtnContentShareModule,
   BtnContentLikeModule,
   // BtnContentShareModule,
   // BtnContentFeedbackModule,
@@ -97,6 +99,7 @@ import { ApiService, AccessControlService, SharedModule } from '../../../../../a
 import { AppTocSinglePageComponent } from './components/app-toc-single-page/app-toc-single-page.component'
 import { AppTocSinglePageComponent as AppTocSinglePageRootComponent } from './routes/app-toc-single-page/app-toc-single-page.component'
 import { AppTocSinglePageDirective } from './routes/app-toc-single-page/app-toc-single-page.directive'
+import { LicenseComponent } from './components/license/license.component'
 @NgModule({
   declarations: [
     AppTocAnalyticsComponent,
@@ -119,6 +122,7 @@ import { AppTocSinglePageDirective } from './routes/app-toc-single-page/app-toc-
     AppTocSinglePageComponent,
     AppTocSinglePageRootComponent,
     AppTocSinglePageDirective,
+    LicenseComponent,
   ],
   imports: [
     CommonModule,
@@ -155,7 +159,9 @@ import { AppTocSinglePageDirective } from './routes/app-toc-single-page/app-toc-
     PipePartialContentModule,
     PipeContentRouteModule,
     BtnCallModule,
-    // BtnContentDownloadModule,
+    BtnContentDownloadModule,
+    BtnGoalsModule,
+    BtnContentShareModule,
     BtnContentLikeModule,
     // BtnContentFeedbackModule,
     BtnContentFeedbackV2Module,
