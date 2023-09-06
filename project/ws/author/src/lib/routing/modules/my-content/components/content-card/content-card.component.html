@@ -59,7 +59,7 @@
         pointer: data.contentType !== 'Knowledge Board',
         cursor: data.contentType === 'Knowledge Board'
       }" [routerLink]="
-        data.contentType !== 'Knowledge Board'&&!isReviewer
+        data.contentType !== 'Knowledge Board'&&!isReviewerOrPublisher
           ? ['/author/editor/' + data.identifier + '/collection']
           : (data | pipeContentRoute : true).url
       " [queryParamsHandling]="data.contentType === 'Knowledge Board' ? 'preserve' : ''">
@@ -158,7 +158,7 @@
     <mat-icon>delete</mat-icon>
     <span i18n>Delete </span>
   </a>
-  <a *ngIf="showMenuItem('publish')" mat-menu-item (click)="takeAction('publish')">
+  <a *ngIf="showMenuItem('publish')" mat-menu-item [routerLink]="(data | pipeContentRoute : true).url">
     <mat-icon>publish</mat-icon>
     <span i18n>Publish</span>
   </a>
@@ -175,8 +175,9 @@
     <mat-icon>rate_review</mat-icon>
     <span i18n>Review</span>
   </a>
-  <a *ngIf="showMenuItem('preview')&&!isReviewer" mat-menu-item [routerLink]="(data | pipeContentRoute : true).url"
-    [title]="data.name" aria-label="Content" i18n-aria-label="Content | Click to view">
+  <a *ngIf="showMenuItem('preview')&&!isReviewerOrPublisher" mat-menu-item
+    [routerLink]="(data | pipeContentRoute : true).url" [title]="data.name" aria-label="Content"
+    i18n-aria-label="Content | Click to view">
     <mat-icon>remove_red_eye</mat-icon>
     <span i18n>Preview</span>
   </a>
