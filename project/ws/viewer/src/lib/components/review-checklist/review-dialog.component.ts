@@ -33,6 +33,9 @@ export class ReviewDialogComponent implements OnInit {
       this.router.navigateByUrl(`/author/editor/${this.activatedRoute.snapshot.queryParams.collectionId}`)
       console.log(this.activatedRoute.snapshot.queryParams.collectionId)
     } else {
+      sessionStorage.setItem('isReviewChecklistSkip', 'true')
+      this.router.navigateByUrl(`/author/editor/${this.activatedRoute.snapshot.queryParams.collectionId}`)
+      // console.log(this.activatedRoute.snapshot.queryParams.collectionId)
       this.dialog.closeAll()
     }
   }

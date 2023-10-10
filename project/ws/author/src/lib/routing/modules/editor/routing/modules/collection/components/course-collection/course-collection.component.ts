@@ -102,6 +102,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   backToCourse?: Subscription
   isModulePageEnabled: boolean = false;
   isReviewChecklistEnabled: boolean = false;
+  // isReviewChecklistSkipEnabled: boolean = false;
   backToDashboard: boolean = false;
   constructor(
     private contentService: EditorContentService,
@@ -128,6 +129,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       sessionStorage.removeItem('isReviewChecklist')
       this.isReviewChecklistEnabled = true
     }
+
     this.callSaveFn = this.headerService.isSavePressed
     this.rootSvc.showNavbarDisplay$.next(false)
     this.headerService.headerSaveData.subscribe(data => {
@@ -365,6 +367,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.clickedNext = true
       this.showAddchapter = true
 
+    }
+    if (sessionStorage.getItem('isReviewChecklistSkip')) {
+      // this.dialog.closeAll()
+      sessionStorage.removeItem('isReviewChecklistSkip')
+      // this.isReviewChecklistSkipEnabled = true
+      this.action("push")
     }
   }
 
@@ -3057,7 +3065,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         break
 
       case 'push':
-
+        console.log("yes here push", this.getAction())
         if (this.getAction() === 'publish') {
           const dialogRefForPublish = this.dialog.open(ConfirmDialogComponent, {
             width: '70%',
