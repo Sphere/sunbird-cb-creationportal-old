@@ -2527,7 +2527,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       meta["versionKey"] = this.updatedVersionKey
       meta["instructions"] = topicDescription
       meta["description"] = topicDescription
-      meta["name"] = name
+      meta["name"] = name ? name.trim() : name
       meta["duration"] = this.timeToSeconds().toString()
       // meta["gatingEnabled"] = isGating
       meta["isIframeSupported"] = iframeSupported
@@ -4610,7 +4610,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           request: {
             content: {
               versionKey: resData.versionKey,
-              name: this.moduleName,
+              name: this.moduleName.trim(),
               appIcon: this.thumbnail,
               gatingEnabled: this.isGating,
               instructions: this.topicDescription,

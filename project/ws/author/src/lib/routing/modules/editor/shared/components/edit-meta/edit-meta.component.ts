@@ -559,6 +559,12 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   clickedNext() {
     let competency, selfAssessment
     competency = this.competencies
+    if (this.contentForm.controls.subTitle.value) {
+      this.contentForm.controls.subTitle.setValue(this.contentForm.controls.subTitle.value.trim())
+    }
+    if (this.contentForm.controls.instructions.value) {
+      this.contentForm.controls.instructions.setValue(this.contentForm.controls.instructions.value.trim())
+    }
     selfAssessment = this.selectedSelfCompetency
     if (this.contentForm.status == 'VALID') {
       if (selfAssessment) {
@@ -972,15 +978,15 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
             //  }
             currentMeta.cneName = ''
             if (!currentMeta.subTitle) {
-              currentMeta.subTitle = parentData.subTitle !== '' ? parentData.subTitle : currentMeta.subTitle
-              currentMeta.purpose = parentData.subTitle !== '' ? parentData.subTitle : currentMeta.subTitle
+              currentMeta.subTitle = parentData.subTitle !== '' ? parentData.subTitle.trim() : currentMeta.subTitle.trim()
+              currentMeta.purpose = parentData.subTitle !== '' ? parentData.subTitle.trim() : currentMeta.subTitle.trim()
             }
             if (!currentMeta.body) {
               currentMeta.body = parentData.body !== '' ? parentData.body : currentMeta.body
             }
 
             if (!currentMeta.instructions) {
-              currentMeta.instructions = parentData.instructions !== '' ? parentData.instructions : currentMeta.instructions
+              currentMeta.instructions = parentData.instructions !== '' ? parentData.instructions.trim() : currentMeta.instructions.trim()
             }
 
             if (!currentMeta.categoryType) {
@@ -1932,7 +1938,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setPurposeValue(sub: any) {
-    this.contentForm.controls.purpose.setValue(sub)
+    this.contentForm.controls.purpose.setValue(sub.trim())
   }
   openCatalogSelector() {
     const oldCatalogs = this.addCommonToCatalog(this.contentForm.controls.catalogPaths.value)
