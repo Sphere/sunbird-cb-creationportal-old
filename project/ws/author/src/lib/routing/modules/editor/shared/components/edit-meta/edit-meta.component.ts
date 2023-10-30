@@ -562,6 +562,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.contentForm.controls.subTitle.value) {
       this.contentForm.controls.subTitle.setValue(this.contentForm.controls.subTitle.value.trim())
     }
+
     if (this.contentForm.controls.instructions.value) {
       this.contentForm.controls.instructions.setValue(this.contentForm.controls.instructions.value.trim())
     }
