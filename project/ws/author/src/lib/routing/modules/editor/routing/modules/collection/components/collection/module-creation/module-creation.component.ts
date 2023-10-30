@@ -2133,7 +2133,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     // this.moduleName = ''
   }
 
-  addResModule(modID: string, courseID: string) {
+  async addResModule(modID: string, courseID: string) {
     this.clearForm()
     this.addResourceModule["module"] = true
     this.addResourceModule["modID"] = modID
@@ -2142,6 +2142,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.showAddModuleForm = true
     this.isResourceTypeEnabled = true
     //this.editItem = ''
+
+    await this.editorService.readContentV2(this.courseData.identifier).subscribe(resData => {
+      this.updatedVersionKey = resData.versionKey
+    })
   }
 
   async addIndependentResource() {
