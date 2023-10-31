@@ -32,6 +32,8 @@ import { UploadService } from '@ws/author/src/lib/routing/modules/editor/shared/
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 import { ConfigurationsService } from 'library/ws-widget/utils/src/lib/services/configurations.service'
 import { Subscription } from 'rxjs'
+import { HttpClient } from '@angular/common/http'
+import { AUTHORING_BASE } from '@ws/author/src/lib/constants/apiEndpoints'
 
 declare const CKEDITOR: any
 
@@ -87,6 +89,7 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
     private accessControlSvc: AccessControlService,
     private loaderService: LoaderService,
     private cdr: ChangeDetectorRef,
+    private http: HttpClient,
   ) { }
 
   ngOnInit() {
@@ -232,45 +235,131 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
               return
             }
             const form = new FormData()
+            const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
             form.set('content', file, file.name.replace(/[^A-Za-z0-9.]/g, ''))
             this.loaderService.changeLoad.next(true)
-            this.uploadService
-              .upload(form, { contentId: this.id, contentType: this.location })
-              .subscribe(
-                data => {
-                  // if (data.code) {
-                  //   let url = data.artifactURL
-                  if (data.result) {
-                    let url = data.result.artifactUrl
-                    if (!this.doRegex) {
-                      url = `/${url.split('/').slice(3).join('/')}`
-                    }
-                    this.editor.instance.insertHtml(
-                      `<img alt='' src='${AUTHORING_CONTENT_BASE}${encodeURIComponent(
-                        url,
-                      )}'></img>`,
-                    )
-                    this.snackBar.openFromComponent(NotificationComponent, {
-                      data: {
-                        type: Notify.UPLOAD_SUCCESS,
-                      },
-                      duration: NOTIFICATION_TIME * 1000,
-                    })
-                    input.remove()
-                    this.loaderService.changeLoad.next(false)
-                  }
+            console.log("contentId: this.id, contentType: this.location", this.id, this.location)
+
+            let randomNumber = ''
+            // tslint:disable-next-line: no-increment-decrement
+            for (let i = 0; i < 16; i++) {
+              randomNumber += Math.floor(Math.random() * 10)
+            }
+            const requestBody: any = {
+              request: {
+                content: {
+                  code: randomNumber,
+                  contentType: 'Asset',
+                  createdBy: this.accessControlSvc.userId,
+                  creator: this.accessControlSvc.userName,
+                  mimeType: 'image/jpeg',
+                  mediaType: 'image',
+                  name: fileName,
+                  lang: ['English'],
+                  license: 'CC BY 4.0',
+                  primaryCategory: 'Asset',
                 },
-                () => {
-                  this.loaderService.changeLoad.next(false)
-                  this.snackBar.openFromComponent(NotificationComponent, {
-                    data: {
-                      type: Notify.UPLOAD_FAIL,
-                    },
-                    duration: NOTIFICATION_TIME * 1000,
-                  })
-                  input.remove()
+              },
+            }
+
+            this.http
+              .post<any>(
+                `${AUTHORING_BASE}content/v3/create`,
+                requestBody,
+              )
+              .subscribe(
+                (meta: any) => {
+                  // return data.result.identifier
+                  this.uploadService
+                    .upload(form, {
+                      contentId: meta.result.identifier,
+                      contentType: CONTENT_BASE_STATIC,
+                    })
+
+                    .subscribe(
+                      data => {
+                        if (data && data.name !== 'Error') {
+
+                          this.loaderService.changeLoad.next(false)
+                          this.snackBar.openFromComponent(NotificationComponent, {
+                            data: {
+                              type: Notify.UPLOAD_SUCCESS,
+                            },
+                            duration: NOTIFICATION_TIME * 2000,
+                          })
+                          console.log("yes here", data)
+                          let url = data.artifactUrl
+                          if (!this.doRegex) {
+                            url = `/${url.split('/').slice(3).join('/')}`
+                          }
+                          this.editor.instance.insertHtml(
+                            `<img alt='' src=${AUTHORING_CONTENT_BASE}${encodeURIComponent(
+                              url,
+                            )}></img>`,
+                          )
+                          console.log("url: ", url)
+                          // })
+                        } else {
+                          this.loaderService.changeLoad.next(false)
+                          this.snackBar.open(data.message, undefined, { duration: 2000 })
+
+                        }
+                      },
+                      () => {
+                        this.loaderService.changeLoad.next(false)
+                        this.snackBar.openFromComponent(NotificationComponent, {
+                          data: {
+                            type: Notify.UPLOAD_FAIL,
+                          },
+                          duration: NOTIFICATION_TIME * 1000,
+                        })
+                      },
+                    )
+
                 },
               )
+
+
+
+
+
+            // this.uploadService
+            //   .upload(form, { contentId: this.id, contentType: this.location })
+            //   .subscribe(
+            //     data => {
+            //       // if (data.code) {
+            //       //   let url = data.artifactURL
+            //       if (data.result) {
+            //         let url = data.result.artifactUrl
+            //         if (!this.doRegex) {
+            //           url = `/${url.split('/').slice(3).join('/')}`
+            //         }
+            //         this.editor.instance.insertHtml(
+            //           `<img alt='' src='${AUTHORING_CONTENT_BASE}${encodeURIComponent(
+            //             url,
+            //           )}'></img>`,
+            //         )
+            //         this.snackBar.openFromComponent(NotificationComponent, {
+            //           data: {
+            //             type: Notify.UPLOAD_SUCCESS,
+            //           },
+            //           duration: NOTIFICATION_TIME * 1000,
+            //         })
+            //         input.remove()
+            //         this.loaderService.changeLoad.next(false)
+            //       }
+            //     },
+            //     () => {
+            //       this.loaderService.changeLoad.next(false)
+            //       this.snackBar.openFromComponent(NotificationComponent, {
+            //         data: {
+            //           type: Notify.UPLOAD_FAIL,
+            //         },
+            //         duration: NOTIFICATION_TIME * 1000,
+            //       })
+            //       input.remove()
+            //     },
+            //   )
           } else {
             this.snackBar.openFromComponent(NotificationComponent, {
               data: {

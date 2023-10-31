@@ -638,7 +638,7 @@
           <mat-form-field appearance="fill" class="margin-top-xs field-edit-width"
             [ngClass]="{ 'mat-form-field-invalid': showError('subTitle') }">
             <mat-label>Sub Title<span style="color: #d32f2f">*</span></mat-label>
-            <input matInput formControlName="subTitle" #subTitle maxlength="500" i18n-placeholder
+            <input trim="blur" matInput formControlName="subTitle" #subTitle maxlength="500" i18n-placeholder
               (keyup)="setPurposeValue(subTitle.value)" placeholder="Enter subtitle here"
               [required]="checkCondition('subTitle', 'required') ? true : null" />
             <mat-hint align="end">{{ subTitle.value.length }} / 500</mat-hint>
