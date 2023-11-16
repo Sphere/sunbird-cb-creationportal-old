@@ -1,0 +1,24 @@
+<mat-dialog-content>
+  <div style="float: right;">
+    <mat-icon style="cursor: pointer;" mat-dialog-close mat-raised-button i18n>close</mat-icon>
+  </div>
+  <h2 class="text-bold">How to upload image in assessment question</h2>
+  <ng-container *ngIf="uploadImageInto">
+    <div class="image-block">
+      <h4 class="text-bold">Step 1</h4>
+      <img class="help-image" alt="" [src]="uploadImageInto.first" />
+      <h4 class="text-bold">Step 2</h4>
+      <img class="help-image" alt="" [src]="uploadImageInto.second" />
+      <h4 class="text-bold">Step 3</h4>
+      <img class="help-image" alt="" [src]="uploadImageInto.third" />
+    </div>
+  </ng-container>
+
+  <div class="">
+    <div style="margin: 10px 0px;">
+      <button i18n mat-dialog-close class="ok-btn" mat-raised-button>
+        Ok
+      </button>
+    </div>
+  </div>
+</mat-dialog-content>

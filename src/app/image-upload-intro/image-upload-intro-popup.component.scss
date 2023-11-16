@@ -1,0 +1,34 @@
+.fixTableHead{
+  margin-top:15px;
+}
+.mb-10 {
+margin-bottom: 5px;
+}
+.module-input{
+  padding: 0 16px;
+  height: 40px;
+}
+.image-block{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+.help-image{
+  width: 76%;
+  height: 50%;
+  margin: 10px;
+}
+.text-bold{
+  font-weight: bold !important;
+}
+.cdk-global-overlay-wrapper{
+  justify-content:space-around !important;
+}
+.ok-btn{
+  background-color: #1c5d95 !important;
+  border-radius: 25px;
+  color: #fff !important;
+  float: right;
+}

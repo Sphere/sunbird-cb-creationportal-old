@@ -59,7 +59,8 @@ export namespace NsInstanceConfig {
     isDownloadableAndroidResource?: IPath
     sourceFieldsUserAutocomplete?: string[]
     forgotPasswordConfig?: IForgotPassword
-    hubs: IHubs[]
+    hubs: IHubs[],
+    uploadImageInto: any
   }
 
   export interface IForgotPassword {

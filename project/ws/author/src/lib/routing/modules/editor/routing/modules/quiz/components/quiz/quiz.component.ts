@@ -43,6 +43,8 @@ import { FormGroup } from '@angular/forms'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 import { isNumber } from 'lodash'
 // import { environment } from '../../../../../../../../../../../../../src/environments/environment'
+import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image-upload-intro-popup.component'
+
 @Component({
   selector: 'ws-auth-quiz',
   templateUrl: './quiz.component.html',
@@ -420,6 +422,18 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
     }
     this.metaContentService.setUpdatedMeta(meta, this.currentId, true)
+  }
+
+  OpenUploadIntro() {
+    const dialogRef = this.dialog.open(ImageUploadIntroPopupComponent, {
+      width: '85%',
+      height: '600px',
+    })
+    dialogRef.afterClosed().subscribe((response: boolean) => {
+      // this.loader.changeLoad.next(true)
+      // tslint:disable-next-line:no-console
+      console.log(response)
+    })
   }
 
   ngOnChanges() {
