@@ -16,7 +16,9 @@
     "build:stats": "ng build --stats-json",
     "start:cbp-dev": "node --max_old_space_size=12288 ./node_modules/@angular/cli/bin/ng serve --proxy-config proxy/cbp-dev-ip.proxy.json -o",
     "analyse": "webpack-bundle-analyzer ./dist/www/ng serve --proxy-config proxy/localhost.proxy.json -o/stats-es5.json",
-    "test": "ng test",
+    "test": "jest",
+    "test-watch": "jest --watch",
+    "test-coverage": "jest  --coverage",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "e2e": "ng e2e",
@@ -119,6 +121,77 @@
     "tslint-config-airbnb": "^5.11.1",
     "typescript": "~3.5.3",
     "typescript-tslint-plugin": "^0.5.4",
-    "webpack-bundle-analyzer": "^3.4.1"
+    "webpack-bundle-analyzer": "^3.4.1",
+    "jest": "^26.0.0",
+    "jest-environment-node": "^26.0.0",
+    "jest-config": "^26.0.0",
+    "jest-preset-angular": "^8.4.0",
+    "@types/jest": "^26.0.14"
+  },
+  "jest": {
+    "preset": "jest-preset-angular",
+    "roots": [
+      "<rootDir>/src/"
+    ],
+    "setupTestFrameworkScriptFile": "<rootDir>/src/setup-jest.ts",
+    "paths": {
+      "@ws-widget/resolver": [
+        "library/ws-widget/resolver"
+      ],
+      "@ws-widget/resolver/*": [
+        "library/ws-widget/resolver/*"
+      ],
+      "@ws-widget/collection": [
+        "library/ws-widget/collection"
+      ],
+      "@ws-widget/collection/*": [
+        "library/ws-widget/collection/*"
+      ],
+      "@ws-widget/utils": [
+        "library/ws-widget/utils"
+      ],
+      "@ws-widget/util": [
+        "library/ws-widget/utils/src/public-api.ts"
+      ],
+      "@ws-widget/utils/*": [
+        "library/ws-widget/utils/*"
+      ],
+      "@ws/app": [
+        "project/ws/app"
+      ],
+      "@ws/app/*": [
+        "project/ws/app/*"
+      ],
+      "@ws/author": [
+        "project/ws/author"
+      ],
+      "@ws/author/*": [
+        "project/ws/author/*"
+      ],
+      "@ws/admin": [
+        "project/ws/admin"
+      ],
+      "@ws/admin/*": [
+        "project/ws/admin/*"
+      ],
+      "@ws/analytics": [
+        "project/ws/analytics"
+      ],
+      "@ws/analytics/*": [
+        "project/ws/analytics/*"
+      ],
+      "@ws/viewer": [
+        "project/ws/viewer"
+      ],
+      "@ws/viewer/*": [
+        "project/ws/viewer/*"
+      ],
+      "@ws/learning-hub": [
+        "project/ws/learning-hub"
+      ],
+      "@ws/learning-hub/*": [
+        "project/ws/learning-hub/*"
+      ]
+    }
   }
 }
