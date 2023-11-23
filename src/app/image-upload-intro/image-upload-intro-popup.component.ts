@@ -16,7 +16,7 @@ export class ImageUploadIntroPopupComponent implements OnInit {
   uploadImageInto: any
   private baseUrl = 'assets/configurations'
   constructor(
-    private configSvc: ConfigurationsService,
+    public configSvc: ConfigurationsService,
     @Inject(MAT_DIALOG_DATA) data: any,
     private http: HttpClient,
 
