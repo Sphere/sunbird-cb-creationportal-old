@@ -1,17 +1,17 @@
 <div class="page-container create-course-container">
 
-  <h1 class="mat-h1 margin-remove-bottom heading-text">Welcome, Lets start by introducing your course!</h1>
-  <p class="desc-text">You can update your course name, details and thumbnails at anytime</p>
+  <!-- <h1 class="mat-h1 margin-remove-bottom heading-text">Welcome, Lets start by introducing your course!</h1>
+  <p class="desc-text">You can update your course name, details and thumbnails at anytime</p> -->
   <!-- <label>Hi, Lets start with a name</label> -->
   <!-- <br /> -->
   <form [formGroup]="createCourseForm" style="margin-top: -1rem;">
     <div>
       <div class="">
-        <!-- <p class="required margin-remove-bottom">
-        Hi, Lets start with a name
-      </p> -->
+        <p class="start-txt">
+          Start by Introducing the course
+        </p>
         <mat-form-field appearance="outline" class="margin-top-xs desc-field name-field ">
-          <textarea matInput #courseName formControlName="courseName" maxlength="100" rows="2"
+          <textarea matInput #courseName formControlName="courseName" maxlength="100" rows="1"
             placeholder="Course name"></textarea>
           <mat-hint class="mt-hint">{{ courseName.value.length }}/100</mat-hint>
         </mat-form-field>

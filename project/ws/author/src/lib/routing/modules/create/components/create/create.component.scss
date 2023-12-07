@@ -1,7 +1,12 @@
 .cursor-disable {
   cursor: not-allowed;
 }
-
+.bg-btm{
+  display: flex;
+  float: right;
+  position: relative;
+  top: 54px;
+}
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -11,7 +16,18 @@
 #curate-container {
   overflow: auto;
 }
-
+.top-banner-bg{
+  padding: 25px 0px 15px 71px;
+  background: #F3F8FD !important;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.10);
+  color: #000;
+  font-family: Roboto;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.48px;
+}
 .mobile-r {
   display: flex;
   flex-direction: column;

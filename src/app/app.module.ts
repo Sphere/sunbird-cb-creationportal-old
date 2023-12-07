@@ -64,6 +64,7 @@ import { AuthInitService } from '../../project/ws/author/src/lib/services/init.s
 // import { environment } from '../environments/environment'
 import { OrgComponent } from '../../project/ws/app/src/lib/routes/org/components/org/org.component'
 
+import { SharedModule } from '../../project/ws/author/src/lib/modules/shared/shared.module'
 @Injectable()
 export class HammerConfig extends GestureConfig {
   buildHammer(element: HTMLElement) {
@@ -96,9 +97,10 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     DialogConfirmComponent,
     LoginRootComponent,
     LoginRootDirective,
-    OrgComponent
+    OrgComponent,
   ],
   imports: [
+    SharedModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserModule,

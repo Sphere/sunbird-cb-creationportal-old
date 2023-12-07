@@ -169,10 +169,12 @@
     </ng-container> -->
   <!-- </mat-drawer> -->
   <mat-drawer-content>
-    <div class="card-holder margin-top-l">
+    <div class="card-holder">
+      <p class="top-banner-bg">Welcome! You will build the course in 4 steps</p>
 
       <div class="flex flex-col md:flex-row pl-12 justify-between">
         <h3 class="mat-h3">
+
           <!-- Choose your starting point from the below available options -->
           <ws-author-create-course [content]="content"></ws-author-create-course>
         </h3>
@@ -184,7 +186,9 @@
           </button>
         </div> -->
       </div>
-
+      <div class="bg-btm">
+        <img alt="create-course-img" src="cbp-assets/images/create-course-bg.svg" />
+      </div>
       <div class="flex flex-1 flex-wrap flex-col md:flex-row">
         <!-- <div class="flex-1"> -->
 

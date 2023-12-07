@@ -5,6 +5,27 @@
     // bottom: -23px;
     position: absolute;
 }
+.start-txt{
+  color: #000;
+font-family: Roboto;
+font-size: 20px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+letter-spacing: -0.64px;
+margin-top: 2rem !important;
+}
+.top-banner-bg{
+  background: #F3F8FD;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.10);
+  color: #000;
+  font-family: Roboto;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.48px;
+}
 
 .font-weight-300 {
     font-weight: 300;
@@ -375,7 +396,10 @@
 .read-and-agree-top-margin {
   margin-top: 5px !important;
 }
+.mat-form-field-appearance-outline .mat-form-field-subscript-wrapper{
+  padding: 0px !important;
 
+}
 .mt-hint {
   font-size: 10px !important;
   color: #808080  !important;

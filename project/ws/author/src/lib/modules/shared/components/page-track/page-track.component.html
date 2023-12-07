@@ -1,0 +1,13 @@
+<mat-dialog-content>
+  <div class="progress" *ngIf="workFlow.length">
+    <div class="progress-step" [class.active]="state.isActive" [class.complete]="state.isCompleted"
+      *ngFor="let state of workFlow; let i = index">
+      <div class="info">
+        {{ state.name }}
+      </div>
+    </div>
+  </div>
+  <div *ngIf="isClient1" (click)="showModal = true" class="flex w-full justify-end ws-mat-primary-text my-4 pointer">
+    <span class="cursor-pointer">Complete Flow</span>
+  </div>
+</mat-dialog-content>
