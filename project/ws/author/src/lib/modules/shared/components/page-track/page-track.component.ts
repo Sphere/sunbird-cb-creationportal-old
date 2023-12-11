@@ -82,6 +82,12 @@ export class PageTrackComponent implements OnInit {
     this.initService.currentPageStatusMessage.subscribe((message) => {
       console.log("message: ", message)
       if (message == 'courseDetailsPage') {
+        let introduction = steps.find(step => step.name === 'Introduction')
+        if (introduction) {
+          introduction.isActive = true
+          introduction.isCompleted = true
+
+        }
         let courseDetailsStep = steps.find(step => step.name === 'Course Details')
         if (courseDetailsStep) {
           courseDetailsStep.isActive = true
@@ -91,6 +97,13 @@ export class PageTrackComponent implements OnInit {
         courseDetailsStep = steps.find(step => step.name === 'Course Builder')
         if (courseDetailsStep) {
           courseDetailsStep.isActive = true
+          courseDetailsStep.isCompleted = false
+
+        }
+        courseDetailsStep = steps.find(step => step.name === 'Course Settings')
+        if (courseDetailsStep) {
+          courseDetailsStep.isActive = false
+          courseDetailsStep.isCompleted = false
         }
       } else if (message == 'courseSettingsPage') {
         let courseDetailsStep = steps.find(step => step.name === 'Course Details')
@@ -109,8 +122,59 @@ export class PageTrackComponent implements OnInit {
           courseDetailsStep.isActive = true
           courseDetailsStep.isCompleted = true
         }
+      } else if (message == 'backFromModulePage') {
+        let introduction = steps.find(step => step.name === 'Introduction')
+        if (introduction) {
+          introduction.isActive = true
+          introduction.isCompleted = true
+
+        }
+        let courseDetailsStep = steps.find(step => step.name === 'Course Details')
+        if (courseDetailsStep) {
+          courseDetailsStep.isActive = true
+          courseDetailsStep.isCompleted = false
+        }
+        courseDetailsStep = steps.find(step => step.name === 'Course Builder')
+        if (courseDetailsStep) {
+          courseDetailsStep.isActive = false
+          courseDetailsStep.isCompleted = false
+        }
+        courseDetailsStep = steps.find(step => step.name === 'Course Settings')
+        if (courseDetailsStep) {
+          courseDetailsStep.isActive = false
+          courseDetailsStep.isCompleted = false
+        }
+        console.log("backFromModulePage", steps)
+
+      }
+      else if (message == 'fromSettings') {
+        let introduction = steps.find(step => step.name === 'Introduction')
+        if (introduction) {
+          introduction.isActive = true
+          introduction.isCompleted = true
+
+        }
+        let courseDetailsStep = steps.find(step => step.name === 'Course Details')
+        if (courseDetailsStep) {
+          courseDetailsStep.isActive = true
+          courseDetailsStep.isCompleted = true
+        }
+        courseDetailsStep = steps.find(step => step.name === 'Course Builder')
+        if (courseDetailsStep) {
+          courseDetailsStep.isActive = true
+          courseDetailsStep.isCompleted = false
+        }
+        courseDetailsStep = steps.find(step => step.name === 'Course Settings')
+        if (courseDetailsStep) {
+          courseDetailsStep.isActive = false
+          courseDetailsStep.isCompleted = false
+        }
+        console.log("backFromModulePage", steps)
+
       }
     })
+    console.log("steps", steps)
+
     this.workFlow.push(...steps)
   }
 

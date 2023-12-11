@@ -172,6 +172,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           sessionStorage.setItem('isSettingsPage', '0')
           // tslint:disable-next-line:no-console
           console.log("inside ")
+          this.initService.currentPageAction('fromSettings')
           this.initService.backToHome('fromSettings')
         } else {
           sessionStorage.setItem('isSettingsPage', '0')
@@ -180,6 +181,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           } else if (this.showAddchapter) {
             if (this.viewMode === 'meta' && this.clickedNext) {
               console.log("fadfasdf")
+              this.initService.currentPageAction('backFromModulePage')
               this.initService.isEditMetaPageAction('backFromModulePage')
               this.clickedNext = false
               this.showAddchapter = false
