@@ -557,6 +557,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   //   }
   // }
   clickedNext() {
+    this.authInitService.currentPageAction('courseDetailsPage')
     let competency, selfAssessment
     competency = this.competencies
     if (this.contentForm.controls.subTitle.value) {

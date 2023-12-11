@@ -1761,6 +1761,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
   }
   setSettingsPage() {
+
     // this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
     //   if (data) {
     //     this.courseData = await data

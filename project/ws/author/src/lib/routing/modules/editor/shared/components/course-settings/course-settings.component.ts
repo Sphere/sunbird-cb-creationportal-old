@@ -203,6 +203,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
   contentForm!: FormGroup
   ngOnInit() {
+    this.authInitService.currentPageAction('courseSettingsPage')
+
     const url = this.router.url
     const id = url.split('/')
     this.contentService.currentContentID = id[3]
