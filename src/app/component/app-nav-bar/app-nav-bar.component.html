@@ -6,12 +6,12 @@
         i18n-aria-label>
         <img [src]="appIcon" alt="Application Logo" class="app-logo" />
       </a>
-      <!-- <span class="spacer"></span> -->
+      <span class="spacer"></span>
       <ng-container *ngIf="primaryNavbarConfig?.mediumScreen">
         <ng-container [ngTemplateOutlet]="navbarSide" [ngTemplateOutletContext]="{ item: item }"
           *ngFor="let item of primaryNavbarConfig?.mediumScreen?.left">
         </ng-container>
-        <ws-auth-page-track *ngIf="showStepper" style="display: flex;align-items: center;"></ws-auth-page-track>
+        <!-- <ws-auth-page-track *ngIf="showStepper" class="stepper-block"></ws-auth-page-track> -->
 
         <!-- <ws-app-search-input-home placeHolder="Search" class="my-search flex-1" [ref]="'home'">
         </ws-app-search-input-home> -->

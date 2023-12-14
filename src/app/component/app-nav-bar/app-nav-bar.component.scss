@@ -6,7 +6,12 @@
   flex-direction: row;
   cursor: pointer;
 }
-
+.stepper-block{
+  display: flex;
+    align-items: center;
+    width: 78%;
+    justify-content: center;
+}
 // .fix-ww {
 //   margin-left: auto;
 //   margin-right: auto;

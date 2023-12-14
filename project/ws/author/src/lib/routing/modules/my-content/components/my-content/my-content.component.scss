@@ -1,6 +1,8 @@
 @import 'ws-common';
 @import 'ws-mixins';
-
+.main-block{
+  margin-left: 25px;
+}
 .activeTab{
 border-bottom: 2px solid #14446C ;
 color: #14446C !important;
@@ -239,6 +241,9 @@ ws-auth-content-card-v2 {
 .mat-list-item.active {
   background: rgba(0,0,0,.04)
 }
+.mat-list-base{
+  padding: 0px !important;
+}
 
 // .mat-list-base, .full-width-field {
 //   width: 100%;
@@ -311,9 +316,10 @@ ws-auth-content-card-v2 {
     padding-left: 3px;
 }
 .main-title {
-   border-left-style: solid;
+  //  border-left-style: solid;
     color: #14446C;
     // padding-left: 3px;
+    margin-left: 8px;
 }
 
 ::ng-deep .theme-igot.day-mode .mat-ink-bar {
@@ -368,4 +374,15 @@ ws-auth-content-card-v2 {
 }
 .mat-expansion-panel-body{
  padding-left: 0px !important;
+}
+.dashboard-txt{
+  color: #808080;
+      font-family: Roboto;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 38.4px; /* 240% */
+      letter-spacing: -0.32px;
+      margin-left: 25px !important;
+      margin-bottom: 0px;
 }
