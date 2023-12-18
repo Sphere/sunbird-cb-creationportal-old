@@ -48,12 +48,13 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <a routerLink="/author/my-content" [queryParams]="{ status: 'deleted' }" i18n>Deleted</a>
             </mat-list-item> -->
             <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
-              <a [ngClass]="{ 'head-content-title': isSelectedReviewCourse }" style="cursor: pointer"
+              <a [ngClass]="{ 'head-content-title': isSelectedReviewCourse }" style="cursor: pointer; color: #808080;"
                 (click)="onClickReviewCourse('Sent for review')" i18n>Courses to Review</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
-              <a [ngClass]="{ 'head-content-title': isSelectedToPublishCourse }" style="cursor: pointer"
-                (click)="onClickReviewCourse('Published')" i18n>Courses to Publish</a>
+              <a [ngClass]="{ 'head-content-title': isSelectedToPublishCourse }"
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('Published')" i18n>Courses to
+                Publish</a>
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
@@ -100,23 +101,20 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
 
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title class="main-block">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 14" fill="none">
+              <svg
+                [ngClass]="{ 'iconActive': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse }"
+                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 14" fill="none">
                 <g clip-path="url(#clip0_1391_8909)">
                   <path
-                    d="M15.0329 4.68675H0.965057C0.965057 4.75323 0.965057 4.81347 0.965057 4.87372C0.965057 7.16308 0.965057 9.45452 0.965057 11.7439C0.965057 12.5375 1.43371 13.0132 2.2148 13.0132C3.40082 13.0132 4.58684 13.0132 5.77287 13.0132C5.8407 13.0132 5.90853 13.0132 5.97431 13.0236C6.24358 13.061 6.41418 13.2729 6.39774 13.543C6.3813 13.7943 6.18191 13.9813 5.91675 13.9917C5.88386 13.9917 5.84892 13.9917 5.81603 13.9917C4.60123 13.9917 3.38849 13.9917 2.17369 13.9917C0.926002 13.9917 0.00513875 13.0714 0.00308325 11.8166C-0.00102775 8.60484 -0.00102775 5.39309 0.00308325 2.18133C0.00513875 0.922392 0.923947 0 2.17163 0C6.05858 0 9.94759 0 13.8345 0C15.0802 0 15.9949 0.922392 15.9969 2.18133C15.999 3.63555 15.9969 5.0877 15.9969 6.54192C15.9969 6.81822 15.8448 7.01558 15.6084 7.06129C15.3844 7.10283 15.1562 6.9865 15.0781 6.77044C15.0452 6.67696 15.0349 6.571 15.0349 6.47129C15.0308 5.94569 15.0349 5.42009 15.0349 4.89449C15.0349 4.83217 15.0349 4.76985 15.0349 4.68675H15.0329ZM0.965057 3.68957H15.0185C15.0247 3.64594 15.0308 3.61478 15.0308 3.58154C15.0308 3.09541 15.0349 2.60929 15.0267 2.12316C15.0267 1.99644 15.0021 1.86348 14.9609 1.74299C14.7944 1.25063 14.3731 0.976406 13.7996 0.976406C9.93525 0.976406 6.06886 0.976406 2.20452 0.976406C2.14286 0.976406 2.08119 0.976406 2.01953 0.982638C1.47893 1.02627 1.037 1.44176 0.981501 1.98605C0.956835 2.23327 0.965057 2.48256 0.963001 2.73186C0.960946 3.04763 0.963001 3.36341 0.963001 3.69165L0.965057 3.68957Z"
-                    fill="#14446C" />
+                    d="M15.0329 4.68675H0.965057C0.965057 4.75323 0.965057 4.81347 0.965057 4.87372C0.965057 7.16308 0.965057 9.45452 0.965057 11.7439C0.965057 12.5375 1.43371 13.0132 2.2148 13.0132C3.40082 13.0132 4.58684 13.0132 5.77287 13.0132C5.8407 13.0132 5.90853 13.0132 5.97431 13.0236C6.24358 13.061 6.41418 13.2729 6.39774 13.543C6.3813 13.7943 6.18191 13.9813 5.91675 13.9917C5.88386 13.9917 5.84892 13.9917 5.81603 13.9917C4.60123 13.9917 3.38849 13.9917 2.17369 13.9917C0.926002 13.9917 0.00513875 13.0714 0.00308325 11.8166C-0.00102775 8.60484 -0.00102775 5.39309 0.00308325 2.18133C0.00513875 0.922392 0.923947 0 2.17163 0C6.05858 0 9.94759 0 13.8345 0C15.0802 0 15.9949 0.922392 15.9969 2.18133C15.999 3.63555 15.9969 5.0877 15.9969 6.54192C15.9969 6.81822 15.8448 7.01558 15.6084 7.06129C15.3844 7.10283 15.1562 6.9865 15.0781 6.77044C15.0452 6.67696 15.0349 6.571 15.0349 6.47129C15.0308 5.94569 15.0349 5.42009 15.0349 4.89449C15.0349 4.83217 15.0349 4.76985 15.0349 4.68675H15.0329ZM0.965057 3.68957H15.0185C15.0247 3.64594 15.0308 3.61478 15.0308 3.58154C15.0308 3.09541 15.0349 2.60929 15.0267 2.12316C15.0267 1.99644 15.0021 1.86348 14.9609 1.74299C14.7944 1.25063 14.3731 0.976406 13.7996 0.976406C9.93525 0.976406 6.06886 0.976406 2.20452 0.976406C2.14286 0.976406 2.08119 0.976406 2.01953 0.982638C1.47893 1.02627 1.037 1.44176 0.981501 1.98605C0.956835 2.23327 0.965057 2.48256 0.963001 2.73186C0.960946 3.04763 0.963001 3.36341 0.963001 3.69165L0.965057 3.68957Z" />
                   <path
-                    d="M11.7291 8.47401C12.7465 7.83208 13.8092 7.71574 14.913 8.15408C15.1926 8.26627 15.4475 8.45532 15.6962 8.63398C15.8976 8.77732 15.9942 9.00169 15.9942 9.25306C15.9963 10.4289 16.0045 11.6047 15.9922 12.7806C15.986 13.4163 15.3447 13.8027 14.763 13.5222C14.2943 13.2979 13.8113 13.2044 13.2974 13.2709C12.8431 13.3311 12.4341 13.4911 12.1011 13.8235C11.8832 14.0416 11.5996 14.0603 11.4002 13.8484C10.8061 13.2148 9.62628 13.0694 8.80408 13.4807C8.59853 13.5846 8.38681 13.6469 8.15865 13.597C7.75783 13.5119 7.47623 13.1898 7.47417 12.7681C7.46595 11.6027 7.46801 10.4393 7.47417 9.27383C7.47417 8.97053 7.62422 8.73785 7.86061 8.55503C8.46081 8.08968 9.14529 7.89025 9.89555 7.89856C10.5677 7.90687 11.1843 8.09591 11.7332 8.47193L11.7291 8.47401ZM11.244 12.5541C11.2481 12.5334 11.2542 12.5105 11.2542 12.4897C11.2542 11.478 11.2563 10.4663 11.2501 9.45457C11.2501 9.39225 11.1926 9.31123 11.1391 9.27176C10.4444 8.75239 9.27273 8.74616 8.55948 9.24683C8.46492 9.31331 8.43615 9.38602 8.43615 9.50028C8.44026 10.2357 8.4382 10.9711 8.4382 11.7045C8.4382 11.987 8.4382 12.2675 8.4382 12.5521C9.63861 12.1927 9.91611 12.1553 11.244 12.5541ZM15.0199 12.5604C15.0261 12.5084 15.0322 12.469 15.0322 12.4316C15.0322 11.4427 15.0322 10.4538 15.0364 9.46496C15.0364 9.33824 14.9685 9.28422 14.8842 9.22813C14.171 8.74824 13.0672 8.75862 12.358 9.24475C12.2614 9.31123 12.2162 9.38186 12.2183 9.50651C12.2244 10.4725 12.2203 11.4385 12.2224 12.4046C12.2224 12.4544 12.2265 12.5043 12.2306 12.577C13.1638 12.2051 14.0888 12.1823 15.0199 12.5604Z"
-                    fill="#14446C" />
+                    d="M11.7291 8.47401C12.7465 7.83208 13.8092 7.71574 14.913 8.15408C15.1926 8.26627 15.4475 8.45532 15.6962 8.63398C15.8976 8.77732 15.9942 9.00169 15.9942 9.25306C15.9963 10.4289 16.0045 11.6047 15.9922 12.7806C15.986 13.4163 15.3447 13.8027 14.763 13.5222C14.2943 13.2979 13.8113 13.2044 13.2974 13.2709C12.8431 13.3311 12.4341 13.4911 12.1011 13.8235C11.8832 14.0416 11.5996 14.0603 11.4002 13.8484C10.8061 13.2148 9.62628 13.0694 8.80408 13.4807C8.59853 13.5846 8.38681 13.6469 8.15865 13.597C7.75783 13.5119 7.47623 13.1898 7.47417 12.7681C7.46595 11.6027 7.46801 10.4393 7.47417 9.27383C7.47417 8.97053 7.62422 8.73785 7.86061 8.55503C8.46081 8.08968 9.14529 7.89025 9.89555 7.89856C10.5677 7.90687 11.1843 8.09591 11.7332 8.47193L11.7291 8.47401ZM11.244 12.5541C11.2481 12.5334 11.2542 12.5105 11.2542 12.4897C11.2542 11.478 11.2563 10.4663 11.2501 9.45457C11.2501 9.39225 11.1926 9.31123 11.1391 9.27176C10.4444 8.75239 9.27273 8.74616 8.55948 9.24683C8.46492 9.31331 8.43615 9.38602 8.43615 9.50028C8.44026 10.2357 8.4382 10.9711 8.4382 11.7045C8.4382 11.987 8.4382 12.2675 8.4382 12.5521C9.63861 12.1927 9.91611 12.1553 11.244 12.5541ZM15.0199 12.5604C15.0261 12.5084 15.0322 12.469 15.0322 12.4316C15.0322 11.4427 15.0322 10.4538 15.0364 9.46496C15.0364 9.33824 14.9685 9.28422 14.8842 9.22813C14.171 8.74824 13.0672 8.75862 12.358 9.24475C12.2614 9.31123 12.2162 9.38186 12.2183 9.50651C12.2244 10.4725 12.2203 11.4385 12.2224 12.4046C12.2224 12.4544 12.2265 12.5043 12.2306 12.577C13.1638 12.2051 14.0888 12.1823 15.0199 12.5604Z" />
                   <path
-                    d="M2.78445 1.86769C3.04138 1.86561 3.24488 2.06505 3.25104 2.32266C3.25721 2.58649 3.04755 2.79839 2.7865 2.79632C2.53162 2.79632 2.32812 2.59065 2.32812 2.33304C2.32812 2.07544 2.52956 1.86977 2.78445 1.86769Z"
-                    fill="#14446C" />
+                    d="M2.78445 1.86769C3.04138 1.86561 3.24488 2.06505 3.25104 2.32266C3.25721 2.58649 3.04755 2.79839 2.7865 2.79632C2.53162 2.79632 2.32812 2.59065 2.32812 2.33304C2.32812 2.07544 2.52956 1.86977 2.78445 1.86769Z" />
                   <path
-                    d="M6.07891 1.86975C6.33174 1.87806 6.53112 2.09412 6.52084 2.34965C6.51057 2.61348 6.29679 2.81084 6.02958 2.7963C5.78498 2.78383 5.5897 2.57193 5.59381 2.32679C5.59792 2.06503 5.81581 1.86144 6.07686 1.86975H6.07891Z"
-                    fill="#14446C" />
+                    d="M6.07891 1.86975C6.33174 1.87806 6.53112 2.09412 6.52084 2.34965C6.51057 2.61348 6.29679 2.81084 6.02958 2.7963C5.78498 2.78383 5.5897 2.57193 5.59381 2.32679C5.59792 2.06503 5.81581 1.86144 6.07686 1.86975H6.07891Z" />
                   <path
-                    d="M4.43541 1.86769C4.69235 1.87185 4.88968 2.07544 4.88762 2.33512C4.88762 2.60311 4.68002 2.80255 4.4128 2.79632C4.15792 2.79008 3.9647 2.58234 3.96881 2.32058C3.97293 2.0609 4.17642 1.86561 4.43541 1.86769Z"
-                    fill="#14446C" />
+                    d="M4.43541 1.86769C4.69235 1.87185 4.88968 2.07544 4.88762 2.33512C4.88762 2.60311 4.68002 2.80255 4.4128 2.79632C4.15792 2.79008 3.9647 2.58234 3.96881 2.32058C3.97293 2.0609 4.17642 1.86561 4.43541 1.86769Z" />
                 </g>
                 <defs>
                   <clipPath id="clip0_1391_8909">
@@ -124,8 +122,8 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   </clipPath>
                 </defs>
               </svg>
-              <span class="font-weight-500 head-content-title" (click)="onClickReviewCourse('Draft')"
-                [ngClass]="{ 'main-title': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse }"
+              <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('Draft')"
+                [ngClass]="{ 'main-title coursesActive': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse }"
                 i18n>Courses</span>
               <img class="expanded-btn"
                 *ngIf="isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse"
@@ -141,8 +139,8 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
 
             <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
               <img *ngIf="isSelectedColor" src="cbp-assets/icons/Frame_81.svg" />
-              <a [ngClass]="{ 'head-content-title': isSelectedColor }" style="cursor: pointer"
-                (click)="onClickReviewCourse('Draft')" i18n>Drafts</a>
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedColor }"
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('Draft')" i18n>Drafts</a>
             </mat-list-item>
 
             <!-- <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
@@ -171,23 +169,101 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
 
             <mat-list-item *ngIf="!allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
               <img *ngIf="isSelectedReviewCourse" src="cbp-assets/icons/Frame_81.svg" />
-              <a [ngClass]="{ 'head-content-title': isSelectedReviewCourse }" style="cursor: pointer"
-                (click)="onClickReviewCourse('Sent for review')" i18n>Sent For Review</a>
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedReviewCourse }"
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('Sent for review')" i18n>Sent For
+                Review</a>
             </mat-list-item>
 
             <mat-list-item *ngIf="allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
               <img *ngIf="isSelectedToPublishCourse" src="cbp-assets/icons/Frame_81.svg" />
-              <a [ngClass]="{ 'head-content-title': isSelectedToPublishCourse }" style="cursor: pointer"
-                (click)="onClickReviewCourse('Courses to publish')" i18n>Courses to Publish</a>
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedToPublishCourse }"
+                style="cursor: pointer ;color: #808080;" (click)="onClickReviewCourse('Courses to publish')"
+                i18n>Courses
+                to Publish</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
               <img *ngIf="isSelectedPublishCourse" src="cbp-assets/icons/Frame_81.svg" />
-              <a [ngClass]="{ 'head-content-title': isSelectedPublishCourse }" style="cursor: pointer"
-                (click)="onClickReviewCourse('Published Courses')" i18n>Published</a>
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedPublishCourse }"
+                style="cursor: pointer ;color: #808080;" (click)="onClickReviewCourse('Published Courses')"
+                i18n>Published</a>
             </mat-list-item>
             <mat-list-item *ngIf="!allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
               <img *ngIf="isSelectedRetiredCourse" src="cbp-assets/icons/Frame_81.svg" />
-              <a [ngClass]="{ 'head-content-title': isSelectedRetiredCourse }" (click)="onClickReviewCourse('Retired')"
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedRetiredCourse }"
+                style="cursor: pointer ;color: #808080;" (click)="onClickReviewCourse('Retired')" i18n>Retired</a>
+            </mat-list-item>
+          </mat-list>
+        </mat-expansion-panel>
+        <mat-expansion-panel *ngIf="allowAuthorContentCreate" [expanded]="isSelfAssessmentExpanded"
+          [disabled]="isDisabled" style="cursor: pointer" class="no-shadow" hideToggle>
+          <mat-expansion-panel-header class="left-panel-header">
+            <mat-panel-title class="main-block">
+              <svg
+                [ngClass]="{ 'iconActive': isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse }"
+                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 19" fill="none">
+                <g clip-path="url(#clip0_1391_8923)">
+                  <path
+                    d="M15.9969 10.1638C15.9969 12.2762 15.9969 14.3886 15.9969 16.5041C15.9969 17.6906 15.241 18.6495 14.0887 18.9251C13.8687 18.9791 13.6364 18.9971 13.4103 18.9971C9.80445 19.0001 6.20174 19.0031 2.59593 18.9971C1.09042 18.9971 0 17.9483 0 16.4921C0 12.2732 0 8.05431 0 3.83541C0 2.37918 1.08732 1.33344 2.59593 1.32745C2.93979 1.32745 3.28054 1.31546 3.62439 1.33044C3.80097 1.33943 3.87531 1.27951 3.92488 1.1237C4.10765 0.542399 4.51346 0.173845 5.12681 0.0360119C5.25692 0.00604813 5.39632 0.00305176 5.52953 0.00305176C7.17135 0.00305176 8.81317 0.00305176 10.455 0.00305176C11.2697 0.00305176 11.8118 0.380595 12.0751 1.13568C12.1278 1.2825 12.1959 1.33644 12.3601 1.33344C12.8527 1.32745 13.3514 1.29449 13.8347 1.36041C15.1171 1.52821 15.9907 2.54697 15.9938 3.82642C15.9969 5.93887 15.9938 8.05131 15.9938 10.1667L15.9969 10.1638ZM3.57793 2.65185C3.29293 2.65185 2.94288 2.65185 2.59593 2.65185C1.84008 2.65484 1.37231 3.11029 1.37231 3.8474C1.37231 8.0573 1.37231 12.2702 1.37231 16.4801C1.37231 17.2142 1.84318 17.6697 2.59903 17.6697C6.19555 17.6697 9.79206 17.6697 13.3886 17.6697C13.5156 17.6697 13.6488 17.6637 13.7696 17.6337C14.3179 17.4959 14.6277 17.0644 14.6277 16.4471C14.6277 12.2552 14.6277 8.06629 14.6277 3.87437C14.6277 3.75751 14.6184 3.64065 14.5967 3.52379C14.51 3.07733 14.1073 2.69379 13.6488 2.66383C13.2151 2.63686 12.7814 2.65784 12.3384 2.65784C12.3229 2.69979 12.3075 2.73574 12.2951 2.7747C12.0782 3.52379 11.502 3.96725 10.7028 3.97025C8.9061 3.97624 7.10629 3.97325 5.30958 3.97025C4.85421 3.97025 4.43601 3.84141 4.13863 3.50581C3.92798 3.2661 3.78548 2.96646 3.58103 2.64585L3.57793 2.65185ZM8.00465 2.65185C8.88132 2.65185 9.75799 2.65185 10.6347 2.65185C10.898 2.65185 10.9847 2.57694 10.9537 2.33423C10.9227 2.09152 10.8484 1.85181 10.7988 1.60911C10.7524 1.38438 10.613 1.31846 10.3837 1.32146C9.55044 1.33044 8.71713 1.32445 7.88074 1.32445C7.10319 1.32445 6.32565 1.32445 5.55121 1.32445C5.41491 1.32445 5.2817 1.33644 5.24143 1.48326C5.16709 1.74694 5.08035 2.01062 5.04318 2.28329C4.99981 2.58593 5.08035 2.65185 5.39632 2.65185C6.2668 2.65185 7.13417 2.65185 8.00465 2.65185Z"
+                    fill="#808080" />
+                  <path
+                    d="M4.47366 7.82955C4.85159 7.44602 5.2574 7.02653 5.6725 6.61902C6.05352 6.24447 6.67618 6.3853 6.82487 6.87371C6.89922 7.11642 6.84965 7.34115 6.66998 7.52692C6.0907 8.11721 5.51141 8.71049 4.92284 9.29178C4.63165 9.57944 4.22274 9.57045 3.93155 9.28579C3.59699 8.95619 3.26553 8.6206 2.94336 8.28201C2.67695 8.00035 2.68934 7.60483 2.95885 7.35013C3.22526 7.09844 3.63726 7.10443 3.92535 7.35912C4.09883 7.51194 4.2785 7.66176 4.47676 7.82656L4.47366 7.82955Z"
+                    fill="#808080" />
+                  <path
+                    d="M4.42638 13.1781C4.84768 12.7496 5.25349 12.3331 5.66859 11.9256C6.04962 11.551 6.67227 11.6889 6.82096 12.1773C6.89531 12.42 6.84884 12.6447 6.66607 12.8305C6.08679 13.4208 5.50751 14.014 4.91893 14.5953C4.62774 14.883 4.21883 14.877 3.92764 14.5893C3.59308 14.2597 3.26162 13.9241 2.93945 13.5856C2.67304 13.3039 2.68544 12.9084 2.95494 12.6537C3.22755 12.396 3.64884 12.405 3.93384 12.6777C4.09492 12.8335 4.24981 12.9953 4.42948 13.1751L4.42638 13.1781Z"
+                    fill="#808080" />
+                  <path
+                    d="M10.7308 8.62054C10.1391 8.62054 9.54742 8.62653 8.95574 8.62054C8.44771 8.61455 8.11935 8.20105 8.25875 7.75758C8.34858 7.46993 8.6057 7.29614 8.96504 7.29614C10.1484 7.29614 11.3317 7.29614 12.5151 7.29614C12.543 7.29614 12.5708 7.29614 12.6018 7.29614C12.9581 7.31712 13.2307 7.57481 13.2555 7.91639C13.2802 8.237 13.0386 8.54263 12.6979 8.59657C12.5306 8.62354 12.3571 8.61754 12.1867 8.61754C11.7035 8.61754 11.2171 8.61754 10.7339 8.61754L10.7308 8.62054Z"
+                    fill="#808080" />
+                  <path
+                    d="M10.7505 12.5968C11.336 12.5968 11.9184 12.5968 12.5039 12.5968C12.9438 12.5968 13.2504 12.8725 13.2535 13.253C13.2535 13.6306 12.9438 13.9212 12.5101 13.9212C11.3267 13.9242 10.1434 13.9242 8.96002 13.9212C8.53252 13.9212 8.21655 13.6246 8.22275 13.25C8.22894 12.8665 8.53252 12.5998 8.9755 12.5998C9.56718 12.5998 10.1589 12.5998 10.7505 12.5998V12.5968Z"
+                    fill="#808080" />
+                </g>
+                <defs>
+                  <clipPath id="clip0_1391_8923">
+                    <rect width="16" height="19" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+              <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('selfAssessmentDraft')"
+                [ngClass]="{ 'main-title selfAssessmentActive': isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse }"
+                i18n>Self Assessment</span>
+              <img class="expanded-btn"
+                *ngIf="isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse"
+                src="cbp-assets/icons/Frame_82.svg" />
+
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <!-- Shown when logged in as admin-->
+          <mat-list role="list">
+            <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
+              <img alt="" *ngIf="isSelfAssessmentSelectedColor" src="cbp-assets/icons/Frame_81.svg" />
+              <a [ngClass]="{ 'head-content-title activeLink': isSelfAssessmentSelectedColor }"
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('Self Assessment Draft')"
+                i18n>Drafts</a>
+            </mat-list-item>
+            <mat-list-item *ngIf="!allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
+              <img alt="" *ngIf="isSelectedSelfReviewCourse" src="cbp-assets/icons/Frame_81.svg" />
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedSelfReviewCourse }"
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('Self Sent for review')" i18n>Sent
+                For Review</a>
+            </mat-list-item>
+
+            <mat-list-item *ngIf="allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
+              <img alt="" *ngIf="isSelectedToSelfPublishCourse" src="cbp-assets/icons/Frame_81.svg" />
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedToSelfPublishCourse }"
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('Self Courses to publish')"
+                i18n>Courses to Publish</a>
+            </mat-list-item>
+            <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+              <img alt="" *ngIf="isSelectedToSelfPublishCourse" src="cbp-assets/icons/Frame_81.svg" />
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedToSelfPublishCourse }"
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('Self Published Courses')"
+                i18n>Published</a>
+            </mat-list-item>
+            <mat-list-item *ngIf="!allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
+              <img alt="" *ngIf="isSelectedSelfRetiredCourse" src="cbp-assets/icons/Frame_81.svg" />
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedSelfRetiredCourse }"
+                style="cursor: pointer ;color: #808080;" (click)="onClickReviewCourse('Self Retired Courses')"
                 i18n>Retired</a>
             </mat-list-item>
           </mat-list>
@@ -195,9 +271,26 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
         <mat-expansion-panel *ngIf="allowAuthorContentCreate" [expanded]="isCouseExpanded" [disabled]="isDisabled"
           style="cursor: pointer" class="no-shadow" hideToggle>
           <mat-expansion-panel-header class="left-panel-header">
-            <mat-panel-title>
-              <span class="font-weight-500 head-content-title" (click)="onClickReviewCourse('All Courses')"
-                [ngClass]="{ 'main-title': isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate }"
+            <mat-panel-title class="main-block">
+              <svg
+                [ngClass]="{ 'iconActive': isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate }"
+                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 18 18" fill="none">
+                <g clip-path="url(#clip0_1391_8933)">
+                  <path
+                    d="M5.29092 15.9074C5.08722 16.116 4.88112 16.3342 4.66784 16.5452C4.38505 16.8233 4.11425 16.8329 3.83865 16.5595C3.03583 15.7636 2.2354 14.9629 1.43977 14.1597C1.17616 13.896 1.18574 13.6227 1.44936 13.3494C1.63389 13.1576 1.8304 12.9778 2.00774 12.7812C2.05088 12.7332 2.07724 12.6277 2.05567 12.5702C1.88072 12.1435 1.6938 11.7215 1.49729 11.2684C1.21211 11.2684 0.895769 11.2708 0.579433 11.2684C0.205582 11.2636 0.00906996 11.0694 0.00667347 10.6954C0.00427699 9.56381 0.0018805 8.43222 0.00667347 7.30062C0.00667347 6.94101 0.207978 6.74442 0.562658 6.73722C0.878994 6.73243 1.19533 6.73722 1.50448 6.73722C1.70338 6.25774 1.8951 5.79263 2.10599 5.28198C1.90469 5.09258 1.67702 4.884 1.45894 4.66823C1.17137 4.38054 1.17376 4.10963 1.46134 3.81954C2.2402 3.03557 3.02385 2.25401 3.8075 1.47244C4.10946 1.17276 4.37547 1.17036 4.67503 1.46525C4.88352 1.66903 5.06326 1.99508 5.30291 2.04783C5.53297 2.09817 5.82534 1.86802 6.08895 1.76013C6.16085 1.73136 6.23274 1.70499 6.30464 1.67862C6.59221 1.57153 6.736 1.35976 6.736 1.0433C6.736 0.870682 6.73121 0.700463 6.736 0.527848C6.74799 0.228167 6.93731 0.0123974 7.22968 0.00999995C8.41354 0.000410174 9.59501 0.000410174 10.7789 0.00999995C11.0617 0.00999995 11.2534 0.22577 11.263 0.511065C11.2725 0.793964 11.2558 1.07686 11.2725 1.35976C11.2773 1.43648 11.3468 1.54676 11.4163 1.57553C11.8309 1.75534 12.2551 1.91597 12.7272 2.10297C12.9117 1.90877 13.1178 1.67862 13.3359 1.46285C13.6235 1.17516 13.8943 1.17516 14.1843 1.46285C14.9679 2.24202 15.7492 3.02359 16.5304 3.80755C16.8372 4.11442 16.8324 4.38054 16.5209 4.6946C16.3148 4.90078 16.1039 5.09977 15.9074 5.29157C16.0895 5.75188 16.2572 6.19061 16.4394 6.61975C16.4633 6.67489 16.5616 6.72763 16.6263 6.73243C16.8995 6.74442 17.1751 6.73243 17.4483 6.73962C17.7886 6.74681 17.9947 6.9434 17.9947 7.28624C17.9995 8.43461 17.9995 9.58299 17.9947 10.7314C17.9947 11.0694 17.7838 11.2636 17.4387 11.2708C17.1727 11.2756 16.9067 11.2612 16.6431 11.278C16.5664 11.2828 16.4561 11.3523 16.4274 11.4218C16.2477 11.8366 16.0871 12.2609 15.9026 12.7284C16.0991 12.9154 16.3267 13.1216 16.5448 13.3398C16.83 13.6275 16.83 13.8984 16.5424 14.1885C15.7564 14.9796 14.9679 15.766 14.1795 16.5524C13.8943 16.8353 13.6235 16.8281 13.3311 16.5428C13.1466 16.363 12.9717 16.1736 12.7823 16.0009C12.7344 15.9578 12.6266 15.9314 12.5714 15.953C12.1449 16.128 11.7231 16.315 11.2702 16.514C11.2702 16.7969 11.2725 17.1134 11.2702 17.4298C11.2654 17.8014 11.0712 18.0004 10.6974 18.0028C9.56625 18.0052 8.43511 18.0076 7.30397 18.0028C6.9445 18.0028 6.74799 17.8014 6.7408 17.4466C6.736 17.1805 6.75038 16.9144 6.73361 16.6506C6.72881 16.5739 6.65932 16.4636 6.58982 16.4325C6.17523 16.2527 5.75105 16.0944 5.29332 15.9122L5.29092 15.9074ZM13.7266 2.48416C13.5444 2.67835 13.3743 2.87015 13.1921 3.05235C12.9381 3.30409 12.7536 3.30409 12.4301 3.15784C11.8717 2.90371 11.3037 2.66637 10.7285 2.45299C10.3643 2.31634 10.2421 2.19167 10.2397 1.80329C10.2397 1.54916 10.2397 1.29743 10.2397 1.05049H7.7641C7.7641 1.319 7.7641 1.56834 7.7641 1.81527C7.7617 2.18448 7.63469 2.31394 7.28719 2.4458C6.70485 2.66637 6.12969 2.90851 5.56412 3.16264C5.25737 3.29929 5.06086 3.29689 4.82361 3.05715C4.63668 2.87015 4.46653 2.66876 4.29398 2.47937C3.67809 3.09551 3.10533 3.6685 2.52538 4.24628C2.52538 4.24868 2.53017 4.26786 2.53976 4.27985C2.7147 4.45726 2.88965 4.63227 3.06219 4.81208C3.29944 5.05662 3.30663 5.25081 3.17003 5.55528C2.91601 6.12348 2.67156 6.69647 2.45109 7.27905C2.31688 7.63627 2.18987 7.75614 1.79445 7.75854C1.54761 7.75854 1.30317 7.75854 1.04435 7.75854V10.2351C1.30557 10.2351 1.55241 10.2351 1.79924 10.2351C2.19227 10.2351 2.31688 10.3574 2.45109 10.7194C2.66677 11.2948 2.90402 11.863 3.15565 12.4216C3.30184 12.7476 3.30663 12.937 3.055 13.1839C2.86808 13.3686 2.66438 13.5364 2.48704 13.6922C3.10772 14.3179 3.68049 14.8957 4.25564 15.4759C4.25085 15.4759 4.26043 15.4759 4.26762 15.4711C4.45695 15.2865 4.64627 15.0995 4.83799 14.9149C5.06086 14.7015 5.25737 14.6943 5.54016 14.8214C6.1249 15.0803 6.71444 15.3297 7.31116 15.5598C7.62989 15.6821 7.75691 15.8187 7.7617 16.1592C7.7641 16.4229 7.7617 16.6842 7.7617 16.9503H10.2157C10.2253 16.9168 10.2349 16.9024 10.2349 16.8856C10.2349 16.6459 10.2349 16.4061 10.2397 16.1664C10.2445 15.8115 10.3691 15.6821 10.7046 15.5526C11.2869 15.3321 11.8621 15.0923 12.4301 14.8358C12.7536 14.6895 12.9405 14.6871 13.1897 14.9461C13.3719 15.1331 13.5372 15.3392 13.6786 15.5047C14.3137 14.8717 14.8888 14.3012 15.4952 13.697C15.3178 13.5316 15.1189 13.3566 14.932 13.1696C14.6995 12.937 14.6947 12.7428 14.8265 12.4503C15.083 11.8749 15.3298 11.2924 15.5551 10.7026C15.6869 10.3574 15.8139 10.2375 16.1925 10.2351C16.4466 10.2351 16.7006 10.2351 16.9522 10.2351V7.77771C16.9187 7.76812 16.9019 7.76093 16.8851 7.76093C16.6622 7.76093 16.4394 7.76093 16.2165 7.75854C15.8091 7.75854 15.6845 7.63627 15.5455 7.26466C15.3346 6.69647 15.1045 6.13547 14.8529 5.58645C14.6923 5.23403 14.6875 5.06141 14.9727 4.78571C15.1549 4.61069 15.3562 4.45486 15.5407 4.29903C14.9032 3.66131 14.3353 3.09071 13.7266 2.48176V2.48416Z"
+                    fill="#808080" />
+                  <path
+                    d="M4.59869 9.00004C4.59869 8.30478 4.60588 7.61192 4.5939 6.91666C4.5891 6.6002 4.70174 6.39162 4.98452 6.231C6.20673 5.53813 7.41935 4.83329 8.63197 4.12604C8.88121 3.9798 9.10408 3.9726 9.35332 4.11885C10.5875 4.83808 11.8265 5.55492 13.0679 6.26456C13.3027 6.39882 13.4034 6.58821 13.4034 6.85193C13.401 8.28321 13.401 9.71448 13.4034 11.1458C13.4034 11.4239 13.2907 11.6085 13.0487 11.7475C11.8145 12.4524 10.5851 13.1644 9.35811 13.8788C9.10887 14.0251 8.886 14.0179 8.63677 13.8716C7.41696 13.1596 6.19475 12.45 4.96775 11.7523C4.70413 11.6013 4.5939 11.4023 4.59869 11.1074C4.60828 10.4049 4.60109 9.70249 4.60109 9.00004H4.59869ZM8.48579 12.5938C8.48579 11.5006 8.48818 10.4553 8.4786 9.4124C8.4786 9.34288 8.39712 9.24938 8.32762 9.20862C7.90344 8.95209 7.46968 8.70995 7.04071 8.46062C6.58538 8.1969 6.12765 7.93318 5.67231 7.66946C5.65075 7.70542 5.63397 7.71981 5.63397 7.73419C5.63157 8.76269 5.62678 9.7888 5.63157 10.8173C5.63157 10.8796 5.6795 10.9683 5.73223 10.9995C6.63091 11.5269 7.53438 12.0448 8.48339 12.5938H8.48579ZM12.3585 7.67905C12.3082 7.69823 12.2746 7.70542 12.2483 7.71981C11.3807 8.21848 10.5132 8.71475 9.65288 9.2254C9.58098 9.26856 9.52347 9.39802 9.52107 9.48912C9.51148 10.4553 9.51388 11.4239 9.51628 12.39C9.51628 12.4452 9.52586 12.4979 9.53066 12.5602C9.57859 12.5459 9.60495 12.5411 9.62651 12.5291C10.494 12.0304 11.3616 11.5341 12.2219 11.0235C12.301 10.9755 12.3681 10.8389 12.3681 10.7406C12.3801 9.7912 12.3753 8.83941 12.3729 7.89003C12.3729 7.8253 12.3633 7.75817 12.3585 7.67665V7.67905ZM6.14682 6.75604C7.08384 7.29546 7.98492 7.8205 8.89319 8.33355C8.96029 8.37191 9.0921 8.34794 9.16639 8.30718C9.7056 8.0075 10.2352 7.69583 10.7696 7.38656C11.1219 7.18278 11.4742 6.979 11.8337 6.76802C11.7977 6.73206 11.781 6.71048 11.7594 6.6985C10.8847 6.19264 10.0123 5.68438 9.13284 5.19051C9.05855 5.14975 8.91716 5.16413 8.83567 5.20729C8.2749 5.51895 7.72131 5.84501 7.16532 6.16626C6.83461 6.35806 6.5015 6.54746 6.14442 6.75604H6.14682Z"
+                    fill="#808080" />
+                </g>
+                <defs>
+                  <clipPath id="clip0_1391_8933">
+                    <rect width="18" height="18" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+              <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('All Courses')"
+                [ngClass]="{ 'main-title manageCourseActive': isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate }"
                 i18n>Manage Courses</span>
               <img class="expanded-btn"
                 *ngIf="isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate"
@@ -208,18 +301,23 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
           <mat-list role="list">
             <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
               <img *ngIf="isSelectedAllCourse" src="cbp-assets/icons/Frame_81.svg" />
-              <a [ngClass]="{ 'head-content-title': isSelectedAllCourse }" style="cursor: pointer"
-                (click)="onClickReviewCourse('All Courses')" i18n>All Courses</a>
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedAllCourse }"
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('All Courses')" i18n>All
+                Courses</a>
             </mat-list-item>
             <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
               <img *ngIf="isSelectedCourseWithoutCertificate" src="cbp-assets/icons/Frame_81.svg" />
-              <a [ngClass]="{ 'head-content-title': isSelectedCourseWithoutCertificate }" style="cursor: pointer"
-                (click)="onClickReviewCourse('Courses without certificate')" i18n>Course Without Certificate</a>
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedCourseWithoutCertificate }"
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('Courses without certificate')"
+                i18n>Courses
+                Without Certificate</a>
             </mat-list-item>
             <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
               <img *ngIf="isSelectedCourseWithCertificate" src="cbp-assets/icons/Frame_81.svg" />
-              <a [ngClass]="{ 'head-content-title': isSelectedCourseWithCertificate }" style="cursor: pointer"
-                (click)="onClickReviewCourse('Courses with certificate')" i18n>Course With Certificate</a>
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedCourseWithCertificate }"
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('Courses with certificate')"
+                i18n>Courses With
+                Certificate</a>
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
@@ -289,19 +387,25 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
 
       <mat-sidenav-content class="sidenav-content">
         <nav mat-tab-nav-bar class="mat-nav-container">
-          <a class="tab-links-data nav-tab-links" mat-tab-link *ngFor="let link of links"
+          <!-- <a class="tab-links-data nav-tab-links" mat-tab-link *ngFor="let link of links"
             (click)="navigateContents(link)" [ngClass]="{'activeTab':link==activeLink}">
             {{ link }}
-          </a>
+          </a> -->
+          <p class="currentTab">{{currentTab}} : {{currentStatus}}</p>
 
           <span fxFlex style="flex: 1 1 auto"></span>
 
           <div *ngIf="allowAuthorContentCreate"
-            class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l padding-remove-left create-button">
-            <button mat-button class="btn-create" [routerLink]="'/author/create'" id="ws-auth-root-home-btn-create"
-              name="ws-auth-root-home-btn-create">
+            class="matExpansion flex flex-middle margin-left-l margin-right-l padding-remove-left create-button">
+            <button *ngIf="createCourseBtn" mat-button class="btn-create" [routerLink]="'/author/create'"
+              id="ws-auth-root-home-btn-create" name="ws-auth-root-home-btn-create">
               <mat-icon class="add-create-icon">add</mat-icon>
               <ng-container i18n>Create a new course</ng-container>
+            </button>
+            <button *ngIf="!createCourseBtn" mat-button class="btn-create self-btn-create"
+              [routerLink]="'/author/create'" id="ws-auth-root-home-btn-create" name="ws-auth-root-home-btn-create">
+              <mat-icon class="add-create-icon">add</mat-icon>
+              <ng-container i18n>Create a new self assessment</ng-container>
             </button>
           </div>
         </nav>

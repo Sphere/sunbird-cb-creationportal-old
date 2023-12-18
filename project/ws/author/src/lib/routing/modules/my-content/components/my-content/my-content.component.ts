@@ -123,7 +123,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
   allowExpiry = false
   allowRestore = false
   isNewDesign = false
-
+  currentTab = 'My Courses'
+  currentStatus = 'Drafts'
+  createCourseBtn = true
   public filterMenuItems: any = []
 
   dataSource: any
@@ -161,6 +163,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       offset: 0,
       limit: 24,
     }
+    this.router.navigate(['/author/my-content'], { queryParams: { status: 'draft' } })
+
     // tslint:disable-next-line:no-console
     console.log(this.configService.unMappedUser.roles)
     // this.newDesign = this.accessService.authoringConfig.newDesign
@@ -284,6 +288,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.links = ['Courses to publish', 'Published Courses']
     }
     if (status == 'Sent for review') {
+      this.createCourseBtn = true
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Sent for review'
       this.isSelectedColor = false
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = true
@@ -300,6 +307,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfRetiredCourse = false
     }
     else if (status == 'Courses to publish') {
+      this.createCourseBtn = true
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Courses to publish'
       this.isSelectedColor = false
       this.isSelectedReviewCourse = false
       this.isSelectedPublishCourse = false
@@ -316,6 +326,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfRetiredCourse = false
     }
     else if (status == 'Published') {
+      this.createCourseBtn = true
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Published'
       this.isSelectedColor = false
       this.isSelectedReviewCourse = false
       this.isSelectedPublishCourse = true
@@ -332,6 +345,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfRetiredCourse = false
     }
     else if (status == 'Retired') {
+      this.createCourseBtn = true
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Retired'
       this.isSelectedColor = false
       this.isSelectedReviewCourse = false
       this.isSelectedPublishCourse = false
@@ -348,6 +364,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfRetiredCourse = false
     }
     else if (status == 'Draft') {
+      this.createCourseBtn = true
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Draft'
       this.isSelectedColor = true
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
@@ -365,6 +384,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
     }
     else if (status == 'All Courses') {
+      this.currentTab = 'Manage Courses'
+      this.currentStatus = 'All Courses'
       this.isSelectedColor = true
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
@@ -380,6 +401,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfRetiredCourse = false
     }
     else if (status == 'Courses without certificate') {
+      this.currentTab = 'Manage Courses'
+      this.currentStatus = 'Courses without certificate'
       this.isSelectedColor = true
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
@@ -396,6 +419,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
     }
 
     else if (status == 'Courses with certificate') {
+      this.currentTab = 'Manage Courses'
+      this.currentStatus = 'Courses with certificate'
       this.isSelectedColor = true
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
@@ -411,6 +436,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfRetiredCourse = false
     }
     else if (status == 'Self Assessment Draft') {
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Draft'
       this.isSelectedColor = false
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
@@ -427,6 +455,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
     }
     else if (status == 'Self Sent for review') {
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Sent for review'
       this.isSelectedColor = false
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
@@ -443,6 +474,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
     }
     else if (status == 'Self Courses to publish') {
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Courses to publish'
       this.isSelectedColor = false
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
@@ -459,6 +493,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
     }
     else if (status == 'Self Published Courses') {
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Published'
       this.isSelectedColor = false
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
@@ -475,6 +512,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
     }
     else if (status == 'Self Retired Courses') {
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Retired'
       this.isSelectedColor = false
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
@@ -499,6 +539,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
   navigateContents(data: string): void {
     switch (data) {
       case 'Draft':
+        this.createCourseBtn = true
+        this.currentTab = 'My Courses'
+        this.currentStatus = 'Draft'
         this.link = 'Draft'
         this.activeLink = 'Draft'
         this.isSelectedColor = true
@@ -546,6 +589,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
 
       case 'Published Courses':
+        this.createCourseBtn = true
+        this.currentTab = 'My Courses'
+        this.currentStatus = 'Published'
         this.link = 'Published Courses'
         this.activeLink = 'Published Courses'
         this.isSelectedColor = false
@@ -625,8 +671,47 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isSelectedRetiredCourse = false
         this.isSelectedAllCourse = false
         this.isSelectedCourseWithoutCertificate = false
-        this.isSelectedCourseWithCertificate = true
+        this.isSelectedCourseWithCertificate = false
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfAssessmentDraft' } })
+        break
+      case 'Self Sent for review':
+        this.link = 'Courses with certificate'
+        this.activeLink = 'Courses with certificate'
+        this.isSelectedColor = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfSentForReview' } })
+        break
+      case 'Self Published Courses':
+        this.link = 'Courses with certificate'
+        this.activeLink = 'Courses with certificate'
+        this.isSelectedColor = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfPublishedCourse' } })
+        break
+      case 'Self Retired Courses':
+        this.link = 'Courses with certificate'
+        this.activeLink = 'Courses with certificate'
+        this.isSelectedColor = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfRetiredCourse' } })
         break
     }
 
@@ -637,11 +722,13 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'draft':
       case 'rejected':
         return ['Draft']
+      case 'selfSentForReview':
       case 'inreview':
         return ['Review', 'QualityReview']
       // return ['InReview', 'Reviewed', 'QualityReview']
       case 'review':
         return ['Review']
+      case 'selfPublishedCourse':
       case 'published':
       case 'expiry':
         return ['Live']
@@ -657,6 +744,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'processing':
         return ['Processing']
       case 'unpublished':
+      case 'selfRetiredCourse':
         return ['Unpublished', 'Retired']
       case 'deleted':
         return ['Deleted']
@@ -990,6 +1078,13 @@ export class MyContentComponent implements OnInit, OnDestroy {
       requestData.request.filters['issueCertification'] = true
     } else if (this.status == 'selfAssessmentDraft') {
       requestData.request.filters['competency'] = true
+    } else if (this.status == 'selfSentForReview') {
+      requestData.request.filters['competency'] = true
+      requestData.request.filters['reviewStatus'] = 'InReview'
+    } else if (this.status == 'selfPublishedCourse') {
+      requestData.request.filters['competency'] = true
+    } else if (this.status == 'selfRetiredCourse') {
+      requestData.request.filters['competency'] = true
 
     }
 
@@ -1036,13 +1131,16 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // if (this.status === 'publish' && !this.isAdmin) {
     //   requestData.request.filters.publisherDetails.push(this.userId)
     // }
+
     switch (this.status) {
       case 'allCourses':
       case 'coursesWithoutCertificate':
       case 'courseWithCertificate':
       case 'published':
+      case 'selfAssessmentDraft':
+      case 'selfSentForReview':
+      case 'selfPublishedCourse':
         if (this.accessService.hasRole(['content_creator'])) {
-          requestData.request.filters['competency'] = false
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         } else if (this.accessService.hasRole(['content_reviewer'])) {
           requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
@@ -1104,6 +1202,12 @@ export class MyContentComponent implements OnInit, OnDestroy {
           requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
         } else if (this.accessService.hasRole(['content_publisher'])) {
           requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+        }
+        break
+      case 'selfRetiredCourse':
+        if (this.accessService.hasRole(['content_creator'])) {
+          requestData.request.filters['competency'] = true
+          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         }
     }
 
