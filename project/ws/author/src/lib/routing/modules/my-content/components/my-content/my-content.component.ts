@@ -163,7 +163,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       offset: 0,
       limit: 24,
     }
-    this.router.navigate(['/author/my-content'], { queryParams: { status: 'draft' } })
+    // this.router.navigate(['/author/my-content'], { queryParams: { status: 'draft' } })
 
     // tslint:disable-next-line:no-console
     console.log(this.configService.unMappedUser.roles)
@@ -435,7 +435,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
     }
-    else if (status == 'Self Assessment Draft') {
+    else if (status == 'Self Assessment Draft' || status == 'selfAssessmentDraft') {
       this.createCourseBtn = false
       this.currentTab = 'Self Assessment'
       this.currentStatus = 'Draft'
@@ -661,6 +661,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isSelectedCourseWithCertificate = true
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'courseWithCertificate' } })
         break
+      case 'selfAssessmentDraft':
       case 'Self Assessment Draft':
         this.link = 'Courses with certificate'
         this.activeLink = 'Courses with certificate'
