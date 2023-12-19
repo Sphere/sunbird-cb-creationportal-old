@@ -96,8 +96,8 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
     <ng-container *ngIf="!isNewDesign">
       <p *ngIf="allowAuthor" class="dashboard-txt">Dashboard</p>
       <mat-accordion expanded *ngIf="allowAuthor">
-        <mat-expansion-panel [expanded]="isContentExpanded" [disabled]="isDisabled" style="cursor: pointer"
-          class="no-shadow" hideToggle>
+        <mat-expansion-panel (click)="onClickReviewCourse('Draft')" [expanded]="isContentExpanded"
+          [disabled]="isDisabled" style="cursor: pointer" class="no-shadow" hideToggle>
 
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title class="main-block">
@@ -122,7 +122,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   </clipPath>
                 </defs>
               </svg>
-              <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('Draft')"
+              <span class="font-weight-500 head-content-block"
                 [ngClass]="{ 'coursesActive': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse }"
                 i18n>Courses</span>
               <img class="expanded-btn"
@@ -194,8 +194,9 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
-        <mat-expansion-panel *ngIf="allowAuthorContentCreate" [expanded]="isSelfAssessmentExpanded"
-          [disabled]="isDisabled" style="cursor: pointer" class="no-shadow" hideToggle>
+        <mat-expansion-panel (click)="onClickReviewCourse('selfAssessmentDraft')" *ngIf="allowAuthorContentCreate"
+          [expanded]="isSelfAssessmentExpanded" [disabled]="isDisabled" style="cursor: pointer" class="no-shadow"
+          hideToggle>
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title class="main-block">
               <svg
@@ -224,7 +225,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   </clipPath>
                 </defs>
               </svg>
-              <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('selfAssessmentDraft')"
+              <span class="font-weight-500 head-content-block"
                 [ngClass]="{ 'selfAssessmentActive': isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse }"
                 i18n>Self Assessment</span>
               <img class="expanded-btn"
@@ -268,8 +269,8 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
-        <mat-expansion-panel *ngIf="allowAuthorContentCreate" [expanded]="isCouseExpanded" [disabled]="isDisabled"
-          style="cursor: pointer" class="no-shadow" hideToggle>
+        <mat-expansion-panel (click)="onClickReviewCourse('All Courses')" *ngIf="allowAuthorContentCreate"
+          [expanded]="isCouseExpanded" [disabled]="isDisabled" style="cursor: pointer" class="no-shadow" hideToggle>
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title class="main-block">
               <svg
@@ -289,7 +290,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   </clipPath>
                 </defs>
               </svg>
-              <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('All Courses')"
+              <span class="font-weight-500 head-content-block"
                 [ngClass]="{ 'manageCourseActive': isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate }"
                 i18n>Manage Courses</span>
               <img class="expanded-btn"
