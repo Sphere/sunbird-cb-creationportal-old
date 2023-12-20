@@ -194,7 +194,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.allowPublish = this.canShow('publish') && this.accessService.authoringConfig.allowPublish
     this.isContentExpanded = true
     console.log("status: ", this.status)
-    debugger
     if (this.status === 'allCourses' || this.status === 'coursesWithoutCertificate' || this.status === 'courseWithCertificate') {
       this.links = ['All Courses', 'Courses without certificate', 'Courses with certificate']
       this.isContentExpanded = false
