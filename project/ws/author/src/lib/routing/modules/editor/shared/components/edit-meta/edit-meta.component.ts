@@ -498,12 +498,12 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   checkMandatoryFields() {
     //let totalDuration = 0, subTitles, sourceName, instructions, appIcon, lang
-    let subTitles, sourceName, instructions, appIcon, lang, competency, selfAssessment
+    let subTitles, instructions, appIcon, lang, competency, selfAssessment
     //totalDuration += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
     //totalDuration += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
     //totalDuration += this.hours ? this.hours * 60 * 60 : 0
     subTitles = this.contentForm.controls.subTitle.value
-    sourceName = this.contentForm.controls.sourceName.value
+    // sourceName = this.contentForm.controls.sourceName.value
     instructions = this.contentForm.controls.instructions.value
     appIcon = this.contentForm.controls.appIcon.value
     lang = this.contentForm.controls.lang.value
@@ -512,7 +512,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // console.log("total: ", totalDuration, subTitles, sourceName, instructions, appIcon)
     //if (totalDuration && subTitles && sourceName && instructions && appIcon && lang) {
-    if (subTitles && sourceName && instructions && appIcon && lang) {
+    if (subTitles && instructions && appIcon && lang) {
       if (selfAssessment) {
         if (competency && competency.length > 0) {
           return false
