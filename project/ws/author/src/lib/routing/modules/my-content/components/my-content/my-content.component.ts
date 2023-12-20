@@ -351,6 +351,63 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = true
     }
+    else if (this.status === 'inreview') {
+      this.isSelfAssessmentExpanded = false
+      this.createCourseBtn = false
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Sent For Review'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = true
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+    }
+    else if (this.status === 'published') {
+      this.isSelfAssessmentExpanded = false
+      this.createCourseBtn = false
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Published'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedToPublishCourse = true
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+    }
+    else if (this.status === 'unpublished') {
+      this.isSelfAssessmentExpanded = false
+      this.createCourseBtn = false
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Retired'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = true
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+    }
   }
 
 
