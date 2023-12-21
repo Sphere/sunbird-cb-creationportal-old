@@ -1294,7 +1294,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
       case 'publish':
         requestData.request.filters['reviewStatus'] = 'Reviewed'
-        requestData.request.filters['competency'] = false
+        // requestData.request.filters['competency'] = false
         requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
         break
       case 'processing':
@@ -1318,7 +1318,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'inreview':
         requestData.request.filters['reviewStatus'] = 'InReview'
         if (this.accessService.hasRole(['content_creator'])) {
-          requestData.request.filters['competency'] = false
+          // requestData.request.filters['competency'] = false
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         } else
           if (this.accessService.hasRole(['content_reviewer'])) {
@@ -1333,13 +1333,13 @@ export class MyContentComponent implements OnInit, OnDestroy {
           this.accessService.hasRole(['content_reviewer']) ||
           this.configService.userRoles!.has('public') ||
           this.accessService.hasRole(['content_publisher'])) {
-          requestData.request.filters['competency'] = false
+          // requestData.request.filters['competency'] = false
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         }
         break
       case 'unpublished':
         if (this.accessService.hasRole(['content_creator'])) {
-          requestData.request.filters['competency'] = false
+          // requestData.request.filters['competency'] = false
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         } else if (this.accessService.hasRole(['content_reviewer'])) {
           requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []

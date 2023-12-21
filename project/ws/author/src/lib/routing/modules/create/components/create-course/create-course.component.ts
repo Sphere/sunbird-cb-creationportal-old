@@ -175,7 +175,6 @@ export class CreateCourseComponent implements OnInit {
             const updateContentReq: any = {
               request: {
                 content: {
-                  competency: false,
                   versionKey: this.identifier.versionKey,
                 },
               },
