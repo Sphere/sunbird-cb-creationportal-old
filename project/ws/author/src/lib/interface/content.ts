@@ -211,6 +211,7 @@ export namespace NSContent {
     trackContactsCtrl: string
     publisherDetailsCtrl: string
     gatingEnabled: boolean
+    courseVisibility: boolean
     activateLink: string
     previewLinkFormControl: string
     sourceUrl: string

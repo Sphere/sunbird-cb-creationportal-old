@@ -338,11 +338,15 @@ ul li {
     line-height: 26.8px;
   }
   .mt-hint {
-    font-size: 10px !important;
-    color: #808080  !important;
-    font-family: Roboto !important;
-    font-weight: 400 !important;
-    line-height: 14.4px !important;
+    color: #808080;
+
+/* Label 2 */
+font-family: Roboto;
+font-size: 12px;
+font-style: normal;
+font-weight: 400;
+line-height: 14.4px; /* 120% */
+letter-spacing: -0.24px;
   }
 
   .ul-list {
@@ -485,9 +489,11 @@ ul li {
     justify-content: space-around;
 }
 .flex-row-container > .flex-row-item {
-    flex: 0 1 50%; /*grow | shrink | basis */
     top: 0;
     justify-content: space-between;
+     flex: 1;
+      padding: 10px 45px;
+      box-sizing: border-box;
 }
 .course-settings-header{
     font-weight: 400;
@@ -496,9 +502,15 @@ ul li {
     font-style: normal;
 }
 .course-settings-title{
-  font-style: normal;
-  font-weight: 400;
-  font-size: 20px;
+  color: #1C5D95;
+
+/* Header 3 */
+font-family: Roboto;
+font-size: 20px;
+font-style: normal;
+font-weight: 400;
+line-height: 24px; /* 120% */
+letter-spacing: -0.4px;
 }
 .mat-chip.mat-standard-chip {
   //      color: white !important;
@@ -515,4 +527,31 @@ ul li {
 }
 .settingsButton{
   border-radius: 30px;
+}
+.course-setup-block{
+  border-left: 1px solid #D9D9D9;
+  border-right: 1px solid #D9D9D9;
+}
+.label-heading{
+  color: #000;
+
+/* Body */
+font-family: Roboto;
+font-size: 16px;
+font-style: normal;
+font-weight: 400;
+line-height: 24px; /* 150% */
+letter-spacing: -0.32px;
+}
+
+::ng-deep .theme-igot.day-mode .mat-form-field-appearance-fill .mat-form-field-flex{
+border-radius: 6px;
+background: #FFF;
+box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
+}
+
+::ng-deep .theme-igot.day-mode .mat-form-field-appearance-outline .mat-form-field-outline{
+border-radius: 6px !important;
+background: #FFF !important;
+box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15) !important;
 }

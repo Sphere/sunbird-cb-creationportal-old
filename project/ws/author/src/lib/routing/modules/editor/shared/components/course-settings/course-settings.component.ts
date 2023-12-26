@@ -78,7 +78,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   publisherDetails!: FormControl
   trackContacts!: FormControl
   activateLink!: FormControl
-  gatingEnabled!: FormControl
   previewLinkFormControl!: FormControl
   publisherDetailsCtrl!: FormControl
   editorsCtrl!: FormControl
@@ -203,6 +202,10 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
   contentForm!: FormGroup
   ngOnInit() {
+    this.ordinals = this.authInitService.ordinals
+    this.audienceList = this.ordinals.audience
+    this.jobProfileList = this.ordinals.jobProfile
+    this.complexityLevelList = this.ordinals.audience
     this.authInitService.currentPageAction('courseSettingsPage')
 
     const url = this.router.url
@@ -241,7 +244,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     this.creatorContactsCtrl = new FormControl()
     this.trackContactsCtrl = new FormControl()
     this.activateLink = new FormControl()
-    this.gatingEnabled = new FormControl()
     this.previewLinkFormControl = new FormControl()
     this.publisherDetailsCtrl = new FormControl()
     this.editorsCtrl = new FormControl()
@@ -493,9 +495,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       this.contentMeta.trackContacts = JSON.parse(this.contentMeta.reviewer)
     }
 
-    if (this.contentMeta.gatingEnabled && typeof this.contentMeta.gatingEnabled === 'boolean') {
-      this.contentMeta.gatingEnabled = this.contentMeta.gatingEnabled
-    }
+
     if (this.contentMeta.creatorDetails && typeof this.contentMeta.creatorDetails === 'string') {
       this.contentMeta.creatorDetails = JSON.parse(this.contentMeta.creatorDetails)
     }
@@ -623,7 +623,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         this.contentForm.controls.gatingEnabled.setValue(this.contentMeta.gatingEnabled)
         this.contentForm.controls.activateLink.setValue(this.contentMeta.activateLink)
         this.contentForm.controls.previewLinkFormControl.setValue(this.contentMeta.previewLinkFormControl)
-        this.contentForm.controls.gatingEnabled.setValue(this.contentMeta.gatingEnabled)
+        this.contentForm.controls.courseVisibility.setValue(this.contentMeta.courseVisibility)
 
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
@@ -636,7 +636,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     })
     this.canUpdate = true
     // tslint:disable-next-line:no-console
-    console.log('saved', this.contentForm.controls)
+    console.log('saved', this.contentForm.controls, this.contentMeta)
     this.storeData()
     if (this.isSubmitPressed) {
       this.contentForm.markAsDirty()
@@ -779,6 +779,9 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             if (!currentMeta.gatingEnabled) {
               currentMeta.gatingEnabled = parentData.gatingEnabled !== false ? parentData.gatingEnabled : currentMeta.gatingEnabled
             }
+            if (!currentMeta.courseVisibility) {
+              currentMeta.courseVisibility = parentData.courseVisibility !== false ? parentData.courseVisibility : currentMeta.courseVisibility
+            }
             if (!currentMeta.activateLink) {
               currentMeta.activateLink = parentData.activateLink !== '' ? parentData.activateLink : currentMeta.activateLink
             }
@@ -808,7 +811,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             }+0000`
         }
         // tslint:disable-next-line:no-console
-        // console.log("currentMeta", currentMeta)
+        console.log("currentMeta", currentMeta)
         Object.keys(currentMeta).map(v => {
           if (
             v !== 'versionKey' && v !== 'visibility' &&
@@ -859,6 +862,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
       }
     } catch (ex) {
+      console.log("yes here", ex)
       this.snackBar.open('Please Save Parent first and refresh page.')
       if (ex) {
         // this.saveParent = true
@@ -1000,15 +1004,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     // Reset the input value
     if (input) {
       input.value = ''
-    }
-  }
-  updateMyValue(event: any) {
-    if (event) {
-      // tslint:disable-next-line:no-console
-      // console.log(event.checked)
-      this.contentForm.controls.gatingEnabled.setValue(
-        event.checked
-      )
     }
   }
 
@@ -1710,7 +1705,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       name: [],
       nodeType: [],
       org: [],
-      gatingEnabled: [],
+      gatingEnabled: new FormControl(''),
       issueCertification: false,
       creatorDetails: [],
       // passPercentage: [],
@@ -1756,8 +1751,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       publisherDetailsCtrl: '',
       activateLink: new FormControl(),
       previewLinkFormControl: new FormControl(),
-
-      // cneName: new FormControl('', [Validators.required])
+      cneName: new FormControl(''),
+      courseVisibility: new FormControl('')
     })
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {

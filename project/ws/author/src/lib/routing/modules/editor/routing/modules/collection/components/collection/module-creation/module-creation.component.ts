@@ -747,11 +747,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         delete requestBody.request.content.trackContacts
       }
 
-      if (requestBody.request.content.gatingEnabled && requestBody.request.content.gatingEnabled) {
+      // if (requestBody.request.content.gatingEnabled && requestBody.request.content.gatingEnabled) {
 
-        requestBody.request.content.gatingEnabled = requestBody.request.content.gatingEnabled
-        delete requestBody.request.content.gatingEnabled
-      }
+      //   requestBody.request.content.gatingEnabled = requestBody.request.content.gatingEnabled
+      //   delete requestBody.request.content.gatingEnabled
+      // }
 
       if (requestBody.request.content.publisherDetails && requestBody.request.content.publisherDetails.length > 0) {
         requestBody.request.content.publisherIDs = []

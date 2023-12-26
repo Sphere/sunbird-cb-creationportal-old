@@ -1,15 +1,14 @@
 <form [formGroup]="contentForm">
   <div class="inner-section">
-    <div class="flex-container">
+    <!-- <div class="flex-container">
 
       <div class="flex-row-item">
         <span class="margin-left-l margin-top-l course-settings-header">Course Settings</span>
 
       </div>
-    </div>
-
-    <!-- <div class="flex-container">
     </div> -->
+
+
     <div class="flex-row-container">
 
       <div class="flex-row-item">
@@ -18,7 +17,8 @@
         <div class="margin-top-l margin-left-l" [ngClass]="{ disable: checkCondition('trackContacts', 'disabled') }">
           <label>
             <div class="margin-top-xs">
-              <b [ngClass]="{ required: checkCondition('trackContacts', 'required') }" i18n>Reviewers</b>
+              <span class="label-heading" style="color: #d32f2f">*</span>
+              <span class="label-heading" i18n>Reviewers</span>
             </div>
           </label>
           <div class="margin-top-xs">
@@ -52,11 +52,13 @@
             </mat-form-field>
           </div>
         </div>
+
         <!--Publishers-->
-        <div class="margin-top-l margin-left-l" [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
+        <div class="margin-left-l" [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
           <!--Show in popup--> <label>
             <div class="margin-top-xs">
-              <b [ngClass]="{ required: checkCondition('publisherDetails', 'required') }" i18n>Publishers</b>
+              <span class="label-heading" style="color: #d32f2f">*</span>
+              <span class="label-heading" i18n>Publishers</span>
             </div>
           </label>
           <div class="margin-top-xs">
@@ -90,8 +92,34 @@
           </div>
           <!--Show in popup-->
         </div>
+        <!--Source name-->
+        <div class="margin-left-l" [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
+          <!--Show in popup--> <label>
+            <div class="margin-top-xs">
+              <span class="label-heading" style="color: #d32f2f">*</span><mat-label class="label-heading">Source Name
+              </mat-label>
+            </div>
+          </label>
+          <div class="margin-top-xs">
+            <mat-form-field appearance="fill" class="margin-top-xs" class="margin-top-xs"
+              [ngClass]="{ 'mat-form-field-invalid': showError('sourceName') }">
+
+              <mat-select formControlName="sourceName" i18n-placeholder placeholder="Select SourceName">
+                <mat-option *ngFor="let sourceName of ordinals.sourceName" [value]="sourceName">
+                  {{ sourceName }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
         <!--Authors-->
-        <div class="margin-top-l margin-left-l" [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
+        <div class="margin-left-l" [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
+          <!--Show in popup-->
+          <label>
+            <div class="margin-top-xs">
+              <mat-label class="label-heading">Authors</mat-label>
+            </div>
+          </label>
           <div class="margin-top-xs">
             <mat-form-field appearance="outline" class="margin-top-xs" class="margin-top-xs"
               [ngClass]="{ 'mat-form-field-invalid': showError('creatorDetails') }">
@@ -122,98 +150,89 @@
             </mat-form-field>
           </div>
         </div>
-        <div class="margin-left-l">
+        <!-- <div class="margin-left-l">
           <p class="course-settings-title">Course Duration(hours : minutes : seconds): {{mainCourseDuration}}</p>
-        </div>
+        </div> -->
       </div>
-
-      <!-- <div class="flex-row-item">
+      <div class="flex-row-item course-setup-block">
         <p class="margin-left-l margin-top-l course-settings-title">Course Setup</p>
+        <!--Show in popup-->
+        <div class="margin-top-l margin-left-l">
 
-
-        <div class="margin-top-xl margin-right-l">
-          <div class="margin-top-xs margin-left-l">
-            <div class="flex flex-middle margin-top-xs">
-              <mat-checkbox (change)="updateMyValue($event)" [formControl]="gatingEnabled"></mat-checkbox>
-              <p class="margin-left-xs read-and-agree-top-margin margin-remove-bottom cons-text">
-                Enable Step-by-Step Learning
-              </p>
+          <label>
+            <div class="margin-top-xs margin-top-l">
+              <span class="label-heading" style="color: #d32f2f">*</span>
+              <span class="label-heading" i18n>Certificate</span>
             </div>
-            <mat-hint>Note: Learners will be able to access modules in a sequntial manner only</mat-hint>
+          </label>
+          <mat-form-field appearance="fill" class="margin-top-s "
+            [ngClass]="{ 'mat-form-field-invalid': showError('issueCertification') }">
+            <!-- <mat-label>Issue Certificate</mat-label> -->
+            <mat-select formControlName="issueCertification" i18n-placeholder placeholder="Issue Certificate">
+              <mat-option [value]="true" i18n>Yes</mat-option>
+              <mat-option [value]="false" i18n>No</mat-option>
+            </mat-select>
+            <mat-error *ngIf="showError('issueCertification')" i18n>Certificate is mandatory </mat-error>
+            <mat-hint class="mt-hint">Accepted format: SVG;808 px(h)x1350 px(w)</mat-hint>
+          </mat-form-field>
+        </div>
+        <div class="margin-top-l margin-left-l">
 
-          </div>
-        </div>
-        <div class="margin-top-l margin-right-l">
-          <div class="margin-top-xs margin-left-l">
-            <div class="flex flex-middle margin-top-xs">
-              <mat-checkbox class="example-margin" [formControl]="activateLink">Activate preview link</mat-checkbox>
+          <label>
+            <div class="margin-top-l">
+              <span class="label-heading" i18n>CNE Points (Optional)</span>
             </div>
-          </div>
+          </label>
+          <mat-form-field appearance="fill" class="margin-top-s ">
+            <input matInput formControlName="cneName" placeholder="(Optional) CNE points" />
+            <mat-hint class="mt-hint">Note: CNE Points will be approved by INC</mat-hint>
+          </mat-form-field>
         </div>
-        <div class="margin-top-l margin-right-l">
-          <div class="margin-top-xs margin-left-l">
-            <div class="flex flex-middle margin-top-xs">
-              <mat-form-field appearance="outline" class="margin-top-xs width-90">
-                <input (change)="updateMyValue($event.target.value)" matInput i18n-placeholder
-                  formControlName="previewLinkFormControl" [formControl]="previewLinkFormControl"
-                  placeholder="www.previewlink.com" />
-                <mat-icon matSuffix><span class="material-icons" style="color: #808080;">
-                    file_copy
-                  </span></mat-icon>
-              </mat-form-field>
-            </div>
-          </div>
-        </div>
-      </div> -->
+        <div class="margin-top-l margin-left-l">
 
+          <label>
+            <div class="margin-top-l">
+              <span class="label-heading" i18n>Enable Step-by-Step Learning</span>
+            </div>
+          </label>
+          <mat-form-field appearance="fill" class="margin-top-s "
+            [ngClass]="{ 'mat-form-field-invalid': showError('gatingEnabled') }">
+            <mat-select formControlName="gatingEnabled" i18n-placeholder placeholder="Enable step by step">
+              <mat-option [value]="true" i18n>Yes</mat-option>
+              <mat-option [value]="false" i18n>No</mat-option>
+            </mat-select>
+            <mat-hint class="mt-hint">Note: Learners will be able to access modules in a sequntial manner</mat-hint>
+
+            <mat-error *ngIf="showError('gatingEnabled')" i18n>Gating is mandatory </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="margin-top-l margin-left-l">
+
+          <label>
+            <div class="margin-top-l">
+              <span class="label-heading" i18n>Private Course</span>
+            </div>
+          </label>
+          <mat-form-field appearance="fill" class="margin-top-s "
+            [ngClass]="{ 'mat-form-field-invalid': showError('courseVisibility') }">
+            <mat-select formControlName="courseVisibility" i18n-placeholder placeholder="Select">
+              <mat-option [value]="true" i18n>Yes</mat-option>
+              <mat-option [value]="false" i18n>No</mat-option>
+            </mat-select>
+            <mat-hint class="mt-hint">Note: Only learners who have the link to the course can access the
+              course.</mat-hint>
+            <mat-error *ngIf="showError('courseVisibility')" i18n>Private course is mandatory </mat-error>
+          </mat-form-field>
+        </div>
+
+      </div>
       <div class="flex-row-item">
         <p class="margin-left-l margin-top-l course-settings-title">Learner Settings</p>
-
-        <!-- <div class="margin-top-l margin-right-l">
-          <div class="margin-top-xs margin-left-xl flex-1"
-            [ngClass]="{ disable: checkCondition('audience', 'disabled') }">
-            <label>
-              <div class="margin-top-xs flex flex-middle">
-                <b i18n>Audience</b>
-              </div>
-            </label>
-            <div class="margin-top-xs">
-              <mat-form-field appearance="outline" class="margin-top-xs width-90"
-                [ngClass]="{ 'mat-form-field-invalid': showError('audience') }">
-                <mat-chip-list #audienceChipList i18n-aria-label aria-label="Audience selection">
-                  <mat-chip style="color: white !important;
-                    background-color: #0074b6 !important;" *ngFor="let job of contentForm.controls.audience.value"
-                    [selectable]="selectable" [removable]="removable"
-                    (removed)="removeFromFormControl(job, 'audience')">
-                    {{ job }}
-                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                  </mat-chip>
-                  <input i18n-placeholder placeholder="Select" #audienceView [formControl]="audienceCtrl"
-                    [matChipInputFor]="audienceChipList" [matAutocomplete]="audienceAuto"
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
-                    (matChipInputTokenEnd)="removeField($event)" />
-                </mat-chip-list>
-                <mat-autocomplete #audienceAuto="matAutocomplete"
-                  (optionSelected)="addToFormControl($event, 'audience')">
-                  <mat-option *ngIf="!checkCondition('audience', 'required')" i18n [value]="null">None
-                  </mat-option>
-                  <mat-option *ngFor="let job of audienceList" [value]="job">
-                    {{ job }}
-                  </mat-option>
-                </mat-autocomplete>
-                <mat-error class="error-font" *ngIf="showError('audience')" i18n>Audience is mandatory
-                </mat-error>
-              </mat-form-field>
-            </div>
-          </div>
-
-        </div> -->
         <div class="margin-top-l margin-right-l">
-          <div class="margin-top-xs margin-left-xl flex-1"
-            [ngClass]="{ disable: checkCondition('rolesMapped', 'disabled') }">
+          <div class="margin-top-l margin-left-l">
             <label>
               <div class="margin-top-xs flex flex-middle">
-                <b i18n>Position Mapped</b>
+                <span class="label-heading" i18n>Audience</span>
               </div>
             </label>
             <div class="margin-top-xs" *ngIf="roles$ | async as roles;">
@@ -245,34 +264,17 @@
               </mat-form-field>
             </div>
           </div>
-
         </div>
-
-        <!-- <div class="margin-top-l margin-right-l" style="margin-top: 25px;">
-          <div class="margin-top-xs margin-left-xl flex-1"
-            [ngClass]="{ disable: checkCondition('complexityLevel', 'disabled') }">
-            <div class="margin-top-xs">
-              <mat-form-field style="margin-top: 51px !important;" appearance="outline" class="margin-top-s"
-                [ngClass]="{ 'mat-form-field-invalid': showError('complexityLevel') }">
-                <mat-select formControlName="complexityLevel" i18n-placeholder placeholder="Learning Level">
-                  <mat-option *ngIf="!checkCondition('complexityLevel', 'required')" i18n [value]="null">None
-                  </mat-option>
-                  <mat-option *ngFor="let complexityLevel of complexityLevelList" [value]="complexityLevel">
-                    {{ complexityLevel }}</mat-option>
-                </mat-select>
-                <mat-error *ngIf="showError('complexityLevel')" i18n>Proficiency Level is mandatory
-                </mat-error>
-              </mat-form-field>
-            </div>
-          </div>
-        </div> -->
-
-        <div class="margin-top-xl margin-right-l">
-          <div class="margin-top-xs margin-left-xl flex-1"
-            [ngClass]="{ disable: checkCondition('keywords', 'disabled') }">
+        <div class="margin-top-xs margin-right-l">
+          <div class="margin-top-xs margin-left-l">
+            <label>
+              <div class="margin-top-xs flex flex-middle">
+                <span class="label-heading" i18n>Keywords</span>
+              </div>
+            </label>
             <div class="margin-top-xs flex margin-right-xl">
-              <mat-form-field style="margin-top: 19px !important;" class="keywords-chip-list margin-top-xs flex-grow80"
-                appearance="outline" [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
+              <mat-form-field class="keywords-chip-list margin-top-xs flex-grow80" appearance="outline"
+                [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
                 <mat-chip-list #keywords aria-label="Keyword selection">
                   <mat-chip style="color: white !important;
                     background-color: #0074b6 !important;" *ngFor="let key of contentForm.controls.keywords.value"
@@ -297,8 +299,10 @@
           </div>
         </div>
       </div>
+
     </div>
   </div>
+
   <!--added end-->
   <div [ngClass]="{ disable: checkCondition('trackContacts', 'disabled') }" class="margin-top-xl margin-right-l">
     <div class="grid"></div>
