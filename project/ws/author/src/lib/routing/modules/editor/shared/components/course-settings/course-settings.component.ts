@@ -117,7 +117,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   complexityLevelList: string[] = []
   isEditEnabled = false
   public sideNavBarOpened = false
-  issueCertification!: FormControl
+  // issueCertification!: FormControl
   bucket: string = ''
   certificateList: any[] = [
     'Yes', 'No'
@@ -624,6 +624,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         this.contentForm.controls.activateLink.setValue(this.contentMeta.activateLink)
         this.contentForm.controls.previewLinkFormControl.setValue(this.contentMeta.previewLinkFormControl)
         this.contentForm.controls.courseVisibility.setValue(this.contentMeta.courseVisibility)
+        this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification)
+        this.contentForm.controls.cneName.setValue(this.contentMeta.cneName)
 
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
@@ -782,8 +784,15 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             if (!currentMeta.courseVisibility) {
               currentMeta.courseVisibility = parentData.courseVisibility !== false ? parentData.courseVisibility : currentMeta.courseVisibility
             }
+            if (!currentMeta.cneName) {
+              currentMeta.cneName = parentData.cneName !== '' ? parentData.cneName : currentMeta.cneName
+            }
+
             if (!currentMeta.activateLink) {
               currentMeta.activateLink = parentData.activateLink !== '' ? parentData.activateLink : currentMeta.activateLink
+            }
+            if (!currentMeta.issueCertification) {
+              currentMeta.issueCertification = parentData.issueCertification !== false ? parentData.issueCertification : currentMeta.issueCertification
             }
             if (!currentMeta.previewLinkFormControl) {
               currentMeta.previewLinkFormControl = parentData.previewLinkFormControl !== '' ? parentData.previewLinkFormControl : currentMeta.previewLinkFormControl
@@ -1706,7 +1715,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       nodeType: [],
       org: [],
       gatingEnabled: new FormControl(''),
-      issueCertification: false,
+      issueCertification: new FormControl('', [Validators.required]),
       creatorDetails: [],
       // passPercentage: [],
       plagScan: [],
@@ -1727,7 +1736,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       sampleCertificates: [],
       skills: [],
       softwareRequirements: [],
-      sourceName: [],
+      sourceName: new FormControl('', [Validators.required]),
       creatorLogo: [],
       creatorPosterImage: [],
       creatorThumbnail: [],

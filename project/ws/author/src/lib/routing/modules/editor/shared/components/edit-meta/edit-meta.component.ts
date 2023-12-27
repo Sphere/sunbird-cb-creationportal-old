@@ -1844,8 +1844,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       nodeType: [],
       org: [],
       gatingEnabled: new FormControl(''),
-      courseVisibility: new FormControl(false),
-      selfAssessment: new FormControl(false),
+      courseVisibility: new FormControl(''),
+      selfAssessment: new FormControl(''),
       issueCertification: false,
       creatorDetails: [],
       // passPercentage: [],
@@ -1867,7 +1867,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       sampleCertificates: [],
       skills: [],
       softwareRequirements: [],
-      sourceName: new FormControl('', [Validators.required]),
+      sourceName: new FormControl(''),
       creatorLogo: [],
       creatorPosterImage: [],
       creatorThumbnail: [],
@@ -1886,7 +1886,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       instructions: new FormControl('', [Validators.required]),
       versionKey: '',  // (new Date()).getTime()
       purpose: '',
-      lang: new FormControl('', [Validators.required]),
+      lang: new FormControl(''),
       cneName: new FormControl('')
     })
     // tslint:disable-next-line:no-console
