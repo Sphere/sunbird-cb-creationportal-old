@@ -877,7 +877,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         return finalComp
       })
-
+      console.log("combined properties", combinedArray)
       this.addedCompetency = combinedArray
       // this.code = this.competencies.map((entity: any) => this.proficiencyList.find((e: any) => e.id = entity.competencyId))
       // console.log("this.proficiencyList", combinedArray)

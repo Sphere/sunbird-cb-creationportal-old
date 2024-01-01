@@ -441,6 +441,7 @@ border-bottom-right-radius: 0px;
   display: flex;
   align-items: center;
   justify-content: center;
+      padding: 0px 65px;
 }
   .ul-list {
     text-decoration: none;
@@ -522,7 +523,7 @@ display: flex;
 .add {
   height: 48px;
   width: 48px;
-  background-color: #0074b6 !important;
+  background-color: #1C5D95 !important;
   border-radius: 50%;
   display: inline-block;
   position: relative;
@@ -681,4 +682,7 @@ box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25) !important;
 }
 .theme-igot normal-typography day-mode{
   overflow: hidden;
+}
+::ng-deep .mat-drawer-content{
+  overflow-x: hidden !important;
 }

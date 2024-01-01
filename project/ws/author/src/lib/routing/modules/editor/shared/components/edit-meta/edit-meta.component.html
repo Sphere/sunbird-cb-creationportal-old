@@ -513,7 +513,7 @@
           </div>
 
           <div class="competency-block">
-            <div class="competency-empty-block" *ngIf="addedCompetency?.length == 0">
+            <div class="competency-empty-block" *ngIf="!addedCompetency||addedCompetency?.length == 0">
               <p>Competencies for the course will be visible here once you start adding them.
                 Note: Minimum one competency needed</p>
             </div>

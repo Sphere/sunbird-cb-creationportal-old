@@ -28,7 +28,7 @@
                 <!-- <mat-chip *ngFor="let author of parseJsonData(contentForm.controls.trackContacts.value)" -->
 
                 <mat-chip style="color: white !important;
-                  background-color: #0074b6 !important;"
+                  background-color: #1C5D95 !important;"
                   *ngFor="let author of contentForm.controls.trackContacts.value" [selectable]="selectable"
                   [removable]="removable" (removed)="removeEmployee(author, 'trackContacts')" class="selectedOption">
                   {{ author.name }}
@@ -66,7 +66,7 @@
               [ngClass]="{ 'mat-form-field-invalid': showError('publisherDetails') }">
               <mat-chip-list #publisherChipList aria-label="Publisher selection">
                 <mat-chip style="color: white !important;
-                  background-color: #0074b6 !important;"
+                  background-color: #1C5D95 !important;"
                   *ngFor="let author of contentForm.controls.publisherDetails.value" [selectable]="selectable"
                   [removable]="removable" (removed)="removeEmployee(author, 'publisherDetails')" class="selectedOption">
                   {{ author.name }}
@@ -125,7 +125,7 @@
               [ngClass]="{ 'mat-form-field-invalid': showError('creatorDetails') }">
               <mat-chip-list #creatorDetailsChipList aria-label="Original Author selection">
                 <mat-chip style="color: white !important;
-                  background-color: #0074b6 !important;"
+                  background-color: #1C5D95 !important;"
                   *ngFor="let author of contentForm.controls.creatorDetails.value" [selectable]="selectable"
                   [removable]="removable" (removed)="removeCreatorDetails(author)">
                   {{ author.name }}
@@ -240,7 +240,7 @@
                 [ngClass]="{ 'mat-form-field-invalid': showError('rolesMapped') }">
                 <mat-chip-list #rolesMappedChipList i18n-aria-label aria-label="Roles Mapped selection">
                   <mat-chip style="color: white !important;
-                            background-color: #0074b6 !important;"
+                            background-color: #1C5D95 !important;"
                     *ngFor="let role of contentForm.controls.rolesMapped.value" [selectable]="selectable"
                     [removable]="removable" (removed)="removeFromFormControl(role.split(':')[0], 'rolesMapped')">
                     {{ role.split(':')[0] }}
@@ -277,7 +277,7 @@
                 [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
                 <mat-chip-list #keywords aria-label="Keyword selection">
                   <mat-chip style="color: white !important;
-                    background-color: #0074b6 !important;" *ngFor="let key of contentForm.controls.keywords.value"
+                    background-color: #1C5D95 !important;" *ngFor="let key of contentForm.controls.keywords.value"
                     [selectable]="selectable" [removable]="removable" (removed)="removeKeyword(key)">
                     {{ key }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>

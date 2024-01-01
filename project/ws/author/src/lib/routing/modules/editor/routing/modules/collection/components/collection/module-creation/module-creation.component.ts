@@ -1822,7 +1822,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.courseHours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
     this.courseMinutes = minutes ? minutes % 60 : 0
     this.courseSeconds = second || 0
-    this.mainCourseDuration = this.courseHours + ':' + this.courseMinutes + ':' + this.courseSeconds
+    this.mainCourseDuration = this.courseHours + 'h ' + this.courseMinutes + 'm ' + this.courseSeconds + 's '
   }
   async resourceLinkSave() {
     // tslint:disable-next-line:no-console
@@ -4308,6 +4308,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   /*PDF/audio/vedio functionality end*/
   takeActions(action: string, node: IContentTreeNode) {
+    console.log("action", action, node)
     switch (action) {
       case 'editMeta':
       case 'editContent':
