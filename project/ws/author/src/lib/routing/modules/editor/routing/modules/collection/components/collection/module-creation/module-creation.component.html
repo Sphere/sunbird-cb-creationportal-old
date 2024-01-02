@@ -31,34 +31,40 @@
               Resource</button>
           </div>
           <div class="model-left-create-content div-1" cdkDropList (cdkDropListDropped)="drop($event)">
-            <div (click)="editContent(module)" class="module-container"
-              *ngFor="let module of courseData?.children;index as i">
-              <div class="mod-heading" *ngIf="module.primaryCategory === 'Course Unit'"
-                [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
-                (cdkDragStarted)="dragDrop(module,module.identifier, 'Module')" style="cursor: pointer;"
-                (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
-                <h2 class="module-text" style="margin: 0px !important">{{module.name !== '' ?
-                  module.name : "no title1"}}
-                </h2>
-                <span fxFlex style="flex: 1 1 auto;"></span>
-                <!-- <span style="display:flex;flex-direction: row;">
+            <div class="module-container" *ngFor="let module of courseData?.children;index as i">
+              <div>
+                <div (click)="editContent(module)" class="left-block-container">
+                  <img src="cbp-assets/icons/Vector.svg" alt="dragDrop" class="dragIcon" />
+                  <div class="mod-heading" *ngIf="module.primaryCategory === 'Course Unit'"
+                    [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
+                    (cdkDragStarted)="dragDrop(module,module.identifier, 'Module')" style="cursor: pointer;"
+                    (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
+                    <h2 class="module-text" style="margin: 0px !important">{{module.name !== '' ?
+                      module.name : "no title1"}}
+                    </h2>
+                    <span fxFlex style="flex: 1 1 auto;"></span>
+                  </div>
+                  <!-- <span style="display:flex;flex-direction: row;">
                   <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)=" editContent(module)">
                     edit</mat-icon>
                   <mat-icon class="icons-list" (click)="takeActions('delete', module, $event.type)">delete</mat-icon>
                   <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
                     content_copy</mat-icon>
                 </span> -->
-              </div>
-              <div *ngIf="module?.children?.length > 0">
-                <div *ngFor="let resource of module.children;index as l" class="heading-resource resource-1"
-                  style="cursor:pointer" [ngClass]="editItem === resource.identifier ? 'edit-item' : ''"
-                  matTooltip="dragDrop" [matTooltipPosition]="'left'"
-                  (cdkDragStarted)="dragDrop(resource,resource.identifier, 'resourceInsideModule')"
-                  style="cursor: pointer;" (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
-                  <mat-icon class="cursor-pointer">more_vert</mat-icon>
-                  <span style="white-space: normal;" class="resourse-text">{{resource.name}}</span>
-                  <span fxFlex style="flex: 1 1 auto;"></span>
-                  <!-- <span style="display:flex;flex-direction: row;">
+                </div>
+                <div *ngIf="module?.children?.length > 0">
+                  <div (click)="editContent(resource)" *ngFor="let resource of module.children;index as l"
+                    class="heading-resource resource-1" style="cursor:pointer"
+                    [ngClass]="editItem === resource.identifier ? 'edit-item' : ''" matTooltip="dragDrop"
+                    [matTooltipPosition]="'left'"
+                    (cdkDragStarted)="dragDrop(resource,resource.identifier, 'resourceInsideModule')"
+                    style="cursor: pointer;" (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
+                    <mat-icon class="cursor-pointer">none</mat-icon>
+                    <span style="white-space: normal;" class="resourse-text">{{resource.name}} </span>
+                    <span class="resource-duration-txt">(
+                      {{ resource.duration | formatDuration }} )</span>
+                    <!-- <span fxFlex style="flex: 1 1 auto;"></span> -->
+                    <!-- <span style="display:flex;flex-direction: row;">
                     <mat-icon class="material-icons margin-left-m text-medium brand-color"
                       (click)="editContent(resource)">
                       edit</mat-icon>
@@ -67,26 +73,26 @@
                     <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
                       content_copy</mat-icon>
                   </span> -->
+                  </div>
                 </div>
-              </div>
-              <div *ngIf="module.primaryCategory !== 'Course Unit'" class="heading-resource resource-2"
-                [ngClass]="editItem === module.identifier ? 'edit-item' : ''" matTooltip="dragDrop"
-                (cdkDragStarted)="dragDrop(module,module.identifier, 'resource')" style="cursor: pointer;"
-                (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
-                <mat-icon class="cursor-pointer">more_vert</mat-icon> <span title="{{module.name}}"
-                  class="resourse-text" style="white-space: normal;">{{ module.name}}</span>
-                <span fxFlex style="flex: 1 1 auto;"></span>
-                <!-- <span style="display:flex;flex-direction: row;">
+                <div *ngIf="module.primaryCategory !== 'Course Unit'" class="heading-resource resource-2"
+                  [ngClass]="editItem === module.identifier ? 'edit-item' : ''" matTooltip="dragDrop"
+                  (cdkDragStarted)="dragDrop(module,module.identifier, 'resource')" style="cursor: pointer;"
+                  (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
+                  <mat-icon class="cursor-pointer">none</mat-icon> <span title="{{module.name}}" class="resourse-text"
+                    style="white-space: normal;">{{ module.name}}</span>
+                  <span fxFlex style="flex: 1 1 auto;"></span>
+                  <!-- <span style="display:flex;flex-direction: row;">
                   <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)="editContent(module)">
                     edit</mat-icon>
                   <mat-icon (click)="takeActions('delete', module, $event.type)" class="icons-list">delete</mat-icon>
                   <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
                     content_copy</mat-icon>
                 </span> -->
+                </div>
               </div>
               <button [disabled]="hideResource" *ngIf="module.primaryCategory === 'Course Unit'" mat-raised-button
-                class="button-style secondary-button-outline mat-button-base"
-                style="margin:0.4rem;color: #1C5D95 !important;"
+                class="secondary-button-outline mat-button-base addResourceBtn"
                 (click)="addResModule(module.identifier, courseData.identifier)">Add Resource</button>
             </div>
 
@@ -118,7 +124,7 @@
                     <div class="custom-placeholder border border-solid" *cdkDragPlaceholder></div>
                     <mat-icon class="cursor-pointer" matTooltip="dragDrop" [matTooltipPosition]="'left'" cdkDrag
                       cdkDragBoundary=".model-left-create-content div-3" cdkDragLockAxis="y"
-                      (click)="dragDrop(resource,resource.identifier, 'resource')">more_vert</mat-icon> <span
+                      (click)="dragDrop(resource,resource.identifier, 'resource')">none</mat-icon> <span
                       class="resourse-text" style="white-space: normal;">{{resource.name}}</span>
                     <span fxFlex style="flex: 1 1 auto;"></span>
                     <!-- <span style="display:flex;flex-direction: row;">

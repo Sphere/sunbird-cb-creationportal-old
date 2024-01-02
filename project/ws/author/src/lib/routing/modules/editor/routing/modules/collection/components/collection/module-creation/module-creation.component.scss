@@ -365,32 +365,42 @@ letter-spacing: -0.4px;
   display: flex;
   flex-direction: row;
   padding: 0.3rem;
-  border: 1px solid gainsboro;
+  // border: 1px solid gainsboro;
   margin-bottom: 5px;
-  background: #FFFFFF;
-  box-shadow: 0px 0px 4px rgb(0 0 0 / 1%);
+  // background: #FFFFFF;
+  // box-shadow: 0px 0px 4px rgb(0 0 0 / 1%);
   border-radius: 6px;
-  margin: 0.4rem;
+  align-items: center;
 }
 
 .resourse-text {
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 23vh;
-  font-size: 15px;
-  line-height: 24px;
-  color: #000000;
+  // width: 23vh;
+  margin-right: 5px;
+  color: #1C5D95;
   font-family: Roboto;
-  letter-spacing: -0.02em;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.32px;
 }
 
 .scroll-bar{
   max-height: 66vh;
   overflow-y: scroll;
 }
+.left-block-container{
+  display: flex;
 
+}
 .module-container {
-  border: 1px solid #58A3E3;
+  border-radius: 10px;
+border: 1px solid #1C5D95;
+background: #F3F8FD;
+box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
+  // border: 1px solid #58A3E3;
   border-radius: 8px;
   margin-top: 5px;
   height: fit-content;
@@ -748,11 +758,15 @@ animation-delay: -0.5s;
 }
 
 .edit-item {
+  border-radius: 6px;
+  border: 1px solid #1C5D95;
+  background: #1C5D95;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
   background-color: #1c5d95;
   h2 {
     color: white!important;
   }
-  .resourse-text, .icons-list, .brand-color, .cursor-pointer{
+  .resourse-text, .icons-list, .brand-color, .cursor-pointer, .resource-duration-txt{
     color: white!important;
   }
 }
@@ -888,4 +902,31 @@ letter-spacing: -0.2px;
   justify-content: space-between;
   gap: 10px;
 
+}
+.addResourceBtn{
+  padding: 8px 20px !important;
+  margin:0.4rem;
+  border-radius: 50px !important;
+  border: 1px solid #14446C !important;
+  background: #F3F8FD;
+  box-shadow: none !important;
+  color: #14446C !important;
+  font-family: Roboto !important;
+  font-size: 14px !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  line-height: normal !important;
+  margin-left: 22px;
+}
+.dragIcon{
+  margin-right: 10px;
+}
+.resource-duration-txt{
+  color: #1C5D95;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.24px;
 }
