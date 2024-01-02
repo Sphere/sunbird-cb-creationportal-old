@@ -2508,7 +2508,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     // })
     let iframeSupported, showDownloadBtn
     // if (topicDescription != '') {
-    if (this.timeToSeconds() == 0 && content !== 'application/json') {
+    if (this.timeToSeconds() == 0 && content !== 'application/json' && this.content.contentType === 'Resource') {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.DURATION_CANT_BE_0,
