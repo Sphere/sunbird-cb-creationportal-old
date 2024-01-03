@@ -66,6 +66,7 @@ import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-po
 import { PlayerNavigationWidgetComponent } from '../../../../../../../library/ws-widget/collection/src/lib/player-navigation-widget/player-navigation-widget.component'
 import { CertificateStatusDialogComponentDialogComponent } from './components/cert-upload-status-dialog/cert-upload-status-dialogcomponent'
 import { UserIndexConfirmComponent } from './components/user-index-confirm/user-index-confirm.component'
+import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image-upload-intro-popup.component'
 
 @NgModule({
   declarations: [
@@ -91,6 +92,7 @@ import { UserIndexConfirmComponent } from './components/user-index-confirm/user-
     FeedbackFormComponent,
     SuccessDialogComponent,
     CompetencyPopupComponent,
+    ImageUploadIntroPopupComponent,
     PlayerNavigationWidgetComponent,
     CertificateStatusDialogComponentDialogComponent,
     UserIndexConfirmComponent
@@ -159,6 +161,7 @@ import { UserIndexConfirmComponent } from './components/user-index-confirm/user-
     CommentsDialogComponent,
     CertificateDialogComponent,
     CompetencyPopupComponent,
+    ImageUploadIntroPopupComponent,
     ConfirmDialogComponent,
     MatSelectModule,
     MatChipsModule,
@@ -205,6 +208,7 @@ import { UserIndexConfirmComponent } from './components/user-index-confirm/user-
     CommentsDialogComponent,
     CertificateDialogComponent,
     CompetencyPopupComponent,
+    ImageUploadIntroPopupComponent,
     ConfirmDialogComponent,
     ErrorParserComponent,
     DeleteDialogComponent,

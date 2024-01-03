@@ -14,34 +14,54 @@
   <div class="mat-body" [ngClass]="{'flex flex-between w-full': !isXSmall && !isMedium}">
     <div [ngClass]="{'flex': !isXSmall}">
       <mat-list class="flex-1 col-width">
-        <div class="docs-footer-version"><img [src]="appIcon" alt="Angular icon" class="docs-footer-aastar-logo">
+        <div class="docs-footer-version"><img [src]="appIcon" alt="Aastar Logo" class="docs-footer-aastar-logo">
         </div>
       </mat-list>
 
-      <mat-list class="flex-1 col-width" [ngClass]="{'ml-20': !isXSmall}">
-        <mat-list-item> <a routerLink="/app/info/about" i18n> <span i18n>About
+      <mat-list class="flex-1 col-width">
+        <mat-list-item class="link-header" style="color: #7b6961 !important"> Quick Links </mat-list-item>
+        <!-- <mat-list-item> <a routerLink="/app/info/about" i18n> <span i18n>About
               Us</span></a> </mat-list-item>
         <mat-list-item><a href="https://www.aastrika.org/vision/" target="_blank"><span i18n>Vision</span></a>
         </mat-list-item>
         <mat-list-item><a href="https://www.aastrika.org/team/" target="_blank"><span i18n>Team</span></a>
-        </mat-list-item>
+        </mat-list-item> -->
         <!--<mat-list-item> <a routerLink="/public/contact" i18n>Help & Contact </a> </mat-list-item>-->
-        <mat-list-item> <a href="http://support.aastrika.org/support/solutions" target="_blank" i18n>Help & Contact </a>
-        </mat-list-item>
+
 
         <!-- <mat-list-item> <a routerLink="/app/social/blogs" i18n>Blog</a> </mat-list-item> -->
         <mat-list-item style="margin-top: 10px;">
-          <a target="_blank" href="https://sphere.aastrika.org/public/tnc" i18n>
-            Privacy Policy <br>
-            & Terms of Use
+          <a target="_blank" href="https://sphere.aastrika.org/public/tnc?panel=dp">
+            Privacy Policy
+          </a>
+        </mat-list-item>
+        <mat-list-item style="margin-top: 10px;">
+          <a target="_blank" href="https://sphere.aastrika.org/public/tnc">
+            Terms of Use
+          </a>
+        </mat-list-item>
+      </mat-list>
+      <mat-list class="flex-1 col-width">
+        <mat-list-item class="link-header"><a href="http://support.aastrika.org/support/solutions" target="_blank"
+            id="footer-help-contact" class="list-item link-header" style="color: #7b6961 !important">Help & Contact
+          </a></mat-list-item>
+        <mat-list-item style="margin-top: 10px;">
+          <a class="link-text" href="mailto:support@aastrika.org"
+            style="text-decoration: underline !important">support@aastrika.org</a>
+        </mat-list-item>
+        <mat-list-item style="margin-top: 10px;">
+          <a i18n class="whatsapp-logo-container" href="https://wa.me/919632013414?text=Hi" target="_blank">
+            <img class="fa fa-whatsapp whatsapp-logo" src="/cbp-assets/icons/whatsapp.svg" height="20"
+              style="    vertical-align: bottom;" />
+            <span>Talk to us on WhatsApp</span>
           </a>
         </mat-list-item>
       </mat-list>
     </div>
 
-    <div class="text-center" [ngClass]="{'flex': !isXSmall }">
+    <!-- <div class="text-center">
       <div class="w-mobile">
-        <h2 class="footer-heading">An initiative of</h2>
+        <h2 class="footer-heading">Help & Contact</h2>
         <a href="https://rohininilekani.org/" target="_blank">
           <img class="footer-image mt-1"
             src="https://www.aastrika.org/wp-content/uploads/2020/03/nilekani-philanthropies-logo.png"
@@ -61,7 +81,7 @@
               src="https://www.aastrika.org/wp-content/uploads/2020/03/respectful-maternal-care-logo.png" /></a>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>
 

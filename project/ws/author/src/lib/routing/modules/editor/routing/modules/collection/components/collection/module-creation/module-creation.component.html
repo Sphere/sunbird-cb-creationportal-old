@@ -239,6 +239,10 @@
             <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
           </div>
           <!-- is pdf/video/audio/zip -->
+          <div class="margin-top-s" *ngIf="isPdfOrAudioOrVedioEnabled&&content?.mimeType !== 'application/json'">
+            <span style="color:#808080">Resource file</span><br>
+            <span *ngIf="!uploadFileName&&uploadFileName == ''" class="invalid-text">This field is Required</span>
+          </div>
           <div class="thumnail-row margin-top-xs"
             *ngIf="isPdfOrAudioOrVedioEnabled&&content?.mimeType !== 'application/json'">
             <div>
@@ -351,7 +355,11 @@
                 placeholder="ss" type="number" min="0" max="59" step="1"
                 onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
             </mat-form-field>
+
+
           </div>
+          <span *ngIf="!hours&&!minutes&&!seconds" class="invalid-text">This field
+            is Required</span>
           <div>
             <button mat-raised-button *ngIf="moduleButtonName === 'Create' && content?.contentType !== 'Course'"
               class="margin-top-m width-15 text-white   mat-button-base save-btn-bottom"

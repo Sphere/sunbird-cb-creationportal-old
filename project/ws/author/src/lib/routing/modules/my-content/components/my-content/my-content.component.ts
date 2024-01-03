@@ -262,6 +262,12 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
 
   onClickReviewCourse(status: string) {
+    if (this.allowReview && status == 'Draft') {
+      status = 'Sent for review'
+    }
+    if (this.allowPublish && status == 'Draft') {
+      status = 'Courses to publish'
+    }
     this.link = status
     this.activeLink = status
     if (status == 'All Courses' || status == 'Courses without certificate' || status == 'Courses with certificate') {

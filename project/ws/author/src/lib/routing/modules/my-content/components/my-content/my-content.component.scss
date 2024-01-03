@@ -306,9 +306,14 @@ ws-auth-content-card-v2 {
   margin-bottom: 8px;
 }
 .head-content-title {
-   border-left-style: solid;
+  //  border-left-style: solid;
     color: #14446C;
     padding-left: 3px;
+}
+.main-title {
+   border-left-style: solid;
+    color: #14446C;
+    // padding-left: 3px;
 }
 
 ::ng-deep .theme-igot.day-mode .mat-ink-bar {
@@ -331,7 +336,7 @@ ws-auth-content-card-v2 {
   margin-bottom: 8px;
 }
 .head-content-title {
-   border-left-style: solid;
+  //  border-left-style: solid;
     color: #14446C;
     padding-left: 3px;
 }
@@ -351,6 +356,16 @@ ws-auth-content-card-v2 {
 }
 .left-panel-header{
   padding-left: 2px !important;
+  background: #F7F7F7;
+   color: #808080;
 }
-
-
+.no-shadow{
+  box-shadow: none !important;
+  background: #F7F7F7 !important;
+}
+.expanded-btn{
+  padding-left: 15px;
+}
+.mat-expansion-panel-body{
+ padding-left: 0px !important;
+}

@@ -2133,7 +2133,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     // this.moduleName = ''
   }
 
-  addResModule(modID: string, courseID: string) {
+  async addResModule(modID: string, courseID: string) {
     this.clearForm()
     this.addResourceModule["module"] = true
     this.addResourceModule["modID"] = modID
@@ -2142,6 +2142,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.showAddModuleForm = true
     this.isResourceTypeEnabled = true
     //this.editItem = ''
+
+    await this.editorService.readContentV2(this.courseData.identifier).subscribe(resData => {
+      this.updatedVersionKey = resData.versionKey
+    })
   }
 
   async addIndependentResource() {
@@ -2527,7 +2531,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       meta["versionKey"] = this.updatedVersionKey
       meta["instructions"] = topicDescription
       meta["description"] = topicDescription
-      meta["name"] = name
+      meta["name"] = name ? name.trim() : name
       meta["duration"] = this.timeToSeconds().toString()
       // meta["gatingEnabled"] = isGating
       meta["isIframeSupported"] = iframeSupported
@@ -4610,7 +4614,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           request: {
             content: {
               versionKey: resData.versionKey,
-              name: this.moduleName,
+              name: this.moduleName.trim(),
               appIcon: this.thumbnail,
               gatingEnabled: this.isGating,
               instructions: this.topicDescription,

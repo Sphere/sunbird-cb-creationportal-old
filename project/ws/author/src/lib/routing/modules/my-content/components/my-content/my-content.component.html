@@ -8,7 +8,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
 </div> -->
 
 <mat-drawer-container class="example-container">
-  <mat-drawer mode="side" class="width-240" style="top: 26px" opened>
+  <mat-drawer mode="side" class="width-240" style="    padding-top: 35px;background: #F7F7F7;" opened>
     <!-- <div *ngIf="allowAuthorContentCreate"
       class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l padding-remove-left create-button">
       <button mat-button class="font-weight-bold margin-remove-bottom mat-h3 ws-mat-primary-text ws-mat-primary-border"
@@ -99,8 +99,12 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title>
               <span class="font-weight-500 head-content-title" (click)="onClickReviewCourse('Draft')"
-                [ngClass]="{ 'head-content-title': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse }"
+                [ngClass]="{ 'main-title': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse }"
                 i18n>My Content</span>
+              <img class="expanded-btn"
+                *ngIf="isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse"
+                src="cbp-assets/icons/Frame_82.svg" />
+
             </mat-panel-title>
           </mat-expansion-panel-header>
           <!-- Shown when logged in as admin-->
@@ -110,6 +114,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </mat-list-item> -->
 
             <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
+              <img *ngIf="isSelectedColor" src="cbp-assets/icons/Frame_81.svg" />
               <a [ngClass]="{ 'head-content-title': isSelectedColor }" style="cursor: pointer"
                 (click)="onClickReviewCourse('Draft')" i18n>Drafts</a>
             </mat-list-item>
@@ -139,19 +144,23 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </mat-list-item> -->
 
             <mat-list-item *ngIf="!allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
+              <img *ngIf="isSelectedReviewCourse" src="cbp-assets/icons/Frame_81.svg" />
               <a [ngClass]="{ 'head-content-title': isSelectedReviewCourse }" style="cursor: pointer"
                 (click)="onClickReviewCourse('Sent for review')" i18n>Sent For Review</a>
             </mat-list-item>
 
             <mat-list-item *ngIf="allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
+              <img *ngIf="isSelectedToPublishCourse" src="cbp-assets/icons/Frame_81.svg" />
               <a [ngClass]="{ 'head-content-title': isSelectedToPublishCourse }" style="cursor: pointer"
                 (click)="onClickReviewCourse('Courses to publish')" i18n>Courses to Publish</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
+              <img *ngIf="isSelectedPublishCourse" src="cbp-assets/icons/Frame_81.svg" />
               <a [ngClass]="{ 'head-content-title': isSelectedPublishCourse }" style="cursor: pointer"
                 (click)="onClickReviewCourse('Published Courses')" i18n>Published</a>
             </mat-list-item>
             <mat-list-item *ngIf="!allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
+              <img *ngIf="isSelectedRetiredCourse" src="cbp-assets/icons/Frame_81.svg" />
               <a [ngClass]="{ 'head-content-title': isSelectedRetiredCourse }" (click)="onClickReviewCourse('Retired')"
                 i18n>Retired</a>
             </mat-list-item>
@@ -162,21 +171,27 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title>
               <span class="font-weight-500 head-content-title" (click)="onClickReviewCourse('All Courses')"
-                [ngClass]="{ 'head-content-title': isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate }"
+                [ngClass]="{ 'main-title': isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate }"
                 i18n>Manage Courses</span>
+              <img class="expanded-btn"
+                *ngIf="isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate"
+                src="cbp-assets/icons/Frame_82.svg" />
             </mat-panel-title>
           </mat-expansion-panel-header>
           <!-- Shown when logged in as admin-->
           <mat-list role="list">
             <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
+              <img *ngIf="isSelectedAllCourse" src="cbp-assets/icons/Frame_81.svg" />
               <a [ngClass]="{ 'head-content-title': isSelectedAllCourse }" style="cursor: pointer"
                 (click)="onClickReviewCourse('All Courses')" i18n>All Courses</a>
             </mat-list-item>
             <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
+              <img *ngIf="isSelectedCourseWithoutCertificate" src="cbp-assets/icons/Frame_81.svg" />
               <a [ngClass]="{ 'head-content-title': isSelectedCourseWithoutCertificate }" style="cursor: pointer"
                 (click)="onClickReviewCourse('Courses without certificate')" i18n>Course Without Certificate</a>
             </mat-list-item>
             <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
+              <img *ngIf="isSelectedCourseWithCertificate" src="cbp-assets/icons/Frame_81.svg" />
               <a [ngClass]="{ 'head-content-title': isSelectedCourseWithCertificate }" style="cursor: pointer"
                 (click)="onClickReviewCourse('Courses with certificate')" i18n>Course With Certificate</a>
             </mat-list-item>

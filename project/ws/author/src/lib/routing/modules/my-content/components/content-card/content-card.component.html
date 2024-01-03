@@ -89,7 +89,11 @@
       <a [ngClass]="{
           pointer: data.contentType !== 'Knowledge Board',
           cursor: data.contentType === 'Knowledge Board'
-        }" [title]="data.name" aria-label="Content" i18n-aria-label="Content | Click to view">
+        }" [routerLink]="
+        data.contentType !== 'Knowledge Board'&&!isReviewerOrPublisher
+          ? ['/author/editor/' + data.identifier + '/collection']
+          : (data | pipeContentRoute : true).url
+      " [title]="data.name" aria-label="Content" i18n-aria-label="Content | Click to view">
         <span class="font-weight-500">{{ data.name || 'Untitled Content' }} </span>
       </a>
     </div>

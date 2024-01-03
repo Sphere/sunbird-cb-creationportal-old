@@ -51,7 +51,7 @@
       </tbody>
     </table>
   </div>
-  <div class="margin-bottom-s margin-top-l">
+  <div>
     <div style="float: left;">
       <button mat-raised-button i18n class="save-btn-mt send-to-creator-link" (click)="moveCourseToDraft()"
         color="#1C5D95" i18n>
@@ -118,8 +118,8 @@
           Send back to Creators draft
         </button>
         <button [disabled]="commentsForm?.invalid" class="margin-left-l
-                  text-white ws-mat-primary-background  mat-button-base save-btn-mt publish-button"
-          style="margin-right: 10px;" (click)="submitData()" mat-raised-button i18n>
+                  text-white mat-button-base save-btn-mt publish-button" style="margin-right: 10px;"
+          (click)="submitData()" mat-raised-button i18n>
           Accept and send to publisher
         </button>
       </div>
