@@ -188,7 +188,7 @@
               < Start by adding Modules and Resources to build the Course</span>
           </div>
           <div class="image-container">
-            <img class="course-builder-bg" src="cbp-assets/images/course-builder-bg.svg" alt="Image">
+            <img loading="lazy" class="course-builder-bg" src="cbp-assets/images/course-builder-bg.svg" alt="Image">
           </div>
         </div>
 
@@ -421,7 +421,7 @@
               <div *ngFor="let list of contentList">
                 <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
                   <div class="list-boxes">
-                    <img [src]="list.icon" alt="icon" />
+                    <img loading="lazy" [src]="list.icon" alt="icon" />
                   </div>
                   <div class="icon-text cursor-pointer" matListItemTitle>{{list.name}}</div>
                 </div>
@@ -434,7 +434,7 @@
               <div class="accessList-block" *ngFor="let list of accessList">
                 <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
                   <div class="list-boxes">
-                    <img [src]="list.icon" alt="icon" />
+                    <img loading="lazy" [src]="list.icon" alt="icon" />
                   </div>
                   <div class="icon-text cursor-pointer" matListItemTitle>{{list.name}}</div>
                 </div>
