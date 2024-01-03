@@ -75,27 +75,27 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   contentList: any[] = [
     {
       name: 'Link',
-      icon: 'link',
+      icon: 'cbp-assets/icons/link_icon.png',
       type: 'web'
     },
     {
       name: 'PDF',
-      icon: 'picture_as_pdf',
+      icon: 'cbp-assets/icons/pdf_icon.svg',
       type: 'upload'
     },
     {
       name: 'Audio',
-      icon: 'music_note',
+      icon: 'cbp-assets/icons/audio_icon.svg',
       type: 'upload'
     },
     {
       name: 'Video',
-      icon: 'videocam',
+      icon: 'cbp-assets/icons/video_icon.svg',
       type: 'upload'
     },
     {
       name: 'SCORM v1.1/1.2',
-      icon: 'cloud_upload',
+      icon: 'cbp-assets/icons/scrom_icon.svg',
       type: 'upload'
     }
   ]
@@ -103,13 +103,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   accessList: any[] = [
     {
       name: 'Assessment',
-      icon: 'assessment',
-      type: 'assessment'
+      icon: 'cbp-assets/icons/assessment_icon.svg',
+      type: 'assessment',
+      text: 'User can go to next module only when they complete the assessment'
     },
     {
       name: 'Quiz',
-      icon: 'smartphone',
-      type: 'assessment'
+      icon: 'cbp-assets/icons/quiz_icon.svg',
+      type: 'assessment',
+      text: 'Users knowledge check. Shows correct answers at the end of quiz.'
     }
   ]
   assessmentOrQuizName: string = 'Quiz'
@@ -2123,7 +2125,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.isResourceTypeEnabled = false
     this.isOnClickOfResourceTypeEnabled = true
   }
-
+  cancelResouceSelection() {
+    this.showAddModuleForm = false
+  }
   addModule() {
     this.clearForm()
     this.showAddModuleForm = false

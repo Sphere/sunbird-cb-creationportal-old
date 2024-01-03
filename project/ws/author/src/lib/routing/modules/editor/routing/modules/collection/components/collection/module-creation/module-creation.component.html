@@ -402,36 +402,49 @@
         </div>
 
         <!--Resource types page -->
-        <div class="model-right-content" *ngIf="isResourceTypeEnabled && showAddModuleForm">
-          <div>
-            <span class="course-title">Select Resourse Type</span>
+        <div class="resource-right-content" *ngIf="isResourceTypeEnabled && showAddModuleForm">
+          <div class="module-resource-title-block">
+            <div>
+              <span class="course-title">Select Resourse Type</span>
+            </div>
+            <div class="save-btn-block">
+              <button mat-raised-button class="text-white   mat-button-base save-btn-bottom cancelResouceSelection"
+                (click)="cancelResouceSelection()">
+                Cancel</button>
+            </div>
           </div>
-          <div *ngIf="!isSelfAssessment" class="margin-top-m margin-bottom-s">
-            <span>Deliver Learning Content:</span>
-          </div>
-          <div *ngIf="!isSelfAssessment" style="display:flex;">
-            <div *ngFor="let list of contentList">
-              <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
-                <div class="list-boxes">
-                  <mat-icon matListItemIcon>{{list.icon}}</mat-icon>
+          <div class="resource-selection-type">
+            <div *ngIf="!isSelfAssessment" class="margin-top-m margin-bottom-s">
+              <span class="learnering-format-txt">Learning Format:</span>
+            </div>
+            <div *ngIf="!isSelfAssessment" style="display:flex;">
+              <div *ngFor="let list of contentList">
+                <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
+                  <div class="list-boxes">
+                    <img [src]="list.icon" alt="icon" />
+                  </div>
+                  <div class="icon-text cursor-pointer" matListItemTitle>{{list.name}}</div>
                 </div>
-                <div class="icon-text cursor-pointer" matListItemTitle>{{list.name}}</div>
+              </div>
+            </div>
+            <div class="margin-top-l margin-bottom-s">
+              <span class="learnering-format-txt">Access your learner:</span>
+            </div>
+            <div style="display:flex;">
+              <div class="accessList-block" *ngFor="let list of accessList">
+                <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
+                  <div class="list-boxes">
+                    <img [src]="list.icon" alt="icon" />
+                  </div>
+                  <div class="icon-text cursor-pointer" matListItemTitle>{{list.name}}</div>
+                </div>
+                <div class="accessList-help">
+                  <span class="accessList-help-txt">{{list.text}}</span>
+                </div>
               </div>
             </div>
           </div>
-          <div class="margin-top-l margin-bottom-s">
-            <span>Access your learner:</span>
-          </div>
-          <div style="display:flex;">
-            <div *ngFor="let list of accessList">
-              <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
-                <div class="list-boxes">
-                  <mat-icon matListItemIcon>{{list.icon}}</mat-icon>
-                </div>
-                <div class="icon-text cursor-pointer" matListItemTitle>{{list.name}}</div>
-              </div>
-            </div>
-          </div>
+
         </div>
 
         <!--Onclick of reosurce type page-->

@@ -108,6 +108,12 @@ letter-spacing: -0.4px;
 background: #FFF;
 box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.10);
 }
+.model-left-create-content::-webkit-scrollbar {
+  width: 3px;
+    height: 35px;
+    border-radius: 50px;
+    background: #D9D9D9;
+}
 
 .thumnail-row {
   display: flex;
@@ -170,6 +176,16 @@ box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.10);
   margin-top: 2vh;
   border-radius: 12px;
   background: #FFF;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.10);
+}
+.resource-right-content{
+  overflow-y: auto !important;
+  height: 70vh;
+  margin: 2vh 10px;
+  border-radius: 12px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.10);
+  border-radius: 12px;
+  background: #FCF9F4;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.10);
 }
 .model-right-content{
@@ -275,14 +291,18 @@ letter-spacing: -0.4px;
 
 
 .icon-text {
+  color: #000;
+
+  /* Label 2 */
+  font-family: Roboto;
+  font-size: 12px;
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
-  line-height: 14px;
-  font-family: Roboto;
-  color: black;
-  margin: 0 auto;
-  margin-top: 5px;
+  line-height: 14.4px; /* 120% */
+  letter-spacing: -0.24px;
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
 }
 
 .resource-details-form {
@@ -929,4 +949,41 @@ letter-spacing: -0.2px;
   font-weight: 400;
   line-height: normal;
   letter-spacing: -0.24px;
+}
+.cancelResouceSelection{
+  border-radius: 50px  !important;
+  background: #1C5D95 !important;
+  width: 90px !important;
+}
+.learnering-format-txt{
+  color: #000;
+font-family: Roboto;
+font-size: 16px;
+font-style: normal;
+font-weight: 400;
+line-height: 24px; /* 150% */
+letter-spacing: -0.32px;
+}
+.resource-selection-type{
+  padding: 15px 25px
+}
+.accessList-help{
+    padding: 5px 15px;
+    width: 60%;
+    height: 45px;
+    border-radius: 6px;
+    background: #F1E2C6;
+}
+.accessList-help-txt{
+  color: #545454;
+font-family: Roboto;
+font-size: 12px;
+font-style: normal;
+font-weight: 400;
+line-height: 14px; /* 116.667% */
+letter-spacing: -0.24px;
+}
+.accessList-block{
+  display: flex;
+  flex-direction: row;
 }
