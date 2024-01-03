@@ -16,6 +16,25 @@
   min-height: 100px !important;
 }
 
-::ng-deep.cke_dialog_container {
+::ng-deep .cke_dialog_container {
   z-index: 10010 !important;
+}
+::ng-deep .header-block{
+  display: flex;
+    justify-content: space-between;
+    padding: 15px 0px;
+    background-color: #F7F7F7;
+    border-radius: 6px;
+    align-items: center;
+}
+::ng-deep .cke_inner .cke_reset{
+    height: 217px;
+    border-radius: 12px;
+}
+#cke_1_bottom .cke_bottom{
+  display: none;
+}
+::ng-deep .cke_contents {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }

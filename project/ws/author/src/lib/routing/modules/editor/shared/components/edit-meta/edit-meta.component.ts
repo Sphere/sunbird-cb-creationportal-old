@@ -72,6 +72,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   clickedBtnNext: boolean = false
   saveTriggerSub?: Subscription
   location = CONTENT_BASE_STATIC
+  editMeta = 'true'
   selectable = true
   removable = true
   addOnBlur = true
