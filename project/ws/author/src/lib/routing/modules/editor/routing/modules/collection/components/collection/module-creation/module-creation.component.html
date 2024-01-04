@@ -34,7 +34,8 @@
             <div class="module-container" *ngFor="let module of courseData?.children;index as i">
               <div>
                 <div (click)="editContent(module)" class="left-block-container">
-                  <img src="cbp-assets/icons/Vector.svg" alt="dragDrop" class="dragIcon" />
+                  <img *ngIf="module.primaryCategory === 'Course Unit'" src="cbp-assets/icons/Vector.svg" alt="dragDrop"
+                    class="dragIcon" />
                   <div class="mod-heading" *ngIf="module.primaryCategory === 'Course Unit'"
                     [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
                     (cdkDragStarted)="dragDrop(module,module.identifier, 'Module')" style="cursor: pointer;"
@@ -54,14 +55,15 @@
                 </div>
                 <div *ngIf="module?.children?.length > 0">
                   <div (click)="editContent(resource)" *ngFor="let resource of module.children;index as l"
-                    class="heading-resource resource-1" style="cursor:pointer"
+                    class="resource-1" style="cursor:pointer"
                     [ngClass]="editItem === resource.identifier ? 'edit-item' : ''" matTooltip="dragDrop"
                     [matTooltipPosition]="'left'"
                     (cdkDragStarted)="dragDrop(resource,resource.identifier, 'resourceInsideModule')"
                     style="cursor: pointer;" (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
-                    <mat-icon class="cursor-pointer">none</mat-icon>
+                    <img src="cbp-assets/icons/Vector.svg" alt="dragDrop" class="dragIcon" />
+                    <!-- <mat-icon class="cursor-pointer">none</mat-icon> -->
                     <span style="white-space: normal;" class="resourse-text">{{resource.name}} </span>
-                    <span class="resource-duration-txt">(
+                    <span *ngIf="resource.duration>0" class="resource-duration-txt">(
                       {{ resource.duration | formatDuration }} )</span>
                     <!-- <span fxFlex style="flex: 1 1 auto;"></span> -->
                     <!-- <span style="display:flex;flex-direction: row;">
@@ -79,9 +81,13 @@
                   [ngClass]="editItem === module.identifier ? 'edit-item' : ''" matTooltip="dragDrop"
                   (cdkDragStarted)="dragDrop(module,module.identifier, 'resource')" style="cursor: pointer;"
                   (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
-                  <mat-icon class="cursor-pointer">none</mat-icon> <span title="{{module.name}}" class="resourse-text"
-                    style="white-space: normal;">{{ module.name}}</span>
-                  <span fxFlex style="flex: 1 1 auto;"></span>
+                  <img src="cbp-assets/icons/Vector.svg" alt="dragDrop" class="dragIcon" />
+                  <!-- <mat-icon class="cursor-pointer">none</mat-icon> -->
+                  <span title="{{module.name}}" class="resourse-text" style="white-space: normal;">{{
+                    module.name}}</span>
+                  <span *ngIf="module.duration>0" class="resource-duration-txt">(
+                    {{ module.duration | formatDuration }} )</span>
+                  <!-- <span fxFlex style="flex: 1 1 auto;"></span> -->
                   <!-- <span style="display:flex;flex-direction: row;">
                   <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)="editContent(module)">
                     edit</mat-icon>

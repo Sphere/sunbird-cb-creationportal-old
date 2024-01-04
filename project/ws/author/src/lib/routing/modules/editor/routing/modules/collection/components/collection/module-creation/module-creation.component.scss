@@ -380,8 +380,20 @@ letter-spacing: -0.4px;
   width: 9rem;
   height: 33px;
 }
-
+.resource-1{
+  border-radius: 6px;
+  background: #F3F8FD;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
+  padding: 10px 10px;
+   display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+  align-items: center;
+  margin-left: 5px;
+  margin-right: 5px;
+}
 .heading-resource {
+
   display: flex;
   flex-direction: row;
   padding: 0.3rem;
@@ -413,6 +425,7 @@ letter-spacing: -0.4px;
 }
 .left-block-container{
   display: flex;
+  margin-bottom: 10px;
 
 }
 .module-container {
@@ -426,6 +439,7 @@ box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
   height: fit-content;
   padding: 1%;
   filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.15));
+  margin-bottom: 10px;
 }
 
 .mod-heading {
