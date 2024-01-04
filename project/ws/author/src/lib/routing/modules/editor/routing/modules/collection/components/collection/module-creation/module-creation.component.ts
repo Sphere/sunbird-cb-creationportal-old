@@ -2154,17 +2154,36 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   async addIndependentResource() {
-    this.clearForm()
-    this.addResourceModule["module"] = false
-    this.addResourceModule["modID"] = this.courseData.identifier
-    this.addResourceModule["courseID"] = this.courseData.identifier
-    this.showAddModuleForm = true
-    this.isResourceTypeEnabled = true
-
-    await this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
-      this.updatedVersionKey = resData.versionKey
+    const dialogRef = this.dialog.open(UserIndexConfirmComponent, {
+      width: '382px',
+      height: '203px',
+      data: { 'message': 'You are adding resource outside the module. Would you like to go ahead?', 'id': this.contentService.parentContent },
     })
-    this.editItem = ''
+    dialogRef.afterClosed().subscribe(async result => {
+      console.log(result)
+
+      if (result === 'New') {
+        this.loaderService.changeLoad.next(true)
+
+        this.clearForm()
+        this.addResourceModule["module"] = false
+        this.addResourceModule["modID"] = this.courseData.identifier
+        this.addResourceModule["courseID"] = this.courseData.identifier
+        this.showAddModuleForm = true
+        this.isResourceTypeEnabled = true
+
+        await this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
+          this.updatedVersionKey = resData.versionKey
+        })
+        this.editItem = ''
+        this.loaderService.changeLoad.next(false)
+
+      } else {
+        dialogRef.close()
+        this.showAddModuleForm = false
+      }
+    })
+
   }
 
   changeToDefaultImg($event: any) {
@@ -3962,9 +3981,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               let cCourseData1 = hierarchy[this.courseData.identifier]
               this.loaderService.changeLoad.next(false)
               const dialogRef = this.dialog.open(UserIndexConfirmComponent, {
-                width: '450px',
-                height: '450x',
-                data: { 'message': 'Do you want to place this selection outside the collection list or within the last Module?', 'id': this.contentService.parentContent },
+                width: '382px',
+                height: '203px',
+                data: { 'message': 'You are adding resource outside the module. Would you like to go ahead?', 'id': this.contentService.parentContent },
               })
 
               dialogRef.afterClosed().subscribe(async result => {
