@@ -379,83 +379,59 @@
             is Required</span>
 
         </div>
-
-        <!--Resource types page -->
-        <div class="resource-right-content" *ngIf="isResourceTypeEnabled && showAddModuleForm">
+        <!--Onclick of reosurce type page-->
+        <div class="module-right-content scroll-bar"
+          *ngIf="!isResourceTypeEnabled && showAddModuleForm && isOnClickOfResourceTypeEnabled">
           <div class="module-resource-title-block">
             <div>
-              <span class="course-title">Select Resourse Type</span>
+              <span class="course-sub-title">Resource Details</span>
             </div>
             <div class="save-btn-block">
-              <button mat-raised-button class="text-white   mat-button-base save-btn-bottom cancelResouceSelection"
-                (click)="cancelResouceSelection()">
-                Cancel</button>
-            </div>
-          </div>
-          <div class="resource-selection-type">
-            <div *ngIf="!isSelfAssessment" class="margin-top-m margin-bottom-s">
-              <span class="learnering-format-txt">Learning Format:</span>
-            </div>
-            <div *ngIf="!isSelfAssessment" style="display:flex;">
-              <div *ngFor="let list of contentList">
-                <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
-                  <div class="list-boxes">
-                    <img loading="lazy" [src]="list.icon" alt="icon" />
-                  </div>
-                  <div class="icon-text cursor-pointer" matListItemTitle>{{list.name}}</div>
-                </div>
+              <img loading="lazy" (click)="takeActions('delete', content, $event.type)"
+                src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-icon" />
+              <button *ngIf="isLinkEnabled||isAssessmentOrQuizEnabled"
+                [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
+                class="width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
+                (click)="resourceLinkSave()">Save</button>
+              <div *ngIf="isPdfOrAudioOrVedioEnabled"><button [disabled]=" uploadFileName==''" mat-raised-button
+                  class="width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
+                  (click)="resourcePdfSave()">Save</button>
               </div>
             </div>
-            <div class="margin-top-l margin-bottom-s">
-              <span class="learnering-format-txt">Access your learner:</span>
-            </div>
-            <div style="display:flex;">
-              <div class="accessList-block" *ngFor="let list of accessList">
-                <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
-                  <div class="list-boxes">
-                    <img loading="lazy" [src]="list.icon" alt="icon" />
-                  </div>
-                  <div class="icon-text cursor-pointer" matListItemTitle>{{list.name}}</div>
-                </div>
-                <div class="accessList-help">
-                  <span class="accessList-help-txt">{{list.text}}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!--Onclick of reosurce type page-->
-        <div class="model-right-content scroll-bar"
-          *ngIf="!isResourceTypeEnabled && showAddModuleForm && isOnClickOfResourceTypeEnabled">
-          <div>
-            <span class="course-sub-title">Resource Details</span>
           </div>
           <div>
             <!--link form start-->
             <form [formGroup]="resourceLinkForm" class="resource-details-form"
               *ngIf="isLinkEnabled||isAssessmentOrQuizEnabled">
-              <mat-form-field appearance="outline" class="margin-top-xs field-width" style="margin-bottom: 0vh;">
+              <mat-form-field appearance="outline" class="module-txt-block margin-top-xs field-width"
+                style="margin-bottom: 0vh;">
                 <input matInput #name formControlName="name" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
                 <mat-hint class="mt-hint">{{ this.resourceLinkForm.value.name.length }}/100</mat-hint>
               </mat-form-field>
-              <span *ngIf="resourceLinkForm.get('name').hasError('required')" class="invalid-text">This field is
+              <span *ngIf="resourceLinkForm.get('name').hasError('required')" class="module-txt-block invalid-text">This
+                field is
                 Required</span>
 
-              <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
+              <div class="module-txt-block" style="display:flex; flex-direction:row"
+                *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">
                   <input matInput #artifactUrl [(ngModel)]="editResourceLinks" formControlName="artifactUrl"
                     maxlength="100" i18n-placeholder placeholder="Link" />
                 </mat-form-field>
-                <mat-checkbox class="check-text" formControlName="isIframeSupported">Open link in new tab</mat-checkbox>
 
               </div>
               <span
                 *ngIf="resourceLinkForm.get('artifactUrl').hasError('required')&&isLinkEnabled && !isAssessmentOrQuizEnabled"
-                class="invalid-text">This field
+                class="module-txt-block invalid-text">This field
                 is Required</span>
+              <div class="margin-bottom-s module-txt-block" *ngIf="!isAssessmentOrQuizEnabled">
+                <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
+              </div>
+              <mat-checkbox class="module-txt-block check-texts" formControlName="isIframeSupported">Open link in new
+                tab</mat-checkbox>
+
+
               <!--validation div for resource link-->
 
               <div class="margin-top-s" *ngIf="isAssessmentOrQuizEnabled">
@@ -466,63 +442,34 @@
                   clicking on Add
                   {{resourceType==='Assessment'?'Assessment':'Quiz'}}</span>
               </div>
-              <div class="margin-bottom-s" *ngIf="!isAssessmentOrQuizEnabled">
-                <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
-              </div>
-              <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
-                <span style="color:#808080">Resource Thumbnail</span><br>
-              </div>
-              <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
-                <div>
-                  <img alt="" class="image max-width" [src]="resourceLinkForm.controls.appIcon.value"
-                    (error)="changeToDefaultImg($event)">
-                  <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadResourceFile.click()">
-                    <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
-                    <input #uploadResourceFile
-                      (change)="uploadResourceAppIcon($event.target.files[0]); uploadResourceFile.value = null"
-                      style="display: none;" [accept]="imageTypes.toString()" type="file">
-                  </div>
-                </div>
-                <div>
-                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)<br> Files
-                  allowed: JPG, PNG
-                </div>
-              </div>
-              <div class="duration-style" *ngIf="!isAssessmentOrQuizEnabled">
+
+              <div class="module-txt-block duration-style margin-top-s" *ngIf="!isAssessmentOrQuizEnabled">
                 <span class="duration-text">Duration:</span>
-                <!-- <mat-form-field appearance="outline" class="width-55"> -->
                 <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
                   (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())" placeholder="hh"
                   type="number" min="0" step="1"
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
-                <!-- </mat-form-field> -->
                 <div class="colon-block">:</div>
 
-                <!-- <mat-form-field appearance="outline" class="width-55"> -->
                 <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
                   (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())" placeholder="mm"
                   type="number" min="0" max="59" step="1"
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
-                <!-- </mat-form-field> -->
                 <div class="colon-block">:</div>
 
-                <!-- <mat-form-field appearance="outline" class="width-55"> -->
                 <input matInput class="numberInput" [(ngModel)]="seconds" [ngModelOptions]="{ standalone: true }"
                   (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())" placeholder="ss"
                   type="number" min="0" max="59" step="1"
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
-                <!-- </mat-form-field> -->
-
               </div>
               <span *ngIf="resourceLinkForm.get('duration').hasError('required')&&!isAssessmentOrQuizEnabled"
-                class="invalid-text">This field
+                class="module-txt-block invalid-text">This field
                 is Required</span>
-
               <div>
-
+                <!--
                 <button [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
                   class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
-                  (click)="resourceLinkSave()">Save</button>
+                  (click)="resourceLinkSave()">Save</button> -->
               </div>
 
             </form>
@@ -582,60 +529,78 @@
                 <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="showDownloadBtn">Show
                   Download Button</mat-checkbox>
               </div>
-
-              <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
-                <span style="color:#808080">Resource Thumbnail</span><br>
-              </div>
-              <div class="thumnail-row margin-top-xs" *ngIf="isSaveModuleFormEnable">
-                <div>
-                  <img alt="" class="image max-width" [src]="resourcePdfForm.controls.appIcon.value"
-                    (error)="changeToDefaultImg($event)">
-                  <div class="photo mat-elevation-z4 mat-app-background" (click)="uploadResourceFile.click()">
-                    <mat-icon class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
-                    <input #uploadResourceFile
-                      (change)="uploadResourceAppIcon($event.target.files[0]); uploadResourceFile.value = null"
-                      style="display: none;" [accept]="imageTypes.toString()" type="file">
-                  </div>
-                </div>
-                <div>
-                  Maximum File size : 1 MB <br>Resolution : 760 px * 400 px<br> Thumbnail Ratio: 256(w)x150(h)<br> Files
-                  allowed: JPG, PNG
-                </div>
-              </div>
               <div class="duration-style module-txt-block">
                 <span class="duration-text">Duration:</span><br>
-                <!-- <mat-form-field appearance="outline" class="width-55"> -->
                 <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
                   (keyup)="this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())" placeholder="hh"
                   type="number" min="0" step="1"
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
-                <!-- </mat-form-field> -->
                 <div class="colon-block">:</div>
 
-                <!-- <mat-form-field appearance="outline" class="width-55"> -->
                 <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
                   (keyup)="this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())" placeholder="mm"
                   type="number" min="0" max="59" step="1"
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
-                <!-- </mat-form-field> -->
                 <div class="colon-block">:</div>
 
-                <!-- <mat-form-field appearance="outline" class="width-55"> -->
                 <input matInput class="numberInput" [(ngModel)]="seconds" [ngModelOptions]="{ standalone: true }"
                   (keyup)="this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())" placeholder="ss"
                   type="number" min="0" max="59" step="1"
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
-                <!-- </mat-form-field> -->
               </div>
               <span *ngIf="resourcePdfForm.get('duration').hasError('required')" class="invalid-text">This field
                 is Required</span>
 
-              <div><button [disabled]="uploadFileName == ''" mat-raised-button
-                  class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
-                  (click)="resourcePdfSave()">Save</button></div>
+
             </form>
           </div>
         </div>
+        <!--Resource types page -->
+        <div class="resource-right-content" *ngIf="isResourceTypeEnabled && showAddModuleForm">
+          <div class="module-resource-title-block">
+            <div>
+              <span class="course-title">Select Resourse Type</span>
+            </div>
+            <div class="save-btn-block">
+              <button mat-raised-button class="text-white   mat-button-base save-btn-bottom cancelResouceSelection"
+                (click)="cancelResouceSelection()">
+                Cancel</button>
+            </div>
+          </div>
+          <div class="resource-selection-type">
+            <div *ngIf="!isSelfAssessment" class="margin-top-m margin-bottom-s">
+              <span class="learnering-format-txt">Learning Format:</span>
+            </div>
+            <div *ngIf="!isSelfAssessment" style="display:flex;">
+              <div *ngFor="let list of contentList">
+                <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
+                  <div class="list-boxes">
+                    <img loading="lazy" [src]="list.icon" alt="icon" />
+                  </div>
+                  <div class="icon-text cursor-pointer" matListItemTitle>{{list.name}}</div>
+                </div>
+              </div>
+            </div>
+            <div class="margin-top-l margin-bottom-s">
+              <span class="learnering-format-txt">Access your learner:</span>
+            </div>
+            <div style="display:flex;">
+              <div class="accessList-block" *ngFor="let list of accessList">
+                <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
+                  <div class="list-boxes">
+                    <img loading="lazy" [src]="list.icon" alt="icon" />
+                  </div>
+                  <div class="icon-text cursor-pointer" matListItemTitle>{{list.name}}</div>
+                </div>
+                <div class="accessList-help">
+                  <span class="accessList-help-txt">{{list.text}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
         <ng-template #guideline>
           <div class="margin-top-m margin-bottom-m">
             <div style="position: relative;">
