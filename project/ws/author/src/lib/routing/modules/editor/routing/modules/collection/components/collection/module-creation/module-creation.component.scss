@@ -1040,3 +1040,42 @@ font-weight: 400;
 line-height: 24px; /* 150% */
 letter-spacing: -0.32px;
 }
+.file-info{
+  margin-left:-10px;
+  color: #000;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  display: flex;
+  align-items: end;
+  margin-left: -20px;
+  margin-bottom: 5px;
+}
+.pdf-info{
+    margin-left: -10px;
+    color: #000;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    display: flex;
+    align-items: end;
+    margin-left: -20px;
+    margin-bottom: 39px;
+
+}
+.quiz-help-txt{
+  color: #808080;
+
+/* Label 2 */
+font-family: Roboto;
+font-size: 12px;
+font-style: normal;
+font-weight: 400;
+line-height: 14.4px; /* 120% */
+letter-spacing: -0.24px;
+}
+.box-shadow{
+  // box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
+}

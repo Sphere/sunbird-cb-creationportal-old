@@ -36,6 +36,8 @@
                 <div (click)="editContent(module)" class="left-block-container">
                   <img *ngIf="module.primaryCategory === 'Course Unit'" src="cbp-assets/icons/Vector.svg" alt="dragDrop"
                     class="dragIcon" />
+                  <!-- <img *ngIf="module.primaryCategory === 'Course Unit'&&editItem === module.identifier"
+                    src="cbp-assets/icons/Vector_white.svg" alt="dragDrop" class="dragIcon" /> -->
                   <div class="mod-heading" *ngIf="module.primaryCategory === 'Course Unit'"
                     [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
                     (cdkDragStarted)="dragDrop(module,module.identifier, 'Module')" style="cursor: pointer;"
@@ -60,7 +62,10 @@
                     [matTooltipPosition]="'left'"
                     (cdkDragStarted)="dragDrop(resource,resource.identifier, 'resourceInsideModule')"
                     style="cursor: pointer;" (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
-                    <img src="cbp-assets/icons/Vector.svg" alt="dragDrop" class="dragIcon" />
+                    <img *ngIf="editItem !== resource.identifier" src="cbp-assets/icons/Vector.svg" alt="dragDrop"
+                      class="dragIcon" />
+                    <img *ngIf="editItem === resource.identifier" src="cbp-assets/icons/Vector_white.svg" alt="dragDrop"
+                      class="dragIcon" />
                     <!-- <mat-icon class="cursor-pointer">none</mat-icon> -->
                     <span style="white-space: normal;" class="resourse-text">{{resource.name}} </span>
                     <span *ngIf="resource.duration>0" class="resource-duration-txt">(
@@ -81,7 +86,10 @@
                   class="heading-resource resource-2" [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
                   matTooltip="dragDrop" (cdkDragStarted)="dragDrop(module,module.identifier, 'resource')"
                   style="cursor: pointer;" (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
-                  <img loading="lazy" src="cbp-assets/icons/Vector.svg" alt="dragDrop" class="dragIcon" />
+                  <img *ngIf="editItem !== module.identifier" loading="lazy" src="cbp-assets/icons/Vector.svg"
+                    alt="dragDrop" class="dragIcon" />
+                  <img *ngIf="editItem === module.identifier" loading="lazy" src="cbp-assets/icons/Vector_white.svg"
+                    alt="dragDrop" class="dragIcon" />
                   <!-- <mat-icon class="cursor-pointer">none</mat-icon> -->
                   <span title="{{module.name}}" class="resourse-text" style="white-space: normal;">{{
                     module.name}}</span>
@@ -239,7 +247,7 @@
           </div>
           <div *ngIf="content?.contentType === 'Course'">
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
-              class="module-input margin-top-s" placeholder="Name of the Course" autocomplete="off"
+              class=" module-input margin-top-s" placeholder="Name of the Course" autocomplete="off"
               maxlength="250" /><br>
             <mat-hint class="mt-hint">{{ moduleName.length }}/250</mat-hint><br>
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
@@ -247,28 +255,54 @@
           <div class="module-txt-block"
             *ngIf="content?.contentType === 'CourseUnit' || content?.contentType === 'Resource'">
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
-              class="module-input margin-top-s" placeholder="Name of the Module" autocomplete="off"
+              class=" module-input margin-top-s" placeholder="Name of the Module" autocomplete="off"
               maxlength="100" /><br>
             <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint><br>
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
+          <div class="module-txt-block" *ngIf="content?.mimeType === 'application/json'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none">
+              <g clip-path="url(#clip0_1391_3564)">
+                <path
+                  d="M7.9936 14.9957C5.80575 14.9957 3.61362 14.9957 1.42577 14.9957C0.637968 14.9957 0.0685271 14.5064 0.00430449 13.7808C-0.0213846 13.4686 0.0770902 13.1943 0.235506 12.9286C1.39579 10.95 2.55608 8.97138 3.71637 6.98858C4.75678 5.21249 5.79719 3.4364 6.84187 1.66031C7.15442 1.13296 7.69818 0.888275 8.28903 1.01484C8.69577 1.09921 8.98263 1.33968 9.18814 1.69405C10.5497 4.02702 11.9155 6.35576 13.2813 8.68451C14.1162 10.1062 14.9468 11.5279 15.7817 12.9497C16.3597 13.9368 15.7389 14.9957 14.5786 14.9957C12.3821 14.9957 10.1857 14.9957 7.98932 14.9957H7.9936ZM7.9936 13.9537C10.1686 13.9537 12.3436 13.9537 14.5186 13.9537C14.9468 13.9537 15.0538 13.7808 14.844 13.4264C12.6604 9.70123 10.4769 5.97186 8.29331 2.24671C8.12205 1.9514 7.90797 1.9514 7.72815 2.24249C7.70674 2.27624 7.68961 2.30999 7.66821 2.34374C5.93848 5.29686 4.20875 8.2542 2.47474 11.2073C2.02518 11.9751 1.57562 12.7387 1.12606 13.5065C0.98477 13.7512 1.10037 13.9453 1.38723 13.9537C1.43861 13.9537 1.49427 13.9537 1.54565 13.9537C3.69497 13.9537 5.84428 13.9537 7.9936 13.9537Z"
+                  fill="black" />
+                <path
+                  d="M7.98926 13.9538C5.83994 13.9538 3.69063 13.9538 1.54131 13.9538C1.48993 13.9538 1.43427 13.9538 1.38289 13.9538C1.09603 13.9453 0.980432 13.7513 1.12172 13.5066C1.567 12.7388 2.02084 11.971 2.4704 11.2074C4.20013 8.25426 5.92986 5.29692 7.66387 2.3438C7.68527 2.31005 7.7024 2.2763 7.72381 2.24255C7.89935 1.95568 8.11771 1.95568 8.28897 2.24677C10.4725 5.97192 12.6561 9.70129 14.8397 13.4264C15.0495 13.785 14.9424 13.9538 14.5143 13.9538C12.3393 13.9538 10.1643 13.9538 7.98926 13.9538ZM7.23143 5.97192C7.33419 7.01395 7.43695 8.07286 7.54399 9.13598C7.57824 9.4777 7.60821 9.82363 7.65102 10.1654C7.67671 10.3636 7.82656 10.4986 8.00211 10.5029C8.18193 10.5029 8.3275 10.3763 8.36175 10.178C8.3746 10.1063 8.38316 10.0346 8.38744 9.96285C8.51589 8.6677 8.64433 7.37254 8.7685 6.07739C8.78134 5.94239 8.78134 5.80317 8.76421 5.66817C8.69999 5.19989 8.43454 4.98474 7.95501 5.00161C7.53542 5.01427 7.28281 5.26739 7.24856 5.71458C7.24428 5.79052 7.24 5.87067 7.23572 5.97192H7.23143ZM8.7685 11.9668C8.7685 11.5407 8.41741 11.1947 7.98498 11.1947C7.55683 11.1947 7.20146 11.5491 7.20575 11.9668C7.20575 12.3928 7.55683 12.7346 7.98926 12.7346C8.42169 12.7346 8.77278 12.3886 8.7685 11.9625V11.9668Z"
+                  fill="#F9F487" />
+                <path
+                  d="M7.23145 5.9719C7.23574 5.87065 7.23574 5.79471 7.2443 5.71456C7.28283 5.26737 7.53116 5.01425 7.95075 5.00159C8.43028 4.98472 8.69573 5.19987 8.75995 5.66815C8.77708 5.80315 8.77708 5.94237 8.76423 6.07737C8.64007 7.37252 8.51163 8.66768 8.38318 9.96283C8.37462 10.0345 8.37034 10.1063 8.35749 10.178C8.32324 10.3763 8.17767 10.507 7.99784 10.5028C7.8223 10.5028 7.67245 10.3678 7.64676 10.1653C7.60395 9.82361 7.57398 9.47768 7.53972 9.13596C7.43269 8.07283 7.32993 7.01393 7.22717 5.9719H7.23145Z"
+                  fill="black" />
+                <path
+                  d="M8.76856 11.9667C8.76856 12.3886 8.42176 12.7388 7.98933 12.7388C7.55689 12.7388 7.21009 12.397 7.20581 11.9709C7.20581 11.5491 7.55689 11.1989 7.98505 11.1989C8.4132 11.1989 8.76428 11.5449 8.76856 11.9709V11.9667Z"
+                  fill="black" />
+              </g>
+              <defs>
+                <clipPath id="clip0_1391_3564">
+                  <rect width="16" height="14.0147" fill="white" transform="translate(0 0.985352)" />
+                </clipPath>
+              </defs>
+            </svg>
+            <span style="color: #000;
+              font-family: Roboto;
+              font-size: 16px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 14.4px; /* 90% */
+              letter-spacing: -0.32px;margin-left: 5px;">Save the assessment details before clicking on add
+              Questions</span>
+          </div>
           <!-- is link enabled -->
           <div class="module-txt-block" *ngIf="isLinkEnabled">
-            <mat-form-field appearance="outline" class="margin-top-xs field-width">
-              <input matInput #artifactUrl [(ngModel)]="editResourceLinks" maxlength="100" i18n-placeholder
-                placeholder="Link" />
-            </mat-form-field><br>
+            <input #artifactUrl name="moduleName" type="text" matInput [(ngModel)]="editResourceLinks"
+              class="module-input margin-top-xs field-width" placeholder="Link" autocomplete="off" maxlength="100"
+              i18n-placeholder />
             <span *ngIf="editResourceLinks == ''" class="invalid-text">This field is Required</span>
           </div>
-          <div *ngIf="isLinkEnabled" class="margin-bottom-s module-txt-block">
+          <div *ngIf="isLinkEnabled" class="margin-bottom-s margin-top-l module-txt-block">
             <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
           </div>
           <!-- is pdf/video/audio/zip -->
-          <div class="margin-top-s" *ngIf="isPdfOrAudioOrVedioEnabled&&content?.mimeType !== 'application/json'">
-            <span style="color:#808080">Resource file</span><br>
-            <span *ngIf="!uploadFileName&&uploadFileName == ''" class="invalid-text">This field is Required</span>
-          </div>
-          <div class="thumnail-row margin-top-xs"
+          <div class="module-txt-block thumnail-row margin-top-xs"
             *ngIf="isPdfOrAudioOrVedioEnabled&&content?.mimeType !== 'application/json'">
             <div>
               <img alt="" class="image max-width" height="144" width="256"
@@ -294,34 +328,41 @@
                   class="pdf-button margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom">Upload
                   File</button>
               </div>
-              <div class="margin-bottom-s" *ngIf="acceptType == 'pdf'">
+              <div class="margin-bottom-s" *ngIf="acceptType == '.pdf'">
                 <span style="color: #808080 !important;">Note : The PDF should have high resolution</span>
                 <span *ngIf="resourceImg == ''" class="invalid-text">This field is Required</span>
               </div>
             </div>
-            <div>
+            <div [ngClass]="acceptType == '.pdf'?'pdf-info':'file-info'">
               Files allowed : {{uploadText}}<br> Max.file size : 200MB
             </div>
           </div>
-          <div class="module-txt-block">
+          <div class="module-txt-block" *ngIf="isPdfOrAudioOrVedioEnabled&&content?.mimeType !== 'application/json'">
+            <!-- <span style="color:#808080">Resource file</span><br> -->
+            <span *ngIf="!uploadFileName&&uploadFileName == ''" class="invalid-text">This field is Required</span>
+          </div>
+          <div class="module-txt-block margin-top-m">
             <mat-checkbox *ngIf="isLinkEnabled" [(ngModel)]="isNewTab" [checked]="isNewTab"
               style="margin-left: 0px;border-radius: 4px;" class="check-text">Open
               link
               in new tab</mat-checkbox>
             <mat-checkbox *ngIf="isShowDownloadBtnEnabled" [(ngModel)]="isShowBtn" [checked]="isShowBtn"
-              style="margin-left: 0px;" class="check-text">Show Download button</mat-checkbox>
+              style="margin-left: 0px; margin-top: 5px;" class="check-text">Show Download button</mat-checkbox>
           </div>
           <div class="margin-top-s" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
             <button mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
               (click)="editAssessmentRes(content)">Edit {{assessmentOrQuizName}}</button>
           </div>
-          <div class="margin-top-s" *ngIf="content?.mimeType === 'application/json'&&!isAddOrEdit">
+          <div class="margin-top-s module-txt-block" *ngIf="content?.mimeType === 'application/json'&&!isAddOrEdit">
             <button mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
               (click)="editAssessmentRes(content)">Add {{resourceType==='Assessment'?'Assessment':'Quiz'}}</button>
           </div>
-
+          <span *ngIf="content?.mimeType === 'application/json'"
+            class="margin-top-s module-txt-block quiz-help-txt">Note: You will be taken to
+            {{resourceType==='Assessment'?'Assessment':'Quiz'}} builder
+          </span>
 
 
           <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
@@ -374,7 +415,9 @@
 
 
           </div>
-          <span *ngIf="!hours&&!minutes&&!seconds&&content?.contentType !== 'CourseUnit'" class="invalid-text">This
+          <span
+            *ngIf="!hours&&!minutes&&!seconds&&content?.contentType !== 'CourseUnit'&&content?.mimeType !== 'application/json'"
+            class="module-txt-block invalid-text">This
             field
             is Required</span>
 
@@ -405,18 +448,48 @@
               *ngIf="isLinkEnabled||isAssessmentOrQuizEnabled">
               <mat-form-field appearance="outline" class="module-txt-block margin-top-xs field-width"
                 style="margin-bottom: 0vh;">
-                <input matInput #name formControlName="name" maxlength="100" i18n-placeholder
+                <input class="" matInput #name formControlName="name" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
                 <mat-hint class="mt-hint">{{ this.resourceLinkForm.value.name.length }}/100</mat-hint>
               </mat-form-field>
               <span *ngIf="resourceLinkForm.get('name').hasError('required')" class="module-txt-block invalid-text">This
                 field is
                 Required</span>
+              <div class="module-txt-block" *ngIf="isAssessmentOrQuizEnabled">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none">
+                  <g clip-path="url(#clip0_1391_3564)">
+                    <path
+                      d="M7.9936 14.9957C5.80575 14.9957 3.61362 14.9957 1.42577 14.9957C0.637968 14.9957 0.0685271 14.5064 0.00430449 13.7808C-0.0213846 13.4686 0.0770902 13.1943 0.235506 12.9286C1.39579 10.95 2.55608 8.97138 3.71637 6.98858C4.75678 5.21249 5.79719 3.4364 6.84187 1.66031C7.15442 1.13296 7.69818 0.888275 8.28903 1.01484C8.69577 1.09921 8.98263 1.33968 9.18814 1.69405C10.5497 4.02702 11.9155 6.35576 13.2813 8.68451C14.1162 10.1062 14.9468 11.5279 15.7817 12.9497C16.3597 13.9368 15.7389 14.9957 14.5786 14.9957C12.3821 14.9957 10.1857 14.9957 7.98932 14.9957H7.9936ZM7.9936 13.9537C10.1686 13.9537 12.3436 13.9537 14.5186 13.9537C14.9468 13.9537 15.0538 13.7808 14.844 13.4264C12.6604 9.70123 10.4769 5.97186 8.29331 2.24671C8.12205 1.9514 7.90797 1.9514 7.72815 2.24249C7.70674 2.27624 7.68961 2.30999 7.66821 2.34374C5.93848 5.29686 4.20875 8.2542 2.47474 11.2073C2.02518 11.9751 1.57562 12.7387 1.12606 13.5065C0.98477 13.7512 1.10037 13.9453 1.38723 13.9537C1.43861 13.9537 1.49427 13.9537 1.54565 13.9537C3.69497 13.9537 5.84428 13.9537 7.9936 13.9537Z"
+                      fill="black" />
+                    <path
+                      d="M7.98926 13.9538C5.83994 13.9538 3.69063 13.9538 1.54131 13.9538C1.48993 13.9538 1.43427 13.9538 1.38289 13.9538C1.09603 13.9453 0.980432 13.7513 1.12172 13.5066C1.567 12.7388 2.02084 11.971 2.4704 11.2074C4.20013 8.25426 5.92986 5.29692 7.66387 2.3438C7.68527 2.31005 7.7024 2.2763 7.72381 2.24255C7.89935 1.95568 8.11771 1.95568 8.28897 2.24677C10.4725 5.97192 12.6561 9.70129 14.8397 13.4264C15.0495 13.785 14.9424 13.9538 14.5143 13.9538C12.3393 13.9538 10.1643 13.9538 7.98926 13.9538ZM7.23143 5.97192C7.33419 7.01395 7.43695 8.07286 7.54399 9.13598C7.57824 9.4777 7.60821 9.82363 7.65102 10.1654C7.67671 10.3636 7.82656 10.4986 8.00211 10.5029C8.18193 10.5029 8.3275 10.3763 8.36175 10.178C8.3746 10.1063 8.38316 10.0346 8.38744 9.96285C8.51589 8.6677 8.64433 7.37254 8.7685 6.07739C8.78134 5.94239 8.78134 5.80317 8.76421 5.66817C8.69999 5.19989 8.43454 4.98474 7.95501 5.00161C7.53542 5.01427 7.28281 5.26739 7.24856 5.71458C7.24428 5.79052 7.24 5.87067 7.23572 5.97192H7.23143ZM8.7685 11.9668C8.7685 11.5407 8.41741 11.1947 7.98498 11.1947C7.55683 11.1947 7.20146 11.5491 7.20575 11.9668C7.20575 12.3928 7.55683 12.7346 7.98926 12.7346C8.42169 12.7346 8.77278 12.3886 8.7685 11.9625V11.9668Z"
+                      fill="#F9F487" />
+                    <path
+                      d="M7.23145 5.9719C7.23574 5.87065 7.23574 5.79471 7.2443 5.71456C7.28283 5.26737 7.53116 5.01425 7.95075 5.00159C8.43028 4.98472 8.69573 5.19987 8.75995 5.66815C8.77708 5.80315 8.77708 5.94237 8.76423 6.07737C8.64007 7.37252 8.51163 8.66768 8.38318 9.96283C8.37462 10.0345 8.37034 10.1063 8.35749 10.178C8.32324 10.3763 8.17767 10.507 7.99784 10.5028C7.8223 10.5028 7.67245 10.3678 7.64676 10.1653C7.60395 9.82361 7.57398 9.47768 7.53972 9.13596C7.43269 8.07283 7.32993 7.01393 7.22717 5.9719H7.23145Z"
+                      fill="black" />
+                    <path
+                      d="M8.76856 11.9667C8.76856 12.3886 8.42176 12.7388 7.98933 12.7388C7.55689 12.7388 7.21009 12.397 7.20581 11.9709C7.20581 11.5491 7.55689 11.1989 7.98505 11.1989C8.4132 11.1989 8.76428 11.5449 8.76856 11.9709V11.9667Z"
+                      fill="black" />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_1391_3564">
+                      <rect width="16" height="14.0147" fill="white" transform="translate(0 0.985352)" />
+                    </clipPath>
+                  </defs>
+                </svg>
+                <span style="color: #000;
+font-family: Roboto;
+font-size: 16px;
+font-style: normal;
+font-weight: 400;
+line-height: 14.4px; /* 90% */
+letter-spacing: -0.32px;margin-left: 5px;">Save the assessment details before clicking on add Questions</span>
+              </div>
 
               <div class="module-txt-block" style="display:flex; flex-direction:row"
                 *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">
-                  <input matInput #artifactUrl [(ngModel)]="editResourceLinks" formControlName="artifactUrl"
+                  <input class="" matInput #artifactUrl [(ngModel)]="editResourceLinks" formControlName="artifactUrl"
                     maxlength="100" i18n-placeholder placeholder="Link" />
                 </mat-form-field>
 
@@ -428,20 +501,22 @@
               <div class="margin-bottom-s module-txt-block" *ngIf="!isAssessmentOrQuizEnabled">
                 <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
               </div>
-              <mat-checkbox class="module-txt-block check-texts" formControlName="isIframeSupported">Open link in new
+              <mat-checkbox *ngIf="isLinkEnabled" class="module-txt-block check-texts"
+                formControlName="isIframeSupported">Open link in new
                 tab</mat-checkbox>
 
 
               <!--validation div for resource link-->
 
-              <div class="margin-top-s" *ngIf="isAssessmentOrQuizEnabled">
+              <div class="margin-top-s module-txt-block" *ngIf="isAssessmentOrQuizEnabled">
                 <button mat-raised-button
                   class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-                  (click)="addAssessment()">Add {{resourceType==='Assessment'?'Assessment':'Quiz'}}</button>
-                <span style="color: #808080 !important;margin-left: 5px;">Note : Save the Resource Details before
-                  clicking on Add
-                  {{resourceType==='Assessment'?'Assessment':'Quiz'}}</span>
+                  (click)="addAssessment()">Add Questions</button>
+
               </div>
+              <span class="margin-top-s module-txt-block quiz-help-txt">Note: You will be taken to
+                {{resourceType==='Assessment'?'Assessment':'Quiz'}} builder
+              </span>
 
               <div class="module-txt-block duration-style margin-top-s" *ngIf="!isAssessmentOrQuizEnabled">
                 <span class="duration-text">Duration:</span>
@@ -476,18 +551,18 @@
             <!--link form end-->
             <!--PDF/audio/vedio form start-->
             <form [formGroup]="resourcePdfForm" class="resource-details-form" *ngIf="isPdfOrAudioOrVedioEnabled">
-              <mat-form-field appearance="outline" class="margin-top-xs field-width" style="margin-bottom: 0vh;">
-                <input matInput #name formControlName="name" maxlength="100" i18n-placeholder
+              <mat-form-field appearance="outline" class="module-txt-block margin-top-xs field-width"
+                style="margin-bottom: 0vh;">
+                <input class="" matInput #name formControlName="name" maxlength="100" i18n-placeholder
                   placeholder="Name of the resource" />
-                <mat-hint class="mt-hint">{{ this.resourcePdfForm.value.name.length }}/100</mat-hint>
+                <mat-hint style="padding: 0px;" class="mt-hint">{{ this.resourcePdfForm.value.name.length
+                  }}/100</mat-hint>
               </mat-form-field>
-              <span *ngIf="resourcePdfForm.get('name').hasError('required')" class="invalid-text">This field
+              <span *ngIf="resourcePdfForm.get('name').hasError('required')" class="module-txt-block invalid-text">This
+                field
                 is Required</span>
-              <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
-                <span style="color:#808080">Resource file</span><br>
-                <span *ngIf="uploadFileName == ''" class="invalid-text">This field is Required</span>
-              </div>
-              <div class="thumnail-row margin-top-xs">
+
+              <div class="module-txt-block thumnail-row margin-top-xs">
                 <div>
                   <img alt="" class="image max-width" height="144" width="256"
                     src="cbp-assets/images/default-white-background.png">
@@ -505,7 +580,7 @@
                   </div>
                   <div class="pdf" *ngIf="uploadFileName == ''">
                     <img alt="" class="pdf-img" src="{{resourceImg}}" (error)="changeToDefaultImg($event)">
-                    <input #pdfFile (change)="uploadPdf($event.target.files[0]); pdfFile.value = null"
+                    <input class="" #pdfFile (change)="uploadPdf($event.target.files[0]); pdfFile.value = null"
                       style="display: none;" accept="{{acceptType}}" type="file" />
                     <button (click)="pdfFile.click()" mat-raised-button
                       class="pdf-button margin-top-m width-15 text-white  mat-button-base save-btn-bottom uploadPdfButton">Upload
@@ -515,21 +590,23 @@
                     <span style="color: #808080 !important;">Note : The PDF should have high resolution</span>
                   </div>
                 </div>
-                <div>
+                <div [ngClass]="acceptType == '.pdf'?'pdf-info':'file-info'">
                   Files allowed : {{uploadText}}<br> Max.file size : 200MB
                 </div>
               </div>
-              <div style="display:flex; flex-direction:row" *ngIf="isLinkEnabled">
-
-                <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="isIframeSupported">Open link
+              <div class="margin-top-s module-txt-block" *ngIf="isSaveModuleFormEnable">
+                <!-- <span style="color:#808080">Resource file</span><br> -->
+                <span *ngIf="uploadFileName == ''" class="invalid-text">This field is Required</span>
+              </div>
+              <div class="margin-top-m" style="display:flex; flex-direction:row" *ngIf="isLinkEnabled">
+                <mat-checkbox class="module-txt-block check-text" formControlName="isIframeSupported">Open link
                   in new tab</mat-checkbox>
               </div>
-              <div style="display:flex; flex-direction:row" *ngIf="isShowDownloadBtnEnabled">
-
-                <mat-checkbox style="margin-left: 0px;" class="check-text" formControlName="showDownloadBtn">Show
+              <div class="margin-top-m" style="display:flex; flex-direction:row" *ngIf="isShowDownloadBtnEnabled">
+                <mat-checkbox class="module-txt-block" formControlName="showDownloadBtn">Show
                   Download Button</mat-checkbox>
               </div>
-              <div class="duration-style module-txt-block">
+              <div class="margin-top-m duration-style module-txt-block">
                 <span class="duration-text">Duration:</span><br>
                 <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
                   (keyup)="this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())" placeholder="hh"
@@ -548,7 +625,8 @@
                   type="number" min="0" max="59" step="1"
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
               </div>
-              <span *ngIf="resourcePdfForm.get('duration').hasError('required')" class="invalid-text">This field
+              <span *ngIf="resourcePdfForm.get('duration').hasError('required')"
+                class="module-txt-block invalid-text">This field
                 is Required</span>
 
 

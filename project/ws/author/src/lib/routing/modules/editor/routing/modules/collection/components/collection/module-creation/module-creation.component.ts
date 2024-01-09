@@ -53,6 +53,8 @@ import { map } from 'rxjs/operators'
 import { UserIndexConfirmComponent } from '@ws/author/src/lib/modules/shared/components/user-index-confirm/user-index-confirm.component'
 //import { M } from '@angular/cdk/keycodes'
 //import { CdkDragDrop } from '@angular/cdk/drag-drop'
+import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
+
 @Component({
   selector: 'ws-author-module-creation',
   templateUrl: './module-creation.component.html',
@@ -2416,7 +2418,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       return
     }
 
-    const dialogRef = this.dialog.open(ImageCropComponent, {
+    const dialogRef = this.dialog.open(NewImageCropComponent, {
       width: '70%',
       data: {
         isRoundCrop: false,
