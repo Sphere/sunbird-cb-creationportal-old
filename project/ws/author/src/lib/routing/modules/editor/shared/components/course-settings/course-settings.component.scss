@@ -337,8 +337,10 @@ ul li {
     font-family: Roboto;
     line-height: 26.8px;
   }
+
   .mt-hint {
     color: #808080;
+    padding-left: 0px !important;
 
 /* Label 2 */
 font-family: Roboto;
@@ -554,4 +556,15 @@ box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
 border-radius: 6px !important;
 background: #FFF !important;
 box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15) !important;
+}
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-subscript-wrapper{
+    padding-left: 0px !important;
+  }
+  ::ng-deep .mat-form-field-underline {
+  display: none;
+}
+
+::ng-deep .mat-form-field-ripple {
+  display: none;
 }
