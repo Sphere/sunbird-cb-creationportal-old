@@ -296,10 +296,13 @@
             <input #artifactUrl name="moduleName" type="text" matInput [(ngModel)]="editResourceLinks"
               class="module-input margin-top-xs field-width" placeholder="Link" autocomplete="off" maxlength="100"
               i18n-placeholder />
-            <span *ngIf="editResourceLinks == ''" class="invalid-text">This field is Required</span>
+
           </div>
-          <div *ngIf="isLinkEnabled" class="margin-bottom-s margin-top-l module-txt-block">
+          <div *ngIf="isLinkEnabled" class="margin-bottom-s margin-top-s module-txt-block">
             <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
+          </div>
+          <div class="module-txt-block margin-top-s" *ngIf="isLinkEnabled">
+            <span *ngIf="editResourceLinks == ''" class="invalid-text">This field is Required</span>
           </div>
           <!-- is pdf/video/audio/zip -->
           <div class="module-txt-block thumnail-row margin-top-xs"
