@@ -98,6 +98,7 @@ letter-spacing: -0.4px;
   margin: 0;
 }
 .numberInput{
+  border: none !important;
     width: 48px;
     height: 35px;
     flex-shrink: 0;
@@ -1075,7 +1076,4 @@ font-style: normal;
 font-weight: 400;
 line-height: 14.4px; /* 120% */
 letter-spacing: -0.24px;
-}
-.box-shadow{
-  // box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
 }
