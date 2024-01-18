@@ -167,7 +167,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.backToCourse = this.initService.isBackButtonClickedMessage.subscribe(
       (data: any) => {
         // tslint:disable-next-line:no-console
-        console.log("isBackButtonClickedMessage data " + data)
         if (sessionStorage.getItem('isSettingsPage') === '1') {
           sessionStorage.setItem('isSettingsPage', '0')
           // tslint:disable-next-line:no-console
@@ -390,7 +389,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.routerSubscription = this.activateRoute.parent.parent.data.subscribe(data => {
 
         this.courseName = data.contents[0].content.name
-
+        this.clickedNext = data.contents[0].content.competency
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
 
         data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {

@@ -135,7 +135,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   isAddCerticate: boolean = false;
   isEnableTitle: boolean = true
   mainCourseDuration: string = ''
-
+  isSelfAssessment: boolean = false
   @ViewChild('creatorContactsView', { static: false }) creatorContactsView!: ElementRef
   @ViewChild('trackContactsView', { static: false }) trackContactsView!: ElementRef
   @ViewChild('publisherDetailsView', { static: false }) publisherDetailsView!: ElementRef
@@ -182,6 +182,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   async ngAfterViewInit() {
     this.editorService.readcontentV3(this.contentService.parentUpdatedMeta().identifier).subscribe(async (data: any) => {
       this.courseData = await data
+
       if (data.duration) {
         const minutes = data.duration > 59 ? Math.floor(data.duration / 60) : 0
         const second = data.duration % 60
@@ -586,6 +587,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     )
   }
   assignFields() {
+    this.isSelfAssessment = this.contentMeta.competency
     if (!this.contentForm) {
       this.createForm()
     }
@@ -637,6 +639,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       } catch (ex) { }
     })
     this.canUpdate = true
+
     // tslint:disable-next-line:no-console
     console.log('saved', this.contentForm.controls, this.contentMeta)
     this.storeData()
@@ -1668,6 +1671,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   createForm() {
+    console.log("this.isSelfAssessment", this.isSelfAssessment, this.contentForm)
     this.contentForm = this.formBuilder.group({
       accessPaths: [],
       accessibility: [],
@@ -1715,7 +1719,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       nodeType: [],
       org: [],
       gatingEnabled: new FormControl(''),
-      issueCertification: new FormControl('', [Validators.required]),
+      issueCertification: !this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
       creatorDetails: [],
       // passPercentage: [],
       plagScan: [],

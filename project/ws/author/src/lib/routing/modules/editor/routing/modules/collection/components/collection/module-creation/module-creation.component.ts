@@ -392,9 +392,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.courseName = data.contents[0].content.name
         this.courseData = data.contents[0].content
 
+        if (this.courseData && this.courseData.competency == true) {
+          this.isSelfAssessment = true
+        } else {
+          this.isSelfAssessment = false
+        }
         this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
           this.courseData = data
-          console.log("data", data)
           this.getChildrenCount()
         })
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
@@ -410,12 +414,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         })
         contentDataMap.forEach(content => this.contentService.setOriginalMeta(content))
         const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
+        console.log("here noe", currentNode)
         this.currentParentId = this.currentContent
         this.storeService.treeStructureChange.next(
           this.storeService.flatNodeMap.get(currentNode) as IContentNode,
         )
         this.storeService.currentParentNode = currentNode
         this.storeService.currentSelectedNode = currentNode
+        console.log("currentSelectedNode", this.storeService.currentParentNode, currentNode)
         let newCreatedNode = 0
         const newCreatedLexid = this.editorService.newCreatedLexid
         if (newCreatedLexid) {
@@ -1699,11 +1705,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.showSettingsPage = true
       }
 
-      if (this.courseData && this.courseData.competency == true) {
-        this.isSelfAssessment = true
-      } else {
-        this.isSelfAssessment = false
-      }
       this.moduleName = data.name
       this.topicDescription = data.description
       this.thumbnail = data.thumbnail
@@ -1972,11 +1973,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                     this.showSettingsPage = false
                   }
                   this.getChildrenCount()
-                  if (this.courseData && this.courseData.competency == true) {
-                    this.isSelfAssessment = true
-                  } else {
-                    this.isSelfAssessment = false
-                  }
+
                   this.loader.changeLoad.next(false)
                   this.snackBar.openFromComponent(NotificationComponent, {
                     data: {
@@ -2305,8 +2302,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             }
           }
         })
-        if (content.artifactUrl) {
+
+        if (content.artifactUrl !== undefined && content.artifactUrl !== null) {
           this.isAddOrEdit = true
+        } else {
+          this.isAddOrEdit = false
         }
         //this.initService.updateAssessment(content)
         // this.isLinkEnabled = false
@@ -2824,11 +2824,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.showSettingsPage = false
         }
         this.getChildrenCount()
-        if (this.courseData && this.courseData.competency == true) {
-          this.isSelfAssessment = true
-        } else {
-          this.isSelfAssessment = false
-        }
+
         this.loaderService.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
@@ -3093,7 +3089,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
 
     const parentNode = node
-    this.loaderService.changeLoad.next(true)
     const isDone = await this.storeService.createChildOrSibling(
       couseCreated,
       parentNode,
@@ -3162,8 +3157,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         //this.courseData = []
         await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
 
-          this.courseData = await data
-
           const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
 
           Object.keys(hierarchyData).forEach((ele: any) => {
@@ -3185,6 +3178,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               },
             },
           }
+
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
             this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
               this.courseData = await data
@@ -4386,11 +4380,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   this.courseData = data
                   this.updateCouseDuration(data)
                   this.showAddModuleForm = false
-                  if (this.courseData && this.courseData.competency == true) {
-                    this.isSelfAssessment = true
-                  } else {
-                    this.isSelfAssessment = false
-                  }
+
                   this.getChildrenCount()
                   if (this.courseData && this.courseData.children.length >= 2) {
                     this.showSettingsPage = true

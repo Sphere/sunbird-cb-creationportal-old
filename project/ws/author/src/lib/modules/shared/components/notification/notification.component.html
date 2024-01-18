@@ -18,6 +18,11 @@
   <span i18n>New content created. Add details</span>
 </p>
 
+<p *ngIf="type === notify.CONTENT_SELF_ASSESSMENT_SUCCESS">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Success">thumb_up</mat-icon>
+  <span i18n>New Self Assessment creation in progress please wait</span>
+</p>
+
 <p *ngIf="type === notify.INVALID_FORMAT">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Fail">error</mat-icon>
   <span i18n>Invalid format</span>

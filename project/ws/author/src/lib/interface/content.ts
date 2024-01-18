@@ -167,6 +167,7 @@ export namespace NSContent {
 
   export interface IContentMeta {
     competencies_v1: any
+    competency: any
     issueCertification: any
     cneName: string
     accessPaths: string[]

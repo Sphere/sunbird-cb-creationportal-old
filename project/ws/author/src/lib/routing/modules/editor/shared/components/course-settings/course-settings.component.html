@@ -113,7 +113,8 @@
         </div>
 
         <!--Authors-->
-        <div class="margin-left-l" [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
+        <div *ngIf="!isSelfAssessment" class="margin-left-l"
+          [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
           <!--Show in popup-->
           <label>
             <div class="margin-top-xs">
@@ -154,151 +155,157 @@
           <p class="course-settings-title">Course Duration(hours : minutes : seconds): {{mainCourseDuration}}</p>
         </div> -->
       </div>
-      <div class="flex-row-item course-setup-block">
-        <p class="margin-left-l margin-top-l course-settings-title">Course Setup</p>
-        <!--Show in popup-->
-        <div class="margin-top-l margin-left-l">
+      <div class="flex-row-item ">
+        <div class="course-setup-block" *ngIf="!isSelfAssessment">
+          <p class="margin-left-l margin-top-l course-settings-title">Course Setup</p>
+          <!--Show in popup-->
+          <div class="margin-top-l margin-left-l">
 
-          <label>
-            <div class="margin-top-xs margin-top-l">
-              <span class="label-heading" style="color: #d32f2f">*</span>
-              <span class="label-heading" i18n>Certificate</span>
-            </div>
-          </label>
-          <mat-form-field appearance="fill" class="margin-top-s "
-            [ngClass]="{ 'mat-form-field-invalid': showError('issueCertification') }">
-            <!-- <mat-label>Issue Certificate</mat-label> -->
-            <mat-select formControlName="issueCertification" i18n-placeholder placeholder="Issue Certificate">
-              <mat-option [value]="true" i18n>Yes</mat-option>
-              <mat-option [value]="false" i18n>No</mat-option>
-            </mat-select>
-            <mat-error *ngIf="showError('issueCertification')" i18n>Certificate is mandatory </mat-error>
-            <mat-hint class="mt-hint">Accepted format: SVG;808 px(h)x1350 px(w)</mat-hint>
-          </mat-form-field>
+            <label>
+              <div class="margin-top-xs margin-top-l">
+                <span class="label-heading" style="color: #d32f2f">*</span>
+                <span class="label-heading" i18n>Certificate</span>
+              </div>
+            </label>
+            <mat-form-field appearance="fill" class="margin-top-s "
+              [ngClass]="{ 'mat-form-field-invalid': showError('issueCertification') }">
+              <!-- <mat-label>Issue Certificate</mat-label> -->
+              <mat-select formControlName="issueCertification" i18n-placeholder placeholder="Issue Certificate">
+                <mat-option [value]="true" i18n>Yes</mat-option>
+                <mat-option [value]="false" i18n>No</mat-option>
+              </mat-select>
+              <mat-error *ngIf="showError('issueCertification')" i18n>Certificate is mandatory </mat-error>
+              <mat-hint class="mt-hint">Accepted format: SVG;808 px(h)x1350 px(w)</mat-hint>
+            </mat-form-field>
+          </div>
+          <div class="margin-top-l margin-left-l">
+
+            <label>
+              <div class="margin-top-l">
+                <span class="label-heading" i18n>CNE Points (Optional)</span>
+              </div>
+            </label>
+            <mat-form-field appearance="fill" class="margin-top-s ">
+              <input matInput formControlName="cneName" placeholder="(Optional) CNE points" />
+              <mat-hint class="mt-hint">Note: CNE Points will be approved by INC</mat-hint>
+            </mat-form-field>
+          </div>
+          <div class="margin-top-l margin-left-l">
+
+            <label>
+              <div class="margin-top-l">
+                <span class="label-heading" i18n>Enable Step-by-Step Learning</span>
+              </div>
+            </label>
+            <mat-form-field appearance="fill" class="margin-top-s "
+              [ngClass]="{ 'mat-form-field-invalid': showError('gatingEnabled') }">
+              <mat-select formControlName="gatingEnabled" i18n-placeholder placeholder="Enable step by step">
+                <mat-option [value]="true" i18n>Yes</mat-option>
+                <mat-option [value]="false" i18n>No</mat-option>
+              </mat-select>
+              <mat-hint class="mt-hint">Note: Learners will be able to access modules in a sequntial manner</mat-hint>
+
+              <mat-error *ngIf="showError('gatingEnabled')" i18n>Gating is mandatory </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="margin-top-l margin-left-l">
+
+            <label>
+              <div class="margin-top-l">
+                <span class="label-heading" i18n>Private Course</span>
+              </div>
+            </label>
+            <mat-form-field appearance="fill" class="margin-top-s "
+              [ngClass]="{ 'mat-form-field-invalid': showError('courseVisibility') }">
+              <mat-select formControlName="courseVisibility" i18n-placeholder placeholder="Select">
+                <mat-option [value]="true" i18n>Yes</mat-option>
+                <mat-option [value]="false" i18n>No</mat-option>
+              </mat-select>
+              <mat-hint class="mt-hint">Note: Only learners who have the link to the course can access the
+                course.</mat-hint>
+              <mat-error *ngIf="showError('courseVisibility')" i18n>Private course is mandatory </mat-error>
+            </mat-form-field>
+          </div>
         </div>
-        <div class="margin-top-l margin-left-l">
 
-          <label>
-            <div class="margin-top-l">
-              <span class="label-heading" i18n>CNE Points (Optional)</span>
-            </div>
-          </label>
-          <mat-form-field appearance="fill" class="margin-top-s ">
-            <input matInput formControlName="cneName" placeholder="(Optional) CNE points" />
-            <mat-hint class="mt-hint">Note: CNE Points will be approved by INC</mat-hint>
-          </mat-form-field>
-        </div>
-        <div class="margin-top-l margin-left-l">
-
-          <label>
-            <div class="margin-top-l">
-              <span class="label-heading" i18n>Enable Step-by-Step Learning</span>
-            </div>
-          </label>
-          <mat-form-field appearance="fill" class="margin-top-s "
-            [ngClass]="{ 'mat-form-field-invalid': showError('gatingEnabled') }">
-            <mat-select formControlName="gatingEnabled" i18n-placeholder placeholder="Enable step by step">
-              <mat-option [value]="true" i18n>Yes</mat-option>
-              <mat-option [value]="false" i18n>No</mat-option>
-            </mat-select>
-            <mat-hint class="mt-hint">Note: Learners will be able to access modules in a sequntial manner</mat-hint>
-
-            <mat-error *ngIf="showError('gatingEnabled')" i18n>Gating is mandatory </mat-error>
-          </mat-form-field>
-        </div>
-        <div class="margin-top-l margin-left-l">
-
-          <label>
-            <div class="margin-top-l">
-              <span class="label-heading" i18n>Private Course</span>
-            </div>
-          </label>
-          <mat-form-field appearance="fill" class="margin-top-s "
-            [ngClass]="{ 'mat-form-field-invalid': showError('courseVisibility') }">
-            <mat-select formControlName="courseVisibility" i18n-placeholder placeholder="Select">
-              <mat-option [value]="true" i18n>Yes</mat-option>
-              <mat-option [value]="false" i18n>No</mat-option>
-            </mat-select>
-            <mat-hint class="mt-hint">Note: Only learners who have the link to the course can access the
-              course.</mat-hint>
-            <mat-error *ngIf="showError('courseVisibility')" i18n>Private course is mandatory </mat-error>
-          </mat-form-field>
-        </div>
 
       </div>
       <div class="flex-row-item">
-        <p class="margin-left-l margin-top-l course-settings-title">Learner Settings</p>
-        <div class="margin-top-l margin-right-l">
-          <div class="margin-top-l margin-left-l">
-            <label>
-              <div class="margin-top-xs flex flex-middle">
-                <span class="label-heading" i18n>Audience</span>
-              </div>
-            </label>
-            <div class="margin-top-xs" *ngIf="roles$ | async as roles;">
-              <mat-form-field appearance="outline" class="margin-top-xs width-90"
-                [ngClass]="{ 'mat-form-field-invalid': showError('rolesMapped') }">
-                <mat-chip-list #rolesMappedChipList i18n-aria-label aria-label="Roles Mapped selection">
-                  <mat-chip style="color: white !important;
+        <div *ngIf="!isSelfAssessment">
+          <p class="margin-left-l margin-top-l course-settings-title">Learner Settings</p>
+          <div class="margin-top-l margin-right-l">
+            <div class="margin-top-l margin-left-l">
+              <label>
+                <div class="margin-top-xs flex flex-middle">
+                  <span class="label-heading" i18n>Audience</span>
+                </div>
+              </label>
+              <div class="margin-top-xs" *ngIf="roles$ | async as roles;">
+                <mat-form-field appearance="outline" class="margin-top-xs width-90"
+                  [ngClass]="{ 'mat-form-field-invalid': showError('rolesMapped') }">
+                  <mat-chip-list #rolesMappedChipList i18n-aria-label aria-label="Roles Mapped selection">
+                    <mat-chip style="color: white !important;
                             background-color: #1C5D95 !important;"
-                    *ngFor="let role of contentForm.controls.rolesMapped.value" [selectable]="selectable"
-                    [removable]="removable" (removed)="removeFromFormControl(role.split(':')[0], 'rolesMapped')">
-                    {{ role.split(':')[0] }}
-                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                  </mat-chip>
-                  <input i18n-placeholder placeholder="Select Roles" #rolesMappedView [formControl]="rolesMappedCtrl"
-                    [matChipInputFor]="rolesMappedChipList" [matAutocomplete]="rolesMappedAuto"
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
-                    (matChipInputTokenEnd)="removeField($event)" />
-                </mat-chip-list>
-                <mat-autocomplete #rolesMappedAuto="matAutocomplete"
-                  (optionSelected)="addToFormControl($event, 'rolesMapped')">
-                  <mat-option *ngIf="!checkCondition('rolesMapped', 'required')" i18n [value]="null">None
-                  </mat-option>
-                  <mat-option *ngFor="let role of rolesMappedList" [value]="role">
-                    {{ role }}
-                  </mat-option>
-                </mat-autocomplete>
-                <mat-error class="error-font" *ngIf="showError('rolesMapped')" i18n>Roles Mapped is mandatory
-                </mat-error>
-              </mat-form-field>
+                      *ngFor="let role of contentForm.controls.rolesMapped.value" [selectable]="selectable"
+                      [removable]="removable" (removed)="removeFromFormControl(role.split(':')[0], 'rolesMapped')">
+                      {{ role.split(':')[0] }}
+                      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                    </mat-chip>
+                    <input i18n-placeholder placeholder="Select Roles" #rolesMappedView [formControl]="rolesMappedCtrl"
+                      [matChipInputFor]="rolesMappedChipList" [matAutocomplete]="rolesMappedAuto"
+                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
+                      (matChipInputTokenEnd)="removeField($event)" />
+                  </mat-chip-list>
+                  <mat-autocomplete #rolesMappedAuto="matAutocomplete"
+                    (optionSelected)="addToFormControl($event, 'rolesMapped')">
+                    <mat-option *ngIf="!checkCondition('rolesMapped', 'required')" i18n [value]="null">None
+                    </mat-option>
+                    <mat-option *ngFor="let role of rolesMappedList" [value]="role">
+                      {{ role }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <mat-error class="error-font" *ngIf="showError('rolesMapped')" i18n>Roles Mapped is mandatory
+                  </mat-error>
+                </mat-form-field>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="margin-top-xs margin-right-l">
-          <div class="margin-top-xs margin-left-l">
-            <label>
-              <div class="margin-top-xs flex flex-middle">
-                <span class="label-heading" i18n>Keywords</span>
-              </div>
-            </label>
-            <div class="margin-top-xs flex margin-right-xl">
-              <mat-form-field class="keywords-chip-list margin-top-xs flex-grow80" appearance="outline"
-                [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
-                <mat-chip-list #keywords aria-label="Keyword selection">
-                  <mat-chip style="color: white !important;
+          <div class="margin-top-xs margin-right-l">
+            <div class="margin-top-xs margin-left-l">
+              <label>
+                <div class="margin-top-xs flex flex-middle">
+                  <span class="label-heading" i18n>Keywords</span>
+                </div>
+              </label>
+              <div class="margin-top-xs flex margin-right-xl">
+                <mat-form-field class="keywords-chip-list margin-top-xs flex-grow80" appearance="outline"
+                  [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
+                  <mat-chip-list #keywords aria-label="Keyword selection">
+                    <mat-chip style="color: white !important;
                     background-color: #1C5D95 !important;" *ngFor="let key of contentForm.controls.keywords.value"
-                    [selectable]="selectable" [removable]="removable" (removed)="removeKeyword(key)">
-                    {{ key }}
-                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                  </mat-chip>
-                  <input i18n-placeholder [formControl]="keywordsCtrl" [matAutocomplete]="auto"
-                    placeholder="Add Keywords" #keywordsView [matChipInputFor]="keywords"
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
-                    (matChipInputTokenEnd)="addKeyword($event)" #keywordsSearch />
-                </mat-chip-list>
-              </mat-form-field>
-              <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption
-                (optionSelected)="optionSelected($event.option.value); keywordsView.value = ''">
-                <mat-option *ngIf="keywordsSearch.value" [value]="keywordsSearch.value">{{ keywordsSearch.value }}
-                </mat-option>
-                <mat-option *ngFor="let option of filteredOptions$ | async" [value]="option">{{ option }}
-                </mat-option>
-              </mat-autocomplete>
+                      [selectable]="selectable" [removable]="removable" (removed)="removeKeyword(key)">
+                      {{ key }}
+                      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                    </mat-chip>
+                    <input i18n-placeholder [formControl]="keywordsCtrl" [matAutocomplete]="auto"
+                      placeholder="Add Keywords" #keywordsView [matChipInputFor]="keywords"
+                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
+                      (matChipInputTokenEnd)="addKeyword($event)" #keywordsSearch />
+                  </mat-chip-list>
+                </mat-form-field>
+                <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption
+                  (optionSelected)="optionSelected($event.option.value); keywordsView.value = ''">
+                  <mat-option *ngIf="keywordsSearch.value" [value]="keywordsSearch.value">{{ keywordsSearch.value }}
+                  </mat-option>
+                  <mat-option *ngFor="let option of filteredOptions$ | async" [value]="option">{{ option }}
+                  </mat-option>
+                </mat-autocomplete>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
 
     </div>
   </div>

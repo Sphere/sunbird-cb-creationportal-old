@@ -397,13 +397,13 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
 
           <div *ngIf="allowAuthorContentCreate"
             class="matExpansion flex flex-middle margin-left-l margin-right-l padding-remove-left create-button">
-            <button *ngIf="createCourseBtn" mat-button class="btn-create" [routerLink]="'/author/create'"
+            <button (click)="createCourse('courseWithLevel')" *ngIf="createCourseBtn" mat-button class="btn-create"
               id="ws-auth-root-home-btn-create" name="ws-auth-root-home-btn-create">
               <mat-icon class="add-create-icon">add</mat-icon>
               <ng-container i18n>Create a new course</ng-container>
             </button>
-            <button *ngIf="!createCourseBtn" mat-button class="btn-create self-btn-create"
-              [routerLink]="'/author/create'" id="ws-auth-root-home-btn-create" name="ws-auth-root-home-btn-create">
+            <button (click)="createCourse('selfAssessment')" *ngIf="!createCourseBtn" mat-button
+              class="btn-create self-btn-create" id="ws-auth-root-home-btn-create" name="ws-auth-root-home-btn-create">
               <mat-icon class="add-create-icon">add</mat-icon>
               <ng-container i18n>Create a new self assessment</ng-container>
             </button>

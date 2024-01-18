@@ -170,14 +170,14 @@
   <!-- </mat-drawer> -->
   <mat-drawer-content>
     <div class="card-holder">
-      <p class="top-banner-bg">Welcome! You will build the course in 4 steps</p>
+      <p *ngIf="!isSelfAssessment" class="top-banner-bg">Welcome! You will build the course in 4 steps</p>
 
       <div class="flex flex-col md:flex-row pl-12 justify-between">
-        <h3 class="mat-h3">
+        <!-- <h3 class="mat-h3"> -->
 
-          <!-- Choose your starting point from the below available options -->
-          <ws-author-create-course [content]="content"></ws-author-create-course>
-        </h3>
+        <!-- Choose your starting point from the below available options -->
+        <ws-author-create-course [content]="content"></ws-author-create-course>
+        <!-- </h3> -->
         <!-- <div class="mat-h3 items-center select-lang">
           <span class="mr-1 text-center" i18n>Select Language: </span>
           <button class="lang-btn" *ngIf="allLanguages?.length" mat-button [matMenuTriggerFor]="sortLang">
@@ -186,7 +186,7 @@
           </button>
         </div> -->
       </div>
-      <div class="bg-btm">
+      <div [ngClass]="isSelfAssessment ? 'bg-btm1' : 'bg-btm'">
         <img alt="create-course-img" src="cbp-assets/images/create-course-bg.svg" />
       </div>
       <div class="flex flex-1 flex-wrap flex-col md:flex-row">

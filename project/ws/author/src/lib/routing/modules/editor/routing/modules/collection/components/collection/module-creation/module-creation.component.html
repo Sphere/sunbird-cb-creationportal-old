@@ -17,43 +17,42 @@
           <span class="course-main-title" style="white-space: normal;">{{courseData?.name}}</span>
           <!-- <mat-icon class=" material-icons margin-left-m text-medium brand-color" (click)=" editContent(courseData)">
             edit</mat-icon> -->
-          <span class="course-duration" matTooltip="Course Duration">Duration : {{mainCourseDuration}}</span>
+          <span class="course-duration" matTooltip="Course Duration">Duration :
+            {{mainCourseDuration}}</span>
         </mat-toolbar>
         <div class="left-navbar-block">
           <!--module & resource left footer-->
-          <div class="model-button">
-            <button [disabled]="hideModule" mat-raised-button
-              class="ws-mat-primary-background mat-button-base save-btn-bottom" (click)="addModule()"> Add
-              Module</button>
-            <span class="or-txt">Or</span>
-            <button [disabled]="hideResource" mat-raised-button
-              class="ws-mat-primary-background mat-button-base save-btn-bottom" (click)="addIndependentResource()">Add
-              Resource</button>
+          <div class="left-nav-bar">
+            <div class="model-button" *ngIf="!isSelfAssessment">
+              <button [disabled]="hideModule" mat-raised-button
+                class="ws-mat-primary-background mat-button-base save-btn-bottom" (click)="addModule()"> Add
+                Module</button>
+              <span class="or-txt">Or</span>
+              <button [disabled]="hideResource" mat-raised-button
+                class="ws-mat-primary-background mat-button-base save-btn-bottom" (click)="addIndependentResource()">Add
+                Resource</button>
+            </div>
+
           </div>
-          <div class="model-left-create-content div-1" cdkDropList (cdkDropListDropped)="drop($event)">
+          <div *ngIf="!isSelfAssessment" class="model-left-create-content div-1" cdkDropList
+            (cdkDropListDropped)="drop($event)">
             <div class="module-container" *ngFor="let module of courseData?.children;index as i">
               <div>
-                <div (click)="editContent(module)" class="left-block-container">
-                  <img *ngIf="module.primaryCategory === 'Course Unit'" src="cbp-assets/icons/Vector.svg" alt="dragDrop"
+                <div (click)="editContent(module)" class="left-block-container"
+                  *ngIf="module.primaryCategory === 'Course Unit'"
+                  [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
+                  (cdkDragStarted)="dragDrop(module,module.identifier, 'Module')" style="cursor: pointer;"
+                  (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
+                  <img *ngIf="editItem !== module.identifier" src="cbp-assets/icons/Vector.svg" alt="dragDrop"
                     class="dragIcon" />
-                  <!-- <img *ngIf="module.primaryCategory === 'Course Unit'&&editItem === module.identifier"
-                    src="cbp-assets/icons/Vector_white.svg" alt="dragDrop" class="dragIcon" /> -->
-                  <div class="mod-heading" *ngIf="module.primaryCategory === 'Course Unit'"
-                    [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
-                    (cdkDragStarted)="dragDrop(module,module.identifier, 'Module')" style="cursor: pointer;"
-                    (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
+                  <img *ngIf="editItem === module.identifier" src="cbp-assets/icons/Vector_white.svg" alt="dragDrop"
+                    class="dragIcon" />
+                  <div class="mod-heading">
                     <h2 class="module-text" style="margin: 0px !important">{{module.name !== '' ?
                       module.name : "no title1"}}
                     </h2>
                     <span fxFlex style="flex: 1 1 auto;"></span>
                   </div>
-                  <!-- <span style="display:flex;flex-direction: row;">
-                  <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)=" editContent(module)">
-                    edit</mat-icon>
-                  <mat-icon class="icons-list" (click)="takeActions('delete', module, $event.type)">delete</mat-icon>
-                  <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
-                    content_copy</mat-icon>
-                </span> -->
                 </div>
                 <div *ngIf="module?.children?.length > 0">
                   <div (click)="editContent(resource)" *ngFor="let resource of module.children;index as l"
@@ -70,16 +69,6 @@
                     <span style="white-space: normal;" class="resourse-text">{{resource.name}} </span>
                     <span *ngIf="resource.duration>0" class="resource-duration-txt">(
                       {{ resource.duration | formatDuration }} )</span>
-                    <!-- <span fxFlex style="flex: 1 1 auto;"></span> -->
-                    <!-- <span style="display:flex;flex-direction: row;">
-                    <mat-icon class="material-icons margin-left-m text-medium brand-color"
-                      (click)="editContent(resource)">
-                      edit</mat-icon>
-                    <mat-icon class="icons-list"
-                      (click)="takeActions('delete', resource, $event.type)">delete</mat-icon>
-                    <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
-                      content_copy</mat-icon>
-                  </span> -->
                   </div>
                 </div>
                 <div (click)="editContent(module)" *ngIf="module.primaryCategory !== 'Course Unit'"
@@ -95,14 +84,6 @@
                     module.name}}</span>
                   <span *ngIf="module.duration>0" class="resource-duration-txt">(
                     {{ module.duration | formatDuration }} )</span>
-                  <!-- <span fxFlex style="flex: 1 1 auto;"></span> -->
-                  <!-- <span style="display:flex;flex-direction: row;">
-                  <mat-icon class="material-icons margin-left-m text-medium brand-color" (click)="editContent(module)">
-                    edit</mat-icon>
-                  <mat-icon (click)="takeActions('delete', module, $event.type)" class="icons-list">delete</mat-icon>
-                  <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
-                    content_copy</mat-icon>
-                </span> -->
                 </div>
               </div>
               <button [disabled]="hideResource" *ngIf="module.primaryCategory === 'Course Unit'" mat-raised-button
@@ -124,14 +105,6 @@
                     title2"}}
                   </h2>
                   <span fxFlex style="flex: 1 1 auto;"></span>
-                  <!-- <span style="display:flex;flex-direction: row;">
-                    <mat-icon class="material-icons margin-left-m text-medium brand-color"
-                      (click)="editContent(module)">
-                      edit</mat-icon>
-                    <mat-icon class="icons-list" (click)="takeActions('delete', module, $event.type)">delete</mat-icon>
-                    <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
-                      content_copy</mat-icon>
-                  </span> -->
                 </div>
                 <div *ngIf="isOnClickOfResourceTypeEnabled">
                   <div (click)="editContent(resource)" *ngFor="let resource of resourceNames"
@@ -142,15 +115,6 @@
                       (click)="dragDrop(resource,resource.identifier, 'resource')">none</mat-icon> <span
                       class="resourse-text" style="white-space: normal;">{{resource.name}}</span>
                     <span fxFlex style="flex: 1 1 auto;"></span>
-                    <!-- <span style="display:flex;flex-direction: row;">
-                      <mat-icon class="material-icons margin-left-m text-medium brand-color"
-                        (click)="editContent(resource)">
-                        edit</mat-icon>
-                      <mat-icon (click)="takeActions('delete', resource, $event.type)" class="icons-list">delete
-                      </mat-icon>
-                      <mat-icon class="icons-list" (click)="copyToClipboard(module)" matTooltip="Copy To Clipboard">
-                        content_copy</mat-icon>
-                    </span> -->
                   </div>
                 </div>
 
@@ -160,15 +124,91 @@
                   Resource</button>
 
               </div>
-              <!-- <div *ngFor="let resource of independentResourceNames" class="heading-resource">
-                      <mat-icon class="cursor-pointer">more_vert</mat-icon> <span class="resourse-text">{{resource.name}}</span>
-                      <span fxFlex style="flex: 1 1 auto;"></span>
-                      <span style="display:flex;flex-direction: row;">
-                        <mat-icon class="icons-list" (click)="takeActions('delete', module, $event.type)">delete</mat-icon>
-                        <mat-icon class="icons-list" (click)="copyToClipboard(module)"
-                          matTooltip="Copy To Clipboard">content_copy</mat-icon>
-                      </span>
-                    </div> -->
+            </div>
+          </div>
+          <div *ngIf="isSelfAssessment" class="model-left-create-content div-1">
+            <div class="module-container" *ngFor="let module of courseData?.children;index as i">
+              <div>
+                <div (click)="editContent(module)" class="left-block-container"
+                  *ngIf="module.primaryCategory === 'Course Unit'"
+                  [ngClass]="editItem === module.identifier ? 'edit-item' : ''" style="cursor: pointer;">
+                  <img *ngIf="editItem !== module.identifier" src="cbp-assets/icons/Vector.svg" alt="dragDrop"
+                    class="dragIcon" />
+                  <img *ngIf="editItem === module.identifier" src="cbp-assets/icons/Vector_white.svg" alt="dragDrop"
+                    class="dragIcon" />
+                  <div class="mod-heading">
+                    <h2 class="module-text" style="margin: 0px !important">{{module.name !== '' ?
+                      module.name : "no title1"}}
+                    </h2>
+                    <span fxFlex style="flex: 1 1 auto;"></span>
+                  </div>
+                </div>
+                <div *ngIf="module?.children?.length > 0">
+                  <div (click)="editContent(resource)" *ngFor="let resource of module.children;index as l"
+                    class="resource-1" style="cursor:pointer"
+                    [ngClass]="editItem === resource.identifier ? 'edit-item' : ''" style="cursor: pointer;">
+                    <img *ngIf="editItem !== resource.identifier" src="cbp-assets/icons/Vector.svg" alt="dragDrop"
+                      class="dragIcon" />
+                    <img *ngIf="editItem === resource.identifier" src="cbp-assets/icons/Vector_white.svg" alt="dragDrop"
+                      class="dragIcon" />
+                    <span style="white-space: normal;" class="resourse-text">Level {{resource.index}}:{{resource.name}}
+                    </span>
+                    <span *ngIf="resource.duration>0" class="resource-duration-txt">(
+                      {{ resource.duration | formatDuration }} )</span>
+                  </div>
+                </div>
+                <div (click)="editContent(module)" *ngIf="module.primaryCategory !== 'Course Unit'"
+                  class="heading-resource resource-2" [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
+                  style="cursor: pointer;">
+                  <img *ngIf="editItem !== module.identifier" loading="lazy" src="cbp-assets/icons/Vector.svg"
+                    alt="dragDrop" class="dragIcon" />
+                  <img *ngIf="editItem === module.identifier" loading="lazy" src="cbp-assets/icons/Vector_white.svg"
+                    alt="dragDrop" class="dragIcon" />
+                  <span title="{{module.name}}" class="resourse-text" style="white-space: normal;">Level
+                    {{module.index}} : {{
+                    module.name}}</span>
+                  <span *ngIf="module.duration>0" class="resource-duration-txt">(
+                    {{ module.duration | formatDuration }} )</span>
+                </div>
+              </div>
+              <button [disabled]="hideResource" *ngIf="module.primaryCategory === 'Course Unit'" mat-raised-button
+                class="secondary-button-outline mat-button-base addResourceBtn"
+                (click)="addResModule(module.identifier, courseData.identifier)">Add Resource</button>
+            </div>
+
+            <!--module & resources left canvas-->
+            <div class="model-text" cdkDropList (cdkDropListDropped)="drop($event)">
+              <span>Your Modules and Resources will be visible here once you start adding them.</span>
+            </div>
+            <!-- <ws-author-auth-toc></ws-author-auth-toc> -->
+            <!--module left canvas creation-->
+            <div class="model-left-create-content div-2" *ngIf="showAddModuleForm && moduleNames.length >0" cdkDropList
+              (cdkDropListDropped)="drop($event)">
+              <div (click)="editContent(module)" class="module-container" *ngFor="let module of moduleNames">
+                <div class="mod-heading">
+                  <h2 class="module-text" style="margin: 0px !important;">{{module.name !== '' ? module.name : "no
+                    title2"}}
+                  </h2>
+                  <span fxFlex style="flex: 1 1 auto;"></span>
+                </div>
+                <div *ngIf="isOnClickOfResourceTypeEnabled">
+                  <div (click)="editContent(resource)" *ngFor="let resource of resourceNames"
+                    class="heading-resource resource-3">
+                    <div class="custom-placeholder border border-solid" *cdkDragPlaceholder></div>
+                    <mat-icon class="cursor-pointer" matTooltip="dragDrop" [matTooltipPosition]="'left'" cdkDrag
+                      cdkDragBoundary=".model-left-create-content div-3" cdkDragLockAxis="y"
+                      (click)="dragDrop(resource,resource.identifier, 'resource')">none</mat-icon> <span
+                      class="resourse-text" style="white-space: normal;">{{resource.name}}</span>
+                    <span fxFlex style="flex: 1 1 auto;"></span>
+                  </div>
+                </div>
+
+                <button *ngIf="isSaveModuleFormEnable" mat-raised-button [disabled]="!isOnClickOfResourceTypeEnabled"
+                  class="button-style secondary-button-outline mat-button-base "
+                  style="margin:0.4rem;color: #1C5D95 !important;" (click)="addIndependentResource()"> Add
+                  Resource</button>
+
+              </div>
             </div>
           </div>
         </div>
@@ -192,13 +232,25 @@
           </div>
         </mat-toolbar>
         <!--module & resource right canvas create page-->
-        <div class="landing-right-content" *ngIf="!showAddModuleForm" style="height: 300px; overflow-y: auto;">
+        <div class="landing-right-content" *ngIf="!showAddModuleForm&&!isSelfAssessment"
+          style="height: 300px; overflow-y: auto;">
           <div class="course-title-block">
             <span class="course-title">
-              < Start by adding Modules and Resources to build the Course</span>
+              Start by adding Modules and Resources to build the Course</span>
           </div>
           <div class="image-container">
             <img loading="lazy" class="course-builder-bg" src="cbp-assets/images/course-builder-bg.svg" alt="Image">
+          </div>
+        </div>
+        <div class="self-landing-right-content" *ngIf="!showAddModuleForm&&isSelfAssessment"
+          style="height: 300px; overflow-y: auto;">
+          <div class="course-title-block">
+            <span class="course-title">
+              Start by adding questions to each assessment level</span>
+          </div>
+          <div class="image-container">
+            <img loading="lazy" class="course-builder-bg" src="cbp-assets/images/selfAssessmentBackground.svg"
+              alt="Image">
           </div>
         </div>
 
@@ -214,7 +266,7 @@
               <span class="course-sub-title" *ngIf="content?.contentType === 'Resource'">Resource Details</span>
             </div>
             <div class="save-btn-block">
-              <img loading="lazy" (click)="takeActions('delete', content, $event.type)"
+              <img class="delete-icon" loading="lazy" (click)="takeActions('delete', content, $event.type)"
                 src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-icon" />
               <button mat-raised-button *ngIf="moduleButtonName === 'Create' && content?.contentType !== 'Course'"
                 class="width-15 text-white   mat-button-base save-btn-bottom"
@@ -352,19 +404,26 @@
             <mat-checkbox *ngIf="isShowDownloadBtnEnabled" [(ngModel)]="isShowBtn" [checked]="isShowBtn"
               style="margin-left: 0px; margin-top: 5px;" class="check-text">Show Download button</mat-checkbox>
           </div>
-          <div class="margin-top-s" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
+          <div class="margin-top-s module-txt-block" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
             <button mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
               (click)="editAssessmentRes(content)">Edit {{assessmentOrQuizName}}</button>
           </div>
           <div class="margin-top-s module-txt-block" *ngIf="content?.mimeType === 'application/json'&&!isAddOrEdit">
-            <button mat-raised-button
+            <button *ngIf="!isSelfAssessment" mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
               (click)="editAssessmentRes(content)">Add {{resourceType==='Assessment'?'Assessment':'Quiz'}}</button>
+            <button *ngIf="isSelfAssessment" mat-raised-button
+              class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+              (click)="editAssessmentRes(content)">Add Assessment</button>
           </div>
-          <span *ngIf="content?.mimeType === 'application/json'"
+          <span *ngIf="content?.mimeType === 'application/json&&!isSelfAssessment'"
             class="margin-top-s module-txt-block quiz-help-txt">Note: You will be taken to
             {{resourceType==='Assessment'?'Assessment':'Quiz'}} builder
+          </span>
+          <span *ngIf="content?.mimeType === 'application/json'&&isSelfAssessment"
+            class="margin-top-s module-txt-block quiz-help-txt">Note: You
+            will be taken to Assessment builder
           </span>
 
 
@@ -433,7 +492,7 @@
               <span class="course-sub-title">Resource Details</span>
             </div>
             <div class="save-btn-block">
-              <img loading="lazy" (click)="takeActions('delete', content, $event.type)"
+              <img class="delete-icon" loading="lazy" (click)="takeActions('delete', content, $event.type)"
                 src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-icon" />
               <button *ngIf="isLinkEnabled||isAssessmentOrQuizEnabled"
                 [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button

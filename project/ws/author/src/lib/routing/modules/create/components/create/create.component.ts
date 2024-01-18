@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs'
 import { CreateService } from './create.service'
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms'
+import { ActivatedRoute } from '@angular/router'
 
 @Component({
   selector: 'ws-auth-generic',
@@ -40,7 +41,7 @@ export class CreateComponent implements OnInit, OnDestroy {
   courseObj = ''
   courseEntity!: ICreateEntity
   createCourseForm!: FormGroup
-
+  isSelfAssessment = false
   constructor(
     private snackBar: MatSnackBar,
     private svc: CreateService,
@@ -49,6 +50,7 @@ export class CreateComponent implements OnInit, OnDestroy {
     private accessControlSvc: AccessControlService,
     private authInitService: AuthInitService,
     private dialog: MatDialog,
+    private route: ActivatedRoute,
     private formBuilder: FormBuilder) { }
 
   ngOnInit() {
@@ -63,6 +65,13 @@ export class CreateComponent implements OnInit, OnDestroy {
             this.entity.push(v)
           }
         }
+      }
+    })
+    this.route.queryParams.subscribe(params => {
+      // Access individual query parameters
+      const value = params['status']
+      if (value == 'selfAssessment') {
+        this.isSelfAssessment = true
       }
     })
     this.loaderService.changeLoadState(false)

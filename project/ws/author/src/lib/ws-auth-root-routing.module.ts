@@ -67,7 +67,7 @@ const routes: Routes = [
   {
     path: 'create',
     data: {
-      load: ['create', 'ordinals'],
+      load: ['create', 'ordinals', 'meta'],
       requiredFeatures: ['authoring'],
     },
     canActivate: [GeneralGuard],

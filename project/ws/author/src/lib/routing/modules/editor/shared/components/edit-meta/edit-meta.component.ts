@@ -868,17 +868,19 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   getAllEntity() {
     this.editorService.getAllEntities().subscribe(async (res: any) => {
       this.proficiencyList = await res.result.response
-      console.log("this.proficiencyList")
-      const combinedArray = this.competencies.map((element: any) => {
-        const matchingValue = this.proficiencyList.find((value: any) => value.id == element.competencyId)
+      let combinedArray = ''
+      if (this.competencies && this.competencies.length > 0) {
+        combinedArray = this.competencies.map((element: any) => {
+          const matchingValue = this.proficiencyList.find((value: any) => value.id == element.competencyId)
 
-        const finalComp = {
-          ...element,
-          ...matchingValue.additionalProperties
-        }
-        return finalComp
-      })
-      console.log("combined properties", combinedArray)
+          const finalComp = {
+            ...element,
+            ...matchingValue.additionalProperties
+          }
+          return finalComp
+        })
+      }
+
       this.addedCompetency = combinedArray
       // this.code = this.competencies.map((entity: any) => this.proficiencyList.find((e: any) => e.id = entity.competencyId))
       // console.log("this.proficiencyList", combinedArray)

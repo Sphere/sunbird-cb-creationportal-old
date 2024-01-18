@@ -1156,6 +1156,31 @@ export class CollectionStoreService {
       }
     }
   }
+  getNewTreeHierarchys(content: any) {
+    const hierarchyTree: any = {}
+
+    const buildHierarchy = (node: any) => {
+      const identifier = node.identifier
+      hierarchyTree[identifier] = {
+        root: this.parentNode.includes(identifier),
+        contentType: node.category,
+        primaryCategory: node.contentType === 'Resource' ? undefined : 'Course Unit',
+        name: node.contentType === 'Resource' ? node.name : undefined,
+        children: [],
+      }
+
+      if (node.children && node.children.length > 0) {
+        node.children.forEach((child: any) => {
+          hierarchyTree[identifier].children.push(child.identifier)
+          buildHierarchy(child)
+        })
+      }
+    }
+
+    buildHierarchy(content)
+
+    return hierarchyTree
+  }
 
   getNewTreeHierarchy(content: any) {
     this.hierarchyTree = {}

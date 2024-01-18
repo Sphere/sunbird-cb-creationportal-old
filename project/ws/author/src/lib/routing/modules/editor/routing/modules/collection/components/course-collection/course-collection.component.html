@@ -114,7 +114,7 @@
       <ws-auth-web-module-editor *ngIf="!showAddchapter && viewMode === 'webmodule'" (data)="action($event)">
       </ws-auth-web-module-editor>
       <ws-auth-edit-meta [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" (data)="action($event)"
-        *ngIf="!showAddchapter && viewMode === 'meta'&&!isReviewChecklistEnabled">
+        *ngIf="!showAddchapter && viewMode === 'meta'&&!isReviewChecklistEnabled&&!clickedNext">
       </ws-auth-edit-meta>
       <!--  [class.hidden]="viewMode !== 'meta'" -->
 
