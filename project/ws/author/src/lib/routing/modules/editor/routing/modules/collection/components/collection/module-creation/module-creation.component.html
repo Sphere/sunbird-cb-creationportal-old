@@ -265,7 +265,7 @@
               <span class="course-sub-title" *ngIf="content?.contentType === 'CourseUnit'">Module Details</span>
               <span class="course-sub-title" *ngIf="content?.contentType === 'Resource'">Resource Details</span>
             </div>
-            <div class="save-btn-block">
+            <div class="save-btn-block" *ngIf="!isSelfAssessment">
               <img class="delete-icon" loading="lazy" (click)="takeActions('delete', content, $event.type)"
                 src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-icon" />
               <button mat-raised-button *ngIf="moduleButtonName === 'Create' && content?.contentType !== 'Course'"
@@ -305,14 +305,19 @@
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
           <div class="module-txt-block"
-            *ngIf="content?.contentType === 'CourseUnit' || content?.contentType === 'Resource'">
+            *ngIf="content?.contentType === 'CourseUnit' || content?.contentType === 'Resource'&&!isSelfAssessment">
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
               class=" module-input margin-top-s" placeholder="Name of the Module" autocomplete="off"
               maxlength="100" /><br>
             <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint><br>
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
-          <div class="module-txt-block" *ngIf="content?.mimeType === 'application/json'">
+          <div class="module-txt-block margin-top-l"
+            *ngIf="content?.contentType === 'CourseUnit' || content?.contentType === 'Resource'&&isSelfAssessment">
+            <span class="self-assessment-name">{{moduleName}}</span><br />
+            <span class="self-assessment-level margin-top-m">Level {{content.index}}</span>
+          </div>
+          <div class="module-txt-block" *ngIf="content?.mimeType === 'application/json'&&!isSelfAssessment">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none">
               <g clip-path="url(#clip0_1391_3564)">
                 <path
@@ -517,7 +522,7 @@
               <span *ngIf="resourceLinkForm.get('name').hasError('required')" class="module-txt-block invalid-text">This
                 field is
                 Required</span>
-              <div class="module-txt-block" *ngIf="isAssessmentOrQuizEnabled">
+              <div class="module-txt-block" *ngIf="isAssessmentOrQuizEnabled&&!isSelfAssessment">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none">
                   <g clip-path="url(#clip0_1391_3564)">
                     <path
