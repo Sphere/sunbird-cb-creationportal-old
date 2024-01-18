@@ -167,6 +167,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.backToCourse = this.initService.isBackButtonClickedMessage.subscribe(
       (data: any) => {
         // tslint:disable-next-line:no-console
+        console.log("data: ", data)
         if (sessionStorage.getItem('isSettingsPage') === '1') {
           sessionStorage.setItem('isSettingsPage', '0')
           // tslint:disable-next-line:no-console

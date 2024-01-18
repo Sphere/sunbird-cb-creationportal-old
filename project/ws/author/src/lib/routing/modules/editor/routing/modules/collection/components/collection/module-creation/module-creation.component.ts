@@ -3156,7 +3156,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         //const hierarchyData = this.storeService.getTreeHierarchy()
         //this.courseData = []
         await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
-
+          console.log("data", data)
           const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
 
           Object.keys(hierarchyData).forEach((ele: any) => {
