@@ -263,7 +263,11 @@
               <span class="course-sub-title" *ngIf="!isSaveModuleFormEnable">Create Course</span>
               <span class="course-sub-title" *ngIf="content?.contentType === 'Course'">Course Details</span>
               <span class="course-sub-title" *ngIf="content?.contentType === 'CourseUnit'">Module Details</span>
-              <span class="course-sub-title" *ngIf="content?.contentType === 'Resource'">Resource Details</span>
+              <span class="course-sub-title" *ngIf="content?.contentType === 'Resource'&&!isSelfAssessment">Resource
+                Details</span>
+              <span class="course-sub-title" *ngIf="isSelfAssessment">Assessment Details : </span>
+              <span style="color: #1C5D95;" *ngIf="isSelfAssessment" class="course-sub-title">Level
+                {{content.index}}</span>
             </div>
             <div class="save-btn-block" *ngIf="!isSelfAssessment">
               <img class="delete-icon" loading="lazy" (click)="takeActions('delete', content, $event.type)"
