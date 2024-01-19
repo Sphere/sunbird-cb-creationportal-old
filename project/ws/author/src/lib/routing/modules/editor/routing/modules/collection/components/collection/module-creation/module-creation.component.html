@@ -61,29 +61,53 @@
                     [matTooltipPosition]="'left'"
                     (cdkDragStarted)="dragDrop(resource,resource.identifier, 'resourceInsideModule')"
                     style="cursor: pointer;" (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
-                    <img *ngIf="editItem !== resource.identifier" src="cbp-assets/icons/Vector.svg" alt="dragDrop"
-                      class="dragIcon" />
-                    <img *ngIf="editItem === resource.identifier" src="cbp-assets/icons/Vector_white.svg" alt="dragDrop"
-                      class="dragIcon" />
-                    <!-- <mat-icon class="cursor-pointer">none</mat-icon> -->
-                    <span style="white-space: normal;" class="resourse-text">{{resource.name}} </span>
-                    <span *ngIf="resource.duration>0" class="resource-duration-txt">(
-                      {{ resource.duration | formatDuration }} )</span>
+                    <div class="drag-icon-block">
+                      <img *ngIf="editItem !== resource.identifier" src="cbp-assets/icons/Vector.svg" alt="dragDrop"
+                        class="dragIcon" />
+                      <img *ngIf="editItem === resource.identifier" src="cbp-assets/icons/Vector_white.svg"
+                        alt="dragDrop" class="dragIcon" />
+                    </div>
+                    <div class="resource-block">
+                      <div class="resource-block-display">
+                        <span style="white-space: normal;" class="resourse-text">{{resource.name}} </span>
+                        <span *ngIf="resource.duration>0" class="resource-duration-txt">(
+                          {{ resource.duration | formatDuration }} )</span>
+                      </div>
+                      <div class="resource-status-block">
+                        <span *ngIf="resource.artifactUrl" class="resourse-status">Updated
+                        </span>
+                        <span *ngIf="!resource.artifactUrl" class="resourse-status">Draft
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div (click)="editContent(module)" *ngIf="module.primaryCategory !== 'Course Unit'"
                   class="heading-resource resource-2" [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
                   matTooltip="dragDrop" (cdkDragStarted)="dragDrop(module,module.identifier, 'resource')"
                   style="cursor: pointer;" (cdkDragReleased)="dragEnd($event)" cdkDrag cdkDragLockAxis="y">
-                  <img *ngIf="editItem !== module.identifier" loading="lazy" src="cbp-assets/icons/Vector.svg"
-                    alt="dragDrop" class="dragIcon" />
-                  <img *ngIf="editItem === module.identifier" loading="lazy" src="cbp-assets/icons/Vector_white.svg"
-                    alt="dragDrop" class="dragIcon" />
-                  <!-- <mat-icon class="cursor-pointer">none</mat-icon> -->
-                  <span title="{{module.name}}" class="resourse-text" style="white-space: normal;">{{
-                    module.name}}</span>
-                  <span *ngIf="module.duration>0" class="resource-duration-txt">(
-                    {{ module.duration | formatDuration }} )</span>
+                  <div class="drag-icon-block">
+                    <img *ngIf="editItem !== module.identifier" loading="lazy" src="cbp-assets/icons/Vector.svg"
+                      alt="dragDrop" class="dragIcon" />
+                    <img *ngIf="editItem === module.identifier" loading="lazy" src="cbp-assets/icons/Vector_white.svg"
+                      alt="dragDrop" class="dragIcon" />
+                  </div>
+                  <div class="resource-block">
+                    <div class="resource-block-display">
+                      <span title="{{module.name}}" class="resourse-text" style="white-space: normal;">{{
+                        module.name}}</span>
+                      <span *ngIf="module.duration>0" class="resource-duration-txt">(
+                        {{ module.duration | formatDuration }} )</span>
+                    </div>
+                    <div class="resource-status-block">
+                      <span *ngIf="module.artifactUrl" class="resourse-status">Updated
+                      </span>
+                      <span *ngIf="!module.artifactUrl" class="resourse-status">Draft
+                      </span>
+                    </div>
+                  </div>
+
+
                 </div>
               </div>
               <button [disabled]="hideResource" *ngIf="module.primaryCategory === 'Course Unit'" mat-raised-button

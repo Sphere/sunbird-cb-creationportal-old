@@ -74,6 +74,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   dragEle1: any
   dragEle2: any
   dragEle3: any
+  currentIndex: any
   contentList: any[] = [
     {
       name: 'Link',
@@ -1796,7 +1797,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.moduleName = name
       this.isSaveModuleFormEnable = true
       this.moduleButtonName = 'Save'
-
+      this.loaderService.changeLoad.next(true)
       this.setContentType(obj)
       //this.initService.createModuleUnit(obj)
       this.clearForm()
@@ -2044,6 +2045,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.resourceType = name
     this.independentResourceCount = this.independentResourceCount + 1
     this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
+    this.loaderService.changeLoad.next(true)
     if (name == 'Link') {
       this.isLinkEnabled = true
       this.isShowDownloadBtnEnabled = false
@@ -3104,6 +3106,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //   duration: NOTIFICATION_TIME * 1000,
 
     // })
+    this.loaderService.changeLoad.next(true)
     if (isDone) {
       const newCreatedLexid = this.editorService.newCreatedLexid
       if (this.addResourceModule["module"] === true) {
@@ -3148,6 +3151,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
               this.courseData = await data
               this.getChildrenCount()
+              this.loaderService.changeLoad.next(false)
             })
           })
         })
@@ -3156,6 +3160,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         //const hierarchyData = this.storeService.getTreeHierarchy()
         //this.courseData = []
         await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+          this.courseData = await data
           console.log("data", data)
           const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
 
