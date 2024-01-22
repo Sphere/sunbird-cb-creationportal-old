@@ -1823,12 +1823,18 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     // this.mainCourseDuration = this.hours + ':' + this.minutes + ':' + this.seconds
   }
   private setCourseDuration(seconds: any) {
-    const minutes = seconds > 59 ? Math.floor(seconds / 60) : 0
-    const second = seconds % 60
-    this.courseHours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
-    this.courseMinutes = minutes ? minutes % 60 : 0
-    this.courseSeconds = second || 0
-    this.mainCourseDuration = this.courseHours + 'h ' + this.courseMinutes + 'm ' + this.courseSeconds + 's '
+    if (seconds) {
+      const minutes = seconds > 59 ? Math.floor(seconds / 60) : 0
+      const second = seconds % 60
+      this.courseHours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
+      this.courseMinutes = minutes ? minutes % 60 : 0
+      this.courseSeconds = second || 0
+      this.mainCourseDuration = this.courseHours + 'h ' + this.courseMinutes + 'm ' + this.courseSeconds + 's '
+    } else {
+      this.mainCourseDuration = '0h ' + '0m ' + '0s '
+
+    }
+
   }
   async resourceLinkSave() {
     // tslint:disable-next-line:no-console

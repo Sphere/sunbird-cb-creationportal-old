@@ -45,8 +45,10 @@ input {
 }
 
 .max-width {
-  max-width: 256px;
-  max-height: 150px;
+      width: 340px;
+    height: 236px;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
 .buttons {
@@ -101,15 +103,13 @@ input {
 }
 
 .photo-icon {
-  position: relative;
-  // top: 10px;
-  // left: 9px;
-  width: 30px;
-  height: 30px;
-  font-size: 30px;
-  float: right;
-    top: -37px;
-    left: 25px;
+position: relative;
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+    float: right;
+    top: 6px;
+    left: 345px;
 }
 
 .mat-form-field {
@@ -307,6 +307,8 @@ ul li {
 .thumbnail-block{
   display: flex;
   flex-direction: row;
+  cursor: pointer;
+
 }
 
 .form-edit-int {
@@ -428,7 +430,7 @@ border-bottom-right-radius: 0px;
   .competency-block{
     display: flex;
     width: 638px;
-    height: 267px;
+    height: 270px;
     flex-shrink: 0;
     border-radius: 12px;
     background: #FFF;

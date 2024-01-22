@@ -121,9 +121,10 @@ letter-spacing: -0.4px;
   max-height: 401px;
   min-height: 66.4vh;
   overflow-y: auto;
-  border-radius: 12px;
-background: #FFF;
-box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.10);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  background: #FFF;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.10);
 }
 .model-left-create-content::-webkit-scrollbar {
   width: 6px;

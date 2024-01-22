@@ -18,7 +18,7 @@
           <!-- <mat-icon class=" material-icons margin-left-m text-medium brand-color" (click)=" editContent(courseData)">
             edit</mat-icon> -->
           <span class="course-duration" matTooltip="Course Duration">Duration :
-            {{mainCourseDuration}}</span>
+            {{mainCourseDuration!=='' ?mainCourseDuration: '0h 0m 0s' }}</span>
         </mat-toolbar>
         <div class="left-navbar-block">
           <!--module & resource left footer-->
