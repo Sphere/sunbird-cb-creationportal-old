@@ -459,10 +459,9 @@
         <div class="form-edit-int">
           <div class="flex flex-column">
             <div class="thumbnail-block margin-top-xs" [ngClass]="{ disable: checkCondition('appIcon', 'disabled') }">
-              <mat-icon (click)="uploadThumbnail.click()" *ngIf="contentForm.controls.appIcon.value"
-                class="photo-icon ws-mat-primary-text">photo_camera</mat-icon>
+              <!-- <mat-icon (click)="uploadThumbnail.click()" *ngIf="contentForm.controls.appIcon.value"
+                class="photo-icon ws-mat-primary-text">photo_camera</mat-icon> -->
               <div class="thumbnail-opt">
-
                 <div class="mat-app-background" (click)="uploadThumbnail.click()">
                   <img *ngIf="contentForm.controls.appIcon.value" class="image max-width" alt=""
                     [src]="contentForm.controls.appIcon.value" (error)="changeToDefaultImg($event)" />
@@ -484,7 +483,6 @@
                   <li class="thumbnail-info" style="margin-bottom: 5px !important;">Files allowed: JPG, PNG</li>
                 </ul>
               </div>
-
             </div>
           </div>
         </div>
