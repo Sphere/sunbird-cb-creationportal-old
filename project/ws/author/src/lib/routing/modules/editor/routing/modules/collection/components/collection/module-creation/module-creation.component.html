@@ -74,7 +74,8 @@
                           {{ resource.duration | formatDuration }} )</span>
                       </div>
                       <div class="resource-status-block">
-                        <span *ngIf="resource.artifactUrl" class="resourse-status">Updated
+                        <span *ngIf="resource.artifactUrl" class="resourse-status">{{resource.mimeType | MimeTypePipe}}
+                          Updated
                         </span>
                         <span *ngIf="!resource.artifactUrl" class="resourse-status">Draft
                         </span>
@@ -100,7 +101,8 @@
                         {{ module.duration | formatDuration }} )</span>
                     </div>
                     <div class="resource-status-block">
-                      <span *ngIf="module.artifactUrl" class="resourse-status">Updated
+                      <span *ngIf="module.artifactUrl" class="resourse-status">{{module.mimeType | MimeTypePipe}}
+                        Updated
                       </span>
                       <span *ngIf="!module.artifactUrl" class="resourse-status">Draft
                       </span>
@@ -175,7 +177,8 @@
                       class="dragIcon" />
                     <img *ngIf="editItem === resource.identifier" src="cbp-assets/icons/Vector_white.svg" alt="dragDrop"
                       class="dragIcon" />
-                    <span style="white-space: normal;" class="resourse-text">Level {{resource.index}}:{{resource.name}}
+                    <span *ngIf="resource.mimeType=='application/json'" style="white-space: normal;"
+                      class="resourse-text">Level {{resource.index}}:{{resource.name}}
                     </span>
                     <span *ngIf="resource.duration>0" class="resource-duration-txt">(
                       {{ resource.duration | formatDuration }} )</span>
@@ -188,7 +191,8 @@
                     alt="dragDrop" class="dragIcon" />
                   <img *ngIf="editItem === module.identifier" loading="lazy" src="cbp-assets/icons/Vector_white.svg"
                     alt="dragDrop" class="dragIcon" />
-                  <span title="{{module.name}}" class="resourse-text" style="white-space: normal;">Level
+                  <span *ngIf="module.mimeType=='application/json'" title="{{module.name}}" class="resourse-text"
+                    style="white-space: normal;">Level
                     {{module.index}} : {{
                     module.name}}</span>
                   <span *ngIf="module.duration>0" class="resource-duration-txt">(
@@ -340,8 +344,7 @@
             <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint><br>
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
-          <div class="module-txt-block margin-top-l"
-            *ngIf="content?.contentType === 'CourseUnit' || content?.contentType === 'Resource'&&isSelfAssessment">
+          <div class="module-txt-block margin-top-l" *ngIf="isSelfAssessment">
             <span class="self-assessment-name">{{moduleName}}</span><br />
             <span class="self-assessment-level margin-top-m">Level {{content.index}}</span>
           </div>

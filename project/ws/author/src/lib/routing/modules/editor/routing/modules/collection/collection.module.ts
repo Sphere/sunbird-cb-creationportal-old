@@ -21,6 +21,7 @@ import { BtnPageBackModule } from '@ws-widget/collection'
 import { WebPageModule } from './../web-page/web-page.module'
 import { ContentQualityComponent } from '../../../shared/components/content-quality/content-quality.component'
 import { FormatDurationPipe } from '@ws/author/src/lib/modules/shared/pipes/seconds-to-hour.pipe'
+import { MimeTypePipe } from '@ws/author/src/lib/modules/shared/pipes/mime-type.pipe'
 
 import {
   MatToolbarModule,
@@ -48,7 +49,8 @@ import { ModuleCreationComponent } from './components/collection/module-creation
     ResourceModuleComponent,
     ModuleCreationComponent,
     ContentQualityComponent,
-    FormatDurationPipe
+    FormatDurationPipe,
+    MimeTypePipe
   ],
   imports: [
     CommonModule,
