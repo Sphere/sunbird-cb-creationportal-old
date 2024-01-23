@@ -34,7 +34,7 @@
             </div>
 
           </div>
-          <div *ngIf="!isSelfAssessment" class="model-left-create-content div-1" cdkDropList
+          <div *ngIf="!isSelfAssessment" style="width: 324px;" class="model-left-create-content div-1" cdkDropList
             (cdkDropListDropped)="drop($event)">
             <div class="module-container" *ngFor="let module of courseData?.children;index as i">
               <div>
@@ -119,7 +119,11 @@
 
             <!--module & resources left canvas-->
             <div class="model-text" cdkDropList (cdkDropListDropped)="drop($event)">
-              <span>Your Modules and Resources will be visible here once you start adding them.</span>
+              <span *ngIf="courseData?.children.length===0">{{courseData?.children}}Your Modules and Resources will be
+                visible
+                here
+                once you start adding
+                them.</span>
             </div>
             <!-- <ws-author-auth-toc></ws-author-auth-toc> -->
             <!--module left canvas creation-->
@@ -206,7 +210,9 @@
 
             <!--module & resources left canvas-->
             <div class="model-text" cdkDropList (cdkDropListDropped)="drop($event)">
-              <span>Your Modules and Resources will be visible here once you start adding them.</span>
+              <span *ngIf="courseData?.children.length===0"> Your Modules and Resources will be visible
+                here once you start adding
+                them.</span>
             </div>
             <!-- <ws-author-auth-toc></ws-author-auth-toc> -->
             <!--module left canvas creation-->
@@ -398,7 +404,7 @@
             <div>
               <img alt="" class="image max-width" height="144" width="256"
                 src="cbp-assets/images/default-white-background.png">
-              <div *ngIf="uploadFileName != ''">
+              <div class="empty-file" *ngIf="uploadFileName != ''">
                 <mat-icon title="Remove"
                   class="material-icons margin-left-m text-medium close-uploadIcon cursor-pointer"
                   (click)="deleteUploadedFile();$event.stopPropagation()">close</mat-icon>
@@ -424,9 +430,17 @@
                 <span *ngIf="resourceImg == ''" class="invalid-text">This field is Required</span>
               </div>
             </div>
-            <div [ngClass]="acceptType == '.pdf'?'pdf-info':'file-info'">
-              Files allowed : {{uploadText}}<br> Max.file size : 200MB
+            <div *ngIf="uploadFileName == ''">
+              <div [ngClass]="acceptType == '.pdf' ? 'pdf-info':'file-info'">
+                Files allowed : {{uploadText}}<br> Max.file size : 200MB
+              </div>
             </div>
+            <div *ngIf="uploadFileName != ''">
+              <div [ngClass]="acceptType == '.pdf' ? 'pdf-upload-info':'file-upload-info'">
+                Files allowed : {{uploadText}}<br> Max.file size : 200MB
+              </div>
+            </div>
+
           </div>
           <div class="module-txt-block" *ngIf="isPdfOrAudioOrVedioEnabled&&content?.mimeType !== 'application/json'">
             <!-- <span style="color:#808080">Resource file</span><br> -->
