@@ -114,6 +114,24 @@ letter-spacing: -0.4px;
     margin-left: 10px;
     margin-right: 10px;
 }
+/* CSS */
+.accordion-item {
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.accordion-content {
+  display: none;
+  padding: 10px;
+}
+
+.accordion-item.open .accordion-content {
+  display: block;
+}
+
+.accordion-toggle {
+  cursor: pointer;
+}
 
 
 .model-left-create-content{
@@ -1173,4 +1191,18 @@ letter-spacing: -0.36px;
 }
 .empty-file{
   margin-bottom: -55px;
+}
+.hide-resource{
+      display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    left: 90px;
+}
+.show-resource{
+      display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    left: 70px;
 }

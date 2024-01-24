@@ -38,7 +38,7 @@
             (cdkDropListDropped)="drop($event)">
             <div class="module-container" *ngFor="let module of courseData?.children;index as i">
               <div>
-                <div (click)="editContent(module)" class="left-block-container"
+                <div (click)="editContent(module)" class="left-block-container main"
                   *ngIf="module.primaryCategory === 'Course Unit'"
                   [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
                   (cdkDragStarted)="dragDrop(module,module.identifier, 'Module')" style="cursor: pointer;"
@@ -53,8 +53,25 @@
                     </h2>
                     <span fxFlex style="flex: 1 1 auto;"></span>
                   </div>
+                  <div *ngIf="editItem !== module.identifier" class="hide-resource">
+                    <svg (click)="toggleChildren(module)" xmlns="http://www.w3.org/2000/svg" width="11" height="7"
+                      viewBox="0 0 11 7" fill="none">
+                      <path
+                        d="M5.5 -4.80825e-07L11 5.91475L9.99084 7L5.5 2.17065L1.00916 7L9.4876e-08 5.91474L5.5 -4.80825e-07Z"
+                        fill="black" />
+                    </svg>
+                  </div>
+                  <div *ngIf="editItem == module.identifier" class="show-resource">
+                    <svg (click)="toggleChildren(module)" xmlns="http://www.w3.org/2000/svg" width="11" height="7"
+                      viewBox="0 0 11 7" fill="none">
+                      <path
+                        d="M5.5 -4.80825e-07L11 5.91475L9.99084 7L5.5 2.17065L1.00916 7L9.4876e-08 5.91474L5.5 -4.80825e-07Z"
+                        fill="black" />
+                    </svg>
+                  </div>
                 </div>
-                <div *ngIf="module?.children?.length > 0">
+
+                <div class="children" *ngIf="module?.children?.length > 0&& module.showChildren">
                   <div (click)="editContent(resource)" *ngFor="let resource of module.children;index as l"
                     class="resource-1" style="cursor:pointer"
                     [ngClass]="editItem === resource.identifier ? 'edit-item' : ''" matTooltip="dragDrop"
@@ -74,7 +91,8 @@
                           {{ resource.duration | formatDuration }} )</span>
                       </div>
                       <div class="resource-status-block">
-                        <span *ngIf="resource.artifactUrl" class="resourse-status">{{resource.mimeType | MimeTypePipe}}
+                        <span *ngIf="resource.artifactUrl" class="resourse-status">{{resource.mimeType |
+                          MimeTypePipe}}
                           Updated
                         </span>
                         <span *ngIf="!resource.artifactUrl" class="resourse-status">Draft
@@ -83,6 +101,10 @@
                     </div>
                   </div>
                 </div>
+                <button class="children" [disabled]="hideResource"
+                  *ngIf="module.primaryCategory === 'Course Unit'&& module.showChildren" mat-raised-button
+                  class="secondary-button-outline mat-button-base addResourceBtn"
+                  (click)="addResModule(module.identifier, courseData.identifier)">Add Resource</button>
                 <div (click)="editContent(module)" *ngIf="module.primaryCategory !== 'Course Unit'"
                   class="heading-resource resource-2" [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
                   matTooltip="dragDrop" (cdkDragStarted)="dragDrop(module,module.identifier, 'resource')"
@@ -112,11 +134,7 @@
 
                 </div>
               </div>
-              <button [disabled]="hideResource" *ngIf="module.primaryCategory === 'Course Unit'" mat-raised-button
-                class="secondary-button-outline mat-button-base addResourceBtn"
-                (click)="addResModule(module.identifier, courseData.identifier)">Add Resource</button>
             </div>
-
             <!--module & resources left canvas-->
             <div class="model-text" cdkDropList (cdkDropListDropped)="drop($event)">
               <span *ngIf="courseData?.children.length===0">{{courseData?.children}}Your Modules and Resources will be
