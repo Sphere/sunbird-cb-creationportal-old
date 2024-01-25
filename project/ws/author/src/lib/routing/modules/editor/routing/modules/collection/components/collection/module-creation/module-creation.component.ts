@@ -246,6 +246,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   resourceDurat: any = []
   sumDuration: any
   @Input() clickedNext: boolean = false;
+  showChildrenMap: { [key: string]: boolean } = {};
 
   constructor(
     public dialog: MatDialog,
@@ -400,6 +401,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }
         this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
           this.courseData = data
+          if (this.courseData.children) {
+            this.courseData.children.forEach((module: any) => {
+              this.showChildrenMap[module.identifier] = true // Set to false to hide children by default
+            })
+          }
           this.getChildrenCount()
         })
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
@@ -2145,7 +2151,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     // this.moduleName = ''
   }
   toggleChildren(module: any): void {
-    module.showChildren = !module.showChildren
+    this.showChildrenMap[module.identifier] = !this.showChildrenMap[module.identifier]
   }
 
 

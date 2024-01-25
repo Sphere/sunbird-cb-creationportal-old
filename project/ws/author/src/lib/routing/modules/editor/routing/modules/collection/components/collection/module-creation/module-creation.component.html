@@ -71,8 +71,8 @@
                   </div>
                 </div>
 
-                <div class="children" *ngIf="module?.children?.length > 0&& module.showChildren">
-                  <div (click)="editContent(resource)" *ngFor="let resource of module.children;index as l"
+                <div class="children" *ngIf="module?.children?.length > 0&&showChildrenMap[module.identifier]">
+                  <div (click)=" editContent(resource)" *ngFor="let resource of module.children;index as l"
                     class="resource-1" style="cursor:pointer"
                     [ngClass]="editItem === resource.identifier ? 'edit-item' : ''" matTooltip="dragDrop"
                     [matTooltipPosition]="'left'"
@@ -102,8 +102,8 @@
                   </div>
                 </div>
                 <button class="children" [disabled]="hideResource"
-                  *ngIf="module.primaryCategory === 'Course Unit'&& module.showChildren" mat-raised-button
-                  class="secondary-button-outline mat-button-base addResourceBtn"
+                  *ngIf="module.primaryCategory === 'Course Unit'&& showChildrenMap[module.identifier]"
+                  mat-raised-button class=" secondary-button-outline mat-button-base addResourceBtn"
                   (click)="addResModule(module.identifier, courseData.identifier)">Add Resource</button>
                 <div (click)="editContent(module)" *ngIf="module.primaryCategory !== 'Course Unit'"
                   class="heading-resource resource-2" [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
@@ -756,7 +756,8 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the assessment details before cl
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
               </div>
               <span *ngIf="resourcePdfForm.get('duration').hasError('required')"
-                class="module-txt-block invalid-text">This field
+                class="module-txt-block invalid-text">This
+                field
                 is Required</span>
 
 
