@@ -49,17 +49,17 @@ body {
   -webkit-overflow-scrolling: touch;
 
   &::-webkit-scrollbar {
-    width: $size-xs;
-    height: $size-xs;
+    width: 3px;
+    height: 6px;
 
     @include breakpoint-s {
-      width: $size-s;
-      height: $size-s;
+    width: 3px;
+      height: 6px;
     }
 
     @include breakpoint-gt-s {
-      width: $size-m;
-      height: $size-m;
+    width: 3px;
+      height: 6px;
     }
 
     @media (hover: none) {

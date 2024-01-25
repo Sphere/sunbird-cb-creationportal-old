@@ -3166,6 +3166,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
             this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
               this.courseData = await data
+              if (this.courseData.children) {
+                this.courseData.children.forEach((module: any) => {
+                  this.showChildrenMap[module.identifier] = true // Set to false to hide children by default
+                })
+              }
               this.getChildrenCount()
               this.loaderService.changeLoad.next(false)
             })
@@ -3203,6 +3208,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
             this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
               this.courseData = await data
+              if (this.courseData.children) {
+                this.courseData.children.forEach((module: any) => {
+                  this.showChildrenMap[module.identifier] = true // Set to false to hide children by default
+                })
+              }
               this.getChildrenCount()
               this.loaderService.changeLoad.next(false)
               this.editorStore.setOriginalMeta(data)
