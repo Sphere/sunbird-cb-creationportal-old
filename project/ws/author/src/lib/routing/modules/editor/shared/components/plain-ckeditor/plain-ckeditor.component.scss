@@ -33,9 +33,37 @@ box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
     height: 224px;
     border-radius: 12px;
 }
-::ng-deep #cke_1_bottom {
-  display: none;
+::ng-deep .cke_bottom .cke_reset_all {
+  display: none !important;
+  border-top: none !important;
 }
+::ng-deep .cke_inner .cke_reset{
+ .cke_bottom .cke_reset_all {
+  display: none !important;
+  border-top: none !important;
+}
+}
+/* Add this CSS to your stylesheet */
+.ck.ck-editor__editable.ck-rounded-corners {
+    /* Adjust the padding as needed */
+    padding-bottom: 0 !important;
+}
+
+.ck.ck-editor__editable.ck-rounded-corners .ck-editor__bottom-bar {
+    display: none !important;
+}
+/* Add this CSS to your stylesheet */
+.ck.ck-editor__editable.ck-rounded-corners .ck-editor__bottom-bar {
+    display: none !important;
+}
+.cke_bottom{
+  display: none !important;
+}
+
+
+
+
+
 ::ng-deep .cke_contents {
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;

@@ -59,5 +59,19 @@ module.exports = {
       '<rootDir>/project/ws/author/src/lib/routing/modules/editor/services/editor-content.service.ts',
     '^@ws/author/src/lib/services/loader.service':
       '<rootDir>/project/ws/author/src/lib/services/loader.service.ts',
+    '^@ws/author/src/lib/constants/upload':
+      '<rootDir>/project/ws/author/src/lib/constants/upload.ts',
+    '^project/ws/author/src/lib/routing/modules/editor/services/editor-content.service':
+      '<rootDir>/project/ws/author/src/lib/routing/modules/editor/services/editor-content.service.ts',
+    '^library/ws-widget/utils/src/lib/services/configurations.service':
+      '<rootDir>/library/ws-widget/utils/src/lib/services/configurations.service.ts',
+    '^@ws/author/src/lib/constants/depth-rule':
+      '<rootDir>/project/ws/author/src/lib/constants/depth-rule.ts',
+    '^@ws/author/src/lib/modules/shared/components/user-index-confirm/user-index-confirm.component':
+      '<rootDir>/project/ws/author/src/lib/modules/shared/components/user-index-confirm/user-index-confirm.component.ts',
+    '^@ws/author/src/lib/modules/shared/pipes/seconds-to-hour.pipe':
+      '<rootDir>/project/ws/author/src/lib/modules/shared/pipes/seconds-to-hour.pipe.ts',
+    '^@ws/author/src/lib/modules/shared/pipes/mime-type.pipe':
+      '<rootDir>/project/ws/author/src/lib/modules/shared/pipes/mime-type.pipe.ts',
   },
 }

@@ -20,7 +20,7 @@ import { of, Subscription } from 'rxjs'
 import { HeaderServiceService } from './../../../../../.././.././../.././../../../../.././src/app/services/header-service.service'
 // import { ConfigurationsService } from '../../../../../../../../../../../../../library/ws-widget/utils/src/public-api'
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
-import { mergeMap, tap } from 'rxjs/operators'
+import { mergeMap, tap, map } from 'rxjs/operators'
 import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/components/comments-dialog/comments-dialog.component'
 import * as _ from 'lodash'
 import { Router } from '@angular/router'
@@ -49,12 +49,10 @@ import { FlatTreeControl } from '@angular/cdk/tree'
 import { QuizStoreService } from '../../../../quiz/services/store.service'
 import { QuizResolverService } from '../../../../quiz/services/resolver.service'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
-import { map } from 'rxjs/operators'
 import { UserIndexConfirmComponent } from '@ws/author/src/lib/modules/shared/components/user-index-confirm/user-index-confirm.component'
 //import { M } from '@angular/cdk/keycodes'
 //import { CdkDragDrop } from '@angular/cdk/drag-drop'
 import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
-
 @Component({
   selector: 'ws-author-module-creation',
   templateUrl: './module-creation.component.html',

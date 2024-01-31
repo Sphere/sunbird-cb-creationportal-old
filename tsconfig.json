@@ -31,7 +31,7 @@
       "@ws/app/*": ["project/ws/app/*"],
       "@ws/author": ["project/ws/author"],
       "@ws/author/*": ["project/ws/author/*"],
-          "@ws/viewer": ["project/ws/viewer"],
+      "@ws/viewer": ["project/ws/viewer"],
       "@ws/viewer/*": ["project/ws/viewer/*"]
     },
     "removeComments": true,
@@ -43,7 +43,8 @@
     "strictPropertyInitialization": true,
     "target": "es2015",
     "typeRoots": ["node_modules/@types", "./custom_typings"],
-    "plugins": [{
+    "plugins": [
+      {
         "name": "@angular/language-service"
       },
       {
