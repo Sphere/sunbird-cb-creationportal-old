@@ -68,6 +68,8 @@ import { CertificateStatusDialogComponentDialogComponent } from './components/ce
 import { UserIndexConfirmComponent } from './components/user-index-confirm/user-index-confirm.component'
 import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image-upload-intro-popup.component'
 import { PageTrackComponent } from './components/page-track/page-track.component'
+import { ProgressStepperComponent } from './components/progress-stepper/progress-stepper.component'
+
 @NgModule({
   declarations: [
     RelativeUrlPipe,
@@ -96,7 +98,8 @@ import { PageTrackComponent } from './components/page-track/page-track.component
     PlayerNavigationWidgetComponent,
     CertificateStatusDialogComponentDialogComponent,
     UserIndexConfirmComponent,
-    PageTrackComponent
+    PageTrackComponent,
+    ProgressStepperComponent
   ],
   imports: [
     CommonModule,
@@ -194,7 +197,8 @@ import { PageTrackComponent } from './components/page-track/page-track.component
     UserIndexConfirmComponent,
     PlayerNavigationWidgetComponent,
     CertificateStatusDialogComponentDialogComponent,
-    PageTrackComponent
+    PageTrackComponent,
+    ProgressStepperComponent
   ],
   providers: [
     ApiService,

@@ -42,6 +42,13 @@ export class CreateComponent implements OnInit, OnDestroy {
   courseEntity!: ICreateEntity
   createCourseForm!: FormGroup
   isSelfAssessment = false
+  steps: any = [
+    { label: '1. Introduction', activeStep: true, completed: false },
+    { label: '2. Course Details', activeStep: false, completed: false },
+    { label: '3. Course Builder', activeStep: false, completed: false },
+    { label: '4. Course Settings', activeStep: false, completed: false }
+  ];
+  header: any = 'Course Details'
   constructor(
     private snackBar: MatSnackBar,
     private svc: CreateService,
@@ -72,6 +79,12 @@ export class CreateComponent implements OnInit, OnDestroy {
       const value = params['status']
       if (value == 'selfAssessment') {
         this.isSelfAssessment = true
+        this.header = 'Self Assessment details'
+        this.steps = [
+          { label: '1. Assessment Details', key: 'AssessmentDetails', activeStep: true, completed: false },
+          { label: '2. Assessment Builder', key: 'AssessmentBuilder', activeStep: false, completed: false },
+          { label: '3. Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+        ]
       }
     })
     this.loaderService.changeLoadState(false)

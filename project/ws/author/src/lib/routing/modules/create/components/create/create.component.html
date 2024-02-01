@@ -170,8 +170,8 @@
   <!-- </mat-drawer> -->
   <mat-drawer-content>
     <div class="card-holder">
-      <p *ngIf="!isSelfAssessment" class="top-banner-bg">Welcome! You will build the course in 4 steps</p>
-
+      <!-- <p *ngIf="!isSelfAssessment" class="top-banner-bg">Welcome! You will build the course in 4 steps</p> -->
+      <ws-progress-stepper [steps]="steps" [header]="header"> </ws-progress-stepper>
       <div class="flex flex-col md:flex-row pl-12 justify-between">
         <!-- <h3 class="mat-h3"> -->
 

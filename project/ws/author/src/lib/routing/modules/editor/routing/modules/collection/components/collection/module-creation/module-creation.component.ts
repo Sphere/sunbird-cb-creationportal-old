@@ -65,6 +65,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   @ViewChild('errorFile', { static: false }) errorFile!: TemplateRef<HTMLElement>
   @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>
   @Output() data = new EventEmitter<any>()
+  @Output() sendSteps = new EventEmitter<any>();
   contents: NSContent.IContentMeta[] = []
   @Output() actions = new EventEmitter<{ action: string; type?: string }>()
   treeControl!: FlatTreeControl<IContentTreeNode>
@@ -1785,9 +1786,28 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       sessionStorage.setItem('isSettingsPage', '1')
       this.isSettingsPage = true
       this.editItem = ''
+      console.log("this.settingsPage", this.isSettingsPage)
+      if (this.isSelfAssessment) {
+        const steps = [
+          { label: '1. Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+          { label: '2. Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
+          { label: '3. Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+        ]
+        console.log(steps)
+        this.sendSteps.emit('AssessmentSettings')
+      } else {
+        const steps = [
+          { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+          { label: '2. Course Details', key: 'CourseDetails', activeStep: true, completed: false },
+          { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+        ]
+        console.log(steps)
+        this.sendSteps.emit('CourseSettings')
+      }
     }, 1000)
     // tslint:disable-next-line:no-console
-    console.log("this.settingsPage", this.isSettingsPage)
+
   }
   moduleCreate(name: string, input1: string, input2: string) {
     // tslint:disable-next-line:no-console

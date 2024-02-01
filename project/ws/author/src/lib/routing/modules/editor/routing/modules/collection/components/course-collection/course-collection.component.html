@@ -2,7 +2,7 @@
   [isModelHeaderView]="isModelHeaderView" [buttonConfig]="actionButton" (action)="action($event)"
   (subAction)="subAction($event)">
 </ws-author-course-header>
-
+<ws-progress-stepper (sendSteps)="receiveSteps($event)" [steps]="steps" [header]="header"> </ws-progress-stepper>
 <mat-drawer-container autosize="true" id="auth-toc" class="example-container">
   <!-- <mat-drawer mode="side" [(opened)]="sideBarOpened" class="side-nav"> -->
 
@@ -137,7 +137,8 @@
         *ngIf="!showAddchapter && viewMode !== 'meta' && showResource == true"
         (courseEditFormSubmit)="courseEditFormSubmit($event)">
       </ws-auth-edit-meta> -->
-      <ws-author-module-creation [clickedNext]="clickedNext" *ngIf="clickedNext"></ws-author-module-creation>
+      <ws-author-module-creation (sendSteps)="receiveSteps($event)" [clickedNext]="clickedNext"
+        *ngIf="clickedNext"></ws-author-module-creation>
     </mat-sidenav-container>
   </mat-drawer-content>
 </mat-drawer-container>

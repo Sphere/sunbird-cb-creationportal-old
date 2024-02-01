@@ -96,6 +96,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   isModelHeaderView: boolean = false;
   showResource: boolean = false;
   clickedNext: boolean = false;
+  isSelfAssessment: boolean = false
   isMoveCourseToDraft: boolean = false;
   createModule: any
   isLoading: boolean = false;
@@ -104,6 +105,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   isReviewChecklistEnabled: boolean = false;
   // isReviewChecklistSkipEnabled: boolean = false;
   backToDashboard: boolean = false;
+  steps: any = [
+    { label: '1. Introduction', key: 'Introduction', activeStep: true, completed: false },
+    { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: false },
+    { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
+    { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+  ];
+  header: any = 'Course Details'
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -225,6 +233,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.showAddchapter = true
           this.viewMode = ''
           this.clickedNext = true
+          this.steps = [
+            { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+            { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+            { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
+            { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+          ]
           setTimeout(() => {
             this.isLoading = false
           }, 500)
@@ -317,6 +331,49 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     //   })
   }
 
+  receiveSteps(steps: any) {
+    if (this.isSelfAssessment) {
+      if (steps === 'AssessmentBuilder') {
+        this.steps = [
+          { label: '1. Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+          { label: '2. Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
+          { label: '3. Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+        ]
+      } else if (steps === 'AssessmentSettings') {
+        this.steps = [
+          { label: '1. Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+          { label: '2. Assessment Builder', key: 'AssessmentBuilder', activeStep: false, completed: true },
+          { label: '3. Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false }
+        ]
+      }
+    } else {
+      if (steps === 'CourseDetails') {
+        this.steps = [
+          { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+          { label: '2. Course Details', key: 'CourseDetails', activeStep: true, completed: true },
+          { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+        ]
+      } else if (steps === 'CourseBuilder') {
+        this.steps = [
+          { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+          { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+          { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+        ]
+      } else if (steps === 'CourseSettings') {
+        this.steps = [
+          { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+          { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+          { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: true },
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: true, completed: false }
+        ]
+      }
+    }
+
+
+  }
+
   ngOnInit() {
     this.routerValuesCall()
 
@@ -367,6 +424,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     if (sessionStorage.getItem('isReviewClicked')) {
       // sessionStorage.removeItem('isReviewClicked')
       this.clickedNext = true
+      this.steps = [
+        { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+        { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+        { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
+        { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+      ]
       this.showAddchapter = true
 
     }
@@ -375,6 +438,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       sessionStorage.removeItem('isReviewChecklistSkip')
       // this.isReviewChecklistSkipEnabled = true
       this.action("push")
+    }
+    if (this.viewMode === 'meta' && !this.clickedNext) {
+      this.steps = [
+        { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+        { label: '2. Course Details', key: 'CourseDetails', activeStep: true, completed: false },
+        { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
+        { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+      ]
     }
   }
 
@@ -391,6 +462,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
         this.courseName = data.contents[0].content.name
         this.clickedNext = data.contents[0].content.competency
+        this.isSelfAssessment = data.contents[0].content.competency
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
 
         data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
@@ -677,8 +749,17 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             duration: NOTIFICATION_TIME * 1000,
           })
 
-          if (this.isModulePageEnabled && this.viewMode !== 'assessment')
+          if (this.isModulePageEnabled && this.viewMode !== 'assessment') {
             this.clickedNext = true
+            console.log("this.viewMode", this.viewMode)
+
+            this.steps = [
+              { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+              { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+              { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
+              { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+            ]
+          }
 
           // window.location.reload()
         },
@@ -733,6 +814,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         })
         if (this.isModulePageEnabled && this.viewMode !== 'assessment') {
           this.clickedNext = true
+          this.steps = [
+            { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+            { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+            { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
+            { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+          ]
         }
       }
     }
@@ -2991,6 +3078,20 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           && this._configurationsService.userProfile.userId === content.createdBy)
           ? true : false
         this.checkCreator = isCreator
+        if (this.isSelfAssessment) {
+          this.steps = [
+            { label: '1. Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+            { label: '2. Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
+            { label: '3. Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+          ]
+        } else {
+          this.steps = [
+            { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+            { label: '2. Course Details', key: 'CourseDetails', activeStep: true, completed: false },
+            { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
+            { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+          ]
+        }
 
         // if (['application/pdf', 'application/x-mpegURL'].includes(content.mimeType)) {
         //   this.viewMode = 'upload'
