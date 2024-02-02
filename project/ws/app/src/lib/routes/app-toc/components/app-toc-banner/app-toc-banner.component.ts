@@ -69,7 +69,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   } = {}
   cohortTypesEnum = NsCohorts.ECohortTypes
   isReviewer: Boolean = false
-
+  commentsList: any
   constructor(
     private sanitizer: DomSanitizer,
     private router: Router,
@@ -105,6 +105,14 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
         })
       }
     })
+
+    if (this.content) {
+      this.progressSvc.getComments(this.content.identifier).subscribe(res => {
+        console.log(res)
+        this.commentsList = res
+      })
+    }
+
     const instanceConfig = this.configSvc.instanceConfig
     if (instanceConfig) {
       this.defaultSLogo = instanceConfig.logos.defaultSourceLogo

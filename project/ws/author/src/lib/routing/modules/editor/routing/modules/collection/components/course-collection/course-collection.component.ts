@@ -39,7 +39,9 @@ import _ from 'lodash'
 import moment from 'moment'
 import { SuccessDialogComponent } from '../../../../../../../../modules/shared/components/success-dialog/success-dialog.component'
 // import { VariableAst } from '@angular/compiler'
-
+import {
+  ContentProgressService,
+} from '@ws-widget/collection'
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'ws-author-course-collection',
@@ -123,6 +125,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     private rootSvc: RootService,
     // private contentSvc: WidgetContentService,
     private _configurationsService: ConfigurationsService,
+    private progressSvc: ContentProgressService,
   ) {
     if (sessionStorage.getItem('isReviewChecklist')) {
       this.dialog.closeAll()
@@ -826,17 +829,55 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         //   this.finalCall(commentsForm)
         // })
         dialogRef.afterClosed().subscribe((d) => {
+          console.log(d)
           // this.finalCall(contentAction)
           if (d) {
             if (this.getAction() === 'sendForReview' && d.value.action === 'reject') {
               contentAction = 'rejectContent'
               // tslint:disable-next-line:no-console
               console.log("rejectContent")
-              this.finalCall(contentAction)
+              let dat = {
+                "userId": this._configurationsService!.userProfile!.userId,
+                "courseId": this.courseData.identifier,
+                "role": "reviewer",
+                "comments": "test reviewer 1",
+                "currentStatus": "inreview",
+                "nextStatus": "reviewed",
+                "readComments": false,
+                "createdDate": new Date().toISOString()
+
+              }
+              this.progressSvc.addComment(dat).subscribe(res => {
+                console.log(res)
+                if (res) {
+                  this.finalCall(contentAction)
+                }
+                //this.commentsList = res
+              })
+
+              //this.finalCall(contentAction)
             } else {
               // tslint:disable-next-line:no-console
               console.log("contentAction", contentAction)
-              this.finalCall(contentAction)
+              let dat = {
+                "userId": this._configurationsService!.userProfile!.userId,
+                "courseId": this.courseData.identifier,
+                "role": "reviewer",
+                "comments": "test reviewer 1",
+                "currentStatus": "inreview",
+                "nextStatus": "reviewed",
+                "readComments": false,
+                "createdDate": new Date().toISOString()
+
+              }
+              this.progressSvc.addComment(dat).subscribe(res => {
+                console.log(res)
+                if (res) {
+                  this.finalCall(contentAction)
+                }
+                //this.commentsList = res
+              })
+              //this.finalCall(contentAction)
             }
           }
         })

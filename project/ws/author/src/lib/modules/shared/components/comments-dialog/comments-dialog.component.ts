@@ -97,6 +97,7 @@ export class CommentsDialogComponent implements OnInit {
   ngOnInit() {
 
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
+    console.log(this.showNewFlow)
     this.contentMeta = this.data
     const reqObj = {
       resourceId: this.data.identifier,

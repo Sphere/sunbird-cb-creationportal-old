@@ -9,7 +9,7 @@
 }
 
 .toc-body {
-  padding: 0px 10.9rem;
+  padding: 0px 3.8rem;
   padding-top: 0px !important;
   @include breakpoint-s {
     padding-right: 1rem;
@@ -26,6 +26,7 @@
     .link-active {
       color: #424242 !important;
       border-bottom: 2px solid;
+      opacity: 1;
     }
   }
 }
@@ -86,4 +87,12 @@
     padding-top: 0px;
     padding-bottom: 0px;
     margin-bottom: 16px;
+}
+
+::ng-deep .mat-tab-link {
+    padding: 0px !important; // adjust this to whatever padding you need
+    justify-content: left !important;
+  }
+  ::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
+  opacity: 1;
 }

@@ -111,6 +111,7 @@
         drafts.
       </h3>
     </div>
+    <ws-auth-status-track *ngIf="showNewFlow" [isDialog]="false" [content]="contentMeta"></ws-auth-status-track>
     <div>
       <div class="margin-bottom-l" style="float: left;">
         <button [disabled]="commentsForm?.invalid" class="text-white mat-button-base save-btn-mt send-back-button"
@@ -137,7 +138,7 @@
         required></textarea>
     </mat-form-field>
     <mat-hint i18n class="margin-top-l margin-bottom-l">
-      For eg. this content is accepted/rejected because...
+      For eg. Please review this comment...
     </mat-hint>
     <mat-error i18n *ngIf="showError(commentsForm.controls.comments)"
       i18n="Comments Error|Explains Comments is mandatory field">
