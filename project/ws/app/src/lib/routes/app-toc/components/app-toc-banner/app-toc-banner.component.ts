@@ -416,7 +416,9 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
       this.actionBtnStatus = 'grant'
     }
   }
-
+  gotoComments() {
+    console.log('yes')
+  }
   generateQuery(type: 'RESUME' | 'START_OVER' | 'START'): { [key: string]: string } {
     if (this.firstResourceLink && (type === 'START' || type === 'START_OVER')) {
       let qParams: { [key: string]: string } = {
