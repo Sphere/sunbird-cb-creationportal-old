@@ -947,8 +947,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                 "courseId": this.courseData.identifier,
                 "role": "creator",
                 "comments": d.value.comments,
-                "currentStatus": "draft",
-                "nextStatus": "inreview",
+                "currentStatus": "Draft",
+                "nextStatus": "Review",
                 "readComments": false,
                 "createdDate": new Date().toISOString(),
                 "updatedDate": new Date().toISOString(),
@@ -960,6 +960,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   this.finalCall(contentAction)
                 }
                 //this.commentsList = res
+              }, (err: any) => {
+                console.log(err)
+                this.finalCall(contentAction)
               })
               console.log(contentAction)
             } else {
@@ -970,8 +973,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   "courseId": this.courseData.identifier,
                   "role": "creator",
                   "comments": d.value.comments,
-                  "currentStatus": "draft",
-                  "nextStatus": "inreview",
+                  "currentStatus": "Draft",
+                  "nextStatus": "Review",
                   "readComments": false,
                   "createdDate": new Date().toISOString(),
                   "updatedDate": new Date().toISOString(),
@@ -983,6 +986,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                     this.finalCall(contentAction)
                   }
                   //this.commentsList = res
+                }, (err: any) => {
+                  console.log(err)
+                  this.finalCall(contentAction)
                 })
               }
               //this.finalCall(contentAction)

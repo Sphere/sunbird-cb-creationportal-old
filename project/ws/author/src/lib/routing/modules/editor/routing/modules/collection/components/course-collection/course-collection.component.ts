@@ -841,18 +841,22 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 "courseId": this.courseData.identifier,
                 "role": "reviewer",
                 "comments": d.value.comments,
-                "currentStatus": "inreview",
-                "nextStatus": "reviewed",
+                "currentStatus": "Review",
+                "nextStatus": "Review",
                 "readComments": false,
                 "createdDate": new Date().toISOString(),
                 "updatedDate": new Date().toISOString()
               }
+              console.log(dat)
               this.progressSvc.addComment(dat).subscribe(res => {
                 console.log(res)
                 if (res) {
                   this.finalCall(contentAction)
                 }
                 //this.commentsList = res
+              }, (err: any) => {
+                console.log(err)
+                this.finalCall(contentAction)
               })
 
               //this.finalCall(contentAction)
@@ -864,18 +868,22 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 "courseId": this.courseData.identifier,
                 "role": "reviewer",
                 "comments": d.value.comments,
-                "currentStatus": "inreview",
-                "nextStatus": "reviewed",
+                "currentStatus": "Review",
+                "nextStatus": "Review",
                 "readComments": false,
                 "createdDate": new Date().toISOString(),
                 "updatedDate": new Date().toISOString()
               }
+              console.log(dat)
               this.progressSvc.addComment(dat).subscribe(res => {
                 console.log(res)
                 if (res) {
                   this.finalCall(contentAction)
                 }
                 //this.commentsList = res
+              }, (err: any) => {
+                console.log(err)
+                this.finalCall(contentAction)
               })
               //this.finalCall(contentAction)
             }
