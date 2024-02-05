@@ -172,6 +172,8 @@ letter-spacing: -0.4px;
   border-radius: 17px;
   font-size: 14px;
   font-family: Roboto !important;
+  position: relative;
+  // top: -60px;
 }
 .photo {
   height: 48px;
@@ -1228,4 +1230,13 @@ letter-spacing: -0.36px;
     align-items: center;
     position: relative;
     left: 70px;
+}.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.edit-course-save-btn{
+  float: right !important;
+  position: relative;
+  top: -67px;
+  right: -57px;
 }

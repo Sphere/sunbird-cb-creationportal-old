@@ -2,8 +2,9 @@
   [isModelHeaderView]="isModelHeaderView" [buttonConfig]="actionButton" (action)="action($event)"
   (subAction)="subAction($event)">
 </ws-author-course-header>
-<ws-progress-stepper (sendSteps)="receiveSteps($event)" [steps]="steps" [header]="header"> </ws-progress-stepper>
+
 <mat-drawer-container autosize="true" id="auth-toc" class="example-container">
+
   <!-- <mat-drawer mode="side" [(opened)]="sideBarOpened" class="side-nav"> -->
 
   <!-- <div class="sticky"> -->
@@ -28,6 +29,7 @@
   </mat-drawer> -->
   <mat-drawer-content>
     <mat-sidenav-container class="nav-container">
+      <ws-progress-stepper (sendSteps)="receiveSteps($event)" [steps]="steps" [header]="header"> </ws-progress-stepper>
       <!-- <form [formGroup]="createTopicForm" *ngIf="showAddchapter" class="margin-left-l">
         <div class="margin-top-s">
           <h1>Build your course by adding Topics</h1>
@@ -94,14 +96,14 @@
       <ws-auth-url-upload [isCollectionEditor]="true" *ngIf="!showAddchapter && viewMode === 'curate'"
         [isSubmitPressed]="isSubmitPressed" (data)="action($event)" [isCreatorEnable]="checkCreator">
       </ws-auth-url-upload>
-      <div class="overlay" *ngIf="isLoading">
+      <!-- <div class="overlay" *ngIf="isLoading">
         <div class="loader-container">
           <div class="loader-ripple">
             <div></div>
             <div></div>
           </div>
         </div>
-      </div>
+      </div> -->
       <ws-auth-file-upload [isCollectionEditor]="true" *ngIf="false" [isSubmitPressed]="isSubmitPressed"
         (data)="action($event)" [isCreatorEnable]="checkCreator">
       </ws-auth-file-upload>

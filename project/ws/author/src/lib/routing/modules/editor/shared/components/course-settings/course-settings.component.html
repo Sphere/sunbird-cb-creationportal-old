@@ -7,12 +7,24 @@
 
       </div>
     </div> -->
-
+    <!--added end-->
+    <div [ngClass]="{ disable: checkCondition('trackContacts', 'disabled') }">
+      <!-- <div class="grid"></div> -->
+      <div class="flex flex-end" style="position: relative;top: -69px;right: -23px;">
+        <button [disabled]="!contentForm.valid" mat-raised-button type="button"
+          class="settingsButton text-white ws-mat-primary-background text-white"
+          (click)="data.emit('save'); isSubmitPressed = true; ">
+          <span class="text-white" i18n>
+            Next
+          </span>
+        </button>
+      </div>
+    </div>
 
     <div class="flex-row-container">
 
       <div class="flex-row-item">
-        <p class="margin-left-l margin-top-l course-settings-title">Organization Settings</p>
+        <p class="margin-left-l course-settings-title">Organization Settings</p>
         <!--Reviewers-->
         <div class="margin-top-l margin-left-l" [ngClass]="{ disable: checkCondition('trackContacts', 'disabled') }">
           <label>
@@ -157,9 +169,9 @@
       </div>
       <div class="flex-row-item ">
         <div class="course-setup-block" *ngIf="!isSelfAssessment">
-          <p class="margin-left-l margin-top-l course-settings-title">Course Setup</p>
+          <p class="margin-left-l course-settings-title">Course Setup</p>
           <!--Show in popup-->
-          <div class="margin-top-l margin-left-l">
+          <div class="margin-top-l margin-right-l  margin-left-l">
 
             <label>
               <div class="margin-top-xs margin-top-l">
@@ -178,7 +190,7 @@
               <mat-hint class="mt-hint">Accepted format: SVG;808 px(h)x1350 px(w)</mat-hint>
             </mat-form-field>
           </div>
-          <div class="margin-top-l margin-left-l">
+          <div class="margin-top-l margin-right-l  margin-left-l">
 
             <label>
               <div class="margin-top-l">
@@ -190,7 +202,7 @@
               <mat-hint class="mt-hint">Note: CNE Points will be approved by INC</mat-hint>
             </mat-form-field>
           </div>
-          <div class="margin-top-l margin-left-l">
+          <div class="margin-top-l margin-right-l margin-left-l">
 
             <label>
               <div class="margin-top-l">
@@ -208,7 +220,7 @@
               <mat-error *ngIf="showError('gatingEnabled')" i18n>Gating is mandatory </mat-error>
             </mat-form-field>
           </div>
-          <div class="margin-top-l margin-left-l">
+          <div class="margin-top-l margin-right-l margin-left-l">
 
             <label>
               <div class="margin-top-l">
@@ -232,7 +244,7 @@
       </div>
       <div class="flex-row-item">
         <div *ngIf="!isSelfAssessment">
-          <p class="margin-left-l margin-top-l course-settings-title">Learner Settings</p>
+          <p class="margin-left-l course-settings-title">Learner Settings</p>
           <div class="margin-top-l margin-right-l">
             <div class="margin-top-l margin-left-l">
               <label>
@@ -310,18 +322,6 @@
     </div>
   </div>
 
-  <!--added end-->
-  <div [ngClass]="{ disable: checkCondition('trackContacts', 'disabled') }" class="margin-top-xl margin-right-l">
-    <div class="grid"></div>
-    <div class="flex flex-end margin-top-l margin-bottom-l margin-right-l">
-      <button [disabled]="!contentForm.valid" mat-raised-button type="button"
-        class="settingsButton text-white ws-mat-primary-background text-white"
-        (click)="data.emit('save'); isSubmitPressed = true; ">
-        <span class="text-white" i18n>
-          Finish and send for review
-        </span>
-      </button>
-    </div>
-  </div>
+
 
 </form>

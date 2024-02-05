@@ -171,7 +171,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         }
       })
 
-
     this.backToCourse = this.initService.isBackButtonClickedMessage.subscribe(
       (data: any) => {
         // tslint:disable-next-line:no-console
@@ -181,14 +180,17 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           // tslint:disable-next-line:no-console
           console.log("inside ")
           this.initService.currentPageAction('fromSettings')
+          this.receiveSteps('CourseBuilder')
           this.initService.backToHome('fromSettings')
         } else {
           sessionStorage.setItem('isSettingsPage', '0')
           if (this.viewMode === 'assessment') {
+            this.receiveSteps('CourseBuilder')
             this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
           } else if (this.showAddchapter) {
             if (this.viewMode === 'meta' && this.clickedNext) {
               console.log("fadfasdf")
+              this.receiveSteps('CourseDetails')
               this.initService.currentPageAction('backFromModulePage')
               this.initService.isEditMetaPageAction('backFromModulePage')
               this.clickedNext = false
@@ -196,12 +198,15 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               this.isModulePageEnabled = false
             } else if (this.viewMode === '') {
               this.viewMode = 'meta'
+              this.receiveSteps('CourseDetails')
               this.initService.publishData('backToCourseDetailsPage')
             }
           } else {
             if (this.viewMode === 'meta' && this.clickedNext) {
+              this.receiveSteps('CourseDetails')
               this.initService.publishData('backToCourseDetailsPage')
             } else {
+              this.receiveSteps('CourseDetails')
               this.router.navigateByUrl('/author/home')
             }
 

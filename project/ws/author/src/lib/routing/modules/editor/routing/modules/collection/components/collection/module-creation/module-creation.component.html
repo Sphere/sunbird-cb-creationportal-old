@@ -8,6 +8,15 @@
     </div>
   </div>
   <mat-grid-list *ngIf="!isSettingsPage" cols="4" rowHeight="100vh">
+    <section class="edit-course-save-btn">
+      <div class="flex flex-between margin-bottom-l margin-right-l">
+        <button [ngClass]="showSettingsPage ? 'ws-mat-primary-background' : 'secondary-button'" mat-raised-button
+          type="submit" (click)="setSettingsPage()"
+          class="text-white save-next mat-button-base save-btn-bottom saveAndNextBtn">
+          Next
+        </button>
+      </div>
+    </section>
     <mat-grid-tile [colspan]="1">
       <mat-drawer-container [class.drawer-opened]="drawer.opened">
         <mat-drawer #drawer class="drawer" mode="side" opened="false"></mat-drawer>
@@ -278,9 +287,9 @@
             <span style="font-size: small;cursor: pointer;color:#1C5D95"
               [ngClass]="showAddModuleForm ? 'brand-color' : ''"
               [routerLink]="'/author/toc/' + courseData?.identifier + '/contents'">Preview</span>
-            <button mat-raised-button [ngClass]="showSettingsPage ? 'ws-mat-primary-background' : 'secondary-button'"
+            <!-- <button mat-raised-button [ngClass]="showSettingsPage ? 'ws-mat-primary-background' : 'secondary-button'"
               class="width-20 margin-left-s mat-button-base save-btn-bottom" (click)="setSettingsPage()">
-              Go to Course Settings ></button>
+              Go to Course Settings ></button> -->
           </div>
         </mat-toolbar>
         <!--module & resource right canvas create page-->
