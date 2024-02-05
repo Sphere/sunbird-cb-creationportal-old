@@ -10,7 +10,7 @@
     <!--added end-->
     <div [ngClass]="{ disable: checkCondition('trackContacts', 'disabled') }">
       <!-- <div class="grid"></div> -->
-      <div class="flex flex-end" style="position: relative;top: -69px;right: -23px;">
+      <div style="position: relative;top: -69px;right: -23px; display: flex; float: right;">
         <button [disabled]="!contentForm.valid" mat-raised-button type="button"
           class="settingsButton text-white ws-mat-primary-background text-white"
           (click)="data.emit('save'); isSubmitPressed = true; ">

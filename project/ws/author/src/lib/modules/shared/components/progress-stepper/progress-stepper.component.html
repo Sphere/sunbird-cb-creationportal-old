@@ -6,7 +6,8 @@
     <ng-container *ngFor="let step of steps; let i = index">
       <!-- add this click function to below line for navigation -->
       <!-- (click)="navigate(step.key)" -->
-      <div class="step" [class.completed]="step.completed" [class.active]="i === activeStep">
+      <div (click)="navigate(step.key)" class="step" [class.completed]="step.completed"
+        [class.active]="i === activeStep">
         <ng-container *ngIf="step.completed &&!step.activeStep">
           <svg xmlns=" http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none"
             style="margin-right: 4px;">
