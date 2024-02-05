@@ -111,6 +111,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
     { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
   ];
+  allowAuthorContentCreate = false
   header: any = 'Course Details'
   constructor(
     private contentService: EditorContentService,
@@ -395,10 +396,29 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
 
   }
-
+  canShow(role: string): boolean {
+    switch (role) {
+      case 'review':
+        //return this.accessService.hasRole(REVIEW_ROLE)
+        return this._configurationsService.userRoles!.has('content_reviewer')
+      case 'publish':
+        //return this.accessService.hasRole(PUBLISH_ROLE)
+        return this._configurationsService.userRoles!.has('content_publisher')
+      case 'author':
+        // return this.accessService.hasRole(CREATE_ROLE) || this.accessService.hasRole(REVIEW_ROLE)
+        //   || this.accessService.hasRole(PUBLISH_ROLE)
+        return this._configurationsService.userRoles!.has('content_reviewer') || this._configurationsService.userRoles!.has('content_creator') || this._configurationsService.userRoles!.has('content_publisher')
+      case 'author_create':
+        //return this.accessService.hasRole(CREATE_ROLE)
+        return this._configurationsService.userRoles!.has('content_creator')
+      default:
+        return false
+    }
+  }
   ngOnInit() {
     this.routerValuesCall()
-
+    this.allowAuthorContentCreate = this.canShow('author_create')
+    console.log("this.allowAuthor", this.allowAuthor)
     this.courseId = this.storeService.parentNode[0]
     this.parentNodeId = this.storeService.currentParentNode
 

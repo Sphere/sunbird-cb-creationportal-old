@@ -29,7 +29,8 @@
   </mat-drawer> -->
   <mat-drawer-content>
     <mat-sidenav-container class="nav-container">
-      <ws-progress-stepper (sendSteps)="receiveSteps($event)" [steps]="steps" [header]="header"> </ws-progress-stepper>
+      <ws-progress-stepper *ngIf="allowAuthorContentCreate" (sendSteps)="receiveSteps($event)" [steps]="steps" [header]="header">
+      </ws-progress-stepper>
       <!-- <form [formGroup]="createTopicForm" *ngIf="showAddchapter" class="margin-left-l">
         <div class="margin-top-s">
           <h1>Build your course by adding Topics</h1>
