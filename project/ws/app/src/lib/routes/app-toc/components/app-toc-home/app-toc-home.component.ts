@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, AfterViewChecked, HostListener, ElementRef, ViewChild } from '@angular/core'
 import { ActivatedRoute, Data } from '@angular/router'
-import { NsContent, WidgetContentService } from '@ws-widget/collection'
+import { NsContent, WidgetContentService, ContentProgressService } from '@ws-widget/collection'
 import { NsWidgetResolver } from '@ws-widget/resolver'
 import { ConfigurationsService, LoggerService, NsPage } from '@ws-widget/utils'
 import { Subscription, Observable } from 'rxjs'
@@ -9,6 +9,7 @@ import { NsAppToc } from '../../models/app-toc.model'
 import { AppTocService } from '../../services/app-toc.service'
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
 import { AccessControlService } from '@ws/author/src/public-api'
+import { Location } from '@angular/common'
 
 export enum ErrorType {
   internalServer = 'internalServer',
@@ -64,8 +65,12 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
   showScrollHeight = 300
   hideScrollHeight = 10
   elementPosition: any
+  changeText: string = 'home'
+  commentsList: any
   @ViewChild('stickyMenu', { static: true }) menuElement!: ElementRef
   @HostListener('window:scroll', ['$event'])
+  isLoading = false
+
   handleScroll() {
     const windowScroll = window.pageYOffset
     if (windowScroll >= this.elementPosition - 100) {
@@ -83,11 +88,32 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     private configSvc: ConfigurationsService,
     private domSanitizer: DomSanitizer,
     private authAccessControlSvc: AccessControlService,
+    private location: Location,
+    private progressSvc: ContentProgressService,
   ) {
+    this.tocSvc.currentMessage.subscribe(async (data: any) => {
+      if (data === 'comments') {
+        this.isLoading = true
+        this.changeText = 'comments'
+        if (this.content) {
+          this.progressSvc.getComments(this.content.identifier).subscribe(res => {
+            console.log(res)
+            this.commentsList = res
+            this.isLoading = false
+          })
+        }
+      }
+    })
   }
 
   ngOnInit() {
     // this.route.fragment.subscribe(fragment => { this.fragment = fragment })
+    this.location.subscribe((event: any) => {
+      console.log(event)
+      if (event) {
+        window.location.assign(`${location.origin}/${event.url}`)
+      }
+    })
     try {
       this.isInIframe = window.self !== window.top
     } catch (_ex) {
@@ -95,7 +121,6 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     }
     if (this.route) {
       this.routeSubscription = this.route.data.subscribe((data: Data) => {
-
         // CHecking for JSON DATA
         if (this.checkJson(data.content.data.creatorContacts)) {
           data.content.data.creatorContacts = JSON.parse(data.content.data.creatorContacts)
@@ -125,6 +150,11 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       this.currentFragment = fragment || 'overview'
     })
   }
+
+  redirect(url: string) {
+    window.location.assign(`${location.origin}${url}`)
+  }
+
   // ngAfterViewInit() {
   //   this.elementPosition = this.menuElement.nativeElement.parentElement.offsetTop
   // }

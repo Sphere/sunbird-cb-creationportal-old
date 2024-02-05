@@ -946,11 +946,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                 "userId": this._configurationsService!.userProfile!.userId,
                 "courseId": this.courseData.identifier,
                 "role": "creator",
-                "comments": "test comments 1",
+                "comments": d.value.comments,
                 "currentStatus": "draft",
                 "nextStatus": "inreview",
                 "readComments": false,
-                "createdDate": new Date().toISOString()
+                "createdDate": new Date().toISOString(),
+                "updatedDate": new Date().toISOString(),
 
               }
               this.progressSvc.addComment(dat).subscribe(res => {
@@ -968,11 +969,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   "userId": this._configurationsService!.userProfile!.userId,
                   "courseId": this.courseData.identifier,
                   "role": "creator",
-                  "comments": "test comments 1",
+                  "comments": d.value.comments,
                   "currentStatus": "draft",
                   "nextStatus": "inreview",
                   "readComments": false,
-                  "createdDate": new Date().toISOString()
+                  "createdDate": new Date().toISOString(),
+                  "updatedDate": new Date().toISOString(),
 
                 }
                 this.progressSvc.addComment(dat).subscribe(res => {

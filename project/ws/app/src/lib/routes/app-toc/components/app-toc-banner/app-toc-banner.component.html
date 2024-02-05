@@ -17,7 +17,7 @@
   </h3>
   <div>
     <button style="float: right;margin-top: 10px;position: relative" id="comment" class="accept-btn cursor-pointer"
-      (click)="gotoComments()">
+      [disabled]="commentsList?.length < 1" (click)="gotoComments()">
       <ng-container i18n>Comments</ng-container>
       <span style="background: #F88808;
     position: absolute;
@@ -76,7 +76,7 @@
           <div class="flex flex-col sm:flex-row">
             <div class="sm:ml-5 flex flex-col flex-auto">
               <div [ngSwitch]="routePath" class="header-meta" [ngClass]="{ 'header-meta-banner': bannerUrl }">
-                <h3 title="Subtitle" style="margin-top: -10px; margin-bottom: 5px;">
+                <h3 title="Subtitle" style="margin-top: 0px; margin-bottom: 5px;">
                   {{ content?.subTitle }}
                 </h3>
                 <div class="banner-overview-container" [hidden]="!content?.purpose && showSubtitleOnBanner"

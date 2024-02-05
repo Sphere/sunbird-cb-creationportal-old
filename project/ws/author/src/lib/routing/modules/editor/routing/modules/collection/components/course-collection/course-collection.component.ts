@@ -840,12 +840,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 "userId": this._configurationsService!.userProfile!.userId,
                 "courseId": this.courseData.identifier,
                 "role": "reviewer",
-                "comments": "test reviewer 1",
+                "comments": d.value.comments,
                 "currentStatus": "inreview",
                 "nextStatus": "reviewed",
                 "readComments": false,
-                "createdDate": new Date().toISOString()
-
+                "createdDate": new Date().toISOString(),
+                "updatedDate": new Date().toISOString()
               }
               this.progressSvc.addComment(dat).subscribe(res => {
                 console.log(res)
@@ -863,12 +863,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 "userId": this._configurationsService!.userProfile!.userId,
                 "courseId": this.courseData.identifier,
                 "role": "reviewer",
-                "comments": "test reviewer 1",
+                "comments": d.value.comments,
                 "currentStatus": "inreview",
                 "nextStatus": "reviewed",
                 "readComments": false,
-                "createdDate": new Date().toISOString()
-
+                "createdDate": new Date().toISOString(),
+                "updatedDate": new Date().toISOString()
               }
               this.progressSvc.addComment(dat).subscribe(res => {
                 console.log(res)
