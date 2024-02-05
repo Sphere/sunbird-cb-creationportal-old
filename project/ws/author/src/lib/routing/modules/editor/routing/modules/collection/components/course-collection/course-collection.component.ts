@@ -174,18 +174,27 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.backToCourse = this.initService.isBackButtonClickedMessage.subscribe(
       (data: any) => {
         // tslint:disable-next-line:no-console
-        console.log("data: ", data)
+        console.log("data: ", data, this.isSelfAssessment)
         if (sessionStorage.getItem('isSettingsPage') === '1') {
           sessionStorage.setItem('isSettingsPage', '0')
           // tslint:disable-next-line:no-console
           console.log("inside ")
           this.initService.currentPageAction('fromSettings')
-          this.receiveSteps('CourseBuilder')
+          if (!this.isSelfAssessment) {
+            this.receiveSteps('CourseBuilder')
+          } else {
+            this.receiveSteps('AssessmentBuilder')
+          }
+
           this.initService.backToHome('fromSettings')
         } else {
           sessionStorage.setItem('isSettingsPage', '0')
           if (this.viewMode === 'assessment') {
-            this.receiveSteps('CourseBuilder')
+            if (!this.isSelfAssessment) {
+              this.receiveSteps('CourseBuilder')
+            } else {
+              this.receiveSteps('AssessmentBuilder')
+            }
             this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
           } else if (this.showAddchapter) {
             if (this.viewMode === 'meta' && this.clickedNext) {
@@ -197,19 +206,26 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               this.showAddchapter = false
               this.isModulePageEnabled = false
             } else if (this.viewMode === '') {
+              console.log("this.viewMode")
               this.viewMode = 'meta'
               this.receiveSteps('CourseDetails')
               this.initService.publishData('backToCourseDetailsPage')
             }
           } else {
-            if (this.viewMode === 'meta' && this.clickedNext) {
+            if (this.isSelfAssessment && this.clickedNext) {
+              this.router.navigateByUrl('/author/home')
+            }
+            if (this.viewMode === 'meta' && this.clickedNext && !this.isSelfAssessment) {
+              console.log("this.meta")
+
               this.receiveSteps('CourseDetails')
               this.initService.publishData('backToCourseDetailsPage')
             } else {
-              this.receiveSteps('CourseDetails')
-              this.router.navigateByUrl('/author/home')
+              if (!this.isSelfAssessment) {
+                this.receiveSteps('CourseDetails')
+                this.router.navigateByUrl('/author/home')
+              }
             }
-
           }
         }
       })
