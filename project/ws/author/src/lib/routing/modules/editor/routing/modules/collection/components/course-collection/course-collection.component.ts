@@ -354,17 +354,18 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   receiveSteps(steps: any) {
     if (this.isSelfAssessment) {
+      this.header = "Self Assessment Details"
       if (steps === 'AssessmentBuilder') {
         this.steps = [
-          { label: '1. Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
-          { label: '2. Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
-          { label: '3. Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+          { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+          { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
         ]
       } else if (steps === 'AssessmentSettings') {
         this.steps = [
-          { label: '1. Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
-          { label: '2. Assessment Builder', key: 'AssessmentBuilder', activeStep: false, completed: true },
-          { label: '3. Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false }
+          { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+          { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: false, completed: true },
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false }
         ]
       }
     } else {
@@ -3100,10 +3101,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           ? true : false
         this.checkCreator = isCreator
         if (this.isSelfAssessment) {
+          this.header = "Self Assessment Details"
           this.steps = [
-            { label: '1. Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
-            { label: '2. Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
-            { label: '3. Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+            { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+            { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
+            { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
           ]
         } else {
           this.steps = [

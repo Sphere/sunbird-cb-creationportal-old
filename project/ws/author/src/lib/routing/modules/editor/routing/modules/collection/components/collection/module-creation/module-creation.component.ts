@@ -1789,9 +1789,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       console.log("this.settingsPage", this.isSettingsPage)
       if (this.isSelfAssessment) {
         const steps = [
-          { label: '1. Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
-          { label: '2. Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
-          { label: '3. Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+          { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+          { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
         ]
         console.log(steps)
         this.sendSteps.emit('AssessmentSettings')
