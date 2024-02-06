@@ -349,8 +349,8 @@ export class CommentsDialogComponent implements OnInit {
         "currentStatus": currentStatus,
         "nextStatus": nextStatus,
         "readComments": false,
-        "createdDate": new Date().toISOString(),
-        "updatedDate": new Date().toISOString()
+        "createdDate": new Date(),
+        "updatedDate": new Date()
       }
       console.log(dat)
       this.progressSvc.addComment(dat).subscribe(res => {

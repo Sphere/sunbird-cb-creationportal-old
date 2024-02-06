@@ -5,10 +5,10 @@ import { Pipe, PipeTransform } from '@angular/core'
 })
 export class TimeDifferencePipe implements PipeTransform {
   transform(value: string): string {
-    const currentTimestamp = new Date().getTime()
-    const timestamp = new Date(value).getTime()
+    const currentTimestamp: any = new Date()
+    const timestamp: any = new Date(value)
     const differenceInSeconds = Math.floor((currentTimestamp - timestamp) / 1000)
-
+    console.log(differenceInSeconds)
     if (differenceInSeconds < 60) {
       return `${differenceInSeconds} seconds ago`
     } else if (differenceInSeconds < 3600) {

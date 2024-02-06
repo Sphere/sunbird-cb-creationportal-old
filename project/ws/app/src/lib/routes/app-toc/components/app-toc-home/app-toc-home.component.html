@@ -26,7 +26,7 @@
         <div class="in-line">
           <img src="/cbp-assets/images/Ellipse130.svg" class="p-r-10">
           <h5 class="p-r-10 highlight">{{comment.role}}</h5>
-          <h5 class="time">{{comment.createdDate | timeDifference}}</h5>
+          <h5 class="time">{{comment.createdDate | timeDifference : 'short'}}</h5>
         </div>
         <h6 class="commentBox">{{comment.comments}}</h6>
       </div>
