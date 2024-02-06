@@ -71,6 +71,9 @@ export class AuthInitService {
   private currentPageStatus = new Subject<any>()
   public currentPageStatusMessage = this.currentPageStatus.asObservable()
 
+  private currentNavigation = new Subject<any>()
+  public currentNavigationMessage = this.currentNavigation.asObservable()
+
   authConfig!: IFormMeta
   authMetaV2!: { [key: string]: IMetaUnit<any> }
   ordinals: any
@@ -139,5 +142,7 @@ export class AuthInitService {
   backToHome(message: any) {
     this.backToHomeSource.next(message)
   }
-
+  currentNavigations(message: any) {
+    this.currentNavigation.next(message)
+  }
 }

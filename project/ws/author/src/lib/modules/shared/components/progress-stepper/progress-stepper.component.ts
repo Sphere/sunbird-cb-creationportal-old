@@ -32,10 +32,10 @@ export class ProgressStepperComponent implements OnInit {
         const targetIndex = this.steps.findIndex((item: any) => item.key === step)
 
         if (activeIndex > 0 && targetIndex < activeIndex) {
-          const previousStep = this.steps[activeIndex - 1]
-          console.log("Previous Step:", previousStep)
-          this.sendSteps.emit(previousStep.key) // Emit the key instead of the label
-          this.initService.isBackButtonClickedAction('backButtonClicked')
+          // const previousStep = this.steps[activeIndex - 1]
+          // console.log("Previous Step:", previousStep)
+          this.sendSteps.emit(step) // Emit the key instead of the label
+          this.initService.currentNavigations(step)
         }
       }
     }
