@@ -12,6 +12,7 @@ import { ConfigurationsService } from '@ws-widget/utils'
 import {
   ContentProgressService,
 } from '@ws-widget/collection'
+import moment from 'moment'
 @Component({
   selector: 'ws-auth-root-comments-dialog',
   templateUrl: './comments-dialog.component.html',
@@ -349,8 +350,8 @@ export class CommentsDialogComponent implements OnInit {
         "currentStatus": currentStatus,
         "nextStatus": nextStatus,
         "readComments": false,
-        "createdDate": new Date(),
-        "updatedDate": new Date()
+        "createdDate": moment().format('YYYY-MM-DD HH:mm:ss'),
+        "updatedDate": moment().format('YYYY-MM-DD HH:mm:ss')
       }
       console.log(dat)
       this.progressSvc.addComment(dat).subscribe(res => {

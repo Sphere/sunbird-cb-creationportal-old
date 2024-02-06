@@ -54,6 +54,7 @@ import { UserIndexConfirmComponent } from '@ws/author/src/lib/modules/shared/com
 import {
   ContentProgressService,
 } from '@ws-widget/collection'
+import moment from 'moment'
 //import { M } from '@angular/cdk/keycodes'
 //import { CdkDragDrop } from '@angular/cdk/drag-drop'
 @Component({
@@ -950,8 +951,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                 "currentStatus": "Draft",
                 "nextStatus": "Review",
                 "readComments": false,
-                "createdDate": new Date(),
-                "updatedDate": new Date(),
+                "createdDate": moment().format('YYYY-MM-DD HH:mm:ss'),
+                "updatedDate": moment().format('YYYY-MM-DD HH:mm:ss'),
 
               }
               this.progressSvc.addComment(dat).subscribe(res => {
@@ -976,8 +977,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   "currentStatus": "Draft",
                   "nextStatus": "Review",
                   "readComments": false,
-                  "createdDate": new Date(),
-                  "updatedDate": new Date(),
+                  "createdDate": moment().format('YYYY-MM-DD HH:mm:ss'),
+                  "updatedDate": moment().format('YYYY-MM-DD HH:mm:ss'),
 
                 }
                 this.progressSvc.addComment(dat).subscribe(res => {
