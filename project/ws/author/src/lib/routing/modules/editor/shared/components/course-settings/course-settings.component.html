@@ -23,7 +23,7 @@
 
     <div class="flex-row-container">
 
-      <div class="flex-row-item">
+      <div class="flex-first-last-item">
         <p class="margin-left-l course-settings-title">Organization Settings</p>
         <!--Reviewers-->
         <div class="margin-top-l margin-left-l" [ngClass]="{ disable: checkCondition('trackContacts', 'disabled') }">
@@ -242,11 +242,11 @@
 
 
       </div>
-      <div class="flex-row-item">
+      <div class="flex-first-last-item">
         <div *ngIf="!isSelfAssessment">
           <p class="margin-left-l course-settings-title">Learner Settings</p>
           <div class="margin-top-l margin-right-l">
-            <div class="margin-top-l margin-left-l">
+            <div class="margin-top-l">
               <label>
                 <div class="margin-top-xs flex flex-middle">
                   <span class="label-heading" i18n>Audience</span>
@@ -283,7 +283,7 @@
             </div>
           </div>
           <div class="margin-top-xs margin-right-l">
-            <div class="margin-top-xs margin-left-l">
+            <div class="margin-top-xs">
               <label>
                 <div class="margin-top-xs flex flex-middle">
                   <span class="label-heading" i18n>Keywords</span>

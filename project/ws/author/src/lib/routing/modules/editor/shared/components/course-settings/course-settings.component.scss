@@ -494,7 +494,14 @@ letter-spacing: -0.24px;
     top: 0;
     justify-content: space-between;
      flex: 1;
-      padding: 10px 45px;
+      padding: 10px 15px 10px 25px;
+      box-sizing: border-box;
+}
+.flex-row-container > .flex-first-last-item {
+    top: 0;
+    justify-content: space-between;
+     flex: 1;
+      padding: 10px 15px;
       box-sizing: border-box;
 }
 .course-settings-header{
