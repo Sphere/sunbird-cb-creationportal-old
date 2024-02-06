@@ -131,7 +131,6 @@ export class AuthInitService {
     this.isBackButtonFromAssessmentClicked.next(message)
   }
   isEditMetaPageAction(message: any) {
-    console.log("rwqweqweqwe")
     this.isEditMetaPageClicked.next(message)
   }
   currentPageAction(message: any) {

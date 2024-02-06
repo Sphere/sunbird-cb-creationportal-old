@@ -50,6 +50,9 @@ import { QuizStoreService } from '../../../../quiz/services/store.service'
 import { QuizResolverService } from '../../../../quiz/services/resolver.service'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
 import { UserIndexConfirmComponent } from '@ws/author/src/lib/modules/shared/components/user-index-confirm/user-index-confirm.component'
+import {
+  ContentProgressService,
+} from '@ws-widget/collection'
 //import { M } from '@angular/cdk/keycodes'
 //import { CdkDragDrop } from '@angular/cdk/drag-drop'
 import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
@@ -272,7 +275,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     private quizStoreSvc: QuizStoreService,
     private quizResolverSvc: QuizResolverService,
     private breakpointObserver: BreakpointObserver,
-
+    private progressSvc: ContentProgressService,
   ) {
     if (sessionStorage.getItem('isReviewClicked')) {
       sessionStorage.removeItem('isReviewClicked')
@@ -948,14 +951,63 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         })
 
         dialogRef.afterClosed().subscribe((d) => {
+          console.log(d)
           this.isVisibleReviewDialog = false
           // this.finalCall(contentAction)
           if (d) {
             if (this.getAction() === 'sendForReview' && d.value.action === 'reject') {
               contentAction = 'rejectContent'
-              this.finalCall(contentAction)
+              //this.finalCall(contentAction)
+              let dat = {
+                "userId": this._configurationsService!.userProfile!.userId,
+                "courseId": this.courseData.identifier,
+                "role": "creator",
+                "comments": d.value.comments,
+                "currentStatus": "Draft",
+                "nextStatus": "Review",
+                "readComments": false,
+                "createdDate": new Date().toISOString(),
+                "updatedDate": new Date().toISOString(),
+
+              }
+              this.progressSvc.addComment(dat).subscribe(res => {
+                console.log(res)
+                if (res) {
+                  this.finalCall(contentAction)
+                }
+                //this.commentsList = res
+              }, (err: any) => {
+                console.log(err)
+                this.finalCall(contentAction)
+              })
+              console.log(contentAction)
             } else {
-              this.finalCall(contentAction)
+              console.log(contentAction)
+              if (contentAction === 'acceptConent') {
+                let dat = {
+                  "userId": this._configurationsService!.userProfile!.userId,
+                  "courseId": this.courseData.identifier,
+                  "role": "creator",
+                  "comments": d.value.comments,
+                  "currentStatus": "Draft",
+                  "nextStatus": "Review",
+                  "readComments": false,
+                  "createdDate": new Date().toISOString(),
+                  "updatedDate": new Date().toISOString(),
+
+                }
+                this.progressSvc.addComment(dat).subscribe(res => {
+                  console.log(res)
+                  if (res) {
+                    this.finalCall(contentAction)
+                  }
+                  //this.commentsList = res
+                }, (err: any) => {
+                  console.log(err)
+                  this.finalCall(contentAction)
+                })
+              }
+              //this.finalCall(contentAction)
             }
           }
         })
@@ -972,7 +1024,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   }
   async finalCall(contentActionTaken: any) {
-
+    console.log(contentActionTaken, 'tok')
     let flag = 0
     const resourceListToReview: any = []
     const moduleListToReview: any = []

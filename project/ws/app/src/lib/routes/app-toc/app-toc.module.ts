@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { RouterModule } from '@angular/router'
 import { AppTocRoutingModule } from './app-toc-routing.module'
-
+import { TimeDifferencePipe } from 'project/ws/app/src/lib/routes/app-toc/components/app-toc-home/time-difference.pipe'
 import {
   MatToolbarModule,
   MatIconModule,
@@ -123,6 +123,7 @@ import { LicenseComponent } from './components/license/license.component'
     AppTocSinglePageRootComponent,
     AppTocSinglePageDirective,
     LicenseComponent,
+    TimeDifferencePipe
   ],
   imports: [
     CommonModule,

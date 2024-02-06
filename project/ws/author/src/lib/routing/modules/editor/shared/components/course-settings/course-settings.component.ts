@@ -222,14 +222,16 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     //   }
     // })
 
-    this.roles$ = this.editorService.rolesMappingAPI() // Assign the observable
-
+    this.roles$ = this.editorService.rolesMapped() // Assign the observable
     this.rolesSubscription = this.roles$.subscribe(async (data: any) => {
+      console.log(data)
       if (data) {
-        this.rolesArray = await Object.entries(data).map(([key, value]) => ({ [key]: value }))
-        this.rolesMappedListData = await Object.keys(data)
-        this.rolesMappedList = await Object.keys(data)
-
+        // this.rolesArray = await Object.entries(data).map(([key, value]) => ({ [key]: value }))
+        // this.rolesMappedListData = await Object.keys(data)
+        // this.rolesMappedList = await Object.keys(data)
+        this.rolesArray = data
+        this.rolesMappedListData = data
+        this.rolesMappedList = data
         // console.log("yes here", data, this.rolesArray, this.rolesMappedListData)
         // this.getFilterData(this.rolesMappedList, this.contentForm.controls.rolesMapped.value)
       }
@@ -861,13 +863,13 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         }
         // tslint:disable-next-line:no-console
         // console.log("originalMeta", meta)
-        if (meta['rolesMapped']) {
-          const keysToFind = meta['rolesMapped']
-          const rolesId = this.getValuesForKeys(keysToFind)
-          // console.log("rolesId", rolesId)
-          meta['rolesMapped'] = rolesId
-          // console.log("roles", rolesId)
-        }
+        // if (meta['rolesMapped']) {
+        //   const keysToFind = meta['rolesMapped']
+        //   const rolesId = this.getValuesForKeys(keysToFind)
+        //   // console.log("rolesId", rolesId)
+        //   meta['rolesMapped'] = rolesId
+        //   // console.log("roles", rolesId)
+        // }
 
         // console.log('meta', meta, this.contentMeta.identifier)
         this.contentService.setUpdatedMeta(meta, this.contentMeta.identifier)
@@ -1623,14 +1625,16 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     }
   }
   private fetchRolesMapped() {
+    //this.data.emit('save')
+    //this.storeData()
     // console.log("this.rolesMappedCtrl", this.rolesMappedListData)
-    if ((this.rolesMappedCtrl.value || '').trim()) {
-      this.rolesMappedList = this.rolesMappedListData.filter(
-        (v: any) => v.toLowerCase().indexOf(this.rolesMappedCtrl.value.toLowerCase()) > -1,
-      )
-    } else {
-      this.rolesMappedList = this.rolesMappedListData.slice()
-    }
+    // if ((this.rolesMappedCtrl.value || '').trim()) {
+    //   this.rolesMappedList = this.rolesMappedListData.filter(
+    //     (v: any) => v.toLowerCase().indexOf(this.rolesMappedCtrl.value.toLowerCase()) > -1,
+    //   )
+    // } else {
+    //   this.rolesMappedList = this.rolesMappedListData.slice()
+    // }
     // console.log("this.rolesMappedList", this.rolesMappedList)
   }
 

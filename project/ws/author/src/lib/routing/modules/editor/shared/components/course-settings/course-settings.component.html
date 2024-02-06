@@ -257,10 +257,10 @@
                   [ngClass]="{ 'mat-form-field-invalid': showError('rolesMapped') }">
                   <mat-chip-list #rolesMappedChipList i18n-aria-label aria-label="Roles Mapped selection">
                     <mat-chip style="color: white !important;
-                            background-color: #1C5D95 !important;"
+                                          background-color: #0074b6 !important;"
                       *ngFor="let role of contentForm.controls.rolesMapped.value" [selectable]="selectable"
-                      [removable]="removable" (removed)="removeFromFormControl(role.split(':')[0], 'rolesMapped')">
-                      {{ role.split(':')[0] }}
+                      [removable]="removable" (removed)="removeFromFormControl(role, 'rolesMapped')">
+                      {{ role }}
                       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                     </mat-chip>
                     <input i18n-placeholder placeholder="Select Roles" #rolesMappedView [formControl]="rolesMappedCtrl"
