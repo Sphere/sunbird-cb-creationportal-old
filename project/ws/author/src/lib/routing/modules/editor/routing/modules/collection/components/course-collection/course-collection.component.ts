@@ -418,7 +418,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.routerValuesCall()
     this.allowAuthorContentCreate = this.canShow('author_create')
-    console.log("this.allowAuthor", this.allowAuthor)
     this.courseId = this.storeService.parentNode[0]
     this.parentNodeId = this.storeService.currentParentNode
 
