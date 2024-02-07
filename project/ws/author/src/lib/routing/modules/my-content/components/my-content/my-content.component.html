@@ -125,7 +125,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('Draft')"
                 [ngClass]="{ 'coursesActive': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse }"
                 i18n>Courses</span>
-              <img class="expanded-btn"
+              <img class="expanded-btn" width="10"
                 *ngIf="isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse"
                 src="cbp-assets/icons/Frame_82.svg" />
 
@@ -227,7 +227,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('selfAssessmentDraft')"
                 [ngClass]="{ 'selfAssessmentActive': isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse }"
                 i18n>Self Assessment</span>
-              <img class="expanded-btn"
+              <img class="expanded-btn" width="10"
                 *ngIf="isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse"
                 src="cbp-assets/icons/Frame_82.svg" />
 
@@ -292,7 +292,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('All Courses')"
                 [ngClass]="{ 'manageCourseActive': isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate }"
                 i18n>Manage Courses</span>
-              <img class="expanded-btn"
+              <img class="expanded-btn" width="10"
                 *ngIf="isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate"
                 src="cbp-assets/icons/Frame_82.svg" />
             </mat-panel-title>
