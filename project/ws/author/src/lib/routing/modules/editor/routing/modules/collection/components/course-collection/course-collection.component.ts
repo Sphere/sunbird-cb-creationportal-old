@@ -985,8 +985,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 "currentStatus": "Review",
                 "nextStatus": "Review",
                 "readComments": false,
-                "createdDate": new Date().toISOString(),
-                "updatedDate": new Date().toISOString()
+                "createdDate": moment(new Date()).toISOString(),
+                "updatedDate": moment(new Date()).toISOString()
               }
               console.log(dat)
               this.progressSvc.addComment(dat).subscribe(res => {
@@ -1012,8 +1012,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 "currentStatus": "Review",
                 "nextStatus": "Review",
                 "readComments": false,
-                "createdDate": new Date().toISOString(),
-                "updatedDate": new Date().toISOString()
+                "createdDate": moment(new Date()).toISOString(),
+                "updatedDate": moment(new Date()).toISOString()
               }
               console.log(dat)
               this.progressSvc.addComment(dat).subscribe(res => {
