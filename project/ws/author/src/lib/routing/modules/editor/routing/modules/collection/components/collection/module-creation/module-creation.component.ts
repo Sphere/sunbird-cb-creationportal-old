@@ -951,8 +951,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                 "currentStatus": "Draft",
                 "nextStatus": "Review",
                 "readComments": false,
-                "createdDate": moment().format('YYYY-MM-DD HH:mm:ss'),
-                "updatedDate": moment().format('YYYY-MM-DD HH:mm:ss'),
+                "createdDate": moment(new Date()).toISOString(),
+                "updatedDate": moment(new Date()).toISOString(),
 
               }
               this.progressSvc.addComment(dat).subscribe(res => {
@@ -977,8 +977,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   "currentStatus": "Draft",
                   "nextStatus": "Review",
                   "readComments": false,
-                  "createdDate": moment().format('YYYY-MM-DD HH:mm:ss'),
-                  "updatedDate": moment().format('YYYY-MM-DD HH:mm:ss'),
+                  "createdDate": moment(new Date()).toISOString(),
+                  "updatedDate": moment(new Date()).toISOString(),
 
                 }
                 this.progressSvc.addComment(dat).subscribe(res => {

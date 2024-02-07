@@ -350,8 +350,8 @@ export class CommentsDialogComponent implements OnInit {
         "currentStatus": currentStatus,
         "nextStatus": nextStatus,
         "readComments": false,
-        "createdDate": moment().format('YYYY-MM-DD HH:mm:ss'),
-        "updatedDate": moment().format('YYYY-MM-DD HH:mm:ss')
+        "createdDate": moment(new Date()).toISOString(),
+        "updatedDate": moment(new Date()).toISOString()
       }
       console.log(dat)
       this.progressSvc.addComment(dat).subscribe(res => {

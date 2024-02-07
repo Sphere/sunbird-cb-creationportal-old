@@ -1,13 +1,25 @@
 import { Pipe, PipeTransform } from '@angular/core'
 //import { time } from 'console'
-import moment from 'moment'
+//import moment from 'moment'
+import moment from 'moment-timezone'
 @Pipe({
   name: 'timeDifference'
 })
 export class TimeDifferencePipe implements PipeTransform {
   transform(value: string): string {
-    const duration = moment.duration(moment(new Date()).diff(moment(new Date(value))))
-    console.log(moment().format('YYYY-MM-DD HH:mm:ss')), moment(new Date(value))
+
+    // const currentTimestamp: any = new Date()
+    // const timestamp: any = new Date(value)
+    // console.log(timestamp)
+    // console.log(moment(new Date()).utcOffset(330))
+    // console.log(moment(new Date()).toISOString(), 'ss', moment(value).utcOffset(330))
+    // console.log(moment.duration(moment(new Date()).diff(moment(value))))
+    // console.log(moment(value).utcOffset(330))
+    let d1 = moment(new Date()).utcOffset(330)
+    let d2 = moment(value).utcOffset(330)
+    console.log(d2.toString(), moment(new Date()).toISOString())
+    const duration = moment.duration(moment(d1).diff(moment(d2)))
+    //console.log(moment().format('YYYY-MM-DD HH:mm:ss')), moment(new Date(value))
     console.log(duration)
     const days = duration.days()
     const hours = duration.hours()
@@ -16,32 +28,22 @@ export class TimeDifferencePipe implements PipeTransform {
     let formattedString = ''
 
     if (days > 0) {
-      formattedString += `${days} day${days !== 1 ? 's' : ''} `
+      formattedString += `${days} day${days !== 1 ? 's ago' : 'ago'} `
     }
     if (hours > 0) {
-      formattedString += `${hours} hour${hours !== 1 ? 's' : ''} `
+      formattedString += `${hours} hour${hours !== 1 ? 's ago' : 'ago'} `
     }
     if (minutes > 0) {
-      formattedString += `${minutes} minute${minutes !== 1 ? 's' : ''} `
+      formattedString += `${minutes} minute${minutes !== 1 ? 's ago' : 'ago'} `
     }
 
-    return formattedString.trim() || 'Just now'
-    // const currentTimestamp: any = new Date()
-    // const timestamp: any = new Date(value)
-    // console.log(moment(timestamp))
-    // const differenceInSeconds = Math.floor((currentTimestamp - timestamp) / 1000)
-    // console.log(differenceInSeconds)
-    // if (differenceInSeconds < 60) {
-    //   return `${differenceInSeconds} seconds ago`
-    // } else if (differenceInSeconds < 3600) {
-    //   const minutes = Math.floor(differenceInSeconds / 60)
-    //   return `${minutes} ${minutes > 1 ? 'minutes' : 'minute'} ago`
-    // } else if (differenceInSeconds < 86400) {
-    //   const hours = Math.floor(differenceInSeconds / 3600)
-    //   return `${hours} ${hours > 1 ? 'hours' : 'hour'} ago`
-    // } else {
-    //   const days = Math.floor(differenceInSeconds / 86400)
-    //   return `${days} ${days > 1 ? 'days' : 'day'} ago`
-    // }
+    const utcMoment = moment.utc(value) // Convert to UTC
+    const localMoment = utcMoment.tz('Asia/Kolkata') // Convert to desired timezone
+
+    return localMoment.fromNow()
+
+    //return moment(value).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss')
+    //return moment(value).tz('Asia/Kolkata').fromNow()
+    //return formattedString.trim() || 'Just now'
   }
 }
