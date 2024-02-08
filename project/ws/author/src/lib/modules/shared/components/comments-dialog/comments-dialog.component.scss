@@ -155,3 +155,12 @@ th {
   height: 6vh !important;
   width: 15vh !important;
 }
+
+.theme-igot.day-mode .mat-form-field-invalid .mat-input-element, .theme-igot.day-mode .mat-warn .mat-input-element {
+  caret-color : #f44336 !important
+
+}
+
+.theme-igot.day-mode .mat-input-element {
+  caret-color: #000 !important;
+}
