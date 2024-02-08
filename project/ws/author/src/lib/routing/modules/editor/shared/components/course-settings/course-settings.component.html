@@ -136,6 +136,7 @@
           <div class="margin-top-xs">
             <mat-form-field appearance="outline" class="margin-top-xs" class="margin-top-xs"
               [ngClass]="{ 'mat-form-field-invalid': showError('creatorDetails') }">
+
               <mat-chip-list #creatorDetailsChipList aria-label="Original Author selection">
                 <mat-chip style="color: white !important;
                   background-color: #1C5D95 !important;"
@@ -215,7 +216,7 @@
                 <mat-option [value]="true" i18n>Yes</mat-option>
                 <mat-option [value]="false" i18n>No</mat-option>
               </mat-select>
-              <mat-hint class="mt-hint">Note: Learners will be able to access modules in a sequntial manner</mat-hint>
+              <mat-hint class="mt-hint">Note: Learners will be able to access modules in a sequential manner</mat-hint>
 
               <mat-error *ngIf="showError('gatingEnabled')" i18n>Gating is mandatory </mat-error>
             </mat-form-field>
@@ -244,7 +245,7 @@
       </div>
       <div class="flex-first-last-item">
         <div *ngIf="!isSelfAssessment">
-          <p class="margin-left-l course-settings-title">Learner Settings</p>
+          <p class="course-settings-title">Learner Settings</p>
           <div class="margin-top-l margin-right-l">
             <div class="margin-top-l">
               <label>
@@ -289,7 +290,7 @@
                   <span class="label-heading" i18n>Keywords</span>
                 </div>
               </label>
-              <div class="margin-top-xs flex margin-right-xl">
+              <div class="margin-top-xs flex">
                 <mat-form-field class="keywords-chip-list margin-top-xs flex-grow80" appearance="outline"
                   [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
                   <mat-chip-list #keywords aria-label="Keyword selection">

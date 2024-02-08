@@ -2221,7 +2221,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     // this.moduleNames.push({ name: 'Create Course' })
     // this.moduleName = ''
   }
-  toggleChildren(module: any): void {
+  toggleChildren(module: any, i?: number): void {
+    console.log(this.showChildrenMap[module.identifier], 'this', i)
     this.showChildrenMap[module.identifier] = !this.showChildrenMap[module.identifier]
   }
 

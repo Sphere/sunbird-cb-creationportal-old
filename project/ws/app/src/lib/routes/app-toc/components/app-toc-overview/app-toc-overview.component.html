@@ -7,21 +7,21 @@
         showSubtitleOnBanner &&
         content?.description
       " class="unit-meta-item">
-      <h2 style="font-weight:bold">{{ tocConfig?.overview?.description?.displayName }}</h2>
+      <h2>{{ tocConfig?.overview?.description?.displayName }}</h2>
       <mat-card-content>
         <div class="mat-subheading-1" [innerHTML]="content?.description"></div>
       </mat-card-content>
     </div>
     <!-- Content Body -->
     <div *ngIf="tocConfig?.overview?.body?.enabled && content?.instructions" class="unit-meta-item">
-      <h2 style="font-weight:bold">{{ tocConfig?.overview?.body?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.body?.displayName }}</h2>
       <mat-card-content>
         <div class="break-words" [innerHTML]="content?.instructions"></div>
       </mat-card-content>
     </div>
     <!-- Learning objective -->
     <div *ngIf="tocConfig?.overview?.learningObjective?.enabled && content?.learningObjective" class="unit-meta-item">
-      <h2 style="font-weight:bold">{{ tocConfig?.overview?.learningObjective?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.learningObjective?.displayName }}</h2>
       <mat-card-content>
         <p class="mat-subheading-1" [innerHTML]="content?.learningObjective"></p>
       </mat-card-content>
@@ -32,13 +32,13 @@
         tocConfig?.overview?.registrationInstructions?.enabled &&
         content?.registrationInstructions?.length
       " class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.registrationInstructions?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.registrationInstructions?.displayName }}</h2>
       <mat-card-content>
         <div class="mat-subheading-1 break-words" [innerHTML]="content?.registrationInstructions"></div>
       </mat-card-content>
     </div>
     <div *ngIf="tocConfig?.overview?.preContents?.enabled && content?.preContents?.length" class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.preContents?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.preContents?.displayName }}</h2>
       <mat-card-content>
         <div class="flex mb-1" *ngFor="let preContent of content?.preContents">
           <span class="mr-1">
@@ -51,7 +51,7 @@
       </mat-card-content>
     </div>
     <div *ngIf="tocConfig?.overview?.postContents?.enabled && content?.postContents?.length" class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.postContents?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.postContents?.displayName }}</h2>
       <mat-card-content>
         <div class="flex mb-1" *ngFor="let postContent of content?.postContents">
           <span class="mr-1">
@@ -65,7 +65,7 @@
     </div>
     <div *ngIf="tocConfig?.overview?.certificationList?.enabled && content?.certificationList?.length"
       class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.certificationList?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.certificationList?.displayName }}</h2>
       <mat-card-content>
         <div class="flex mb-1" *ngFor="let certification of content?.certificationList">
           <span class="mr-1">
@@ -78,7 +78,7 @@
       </mat-card-content>
     </div>
     <div *ngIf="tocConfig?.overview?.studyMaterials?.enabled && content?.studyMaterials?.length" class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.studyMaterials?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.studyMaterials?.displayName }}</h2>
       <mat-card-content>
         <div class="flex mb-1" *ngFor="let studyitem of content?.studyMaterials">
           <span class="mr-1">
@@ -93,7 +93,7 @@
     <div *ngIf="
         tocConfig?.overview?.playgroundResources?.enabled && content?.playgroundResources?.length
       " class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.playgroundResources?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.playgroundResources?.displayName }}</h2>
       <mat-card-content>
         <div class="flex mb-1" *ngFor="let playgroundResource of content?.playgroundResources">
           <span class="mr-1">
@@ -106,7 +106,7 @@
       </mat-card-content>
     </div>
     <div *ngIf="tocConfig?.overview?.kArtifacts?.enabled && content?.kArtifacts?.length" class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.kArtifacts?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.kArtifacts?.displayName }}</h2>
       <mat-card-content>
         <div class="flex mb-1" *ngFor="let kArtifact of content?.kArtifacts">
           <span class="mr-1">
@@ -122,7 +122,7 @@
         tocConfig?.overview?.equivalentCertifications?.enabled &&
         content?.equivalentCertifications?.length
       " class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.equivalentCertifications?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.equivalentCertifications?.displayName }}</h2>
       <mat-card-content>
         <div class="flex mb-1" *ngFor="let equivalentCertification of content?.equivalentCertifications">
           <span class="mr-1">
@@ -137,7 +137,7 @@
     <div *ngIf="
         tocConfig?.overview?.softwareRequirements?.enabled && content?.softwareRequirements?.length
       " class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.softwareRequirements?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.softwareRequirements?.displayName }}</h2>
       <mat-card-content>
         <div class="flex mb-1" *ngFor="let softwareRequirement of content?.softwareRequirements">
           <span class="mr-1">
@@ -152,14 +152,14 @@
     <!-- Skills -->
     <div *ngIf="tocConfig?.overview?.skills?.enabled && content?.skills?.length"
       class="unit-meta-item mat-app-background">
-      <h2 style="font-weight: bolder">{{ tocConfig?.overview?.skills?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.skills?.displayName }}</h2>
       <mat-chip-list>
         <mat-chip *ngFor="let skill of content?.skills">{{ skill.name }}</mat-chip>
       </mat-chip-list>
     </div>
     <!-- Requirements -->
     <div *ngIf="tocConfig?.overview?.preRequisites?.enabled && content?.preRequisites" class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.preRequisites?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.preRequisites?.displayName }}</h2>
       <mat-card-content>
         <div class="mat-subheading-1" [innerHTML]="content?.preRequisites"></div>
         <div class="margin-top-s" *ngIf="content?.softwareRequirements?.length">
@@ -295,12 +295,13 @@
 <div style="
     margin-bottom: 20px;
 ">
-  <h2 style="font-weight:bold" class="margin-bottom-m">License terms</h2>
-  <p>CC BY</p>
-  <p>This license allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, so
+  <h2 class="margin-bottom-m">License terms</h2>
+  <p style="font-weight: 500;">CC BY</p>
+  <p style="font-weight: 500;">This license allows reusers to distribute, remix, adapt, and build upon the material in
+    any medium or format, so
     long as
     attribution is given to the creator. The license allows for commercial use.</p>
-  <p>CC BY For details see below:‎</p>
+  <p style="font-weight: 500;">CC BY For details see below:‎</p>
   <div class="license-link cursor-pointer">
     <a class="blue-link" href="https://creativecommons.org/licenses/by/4.0/"
       target="_blank">https://creativecommons.org/licenses/by/4.0/</a>

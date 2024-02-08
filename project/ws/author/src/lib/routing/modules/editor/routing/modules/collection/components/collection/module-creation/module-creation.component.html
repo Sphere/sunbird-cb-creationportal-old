@@ -66,17 +66,32 @@
                     <svg (click)="toggleChildren(module)" xmlns="http://www.w3.org/2000/svg" width="11" height="7"
                       viewBox="0 0 11 7" fill="none">
                       <path
-                        d="M5.5 -4.80825e-07L11 5.91475L9.99084 7L5.5 2.17065L1.00916 7L9.4876e-08 5.91474L5.5 -4.80825e-07Z"
+                        d="M5.5 7L0 0.0852527L1.00916 -4.80825e-07L5.5 4.82935L10.9908 -4.80825e-07L12 0.0852527L5.5 7Z"
                         fill="black" />
                     </svg>
-                  </div>
-                  <div *ngIf="editItem == module.identifier" class="show-resource">
-                    <svg (click)="toggleChildren(module)" xmlns="http://www.w3.org/2000/svg" width="11" height="7"
+
+                    <!-- <svg (click)="toggleChildren(module)" xmlns="http://www.w3.org/2000/svg" width="11" height="7"
                       viewBox="0 0 11 7" fill="none">
                       <path
                         d="M5.5 -4.80825e-07L11 5.91475L9.99084 7L5.5 2.17065L1.00916 7L9.4876e-08 5.91474L5.5 -4.80825e-07Z"
                         fill="black" />
-                    </svg>
+                    </svg> -->
+                  </div>
+                  <div *ngIf="editItem == module.identifier" class="show-resource">
+                    <a (click)="toggleChildren(module, i)">
+                      <svg *ngIf="!showChildrenMap[module.identifier]" xmlns="http://www.w3.org/2000/svg" width="11"
+                        height="7" viewBox="0 0 11 7" fill="none">
+                        <path
+                          d="M5.5 -4.80825e-07L11 5.91475L9.99084 7L5.5 2.17065L1.00916 7L9.4876e-08 5.91474L5.5 -4.80825e-07Z"
+                          fill="black" />
+                      </svg>
+                      <svg *ngIf="showChildrenMap[module.identifier]" xmlns="http://www.w3.org/2000/svg" width="11"
+                        height="7" viewBox="0 0 11 7" fill="none">
+                        <path
+                          d="M5.5 7L0 0.0852527L1.00916 -4.80825e-07L5.5 4.82935L10.9908 -4.80825e-07L12 0.0852527L5.5 7Z"
+                          fill="black" />
+                      </svg>
+                    </a>
                   </div>
                 </div>
 

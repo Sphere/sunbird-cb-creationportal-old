@@ -163,4 +163,13 @@ th {
 
 .theme-igot.day-mode .mat-input-element {
   caret-color: #000 !important;
+  margin-right: 5px !important;
+}
+
+textarea:focus {
+  cursor: text !important; /* Change cursor style to pointer */
+
+}
+textarea::placeholder {
+  font-weight: normal !important; /* Reset font weight for placeholder text */
 }
