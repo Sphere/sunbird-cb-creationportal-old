@@ -210,20 +210,40 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         // tslint:disable-next-line:no-console
         console.log("data: ", data, this.isSelfAssessment)
         if (sessionStorage.getItem('isSettingsPage') === '1') {
+          if (this.isSelfAssessment) {
+            this.receiveSteps('AssessmentBuilder')
+          } else {
+            this.receiveSteps('CourseBuilder')
+          }
           sessionStorage.setItem('isSettingsPage', '0')
           this.initService.backToHome('fromSettings')
         } else {
           sessionStorage.setItem('isSettingsPage', '0')
           if (this.viewMode === 'assessment') {
+            if (this.isSelfAssessment) {
+              this.receiveSteps('AssessmentBuilder')
+            } else {
+              this.receiveSteps('CourseBuilder')
+            }
             this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
           } else if (this.showAddchapter) {
             if (this.viewMode === 'meta' && this.clickedNext) {
+              if (this.isSelfAssessment) {
+                this.receiveSteps('AssessmentBuilder')
+              } else {
+                this.receiveSteps('CourseDetails')
+              }
               console.log("fadfasdf")
               this.initService.isEditMetaPageAction('backFromModulePage')
               this.clickedNext = false
               this.showAddchapter = false
               this.isModulePageEnabled = false
             } else if (this.viewMode === '') {
+              if (this.isSelfAssessment) {
+                this.receiveSteps('AssessmentBuilder')
+              } else {
+                this.receiveSteps('CourseDetails')
+              }
               console.log("this.viewMode")
               this.viewMode = 'meta'
               this.initService.publishData('backToCourseDetailsPage')
@@ -234,6 +254,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             }
             if (this.viewMode === 'meta' && this.clickedNext && !this.isSelfAssessment) {
               console.log("this.meta")
+              if (this.isSelfAssessment) {
+                this.receiveSteps('AssessmentBuilder')
+              } else {
+                this.receiveSteps('CourseDetails')
+              }
               this.initService.publishData('backToCourseDetailsPage')
             } else {
               if (!this.isSelfAssessment) {
