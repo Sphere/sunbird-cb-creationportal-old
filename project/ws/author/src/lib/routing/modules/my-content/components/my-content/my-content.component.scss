@@ -441,4 +441,6 @@ letter-spacing: -0.4px;
 ::ng-deep .overflowY::-webkit-scrollbar:hover {
   background: #C0C0C0 !important; /* Change the background color on hover */
 }
-
+ .mat-icon {
+  margin-top: -3px !important;
+ }

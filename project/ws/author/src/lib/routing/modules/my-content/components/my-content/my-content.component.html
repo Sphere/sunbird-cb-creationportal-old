@@ -96,13 +96,14 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
     <ng-container *ngIf="!isNewDesign">
       <p *ngIf="allowAuthor" class="dashboard-txt">Dashboard</p>
       <mat-accordion expanded *ngIf="allowAuthor">
-        <mat-expansion-panel [expanded]="isContentExpanded" [disabled]="isDisabled" style="cursor: pointer"
+        <mat-expansion-panel #panel1 [expanded]="isContentExpanded" [disabled]="isDisabled" style="cursor: pointer"
           class="no-shadow" hideToggle>
 
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title class="main-block">
+
               <svg
-                [ngClass]="{ 'iconActive': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse }"
+                [ngClass]="{ 'iconActive': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse || panel1.expanded}"
                 xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 14" fill="none">
                 <g clip-path="url(#clip0_1391_8909)">
                   <path fill="#808080"
@@ -122,15 +123,24 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   </clipPath>
                 </defs>
               </svg>
-              <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('Draft')"
-                [ngClass]="{ 'coursesActive': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse }"
+              <span (click)="onClickReviewCourse('Draft')" class="font-weight-500 head-content-block"
+                [ngClass]="{ 'coursesActive': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse || panel1.expanded}"
                 i18n>Courses</span>
-              <img class="expanded-btn" width="10"
+              <mat-icon style="color:#808080" *ngIf="!panel1.expanded">keyboard_arrow_down</mat-icon>
+              <!-- Add up arrow icon when panel is expanded -->
+              <mat-icon style="color: #14446C" *ngIf="panel1.expanded">keyboard_arrow_up</mat-icon>
+
+              <!-- <img class="expanded-btn" width="10"
                 *ngIf="isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse"
                 src="cbp-assets/icons/Frame_82.svg" />
 
+              <img class="expanded-btn" width="10"
+                *ngIf="!(isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse)"
+                src="cbp-assets/icons/vector-127.svg" /> -->
+
             </mat-panel-title>
           </mat-expansion-panel-header>
+
           <!-- Shown when logged in as admin-->
           <mat-list role="list">
             <!-- <mat-list-item mat-button role="listitem" [routerLinkActive]="['active']">
@@ -194,12 +204,12 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
-        <mat-expansion-panel [expanded]="isSelfAssessmentExpanded" [disabled]="isDisabled" style="cursor: pointer"
-          class="no-shadow" hideToggle>
+        <mat-expansion-panel #panel2 [expanded]="isSelfAssessmentExpanded" [disabled]="isDisabled"
+          style="cursor: pointer" class="no-shadow" hideToggle>
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title class="main-block">
               <svg
-                [ngClass]="{ 'iconActive': isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse }"
+                [ngClass]="{ 'iconActive': isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse || panel2.expanded}"
                 xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 19" fill="none">
                 <g clip-path="url(#clip0_1391_8923)">
                   <path
@@ -225,12 +235,17 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 </defs>
               </svg>
               <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('selfAssessmentDraft')"
-                [ngClass]="{ 'selfAssessmentActive': isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse }"
+                [ngClass]="{ 'selfAssessmentActive': isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse || panel2.expanded}"
                 i18n>Self Assessment</span>
-              <img class="expanded-btn" width="10"
+              <mat-icon style="color:#808080" *ngIf="!panel2.expanded">keyboard_arrow_down</mat-icon>
+              <!-- Add up arrow icon when panel is expanded -->
+              <mat-icon style="color: #14446C" *ngIf="panel2.expanded">keyboard_arrow_up</mat-icon>
+              <!-- <img class="expanded-btn" width="10"
                 *ngIf="isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse"
                 src="cbp-assets/icons/Frame_82.svg" />
-
+              <img class="expanded-btn" width="10"
+                *ngIf="!(isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse)"
+                src="cbp-assets/icons/vector-127.svg" /> -->
             </mat-panel-title>
           </mat-expansion-panel-header>
           <!-- Shown when logged in as admin-->
@@ -268,12 +283,12 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
-        <mat-expansion-panel *ngIf="allowAuthorContentCreate" [expanded]="isCouseExpanded" [disabled]="isDisabled"
-          style="cursor: pointer" class="no-shadow" hideToggle>
+        <mat-expansion-panel #panel3 *ngIf="allowAuthorContentCreate" [expanded]="isCouseExpanded"
+          [disabled]="isDisabled" style="cursor: pointer" class="no-shadow" hideToggle>
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title class="main-block">
               <svg
-                [ngClass]="{ 'iconActive': isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate }"
+                [ngClass]="{ 'iconActive': isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate || panel3.expanded }"
                 xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 18 18" fill="none">
                 <g clip-path="url(#clip0_1391_8933)">
                   <path
@@ -290,11 +305,17 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 </defs>
               </svg>
               <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('All Courses')"
-                [ngClass]="{ 'manageCourseActive': isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate }"
+                [ngClass]="{ 'manageCourseActive': isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate || panel3.expanded }"
                 i18n>Manage Courses</span>
-              <img class="expanded-btn" width="10"
+              <mat-icon style="color: #808080" *ngIf="!panel3.expanded">keyboard_arrow_down</mat-icon>
+              <!-- Add up arrow icon when panel is expanded -->
+              <mat-icon style="color:#14446C" *ngIf="panel3.expanded">keyboard_arrow_up</mat-icon>
+              <!-- <img class="expanded-btn" width="10"
                 *ngIf="isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate"
                 src="cbp-assets/icons/Frame_82.svg" />
+              <img class="expanded-btn" width="10"
+                *ngIf="!(isSelectedAllCourse||isSelectedCourseWithoutCertificate||isSelectedCourseWithCertificate)"
+                src="cbp-assets/icons/vector-127.svg" /> -->
             </mat-panel-title>
           </mat-expansion-panel-header>
           <!-- Shown when logged in as admin-->
