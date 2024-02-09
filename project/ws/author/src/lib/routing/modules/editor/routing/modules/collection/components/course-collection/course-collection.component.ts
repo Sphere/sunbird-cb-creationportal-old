@@ -319,7 +319,21 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       console.log("this.viewMeta", this.viewMode, this.clickedNext, this.showAddchapter, this.isReviewChecklistEnabled)
       console.log("fasrwerweeeeeeeee")
       this.initService.isEditMetaPageAction('backFromModulePage')
-
+      if (this.isSelfAssessment) {
+        this.header = "Self Assessment Details"
+        this.steps = [
+          { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+          { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: false, completed: true },
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false }
+        ]
+      } else {
+        this.steps = [
+          { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+          { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+          { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: true },
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: true, completed: false }
+        ]
+      }
     }
     this.initService.updateAssessmentMessage.subscribe(
       (data: any) => {
@@ -392,6 +406,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
         ]
       } else if (steps === 'CourseBuilder') {
+
         this.steps = [
           { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
           { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
@@ -479,14 +494,23 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     if (sessionStorage.getItem('isReviewClicked')) {
       // sessionStorage.removeItem('isReviewClicked')
       this.clickedNext = true
-      this.steps = [
-        { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
-        { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
-        { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
-        { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
-      ]
-      this.showAddchapter = true
 
+      if (this.isSelfAssessment) {
+        this.header = "Self Assessment Details"
+        this.steps = [
+          { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+          { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: false, completed: true },
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false }
+        ]
+      } else {
+        this.steps = [
+          { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+          { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+          { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: true },
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: true, completed: false }
+        ]
+      }
+      this.showAddchapter = true
     }
     if (sessionStorage.getItem('isReviewChecklistSkip')) {
       // this.dialog.closeAll()
@@ -869,6 +893,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         })
         if (this.isModulePageEnabled && this.viewMode !== 'assessment') {
           this.clickedNext = true
+
           this.steps = [
             { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
             { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
@@ -3187,6 +3212,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
           ]
         } else {
+
           this.steps = [
             { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
             { label: '2. Course Details', key: 'CourseDetails', activeStep: true, completed: false },
