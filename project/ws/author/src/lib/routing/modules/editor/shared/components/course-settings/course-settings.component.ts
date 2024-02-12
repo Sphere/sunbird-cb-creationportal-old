@@ -158,7 +158,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   isSaveModuleFormEnable: boolean = false;
   moduleButtonName: string = 'Create';
   roles$!: Observable<any[]>
-
+  userId!: any
+  givenName!: any
   constructor(
     private formBuilder: FormBuilder,
     private uploadService: UploadService,
@@ -177,7 +178,13 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     private router: Router,
     private storeService: CollectionStoreService,
 
-  ) { }
+  ) {
+    if (this.configSvc.userProfile) {
+      this.userId = this.configSvc.userProfile.userId
+      this.givenName = this.configSvc.userProfile.givenName
+
+    }
+  }
 
   async ngAfterViewInit() {
     this.editorService.readcontentV3(this.contentService.parentUpdatedMeta().identifier).subscribe(async (data: any) => {
@@ -499,9 +506,18 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
 
-    if (this.contentMeta.creatorDetails && typeof this.contentMeta.creatorDetails === 'string') {
-      this.contentMeta.creatorDetails = JSON.parse(this.contentMeta.creatorDetails)
+    if (typeof this.contentMeta.creatorDetails === 'string') {
+      const parsedDetails: NSContent.IAuthorDetails = JSON.parse(this.contentMeta.creatorDetails)
+      this.contentMeta.creatorDetails = [parsedDetails]
     }
+
+    const authorDetails: NSContent.IAuthorDetails = {
+      id: this.userId,
+      name: this.givenName,
+    }
+
+    this.contentMeta.creatorDetails = [authorDetails]
+
     if (this.contentMeta.publisherDetails && typeof this.contentMeta.publisherDetails === 'string') {
       this.contentMeta.publisherDetails = JSON.parse(this.contentMeta.publisherDetails)
     }
@@ -1005,6 +1021,10 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
   addCreatorDetails(event: MatChipInputEvent): void {
     const input = event.input
+    if (this.configSvc.userProfile) {
+      const name = this.configSvc.userProfile || ''
+      console.log("name: ", name)
+    }
     const value = (event.value || '').trim()
     if (value) {
       this.contentForm.controls.creatorDetails.value.push({ id: '', name: value })
@@ -1554,6 +1574,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   addEmployee(event: MatAutocompleteSelectedEvent, field: string) {
+    console.log("event", event, field)
     if (event.option.value && event.option.value.id) {
       this.loader.changeLoad.next(true)
       const observable = ['trackContacts', 'publisherDetails'].includes(field) &&
@@ -1579,6 +1600,15 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
               name: event.option.value.displayName,
             })
             this.contentForm.controls[field].setValue(this.contentForm.controls[field].value)
+            if (field === 'creatorDetails') {
+              this.contentForm.controls[field].value.push({
+                id: this.userId,
+                name: this.givenName,
+              })
+
+              this.contentForm.controls[field].setValue(this.contentForm.controls[field].value)
+            }
+
           } else {
             this.snackBar.openFromComponent(NotificationComponent, {
               data: {

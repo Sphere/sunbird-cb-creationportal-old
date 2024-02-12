@@ -125,15 +125,14 @@
         </div>
 
         <!--Authors-->
-        <div *ngIf="!isSelfAssessment" class="margin-left-l"
-          [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
+        <div *ngIf="!isSelfAssessment" class="margin-left-l">
           <!--Show in popup-->
           <label>
             <div class="margin-top-xs">
               <mat-label class="label-heading">Authors</mat-label>
             </div>
           </label>
-          <div class="margin-top-xs">
+          <div class="margin-top-xs" [ngClass]="{ disable: true }">
             <mat-form-field appearance="outline" class="margin-top-xs" class="margin-top-xs"
               [ngClass]="{ 'mat-form-field-invalid': showError('creatorDetails') }">
 
