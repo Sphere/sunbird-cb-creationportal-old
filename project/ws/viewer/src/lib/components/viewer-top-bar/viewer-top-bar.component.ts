@@ -37,7 +37,7 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
   forChannel = false
   isPublisher!: boolean
   isReviewer!: boolean
-
+  isCreator = false
   constructor(
     private activatedRoute: ActivatedRoute,
     private domSanitizer: DomSanitizer,
@@ -55,8 +55,9 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isPublisher = this.accessService.hasRole(['content_publisher'])
-
+    this.isCreator = this.canShow('author_create')
+    this.isReviewer = this.canShow('review')
+    this.isPublisher = this.canShow('publish')
     if (window.location.href.includes('/channel/')) {
       this.forChannel = true
     }
@@ -95,7 +96,25 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
       },
     )
   }
-
+  canShow(role: string): boolean {
+    switch (role) {
+      case 'review':
+        //return this.accessService.hasRole(REVIEW_ROLE)
+        return this.configSvc.userRoles!.has('content_reviewer')
+      case 'publish':
+        //return this.accessService.hasRole(PUBLISH_ROLE)
+        return this.configSvc.userRoles!.has('content_publisher')
+      case 'author':
+        // return this.accessService.hasRole(CREATE_ROLE) || this.accessService.hasRole(REVIEW_ROLE)
+        //   || this.accessService.hasRole(PUBLISH_ROLE)
+        return this.configSvc.userRoles!.has('content_reviewer') || this.configSvc.userRoles!.has('content_creator') || this.configSvc.userRoles!.has('content_publisher')
+      case 'author_create':
+        //return this.accessService.hasRole(CREATE_ROLE)
+        return this.configSvc.userRoles!.has('content_creator')
+      default:
+        return false
+    }
+  }
   ngOnDestroy() {
     if (this.viewerDataServiceSubscription) {
       this.viewerDataServiceSubscription.unsubscribe()

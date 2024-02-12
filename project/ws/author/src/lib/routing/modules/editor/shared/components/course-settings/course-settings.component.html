@@ -172,7 +172,8 @@
         <div class="course-setup-block" *ngIf="!isSelfAssessment">
           <p class="margin-left-l course-settings-title">Course Setup</p>
           <!--Show in popup-->
-          <div class="margin-top-l margin-right-l  margin-left-l">
+          <div class="margin-top-l margin-right-l  margin-left-l"
+            [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
 
             <label>
               <div class="margin-top-xs margin-top-l">
@@ -191,7 +192,8 @@
               <mat-hint class="mt-hint">Accepted format: SVG;808 px(h)x1350 px(w)</mat-hint>
             </mat-form-field>
           </div>
-          <div class="margin-top-l margin-right-l  margin-left-l">
+          <div class="margin-top-l margin-right-l  margin-left-l"
+            [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
 
             <label>
               <div class="margin-top-l">
@@ -203,7 +205,8 @@
               <mat-hint class="mt-hint">Note: CNE Points will be approved by INC</mat-hint>
             </mat-form-field>
           </div>
-          <div class="margin-top-l margin-right-l margin-left-l">
+          <div class="margin-top-l margin-right-l margin-left-l"
+            [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
 
             <label>
               <div class="margin-top-l">
@@ -221,7 +224,8 @@
               <mat-error *ngIf="showError('gatingEnabled')" i18n>Gating is mandatory </mat-error>
             </mat-form-field>
           </div>
-          <div class="margin-top-l margin-right-l margin-left-l">
+          <div class="margin-top-l margin-right-l margin-left-l"
+            [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
 
             <label>
               <div class="margin-top-l">
@@ -246,7 +250,8 @@
       <div class="flex-first-last-item">
         <div *ngIf="!isSelfAssessment">
           <p class="course-settings-title">Learner Settings</p>
-          <div class="margin-top-l margin-right-l">
+          <div class="margin-top-l margin-right-l"
+            [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
             <div class="margin-top-l">
               <label>
                 <div class="margin-top-xs flex flex-middle">
@@ -283,7 +288,8 @@
               </div>
             </div>
           </div>
-          <div class="margin-top-xs margin-right-l">
+          <div class="margin-top-xs margin-right-l"
+            [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
             <div class="margin-top-xs">
               <label>
                 <div class="margin-top-xs flex flex-middle">
