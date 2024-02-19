@@ -89,7 +89,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   assessmentDuration: any
   randomCount: any
   passPercentage: any
-  isQuiz: string = ''
+  isQuiz: string = 'Quiz'
   mediumSizeBreakpoint$ = this.breakpointObserver
     .observe([Breakpoints.XSmall, Breakpoints.Small])
     .pipe(map((res: BreakpointState) => res.matches))
@@ -138,9 +138,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     this.initService.isAssessmentOrQuizMessage.subscribe(
       (data: any) => {
         if (data == false) {
-          this.isQuiz = 'true'
+          this.isQuiz = 'Assessment'
         } else {
-          this.isQuiz = 'false'
+          this.isQuiz = 'Quiz'
         }
       })
   }
@@ -252,11 +252,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       this.isLoading = true
       // console.log('kk', JSON.parse(sessionStorage.assessment))
       const code = sessionStorage.getItem('assessment') || null
-      this.isQuiz = sessionStorage.getItem('quiz') || ''
-
+      this.isQuiz = sessionStorage.getItem('quiz') ? 'Quiz' : 'Assessment'
+      console.log("sessionStorage.getItem('quiz')", sessionStorage.getItem('quiz'))
 
       this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
-
+        console.log("code", code)
         if (code) {
           this.loaderService.changeLoad.next(false)
           this.isEdited = true
@@ -304,6 +304,13 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                         if (jsonResponse.passPercentage >= 0) {
                           this.validPercentage = true
                         }
+                        console.log("yes here", jsonResponse.isAssessment, quizContent.competency)
+                        if (jsonResponse.isAssessment && quizContent.competency) {
+                          this.isQuiz = 'Assessment'
+                        } else {
+                          this.isQuiz = 'Quiz'
+                        }
+
                         this.assessmentDuration = (jsonResponse.timeLimit) / 60
                         this.passPercentage = jsonResponse.passPercentage
                         this.randomCount = jsonResponse.randomCount
@@ -367,11 +374,16 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                     if (!this.quizStoreSvc.collectiveQuiz[id]) {
                       this.quizStoreSvc.collectiveQuiz[id] = []
                     }
+                    console.log("yessfasdf", quizContent)
+                    this.isQuiz = quizContent.competency ? 'Assessment' : 'Quiz'
                   }
 
                 })
               }
-
+              if (v.contents[0].content.competency) {
+                console.log("ye sasdfsdaf")
+                this.isQuiz = v.contents[0].content.competency ? 'Assessment' : 'Quiz'
+              }
             })
           })
 
@@ -748,7 +760,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       timeLimit: (this.assessmentDuration) * 60,
       //assessmentDuration: (this.assessmentDuration) * 60 || '300',
       passPercentage: this.passPercentage,
-      isAssessment: this.isQuiz === '' ? true : false,
+      isAssessment: this.isQuiz === 'Assessment' ? true : false,
       randomCount: this.randomCount || this.questionsArr.length,
       questions: array,
     }

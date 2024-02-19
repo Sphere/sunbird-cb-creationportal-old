@@ -384,10 +384,16 @@
             <mat-hint class="mt-hint">{{ moduleName.length }}/250</mat-hint><br>
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
-          <div class="module-txt-block"
-            *ngIf="content?.contentType === 'CourseUnit' || content?.contentType === 'Resource'&&!isSelfAssessment">
+          <div class="module-txt-block" *ngIf="content?.contentType === 'CourseUnit' &&!isSelfAssessment">
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
               class=" module-input margin-top-s" placeholder="Name of the Module" autocomplete="off"
+              maxlength="100" /><br>
+            <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint><br>
+            <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
+          </div>
+          <div class="module-txt-block" *ngIf="content?.contentType === 'Resource'&&!isSelfAssessment">
+            <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
+              class=" module-input margin-top-s" placeholder="Name of the Resource" autocomplete="off"
               maxlength="100" /><br>
             <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint><br>
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
@@ -493,8 +499,8 @@
               style="margin-left: 0px;border-radius: 4px;" class="check-text">Open
               link
               in new tab</mat-checkbox>
-            <mat-checkbox *ngIf="isShowDownloadBtnEnabled" [(ngModel)]="isShowBtn" [checked]="isShowBtn"
-              style="margin-left: 0px; margin-top: 5px;" class="check-text">Show Download button</mat-checkbox>
+            <!-- <mat-checkbox *ngIf="isShowDownloadBtnEnabled" [(ngModel)]="isShowBtn" [checked]="isShowBtn"
+              style="margin-left: 0px; margin-top: 5px;" class="check-text">Show Download button</mat-checkbox> -->
           </div>
           <div class="margin-top-s module-txt-block" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
             <button mat-raised-button
@@ -756,10 +762,10 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the assessment details before cl
                 <mat-checkbox class="module-txt-block check-text" formControlName="isIframeSupported">Open link
                   in new tab</mat-checkbox>
               </div>
-              <div class="margin-top-m" style="display:flex; flex-direction:row" *ngIf="isShowDownloadBtnEnabled">
+              <!-- <div class="margin-top-m" style="display:flex; flex-direction:row" *ngIf="isShowDownloadBtnEnabled">
                 <mat-checkbox class="module-txt-block" formControlName="showDownloadBtn">Show
                   Download Button</mat-checkbox>
-              </div>
+              </div> -->
               <div class="margin-top-m duration-style module-txt-block">
                 <span class="duration-text">Duration:</span><br>
                 <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"

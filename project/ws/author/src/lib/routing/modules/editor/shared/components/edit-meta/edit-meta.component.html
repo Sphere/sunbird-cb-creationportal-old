@@ -476,7 +476,7 @@
                     [src]="contentForm.controls.appIcon.value" (error)="changeToDefaultImg($event)" />
                   <button *ngIf="!contentForm.controls.appIcon.value" mat-raised-button
                     class="mat-button-base thumbnail-btn-mt" style="height: fit-content;">
-                    + Add Thumbnail
+                    + Add Thumbnail <span style="color: #d32f2f">*</span>
                   </button>
                   <input type="file" #uploadThumbnail
                     (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null" style="display: none"

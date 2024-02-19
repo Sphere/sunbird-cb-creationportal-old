@@ -181,11 +181,11 @@
 </p>
 <p *ngIf="type === notify.QUESTION_EMPTY">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
-  <span i18n>Problem statement cannot be empty!</span>
+  <span i18n>Please state question cannot be empty!</span>
 </p>
 <p *ngIf="type === notify.QUESTION_SPACES_ALONE">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
-  <span i18n>Problem statement cannot contain spaces alone!</span>
+  <span i18n>Please state question cannot contain spaces alone!</span>
 </p>
 <p *ngIf="type === notify.OPTION_EMPTY">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
@@ -224,7 +224,7 @@
 <!-- class diagram -->
 <p *ngIf="type === notify.EMPTY_PROBLEM_STATEMENT">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
-  <span i18n>Problem statement cannot be empty</span>
+  <span i18n>Please state question cannot be empty</span>
 </p>
 <p *ngIf="type === notify.CLASS_DIAGRAM_NO_CLASS">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>

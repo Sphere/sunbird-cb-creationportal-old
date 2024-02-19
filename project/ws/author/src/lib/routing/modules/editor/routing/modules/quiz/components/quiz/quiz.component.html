@@ -98,7 +98,7 @@
               <div *ngIf="resourceName" class="headerpadding resourceName font-weight-bold" i18n>
                 {{resourceName}}</div>
               <div *ngIf="questionsArr.length">
-                <div class="headerpadding font-weight-bold margin-top-s" i18n>{{isQuiz?'Assessment':'Quiz'}} Details
+                <div class="headerpadding font-weight-bold margin-top-s" i18n>{{isQuiz}} Details
                 </div>
                 <mat-form-field appearance="outline" style="padding: 5px 15px 0px 0.75rem">
                   <label class="starlabel">Pass Percentage</label>
@@ -106,7 +106,7 @@
                     (change)="addTodo(passPercentage, 'passPercentage')" type="number" />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <label class="starlabel">{{isQuiz?'Assessment':'Quiz'}} Duration (Minutes)</label>
+                  <label class="starlabel">{{isQuiz}} Duration (Minutes)</label>
                   <input matInput type="number" class="form-control" placeholder="Enter duration" min="2"
                     [(ngModel)]="assessmentDuration" (change)="addTodo(assessmentDuration, 'assessmentDuration')" />
                 </mat-form-field>
@@ -141,7 +141,7 @@
               <div class="flex items-center justify-center no-quiz-align-div"
                 *ngIf="!questionsArr.length || !canEditJson">
                 <div class="p-1">
-                  <span i18n *ngIf="!questionsArr.length && canEditJson">No {{isQuiz?'quiz':'assessment'}} found, Kindly
+                  <span i18n *ngIf="!questionsArr.length && canEditJson">No {{isQuiz}} found, Kindly
                     add</span>
                   <span i18n *ngIf="!canEditJson">Reviewer or Publisher cannot add or edit Quiz</span>
                   <!-- <mat-icon class="align-middle">error</mat-icon> -->

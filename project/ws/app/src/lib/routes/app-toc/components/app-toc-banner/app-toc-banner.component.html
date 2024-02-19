@@ -1,4 +1,4 @@
-<div style="color: #1C5D95 !important;padding: 10px 2.9rem; height:50px; background: #F3F8FD;">
+<div style="color: #1C5D95 !important;padding: 16px 2.9rem; height:50px; background: #F3F8FD;">
   <h3 *ngIf=" content?.status==='Deleted' || content?.status==='Expired'" class=" margin-remove-bottom pt-4 info-msg"
     i18n>
     The content is expired or deleted.
@@ -15,20 +15,20 @@
     <img loading="lazy" src=".\cbp-assets\images\preview-icon.svg" alt="clock"><span style="vertical-align: super;">You
       are in review mode</span>
   </h3>
-  <div>
-    <button style="float: right;margin-top: 10px;position: relative" id="comment" class="accept-btn cursor-pointer"
-      [disabled]="commentsList?.length < 1" (click)="gotoComments()">
-      <ng-container i18n>Comments</ng-container>
-      <span style="background: #F88808;
-    position: absolute;
-    color: white;
-    right: 0px;
-    top: -5px;
-    width: 25px;
-    border-radius: 28px;
-    font-size: 12px;">{{commentsList?.length}}</span>
-    </button>
+  <div class="creator-action-btn">
+    <div>
+      <button id="comment" class="accept-btn cursor-pointer" [disabled]="commentsList?.length < 1"
+        (click)="gotoComments()">
+        <ng-container i18n>Comments</ng-container>
+        <span class="comments-length">{{commentsList?.length}}</span>
+      </button>
+    </div>
+    <div>
+      <button *ngIf="isCreator" [routerLink]="['/author/editor/' + content?.identifier  + '/collection']"
+        class="edit-course">Edit the course</button>
+    </div>
   </div>
+
 </div>
 <div style="width: 100%; overflow: hidden;background-color: #f7f7f7;font-family: Roboto !important;">
   <div [ngClass]="{ 'header-synopsis-gradient': bannerUrl }" *ngIf="content">
@@ -182,11 +182,11 @@
                   </div>
                   <div class="vertical-line" *ngIf="content?.gatingEnabled || content?.courseVisibility"></div>
                   <div class="separate">
-                    <div *ngIf="content?.audience">
+                    <div *ngIf="content?.rolesMapped">
                       <span class="text">Audience : </span>
-                      <span *ngFor="let curator of content?.audience; let i = index" class="mr-1">
+                      <span *ngFor="let curator of content?.rolesMapped; let i = index" class="mr-1">
                         {{curator}} <ng-container
-                          *ngIf="content?.audience.length > 1 && i !== content?.audience.length - 1">,
+                          *ngIf="content?.rolesMapped.length > 1 && i !== content?.rolesMapped.length - 1">,
                         </ng-container>
                       </span>
                     </div>
