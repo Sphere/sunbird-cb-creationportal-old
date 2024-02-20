@@ -115,10 +115,16 @@
                           {{ resource.duration | formatDuration }} )</span>
                       </div>
                       <div class="resource-status-block">
-                        <span *ngIf="resource.artifactUrl" class="resourse-status">{{resource.mimeType |
+                        <span *ngIf="resource.artifactUrl&& resource.mimeType !== 'application/json'"
+                          class="resourse-status">{{resource.mimeType |
                           MimeTypePipe}}
                           Updated
                         </span>
+                        <span *ngIf="resource.artifactUrl&& resource.mimeType == 'application/json'"
+                          class="resourse-status">{{resource?.isAssessment?'Assessment':'Quiz'}}
+                          Updated
+                        </span>
+
                         <span *ngIf="!resource.artifactUrl" class="resourse-status">Draft
                         </span>
                       </div>
@@ -147,7 +153,12 @@
                         {{ module.duration | formatDuration }} )</span>
                     </div>
                     <div class="resource-status-block">
-                      <span *ngIf="module.artifactUrl" class="resourse-status">{{module.mimeType | MimeTypePipe}}
+                      <span *ngIf="module.artifactUrl&& module.mimeType !== 'application/json'"
+                        class="resourse-status">{{module.mimeType | MimeTypePipe}}
+                        Updated
+                      </span>
+                      <span *ngIf="module.artifactUrl&& module.mimeType == 'application/json'"
+                        class="resourse-status">{{module?.isAssessment?'Assessment':'Quiz'}}
                         Updated
                       </span>
                       <span *ngIf="!module.artifactUrl" class="resourse-status">Draft
@@ -430,7 +441,8 @@
               font-style: normal;
               font-weight: 400;
               line-height: 14.4px; /* 90% */
-              letter-spacing: -0.32px;margin-left: 5px;">Save the assessment details before clicking on add
+              letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Assessment':'Quiz'}} details
+              before clicking on add
               Questions</span>
           </div>
           <!-- is link enabled -->
@@ -505,19 +517,20 @@
           <div class="margin-top-s module-txt-block" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
             <button mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-              (click)="editAssessmentRes(content)">Edit {{assessmentOrQuizName}}</button>
+              (click)="editAssessmentRes(content)">Edit {{content?.isAssessment?'Assessment':'Quiz'}}</button>
           </div>
           <div class="margin-top-s module-txt-block" *ngIf="content?.mimeType === 'application/json'&&!isAddOrEdit">
             <button *ngIf="!isSelfAssessment" mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-              (click)="editAssessmentRes(content)">Add {{resourceType==='Assessment'?'Assessment':'Quiz'}}</button>
+              (click)="editAssessmentRes(content)">Add
+              {{content?.isAssessment?'Assessment':'Quiz'}}</button>
             <button *ngIf="isSelfAssessment" mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
               (click)="editAssessmentRes(content)">Add Assessment</button>
           </div>
           <span *ngIf="content?.mimeType === 'application/json&&!isSelfAssessment'"
             class="margin-top-s module-txt-block quiz-help-txt">Note: You will be taken to
-            {{resourceType==='Assessment'?'Assessment':'Quiz'}} builder
+            {{content?.isAssessment?'Assessment':'Quiz'}} builder
           </span>
           <span *ngIf="content?.mimeType === 'application/json'&&isSelfAssessment"
             class="margin-top-s module-txt-block quiz-help-txt">Note: You
@@ -643,7 +656,8 @@ font-size: 16px;
 font-style: normal;
 font-weight: 400;
 line-height: 14.4px; /* 90% */
-letter-spacing: -0.32px;margin-left: 5px;">Save the assessment details before clicking on add Questions</span>
+letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Assessment':'Quiz'}} details before
+                  clicking on add Questions</span>
               </div>
 
               <div class="module-txt-block" style="display:flex; flex-direction:row"
@@ -675,7 +689,7 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the assessment details before cl
 
               </div>
               <span class="margin-top-s module-txt-block quiz-help-txt">Note: You will be taken to
-                {{resourceType==='Assessment'?'Assessment':'Quiz'}} builder
+                {{content?.isAssessment?'Assessment':'Quiz'}} builder
               </span>
 
               <div class="module-txt-block duration-style margin-top-s" *ngIf="!isAssessmentOrQuizEnabled">

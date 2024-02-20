@@ -79,6 +79,7 @@ export class CreateService {
     const requestBody: NSApiRequest.ICreateMetaRequestV2 = {
       request: {
         content: {
+          isAssessment: meta.isAssessment,
           code: randomNumber,
           contentType: meta.contentType,
           createdBy: this.accessService.userId,

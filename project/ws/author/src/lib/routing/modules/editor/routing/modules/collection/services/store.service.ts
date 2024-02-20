@@ -385,7 +385,7 @@ export class CollectionStoreService {
       if (cType === 'upload') {
         mimeTypeData = this.setUploadContentAcceptType()
       }
-
+      console.log("topicObj", topicObj)
       const requestBody = {
         name: type.type === 'collection' ? 'Module Name' : topicObj.topicName,
         description: topicDescription,
@@ -395,7 +395,7 @@ export class CollectionStoreService {
         resourceType: parentData.categoryType || '',
         categoryType: parentData.categoryType || '',
         fileType: fileType || '',
-
+        isAssessment: topicObj.isAssessment,
         // thumbnail: parentData.thumbnail,
         // appIcon: parentData.appIcon,
         posterImage: parentData.posterImage,
@@ -514,6 +514,7 @@ export class CollectionStoreService {
       isNew: true,
       root: false,
       metadata: {
+        isAssessment: meta.isAssessment,
         code: randomNumber,
         contentType: meta.contentType,
         createdBy: this.accessService.userId,

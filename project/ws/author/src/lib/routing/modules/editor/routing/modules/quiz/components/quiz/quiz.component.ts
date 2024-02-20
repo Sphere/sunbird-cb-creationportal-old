@@ -252,7 +252,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       this.isLoading = true
       // console.log('kk', JSON.parse(sessionStorage.assessment))
       const code = sessionStorage.getItem('assessment') || null
-      this.isQuiz = sessionStorage.getItem('quiz') ? 'Quiz' : 'Assessment'
       console.log("sessionStorage.getItem('quiz')", sessionStorage.getItem('quiz'))
 
       this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
@@ -282,10 +281,13 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
           this.activateRoute.parent.parent.data.subscribe(v => {
             // tslint:disable-next-line:no-console
             console.log(v)
+
             this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(async newData => {
               // const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
 
-              let quizContent = await this.editorService.readcontentV3(this.metaContentService.currentContent).toPromise()
+              let quizContent: any = await this.editorService.readcontentV3(this.metaContentService.currentContent).toPromise()
+              this.isQuiz = quizContent.isAssessment ? 'Assessment' : 'Quiz'
+              console.log("this is quiz", v.contents[0].content, this.isQuiz)
               this.resourceName = quizContent ? quizContent.name : 'Resource'
               console.log("quizContent", quizContent, this.metaContentService.currentContent, this.resourceName)
               // console.log(quizContent)
@@ -375,18 +377,17 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                       this.quizStoreSvc.collectiveQuiz[id] = []
                     }
                     console.log("yessfasdf", quizContent)
-                    this.isQuiz = quizContent.competency ? 'Assessment' : 'Quiz'
+
                   }
 
                 })
               }
               if (v.contents[0].content.competency) {
                 console.log("ye sasdfsdaf")
-                this.isQuiz = v.contents[0].content.competency ? 'Assessment' : 'Quiz'
+                this.isQuiz = 'Assessment'
               }
             })
           })
-
           // selected quiz index
           this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
             this.selectedQuizIndex = index

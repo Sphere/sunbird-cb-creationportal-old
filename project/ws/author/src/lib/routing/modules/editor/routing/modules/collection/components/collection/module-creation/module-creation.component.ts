@@ -140,6 +140,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   moduleForm!: FormGroup
   resourceImg: string = '';
   isLinkEnabled: boolean = false;
+  assessment!: boolean
   isShowDownloadBtnEnabled: boolean = false;
   openinnewtab: boolean = false
   moduleName: string = '';
@@ -2176,6 +2177,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.setContentType(type, 'zip')
     } else if (name == 'Assessment') {
+      this.assessment = true
       this.isLinkEnabled = false
       this.isShowDownloadBtnEnabled = false
       this.isAssessmentOrQuizEnabled = true
@@ -2190,6 +2192,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.setContentType(type)
       //this.getassessment()
     } else if (name == 'Quiz') {
+      this.assessment = false
       this.isLinkEnabled = false
       this.isShowDownloadBtnEnabled = false
       this.isAssessmentOrQuizEnabled = true
@@ -3158,6 +3161,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     if (filetype) {
       this.storeService.uploadFileType.next(filetype)
     }
+    console.log("filetype", filetype)
     let couseCreated = type
     const asSibling = false
     const node = {
@@ -3172,7 +3176,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     const newData = {
       topicDescription: '',
-      topicName: type.type === 'collection' ? 'Add Module' : 'Resource'
+      topicName: type.type === 'collection' ? 'Add Module' : 'Resource',
+      isAssessment: this.assessment
     }
     if (type.type === 'collection') {
       this.storeService.parentData = this.courseData

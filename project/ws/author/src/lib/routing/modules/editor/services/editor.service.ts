@@ -161,6 +161,7 @@ export class EditorService {
           framework: environment.framework,
           mimeType: meta.mimeType,
           name: meta.name,
+          isAssessment: meta.isAssessment,
           instructions: '',
           // organisation: [environment.organisation],
           organisation: [

@@ -63,6 +63,7 @@ export namespace NSApiRequest {
     isExternal?: boolean
     primaryCategory: string
     purpose?: string
+    isAssessment: boolean
   }
 
   export interface IContentUpdateV2 {
@@ -74,6 +75,7 @@ export namespace NSApiRequest {
   export interface ICreateMetaRequestV2 {
     request: {
       content: {
+        isAssessment: boolean,
         name: string
         code: string
         // description: string
