@@ -66,7 +66,7 @@ export class CreateService {
 
   createV2(meta: {
     mimeType: string; contentType: string; locale: string, name: any,
-    primaryCategory: string, purpose?: string
+    primaryCategory: string, purpose?: string, isAssessment?: boolean
   }): Observable<string> {
     // let description: string = meta.name.courseSummary.trim()
     let instructions: string = meta.name.courseDescription.trim()
@@ -79,7 +79,7 @@ export class CreateService {
     const requestBody: NSApiRequest.ICreateMetaRequestV2 = {
       request: {
         content: {
-          isAssessment: meta.isAssessment,
+          isAssessment: meta.isAssessment ? meta.isAssessment : false,
           code: randomNumber,
           contentType: meta.contentType,
           createdBy: this.accessService.userId,
