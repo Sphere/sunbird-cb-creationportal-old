@@ -49,6 +49,7 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
   downloadPartialAncRegex = RegExp(` href\=\s*['"](.*?)['"]`, 'gm')
   @Input() doRegex = true
   @Input() doPartialRegex = false
+  @Input() quiz!: boolean
   html = ''
   @Input() set content(value: string) {
     if (this.doPartialRegex) {
@@ -97,7 +98,6 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
   ) { }
 
   ngOnInit() {
-    console.log("editMeta", this.editMeta)
     this.allConfig()
     this.initiateConfig()
     if (!this.editMeta || this.editMeta === '' || this.editMeta == undefined) {

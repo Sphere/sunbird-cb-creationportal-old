@@ -5,7 +5,7 @@
   <span *ngIf="showAdvancedSettings" (click)="toggleAdvancedSettings();" class="advanced-format">Basic
     Formatting</span>
 </div>
-<div *ngIf="showAdvancedSettings">
+<div *ngIf="showAdvancedSettings" [class.ws-active]="quiz">
 
   <ckeditor #editor [config]="configsecond" [(ngModel)]="html" (change)="onContentChanged()"
     aria-placeholder="Description">

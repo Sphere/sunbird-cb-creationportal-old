@@ -3122,7 +3122,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         if (content.contentType === 'Resource') {
           this.editItem = content.identifier
 
-          this.resourceLinkForm.controls.name.setValue(content.name)
+          // this.resourceLinkForm.controls.name.setValue(content.name)
         }
         const isCreator = (this._configurationsService.userProfile
           && this._configurationsService.userProfile.userId === content.createdBy)
