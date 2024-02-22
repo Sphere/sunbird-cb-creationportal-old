@@ -521,11 +521,15 @@ box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
   font-size: 17px;
   cursor: pointer;
 }
-
-.close-uploadIcon{
+.edit-close-uploadIcon{
   position: relative;
   bottom: 9rem;
   left: 13.5rem;
+}
+.close-uploadIcon{
+  position: relative;
+    bottom: 7.8rem;
+    left: -2.5rem;
 }
 
 .upload-file-name{
@@ -1118,15 +1122,17 @@ letter-spacing: -0.32px;
 }
 
   .pdf-new-info {
-    display: flex;
+       display: flex;
     align-items: flex-end;
-    margin-left: -33px;
+    margin-left: -32px;
     margin-bottom: 4px;
-color: #000;
+    color: #000;
     font-family: Roboto;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
+    position: relative;
+    top: -39px;
 }
 .file-upload-info{
    position: relative;

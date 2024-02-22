@@ -468,7 +468,7 @@
                 src="cbp-assets/images/default-white-background.png">
               <div class="empty-file" *ngIf="uploadFileName != ''">
                 <mat-icon title="Remove"
-                  class="material-icons margin-left-m text-medium close-uploadIcon cursor-pointer"
+                  class="material-icons margin-left-m text-medium edit-close-uploadIcon cursor-pointer"
                   (click)="deleteUploadedFile();$event.stopPropagation()">close</mat-icon>
                 <div class="upload-file-name">
                   <div style="flex: 0 0 auto;">
@@ -742,7 +742,7 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Ass
                 <div>
                   <img alt="" class="image max-width" height="144" width="256"
                     src="cbp-assets/images/default-white-background.png">
-                  <div *ngIf="uploadFileName != ''">
+                  <ng-container *ngIf="uploadFileName != ''">
                     <mat-icon class="material-icons margin-left-m text-medium close-uploadIcon"
                       (click)="deleteUploadedFile();$event.stopPropagation()">close</mat-icon>
                     <div class="upload-file-name">
@@ -753,7 +753,7 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Ass
                         <p class="text-wrap">{{uploadFileName}}</p>
                       </div>
                     </div>
-                  </div>
+                  </ng-container>
                   <div class="pdf" *ngIf="uploadFileName == ''">
                     <img alt="" class="pdf-img" src="{{resourceImg}}" (error)="changeToDefaultImg($event)">
                     <input class="" #pdfFile (change)="uploadPdf($event.target.files[0]); pdfFile.value = null"
@@ -766,7 +766,7 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Ass
                     <span style="color: #808080 !important;">Note : The PDF should have high resolution</span>
                   </div>
                 </div>
-                <div [ngClass]="acceptType == '.pdf'?'pdf-new-info':'file-new-info'">
+                <div [ngClass]="acceptType == '.pdf'&&uploadFileName !== ''?'pdf-new-info':'file-new-info'">
                   Files allowed : {{uploadText}}<br> Max.file size : 200MB
                 </div>
               </div>
