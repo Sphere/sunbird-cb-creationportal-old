@@ -312,13 +312,29 @@ margin-right: 7px;
 #comment:disabled {
   opacity: 0.6;
 }
+.creator-comments-length{
+   background: #F88808;
+    position: absolute;
+    color: white !important;
+    right: 0px;
+    top: 92px;
+    right: 217px;
+    width: 25px;
+    height: 24px;
+    border-radius: 28px;
+    font-size: 12px;
+    text-align: center;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
 .comments-length{
    background: #F88808;
     position: absolute;
     color: white !important;
     right: 0px;
-    top: -11px;
-    right: -3px;
+    top: 87px;
+    right: 58px;
     width: 25px;
     height: 24px;
     border-radius: 28px;
