@@ -50,6 +50,7 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
   @Input() doRegex = true
   @Input() doPartialRegex = false
   @Input() quiz!: boolean
+  @Input() editCoursePage!: boolean
   html = ''
   @Input() set content(value: string) {
     if (this.doPartialRegex) {

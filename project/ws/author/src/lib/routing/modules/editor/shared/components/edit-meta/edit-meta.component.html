@@ -501,8 +501,8 @@
           <div [ngClass]="{ disable: checkCondition('instructions', 'disabled') }">
             <div class="margin-top-s margin-bottom-l" *ngIf="contentForm && contentForm.controls"
               [ngClass]="{ 'mat-form-field-invalid': showError('instructions') }">
-              <ws-auth-plain-ckeditor [editMeta]="editMeta" [location]="location" [id]="contentMeta.identifier"
-                [content]="contentForm.controls.instructions.value || ''"
+              <ws-auth-plain-ckeditor [editCoursePage]="'yes'" [editMeta]="editMeta" [location]="location"
+                [id]="contentMeta.identifier" [content]="contentForm.controls.instructions.value || ''"
                 (value)="updateContentService('instructions', $event)">
               </ws-auth-plain-ckeditor>
               <span class="description-hint">In 1-4 Paragraphs, summarise your course</span>
