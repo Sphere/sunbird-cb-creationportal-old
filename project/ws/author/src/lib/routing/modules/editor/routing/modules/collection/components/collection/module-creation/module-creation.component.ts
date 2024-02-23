@@ -3121,6 +3121,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         console.log(content)
         if (content.contentType === 'Resource') {
           this.editItem = content.identifier
+          this.content = content
+
 
           // this.resourceLinkForm.controls.name.setValue(content.name)
         }
@@ -3260,6 +3262,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
           this.courseData = await data
           console.log("data", data)
+          this.content.parent = data.identifier
           const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
 
           Object.keys(hierarchyData).forEach((ele: any) => {
@@ -4450,7 +4453,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   delete(node: IContentTreeNode) {
-
+    console.log("node", node)
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '500px',
       height: '175px',
