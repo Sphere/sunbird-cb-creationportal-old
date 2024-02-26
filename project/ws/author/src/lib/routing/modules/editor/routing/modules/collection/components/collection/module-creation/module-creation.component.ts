@@ -3213,10 +3213,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             children: [this.editorService.resourseID],
           },
         }
+        console.log("yes here module", request, this.addResourceModule["modID"])
         //if (this.parentNode[0] !== dropNode.identifier) {
         const result = await this.editorService.resourceToModule(request).toPromise()
         // tslint:disable-next-line:no-console
         console.log(result)
+
+
         await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
           this.courseData = await data
 
@@ -3262,7 +3265,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
           this.courseData = await data
           console.log("data", data)
-          this.content.parent = data.identifier
+          // this.content.parent = data.identifier
           const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
 
           Object.keys(hierarchyData).forEach((ele: any) => {
@@ -4467,8 +4470,20 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
           this.courseData = data
         })
-        const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
-        //const hierarchyData = this.storeService.getTreeHierarchy()
+        const hierarchyData: any = this.storeService.getNewTreeHierarchy(this.courseData)
+        let parent: string | null = null
+
+        for (const [parentKey, parentValue] of Object.entries(hierarchyData)) {
+          // @ts-ignore: Unreachable code error
+          if (parentValue.children && parentValue.children.includes(node.identifier)) {
+            parent = parentKey
+            break
+          }
+        }
+        node.parent = parent
+
+
+        console.log("yes here", hierarchyData, node)
         Object.keys(hierarchyData).forEach(async (ele: any) => {
           if (ele === node.identifier) {
             this.storeService.deleteContentNode(node)
