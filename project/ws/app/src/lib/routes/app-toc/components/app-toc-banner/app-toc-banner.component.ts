@@ -423,6 +423,9 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   gotoComments() {
     this.tocSvc.changeMessage('comments')
   }
+  gotoReviewerChecklist() {
+    this.tocSvc.changeMessage('reviewerChecklist')
+  }
   generateQuery(type: 'RESUME' | 'START_OVER' | 'START'): { [key: string]: string } {
     if (this.firstResourceLink && (type === 'START' || type === 'START_OVER')) {
       let qParams: { [key: string]: string } = {

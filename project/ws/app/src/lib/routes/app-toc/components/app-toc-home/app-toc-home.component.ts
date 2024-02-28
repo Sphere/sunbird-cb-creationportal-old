@@ -23,7 +23,8 @@ export enum ErrorType {
 })
 export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked {
   banners: NsAppToc.ITocBanner | null = null
-  content: NsContent.IContent | null = null
+  content: any | null = null
+  hasPublishAccess: any = false
   errorCode: NsAppToc.EWsTocErrorCode | null = null
   resumeData: NsContent.IContinueLearningData | null = null
   routeSubscription: Subscription | null = null
@@ -47,6 +48,10 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       type: 'mat-button',
     },
   }
+  // Define roles array
+  roles: string[] = ['reviewer', 'publisher', 'creator'];
+  // Filter comments for each role
+  filteredComments: { [key: string]: any } = {};
   tocConfig: any = null
   contentTypes = NsContent.EContentTypes
   askAuthorEnabled = true
@@ -70,7 +75,9 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
   @ViewChild('stickyMenu', { static: true }) menuElement!: ElementRef
   @HostListener('window:scroll', ['$event'])
   isLoading = false
-
+  isReviewer: boolean = false
+  isPublisher: boolean = false
+  isCreator: boolean = false
   handleScroll() {
     const windowScroll = window.pageYOffset
     if (windowScroll >= this.elementPosition - 100) {
@@ -91,6 +98,21 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     private location: Location,
     private progressSvc: ContentProgressService,
   ) {
+    // Initialize filteredComments for each role as an empty array
+    this.roles.forEach(role => {
+      this.filteredComments[role] = []
+    })
+    this.isCreator = this.authAccessControlSvc.hasRole(['content_creator'])
+
+    this.isReviewer = this.authAccessControlSvc.hasRole(['content_reviewer'])
+    this.isPublisher = this.authAccessControlSvc.hasRole(['content_publisher'])
+    if (this.isCreator) {
+      this.roles = ['reviewer', 'publisher']
+    } else if (this.isReviewer) {
+      this.roles = ['creator', 'publisher']
+    } else if (this.isPublisher) {
+      this.roles = ['creator', 'reviewer']
+    }
     this.tocSvc.currentMessage.subscribe(async (data: any) => {
       if (data === 'comments') {
         this.isLoading = true
@@ -99,6 +121,21 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
           this.progressSvc.getComments(this.content.identifier).subscribe(res => {
             console.log(res)
             this.commentsList = res
+            // Filter comments for each role
+            this.roles.forEach(role => {
+              this.filteredComments[role] = this.commentsList.filter((comment: { role: string }) => comment.role === role)
+            })
+            this.isLoading = false
+          })
+        }
+      }
+      else if (data === 'reviewerChecklist') {
+        this.isLoading = true
+        this.changeText = 'reviewerChecklist'
+        if (this.content) {
+          this.progressSvc.getComments(this.content.identifier).subscribe(res => {
+            console.log(res)
+
             this.isLoading = false
           })
         }
@@ -107,6 +144,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   ngOnInit() {
+
     // this.route.fragment.subscribe(fragment => { this.fragment = fragment })
     this.location.subscribe((event: any) => {
       console.log(event)
@@ -149,6 +187,64 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     this.route.fragment.subscribe((fragment: string) => {
       this.currentFragment = fragment || 'overview'
     })
+  }
+
+  showMenuItem(menuType: string) {
+    let returnValue = false
+    switch (menuType) {
+      case 'edit':
+      case 'delete':
+        if (this.content.status === 'Draft' || this.content.status === 'Live') {
+          returnValue = this.authAccessControlSvc.hasAccess(this.content)
+        }
+        if (this.content.authoringDisabled && menuType === 'edit') {
+          returnValue = false
+        }
+        break
+      case 'moveToDraft':
+        if (
+          this.content.status === 'InReview' ||
+          this.content.status === 'Unpublished' ||
+          this.content.status === 'Reviewed' ||
+          this.content.status === 'QualityReview' ||
+          this.content.status === 'Draft'
+        ) {
+          returnValue = this.authAccessControlSvc.hasAccess({ ...this.content, status: 'Draft' })
+        }
+        break
+      case 'moveToInReview':
+        if (this.content.status === 'Reviewed' || this.content.status === 'QualityReview') {
+          returnValue = this.authAccessControlSvc.hasAccess({ ...this.content, status: 'InReview' })
+        }
+        break
+      case 'publish':
+        // if (this.content.status === 'Reviewed') {
+        if (this.content.reviewStatus === 'Reviewed' && this.content.status === 'Review') {
+          returnValue = this.authAccessControlSvc.hasAccess(this.content)
+        }
+        break
+      case 'unpublish':
+        if (this.content.status === 'Live') {
+          returnValue = this.authAccessControlSvc.hasAccess(this.content)
+        }
+        break
+      case 'review':
+        // if (this.content.status === 'Review' || this.content.status === 'QualityReview') {
+        if (this.content.reviewStatus === 'InReview' && this.content.status === 'Review') {
+          returnValue = this.authAccessControlSvc.hasAccess(this.content)
+        }
+        break
+      case 'preview':
+        // if (this.content.status === 'Review' || this.content.status === 'QualityReview') {
+        if ((this.content.reviewStatus === 'InReview' && this.content.status === 'Review') || (this.content.reviewStatus === 'Reviewed' && this.content.status === 'Review')) {
+          returnValue = this.authAccessControlSvc.hasAccess(this.content)
+        }
+        break
+      case 'lang':
+        returnValue = this.authAccessControlSvc.hasAccess({ ...this.content, status: 'Draft' })
+        break
+    }
+    return returnValue
   }
 
   redirect(url: string) {
@@ -195,6 +291,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
   private initData(data: Data) {
     const initData = this.tocSvc.initData(data)
     this.content = initData.content
+    this.hasPublishAccess = this.showMenuItem('publish')
     this.errorCode = initData.errorCode
     switch (this.errorCode) {
       case NsAppToc.EWsTocErrorCode.API_FAILURE: {

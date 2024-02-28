@@ -205,3 +205,36 @@ animation-delay: -0.5s;
   opacity: 0;
 }
 }
+.comments-text{
+  display: flex;
+  align-items: center;
+}
+.role-txt{
+  color: #1C5D95;
+      // margin: 0px 0px 0px 4px;
+          margin: 0px 0px 0px 4px !important;
+
+}
+.new-text{
+    padding: 2px 7px !important;
+    font-size: 11px;
+    border-radius: 30px !important;
+    background-color: #F88808 !important;
+    color: #fff !important;
+}
+.mark-read-block{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.check-text{
+   font-size: 14px;
+  color: #1C5D95 !important;
+}
+.check-text .mat-checkbox-layout {
+  border-radius: 30px !important;
+}
+::ng-deep .mat-checkbox-inner-container{
+  width: 13px !important;
+  height: 13px !important;
+}
