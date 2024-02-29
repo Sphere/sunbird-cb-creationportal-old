@@ -7,8 +7,7 @@
 }
 .no-data-message {
   text-align: center;
-  padding: 20px;
-
+  padding: 0px 20px;
   color: #000000;
   font-size: 18px;
 }
@@ -162,4 +161,11 @@ font-style: normal !important;
 font-weight: 400 !important;
 line-height: 57.6px !important;
 letter-spacing: -0.96px !important;
+}
+.left-icon{
+  text-align: left;
+  cursor: pointer;
+}
+.no-data{
+  margin-top: 150px !important;
 }

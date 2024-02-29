@@ -129,17 +129,6 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
           })
         }
       }
-      else if (data === 'reviewerChecklist') {
-        this.isLoading = true
-        this.changeText = 'reviewerChecklist'
-        if (this.content) {
-          this.progressSvc.getComments(this.content.identifier).subscribe(res => {
-            console.log(res)
-
-            this.isLoading = false
-          })
-        }
-      }
     })
   }
 

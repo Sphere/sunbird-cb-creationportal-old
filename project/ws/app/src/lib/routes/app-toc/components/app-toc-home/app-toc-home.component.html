@@ -47,18 +47,11 @@
   </ng-container>
 </div>
 
-<div id="commentSection" *ngIf="changeText === 'reviewerChecklist'">
-  <h1> Hi</h1>
-</div>
-
-
-
-<div [ngClass]="{'showData': changeText === 'comments' || changeText === 'reviewerChecklist'}">
+<div [ngClass]="{'showData': changeText === 'comments'}">
   <ws-app-toc-banner role="banner" [banners]="banners" [forPreview]="forPreview" [content]="content"
     [analytics]="analytics" [resumeData]="resumeData">
   </ws-app-toc-banner>
   <!-- </div> -->
-
 
   <ng-container>
     <div role="main" class="toc-body" *ngIf="!errorCode; else tocError">

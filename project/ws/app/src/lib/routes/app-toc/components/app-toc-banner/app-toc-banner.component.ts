@@ -424,7 +424,9 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     this.tocSvc.changeMessage('comments')
   }
   gotoReviewerChecklist() {
-    this.tocSvc.changeMessage('reviewerChecklist')
+    if (this.content) {
+      this.router.navigate(['/author/reviewerChecklist/' + this.content.identifier])
+    }
   }
   generateQuery(type: 'RESUME' | 'START_OVER' | 'START'): { [key: string]: string } {
     if (this.firstResourceLink && (type === 'START' || type === 'START_OVER')) {
