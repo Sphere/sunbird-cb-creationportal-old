@@ -152,15 +152,16 @@ letter-spacing: -0.4px !important;
   color: red;
 }
 .percentage-text{
-  // color: #1C5D95 !important;
-
-/* Display 1 */
 font-family: Roboto !important;
-font-size: 32px !important;
+font-size: 16px !important;
 font-style: normal !important;
 font-weight: 400 !important;
 line-height: 57.6px !important;
 letter-spacing: -0.96px !important;
+display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px 0px 0px 4px !important;
 }
 .left-icon{
   text-align: left;
@@ -168,4 +169,16 @@ letter-spacing: -0.96px !important;
 }
 .no-data{
   margin-top: 150px !important;
+}
+.total-percentage{
+  font-size: 16px !important;
+    width: 191px;
+    height: 32px;
+    background: #EBF4FB !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border-radius: 32px;
+    color: #1C5D95 !important;
 }

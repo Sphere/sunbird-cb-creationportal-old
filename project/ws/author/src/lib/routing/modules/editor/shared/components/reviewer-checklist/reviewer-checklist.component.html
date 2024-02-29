@@ -6,13 +6,14 @@
           <button mat-icon-button class="back-icon text-left"><mat-icon>chevron_left</mat-icon></button>
         </a>
         <span *ngIf="content" class="review-text-name">Review Checklist : {{content.name}}</span>
-        <span *ngIf="content" style="font-size: 24px;">The score is: <span
+      </div>
+      <div>
+        <span *ngIf="content" class="total-percentage">Total Percentage - <span
             class="mat-title margin-top-s percentage-text" [ngClass]="{
-          'green': getQualityPercent > 70,
-          'orange': getQualityPercent > 30 && getQualityPercent <= 70,
-          'red': getQualityPercent <= 30
-        }">{{getQualityPercent}}%</span></span>
-
+                  'green': getQualityPercent > 70,
+                  'orange': getQualityPercent > 30 && getQualityPercent <= 70,
+                  'red': getQualityPercent <= 30
+                }">{{getQualityPercent}}%</span></span>
       </div>
 
       <mat-tab-group>
