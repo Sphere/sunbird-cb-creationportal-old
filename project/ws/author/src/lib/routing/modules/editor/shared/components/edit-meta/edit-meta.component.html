@@ -1,7 +1,7 @@
 <form [formGroup]="contentForm" *ngIf="!clickedBtnNext&&contentForm">
   <section class="edit-course-save-btn">
     <div class="flex flex-between margin-bottom-l margin-right-l">
-      <button [ngClass]="{ 'button-disbale': checkMandatoryFields() }" mat-raised-button type="submit"
+      <button [disabled]="checkMandatoryFields()" mat-raised-button type="submit"
         (click)="isSubmitPressed = true; clickedNext()"
         class="text-white save-next mat-button-base save-btn-bottom saveAndNextBtn">
         Next

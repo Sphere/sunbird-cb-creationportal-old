@@ -191,6 +191,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.viewMode = 'meta'
         }
         if (data === 'CourseDetails') {
+          this.viewMode = 'meta'
+          this.initService.publishData('backToCourseDetailsPage')
           this.initService.isEditMetaPageAction('backFromModulePage')
           this.clickedNext = false
           this.showAddchapter = false

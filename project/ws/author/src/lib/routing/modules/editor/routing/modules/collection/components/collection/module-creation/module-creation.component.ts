@@ -1040,6 +1040,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             if (element.children.length > 0) {
               element.children.forEach((subElement: any) => {
                 const tempChildData = {
+                  name: element.name,
                   identifier: subElement.identifier,
                   status: subElement.status,
                   parentStatus: updatedMeta.status,
@@ -1050,6 +1051,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               })
             }
             const tempParentData = {
+              name: element.name,
               identifier: element.identifier,
               status: element.status,
               parentStatus: updatedMeta.status,
@@ -1059,6 +1061,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
           } else {
             const tempData = {
+              name: element.name,
               identifier: element.identifier,
               status: element.status,
               parentStatus: updatedMeta.status,
@@ -1094,7 +1097,27 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               }
 
               const reviewRes =
-                await this.editorService.sendToReview(element.identifier, updatedMeta.status).toPromise().catch(_error => { })
+                await this.editorService.sendToReview(element.identifier, updatedMeta.status).toPromise().catch(async _error => {
+                  console.log("_error.error.params", _error.error, element)
+                  if (_error.error.params.status === 'failed') {
+                    let error = [{
+                      "id": element.identifier,
+                      "name": element.name,
+                      "message": [
+                        "File is not uploaded correctly"
+                      ]
+                    }]
+                    const dialog = this.dialog.open(ErrorParserComponent, {
+                      width: '80vw',
+                      height: '90vh',
+                      data: {
+                        processErrorData: error,
+                      },
+                    })
+                    console.log("dialog", dialog, error)
+                  }
+                })
+
               if (reviewRes && reviewRes.params && reviewRes.params.status === 'successful') {
                 const updateContentRes =
                   await this.editorService.updateContentWithFewFields(requestPayload, element.identifier).toPromise().catch(_error => { })
