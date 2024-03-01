@@ -2331,7 +2331,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType == 'application/pdf') {
       this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
-      this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
+      this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('/').pop() : ''
       this.uploadText = 'PDF'
       this.isShowDownloadBtnEnabled = true
       this.isLinkEnabled = false
@@ -2342,7 +2342,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType == 'audio/mpeg') {
-      this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
+      this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('/').pop() : ''
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
       this.isShowDownloadBtnEnabled = true
       this.uploadText = 'mp3'
@@ -2356,7 +2356,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     } else if (content.mimeType === 'video/mp4') {
       // tslint:disable-next-line:no-console
       console.log("this.uploadFile", content.artifactUrl)
-      this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
+      this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('/').pop() : ''
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
       this.isShowDownloadBtnEnabled = true
       this.uploadText = 'mp4, m4v'
@@ -2368,7 +2368,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'application/vnd.ekstep.html-archive') {
-      this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('_')[4] : ''
+      this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('/').pop() : ''
       this.uploadIcon = 'cbp-assets/images/SCROM-img.svg'
       this.uploadText = '.zip'
       this.isShowDownloadBtnEnabled = false

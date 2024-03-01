@@ -7,7 +7,7 @@
         </a>
         <span *ngIf="content" class="review-text-name">Review Checklist : {{content.name}}</span>
       </div>
-      <div>
+      <div class="percentage-block">
         <span *ngIf="content" class="total-percentage">Total Percentage - <span
             class="mat-title margin-top-s percentage-text" [ngClass]="{
                   'green': getQualityPercent > 70,
