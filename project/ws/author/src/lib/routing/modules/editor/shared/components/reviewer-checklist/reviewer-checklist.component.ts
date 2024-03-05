@@ -12,6 +12,8 @@ import { Router } from '@angular/router'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { LoaderService } from '../../../../../../services/loader.service'
 import { AccessControlService } from '@ws/author'
+import { MatDialog } from '@angular/material/dialog'
+import { CommentsViewComponent } from '../../../../../../modules/shared/components/comments-view/comments-view.component'
 
 @Component({
   selector: 'ws-reviewer-checklist-view',
@@ -28,6 +30,7 @@ export class ReviewerChecklist implements OnInit, OnDestroy, AfterViewInit {
     private editorService: EditorService,
     private loader: LoaderService,
     private authAccessService: AccessControlService,
+    public dialog: MatDialog,
 
 
   ) {
@@ -81,7 +84,21 @@ export class ReviewerChecklist implements OnInit, OnDestroy, AfterViewInit {
       this.router.navigate([`/author/toc/${this.content.identifier}/overview`])
     }
     if (this.authAccessService.hasRole(['content_publisher'])) {
-      this.router.navigate([`/author/cbp`])
+      this.router.navigate([`/author/toc/${this.content.identifier}/overview`])
+
+      // this.router.navigate([`/author/cbp`])
     }
+  }
+  openComments(question: any) {
+
+    const dialogRef = this.dialog.open(CommentsViewComponent, {
+      width: '450px',
+      height: '250px',
+      data: question,
+    })
+
+    dialogRef.afterClosed().subscribe((d: any) => {
+      console.log(d)
+    })
   }
 }

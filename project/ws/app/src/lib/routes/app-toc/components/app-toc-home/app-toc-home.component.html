@@ -26,15 +26,15 @@
       <span class="comments-text">Comments by <h3 class="role-txt">{{ role | titlecase }}</h3></span>
       <div *ngFor="let comment of filteredComments[role]" class="display">
         <div>
-          <div class="mark-read-block" *ngIf="hasPublishAccess">
+          <!-- <div class="mark-read-block" *ngIf="hasPublishAccess">
             <div>
-              <mat-checkbox [checked]="true" style="margin-left: 0px;border-radius: 24px;" class="check-text">Mark as
+              <mat-checkbox style="margin-left: 0px;border-radius: 24px;" class="check-text">Mark as
                 read</mat-checkbox>
             </div>
             <div>
               <span class="new-text">New</span>
             </div>
-          </div>
+          </div> -->
           <div class="in-line">
             <img alt="" src="/cbp-assets/images/Ellipse130.svg" class="p-r-10">
             <h5 class="p-r-10 highlight">{{ comment.role }}</h5>
