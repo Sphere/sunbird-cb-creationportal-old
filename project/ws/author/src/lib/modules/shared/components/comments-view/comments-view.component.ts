@@ -11,7 +11,7 @@ export class CommentsViewComponent implements OnInit {
   constructor(
 
     public dialogRef: MatDialogRef<CommentsViewComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: NSContent.IContentMeta,
+    @Inject(MAT_DIALOG_DATA) public data: any,
 
   ) {
 
