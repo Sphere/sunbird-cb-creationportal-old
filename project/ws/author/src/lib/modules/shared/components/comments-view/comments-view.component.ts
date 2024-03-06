@@ -1,6 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
-import { NSContent } from '@ws/author/src/lib/interface/content'
 
 @Component({
   selector: 'ws-auth-root-comments-view',
