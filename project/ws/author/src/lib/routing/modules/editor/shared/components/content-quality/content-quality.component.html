@@ -42,7 +42,7 @@
             <mat-progress-bar mode="indeterminate" *ngIf="showQuestionProgressBar"></mat-progress-bar>
             <mat-card style="background: #F7FBFE;border: none;" class="ws-mat-accent-border form-block"
               [formGroupName]="idx">
-              <mat-card-title class="m-auto">
+              <mat-card-title style="background: #F3F8FD !important;" class="m-auto padding-left-14">
                 <!-- <input name="sectionName" type="text" readonly class="mat-title no-border" formControlName="name"> -->
                 <span *ngIf="questionData[idx].desc" tabindex="0" class="mat-title">{{questionData[idx].name}}</span>
               </mat-card-title>
@@ -57,7 +57,7 @@
                     [formGroupName]="qIdx">
                     <div class="flex flex-1 flex-column" *ngIf="selectedQIndex === qIdx">
                       <div class="flex flex-1">
-                        <span class="mat-subheading-1 width-100" tabindex="0">
+                        <span class="mat-subheading-1 width-100 padding-left-14" tabindex="0">
                           {{questionData[idx].questions[qIdx].question}}
                         </span>
                       </div>
@@ -133,13 +133,13 @@
     padding: 14px;">
       <span class="mat-title">{{name || 'Instructions'}}</span>
     </mat-card-title>
-    <mat-card-content class="margin-top-m mobile-break">
+    <mat-card-content style="padding: 14px;" class="margin-top-m mobile-break">
       <span class="mat-body-1">All courses on the Aastrika platform will be scored on six categories:
         {{fieldsToDisplay}}.
         Please mark your answers from the drop-down menu across the provided range: Yes, No
         (and Not Applicable for certain questions). Once you have completed the questionnaire, please
         click on submit button.</span>
-      <div class="flex flex-column new-color padding-s margin-s">
+      <div class="flex flex-column new-color padding-s" style="margin-top: 5px;">
         <span class="mat-body-1">
           Note: We trust you to complete the content quality assessment honestly. The content you submit for review will
           go
@@ -149,7 +149,7 @@
         <!-- <a class="ws-mat-default-text" href="#">Read more about trust score</a> -->
       </div>
     </mat-card-content>
-    <mat-card-actions>
+    <mat-card-actions style="padding: 14px;">
       <div class="flex flex-start margin-top-l margin-bottom-s margin-left-s">
         <button mat-raised-button type="button" (click)="start()" class="text-white start-review-btn">
           <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Start Review Cheklist
