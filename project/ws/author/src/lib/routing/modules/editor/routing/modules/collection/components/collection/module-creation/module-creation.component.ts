@@ -1860,6 +1860,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     // this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => { })
     // this.ngAfterViewInit()
     setTimeout(() => {
+      this.clearForm()
+      this.editItem = ''
       sessionStorage.setItem('isSettingsPage', '1')
       this.isSettingsPage = true
       this.editItem = ''

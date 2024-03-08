@@ -42,7 +42,7 @@
             <mat-progress-bar mode="indeterminate" *ngIf="showQuestionProgressBar"></mat-progress-bar>
             <mat-card style="background: #F7FBFE;border: none;" class="ws-mat-accent-border form-block"
               [formGroupName]="idx">
-              <mat-card-title style="background: #F3F8FD !important;" class="m-auto padding-left-14">
+              <mat-card-title style="background: #F3F8FD !important;padding: 14px;" class="m-auto">
                 <!-- <input name="sectionName" type="text" readonly class="mat-title no-border" formControlName="name"> -->
                 <span *ngIf="questionData[idx].desc" tabindex="0" class="mat-title">{{questionData[idx].name}}</span>
               </mat-card-title>

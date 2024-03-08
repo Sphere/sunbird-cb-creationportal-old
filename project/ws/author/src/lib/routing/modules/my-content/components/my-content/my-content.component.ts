@@ -829,7 +829,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     }
     else if (status == 'self for revision') {
       this.createCourseBtn = false
-      this.currentTab = 'For revision'
+      this.currentTab = 'Self Assessment'
       this.currentStatus = 'For revision'
       this.isSelectedColor = false
       this.isSelectedPublishCourse = false
@@ -913,7 +913,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'courseRevision' } })
         break
       case 'self for revision':
-        this.currentTab = 'My Courses'
+        this.currentTab = 'Self Assessment'
         this.link = 'for revision'
         this.activeLink = 'for revision'
         this.isSelectedColor = false
