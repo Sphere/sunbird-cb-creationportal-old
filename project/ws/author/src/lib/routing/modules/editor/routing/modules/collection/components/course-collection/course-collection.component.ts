@@ -2994,7 +2994,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           }
           // tslint:disable-next-line:no-console
           console.log("sum", sum)
+          if (!this.versionKey.competency) {
+            requestBody.request.content.competency = false
+            console.log(requestBody, this.versionKey, this.versionKey.competency)
 
+          }
           return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
             tap(() => {
               this.storeService.changedHierarchy = {}
