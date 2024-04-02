@@ -1635,6 +1635,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         requestPayload.request.content.versionKey = element.versionKey
         if (element.status === 'Live' && element.parentStatus === 'Review') {
           flag += 1
+        }
+        //added to verify element status is Review
+        else if (element.status === 'Review' && element.reviewerStatus === 'Reviewed' && element.parentStatus === 'Review') {
+          flag += 1
         } else if (element.reviewerStatus === 'InReview' && element.status === 'Review') {
           const updateRes =
             await this.editorService.updateContentForReviwer(requestPayload, element.identifier).toPromise().catch(_error => { })
@@ -1645,6 +1649,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           }
         }
       }
+      console.log("here", flag, resourceList)
+
       if (flag === resourceList.length) {
         requestPayload.request.content.versionKey = metaData.versionKey
         // const tempRequset: NSApiRequest.IContentUpdateV3 = {
@@ -2994,7 +3000,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           }
           // tslint:disable-next-line:no-console
           console.log("sum", sum)
+          if (!this.versionKey.competency) {
+            requestBody.request.content.competency = false
+            console.log(requestBody, this.versionKey, this.versionKey.competency)
 
+          }
           return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
             tap(() => {
               this.storeService.changedHierarchy = {}

@@ -509,9 +509,12 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   <mat-icon>search</mat-icon>
                 </div>
               </div>
-              <span fxFlex style="flex: 1 1 auto"></span>
+              <span fxFlex style="flex: 1 1 auto"><span *ngIf="cardContent?.length >0" style="    margin-left: 10px !important;
+    vertical-align: sub;">Showing
+                  {{cardContent?.length}} results</span></span>
               <div class="flex items-center">
                 <div>
+
                   <h4 *ngIf="filterMenuItems.length" class="ws-mat-primary-text font-size-m font-weight-bold">
                     <!-- <span i18n> Apply Filters</span> -->
                     <!-- <button mat-icon-button color="primary" class="text-middle" (click)="sideNavBarOpened = true">
