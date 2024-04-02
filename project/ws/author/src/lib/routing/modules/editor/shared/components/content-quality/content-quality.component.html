@@ -66,7 +66,6 @@
                           aria-label="Select an option" formControlName="options">
                           <mat-radio-button [name]="'radio-' + _option.name"
                             class="flex flex-row itm-center ws-mat-accent-border margin-right-s radio-btn-bg"
-                            (change)="!lastQ?autoNextQ():null"
                             *ngFor="let _option of questionData[idx].questions[qIdx].options" [value]="_option.weight">
                             <span class="mat-body-2">{{_option.name}}</span>
                           </mat-radio-button>
