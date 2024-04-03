@@ -380,7 +380,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                     console.log("yessfasdf", quizContent)
 
                   }
-
+                  if (quizContent.isAssessment) {
+                    this.isQuiz = 'Assessment'
+                  } else {
+                    this.validPercentage = true
+                    this.isQuiz = 'Quiz'
+                  }
                 })
               }
               if (v.contents[0].content.competency) {

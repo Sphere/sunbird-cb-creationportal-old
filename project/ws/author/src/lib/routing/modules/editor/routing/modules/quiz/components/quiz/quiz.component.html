@@ -106,7 +106,7 @@
                   <input matInput placeholder="Enter pass percentage" max="100" [(ngModel)]="passPercentage"
                     (change)="addTodo(passPercentage, 'passPercentage')" type="number" />
                 </mat-form-field>
-                <mat-form-field appearance="outline" style="padding: 5px 15px 0px 0.75rem">
+                <mat-form-field appearance="outline" style="padding: 5px 15px 0px 0.75rem;min-width: 250px">
                   <label class="starlabel">{{isQuiz}} Duration (Minutes)</label>
                   <input matInput type="number" class="form-control" placeholder="Enter duration" min="2"
                     [(ngModel)]="assessmentDuration" (change)="addTodo(assessmentDuration, 'assessmentDuration')" />
