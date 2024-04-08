@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, ViewChild, ViewContainerRef } from '@angular/core'
+import { AfterViewInit, Component } from '@angular/core'
 
 
 @Component({
@@ -11,7 +11,7 @@ export class AIHubDashboardComponent implements AfterViewInit {
   constructor() { }
 
   ngAfterViewInit() {
-    console.log('ngAfterViewInit called')
+    //console.log('ngAfterViewInit called')
     // Access ViewChild elements here if needed
   }
 
