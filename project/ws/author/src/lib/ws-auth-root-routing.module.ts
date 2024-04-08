@@ -65,6 +65,15 @@ const routes: Routes = [
     },
   },
   {
+    path: 'my-content/ai-hub',
+    loadChildren: () =>
+      import('./routing/modules/aihub/aihub.module').then(u => u.AIHubModule),
+    data: { load: ['ordinals', 'meta'] },
+    resolve: {
+      script: InitResolver,
+    }
+  },
+  {
     path: 'create',
     data: {
       load: ['create', 'ordinals', 'meta'],

@@ -342,7 +342,27 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
+        <mat-expansion-panel #panel4 style="cursor: pointer" class="no-shadow" [expanded]="isAiHubExanded" hideToggle>
+
+          <mat-expansion-panel-header class="left-panel-header">
+            <mat-panel-title class="main-block">
+              <mat-icon class="add-create-icon">assistant</mat-icon>
+              <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('AIHub')">
+                AI Hub
+              </span>
+              <mat-icon style="color:#808080" *ngIf="!panel4.expanded">keyboard_arrow_down</mat-icon>
+              <!-- Add up arrow icon when panel is expanded -->
+              <mat-icon style="color: #14446C" *ngIf="panel4.expanded">keyboard_arrow_up</mat-icon>
+
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+
+        </mat-expansion-panel>
+
+
       </mat-accordion>
+
       <!-- allowAuthor -->
       <!-- <mat-accordion *ngIf="allowReview || allowPublish">
         <mat-expansion-panel [expanded]="false" class="no-shadow">
@@ -368,6 +388,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
   </mat-drawer>
   <mat-drawer-content>
     <mat-sidenav-container class="nav-container">
+
       <mat-sidenav class="padding-s width-300" position="end" [fixedInViewport]="true" [(opened)]="sideNavBarOpened">
         <h4 class="ws-mat-primary-text font-weight-bold margin-remove">
           <div class="flex flex-between flex-baseline">
@@ -416,7 +437,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
 
           <span fxFlex style="flex: 1 1 auto"></span>
 
-          <div *ngIf="allowAuthorContentCreate"
+          <div *ngIf="allowAuthorContentCreate && !isAihub"
             class="matExpansion flex flex-middle margin-left-l margin-right-l padding-remove-left create-button">
             <button (click)="createCourse('courseWithLevel')" *ngIf="createCourseBtn" mat-button class="btn-create"
               id="ws-auth-root-home-btn-create" name="ws-auth-root-home-btn-create">
@@ -432,7 +453,10 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
         </nav>
 
         <div class="outer-flex">
-          <div class="content-box">
+          <section *ngIf="isAihub" class="aihubContainer">
+            <ws-author-aihub-dashboard></ws-author-aihub-dashboard>
+          </section>
+          <div class="content-box" *ngIf="!isAihub">
             <nav class="flex flex-middle flex-wrap p-4 ws-mat-primary-text">
               <!-- <div class="mat-subheading-2 margin-remove-bottom">
                 <a i18n>
@@ -587,8 +611,12 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </div>
           </div> -->
         </div>
+
       </mat-sidenav-content>
+
+
     </mat-sidenav-container>
+
     <mat-menu #sortLang="matMenu">
       <ng-template matMenuContent>
         <button mat-menu-item class="flex flex-between" (click)="setCurrentLanguage('')">

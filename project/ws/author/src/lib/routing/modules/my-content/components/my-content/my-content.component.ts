@@ -105,6 +105,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
   isContentExpanded: boolean = false
   isCouseExpanded: boolean = false
   isSelfAssessmentExpanded: boolean = false
+  isAiHubExanded: boolean = false
   isSelfAssessmentSelectedColor: boolean = false
   isSelectedSelfPublishCourse: boolean = false
   isSelectedSelfReviewCourse: boolean = false
@@ -115,6 +116,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
   >
 
   // sideNavBarOpened = true
+  isAihub = false
   panelOpenState = false
   allowReview = false
   allowAuthor = false
@@ -447,6 +449,22 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
+    } else if (this.status === 'AIHub') {
+      this.createCourseBtn = false
+      this.currentTab = 'AIHub'
+      this.currentStatus = 'AIHub'
+      this.link = 'AIHub'
+      this.activeLink = 'AIHub'
+      this.isSelectedColor = true
+      this.isSelectedPublishCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedCertificate = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isAihub = true
     }
     console.log("this.currentTab", this.currentTab)
   }
@@ -725,7 +743,26 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
   navigateContents(data: string): void {
     switch (data) {
+      case 'AIHub':
+        this.createCourseBtn = false
+        this.currentTab = 'AIHub'
+        this.currentStatus = 'AIHub'
+        this.link = 'AIHub'
+        this.activeLink = 'AIHub'
+        this.isSelectedColor = true
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedCertificate = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+        this.isAihub = true
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'AIHub' } })
+        break
       case 'Draft':
+        this.isAihub = false
         this.createCourseBtn = true
         this.currentTab = 'My Courses'
         this.currentStatus = 'Draft'
@@ -744,6 +781,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
 
       case 'Sent for review':
+        this.isAihub = false
         this.link = 'Sent for review'
         this.activeLink = 'Sent for review'
         this.isSelectedColor = false
@@ -760,6 +798,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
 
       case 'Courses to publish':
+        this.isAihub = false
         this.link = 'Courses to publish'
         this.activeLink = 'Courses to publish'
         this.isSelectedColor = false
@@ -776,6 +815,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
 
       case 'Published Courses':
+        this.isAihub = false
         this.createCourseBtn = true
         this.currentTab = 'My Courses'
         this.currentStatus = 'Published'
@@ -796,6 +836,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
 
       case 'Retired':
+        this.isAihub = false
         this.link = 'Retired'
         this.activeLink = 'Retired'
         this.isSelectedColor = false
@@ -810,6 +851,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'unpublished' } })
         break
       case 'All Courses':
+        this.isAihub = false
         this.link = 'All Courses'
         this.activeLink = 'All Courses'
         this.isSelectedColor = false
@@ -823,6 +865,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'allCourses' } })
         break
       case 'Courses without certificate':
+        this.isAihub = false
         this.link = 'Courses without certificate'
         this.activeLink = 'Courses without certificate'
         this.isSelectedColor = false
@@ -836,6 +879,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'coursesWithoutCertificate' } })
         break
       case 'Courses with certificate':
+        this.isAihub = false
         this.link = 'Courses with certificate'
         this.activeLink = 'Courses with certificate'
         this.isSelectedColor = false
@@ -850,6 +894,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
       case 'selfAssessmentDraft':
       case 'Self Assessment Draft':
+        this.isAihub = false
         this.link = 'Self Assessment Draft'
         this.activeLink = 'Self Assessment Draft'
         this.isSelectedColor = false
@@ -863,6 +908,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfAssessmentDraft' } })
         break
       case 'Self Sent for review':
+        this.isAihub = false
         this.link = 'Self Sent for review'
         this.activeLink = 'Self Sent for review'
         this.isSelectedColor = false
@@ -876,6 +922,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfSentForReview' } })
         break
       case 'Self Courses to publish':
+        this.isAihub = false
         this.link = 'Self Courses to publish'
         this.activeLink = 'Self Courses to publish'
         this.isSelectedColor = false
@@ -889,6 +936,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfToPublishedCourse' } })
         break
       case 'Self Published Courses':
+        this.isAihub = false
         this.link = 'Self Published Courses'
         this.activeLink = 'Self Published Courses'
         this.isSelectedColor = false
@@ -902,6 +950,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfPublishedCourse' } })
         break
       case 'Self Retired Courses':
+        this.isAihub = false
         this.link = 'Self Retired Courses'
         this.activeLink = 'Self Retired Courses'
         this.isSelectedColor = false
