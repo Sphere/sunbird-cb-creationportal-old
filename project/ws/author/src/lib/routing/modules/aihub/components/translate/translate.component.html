@@ -24,7 +24,7 @@
       <section class="flex ml-3">
         <mat-form-field appearance="outline" class="margin-top-xs desc-field name-field">
           <textarea readonly matInput cols="100" formControlName="translatedText"
-            [value]="translateForm.get('translatedText').value" maxlength="100" rows="20"
+            [value]="translateForm.get('translatedText')?.value" maxlength="100" rows="20"
             placeholder="Translated Text"></textarea>
         </mat-form-field>
       </section>
