@@ -100,17 +100,18 @@
               <div *ngIf="questionsArr.length">
                 <div class="headerpadding font-weight-bold margin-top-s" i18n>{{isQuiz}} Details
                 </div>
-                <mat-form-field appearance="outline" style="padding: 5px 15px 0px 0.75rem">
-                  <label class="starlabel">Pass Percentage</label>
+                <mat-form-field *ngIf="isQuiz === 'Assessment'" appearance="outline"
+                  style="padding: 5px 15px 0px 0.75rem">
+                  <label [ngClass]="{'starlabel': isQuiz === 'Assessment'}">Pass Percentage</label>
                   <input matInput placeholder="Enter pass percentage" max="100" [(ngModel)]="passPercentage"
                     (change)="addTodo(passPercentage, 'passPercentage')" type="number" />
                 </mat-form-field>
-                <mat-form-field appearance="outline">
+                <mat-form-field appearance="outline" style="padding: 5px 15px 0px 0.75rem;min-width: 250px">
                   <label class="starlabel">{{isQuiz}} Duration (Minutes)</label>
                   <input matInput type="number" class="form-control" placeholder="Enter duration" min="2"
                     [(ngModel)]="assessmentDuration" (change)="addTodo(assessmentDuration, 'assessmentDuration')" />
                 </mat-form-field>
-                <mat-form-field appearance="outline" style="padding: 5px 15px 0px 15px; min-width: 285px">
+                <mat-form-field appearance="outline" style="padding: 5px 15px 0px 5px; min-width: 290px">
                   <label class="">Random Count (Only For Self-Assessment)</label>
                   <input matInput type="number" class="form-control" placeholder="Enter Random Question Count"
                     [(ngModel)]="randomCount" (change)="addTodo(randomCount, 'randomCount')" />

@@ -17,15 +17,22 @@
   </h3>
   <div class="creator-action-btn">
     <div>
-      <button id="comment" class="accept-btn cursor-pointer" [disabled]="commentsList?.length < 1"
-        (click)="gotoComments()">
-        <ng-container i18n>Comments</ng-container>
-        <span [ngClass]="isCreator?'creator-comments-length':'comments-length'">{{commentsList?.length}}</span>
+      <button id="comment" class="accept-btn cursor-pointer" (click)="gotoReviewerChecklist()">
+        <ng-container i18n>Review Checklist</ng-container>
       </button>
     </div>
     <div>
-      <button *ngIf="isCreator" [routerLink]="['/author/editor/' + content?.identifier  + '/collection']"
-        class="edit-course">Edit the course</button>
+      <button id="comment" class="accept-btn cursor-pointer" [disabled]="commentsList?.length < 1"
+        (click)="gotoComments()">
+        <ng-container i18n>Comments</ng-container>
+        <span
+          [ngClass]="content?.status==='Draft'?'creator-comments-length':'comments-length'">{{commentsList?.length}}</span>
+      </button>
+    </div>
+    <div>
+      <button *ngIf="content?.status==='Draft'"
+        [routerLink]="['/author/editor/' + content?.identifier  + '/collection']" class="edit-course">Edit the
+        course</button>
     </div>
   </div>
 

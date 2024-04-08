@@ -2,17 +2,18 @@
   <div class="header-left">
     <div class="header-synopsis" *ngIf="qualityResponse&&!loading">
       <div class="flex flex-column">
-        <a [routerLink]="'/author/cbp'">
-          <img class="answer-icon mt-4 mb-4" src="cbp-assets/icons/akar-icons_arrow-left.svg" />
+        <a (click)="redirectBack()">
+          <button mat-icon-button class="back-icon text-left"><mat-icon>chevron_left</mat-icon></button>
         </a>
         <span *ngIf="content" class="review-text-name">Review Checklist : {{content.name}}</span>
-        <span *ngIf="content" style="font-size: 24px;">The score is: <span
+      </div>
+      <div class="percentage-block">
+        <span *ngIf="content" class="total-percentage">Total Percentage - <span
             class="mat-title margin-top-s percentage-text" [ngClass]="{
-          'green': getQualityPercent > 70,
-          'orange': getQualityPercent > 30 && getQualityPercent <= 70,
-          'red': getQualityPercent <= 30
-        }">{{getQualityPercent}}%</span></span>
-
+                  'green': getQualityPercent > 70,
+                  'orange': getQualityPercent > 30 && getQualityPercent <= 70,
+                  'red': getQualityPercent <= 30
+                }">{{getQualityPercent}}%</span></span>
       </div>
 
       <mat-tab-group>
@@ -24,13 +25,20 @@
               <div class="flex">
                 <mat-card class="question-container">{{question.description}}</mat-card>
                 <mat-card *ngIf="question.evaluated=='Yes'" class="answer-container">
-                  <img class="answer-icon" src="cbp-assets/icons/mdi_tick.svg" />
+                  <img alt="" class="answer-icon" src="cbp-assets/icons/mdi_tick.svg" />
                 </mat-card>
                 <mat-card *ngIf="question.evaluated=='No'" class="answer-container">
-                  <img class="answer-icon" src="cbp-assets/icons/gridicons_cross.svg" />
+                  <img alt="" class="answer-icon" src="cbp-assets/icons/gridicons_cross.svg" />
                 </mat-card>
                 <mat-card *ngIf="question.evaluated=='Not Applicable'" class="answer-container">
                   <span>May be</span>
+                </mat-card>
+                <mat-card matTooltip="Click to view comments" *ngIf="question.comment" (click)="openComments(question)"
+                  class="answer-container comment-read-container">
+                  <img alt="" class="answer-icon" src="cbp-assets/icons/Comment-read.png" />
+                </mat-card>
+                <mat-card matTooltip="No Comments" *ngIf="!question.comment" class="answer-container">
+                  <img alt="" class="answer-icon" src="cbp-assets/icons/Comment-unread.png" />
                 </mat-card>
               </div>
             </div>
@@ -41,7 +49,12 @@
     </div>
     <div class="header-synopsis">
       <div *ngIf="!qualityResponse&&!loading" class="no-data-message">
-        <p>No data found.</p>
+        <div class="flex flex-column">
+          <a class="left-icon" (click)="redirectBack()">
+            <button mat-icon-button class="back-icon text-left"><mat-icon>chevron_left</mat-icon></button>
+          </a>
+          <p class="no-data">No data found.</p>
+        </div>
       </div>
     </div>
   </div>

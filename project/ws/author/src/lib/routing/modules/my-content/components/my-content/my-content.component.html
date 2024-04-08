@@ -75,7 +75,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 [routerLinkActive]="status == 'draft'" [class.active]="status == 'draft'" class="draft" i18n>Draft</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem">
-              <a routerLink="/author/my-content" [queryParams]="{ status: 'inreview' }" i18n>Sent for review</a>
+              <a routerLink="/author/my-content" [queryParams]="{ status: 'inreview' }" i18n>For review</a>
             </mat-list-item>
             <mat-list-item mat-button role="listitem">
               <a routerLink="/author/my-content" [queryParams]="{ status: 'published' }" i18n>Published</a>
@@ -103,7 +103,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             <mat-panel-title class="main-block">
 
               <svg
-                [ngClass]="{ 'iconActive': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse || panel1.expanded}"
+                [ngClass]="{ 'iconActive': isSelectedColor||isSelectedReviewCourse||isSelectedRevisionCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse || panel1.expanded}"
                 xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 14" fill="none">
                 <g clip-path="url(#clip0_1391_8909)">
                   <path fill="#808080"
@@ -124,7 +124,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 </defs>
               </svg>
               <span (click)="onClickReviewCourse('Draft')" class="font-weight-500 head-content-block"
-                [ngClass]="{ 'coursesActive': isSelectedColor||isSelectedReviewCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse || panel1.expanded}"
+                [ngClass]="{ 'coursesActive': isSelectedColor||isSelectedReviewCourse||isSelectedRevisionCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse || panel1.expanded}"
                 i18n>Courses</span>
               <mat-icon style="color:#808080" *ngIf="!panel1.expanded">keyboard_arrow_down</mat-icon>
               <!-- Add up arrow icon when panel is expanded -->
@@ -180,8 +180,14 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             <mat-list-item *ngIf="!allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
               <img *ngIf="isSelectedReviewCourse" src="cbp-assets/icons/Frame_81.svg" />
               <a [ngClass]="{ 'head-content-title activeLink': isSelectedReviewCourse }"
-                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('Sent for review')" i18n>Sent For
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('Sent for review')" i18n>For
                 Review</a>
+            </mat-list-item>
+            <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
+              <img *ngIf="isSelectedRevisionCourse" src="cbp-assets/icons/Frame_81.svg" />
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedRevisionCourse }"
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('for revision')" i18n>For
+                Revision</a>
             </mat-list-item>
 
             <mat-list-item *ngIf="allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
@@ -235,7 +241,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 </defs>
               </svg>
               <span class="font-weight-500 head-content-block" (click)="onClickReviewCourse('selfAssessmentDraft')"
-                [ngClass]="{ 'selfAssessmentActive': isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse || panel2.expanded}"
+                [ngClass]="{ 'selfAssessmentActive': isSelfAssessmentSelectedColor||isSelectedSelfRevisionCourse||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse || panel2.expanded}"
                 i18n>Self Assessment</span>
               <mat-icon style="color:#808080" *ngIf="!panel2.expanded">keyboard_arrow_down</mat-icon>
               <!-- Add up arrow icon when panel is expanded -->
@@ -259,10 +265,15 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             <mat-list-item *ngIf="!allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
               <img alt="" *ngIf="isSelectedSelfReviewCourse" src="cbp-assets/icons/Frame_81.svg" />
               <a [ngClass]="{ 'head-content-title activeLink': isSelectedSelfReviewCourse }"
-                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('Self Sent for review')" i18n>Sent
-                For Review</a>
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('Self Sent for review')" i18n>For
+                Review</a>
             </mat-list-item>
-
+            <mat-list-item *ngIf="allowAuthorContentCreate" mat-button role="listitem" [routerLinkActive]="['active']">
+              <img *ngIf="isSelectedSelfRevisionCourse" src="cbp-assets/icons/Frame_81.svg" />
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedSelfRevisionCourse }"
+                style="cursor: pointer; color: #808080;" (click)="onClickReviewCourse('self for revision')" i18n>For
+                Revision</a>
+            </mat-list-item>
             <mat-list-item *ngIf="allowPublish" mat-button role="listitem" [routerLinkActive]="['active']">
               <img alt="" *ngIf="isSelectedSelfPublishCourse" src="cbp-assets/icons/Frame_81.svg" />
               <a [ngClass]="{ 'head-content-title activeLink': isSelectedSelfPublishCourse }"

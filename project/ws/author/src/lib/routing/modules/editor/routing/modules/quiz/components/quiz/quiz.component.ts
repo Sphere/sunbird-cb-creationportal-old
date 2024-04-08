@@ -310,6 +310,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                         if (jsonResponse.isAssessment && quizContent.competency) {
                           this.isQuiz = 'Assessment'
                         } else {
+                          this.validPercentage = true
                           this.isQuiz = 'Quiz'
                         }
 
@@ -379,7 +380,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                     console.log("yessfasdf", quizContent)
 
                   }
-
+                  if (quizContent.isAssessment) {
+                    this.isQuiz = 'Assessment'
+                  } else {
+                    this.validPercentage = true
+                    this.isQuiz = 'Quiz'
+                  }
                 })
               }
               if (v.contents[0].content.competency) {
@@ -420,6 +426,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       }
       if (event === null) {
         this.validPercentage = false
+      }
+      if (this.isQuiz === 'Quiz') {
+        this.validPercentage = true
       }
       this.quizStoreSvc.hasChanged = true
     } else {
@@ -751,10 +760,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   uploadJson(array: any[], fileName: string) {
     // tslint:disable-next-line:no-console
-    console.log(this.assessmentDuration, this.passPercentage)
+    console.log(this.assessmentDuration, this.passPercentage, this.isQuiz)
     this.quizDuration = (this.metaContentService.getUpdatedMeta(this.currentId).duration &&
       this.metaContentService.getUpdatedMeta(this.currentId).duration !== '0') ?
       this.metaContentService.getUpdatedMeta(this.currentId).duration : this.assessmentDuration
+    this.passPercentage = this.isQuiz === 'Quiz' ? 0 : this.passPercentage
     const quizData = {
       // tslint:disable-next-line: prefer-template
       //timeLimit: parseInt(this.quizDuration + '', 10) || 300

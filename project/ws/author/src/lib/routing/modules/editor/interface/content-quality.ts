@@ -9,12 +9,14 @@ export namespace NSIQuality {
     name: string
     desc?: string
     questions: IQualityQuestion[]
+    comment: string
   }
   export interface IQualityQuestion {
     type: string
     position: Number
     question: String,
     options: IQualityQuestionOption[]
+    comment: string
   }
 
   export interface IQualityQuestionOption {

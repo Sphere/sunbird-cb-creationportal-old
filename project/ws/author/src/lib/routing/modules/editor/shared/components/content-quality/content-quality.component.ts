@@ -162,11 +162,13 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
           type: (cr.criteria || '').replace(' ', ''),
           name: cr.criteria,
           desc: cr.description || 'desc',
+          comment: cr.comment || '',
           questions: _.map(cr.qualifiers, (q, idx1: number) => {
             return {
               question: q.description,
               type: q.qualifier,
               position: idx1,
+              comment: q.comment || '',
               options: _.map(q.options, op => {
                 return {
                   name: op.name,
@@ -174,6 +176,7 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
                   selected: false,
                 }
               }),
+
             }
           }),
         }
@@ -183,6 +186,7 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
         desc: 'Instructions',
         questions: [],
         type: 'instructions',
+        comment: ''
       })
       this.questionData = qData
     }
@@ -213,6 +217,7 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
       type: new FormControl(questionObj.type),
       desc: new FormControl(questionObj.desc),
       ques: new FormArray(this.createQuesControl(questionObj.questions)),
+      comment: new FormControl(questionObj.comment),
     })
     const optionsArr = this.qualityForm.controls['questionsArray'] as FormArray
     optionsArr.push(newControl)
@@ -224,6 +229,7 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
         questionText: [v.question],
         questionPosition: [v.position],
         options: new FormControl(),
+        comment: [v.comment],
       })
     })
   }
@@ -416,7 +422,8 @@ export class ContentQualityComponent implements OnInit, OnDestroy, AfterViewInit
             const defaultNo = this.questionData[cid].questions[qid].options[index].weight
             return {
               name: q.type,
-              evaluated: q.options || defaultNo
+              evaluated: q.options || defaultNo,
+              comment: q.comment
             }
           })
         }

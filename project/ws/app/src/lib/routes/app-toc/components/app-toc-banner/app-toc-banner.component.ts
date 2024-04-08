@@ -53,6 +53,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     'SkillSoft Leadership',
     'Pluralsight',
   ])
+  roles: string[] = ['reviewer', 'publisher', 'creator'];
   isUserRegistered = false
   actionBtnStatus = 'wait'
   showIntranetMessage = false
@@ -70,6 +71,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   cohortTypesEnum = NsCohorts.ECohortTypes
   isReviewer: boolean = false
   isCreator: boolean = false
+  isPublisher: boolean = false
   commentsList: any
   constructor(
     private sanitizer: DomSanitizer,
@@ -112,8 +114,22 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
 
     if (this.content) {
       this.progressSvc.getComments(this.content.identifier).subscribe(res => {
-        console.log(res)
-        this.commentsList = res
+        console.log("res", res)
+        this.isCreator = this.authAccessService.hasRole(['content_creator'])
+
+        this.isReviewer = this.authAccessService.hasRole(['content_reviewer'])
+        this.isPublisher = this.authAccessService.hasRole(['content_publisher'])
+        if (this.isCreator) {
+          this.roles = ['reviewer', 'publisher']
+        } else if (this.isReviewer) {
+          this.roles = ['creator', 'publisher']
+        } else if (this.isPublisher) {
+          this.roles = ['creator', 'reviewer']
+        }
+
+        const filteredComments = res.filter((comment: { role: string }) => this.roles.includes(comment.role))
+        console.log("filtered comments", filteredComments)
+        this.commentsList = filteredComments
       })
     }
 
@@ -422,6 +438,11 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   }
   gotoComments() {
     this.tocSvc.changeMessage('comments')
+  }
+  gotoReviewerChecklist() {
+    if (this.content) {
+      this.router.navigate(['/author/reviewerChecklist/' + this.content.identifier])
+    }
   }
   generateQuery(type: 'RESUME' | 'START_OVER' | 'START'): { [key: string]: string } {
     if (this.firstResourceLink && (type === 'START' || type === 'START_OVER')) {

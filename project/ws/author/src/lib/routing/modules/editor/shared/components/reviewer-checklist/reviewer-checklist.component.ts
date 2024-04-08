@@ -11,6 +11,9 @@ import { ContentQualityService } from '../../services/content-quality.service'
 import { Router } from '@angular/router'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { LoaderService } from '../../../../../../services/loader.service'
+import { AccessControlService } from '@ws/author'
+import { MatDialog } from '@angular/material/dialog'
+import { CommentsViewComponent } from '../../../../../../modules/shared/components/comments-view/comments-view.component'
 
 @Component({
   selector: 'ws-reviewer-checklist-view',
@@ -26,6 +29,9 @@ export class ReviewerChecklist implements OnInit, OnDestroy, AfterViewInit {
   constructor(private _qualityService: ContentQualityService, private router: Router,
     private editorService: EditorService,
     private loader: LoaderService,
+    private authAccessService: AccessControlService,
+    public dialog: MatDialog,
+
 
   ) {
     const url = this.router.url
@@ -67,5 +73,32 @@ export class ReviewerChecklist implements OnInit, OnDestroy, AfterViewInit {
   get getQualityPercent() {
     const score = this.qualityResponse.finalWeightedScore || 0
     return score.toFixed(1)
+  }
+
+  redirectBack() {
+    if (this.authAccessService.hasRole(['content_reviewer'])) {
+      this.router.navigate([`/author/toc/${this.content.identifier}/overview`])
+    }
+
+    if (this.authAccessService.hasRole(['content_creator'])) {
+      this.router.navigate([`/author/toc/${this.content.identifier}/overview`])
+    }
+    if (this.authAccessService.hasRole(['content_publisher'])) {
+      this.router.navigate([`/author/toc/${this.content.identifier}/overview`])
+
+      // this.router.navigate([`/author/cbp`])
+    }
+  }
+  openComments(question: any) {
+
+    const dialogRef = this.dialog.open(CommentsViewComponent, {
+      width: '450px',
+      height: '250px',
+      data: question,
+    })
+
+    dialogRef.afterClosed().subscribe((d: any) => {
+      console.log(d)
+    })
   }
 }

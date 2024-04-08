@@ -90,10 +90,15 @@ th, td {
   border-radius: 30px !important;
 }
 .publish-course-note{
-  font-style: normal;
-  font-weight: 400;
-  font-size: 15px;
-  color: #808080 !important;
+//styleName: Body;
+font-family: Roboto;
+font-size: 16px;
+font-weight: 400;
+line-height: 24px;
+letter-spacing: -0.02em;
+text-align: left;
+color: #808080 !important;
+
 }
 .refresh-button{
     top: 5px;
@@ -172,4 +177,13 @@ textarea:focus {
 }
 textarea::placeholder {
   font-weight: normal !important; /* Reset font weight for placeholder text */
+}
+.publish-course{
+  //styleName: Header 2;
+font-family: Roboto;
+font-size: 24px;
+font-weight: 400;
+line-height: 29px;
+letter-spacing: -0.02em;
+text-align: left;
 }

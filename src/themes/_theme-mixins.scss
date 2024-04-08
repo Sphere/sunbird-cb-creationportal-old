@@ -839,11 +839,11 @@
     // .mat-tab-group
     .mat-tab-nav-bar,
     .mat-form-field-outline-thick .mat-ink-bar {
-      background-color: $linkActiveColor !important;
+      background-color: $linkActiveColor ;
     }
 
     .mat-ink-bar {
-      background-color: $colorAccentLight !important;
+      background-color: $colorAccentLight ;
     }
 
     .mat-option.mat-selected:not(.mat-option-multiple) {
@@ -900,7 +900,7 @@
 
     .mat-tab-nav-bar,
     .mat-form-field-outline-thick .mat-ink-bar {
-      background-color: $colorPrimaryDark !important;
+      background-color: $colorPrimaryDark ;
     }
   } @else {
     .mat-radio-button {
@@ -927,7 +927,7 @@
     }
 
     .mat-ink-bar {
-      background-color: $linkActiveColor !important;
+      background-color: $linkActiveColor;
     }
 
     .mat-input-element {

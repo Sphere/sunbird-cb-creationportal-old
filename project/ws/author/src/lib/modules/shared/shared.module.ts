@@ -41,6 +41,7 @@ import { ImageCropModule, NewImageCropModule } from '@ws-widget/utils/src/public
 import { AuthEditorStepsComponent } from './components/auth-editor-steps/auth-editor-steps.component'
 import { CommentsDialogComponent } from './components/comments-dialog/comments-dialog.component'
 import { CertificateDialogComponent } from './components/certificate-upload-dialog/certificate-upload-dialog.component'
+import { CommentsViewComponent } from './components/comments-view/comments-view.component'
 
 import { CommentsComponent } from './components/comments/comments.component'
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component'
@@ -76,6 +77,7 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     CommentsComponent,
     NotificationComponent,
     CommentsDialogComponent,
+    CommentsViewComponent,
     CertificateDialogComponent,
     IprDialogComponent,
     ConfirmDialogComponent,
@@ -164,6 +166,7 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     MatSnackBarModule,
     NotificationComponent,
     CommentsDialogComponent,
+    CommentsViewComponent,
     CertificateDialogComponent,
     CompetencyPopupComponent,
     ImageUploadIntroPopupComponent,
@@ -210,10 +213,12 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     { provide: MatDialogRef, useValue: {} },
   ],
   entryComponents: [
+    CommentsComponent,
     AuthExpiryDateConfirmComponent,
     NotificationComponent,
     IprDialogComponent,
     CommentsDialogComponent,
+    CommentsViewComponent,
     CertificateDialogComponent,
     CompetencyPopupComponent,
     ImageUploadIntroPopupComponent,

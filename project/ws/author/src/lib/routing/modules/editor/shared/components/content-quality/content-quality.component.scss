@@ -22,7 +22,7 @@
   padding: 5px;
 }
 .question-block{
-background: #F7FBFE !important;
+background: #FFFF !important;
 }
 .radio-btn-bg{
   border: none !important;
@@ -92,10 +92,11 @@ height: 538px;
   overflow: unset;
 }
 .form-block{
+  padding: 0px !important;
   border-radius: 12px !important;
-background: #F7FBFE !important;
+background: #FFFFFF !important;
 box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15) !important;
-border:#F7FBFE !important ;
+border:#FFFFFF !important ;
 height: 538px;
 }
 .qualityForm-block{
@@ -212,7 +213,9 @@ height: 538px;
   position: sticky;
   top: 50px;
 }
-
+.padding-left-14{
+  padding-left: 14px;
+}
 .new-color {
   background-color: #FDECDE;
 }
@@ -377,4 +380,28 @@ line-height: normal !important;
 .custom-scroll::-webkit-scrollbar, .y-scroll::-webkit-scrollbar, .x-scroll::-webkit-scrollbar, .mat-drawer-inner-container::-webkit-scrollbar, .mat-drawer-content::-webkit-scrollbar, .mat-dialog-content::-webkit-scrollbar, .mat-select-panel::-webkit-scrollbar, textarea::-webkit-scrollbar {
     width: 6px;
     height: 16px;
+}
+.help-text{
+  //styleName: small;
+font-family: Roboto;
+font-size: 10px;
+font-weight: 400;
+line-height: 13px;
+letter-spacing: -0.02em;
+text-align: left;
+margin-left: 18px !important;
+color: #000000 !important;
+
+}
+
+.comment-text{
+  width: 437px !important;
+    border-radius: 6px !important;
+    height: 60px !important;
+    border: none !important;
+     margin-top: 10px !important;
+    margin-left: 18px !important;
+    margin-bottom: 5px !important;
+    box-shadow: 0px 0px 4px 0px #0000001A !important;
+    padding: 10px !important;
 }
