@@ -1,4 +1,4 @@
-<form [formGroup]="questionForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="questionForm">
   <section class="question-container">
     <input type="file" accept="application/pdf" (change)="upload($event.target.files)" />
     <div class="flex mr-3">
@@ -8,8 +8,8 @@
           placeholder="Number of Questions" />
       </mat-form-field>
     </div>
-    <button type="submit" [disabled]="!isDownload" mat-button class="language-btn" id="ws-auth-root-home-btn-create"
-      name="ws-auth-root-home-btn-create">
+    <button type="submit" (click)="onDownloadClick()" [disabled]="!isDownload" mat-button class="language-btn"
+      id="ws-auth-root-home-btn-create" name="ws-auth-root-home-btn-create">
       <ng-container i18n>Download</ng-container>
     </button>
   </section>

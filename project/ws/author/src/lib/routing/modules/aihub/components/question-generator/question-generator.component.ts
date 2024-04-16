@@ -44,7 +44,7 @@ export class QuestionGeneratorComponent implements OnInit {
     }
   }
   onDownloadClick() {
-    if (this.questionForm.valid && this.questionForm.value.numberOfQuestions) {
+    if (this.questionForm.value.numberOfQuestions && this.isDownload) {
       const numberOfQuestions = this.questionForm.value.numberOfQuestions
       this.aiHubService.downloadQuestions(localStorage.getItem('uuid_number'), numberOfQuestions)
     }
