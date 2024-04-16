@@ -1,7 +1,16 @@
-<section class="question-container">
-  <input type="file" (change)="upload($event.target.files)" />
-  <button mat-button (click)="onDownloadClick()" class="language-btn" id="ws-auth-root-home-btn-create"
-    name="ws-auth-root-home-btn-create">
-    <ng-container i18n>Download</ng-container>
-  </button>
-</section>
+<form [formGroup]="questionForm" (ngSubmit)="onSubmit()">
+  <section class="question-container">
+    <input type="file" accept="application/pdf" (change)="upload($event.target.files)" />
+    <div class="flex mr-3">
+      <mat-form-field>
+        <mat-label>Number of Questions</mat-label>
+        <input matInput type="number" max="20" (keypress)="onKeyPress($event)" formControlName="numberOfQuestions"
+          placeholder="Number of Questions" />
+      </mat-form-field>
+    </div>
+    <button type="submit" [disabled]="!isDownload" mat-button class="language-btn" id="ws-auth-root-home-btn-create"
+      name="ws-auth-root-home-btn-create">
+      <ng-container i18n>Download</ng-container>
+    </button>
+  </section>
+</form>

@@ -20,14 +20,14 @@ export class AIHubService {
   getUUID(reqBody: any) {
     return this.http.post(API_END_POINTS.UPLOAD_FILE_AND_GET_UUID, reqBody)
   }
-  downloadQuestions(uuid_number: any) {
+  downloadQuestions(uuid_number: any, numQuestions: any) {
     const headers = {
       'Content-Type': 'application/json',
     }
 
     this.http.post(API_END_POINTS.GET_QUESTION, {
       uuid: uuid_number,
-      numQuestions: 5
+      numQuestions: numQuestions
     }, { headers, responseType: 'text' }).subscribe(response => {
       const jsonData = JSON.parse(response) // Parse JSON data
       const csvData = this.convertJSONToCSV(jsonData)
