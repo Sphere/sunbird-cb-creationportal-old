@@ -416,6 +416,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   }
   addTodo(event: any, field: string) {
     const meta: any = {}
+    console.log("event", event)
+    if (event > 100) {
+      // Reset the input value to 100
+      this.passPercentage = 100
+      event = 100
+    }
     if (field === 'passPercentage') {
       meta['passPercentage'] = event
       this.passPercentage = event
