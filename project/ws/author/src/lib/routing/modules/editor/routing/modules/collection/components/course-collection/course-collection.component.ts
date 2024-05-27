@@ -1034,8 +1034,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 "courseId": this.courseData.identifier,
                 "role": "reviewer",
                 "comments": d.value.comments,
-                "currentStatus": "Review",
-                "nextStatus": "Review",
+                "currentStatus": "Sent for Review",
+                "nextStatus": "Draft",
                 "readComments": false,
                 "createdDate": moment(new Date()).toISOString(),
                 "updatedDate": moment(new Date()).toISOString()
@@ -1061,8 +1061,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 "courseId": this.courseData.identifier,
                 "role": "reviewer",
                 "comments": d.value.comments,
-                "currentStatus": "Review",
-                "nextStatus": "Review",
+                "currentStatus": "Sent for Review",
+                "nextStatus": "Sent for Publish",
                 "readComments": false,
                 "createdDate": moment(new Date()).toISOString(),
                 "updatedDate": moment(new Date()).toISOString()
@@ -1591,6 +1591,24 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 "createdBy": this._configurationsService.userProfile!.userId
               }
             }
+            let dat = {
+              "userId": this._configurationsService!.userProfile!.userId,
+              "courseId": this.courseData.identifier,
+              "role": "publisher",
+              "comments": " ",
+              "currentStatus": "Course Published",
+              "nextStatus": "Sent for Publish",
+              "readComments": false,
+              "createdDate": moment(new Date()).toISOString(),
+              "updatedDate": moment(new Date()).toISOString()
+            }
+            console.log(dat)
+            this.progressSvc.addComment(dat).subscribe(res => {
+              console.log(res)
+              //this.commentsList = res
+            }, (err: any) => {
+              console.log(err)
+            })
             // tslint:disable-next-line:no-console
             console.log(obj)
             let data = await this.editorService.createBatch(obj).toPromise().catch(_error => { })

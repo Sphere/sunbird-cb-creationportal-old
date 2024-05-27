@@ -333,11 +333,11 @@ export class CommentsDialogComponent implements OnInit {
     if (this.contentMeta) {
       if (this.accessService.hasRole(['content_publisher'])) {
         role = 'publisher'
-        currentStatus = this.contentMeta.status
+        currentStatus = "Sent for Publish"
         nextStatus = 'Draft'
       } else if (this.accessService.hasRole(['content_reviewer'])) {
         role = 'reviewer'
-        currentStatus = "Review"
+        currentStatus = "Sent for Review"
         nextStatus = 'Draft'
       } else {
         role = 'creator'

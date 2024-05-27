@@ -349,9 +349,11 @@
           *ngIf="showAddModuleForm && !isResourceTypeEnabled && !isOnClickOfResourceTypeEnabled">
           <div class="module-resource-title-block">
             <div>
-              <span class="course-sub-title" *ngIf="!isSaveModuleFormEnable">Create Course</span>
+              <span class="course-sub-title"
+                *ngIf="!isSaveModuleFormEnable&&content?.contentType !== 'Collection'">Create Course</span>
               <span class="course-sub-title" *ngIf="content?.contentType === 'Course'">Course Details</span>
               <span class="course-sub-title" *ngIf="content?.contentType === 'CourseUnit'">Module Details</span>
+              <span class="course-sub-title" *ngIf="content?.contentType === 'Collection'">Module Details</span>
               <span class="course-sub-title" *ngIf="content?.contentType === 'Resource'&&!isSelfAssessment">Resource
                 Details</span>
               <span class="course-sub-title" *ngIf="isSelfAssessment">Assessment Details : </span>
@@ -365,12 +367,13 @@
                 class="width-15 text-white   mat-button-base save-btn-bottom"
                 (click)="moduleCreate(moduleName, topicDescription, thumbnail)">
                 {{moduleButtonName}}</button>
-              <button mat-raised-button *ngIf="content?.contentType === 'CourseUnit'"
+              <button mat-raised-button
+                *ngIf="content?.contentType === 'CourseUnit'||content?.contentType === 'Collection'"
                 class="width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
                 (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab,isShowBtn,content?.mimeType)">
                 {{moduleButtonName}}</button>
               <button [disabled]="(uploadFileName?uploadFileName == '':true)" mat-raised-button
-                *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course'&& !isLinkEnabled && content?.mimeType !== 'application/json'"
+                *ngIf="moduleButtonName === 'Save'&&content?.contentType !== 'Collection' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course'&& !isLinkEnabled && content?.mimeType !== 'application/json'"
                 class="width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave"
                 (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab,isShowBtn,content?.mimeType)">
                 {{moduleButtonName}}</button>
@@ -405,6 +408,13 @@
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
           <div class="module-txt-block" *ngIf="content?.contentType === 'Resource'&&!isSelfAssessment">
+            <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
+              class=" module-input margin-top-s" placeholder="Name of the Resource" autocomplete="off"
+              maxlength="100" /><br>
+            <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint><br>
+            <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
+          </div>
+          <div class="module-txt-block" *ngIf="content?.contentType === 'Collection'">
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
               class=" module-input margin-top-s" placeholder="Name of the Resource" autocomplete="off"
               maxlength="100" /><br>

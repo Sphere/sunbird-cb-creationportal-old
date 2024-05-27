@@ -27,7 +27,10 @@ import { CollectionStoreService } from '../../../../../../../../author/src/lib/r
 import { EditorContentService } from 'project/ws/author/src/lib/routing/modules/editor/services/editor-content.service'
 import { CollectionResolverService } from 'project/ws/author/src/lib/routing/modules/editor/routing/modules/collection/services/resolver.service'
 import { NSContent } from '@ws/author/src/lib/interface/content'
-
+import moment from 'moment'
+import {
+  ContentProgressService,
+} from '@ws-widget/collection'
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'ws-author-create-course',
@@ -85,6 +88,7 @@ export class CreateCourseComponent implements OnInit {
     private storeService: CollectionStoreService,
     private editorStore: EditorContentService,
     private resolverService: CollectionResolverService,
+    private progressSvc: ContentProgressService,
   ) { }
   createCourseForm!: FormGroup
   createSelfAssessmentForm!: FormGroup
@@ -323,6 +327,20 @@ export class CreateCourseComponent implements OnInit {
             }
             // tslint:disable-next-line:max-line-length
             const result = await this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier).toPromise().catch((_error: any) => { })
+            console.log("this.configSvc!.userProfile!.userId", this.configSvc!.userProfile!.userName)
+            let val = {
+              "userId": this.configSvc!.userProfile!.userId,
+              "userName": this.configSvc!.userProfile!.userName,
+              "courseId": this.courseData.identifier,
+              "role": "creator",
+              "comments": '',
+              "currentStatus": "course-created",
+              "nextStatus": "draft",
+              "readComments": false,
+              "createdDate": moment(new Date()).toISOString(),
+              "updatedDate": moment(new Date()).toISOString(),
+            }
+            await this.progressSvc.addComment(val).toPromise().catch((_error: any) => { })
 
             if (data && result) {
               this.loaderService.changeLoad.next(false)
