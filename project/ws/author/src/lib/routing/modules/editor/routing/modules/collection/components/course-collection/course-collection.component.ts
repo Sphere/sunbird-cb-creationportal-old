@@ -1596,8 +1596,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               "courseId": this.courseData.identifier,
               "role": "publisher",
               "comments": " ",
-              "currentStatus": "Course Published",
-              "nextStatus": "Sent for Publish",
+              "currentStatus": "Sent for Publish",
+              "nextStatus": "Course Published",
               "readComments": false,
               "createdDate": moment(new Date()).toISOString(),
               "updatedDate": moment(new Date()).toISOString()
