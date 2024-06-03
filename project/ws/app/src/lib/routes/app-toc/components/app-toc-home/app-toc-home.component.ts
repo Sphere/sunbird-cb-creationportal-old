@@ -128,6 +128,15 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
             this.isLoading = false
           })
         }
+      } else {
+        this.isLoading = true
+        this.changeText = 'history'
+        if (this.content) {
+          this.progressSvc.getComments(this.content.identifier).subscribe(res => {
+            this.commentsList = res
+            this.isLoading = false
+          })
+        }
       }
     })
   }

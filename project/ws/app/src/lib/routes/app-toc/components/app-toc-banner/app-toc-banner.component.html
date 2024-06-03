@@ -22,7 +22,13 @@
       </button>
     </div>
     <div>
-      <button id="comment" class="accept-btn cursor-pointer" [disabled]="commentsList?.length < 1"
+      <button class="comment accept-btn cursor-pointer" [disabled]="historyList?.length === 0" (click)="gotoHistory()">
+        <ng-container i18n>History</ng-container>
+        <span class="creator-comments-length">{{historyList?.length}}</span>
+      </button>
+    </div>
+    <div>
+      <button id="comment" class="comment accept-btn cursor-pointer" [disabled]="commentsList?.length < 1"
         (click)="gotoComments()">
         <ng-container i18n>Comments</ng-container>
         <span

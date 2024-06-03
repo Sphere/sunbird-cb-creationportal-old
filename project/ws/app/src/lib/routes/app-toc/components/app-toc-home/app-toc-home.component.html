@@ -16,6 +16,37 @@
 
 <!-- <ng-container *ngIf="isAuthor" [wsResolverWidget]="authorBtnWidget"></ng-container> -->
 <!-- </mat-toolbar> -->
+<div id="commentSection" *ngIf="changeText === 'history'">
+  <button (click)="redirect('/author/toc/' + content?.identifier  + '/overview')" mat-icon-button
+    class="back-icon text-left"><mat-icon>chevron_left</mat-icon></button>
+  <h1 class="heading">Histroy of course : <span style="color: #1C5D95">{{content.name}} </span></h1>
+  <ng-container>
+    <!-- Check if there are comments for the current role -->
+    <ng-container *ngIf="commentsList?.length > 0">
+      <!-- <span class="comments-text">Comments by <h3 class="role-txt">{{ role | titlecase }}</h3></span> -->
+      <div *ngFor="let comment of commentsList" class="display">
+        <div>
+          <!-- <div class="mark-read-block" *ngIf="hasPublishAccess">
+            <div>
+              <mat-checkbox style="margin-left: 0px;border-radius: 24px;" class="check-text">Mark as
+                read</mat-checkbox>
+            </div>
+            <div>
+              <span class="new-text">New</span>
+            </div>
+          </div> -->
+          <div class="in-line">
+            <img alt="" src="/cbp-assets/images/Ellipse130.svg" class="p-r-10">
+            <h5 class="p-r-10 highlight">{{ comment.role }}</h5>
+            <h5 class="time">{{ comment.createdDate | timeDifference : 'short' }}</h5>
+          </div>
+          <h6 class="commentBox">{{ comment.comments }}</h6>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>
+
 <div id="commentSection" *ngIf="changeText === 'comments'">
   <button (click)="redirect('/author/toc/' + content?.identifier  + '/overview')" mat-icon-button
     class="back-icon text-left"><mat-icon>chevron_left</mat-icon></button>
@@ -47,7 +78,7 @@
   </ng-container>
 </div>
 
-<div [ngClass]="{'showData': changeText === 'comments'}">
+<div [ngClass]="{'showData': changeText === 'comments' || changeText === 'history'}">
   <ws-app-toc-banner role="banner" [banners]="banners" [forPreview]="forPreview" [content]="content"
     [analytics]="analytics" [resumeData]="resumeData">
   </ws-app-toc-banner>

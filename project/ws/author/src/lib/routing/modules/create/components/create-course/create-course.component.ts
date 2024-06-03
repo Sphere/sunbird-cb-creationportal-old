@@ -330,12 +330,12 @@ export class CreateCourseComponent implements OnInit {
             console.log("this.configSvc!.userProfile!.userId", this.configSvc!.userProfile!.userName)
             let val = {
               "userId": this.configSvc!.userProfile!.userId,
-              "userName": this.configSvc!.userProfile!.userName,
-              "courseId": this.courseData.identifier,
+              "username": this.configSvc!.userProfile!.userName,
+              "courseId": this.identifier.identifier,
               "role": "creator",
-              "comments": '',
+              "comments": 'Course Created',
               "currentStatus": "course-created",
-              "nextStatus": "draft",
+              "nextStatus": "Draft",
               "readComments": false,
               "createdDate": moment(new Date()).toISOString(),
               "updatedDate": moment(new Date()).toISOString(),

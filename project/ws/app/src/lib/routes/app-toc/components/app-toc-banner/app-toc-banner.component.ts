@@ -73,6 +73,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   isCreator: boolean = false
   isPublisher: boolean = false
   commentsList: any
+  historyList: any
   constructor(
     private sanitizer: DomSanitizer,
     private router: Router,
@@ -130,6 +131,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
         const filteredComments = res.filter((comment: { role: string }) => this.roles.includes(comment.role))
         console.log("filtered comments", filteredComments)
         this.commentsList = filteredComments
+        this.historyList = res
       })
     }
 
@@ -435,6 +437,9 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.actionBtnStatus = 'grant'
     }
+  }
+  gotoHistory() {
+    this.tocSvc.changeMessage('history')
   }
   gotoComments() {
     this.tocSvc.changeMessage('comments')
