@@ -40,7 +40,9 @@
             <h5 class="p-r-10 highlight">{{ comment.role }}</h5>
             <h5 class="time">{{ comment.createdDate | timeDifference : 'short' }}</h5>
           </div>
-          <h6 class="commentBox">{{ comment.comments }}</h6>
+          <h6 class="commentBox">Comment: {{ comment.comments }}</h6>
+          <h6>Current Course Status: {{comment.currentStatus}}</h6>
+          <h6>Next Course Status: {{comment.nextStatus}}</h6>
         </div>
       </div>
     </ng-container>
