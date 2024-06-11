@@ -19,7 +19,7 @@
 <div id="commentSection" *ngIf="changeText === 'history'">
   <button (click)="redirect('/author/toc/' + content?.identifier  + '/overview')" mat-icon-button
     class="back-icon text-left"><mat-icon>chevron_left</mat-icon></button>
-  <h1 class="heading">Activity log of course : <span style="color: #1C5D95">{{content.name}} </span></h1>
+  <h1 class="heading">Activity Log : <span style="color: #1C5D95">{{content.name}} </span></h1>
   <ng-container>
     <!-- Check if there are comments for the current role -->
     <ng-container *ngIf="commentsList?.length > 0">
@@ -36,13 +36,18 @@
             </div>
           </div> -->
           <div class="in-line">
-            <img alt="" src="/cbp-assets/images/Ellipse130.svg" class="p-r-10">
-            <h5 class="p-r-10 highlight">{{ comment.role }}</h5>
-            <h5 class="time">{{ comment.createdDate | timeDifference : 'short' }}</h5>
+            <!-- <img alt="" src="/cbp-assets/images/Ellipse130.svg" class="p-r-10"> -->
+            <!-- <h5 class="p-r-10 highlight">{{ comment.role }}</h5> -->
+            <!-- <h5 class="time">{{ comment.createdDate | timeDifference : 'short' }}</h5> -->
           </div>
-          <h6 class="commentBox">Comment: {{ comment.comments }}</h6>
-          <h6>Current Course Status: {{comment.currentStatus}}</h6>
-          <h6>Next Course Status: {{comment.nextStatus}}</h6>
+          <h6 class="" style="font-weight: 500;font-size: 14px" *ngIf="comment.role === 'creator'">{{ comment.comments
+            }} by {{ comment.role }}</h6>
+          <h6 class="" style="font-weight: 500;font-size: 14px"
+            *ngIf="comment.role === 'reviewer' || comment.role === 'publisher'">{{ comment.role }}
+            has {{ comment.comments }}</h6>
+          <h5>Current Course Status: {{comment.currentStatus}}</h5>
+          <h5>Next Course Status: {{comment.nextStatus}}</h5>
+          <h5 class="time">{{ comment.createdDate | timeDifference : 'short' }}</h5>
         </div>
       </div>
     </ng-container>
