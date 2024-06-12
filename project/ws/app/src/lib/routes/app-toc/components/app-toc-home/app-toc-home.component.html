@@ -41,15 +41,15 @@
             <!-- <h5 class="time">{{ comment.createdDate | timeDifference : 'short' }}</h5> -->
           </div>
           <h6 class="" style="font-weight: 500;font-size: 14px" *ngIf="comment.role === 'creator'">{{ comment.comments
-            }} by {{ comment.role }}</h6>
+            }} by <span style="text-transform: capitalize;">{{ comment.role }} </span></h6>
           <h6 class="" style="font-weight: 500;font-size: 14px"
             *ngIf="comment.role === 'reviewer' || comment.role === 'publisher'">Comment added by <span
-              style="color: #1C5D95">{{ comment.role
+              style="color: #1C5D95; text-transform: capitalize;">{{ comment.role
               }} :</span>
             {{ comment.comments }}</h6>
-          <h5 style="font-weight: 500;font-size: 14px">Current Course Status: {{comment.currentStatus}}</h5>
-          <h5 style="font-weight: 500;font-size: 14px">Next Course Status: {{comment.nextStatus}}</h5>
-          <h5 class="time">{{ comment.createdDate | timeDifference : 'short' }}</h5>
+          <h5 style="font-size: 14px">Current Course Status : {{comment.currentStatus}}</h5>
+          <h5 style="font-size: 14px">Next Course Status : {{comment.nextStatus}}</h5>
+          <h5 class="time">{{ comment.createdDate | date:'dd/MM/yy HH:mm:ss a' }}</h5>
         </div>
       </div>
     </ng-container>
