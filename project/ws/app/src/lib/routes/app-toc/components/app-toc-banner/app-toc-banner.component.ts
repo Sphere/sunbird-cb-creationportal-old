@@ -116,6 +116,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     if (this.content) {
       this.progressSvc.getComments(this.content.identifier).subscribe(res => {
         console.log("res", res)
+        this.historyList = res
         this.isCreator = this.authAccessService.hasRole(['content_creator'])
 
         this.isReviewer = this.authAccessService.hasRole(['content_reviewer'])
@@ -131,7 +132,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
         const filteredComments = res.filter((comment: { role: string }) => this.roles.includes(comment.role))
         console.log("filtered comments", filteredComments)
         this.commentsList = filteredComments
-        this.historyList = res
+
       })
     }
 

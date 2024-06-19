@@ -312,7 +312,8 @@ margin-right: 7px;
 .comment:disabled {
   opacity: 0.6;
 }
-.creator-comments-length{
+.creator-comments-length,
+.historyList-comments-length {
    background: #F88808;
     position: absolute;
     color: white !important;
