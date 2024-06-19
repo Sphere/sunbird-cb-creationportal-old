@@ -59,7 +59,7 @@ export class SuccessDialogComponent implements OnInit {
             "userId": this._configurationsService!.userProfile!.userId,
             "courseId": this.data.id,
             "role": "publisher",
-            "comments": " ",
+            "comments": "Approving this course to go Live",
             "currentStatus": "Sent for Publish",
             "nextStatus": "Course Published",
             "readComments": false,

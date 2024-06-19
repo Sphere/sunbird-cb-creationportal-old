@@ -1595,7 +1595,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               "userId": this._configurationsService!.userProfile!.userId,
               "courseId": this.courseData.identifier,
               "role": "publisher",
-              "comments": " ",
+              "comments": "Approving this course to go Live",
               "currentStatus": "Sent for Publish",
               "nextStatus": "Course Published",
               "readComments": false,
