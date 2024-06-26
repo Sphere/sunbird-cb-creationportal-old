@@ -346,7 +346,7 @@ export class CommentsDialogComponent implements OnInit {
         "userId": this._configurationsService!.userProfile!.userId,
         "courseId": id[3],
         "role": role,
-        "comments": this.commentsForm.value.comments === '' ? `Comment from ${role}` : this.commentsForm.value.comments,
+        "comments": this.commentsForm.value.comments === '' ? `Sending the course back to draft status from ${role}` : this.commentsForm.value.comments,
         "currentStatus": currentStatus,
         "nextStatus": nextStatus,
         "readComments": false,
