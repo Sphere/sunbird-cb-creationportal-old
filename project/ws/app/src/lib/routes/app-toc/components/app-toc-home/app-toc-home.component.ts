@@ -187,6 +187,10 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     })
   }
 
+  toggleComments(item: any) {
+    item.readComments = !item.readComments
+  }
+
   showMenuItem(menuType: string) {
     let returnValue = false
     switch (menuType) {
