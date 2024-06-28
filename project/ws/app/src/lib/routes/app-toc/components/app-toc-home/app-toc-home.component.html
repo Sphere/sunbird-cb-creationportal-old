@@ -62,8 +62,8 @@
           </h6>
           <h6 class="" style="font-weight: 500;font-size: 15px;"
             *ngIf="comment.currentStatus === 'Sent for Publish' && comment.nextStatus === 'Course Published'">
-            <span style="text-transform: capitalize;">{{ comment.role }}</span>
-            your course is live now.
+            <!-- <span style="text-transform: capitalize;">{{ comment.role }},</span> -->
+            Your <span>{{content?.competency === false ? 'course' : 'self assessment' }}</span> is live now.
           </h6>
           <!-- <h5 style="font-size: 14px">Current Course Status : {{comment.currentStatus}}</h5>
           <h5 style="font-size: 14px">Next Course Status : {{comment.nextStatus}}</h5> -->
@@ -90,8 +90,8 @@
     <!-- Check if there are comments for the current role -->
     <ng-container *ngIf="filteredComments[role].length > 0">
       <span class="comments-text">Comments by <h3 class="role-txt">{{ role | titlecase }}</h3></span>
-      <div *ngFor="let comment of filteredComments[role]" class="display">
-        <div>
+      <div *ngFor="let comment of filteredComments[role]">
+        <div *ngIf="comment.currentStatus !== 'course-created'" class="display">
           <!-- <div class="mark-read-block" *ngIf="hasPublishAccess">
             <div>
               <mat-checkbox style="margin-left: 0px;border-radius: 24px;" class="check-text">Mark as
