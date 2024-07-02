@@ -131,7 +131,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
 
         const filteredComments = res.filter((comment: { role: string }) => this.roles.includes(comment.role))
         console.log("filtered comments", filteredComments)
-        this.commentsList = filteredComments
+        this.commentsList = filteredComments.filter((item: any) => item.currentStatus !== "course-created")
 
       })
     }
