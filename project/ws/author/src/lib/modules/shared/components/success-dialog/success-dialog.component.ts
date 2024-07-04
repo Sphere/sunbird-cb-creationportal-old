@@ -59,12 +59,13 @@ export class SuccessDialogComponent implements OnInit {
             "userId": this._configurationsService!.userProfile!.userId,
             "courseId": this.data.id,
             "role": "publisher",
-            "comments": "Approving this course to go Live",
+            "comments": "Publisher approved this course to go live.",
             "currentStatus": "Sent for Publish",
             "nextStatus": "Course Published",
             "readComments": false,
             "createdDate": moment(new Date()).toISOString(),
-            "updatedDate": moment(new Date()).toISOString()
+            "updatedDate": moment(new Date()).toISOString(),
+            "username": this._configurationsService!.userProfile!.userName
           }
           console.log(dat)
           this.progressSvc.addComment(dat).subscribe((res: any) => {

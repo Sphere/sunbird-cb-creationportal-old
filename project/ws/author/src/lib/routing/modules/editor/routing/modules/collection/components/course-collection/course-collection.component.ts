@@ -1038,7 +1038,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 "nextStatus": "Draft",
                 "readComments": false,
                 "createdDate": moment(new Date()).toISOString(),
-                "updatedDate": moment(new Date()).toISOString()
+                "updatedDate": moment(new Date()).toISOString(),
+                "username": this._configurationsService!.userProfile!.userName
               }
               console.log(dat)
               this.progressSvc.addComment(dat).subscribe(res => {
@@ -1065,7 +1066,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 "nextStatus": "Sent for Publish",
                 "readComments": false,
                 "createdDate": moment(new Date()).toISOString(),
-                "updatedDate": moment(new Date()).toISOString()
+                "updatedDate": moment(new Date()).toISOString(),
+                "username": this._configurationsService!.userProfile!.userName
               }
               console.log(dat)
               this.progressSvc.addComment(dat).subscribe(res => {
@@ -1600,7 +1602,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               "nextStatus": "Course Published",
               "readComments": false,
               "createdDate": moment(new Date()).toISOString(),
-              "updatedDate": moment(new Date()).toISOString()
+              "updatedDate": moment(new Date()).toISOString(),
+              "username": this._configurationsService!.userProfile!.userName
             }
             console.log(dat)
             this.progressSvc.addComment(dat).subscribe(res => {

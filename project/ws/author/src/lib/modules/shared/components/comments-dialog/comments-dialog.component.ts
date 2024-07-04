@@ -101,7 +101,7 @@ export class CommentsDialogComponent implements OnInit {
     }
   }
   ngOnInit() {
-
+    console.log(this._configurationsService.userProfile)
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
     console.log(this.showNewFlow)
     this.contentMeta = this.data
@@ -351,7 +351,8 @@ export class CommentsDialogComponent implements OnInit {
         "nextStatus": nextStatus,
         "readComments": false,
         "createdDate": moment(new Date()).toISOString(),
-        "updatedDate": moment(new Date()).toISOString()
+        "updatedDate": moment(new Date()).toISOString(),
+        "username": this._configurationsService!.userProfile!.userName
       }
       console.log(dat)
       this.progressSvc.addComment(dat).subscribe(res => {
