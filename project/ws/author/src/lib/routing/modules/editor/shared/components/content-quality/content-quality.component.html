@@ -20,7 +20,8 @@
             <ng-container *ngFor="let _menu of questionData; let i = index">
               <a mat-list-item disableRipple class="flex outline-1" [attr.data-index]="i" [routerLink]="'.'"
                 (click)="selectMenu($event,_menu.type,i)" [class.ws-active-route-menu]="isLinkActive(_menu.type, i)">
-                <mat-icon *ngIf="isTouched('menu',i)">done</mat-icon>
+                <!-- <mat-icon *ngIf="isTouched('menu',i)">done</mat-icon> -->
+                <img class="green-tick" *ngIf="isTouched('menu',i)" src="cbp-assets/icons/green-tick.png" alt="" />
                 <span class="padding-left-xs">{{_menu?.name}}</span>
               </a>
             </ng-container>
@@ -41,7 +42,7 @@
             <mat-progress-bar mode="indeterminate" *ngIf="showQuestionProgressBar"></mat-progress-bar>
             <mat-card style="background: #F7FBFE;border: none;" class="ws-mat-accent-border form-block"
               [formGroupName]="idx">
-              <mat-card-title class="m-auto">
+              <mat-card-title style="background: #F3F8FD !important;padding: 14px;" class="m-auto">
                 <!-- <input name="sectionName" type="text" readonly class="mat-title no-border" formControlName="name"> -->
                 <span *ngIf="questionData[idx].desc" tabindex="0" class="mat-title">{{questionData[idx].name}}</span>
               </mat-card-title>
@@ -56,7 +57,7 @@
                     [formGroupName]="qIdx">
                     <div class="flex flex-1 flex-column" *ngIf="selectedQIndex === qIdx">
                       <div class="flex flex-1">
-                        <span class="mat-subheading-1 width-100" tabindex="0">
+                        <span class="mat-subheading-1 width-100 padding-left-14" tabindex="0">
                           {{questionData[idx].questions[qIdx].question}}
                         </span>
                       </div>
@@ -65,12 +66,23 @@
                           aria-label="Select an option" formControlName="options">
                           <mat-radio-button [name]="'radio-' + _option.name"
                             class="flex flex-row itm-center ws-mat-accent-border margin-right-s radio-btn-bg"
-                            (change)="!lastQ?autoNextQ():null"
                             *ngFor="let _option of questionData[idx].questions[qIdx].options" [value]="_option.weight">
                             <span class="mat-body-2">{{_option.name}}</span>
                           </mat-radio-button>
                         </mat-radio-group>
                       </div>
+                      <div class="flex flex-column">
+                        <textarea formControlName="comment" [name]="'comment-' + question.comment"
+                          class="flex flex-row itm-center ws-mat-accent-border comment-text" matInput i18n-placeholder
+                          placeholder="Provide Comment..." [value]="questionData[idx].questions[qIdx].comment"
+                          rows="5"></textarea>
+                        <span class="help-text">Explain the creator why your response was no to this checklist</span>
+                      </div>
+                      <!-- <div class="flex flex-column">
+                        <mat-input formControlName="comment" [name]="'comment-' + question.comment"
+                          class="flex flex-row itm-center ws-mat-accent-border margin-right-s radio-btn-bg"
+                          [value]="questionData[idx].questions[qIdx].comment">
+                      </div> -->
                     </div>
                   </ng-container>
                 </ng-container>
@@ -116,25 +128,27 @@
 
 <ng-template #instruction let-name="name">
   <mat-card class="ws-mat-accent-border form-block">
-    <mat-card-title class="m-auto">
+    <mat-card-title class="m-auto" style="background: #F3F8FD !important;
+    padding: 14px;">
       <span class="mat-title">{{name || 'Instructions'}}</span>
     </mat-card-title>
-    <mat-card-content class="margin-top-m mobile-break">
+    <mat-card-content style="padding: 14px;" class="margin-top-m mobile-break">
       <span class="mat-body-1">All courses on the Aastrika platform will be scored on six categories:
         {{fieldsToDisplay}}.
         Please mark your answers from the drop-down menu across the provided range: Yes, No
         (and Not Applicable for certain questions). Once you have completed the questionnaire, please
         click on submit button.</span>
-      <div class="flex flex-column new-color padding-s margin-s">
+      <div class="flex flex-column new-color padding-s" style="margin-top: 5px;">
         <span class="mat-body-1">
-          We trust you to complete the content quality assessment honestly. The content you submit for review
-          will go through another round of quality assessment by experts. Any disparity found might lead to reduction
-          in your trust score.
+          Note: We trust you to complete the content quality assessment honestly. The content you submit for review will
+          go
+          through another round of quality assessment by experts. Any disparity found might lead to reduction in your
+          trust score.
         </span>
         <!-- <a class="ws-mat-default-text" href="#">Read more about trust score</a> -->
       </div>
     </mat-card-content>
-    <mat-card-actions>
+    <mat-card-actions style="padding: 14px;">
       <div class="flex flex-start margin-top-l margin-bottom-s margin-left-s">
         <button mat-raised-button type="button" (click)="start()" class="text-white start-review-btn">
           <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Start Review Cheklist

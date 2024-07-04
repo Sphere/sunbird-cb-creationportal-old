@@ -1,4 +1,4 @@
-<div style="color: #1C5D95 !important;padding: 0px 10.9rem;">
+<div style="color: #1C5D95 !important;padding: 16px 2.9rem; height:50px; background: #F3F8FD;">
   <h3 *ngIf=" content?.status==='Deleted' || content?.status==='Expired'" class=" margin-remove-bottom pt-4 info-msg"
     i18n>
     The content is expired or deleted.
@@ -6,15 +6,55 @@
   <h3 class="margin-remove-bottom pt-4 info-msg" i18n *ngIf="content?.status === 'Unpublished'">
     The content has been unpublished.
   </h3>
-  <h3 class="margin-remove-bottom pt-4 info-msg" i18n *ngIf="content?.status === 'Draft'">
+  <h3 class="margin-remove-bottom pt-4 info-msg" style="float: left;" i18n *ngIf="content?.status === 'Draft'">
     <img loading="lazy" src=".\cbp-assets\images\preview-icon.svg" alt="clock"> <span style="vertical-align: super;">You
       are in draft mode</span>
   </h3>
-  <h3 class="margin-remove-bottom pt-4 info-msg" i18n
+  <h3 class="margin-remove-bottom pt-4 info-msg" i18n style="float: left;"
     *ngIf="content?.status === 'Review'&&content?.reviewStatus==='InReview'">
     <img loading="lazy" src=".\cbp-assets\images\preview-icon.svg" alt="clock"><span style="vertical-align: super;">You
       are in review mode</span>
   </h3>
+  <div class="creator-action-btn">
+    <div>
+      <button id="comment" class="accept-btn cursor-pointer" (click)="gotoReviewerChecklist()">
+        <ng-container i18n>Review Checklist</ng-container>
+      </button>
+    </div>
+    <div>
+      <button class="comment accept-btn cursor-pointer" [disabled]="historyList?.length === 0" (click)="gotoHistory()"
+        style="position: relative;">
+        <ng-container i18n>Activity Log</ng-container>
+        <span style="   background: #F88808;
+    position: absolute;
+    color: white !important;
+    right: -4px;
+    top: -5px !important;
+    width: 25px;
+    height: 24px;
+    border-radius: 28px;
+    font-size: 12px;
+    text-align: center;
+    align-items: center;
+    display: flex;
+    justify-content: center;">{{historyList?.length}}</span>
+      </button>
+    </div>
+    <div>
+      <button id="comment" class="comment accept-btn cursor-pointer" [disabled]="commentsList?.length < 1"
+        (click)="gotoComments()">
+        <ng-container i18n>Comments</ng-container>
+        <span
+          [ngClass]="content?.status==='Draft'?'creator-comments-length':'comments-length'">{{commentsList?.length}}</span>
+      </button>
+    </div>
+    <div>
+      <button *ngIf="content?.status==='Draft'"
+        [routerLink]="['/author/editor/' + content?.identifier  + '/collection']" class="edit-course">Edit the
+        course</button>
+    </div>
+  </div>
+
 </div>
 <div style="width: 100%; overflow: hidden;background-color: #f7f7f7;font-family: Roboto !important;">
   <div [ngClass]="{ 'header-synopsis-gradient': bannerUrl }" *ngIf="content">
@@ -35,10 +75,10 @@
             mat-icon-button [disableRipple]="true" class="back-icon"><mat-icon>chevron_left</mat-icon></button>
           <button *ngIf="isReviewer" [routerLink]="'/author/cbp'" mat-icon-button [disableRipple]="true"
             class="back-icon"><mat-icon>chevron_left</mat-icon></button>
-          <div style="float:right">
+          <!-- <div style="float:right">
             <img loading="lazy" src=".\cbp-assets\images\clock.svg" alt="clock"> {{ content?.duration |
             pipeDurationTransform: 'hms' }}
-          </div>
+          </div> -->
           <!-- <div class="header-synopsis" [ngClass]="{ 'header-synopsis-gradient': bannerUrl }" *ngIf="content"> -->
           <div class="header-title flex-col sm:flex-row">
             <!-- <div *ngIf="content?.appIcon" class="apIcon">
@@ -62,6 +102,9 @@
           <div class="flex flex-col sm:flex-row">
             <div class="sm:ml-5 flex flex-col flex-auto">
               <div [ngSwitch]="routePath" class="header-meta" [ngClass]="{ 'header-meta-banner': bannerUrl }">
+                <h3 title="Subtitle" style="margin-top: 0px; margin-bottom: 5px;">
+                  {{ content?.subTitle }}
+                </h3>
                 <div class="banner-overview-container" [hidden]="!content?.purpose && showSubtitleOnBanner"
                   *ngSwitchCase="'overview'">
                   <!-- <h2 class="overview-description" *ngIf="showSubtitleOnBanner" i18n-title title="Subtitle">
@@ -96,36 +139,92 @@
 
                 <!-- Table Structure -->
                 <div>
-                  <div class="toc-banner-item" *ngIf="tocConfig?.atAGlance?.duration?.enabled && content?.duration">
-                    Duration :
-                    {{ content?.duration | pipeDurationTransform: 'hms' }} </div>
-                  <div class="toc-banner-item"
-                    *ngIf="tocConfig?.atAGlance?.expiryDate?.enabled && content?.expiryDate && content?.expiryDate?.startsWith('20')">
-                    {{tocConfig?.atAGlance?.expiryDate?.displayName}} : {{ content?.expiryDate | date }}</div>
-                  <div class="info-item" *ngIf="tocConfig?.atAGlance?.lastUpdatedOn?.enabled && content?.lastUpdatedOn">
-                    {{tocConfig?.atAGlance?.lastUpdatedOn?.displayName}} : {{ content?.lastUpdatedOn | date }}
+                  <div class="separate">
+                    <div class="toc-banner-item" *ngIf="tocConfig?.atAGlance?.duration?.enabled && content?.duration">
+                      <span class="text">Duration :</span>
+                      {{ content?.duration | pipeDurationTransform: 'hms' }}
+                    </div>
+                    <div class="info-item"
+                      *ngIf="tocConfig?.atAGlance?.lastUpdatedOn?.enabled && content?.lastUpdatedOn">
+                      <span class="text">{{tocConfig?.atAGlance?.lastUpdatedOn?.displayName}} :</span> {{
+                      content?.lastUpdatedOn | date }}
+                    </div>
                   </div>
-                  <div *ngIf="content?.sourceName">
-                    Source : <a class="blue-link cursor-pointer"
-                      (click)="showOrgprofile(content?.sourceName)">{{content?.sourceName}}</a>
+                  <div class="vertical-line" *ngIf="content?.lastUpdatedOn  || content?.duration"></div>
+                  <div class="separate">
+                    <div class="toc-banner-item" *ngIf="content?.reviewer && content?.reviewer.length > 0">
+                      <span class="text">Reviewer :</span> {{
+                      content?.reviewer[0].name }}
+                    </div>
+                    <div class="toc-banner-item"
+                      *ngIf="content?.publisherDetails && content?.publisherDetails.length > 0">
+                      <span class="text">Publisher :</span> {{
+                      content?.publisherDetails[0].name }}
+                    </div>
                   </div>
-                  <div *ngIf="content?.creatorContacts"> Authors :
-                    <span *ngFor="let author of content?.creatorContacts; let i = index" class="mr-1">{{author.name}}
-                      <ng-container
-                        *ngIf="content?.creatorContacts.length > 1 && i !== content?.creatorContacts.length - 1">,
-                      </ng-container>
-                    </span>
+                  <div class="vertical-line"
+                    *ngIf="content?.reviewer && content?.reviewer.length > 0 || content?.publisherDetails && content?.publisherDetails.length > 0">
                   </div>
-                  <div *ngIf="content?.creatorDetails">
-                    Curators :
-                    <span *ngFor="let curator of content?.creatorDetails; let i = index" class="mr-1">
-                      {{curator.name}} <ng-container
-                        *ngIf="content?.creatorDetails.length > 1 && i !== content?.creatorDetails.length - 1">,
-                      </ng-container>
-                    </span>
+                  <div class="separate">
+                    <div class="toc-banner-item" *ngIf="content?.creatorDetails && content?.creatorDetails.length > 0">
+                      <span class="text">Author : </span> <span
+                        *ngFor="let author of content?.creatorDetails; let i = index" class="mr-1">{{author.name}}
+                        <ng-container
+                          *ngIf="content?.creatorDetails.length > 1 && i !== content?.creatorDetails.length - 1">,
+                        </ng-container>
+                      </span>
+                    </div>
+                    <div *ngIf="content?.sourceName">
+                      <span class="text">Source : </span><a class="blue-link cursor-pointer"
+                        (click)="showOrgprofile(content?.sourceName)">{{content?.sourceName}}</a>
+                    </div>
                   </div>
-
-
+                  <div class="vertical-line"
+                    *ngIf="content?.sourceName || content?.creatorDetails && content?.creatorDetails.length > 0"></div>
+                  <div class="separate">
+                    <div *ngIf="content?.issueCertification">
+                      <span class="text">Certification : </span>
+                      <span>{{content.issueCertification === true ? 'Yes' : 'No'}}</span>
+                    </div>
+                    <div *ngIf="content?.cneName">
+                      <span class="text">CNE Points : </span>
+                      <span>
+                        {{content.cneName}}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="vertical-line" *ngIf="content?.issueCertification || content?.cneName"></div>
+                  <div class="separate">
+                    <div *ngIf="content?.gatingEnabled">
+                      <span class="text">Gating Enabled : </span>
+                      <span>{{content.gatingEnabled === true ? 'Yes' : 'No'}}</span>
+                    </div>
+                    <div *ngIf="content?.courseVisibility">
+                      <span class="text">Private Course : </span>
+                      <span>
+                        {{content.courseVisibility === true ? 'Yes' : 'No'}}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="vertical-line" *ngIf="content?.gatingEnabled || content?.courseVisibility"></div>
+                  <div class="separate">
+                    <div *ngIf="content?.rolesMapped">
+                      <span class="text">Audience : </span>
+                      <span *ngFor="let curator of content?.rolesMapped; let i = index" class="mr-1">
+                        {{curator}} <ng-container
+                          *ngIf="content?.rolesMapped.length > 1 && i !== content?.rolesMapped.length - 1">,
+                        </ng-container>
+                      </span>
+                    </div>
+                    <div *ngIf="content?.keywords">
+                      <span class="text">Keywords : </span>
+                      <span *ngFor="let curator of content?.keywords; let i = index" class="mr-1">
+                        {{curator}} <ng-container
+                          *ngIf="content?.keywords.length > 1 && i !== content?.keywords.length - 1">,
+                        </ng-container>
+                      </span>
+                    </div>
+                  </div>
                   <!-- {{fetchCohorts(cohortTypesEnum.ACTIVE_USERS)}} -->
                   <div *ngIf="cohortResults[cohortTypesEnum.ACTIVE_USERS]">
                     <a [routerLink]="'./details'" [queryParams]="{id: content.identifier}">

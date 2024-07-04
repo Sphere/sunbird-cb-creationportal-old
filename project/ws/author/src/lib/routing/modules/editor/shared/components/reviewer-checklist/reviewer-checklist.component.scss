@@ -1,5 +1,5 @@
 .checklist-container{
-  overflow: scroll;
+  overflow-y: scroll;
   height: 400px;
 }
 ::ng-deep .mat-tab-header {
@@ -7,8 +7,7 @@
 }
 .no-data-message {
   text-align: center;
-  padding: 20px;
-
+  padding: 0px 20px;
   color: #000000;
   font-size: 18px;
 }
@@ -88,7 +87,7 @@ font-style: normal;
 font-weight: 400;
 line-height: 24px;
 letter-spacing: -0.4px;
-  width: 82%;
+  width: 70%;
   height: auto;
   flex-shrink: 0;
   border-radius: 15px;
@@ -96,6 +95,10 @@ letter-spacing: -0.4px;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
   margin: 5px;
 }
+.comment-read-container{
+cursor: pointer;
+}
+
 .answer-container{
   display: flex;
   justify-content: center;
@@ -128,7 +131,7 @@ letter-spacing: -0.4px !important;
 }
 /* Styling the scrollbar track */
 ::-webkit-scrollbar {
-  width: 5px; /* Set the width of the scrollbar */
+  width: 6px; /* Set the width of the scrollbar */
 }
 
 /* Styling the scrollbar thumb (the draggable handle) */
@@ -153,13 +156,52 @@ letter-spacing: -0.4px !important;
   color: red;
 }
 .percentage-text{
-  // color: #1C5D95 !important;
-
-/* Display 1 */
 font-family: Roboto !important;
-font-size: 32px !important;
+font-size: 16px !important;
 font-style: normal !important;
-font-weight: 400 !important;
+font-weight:  500 !important;
 line-height: 57.6px !important;
 letter-spacing: -0.96px !important;
+display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px 0px 0px 4px !important;
+}
+.left-icon{
+  text-align: left;
+  cursor: pointer;
+}
+.no-data{
+  margin-top: 150px !important;
+}
+.total-percentage{
+  font-size: 16px !important;
+    width: 191px;
+    height: 32px;
+    background: #EBF4FB !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border-radius: 32px;
+    color: #1C5D95 !important;
+}
+.percentage-block{
+  display: flex;
+  justify-content: flex-end;
+}
+
+::ng-deep .mat-tab-label-active {
+  border-bottom: 2px solid #1C5D95; /* Change 'red' to your desired color */
+}
+::ng-deep .mat-tab-labels{
+
+ .mat-ink-bar{
+    border-bottom-color:  #1C5D95 !important; /* Change 'red' to your desired color */
+
+}
+}
+
+::ng-deep .theme-igot.day-mode .mat-ink-bar {
+    background-color: #1C5D95 !important;
 }

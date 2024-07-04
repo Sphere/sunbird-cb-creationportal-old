@@ -53,6 +53,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     'SkillSoft Leadership',
     'Pluralsight',
   ])
+  roles: string[] = ['reviewer', 'publisher', 'creator'];
   isUserRegistered = false
   actionBtnStatus = 'wait'
   showIntranetMessage = false
@@ -68,8 +69,11 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     [key: string]: { hasError: boolean; contents: NsCohorts.ICohortsContent[], count: Number }
   } = {}
   cohortTypesEnum = NsCohorts.ECohortTypes
-  isReviewer: Boolean = false
-
+  isReviewer: boolean = false
+  isCreator: boolean = false
+  isPublisher: boolean = false
+  commentsList: any
+  historyList: any
   constructor(
     private sanitizer: DomSanitizer,
     private router: Router,
@@ -91,6 +95,9 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.isReviewer = false
     }
+    if (this.authAccessService.hasRole(['content_creator'])) {
+      this.isCreator = true
+    }
     this.route.data.subscribe(data => {
       this.tocConfig = data.pageData.data
       if (this.content && this.isPostAssessment) {
@@ -105,6 +112,30 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
         })
       }
     })
+
+    if (this.content) {
+      this.progressSvc.getComments(this.content.identifier).subscribe(res => {
+        console.log("res", res)
+        this.historyList = res
+        this.isCreator = this.authAccessService.hasRole(['content_creator'])
+
+        this.isReviewer = this.authAccessService.hasRole(['content_reviewer'])
+        this.isPublisher = this.authAccessService.hasRole(['content_publisher'])
+        if (this.isCreator) {
+          this.roles = ['reviewer', 'publisher']
+        } else if (this.isReviewer) {
+          this.roles = ['creator', 'publisher']
+        } else if (this.isPublisher) {
+          this.roles = ['creator', 'reviewer']
+        }
+
+        const filteredComments = res.filter((comment: { role: string }) => this.roles.includes(comment.role))
+        console.log("filtered comments", filteredComments)
+        this.commentsList = filteredComments.filter((item: any) => item.currentStatus !== "course-created")
+
+      })
+    }
+
     const instanceConfig = this.configSvc.instanceConfig
     if (instanceConfig) {
       this.defaultSLogo = instanceConfig.logos.defaultSourceLogo
@@ -408,7 +439,17 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
       this.actionBtnStatus = 'grant'
     }
   }
-
+  gotoHistory() {
+    this.tocSvc.changeMessage('history')
+  }
+  gotoComments() {
+    this.tocSvc.changeMessage('comments')
+  }
+  gotoReviewerChecklist() {
+    if (this.content) {
+      this.router.navigate(['/author/reviewerChecklist/' + this.content.identifier])
+    }
+  }
   generateQuery(type: 'RESUME' | 'START_OVER' | 'START'): { [key: string]: string } {
     if (this.firstResourceLink && (type === 'START' || type === 'START_OVER')) {
       let qParams: { [key: string]: string } = {

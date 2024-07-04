@@ -89,7 +89,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   assessmentDuration: any
   randomCount: any
   passPercentage: any
-  isQuiz: string = ''
+  isQuiz: string = 'Quiz'
   mediumSizeBreakpoint$ = this.breakpointObserver
     .observe([Breakpoints.XSmall, Breakpoints.Small])
     .pipe(map((res: BreakpointState) => res.matches))
@@ -138,9 +138,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     this.initService.isAssessmentOrQuizMessage.subscribe(
       (data: any) => {
         if (data == false) {
-          this.isQuiz = 'true'
+          this.isQuiz = 'Assessment'
         } else {
-          this.isQuiz = 'false'
+          this.isQuiz = 'Quiz'
         }
       })
   }
@@ -252,11 +252,10 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       this.isLoading = true
       // console.log('kk', JSON.parse(sessionStorage.assessment))
       const code = sessionStorage.getItem('assessment') || null
-      this.isQuiz = sessionStorage.getItem('quiz') || ''
-
+      console.log("sessionStorage.getItem('quiz')", sessionStorage.getItem('quiz'))
 
       this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
-
+        console.log("code", code)
         if (code) {
           this.loaderService.changeLoad.next(false)
           this.isEdited = true
@@ -282,10 +281,13 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
           this.activateRoute.parent.parent.data.subscribe(v => {
             // tslint:disable-next-line:no-console
             console.log(v)
+
             this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(async newData => {
               // const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
 
-              let quizContent = await this.editorService.readcontentV3(this.metaContentService.currentContent).toPromise()
+              let quizContent: any = await this.editorService.readcontentV3(this.metaContentService.currentContent).toPromise()
+              this.isQuiz = quizContent.isAssessment ? 'Assessment' : 'Quiz'
+              console.log("this is quiz", v.contents[0].content, this.isQuiz)
               this.resourceName = quizContent ? quizContent.name : 'Resource'
               console.log("quizContent", quizContent, this.metaContentService.currentContent, this.resourceName)
               // console.log(quizContent)
@@ -304,6 +306,14 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                         if (jsonResponse.passPercentage >= 0) {
                           this.validPercentage = true
                         }
+                        console.log("yes here", jsonResponse.isAssessment, quizContent.competency)
+                        if (jsonResponse.isAssessment && quizContent.competency) {
+                          this.isQuiz = 'Assessment'
+                        } else {
+                          this.validPercentage = true
+                          this.isQuiz = 'Quiz'
+                        }
+
                         this.assessmentDuration = (jsonResponse.timeLimit) / 60
                         this.passPercentage = jsonResponse.passPercentage
                         this.randomCount = jsonResponse.randomCount
@@ -367,14 +377,23 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                     if (!this.quizStoreSvc.collectiveQuiz[id]) {
                       this.quizStoreSvc.collectiveQuiz[id] = []
                     }
-                  }
+                    console.log("yessfasdf", quizContent)
 
+                  }
+                  if (quizContent.isAssessment) {
+                    this.isQuiz = 'Assessment'
+                  } else {
+                    this.validPercentage = true
+                    this.isQuiz = 'Quiz'
+                  }
                 })
               }
-
+              if (v.contents[0].content.competency) {
+                console.log("ye sasdfsdaf")
+                this.isQuiz = 'Assessment'
+              }
             })
           })
-
           // selected quiz index
           this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
             this.selectedQuizIndex = index
@@ -397,6 +416,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   }
   addTodo(event: any, field: string) {
     const meta: any = {}
+    console.log("event", event)
+    if (event > 100) {
+      // Reset the input value to 100
+      this.passPercentage = 100
+      event = 100
+    }
     if (field === 'passPercentage') {
       meta['passPercentage'] = event
       this.passPercentage = event
@@ -407,6 +432,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       }
       if (event === null) {
         this.validPercentage = false
+      }
+      if (this.isQuiz === 'Quiz') {
+        this.validPercentage = true
       }
       this.quizStoreSvc.hasChanged = true
     } else {
@@ -738,17 +766,18 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   uploadJson(array: any[], fileName: string) {
     // tslint:disable-next-line:no-console
-    console.log(this.assessmentDuration, this.passPercentage)
+    console.log(this.assessmentDuration, this.passPercentage, this.isQuiz)
     this.quizDuration = (this.metaContentService.getUpdatedMeta(this.currentId).duration &&
       this.metaContentService.getUpdatedMeta(this.currentId).duration !== '0') ?
       this.metaContentService.getUpdatedMeta(this.currentId).duration : this.assessmentDuration
+    this.passPercentage = this.isQuiz === 'Quiz' ? 0 : this.passPercentage
     const quizData = {
       // tslint:disable-next-line: prefer-template
       //timeLimit: parseInt(this.quizDuration + '', 10) || 300
       timeLimit: (this.assessmentDuration) * 60,
       //assessmentDuration: (this.assessmentDuration) * 60 || '300',
       passPercentage: this.passPercentage,
-      isAssessment: this.isQuiz === '' ? true : false,
+      isAssessment: this.isQuiz === 'Assessment' ? true : false,
       randomCount: this.randomCount || this.questionsArr.length,
       questions: array,
     }

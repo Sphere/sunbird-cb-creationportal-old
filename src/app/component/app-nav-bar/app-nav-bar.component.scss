@@ -6,7 +6,12 @@
   flex-direction: row;
   cursor: pointer;
 }
-
+.stepper-block{
+  display: flex;
+    align-items: center;
+    width: 78%;
+    justify-content: center;
+}
 // .fix-ww {
 //   margin-left: auto;
 //   margin-right: auto;
@@ -40,15 +45,15 @@
   // color: rgba(0, 0, 0, 0.54);
 }
 
-.logo-dim {
-  min-width: 70px;
-  max-width: 174px;
-  /* margin-right: 10rem; */
-  margin-top: 10px;
-  margin-bottom: auto;
-  width: 174px;
-  margin-right: 2rem;
-}
+// .logo-dim {
+//   min-width: 70px;
+//   max-width: 174px;
+//   /* margin-right: 10rem; */
+//   margin-top: 10px;
+//   margin-bottom: auto;
+//   width: 174px;
+//   margin-right: 2rem;
+// }
 
 // .app-logo {
 //   max-width: 100px;
@@ -62,10 +67,10 @@
 // }
 
 .app-logo {
-  height: auto;
-  max-width: 100%;
-  width: 150px;
-  max-height: 60px;
+  height: 70px;
+  // max-width: 100%;
+  // width: 150px;
+  // max-height: 60px;
 filter: brightness(3);
   @include breakpoint-xs {
     max-width: 80px;

@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs'
 import { CreateService } from './create.service'
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms'
+import { ActivatedRoute } from '@angular/router'
 
 @Component({
   selector: 'ws-auth-generic',
@@ -40,7 +41,14 @@ export class CreateComponent implements OnInit, OnDestroy {
   courseObj = ''
   courseEntity!: ICreateEntity
   createCourseForm!: FormGroup
-
+  isSelfAssessment = false
+  steps: any = [
+    { label: '1. Introduction', activeStep: true, completed: false },
+    { label: '2. Course Details', activeStep: false, completed: false },
+    { label: '3. Course Builder', activeStep: false, completed: false },
+    { label: '4. Course Settings', activeStep: false, completed: false }
+  ];
+  header: any = 'Course Details'
   constructor(
     private snackBar: MatSnackBar,
     private svc: CreateService,
@@ -49,6 +57,7 @@ export class CreateComponent implements OnInit, OnDestroy {
     private accessControlSvc: AccessControlService,
     private authInitService: AuthInitService,
     private dialog: MatDialog,
+    private route: ActivatedRoute,
     private formBuilder: FormBuilder) { }
 
   ngOnInit() {
@@ -63,6 +72,19 @@ export class CreateComponent implements OnInit, OnDestroy {
             this.entity.push(v)
           }
         }
+      }
+    })
+    this.route.queryParams.subscribe(params => {
+      // Access individual query parameters
+      const value = params['status']
+      if (value == 'selfAssessment') {
+        this.isSelfAssessment = true
+        this.header = 'Self Assessment details'
+        this.steps = [
+          { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: true, completed: false },
+          { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: false, completed: false },
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+        ]
       }
     })
     this.loaderService.changeLoadState(false)

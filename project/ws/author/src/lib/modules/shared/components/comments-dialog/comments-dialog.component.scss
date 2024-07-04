@@ -90,10 +90,15 @@ th, td {
   border-radius: 30px !important;
 }
 .publish-course-note{
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  color: #808080 !important;
+//styleName: Body;
+font-family: Roboto;
+font-size: 16px;
+font-weight: 400;
+line-height: 24px;
+letter-spacing: -0.02em;
+text-align: left;
+color: #808080 !important;
+
 }
 .refresh-button{
     top: 5px;
@@ -154,4 +159,31 @@ th {
 .button-style {
   height: 6vh !important;
   width: 15vh !important;
+}
+
+.theme-igot.day-mode .mat-form-field-invalid .mat-input-element, .theme-igot.day-mode .mat-warn .mat-input-element {
+  caret-color : #f44336 !important
+
+}
+
+.theme-igot.day-mode .mat-input-element {
+  caret-color: #000 !important;
+  margin-right: 5px !important;
+}
+
+textarea:focus {
+  cursor: text !important; /* Change cursor style to pointer */
+
+}
+textarea::placeholder {
+  font-weight: normal !important; /* Reset font weight for placeholder text */
+}
+.publish-course{
+  //styleName: Header 2;
+font-family: Roboto;
+font-size: 24px;
+font-weight: 400;
+line-height: 29px;
+letter-spacing: -0.02em;
+text-align: left;
 }

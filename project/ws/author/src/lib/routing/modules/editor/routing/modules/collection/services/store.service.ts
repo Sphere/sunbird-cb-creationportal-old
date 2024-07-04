@@ -385,7 +385,7 @@ export class CollectionStoreService {
       if (cType === 'upload') {
         mimeTypeData = this.setUploadContentAcceptType()
       }
-
+      console.log("topicObj", topicObj)
       const requestBody = {
         name: type.type === 'collection' ? 'Module Name' : topicObj.topicName,
         description: topicDescription,
@@ -395,7 +395,7 @@ export class CollectionStoreService {
         resourceType: parentData.categoryType || '',
         categoryType: parentData.categoryType || '',
         fileType: fileType || '',
-
+        isAssessment: topicObj.isAssessment,
         // thumbnail: parentData.thumbnail,
         // appIcon: parentData.appIcon,
         posterImage: parentData.posterImage,
@@ -514,6 +514,7 @@ export class CollectionStoreService {
       isNew: true,
       root: false,
       metadata: {
+        isAssessment: meta.isAssessment,
         code: randomNumber,
         contentType: meta.contentType,
         createdBy: this.accessService.userId,
@@ -1155,6 +1156,31 @@ export class CollectionStoreService {
         })
       }
     }
+  }
+  getNewTreeHierarchys(content: any) {
+    const hierarchyTree: any = {}
+
+    const buildHierarchy = (node: any) => {
+      const identifier = node.identifier
+      hierarchyTree[identifier] = {
+        root: this.parentNode.includes(identifier),
+        contentType: node.category,
+        primaryCategory: node.contentType === 'Resource' ? undefined : 'Course Unit',
+        name: node.contentType === 'Resource' ? node.name : undefined,
+        children: [],
+      }
+
+      if (node.children && node.children.length > 0) {
+        node.children.forEach((child: any) => {
+          hierarchyTree[identifier].children.push(child.identifier)
+          buildHierarchy(child)
+        })
+      }
+    }
+
+    buildHierarchy(content)
+
+    return hierarchyTree
   }
 
   getNewTreeHierarchy(content: any) {

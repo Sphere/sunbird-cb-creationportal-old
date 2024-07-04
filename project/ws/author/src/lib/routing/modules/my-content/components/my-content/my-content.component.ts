@@ -94,6 +94,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
   activeLink = this.links[0];
   isSelectedColor: boolean = true
   isSelectedReviewCourse: boolean = false;
+  isSelectedRevisionCourse: boolean = false;
+  isSelectedSelfRevisionCourse: boolean = false;
   isSelectedPublishCourse: boolean = false;
   isSelectedToPublishCourse: boolean = false;
   isSelectedAllCourse: boolean = false
@@ -104,12 +106,19 @@ export class MyContentComponent implements OnInit, OnDestroy {
   link: string = ''
   isContentExpanded: boolean = false
   isCouseExpanded: boolean = false
-
+  isSelfAssessmentExpanded: boolean = false
+  isAiHubExanded: boolean = false
+  isSelfAssessmentSelectedColor: boolean = false
+  isSelectedSelfPublishCourse: boolean = false
+  isSelectedSelfReviewCourse: boolean = false
+  isSelectedToSelfPublishCourse: boolean = false
+  isSelectedSelfRetiredCourse: boolean = false
   @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<
     any
   >
 
   // sideNavBarOpened = true
+  isAihub = false
   panelOpenState = false
   allowReview = false
   allowAuthor = false
@@ -119,7 +128,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
   allowExpiry = false
   allowRestore = false
   isNewDesign = false
-
+  currentTab = 'My Courses'
+  currentStatus = 'Drafts'
+  createCourseBtn = true
   public filterMenuItems: any = []
 
   dataSource: any
@@ -157,6 +168,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       offset: 0,
       limit: 24,
     }
+    // this.router.navigate(['/author/my-content'], { queryParams: { status: 'draft' } })
+
     // tslint:disable-next-line:no-console
     console.log(this.configService.unMappedUser.roles)
     // this.newDesign = this.accessService.authoringConfig.newDesign
@@ -184,27 +197,36 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.allowReview = this.canShow('review') && this.accessService.authoringConfig.allowReview
     this.allowPublish = this.canShow('publish') && this.accessService.authoringConfig.allowPublish
     this.isContentExpanded = true
+    console.log("status: ", this.status)
     if (this.status === 'allCourses' || this.status === 'coursesWithoutCertificate' || this.status === 'courseWithCertificate') {
       this.links = ['All Courses', 'Courses without certificate', 'Courses with certificate']
       this.isContentExpanded = false
       this.isCouseExpanded = true
       this.isSelectedColor = false
       this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
       this.isSelectedPublishCourse = false
       this.isSelectedToPublishCourse = false
       if (this.status === 'allCourses') {
+        this.currentTab = 'Manage Courses'
+        this.currentStatus = 'All Courses'
         this.link = 'All Courses'
         this.activeLink = 'All Courses'
         this.isSelectedAllCourse = true
         this.isSelectedCourseWithoutCertificate = false
         this.isSelectedCourseWithCertificate = false
       } else if (this.status === 'coursesWithoutCertificate') {
+        this.currentTab = 'Manage Courses'
+        this.currentStatus = 'Courses without certificate'
         this.link = 'Courses without certificate'
         this.activeLink = 'Courses without certificate'
         this.isSelectedAllCourse = false
         this.isSelectedCourseWithoutCertificate = true
         this.isSelectedCourseWithCertificate = false
       } else if (this.status === 'courseWithCertificate') {
+        this.currentTab = 'Manage Courses'
+        this.currentStatus = 'Courses with certificate'
         this.link = 'Courses with certificate'
         this.activeLink = 'Courses with certificate'
         this.isSelectedAllCourse = false
@@ -218,55 +240,312 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.activeLink = 'Draft'
       this.isSelectedColor = false
       this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
       this.isSelectedPublishCourse = false
       this.isSelectedToPublishCourse = false
       this.isSelectedAllCourse = false
       this.isSelectedCourseWithoutCertificate = false
       this.isSelectedCourseWithCertificate = false
-    } else if (this.allowPublish) {
-      this.link = 'Courses to publish'
-      this.links = ['Courses to publish', 'Published Courses']
-      this.activeLink = this.links[0]
+    }
+    // else if (this.allowPublish) {
+    //   this.link = 'Courses to publish'
+    //   this.links = ['Courses to publish', 'Published Courses']
+    //   this.activeLink = this.links[0]
+    //   this.isSelectedColor = false
+    //   this.isSelectedReviewCourse = false
+    //   this.isSelectedPublishCourse = false
+    //   this.isSelectedToPublishCourse = true
+    //   this.isSelectedAllCourse = false
+    //   this.isSelectedCourseWithoutCertificate = false
+    //   this.isSelectedCourseWithCertificate = false
+    // } else if (this.allowReview) {
+    //   this.link = 'Sent for review'
+    //   this.links = ['Sent for review', 'Published Courses', 'Retired']
+    //   this.activeLink = this.links[0]
+    //   this.isSelectedColor = false
+    //   this.isSelectedReviewCourse = true
+    //   this.isSelectedPublishCourse = false
+    //   this.isSelectedToPublishCourse = true
+    //   this.isSelectedAllCourse = false
+    //   this.isSelectedCourseWithoutCertificate = false
+    //   this.isSelectedCourseWithCertificate = false
+    // }
+    // else if (this.allowAuthorContentCreate) {
+    //   this.link = 'Draft'
+    //   this.links = ['Draft', 'Sent for review', 'Published Courses', 'Retired']
+    //   this.activeLink = 'Draft'
+    //   this.isSelectedColor = true
+    //   this.isSelectedReviewCourse = false
+    //   this.isSelectedPublishCourse = false
+    //   this.isSelectedToPublishCourse = false
+    //   this.isSelectedAllCourse = false
+    //   this.isSelectedCourseWithoutCertificate = false
+    //   this.isSelectedCourseWithCertificate = false
+    // }
+    else if (this.status === 'selfAssessmentDraft') {
+      console.log("yes here")
+      this.isSelfAssessmentExpanded = true
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Draft'
       this.isSelectedColor = false
-      this.isSelectedReviewCourse = false
       this.isSelectedPublishCourse = false
-      this.isSelectedToPublishCourse = true
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
       this.isSelectedAllCourse = false
       this.isSelectedCourseWithoutCertificate = false
       this.isSelectedCourseWithCertificate = false
-    } else if (this.allowReview) {
-      this.link = 'Sent for review'
-      this.links = ['Sent for review', 'Published Courses', 'Retired']
-      this.activeLink = this.links[0]
+      this.isSelfAssessmentSelectedColor = true
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+    }
+    else if (this.status === 'selfSentForReview') {
+      this.isSelfAssessmentExpanded = true
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Sent for review'
       this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = true
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+    }
+    else if (this.status === 'selfToPublishedCourse') {
+      this.isSelfAssessmentExpanded = true
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Courses to Pubish'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = true
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+      console.log("this tab", this.currentTab)
+    }
+    else if (this.status === 'selfPublishedCourse') {
+      this.isSelfAssessmentExpanded = true
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Published'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = true
+      this.isSelectedSelfRetiredCourse = false
+    }
+    else if (this.status === 'selfRetiredCourse') {
+      this.isSelfAssessmentExpanded = true
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Retired'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = true
+    }
+    else if (this.status === 'inreview') {
+      this.isSelfAssessmentExpanded = false
+      this.createCourseBtn = false
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Sent For Review'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = true
-      this.isSelectedPublishCourse = false
-      this.isSelectedToPublishCourse = true
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
       this.isSelectedAllCourse = false
       this.isSelectedCourseWithoutCertificate = false
       this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
     }
-    else if (this.allowAuthorContentCreate) {
-      this.link = 'Draft'
-      this.links = ['Draft', 'Sent for review', 'Published Courses', 'Retired']
-      this.activeLink = 'Draft'
-      this.isSelectedColor = true
+    else if (this.status === 'reviewed') {
+      this.isSelfAssessmentExpanded = false
+      this.createCourseBtn = false
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Published'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = true
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+    }
+    else if (this.status === 'published') {
+      this.isSelfAssessmentExpanded = false
+      this.createCourseBtn = false
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Published'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = true
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+    }
+    else if (this.status === 'unpublished') {
+      this.isSelfAssessmentExpanded = false
+      this.createCourseBtn = false
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Retired'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = true
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+    } else if (this.status === 'courseRevision') {
+      this.isSelfAssessmentExpanded = false
+      this.createCourseBtn = false
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'For Revision'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = true
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+    }
+    else if (this.status === 'AIHub') {
+      this.createCourseBtn = false
+      this.currentTab = 'AIHub'
+      this.currentStatus = 'AIHub'
+      this.link = 'AIHub'
+      this.activeLink = 'AIHub'
+      this.isSelectedColor = true
       this.isSelectedPublishCourse = false
       this.isSelectedToPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedCertificate = false
       this.isSelectedAllCourse = false
       this.isSelectedCourseWithoutCertificate = false
       this.isSelectedCourseWithCertificate = false
+      this.isAihub = true
     }
+    else if (this.status === 'selfCourseRevision') {
+      this.isSelfAssessmentExpanded = true
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'For Revision'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = true
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+    }
+    console.log("this.currentTab", this.currentTab)
   }
 
 
   onClickReviewCourse(status: string) {
+    console.log("status: ", status)
     if (this.allowReview && status == 'Draft') {
       status = 'Sent for review'
     }
     if (this.allowPublish && status == 'Draft') {
       status = 'Courses to publish'
+    }
+    if ((this.allowPublish) && (status == 'selfAssessmentDraft' || status == 'Self Courses to publish')) {
+      status = 'Self Courses to publish'
     }
     this.link = status
     this.activeLink = status
@@ -280,6 +559,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.links = ['Courses to publish', 'Published Courses']
     }
     if (status == 'Sent for review') {
+      this.createCourseBtn = true
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Sent for review'
       this.isSelectedColor = false
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = true
@@ -289,10 +571,20 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedAllCourse = false
       this.isSelectedCourseWithoutCertificate = false
       this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
     }
     else if (status == 'Courses to publish') {
+      this.createCourseBtn = true
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Courses to publish'
       this.isSelectedColor = false
       this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
       this.isSelectedPublishCourse = false
       this.isSelectedToPublishCourse = true
       this.isSelectedRetiredCourse = false
@@ -300,11 +592,20 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedAllCourse = false
       this.isSelectedCourseWithoutCertificate = false
       this.isSelectedCourseWithCertificate = false
-
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
     }
     else if (status == 'Published') {
+      this.createCourseBtn = true
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Published'
       this.isSelectedColor = false
       this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
       this.isSelectedPublishCourse = true
       this.isSelectedToPublishCourse = false
       this.isSelectedRetiredCourse = false
@@ -312,11 +613,20 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedAllCourse = false
       this.isSelectedCourseWithoutCertificate = false
       this.isSelectedCourseWithCertificate = false
-
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
     }
     else if (status == 'Retired') {
+      this.createCourseBtn = true
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Retired'
       this.isSelectedColor = false
       this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
       this.isSelectedPublishCourse = false
       this.isSelectedToPublishCourse = false
       this.isSelectedRetiredCourse = true
@@ -324,53 +634,238 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedAllCourse = false
       this.isSelectedCourseWithoutCertificate = false
       this.isSelectedCourseWithCertificate = false
-
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
     }
     else if (status == 'Draft') {
+      this.createCourseBtn = true
+      this.currentTab = 'My Courses'
+      this.currentStatus = 'Draft'
       this.isSelectedColor = true
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
       this.isSelectedToPublishCourse = false
       this.isSelectedRetiredCourse = false
       this.isSelectedCertificate = false
       this.isSelectedAllCourse = false
       this.isSelectedCourseWithoutCertificate = false
       this.isSelectedCourseWithCertificate = false
-
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
 
     }
     else if (status == 'All Courses') {
+      this.currentTab = 'Manage Courses'
+      this.currentStatus = 'All Courses'
       this.isSelectedColor = true
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
       this.isSelectedToPublishCourse = false
       this.isSelectedRetiredCourse = false
       this.isSelectedAllCourse = true
       this.isSelectedCourseWithoutCertificate = false
       this.isSelectedCourseWithCertificate = false
-
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
     }
     else if (status == 'Courses without certificate') {
+      this.currentTab = 'Manage Courses'
+      this.currentStatus = 'Courses without certificate'
       this.isSelectedColor = true
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
       this.isSelectedToPublishCourse = false
       this.isSelectedRetiredCourse = false
       this.isSelectedAllCourse = false
       this.isSelectedCourseWithoutCertificate = true
       this.isSelectedCourseWithCertificate = false
-
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
     }
 
     else if (status == 'Courses with certificate') {
+      this.currentTab = 'Manage Courses'
+      this.currentStatus = 'Courses with certificate'
       this.isSelectedColor = true
       this.isSelectedPublishCourse = false
       this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
       this.isSelectedToPublishCourse = false
       this.isSelectedRetiredCourse = false
       this.isSelectedAllCourse = false
       this.isSelectedCourseWithoutCertificate = false
       this.isSelectedCourseWithCertificate = true
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+    }
+    else if (status == 'Self Assessment Draft' || status == 'selfAssessmentDraft') {
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Draft'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = true
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+
+    }
+    else if (status == 'Self Sent for review') {
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Sent for review'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = true
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+
+    }
+    else if (status == 'Self Courses to publish') {
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Courses to publish'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = true
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+
+    }
+    else if (status == 'Self Published Courses') {
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Published'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = true
+      this.isSelectedSelfRetiredCourse = false
+
+    }
+    else if (status == 'Self Retired Courses') {
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'Retired'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = true
+
+    }
+    else if (status == 'for revision') {
+      this.createCourseBtn = false
+      this.currentTab = 'For revision'
+      this.currentStatus = 'For revision'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = true
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+
+    }
+    else if (status == 'self for revision') {
+      this.createCourseBtn = false
+      this.currentTab = 'Self Assessment'
+      this.currentStatus = 'For revision'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = true
+
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
 
     }
 
@@ -381,9 +876,12 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
   navigateContents(data: string): void {
     switch (data) {
-      case 'Draft':
-        this.link = 'Draft'
-        this.activeLink = 'Draft'
+      case 'AIHub':
+        this.createCourseBtn = false
+        this.currentTab = 'AIHub'
+        this.currentStatus = 'AIHub'
+        this.link = 'AIHub'
+        this.activeLink = 'AIHub'
         this.isSelectedColor = true
         this.isSelectedPublishCourse = false
         this.isSelectedToPublishCourse = false
@@ -393,16 +891,40 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isSelectedAllCourse = false
         this.isSelectedCourseWithoutCertificate = false
         this.isSelectedCourseWithCertificate = false
+        this.isAihub = true
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'AIHub' } })
+        break
+      case 'Draft':
+        this.isAihub = false
+        this.createCourseBtn = true
+        this.currentTab = 'My Courses'
+        this.currentStatus = 'Draft'
+        this.link = 'Draft'
+        this.activeLink = 'Draft'
+        this.isSelectedColor = true
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedCertificate = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'draft' } })
         break
 
       case 'Sent for review':
+        this.isAihub = false
         this.link = 'Sent for review'
         this.activeLink = 'Sent for review'
         this.isSelectedColor = false
         this.isSelectedPublishCourse = false
         this.isSelectedToPublishCourse = false
         this.isSelectedReviewCourse = true
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = false
         this.isSelectedRetiredCourse = false
         this.isSelectedCertificate = false
         this.isSelectedAllCourse = false
@@ -411,12 +933,50 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'inreview' } })
         break
+      case 'for revision':
+        this.currentTab = 'My Courses'
+        this.link = 'for revision'
+        this.activeLink = 'for revision'
+        this.isSelectedColor = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = true
+        this.isSelectedSelfRevisionCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedCertificate = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
 
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'courseRevision' } })
+        break
+      case 'self for revision':
+        this.currentTab = 'Self Assessment'
+        this.link = 'for revision'
+        this.activeLink = 'for revision'
+        this.isSelectedColor = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = true
+        this.isSelectedRetiredCourse = false
+        this.isSelectedCertificate = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfCourseRevision' } })
+        break
       case 'Courses to publish':
+        this.isAihub = false
         this.link = 'Courses to publish'
         this.activeLink = 'Courses to publish'
         this.isSelectedColor = false
         this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = false
         this.isSelectedPublishCourse = false
         this.isSelectedToPublishCourse = true
         this.isSelectedRetiredCourse = false
@@ -429,10 +989,16 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
 
       case 'Published Courses':
+        this.isAihub = false
+        this.createCourseBtn = true
+        this.currentTab = 'My Courses'
+        this.currentStatus = 'Published'
         this.link = 'Published Courses'
         this.activeLink = 'Published Courses'
         this.isSelectedColor = false
         this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = false
         this.isSelectedPublishCourse = true
         this.isSelectedToPublishCourse = false
         this.isSelectedRetiredCourse = false
@@ -446,10 +1012,13 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
 
       case 'Retired':
+        this.isAihub = false
         this.link = 'Retired'
         this.activeLink = 'Retired'
         this.isSelectedColor = false
         this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = false
         this.isSelectedPublishCourse = false
         this.isSelectedToPublishCourse = false
         this.isSelectedRetiredCourse = true
@@ -460,10 +1029,13 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'unpublished' } })
         break
       case 'All Courses':
+        this.isAihub = false
         this.link = 'All Courses'
         this.activeLink = 'All Courses'
         this.isSelectedColor = false
         this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = false
         this.isSelectedPublishCourse = false
         this.isSelectedToPublishCourse = false
         this.isSelectedRetiredCourse = false
@@ -473,10 +1045,13 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'allCourses' } })
         break
       case 'Courses without certificate':
+        this.isAihub = false
         this.link = 'Courses without certificate'
         this.activeLink = 'Courses without certificate'
         this.isSelectedColor = false
         this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = false
         this.isSelectedPublishCourse = false
         this.isSelectedToPublishCourse = false
         this.isSelectedRetiredCourse = false
@@ -486,10 +1061,13 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'coursesWithoutCertificate' } })
         break
       case 'Courses with certificate':
+        this.isAihub = false
         this.link = 'Courses with certificate'
         this.activeLink = 'Courses with certificate'
         this.isSelectedColor = false
         this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = false
         this.isSelectedPublishCourse = false
         this.isSelectedToPublishCourse = false
         this.isSelectedRetiredCourse = false
@@ -498,6 +1076,87 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isSelectedCourseWithCertificate = true
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'courseWithCertificate' } })
         break
+      case 'selfAssessmentDraft':
+      case 'Self Assessment Draft':
+        this.isAihub = false
+        this.link = 'Self Assessment Draft'
+        this.activeLink = 'Self Assessment Draft'
+        this.isSelectedColor = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfAssessmentDraft' } })
+        break
+      case 'Self Sent for review':
+        this.isAihub = false
+        this.link = 'Self Sent for review'
+        this.activeLink = 'Self Sent for review'
+        this.isSelectedColor = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfSentForReview' } })
+        break
+      case 'Self Courses to publish':
+        this.isAihub = false
+        this.link = 'Self Courses to publish'
+        this.activeLink = 'Self Courses to publish'
+        this.isSelectedColor = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfToPublishedCourse' } })
+        break
+      case 'Self Published Courses':
+        this.isAihub = false
+        this.link = 'Self Published Courses'
+        this.activeLink = 'Self Published Courses'
+        this.isSelectedColor = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfPublishedCourse' } })
+        break
+      case 'Self Retired Courses':
+        this.isAihub = false
+        this.link = 'Self Retired Courses'
+        this.activeLink = 'Self Retired Courses'
+        this.isSelectedColor = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedRevisionCourse = false
+        this.isSelectedSelfRevisionCourse = false
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfRetiredCourse' } })
+        break
     }
 
   }
@@ -505,13 +1164,17 @@ export class MyContentComponent implements OnInit, OnDestroy {
   fetchStatus() {
     switch (this.status) {
       case 'draft':
+      case 'courseRevision':
+      case 'selfCourseRevision':
       case 'rejected':
         return ['Draft']
+      case 'selfSentForReview':
       case 'inreview':
         return ['Review', 'QualityReview']
       // return ['InReview', 'Reviewed', 'QualityReview']
       case 'review':
         return ['Review']
+      case 'selfPublishedCourse':
       case 'published':
       case 'expiry':
         return ['Live']
@@ -527,6 +1190,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'processing':
         return ['Processing']
       case 'unpublished':
+      case 'selfRetiredCourse':
         return ['Unpublished', 'Retired']
       case 'deleted':
         return ['Deleted']
@@ -550,6 +1214,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'allCourses':
       case 'coursesWithoutCertificate':
       case 'courseWithCertificate':
+      case 'courseRevision':
+      case 'selfCourseRevision':
       case 'deleted':
         this.currentAction = 'author'
         break
@@ -856,8 +1522,20 @@ export class MyContentComponent implements OnInit, OnDestroy {
     requestData.request.filters['status'] = this.fetchStatus()
     if (this.status == 'coursesWithoutCertificate') {
       requestData.request.filters['issueCertification'] = false
+    } else if (this.status == 'courseRevision' || this.status == 'selfCourseRevision') {
+      requestData.request.filters['prevStatus'] = 'Review'
     } else if (this.status == 'courseWithCertificate') {
       requestData.request.filters['issueCertification'] = true
+    } else if (this.status == 'selfAssessmentDraft') {
+      requestData.request.filters['competency'] = true
+    } else if (this.status == 'selfSentForReview') {
+      requestData.request.filters['competency'] = true
+      requestData.request.filters['reviewStatus'] = 'InReview'
+    } else if (this.status == 'selfToPublishedCourse' || this.status == 'selfPublishedCourse') {
+      requestData.request.filters['competency'] = true
+    } else if (this.status == 'selfRetiredCourse' || this.status == 'selfCourseRevision') {
+      requestData.request.filters['competency'] = true
+
     }
 
     // requestData.request.filters['contentType'] = ['Collection', 'Course', 'Learning Path']
@@ -903,11 +1581,15 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // if (this.status === 'publish' && !this.isAdmin) {
     //   requestData.request.filters.publisherDetails.push(this.userId)
     // }
+
     switch (this.status) {
       case 'allCourses':
       case 'coursesWithoutCertificate':
       case 'courseWithCertificate':
       case 'published':
+      case 'selfAssessmentDraft':
+      case 'selfSentForReview':
+      case 'selfPublishedCourse':
         if (this.accessService.hasRole(['content_creator'])) {
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         } else if (this.accessService.hasRole(['content_reviewer'])) {
@@ -919,6 +1601,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
       case 'publish':
         requestData.request.filters['reviewStatus'] = 'Reviewed'
+        requestData.request.filters['competency'] = false
         requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
         break
       case 'processing':
@@ -942,6 +1625,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'inreview':
         requestData.request.filters['reviewStatus'] = 'InReview'
         if (this.accessService.hasRole(['content_creator'])) {
+          requestData.request.filters['competency'] = false
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         } else
           if (this.accessService.hasRole(['content_reviewer'])) {
@@ -956,17 +1640,53 @@ export class MyContentComponent implements OnInit, OnDestroy {
           this.accessService.hasRole(['content_reviewer']) ||
           this.configService.userRoles!.has('public') ||
           this.accessService.hasRole(['content_publisher'])) {
+          requestData.request.filters['competency'] = false
+          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+        }
+        break
+      case 'courseRevision':
+        // case 'unpublished':
+        if (this.accessService.hasRole(['content_creator']) ||
+          this.accessService.hasRole(['content_reviewer']) ||
+          this.configService.userRoles!.has('public') ||
+          this.accessService.hasRole(['content_publisher'])) {
+          requestData.request.filters['competency'] = false
+          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+        }
+        break
+      case 'selfCourseRevision':
+        // case 'unpublished':
+        if (this.accessService.hasRole(['content_creator']) ||
+          this.accessService.hasRole(['content_reviewer']) ||
+          this.configService.userRoles!.has('public') ||
+          this.accessService.hasRole(['content_publisher'])) {
+          requestData.request.filters['competency'] = true
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         }
         break
       case 'unpublished':
         if (this.accessService.hasRole(['content_creator'])) {
+          requestData.request.filters['competency'] = false
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         } else if (this.accessService.hasRole(['content_reviewer'])) {
           requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
         } else if (this.accessService.hasRole(['content_publisher'])) {
           requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
         }
+        break
+      case 'selfRetiredCourse':
+        if (this.accessService.hasRole(['content_creator'])) {
+          requestData.request.filters['competency'] = true
+          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+        }
+        break
+      case 'selfToPublishedCourse':
+        requestData.request.filters['reviewStatus'] = 'Reviewed'
+        requestData.request.filters['status'] = 'Review'
+        if (this.accessService.hasRole(['content_publisher'])) {
+          requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+        }
+        break
     }
 
     this.loadService.changeLoad.next(true)
@@ -994,6 +1714,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
               : this.filterMenuItems
           this.dataSource.data = this.filterMenuItems
         }
+        console.log("1667")
         this.cardContent =
           loadMoreFlag && !this.queryFilter
             ? (this.cardContent || []).concat(
@@ -1002,6 +1723,16 @@ export class MyContentComponent implements OnInit, OnDestroy {
             : data && data.result.content
               ? data.result.content
               : []
+        if (this.status === 'draft' || this.status === 'selfAssessmentDraft') {
+          console.log("this.status = ", this.status)
+          const filteredContent = (data && data.result && data.result.content) ?
+            data.result.content.filter((item: any) => item.prevStatus !== 'Review') : []
+          this.cardContent = filteredContent
+          console.log("filteredContent", data.result, this.cardContent, filteredContent)
+        }
+
+
+
         this.totalContent = data && data.result ? data.result.count : 0
         // const index = _.findIndex(this.count, i => i.n === this.status)
         // if (index >= 0) {
@@ -1076,6 +1807,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
+          console.log("1760")
+
           this.cardContent = (this.cardContent || []).filter(
             v => v.identifier !== request.identifier,
           )
@@ -1112,6 +1845,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
           },
           duration: NOTIFICATION_TIME * 1000,
         })
+        console.log("1797")
+
         this.cardContent = (this.cardContent || []).filter(v => v.identifier !== request.identifier)
       },
       error => {
@@ -1238,6 +1973,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
           },
           duration: NOTIFICATION_TIME * 1000,
         })
+        console.log("1926")
+
         this.cardContent = (this.cardContent || []).filter(v => v.identifier !== request.identifier)
       },
       error => {
@@ -1300,6 +2037,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
+          console.log("1989")
+
           this.cardContent = (this.cardContent || []).filter(
             v => v.identifier !== content.data.identifier,
           )
@@ -1338,6 +2077,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(`/author/editor/${event.data.identifier}`)
         break
       case 'remove':
+        console.log("2030")
+
         this.cardContent = (this.cardContent || []).filter(
           v => v.identifier !== event.data.identifier,
         )
@@ -1365,6 +2106,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((userAction?: { isExtend: boolean; expiryDate?: string }) => {
       if (userAction) {
+        console.log("2059")
+
         this.cardContent = (this.cardContent || []).filter(v => v.identifier !== content.identifier)
       }
     })
@@ -1390,6 +2133,17 @@ export class MyContentComponent implements OnInit, OnDestroy {
         return this.configService.userRoles!.has('content_creator')
       default:
         return false
+    }
+  }
+  createCourse(course: any) {
+    if (course == 'selfAssessment') {
+      this.router.navigate(['/author/create'], { queryParams: { status: 'selfAssessment' } })
+      // localStorage.removeItem('course')
+      // localStorage.setItem('course', 'selfAssessment')
+    } else {
+      this.router.navigate(['/author/create'], { queryParams: { status: 'courseWithLevel' } })
+      // localStorage.removeItem('course')
+      // localStorage.setItem('course', 'courseWithLevel')
     }
   }
 }

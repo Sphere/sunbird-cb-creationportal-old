@@ -16,46 +16,150 @@
 
 <!-- <ng-container *ngIf="isAuthor" [wsResolverWidget]="authorBtnWidget"></ng-container> -->
 <!-- </mat-toolbar> -->
+<div id="commentSection" *ngIf="changeText === 'history'">
+  <button (click)="redirect('/author/toc/' + content?.identifier  + '/overview')" mat-icon-button
+    class="back-icon text-left"><mat-icon>chevron_left</mat-icon></button>
+  <h1 class="heading">Activity Log : <span style="color: #1C5D95">{{content.name}} </span></h1>
+  <ng-container>
+    <!-- Check if there are comments for the current role -->
+    <ng-container *ngIf="commentsList?.length > 0">
+      <!-- <span class="comments-text">Comments by <h3 class="role-txt">{{ role | titlecase }}</h3></span> -->
+      <div *ngFor="let comment of commentsList" class="display">
+        <div>
+          <!-- <div class="mark-read-block" *ngIf="hasPublishAccess">
+            <div>
+              <mat-checkbox style="margin-left: 0px;border-radius: 24px;" class="check-text">Mark as
+                read</mat-checkbox>
+            </div>
+            <div>
+              <span class="new-text">New</span>
+            </div>
+          </div> -->
+          <div class="in-line">
+            <!-- <img alt="" src="/cbp-assets/images/Ellipse130.svg" class="p-r-10"> -->
+            <!-- <h5 class="p-r-10 highlight">{{ comment.role }}</h5> -->
+            <!-- <h5 class="time">{{ comment.createdDate | timeDifference : 'short' }}</h5> -->
+          </div>
 
-<ws-app-toc-banner role="banner" [banners]="banners" [forPreview]="forPreview" [content]="content"
-  [analytics]="analytics" [resumeData]="resumeData">
-</ws-app-toc-banner>
-<!-- </div> -->
+          <h6 style="font-weight: 500;font-size: 15px"
+            *ngIf="comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Sent for Review'">
+            <span>Course sent to the reviewer</span>
+          </h6>
+          <h6 class="" style="font-weight: 500;font-size: 15px"
+            *ngIf="comment.role === 'creator' && comment.currentStatus === 'course-created'">{{ comment.comments
+            }} by <span style="text-transform: capitalize;color: #1C5D95;">{{ comment.role }} </span>
+          </h6>
+          <!-- *ngIf="comment.role === 'reviewer' || comment.role === 'publisher'" -->
+          <h6 class="" style="font-weight: 500;font-size: 15px;"
+            *ngIf="(comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Draft') || (comment.currentStatus === 'Sent for Publish' &&  comment.nextStatus === 'Draft')">
+            <span style="text-transform: capitalize;">{{ comment.role }}</span>
+            sent the course back to you
+          </h6>
+          <h6 class="" style="font-weight: 500;font-size: 15px;"
+            *ngIf="comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Sent for Publish'">
+            <span style="text-transform: capitalize;">{{ comment.role }}</span>
+            sent the course to the Publisher
+          </h6>
+          <h6 class="" style="font-weight: 500;font-size: 15px;"
+            *ngIf="comment.currentStatus === 'Sent for Publish' && comment.nextStatus === 'Course Published'">
+            <!-- <span style="text-transform: capitalize;">{{ comment.role }},</span> -->
+            Your <span>{{content?.competency === false ? 'course' : 'self assessment' }}</span> is live now.
+          </h6>
+          <!-- <h5 style="font-size: 14px">Current Course Status : {{comment.currentStatus}}</h5>
+          <h5 style="font-size: 14px">Next Course Status : {{comment.nextStatus}}</h5> -->
+          <div style="display: inline-flex;">
+            <h5 class="time">{{ comment.createdDate | momentDate }}</h5>
+            <span *ngIf="comment.currentStatus !== 'course-created'" (click)="toggleComments(comment)"
+              style="color: #1C5D95; text-transform: capitalize;text-decoration: underline; margin-left: 15px;font-size: 13px !important; cursor: pointer;">
+              {{comment.readComments ? 'Hide' : 'View' }} comment</span>
+          </div>
+          <div *ngIf="comment.readComments">
+            <p style="font-size: 14px;"> {{ comment.comments }}</p>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>
 
+<div id="commentSection" *ngIf="changeText === 'comments'">
+  <button (click)="redirect('/author/toc/' + content?.identifier  + '/overview')" mat-icon-button
+    class="back-icon text-left"><mat-icon>chevron_left</mat-icon></button>
+  <h1 class="heading">Comments: <span style="color: #1C5D95">{{content.name}} </span></h1>
+  <ng-container *ngFor="let role of roles">
+    <!-- Check if there are comments for the current role -->
+    <ng-container *ngIf="filteredComments[role].length > 0">
+      <span class="comments-text">Comments by <h3 class="role-txt">{{ role | titlecase }}</h3></span>
+      <div *ngFor="let comment of filteredComments[role]">
+        <div *ngIf="comment.currentStatus !== 'course-created'" class="display">
+          <!-- <div class="mark-read-block" *ngIf="hasPublishAccess">
+            <div>
+              <mat-checkbox style="margin-left: 0px;border-radius: 24px;" class="check-text">Mark as
+                read</mat-checkbox>
+            </div>
+            <div>
+              <span class="new-text">New</span>
+            </div>
+          </div> -->
+          <div class="in-line">
+            <img alt="" src="/cbp-assets/images/Ellipse130.svg" class="p-r-10">
+            <h5 class="p-r-10 highlight">{{ comment.role }}</h5>
+            <h5 class="time">{{ comment.createdDate | timeDifference : 'short' }}</h5>
+          </div>
+          <h6 class="commentBox">{{ comment.comments }}</h6>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>
 
-<ng-container>
-  <div role="main" class="toc-body" *ngIf="!errorCode; else tocError">
-    <nav mat-tab-nav-bar class="toc-links mat-app-background">
-      <a mat-tab-link [routerLink]="'./overview'" routerLinkActive="ws-mat-primary-text link-active" i18n>Overview</a>
-      <a mat-tab-link *ngIf="content?.resourceType === 'Certification'" [routerLink]="'./certification'"
-        routerLinkActive="ws-mat-primary-text link-active">
-        <ng-container *ngIf="content?.isExternal === true" i18n>Certification</ng-container>
-        <ng-container *ngIf="content?.isExternal === false" i18n>Take Certification</ng-container>
-      </a>
+<div [ngClass]="{'showData': changeText === 'comments' || changeText === 'history'}">
+  <ws-app-toc-banner role="banner" [banners]="banners" [forPreview]="forPreview" [content]="content"
+    [analytics]="analytics" [resumeData]="resumeData">
+  </ws-app-toc-banner>
+  <!-- </div> -->
 
-      <a *ngIf="content?.children?.length" mat-tab-link [routerLink]="'./contents'"
-        routerLinkActive="ws-mat-primary-text link-active" i18n>Chapters</a>
-      <!-- <a *ngIf="enableAnalytics" [disabled]="forPreview" mat-tab-link [routerLink]="'./analytics'"
+  <ng-container>
+    <div role="main" class="toc-body" *ngIf="!errorCode; else tocError">
+      <nav mat-tab-nav-bar class="toc-links mat-app-background">
+        <a mat-tab-link [routerLink]="'./overview'" routerLinkActive="ws-mat-primary-text link-active" i18n>Overview</a>
+        <a mat-tab-link *ngIf="content?.resourceType === 'Certification'" [routerLink]="'./certification'"
+          routerLinkActive="ws-mat-primary-text link-active">
+          <ng-container *ngIf="content?.isExternal === true" i18n>Certification</ng-container>
+          <ng-container *ngIf="content?.isExternal === false" i18n>Take Certification</ng-container>
+        </a>
+
+        <a *ngIf="content?.children?.length" mat-tab-link [routerLink]="'./contents'"
+          routerLinkActive="ws-mat-primary-text link-active" i18n>Chapters</a>
+        <!-- <a *ngIf="enableAnalytics" [disabled]="forPreview" mat-tab-link [routerLink]="'./analytics'"
         routerLinkActive="ws-mat-primary-text link-active" i18n>Analytics</a>
       <a mat-tab-link [routerLink]="'./discussion'" routerLinkActive="ws-mat-primary-text link-active"
         i18n>Discussions</a>
       <a mat-tab-link [routerLink]="'./details'" [queryParams]="{id: content.identifier}"
         routerLinkActive="ws-mat-primary-text link-active" i18n>Cohorts</a> -->
 
-      <!-- <a mat-tab-link [routerLink]="'./license'" routerLinkActive="ws-mat-primary-text link-active" i18n>License</a> -->
-    </nav>
-    <router-outlet></router-outlet>
-    <ng-container>
-      <!-- <mat-divider class="margin-top-m margin-bottom-m"></mat-divider> -->
-      <!-- <div class="toc-discussion-container" fragment="discussion-forum"> -->
-      <!-- <ws-app-toc-discussion [content]="content" class="discussion"></ws-app-toc-discussion> -->
-      <!-- <ws-app-toc-cohorts [content]="content" class="cohorts"></ws-app-toc-cohorts> -->
-      <!-- </div> -->
+        <!-- <a mat-tab-link [routerLink]="'./license'" routerLinkActive="ws-mat-primary-text link-active" i18n>License</a> -->
+      </nav>
+      <router-outlet></router-outlet>
+      <ng-container>
+        <!-- <mat-divider class="margin-top-m margin-bottom-m"></mat-divider> -->
+        <!-- <div class="toc-discussion-container" fragment="discussion-forum"> -->
+        <!-- <ws-app-toc-discussion [content]="content" class="discussion"></ws-app-toc-discussion> -->
+        <!-- <ws-app-toc-cohorts [content]="content" class="cohorts"></ws-app-toc-cohorts> -->
+        <!-- </div> -->
 
-    </ng-container>
-  </div>
-</ng-container>
-
+      </ng-container>
+    </div>
+  </ng-container>
+</div>
 <ng-template #tocError>
   <div [wsResolverWidget]="errorWidgetData"></div>
 </ng-template>
+<div class="overlay" *ngIf="isLoading">
+  <div class="loader-container">
+    <div class="loader-ripple">
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+</div>

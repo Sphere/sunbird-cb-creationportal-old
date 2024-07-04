@@ -8,7 +8,11 @@ import { Router } from '@angular/router'
 import { ContentQualityService } from '../../../../../../../author/src/lib/routing/modules/editor/shared/services/content-quality.service'
 import { NSIQuality } from '../../../../../../../author/src/lib/routing/modules/editor/interface/content-quality'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
-
+import { ConfigurationsService } from '@ws-widget/utils'
+import {
+  ContentProgressService,
+} from '@ws-widget/collection'
+import moment from 'moment'
 @Component({
   selector: 'ws-auth-root-comments-dialog',
   templateUrl: './comments-dialog.component.html',
@@ -35,7 +39,9 @@ export class CommentsDialogComponent implements OnInit {
     private authInitService: AuthInitService,
     private editorService: EditorService,
     private router: Router,
-    private accessService: AccessControlService
+    private accessService: AccessControlService,
+    private _configurationsService: ConfigurationsService,
+    private progressSvc: ContentProgressService,
   ) {
     this.authInitService.publishMessage.subscribe(
       async (result: any) => {
@@ -95,8 +101,9 @@ export class CommentsDialogComponent implements OnInit {
     }
   }
   ngOnInit() {
-
+    console.log(this._configurationsService.userProfile)
     this.showNewFlow = this.authInitService.authAdditionalConfig.allowActionHistory
+    console.log(this.showNewFlow)
     this.contentMeta = this.data
     const reqObj = {
       resourceId: this.data.identifier,
@@ -317,7 +324,49 @@ export class CommentsDialogComponent implements OnInit {
     this.authInitService.changeMessage('PublishCBP')
   }
   moveCourseToDraft() {
-    this.authInitService.changeMessage('MoveCourseToDraft')
+    console.log(this.contentMeta)
+    let role = ''
+    const url = this.router.url
+    const id = url.split('/')
+    let currentStatus = ''
+    let nextStatus = ''
+    if (this.contentMeta) {
+      if (this.accessService.hasRole(['content_publisher'])) {
+        role = 'publisher'
+        currentStatus = "Sent for Publish"
+        nextStatus = 'Draft'
+      } else if (this.accessService.hasRole(['content_reviewer'])) {
+        role = 'reviewer'
+        currentStatus = "Sent for Review"
+        nextStatus = 'Draft'
+      } else {
+        role = 'creator'
+      }
+      let dat = {
+        "userId": this._configurationsService!.userProfile!.userId,
+        "courseId": id[3],
+        "role": role,
+        "comments": this.commentsForm.value.comments === '' ? `Sending the course back to draft status from ${role}` : this.commentsForm.value.comments,
+        "currentStatus": currentStatus,
+        "nextStatus": nextStatus,
+        "readComments": false,
+        "createdDate": moment(new Date()).toISOString(),
+        "updatedDate": moment(new Date()).toISOString(),
+        "username": this._configurationsService!.userProfile!.userName
+      }
+      console.log(dat)
+      this.progressSvc.addComment(dat).subscribe(res => {
+        console.log(res)
+        if (res) {
+          this.authInitService.changeMessage('MoveCourseToDraft')
+        }
+      }, (err: any) => {
+        console.log(err)
+        this.authInitService.changeMessage('MoveCourseToDraft')
+      })
+    }
+
+    //this.authInitService.changeMessage('MoveCourseToDraft')
   }
 
   click(action: string) {

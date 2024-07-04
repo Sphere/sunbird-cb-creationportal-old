@@ -167,6 +167,7 @@ export namespace NSContent {
 
   export interface IContentMeta {
     competencies_v1: any
+    competency: any
     issueCertification: any
     cneName: string
     accessPaths: string[]
@@ -211,6 +212,7 @@ export namespace NSContent {
     trackContactsCtrl: string
     publisherDetailsCtrl: string
     gatingEnabled: boolean
+    courseVisibility: boolean
     activateLink: string
     previewLinkFormControl: string
     sourceUrl: string

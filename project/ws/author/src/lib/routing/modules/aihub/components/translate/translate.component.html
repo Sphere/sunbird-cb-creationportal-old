@@ -1,0 +1,33 @@
+<div class="flex margin-horizontal-s margin-top-xs margin-left-xs">
+  <form [formGroup]="translateForm" (submit)="onSubmit()">
+    <section class="flex ml-3">
+      <mat-form-field class="language-drop-down-width" appearance="outline">
+        <mat-select formControlName="sourceLanguage" placeholder="Select Language">
+          <mat-option *ngFor="let language of languages" [value]="language.code">
+            {{ language.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-button class="language-btn ml-3" id="ws-auth-root-home-btn-create"
+        name="ws-auth-root-home-btn-create">
+        <ng-container i18n>Translate</ng-container>
+      </button>
+    </section>
+    <div class="flex">
+      <section>
+        <mat-form-field appearance="outline" class="margin-top-xs desc-field name-field">
+          <textarea matInput #inputText cols="100" p formControlName="inputText" maxlength="100" rows="20"
+            placeholder="Enter Text"></textarea>
+        </mat-form-field>
+      </section>
+
+      <section class="flex ml-3">
+        <mat-form-field appearance="outline" class="margin-top-xs desc-field name-field">
+          <textarea readonly matInput cols="100" formControlName="translatedText"
+            [value]="translateForm.get('translatedText')?.value" maxlength="100" rows="20"
+            placeholder="Translated Text"></textarea>
+        </mat-form-field>
+      </section>
+    </div>
+  </form>
+</div>

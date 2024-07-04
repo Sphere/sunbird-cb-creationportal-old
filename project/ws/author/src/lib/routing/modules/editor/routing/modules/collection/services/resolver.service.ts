@@ -79,7 +79,7 @@ export class CollectionResolverService {
       /**
        * Checking the user have access or not
        */
-      const haveAccessToChangeStructure = this.hasAccess(currContent)
+      const haveAccessToChangeStructure = true
       if (treeStructure.childLoaded && treeStructure.children) {
         const children: IContentNode[] = []
         if (currContent.children) {

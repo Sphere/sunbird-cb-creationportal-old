@@ -48,6 +48,10 @@ const routes: Routes = [
         component: AppTocContentsComponent,
       },
       {
+        path: 'comments',
+        component: AppTocContentsComponent,
+      },
+      {
         path: 'overview',
         // component: AppTocSinglePageRootComponent,
         component: AppTocOverviewRootComponent,

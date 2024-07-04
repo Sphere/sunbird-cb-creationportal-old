@@ -49,6 +49,8 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
   downloadPartialAncRegex = RegExp(` href\=\s*['"](.*?)['"]`, 'gm')
   @Input() doRegex = true
   @Input() doPartialRegex = false
+  @Input() quiz!: boolean
+  @Input() editCoursePage!: boolean
   html = ''
   @Input() set content(value: string) {
     if (this.doPartialRegex) {
@@ -66,6 +68,7 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
     }
   }
   @Input() id = ''
+  @Input() editMeta = ''
   @Input() location:
     | typeof CONTENT_BASE_STATIC
     | typeof CONTENT_BASE_STREAM
@@ -73,6 +76,7 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
     | typeof CONTENT_BASE_WEBHOST_ASSETS = CONTENT_BASE_WEBHOST_ASSETS
   @Output() value = new EventEmitter<string>()
   config: any
+  configsecond: any
   @ViewChild('editor', { static: false }) editor!: any
   @ViewChild('uploadImage', { static: false }) image!: ElementRef
   imageName = 'Insert Image'
@@ -81,6 +85,8 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
   @ViewChild('addBlank', { static: false }) blank!: ElementRef
   blankName = 'Add Blank'
   timer: any
+  showAdvancedSettings = false;
+
   subscription!: Subscription
   constructor(
     private snackBar: MatSnackBar,
@@ -93,7 +99,14 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
   ) { }
 
   ngOnInit() {
+    this.allConfig()
     this.initiateConfig()
+    if (!this.editMeta || this.editMeta === '' || this.editMeta == undefined) {
+      this.showAdvancedSettings = true
+    } else {
+      this.showAdvancedSettings = false
+    }
+
     this.makeTargetAsBlank()
     this.allowAdditionalContents()
     this.configurationSvc.prefChangeNotifier.subscribe(() => {
@@ -102,6 +115,11 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
         this.config.uiColor = theme
         this.editor.instance.setUiColor(this.theme)
       }
+      if (this.configsecond && this.configsecond.uiColor !== theme) {
+        this.configsecond.uiColor = theme
+        this.editor.instance.setUiColor(this.theme)
+      }
+
     })
   }
 
@@ -115,6 +133,56 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
 
   initiateConfig() {
     this.config = {
+      skin: 'moono',
+      uiColor: this.theme,
+      language: this.accessControlSvc.locale,
+      toolbarGroups: [
+        { name: 'basicstyles', groups: ['basicstyles'] },
+        // ... other toolbar groups
+      ],
+      allowedContent: true,
+      extraAllowedContent: 'a[!href,download,document-href,class]',
+      removeButtons:
+        'Cut,Copy,Paste,PasteText,PasteFromWord,Save,NewPage,Preview,Print,' +
+        'Templates,Scayt,Form,Checkbox,Radio,TextField,Textarea,Select,Button,HiddenField,ImageButton' +
+        ',Smiley,PageBreak,Flash,About,CreateDiv,Anchor,SelectAll,Image',
+      disableNativeSpellChecker: true,
+      removeDialogTabs: 'image:advanced;link:advanced',
+      format_tags: 'p;h1;h2;h3;h4;h5;h6;div',
+      forcePasteAsPlainText: false,
+      image2_alignClasses: ['image-align-left', 'image-align-center', 'image-align-right'],
+      image2_captionedClass: 'image-captioned',
+      stylesSet: [
+        {
+          name: 'Narrow image',
+          type: 'widget',
+          widget: 'image',
+          attributes: { class: 'image-narrow' },
+        },
+        {
+          name: 'Wide image',
+          type: 'widget',
+          widget: 'image',
+          attributes: { class: 'image-wide' },
+        },
+      ],
+    }
+  }
+  // Add this property to your PlainCKEditorComponent class
+
+  toggleAdvancedSettings() {
+    this.showAdvancedSettings = !this.showAdvancedSettings
+
+    // if (this.editor && this.editor.instance) {
+    //   this.editor.instance.destroy()
+    // }
+
+    // // Replace the editor with the updated configuration
+    // CKEDITOR.replace('editor', this.showAdvancedSettings ? { toolbarGroups: 'Advanced' } : { toolbarGroups: 'Basic' })
+  }
+
+  allConfig() {
+    this.configsecond = {
       skin: 'moono',
       uiColor: this.theme,
       language: this.accessControlSvc.locale,
@@ -172,6 +240,11 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
     this.fileName = this.file.nativeElement.innerHTML
     this.blankName = this.blank.nativeElement.innerHTML
     this.cdr.detectChanges()
+    setTimeout(() => {
+      if (this.editor && this.editor.nativeElement) {
+        CKEDITOR.replace(this.editor.nativeElement, this.showAdvancedSettings ? { toolbarGroups: 'Advanced' } : { toolbarGroups: 'Basic' })
+      }
+    }, 0)
   }
 
   onContentChanged() {

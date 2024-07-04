@@ -4,6 +4,7 @@
 </ws-author-course-header>
 
 <mat-drawer-container autosize="true" id="auth-toc" class="example-container">
+
   <!-- <mat-drawer mode="side" [(opened)]="sideBarOpened" class="side-nav"> -->
 
   <!-- <div class="sticky"> -->
@@ -28,6 +29,8 @@
   </mat-drawer> -->
   <mat-drawer-content>
     <mat-sidenav-container class="nav-container">
+      <ws-progress-stepper *ngIf="allowAuthorContentCreate" (sendSteps)="receiveSteps($event)" [steps]="steps" [header]="header">
+      </ws-progress-stepper>
       <!-- <form [formGroup]="createTopicForm" *ngIf="showAddchapter" class="margin-left-l">
         <div class="margin-top-s">
           <h1>Build your course by adding Topics</h1>
@@ -94,14 +97,14 @@
       <ws-auth-url-upload [isCollectionEditor]="true" *ngIf="!showAddchapter && viewMode === 'curate'"
         [isSubmitPressed]="isSubmitPressed" (data)="action($event)" [isCreatorEnable]="checkCreator">
       </ws-auth-url-upload>
-      <div class="overlay" *ngIf="isLoading">
+      <!-- <div class="overlay" *ngIf="isLoading">
         <div class="loader-container">
           <div class="loader-ripple">
             <div></div>
             <div></div>
           </div>
         </div>
-      </div>
+      </div> -->
       <ws-auth-file-upload [isCollectionEditor]="true" *ngIf="false" [isSubmitPressed]="isSubmitPressed"
         (data)="action($event)" [isCreatorEnable]="checkCreator">
       </ws-auth-file-upload>
@@ -114,7 +117,7 @@
       <ws-auth-web-module-editor *ngIf="!showAddchapter && viewMode === 'webmodule'" (data)="action($event)">
       </ws-auth-web-module-editor>
       <ws-auth-edit-meta [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" (data)="action($event)"
-        *ngIf="!showAddchapter && viewMode === 'meta'&&!isReviewChecklistEnabled">
+        *ngIf="!showAddchapter && viewMode === 'meta'&&!isReviewChecklistEnabled&&!clickedNext">
       </ws-auth-edit-meta>
       <!--  [class.hidden]="viewMode !== 'meta'" -->
 
@@ -137,7 +140,8 @@
         *ngIf="!showAddchapter && viewMode !== 'meta' && showResource == true"
         (courseEditFormSubmit)="courseEditFormSubmit($event)">
       </ws-auth-edit-meta> -->
-      <ws-author-module-creation [clickedNext]="clickedNext" *ngIf="clickedNext"></ws-author-module-creation>
+      <ws-author-module-creation (sendSteps)="receiveSteps($event)" [clickedNext]="clickedNext"
+        *ngIf="clickedNext"></ws-author-module-creation>
     </mat-sidenav-container>
   </mat-drawer-content>
 </mat-drawer-container>

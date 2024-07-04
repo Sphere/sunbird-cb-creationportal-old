@@ -7,6 +7,8 @@ import { map } from 'rxjs/operators'
 const PROTECTED_SLAG_V8 = '/apis/protected/v8'
 const API_END_POINTS = {
   PROGRESS_HASH: `${PROTECTED_SLAG_V8}/user/progress`,
+  'getCourseComments': `${PROTECTED_SLAG_V8}/scroing/comments`,
+  'createComment': `${PROTECTED_SLAG_V8}/scroing/comments/create`
 }
 
 @Injectable({
@@ -27,6 +29,16 @@ export class ContentProgressService {
       this.fetchProgressHash()
     }
     return this.progressHashSubject.pipe(map(hash => hash[id]))
+  }
+
+  getComments(id: string): Observable<any> {
+    return this.http
+      .get<any>(`${API_END_POINTS.getCourseComments}/course?courseId=${id}`)
+  }
+
+  addComment(data: any) {
+    return this.http.post(
+      API_END_POINTS.createComment, data)
   }
 
   getProgressHash(): Observable<{ [id: string]: number }> {

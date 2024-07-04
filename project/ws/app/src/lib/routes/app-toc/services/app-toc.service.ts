@@ -32,12 +32,18 @@ const API_END_POINTS = {
 
 @Injectable()
 export class AppTocService {
+  private messageSource = new Subject<any>()
+  public currentMessage = this.messageSource.asObservable()
   analyticsReplaySubject: Subject<any> = new Subject()
   analyticsFetchStatus: TFetchStatus = 'none'
   private showSubtitleOnBanners = false
   private canShowDescription = false
 
   constructor(private http: HttpClient, private configSvc: ConfigurationsService) { }
+
+  changeMessage(message: any) {
+    this.messageSource.next(message)
+  }
 
   get subtitleOnBanners(): boolean {
     return this.showSubtitleOnBanners

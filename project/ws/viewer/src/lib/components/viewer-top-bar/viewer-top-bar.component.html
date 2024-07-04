@@ -42,7 +42,9 @@
   <span class="spacer width-1-1"></span>
   <mat-icon class="material-icons white-icon margin-right-l pointer" routerLink="/author/home">arrow_back</mat-icon>
   <span class="text-style margin-right-l pointer" routerLink="/author/home">Back to Dashboard</span>
-  <span class="text-style margin-right-l pointer flex-cls" (click)="sendForReview('review')" *ngIf="!isPublisher">Finish
+  <span class="text-style margin-right-l pointer flex-cls" (click)="sendForReview('review')" *ngIf="isCreator">Send For
+    Review <mat-icon class="material-icons white-icon pointer margin-left-l">arrow_forward</mat-icon></span>
+  <span class="text-style margin-right-l pointer flex-cls" (click)="sendForReview('review')" *ngIf="isReviewer">Finish
     Review <mat-icon class="material-icons white-icon pointer margin-left-l">arrow_forward</mat-icon></span>
   <span class="text-style margin-right-l pointer flex-cls" (click)="sendForReview('publish')" *ngIf="isPublisher">Finish
     Publish <mat-icon class="material-icons white-icon pointer margin-left-l">arrow_forward</mat-icon></span>

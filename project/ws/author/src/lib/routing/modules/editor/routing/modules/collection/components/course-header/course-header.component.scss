@@ -3,7 +3,12 @@
 .logo-dim{
   cursor: pointer !important;
 }
-
+.stepper-block{
+  display: flex;
+    align-items: center;
+    width: 78%;
+    justify-content: center;
+}
 .app-logo {
   width: 120px;
   height: 60px;

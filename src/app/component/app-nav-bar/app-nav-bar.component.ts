@@ -33,6 +33,7 @@ export class AppNavBarComponent implements OnInit, OnChanges {
   isTourGuideClosed = false
   showAppNavBar = false
   popupTour: any
+  showStepper = false
   constructor(
     private domSanitizer: DomSanitizer,
     private configSvc: ConfigurationsService,
@@ -62,6 +63,17 @@ export class AppNavBarComponent implements OnInit, OnChanges {
         }
 
       }
+      if (e instanceof NavigationEnd) {
+        if ((e.url.includes('/author/create'))) {
+          this.showStepper = true
+        } else {
+          this.showStepper = false
+
+        }
+
+      }
+
+
     })
 
     if (this.configSvc.instanceConfig) {

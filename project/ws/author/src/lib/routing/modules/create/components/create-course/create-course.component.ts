@@ -22,16 +22,27 @@ import { HttpClient } from '@angular/common/http'
 import { AUTHORING_BASE, CONTENT_BASE_STATIC } from '../../../../../constants/apiEndpoints'
 import { UploadService } from '../../../editor/shared/services/upload.service'
 // import { environment } from '../../../../../../../../../../src/environments/environment'
-
+import { ActivatedRoute } from '@angular/router'
+import { CollectionStoreService } from '../../../../../../../../author/src/lib/routing/modules/editor/routing/modules/collection/services/store.service'
+import { EditorContentService } from 'project/ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+import { CollectionResolverService } from 'project/ws/author/src/lib/routing/modules/editor/routing/modules/collection/services/resolver.service'
+import { NSContent } from '@ws/author/src/lib/interface/content'
+import moment from 'moment'
+import {
+  ContentProgressService,
+} from '@ws-widget/collection'
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'ws-author-create-course',
   templateUrl: './create-course.component.html',
   styleUrls: ['./create-course.component.scss'],
+  providers: [CollectionStoreService, CollectionResolverService],
 })
+
 export class CreateCourseComponent implements OnInit {
   @Input() content: any
-
+  currentContent!: string
+  currentCourseId!: string
   language = ''
   entity: ICreateEntity[] = []
   resourceEntity!: ICreateEntity
@@ -43,6 +54,21 @@ export class CreateCourseComponent implements OnInit {
   contentForm!: FormGroup
   bucket: string = ''
   imageTypes = IMAGE_SUPPORT_TYPES
+  isSelfAssessment = false
+  languageList: any[] = [
+    {
+      "name": 'English',
+      "value": 'en'
+    },
+    {
+      "name": 'Hindi',
+      "value": 'hi'
+    }
+  ]
+  addResourceModule: any = {}
+  resourseSelected: string = ''
+  searchComp: any = ''
+  proficiencyList: any
   constructor(
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
@@ -57,16 +83,39 @@ export class CreateCourseComponent implements OnInit {
     private configSvc: ConfigurationsService,
     private loader: LoaderService,
     private http: HttpClient,
-    private uploadService: UploadService) { }
+    private route: ActivatedRoute,
+    private uploadService: UploadService,
+    private storeService: CollectionStoreService,
+    private editorStore: EditorContentService,
+    private resolverService: CollectionResolverService,
+    private progressSvc: ContentProgressService,
+  ) { }
   createCourseForm!: FormGroup
+  createSelfAssessmentForm!: FormGroup
+  proficiency: any
+  getAllEntities: any
   ngOnInit() {
+    this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {
+      this.proficiencyList = await res.result.response
+      this.searchComp = this.proficiencyList
+    })
+    this.route.queryParams.subscribe(params => {
+      // Access individual query parameters
+      const value = params['status']
+      if (value == 'selfAssessment') {
+        this.isSelfAssessment = true
+      }
+    })
     this.createCourseForm = this.fb.group({
       courseName: new FormControl('', [Validators.required]),
       // courseSummary: new FormControl(''),
       courseDescription: new FormControl('', [Validators.required]),
       appIcon: new FormControl([])
     })
-
+    this.createSelfAssessmentForm = this.fb.group({
+      lang: new FormControl(''),
+      proficiency: new FormControl('', [Validators.required]),
+    })
     this.authInitService.creationEntity.forEach(v => {
       // console.log('vvvvvvvv   ', v)
       if (!v.parent && v.available) {
@@ -96,51 +145,147 @@ export class CreateCourseComponent implements OnInit {
 
   }
 
-  // contentClicked() {
-  //   this.loaderService.changeLoad.next(true)
-  //   if (this.courseData && this.courseData.courseName) {
-  //   this.svc
-  //     .create({
-  //       contentType: this.content.contentType,
-  //       mimeType: this.content.mimeType,
-  //       locale: this.language,
-  //       name: this.courseData.courseName,
-  //       description: this.courseData.courseIntroduction,
-  //       ...(this.content.additionalMeta || {}),
-  //     })
-  //     .subscribe(
-  //       (id: string) => {
-  //         this.loaderService.changeLoad.next(false)
-  //         this.snackBar.openFromComponent(NotificationComponent, {
-  //           data: {
-  //             type: Notify.CONTENT_CREATE_SUCCESS,
-  //           },
-  //           duration: NOTIFICATION_TIME * 1000,
-  //         })
-  //         this.router.navigateByUrl(`/author/editor/${id}`, { state: this.courseData })
-  //       },
-  //       error => {
-  //         if (error.status === 409) {
-  //           this.dialog.open(ErrorParserComponent, {
-  //             width: '80vw',
-  //             height: '90vh',
-  //             data: {
-  //               errorFromBackendData: error.error,
-  //             },
-  //           })
-  //         }
-  //         this.loaderService.changeLoad.next(false)
-  //         this.snackBar.openFromComponent(NotificationComponent, {
-  //           data: {
-  //             type: Notify.CONTENT_FAIL,
-  //           },
-  //           duration: NOTIFICATION_TIME * 1000,
-  //         })
-  //       },
-  //     )
-  // }
-  // }
 
+  onKey(value: string) {
+    this.proficiencyList = this.search(value)
+  }
+  eventSelection(event: any) {
+    this.proficiency = event
+  }
+  search(value: string) {
+    let filter = value.toLowerCase()
+    if (!filter) {
+      return this.searchComp
+    }
+    return this.proficiencyList = this.searchComp.filter((option: any) =>
+      option.name.toLowerCase().includes(filter)
+    )
+  }
+
+  createSelfAssessmentCourse() {
+    this.loaderService.changeLoad.next(true)
+    const competency = this.proficiencyList.find((obj: any) => obj.id === this.courseData.proficiency.id)
+    this.courseData.courseName = this.courseData.proficiency.name
+    this.courseData.courseDescription = this.courseData.proficiency.description
+
+
+    if (this.content && competency && this.courseData.proficiency.name) {
+      this.svc
+        .createV2({
+          name: this.courseData,
+          contentType: this.content.contentType,
+          mimeType: this.content.mimeType,
+          locale: this.language,
+          primaryCategory: this.content.primaryCategory,
+          ...(this.content.additionalMeta || {}),
+
+        }).pipe(mergeMap((id: string) => {
+
+          this.identifier = id
+          const request = {
+            category: {
+              context: [
+                {
+                  type: 'course',
+                  identifier: this.identifier.identifier,
+                },
+              ],
+            },
+          }
+          return this.svc.createForum(request)
+        }))
+        .subscribe(
+          async (data: any) => {
+            let competencies_obj = {
+              competencyName: this.courseData.proficiency.name,
+              competencyId: this.courseData.proficiency.id,
+            }
+            let link = "https://sunbirdcontent.s3-ap-south-1.amazonaws.com/content/do_1139718921061744641126/artifact/do_1139718921061744641126_1705553236239_justwhiteplainwhitewhitewallpaperpreview1705553235473.jpg"
+
+            const updateContentReq: any = {
+              request: {
+                content: {
+                  competency: true,
+                  competencies_v1: competencies_obj,
+                  lang: this.courseData.lang ? this.courseData.lang : 'en',
+                  versionKey: this.identifier.versionKey,
+                  appIcon: link,
+                  thumbnail: link
+                },
+              },
+            }
+            // tslint:disable-next-line:max-line-length
+            const result = await this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier).toPromise().catch((_error: any) => { })
+            if (data && result) {
+              // this.loaderService.changeLoad.next(false)
+              this.snackBar.openFromComponent(NotificationComponent, {
+                data: {
+                  type: Notify.CONTENT_SELF_ASSESSMENT_SUCCESS,
+                },
+                duration: NOTIFICATION_TIME * 3000,
+              })
+              let competencyLevelDescription = JSON.parse(competency.additionalProperties.competencyLevelDescription)
+              // console.log("competencyLevelDescription", competencyLevelDescription)
+              this.editorStore.parentContent = this.identifier.identifier
+              this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+                this.courseData = data
+                this.getChildrenCount()
+
+                const contentDataMap = new Map<string, NSContent.IContentMeta>()
+                // data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
+                this.storeService.parentNode.push(data.identifier)
+                this.resolverService.buildTreeAndMap(
+                  data,
+                  contentDataMap,
+                  this.storeService.flatNodeMap,
+                  this.storeService.uniqueIdMap,
+                  this.storeService.lexIdMap,
+                )
+                // })
+                this.currentContent = this.identifier.identifier
+                this.currentCourseId = this.identifier.identifier
+                contentDataMap.forEach(content => this.editorStore.setOriginalMeta(content))
+                const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
+                this.storeService.currentParentNode = currentNode
+                this.storeService.currentSelectedNode = currentNode
+
+                if (competencyLevelDescription.length > 0) {
+                  this.loaderService.changeLoad.next(true)
+                  for (const level of competencyLevelDescription) {
+                    if (level) {
+                      this.courseData = await this.editorService.readcontentV3(this.editorStore.parentContent).toPromise()
+                      this.editorStore.setOriginalMeta(data)
+                      await this.setContentType('assessment', level, '')
+                    }
+                  }
+                }
+                // this.loaderService.changeLoad.next(false)
+                this.router.navigateByUrl(`/author/editor/${this.editorStore.parentContent}/collection`, { state: this.courseData })
+              })
+            }
+
+          },
+          error => {
+            if (error.status === 409) {
+              this.dialog.open(ErrorParserComponent, {
+                width: '80vw',
+                height: '90vh',
+                data: {
+                  errorFromBackendData: error.error,
+                },
+              })
+            }
+            this.loaderService.changeLoad.next(false)
+            this.snackBar.openFromComponent(NotificationComponent, {
+              data: {
+                type: Notify.CONTENT_FAIL,
+              },
+              duration: NOTIFICATION_TIME * 1000,
+            })
+          },
+        )
+    }
+  }
   contentClicked() {
     this.loaderService.changeLoad.next(true)
     // const _name = this.createCourseForm.get('name')
@@ -175,12 +320,27 @@ export class CreateCourseComponent implements OnInit {
             const updateContentReq: any = {
               request: {
                 content: {
+                  competency: false,
                   versionKey: this.identifier.versionKey,
                 },
               },
             }
             // tslint:disable-next-line:max-line-length
             const result = await this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier).toPromise().catch((_error: any) => { })
+            console.log("this.configSvc!.userProfile!.userId", this.configSvc!.userProfile!.userName)
+            let val = {
+              "userId": this.configSvc!.userProfile!.userId,
+              "username": this.configSvc!.userProfile!.userName,
+              "courseId": this.identifier.identifier,
+              "role": "creator",
+              "comments": 'Course Created',
+              "currentStatus": "course-created",
+              "nextStatus": "Draft",
+              "readComments": false,
+              "createdDate": moment(new Date()).toISOString(),
+              "updatedDate": moment(new Date()).toISOString(),
+            }
+            await this.progressSvc.addComment(val).toPromise().catch((_error: any) => { })
 
             if (data && result) {
               this.loaderService.changeLoad.next(false)
@@ -460,10 +620,138 @@ export class CreateCourseComponent implements OnInit {
     this.courseData = form.value
     this.contentClicked()
   }
+  createSelfAssessment(form: any) {
+    this.courseData = form.value
+    this.createSelfAssessmentCourse()
+  }
 
   navigateTo(params: string) {
     if (params === 'features') {
       this.router.navigate(['/app/features'])
     }
   }
+  async setContentType(type: any, level: any, filetype?: string) {
+    try {
+      this.resourseSelected = type
+
+      if (filetype) {
+        this.storeService.uploadFileType.next(filetype)
+      }
+
+      let couseCreated = type
+      const asSibling = false
+
+      const node = {
+        id: this.storeService.currentParentNode,
+        identifier: this.storeService.parentNode[0],
+        editable: true,
+        category: 'Course',
+        childLoaded: true,
+        expandable: true,
+        level: 1,
+      }
+      console.log("level", level)
+      const newData = {
+        topicDescription: level.description ? level.description : '',
+        topicName: '( Level ' + level.level + ') ' + level.name ? level.name : 'Resource',
+      }
+
+      if (type.type === 'collection') {
+        this.storeService.parentData = this.courseData
+      }
+
+      const parentNode = node
+      const isDone = await this.storeService.createChildOrSibling(
+        couseCreated,
+        parentNode,
+        asSibling ? node.id : undefined,
+        'below',
+        newData,
+        couseCreated === 'web' ? 'link' : ''
+      )
+
+      if (isDone) {
+        this.addResourceModule['module'] = false
+        this.addResourceModule['courseID'] = this.courseData.identifier
+
+        const data = await this.editorService.readcontentV3(this.editorStore.parentContent).toPromise()
+        const newCreatedLexid = this.editorService.newCreatedLexid
+        this.courseData = data
+
+        const hierarchyData = this.storeService.getNewTreeHierarchys(this.courseData)
+
+        Object.keys(hierarchyData).forEach((ele: any) => {
+          if (ele === this.addResourceModule['courseID']) {
+            hierarchyData[this.editorService.resourseID] = {
+              root: false,
+              name: this.resourseSelected !== 'assessment' ? 'Resource 1' : 'Assessment',
+              children: [],
+            }
+            hierarchyData[ele].children.push(this.editorService.resourseID)
+          }
+        })
+
+        const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+          request: {
+            data: {
+              nodesModified: this.editorStore.getNodeModifyData(),
+              hierarchy: hierarchyData,
+            },
+          },
+        }
+        const dataAfterUpdate = await new Promise((resolve) => {
+          this.editorService.updateContentV4(requestBodyV2).subscribe((data: any) => {
+            resolve(data)
+          })
+        })
+
+        this.courseData = dataAfterUpdate
+        this.getChildrenCount()
+        if (newCreatedLexid) {
+          const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
+          this.storeService.currentSelectedNode = newCreatedNode
+          this.storeService.selectedNodeChange.next(newCreatedNode)
+        }
+
+        this.currentContent = this.editorService.newCreatedLexid
+        this.editorStore.currentContent = newCreatedLexid
+        // this.snackBar.openFromComponent(NotificationComponent, {
+        //   data: {
+        //     type: Notify.CONTENT_CREATE_SUCCESS,
+        //   },
+        //   duration: NOTIFICATION_TIME * 1000,
+        // })
+
+      }
+    } catch (error) {
+      console.error('Error in setContentType:', error)
+    } finally {
+      // this.loaderService.changeLoad.next(false)
+    }
+  }
+
+
+
+  getChildrenCount(): any {
+    let count = 0
+
+    if (this.courseData.children && Array.isArray(this.courseData.children)) {
+      for (const element of this.courseData.children) {
+        // console.log('element', element)
+        if (element.contentType !== 'CourseUnit' && (element.mimeType === 'application/quiz' || element.mimeType === 'application/json')) {
+          count += 1
+        }
+        if (element.children) {
+          for (const elem of element.children) {
+            if (elem.contentType !== 'CourseUnit' && (elem.mimeType === 'application/quiz' || elem.mimeType === 'application/json')) {
+              count += 1
+            }
+          }
+        }
+      }
+    }
+
+    return count
+  }
+
 }

@@ -1,0 +1,10 @@
+<mat-dialog-content>
+  <div class="progress" *ngIf="workFlow.length">
+    <div class="progress-step" [class.active]="state.isActive" [class.complete]="state.isCompleted"
+      *ngFor="let state of workFlow; let i = index">
+      <div class="info">
+        {{ state.name }}
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>

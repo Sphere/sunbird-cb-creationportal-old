@@ -1,6 +1,6 @@
 <ng-container *ngIf="selectedQuiz">
   <!-- <mat-card-title class="text-xl ws-mat-primary-text p-3 pl-2" i18n>Details</mat-card-title> -->
-  <div class="headerpadding mat-h3 font-weight-bold" i18n>Problem Statement</div>
+  <div class="headerpadding mat-h3 font-weight-bold" i18n>Please state question</div>
   <ng-container *ngIf="
       selectedQuiz.questionType === 'mtf' ||
       selectedQuiz.questionType === 'mcq-mca' ||
@@ -8,7 +8,7 @@
       selectedQuiz.questionType === 'fitb'
     ">
     <div class="editorpadding">
-      <ws-auth-plain-ckeditor [content]="quizStoreSvc.getQuiz(quizIndex)?.question || ''"
+      <ws-auth-plain-ckeditor [quiz]="'yes'" [content]="quizStoreSvc.getQuiz(quizIndex)?.question || ''"
         (value)="updateSelectedQuiz($event, 'question')" [id]="currentId"></ws-auth-plain-ckeditor>
     </div>
   </ng-container>

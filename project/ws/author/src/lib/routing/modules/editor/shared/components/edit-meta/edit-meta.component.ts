@@ -18,7 +18,7 @@ import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
 import { ConfigurationsService } from '@ws-widget/utils'
-import { ImageCropComponent } from '@ws-widget/utils/src/public-api'
+import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
 import { AUTHORING_BASE, CONTENT_BASE_STATIC } from '@ws/author/src/lib/constants/apiEndpoints'
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
@@ -72,6 +72,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   clickedBtnNext: boolean = false
   saveTriggerSub?: Subscription
   location = CONTENT_BASE_STATIC
+  editMeta = 'true'
   selectable = true
   removable = true
   addOnBlur = true
@@ -130,6 +131,10 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     {
       "name": 'Hindi',
       "value": 'hi'
+    },
+    {
+      "name": 'Kannada',
+      "value": 'kn'
     }
   ]
   isAddCerticate: boolean = false;
@@ -498,12 +503,12 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   checkMandatoryFields() {
     //let totalDuration = 0, subTitles, sourceName, instructions, appIcon, lang
-    let subTitles, sourceName, instructions, appIcon, lang, competency, selfAssessment
+    let subTitles, instructions, appIcon, lang, competency, selfAssessment
     //totalDuration += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
     //totalDuration += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
     //totalDuration += this.hours ? this.hours * 60 * 60 : 0
     subTitles = this.contentForm.controls.subTitle.value
-    sourceName = this.contentForm.controls.sourceName.value
+    // sourceName = this.contentForm.controls.sourceName.value
     instructions = this.contentForm.controls.instructions.value
     appIcon = this.contentForm.controls.appIcon.value
     lang = this.contentForm.controls.lang.value
@@ -512,7 +517,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // console.log("total: ", totalDuration, subTitles, sourceName, instructions, appIcon)
     //if (totalDuration && subTitles && sourceName && instructions && appIcon && lang) {
-    if (subTitles && sourceName && instructions && appIcon && lang) {
+    if (subTitles && instructions && appIcon && lang) {
       if (selfAssessment) {
         if (competency && competency.length > 0) {
           return false
@@ -557,6 +562,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   //   }
   // }
   clickedNext() {
+    this.authInitService.currentPageAction('courseDetailsPage')
     let competency, selfAssessment
     competency = this.competencies
     if (this.contentForm.controls.subTitle.value) {
@@ -866,16 +872,18 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   getAllEntity() {
     this.editorService.getAllEntities().subscribe(async (res: any) => {
       this.proficiencyList = await res.result.response
-      console.log("this.proficiencyList")
-      const combinedArray = this.competencies.map((element: any) => {
-        const matchingValue = this.proficiencyList.find((value: any) => value.id == element.competencyId)
+      let combinedArray = ''
+      if (this.competencies && this.competencies.length > 0) {
+        combinedArray = this.competencies.map((element: any) => {
+          const matchingValue = this.proficiencyList.find((value: any) => value.id == element.competencyId)
 
-        const finalComp = {
-          ...element,
-          ...matchingValue.additionalProperties
-        }
-        return finalComp
-      })
+          const finalComp = {
+            ...element,
+            ...matchingValue.additionalProperties
+          }
+          return finalComp
+        })
+      }
 
       this.addedCompetency = combinedArray
       // this.code = this.competencies.map((entity: any) => this.proficiencyList.find((e: any) => e.id = entity.competencyId))
@@ -1226,7 +1234,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   //     return
   //   }
 
-  //   const dialogRef = this.dialog.open(ImageCropComponent, {
+  //   const dialogRef = this.dialog.open(NewImageCropComponent, {
   //     width: '70%',
   //     data: {
   //       isRoundCrop: false,
@@ -1312,7 +1320,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   //     return
   //   }
 
-  //   const dialogRef = this.dialog.open(ImageCropComponent, {
+  //   const dialogRef = this.dialog.open(NewImageCropComponent, {
   //     width: '70%',
   //     data: {
   //       isRoundCrop: false,
@@ -1399,7 +1407,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       return
     }
 
-    const dialogRef = this.dialog.open(ImageCropComponent, {
+    const dialogRef = this.dialog.open(NewImageCropComponent, {
       width: '70%',
       data: {
         isRoundCrop: false,
@@ -1581,7 +1589,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       return
     }
 
-    const dialogRef = this.dialog.open(ImageCropComponent, {
+    const dialogRef = this.dialog.open(NewImageCropComponent, {
       width: '70%',
       data: {
         isRoundCrop: false,
@@ -1843,8 +1851,8 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       nodeType: [],
       org: [],
       gatingEnabled: new FormControl(''),
-      courseVisibility: new FormControl(false),
-      selfAssessment: new FormControl(false),
+      courseVisibility: new FormControl(''),
+      selfAssessment: new FormControl(''),
       issueCertification: false,
       creatorDetails: [],
       // passPercentage: [],
@@ -1866,7 +1874,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       sampleCertificates: [],
       skills: [],
       softwareRequirements: [],
-      sourceName: new FormControl('', [Validators.required]),
+      sourceName: new FormControl(''),
       creatorLogo: [],
       creatorPosterImage: [],
       creatorThumbnail: [],
@@ -1885,7 +1893,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       instructions: new FormControl('', [Validators.required]),
       versionKey: '',  // (new Date()).getTime()
       purpose: '',
-      lang: new FormControl('', [Validators.required]),
+      lang: new FormControl(''),
       cneName: new FormControl('')
     })
     // tslint:disable-next-line:no-console

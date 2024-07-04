@@ -9,7 +9,7 @@
 <ws-widget-tree-catalog-menu #rootMenu [rootTrigger]="rootTrigger" [catalogItems]="catalogItems | slice: 0:10"
   [fetchStatus]="catalogFetchStatus" isRoot="true">
 </ws-widget-tree-catalog-menu> -->
-<div>
+<div id="user">
   <span class="login-pf-text">Logged in as {{this.givenName}} </span>
   <a href="javascript:void(0)" mat-icon-button i18n-aria-label title="option" class="new-margin"
     #rootTrigger="matMenuTrigger" [matMenuTriggerFor]="settingsMenu" role="link">

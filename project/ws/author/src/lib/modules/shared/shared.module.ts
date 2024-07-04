@@ -37,10 +37,11 @@ import { MatStepperModule } from '@angular/material/stepper'
 import { MatTabsModule } from '@angular/material/tabs'
 import { MatToolbarModule } from '@angular/material/toolbar'
 import { MatTreeModule } from '@angular/material/tree'
-import { ImageCropModule } from '@ws-widget/utils/src/public-api'
+import { ImageCropModule, NewImageCropModule } from '@ws-widget/utils/src/public-api'
 import { AuthEditorStepsComponent } from './components/auth-editor-steps/auth-editor-steps.component'
 import { CommentsDialogComponent } from './components/comments-dialog/comments-dialog.component'
 import { CertificateDialogComponent } from './components/certificate-upload-dialog/certificate-upload-dialog.component'
+import { CommentsViewComponent } from './components/comments-view/comments-view.component'
 
 import { CommentsComponent } from './components/comments/comments.component'
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component'
@@ -67,6 +68,8 @@ import { PlayerNavigationWidgetComponent } from '../../../../../../../library/ws
 import { CertificateStatusDialogComponentDialogComponent } from './components/cert-upload-status-dialog/cert-upload-status-dialogcomponent'
 import { UserIndexConfirmComponent } from './components/user-index-confirm/user-index-confirm.component'
 import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image-upload-intro-popup.component'
+import { PageTrackComponent } from './components/page-track/page-track.component'
+import { ProgressStepperComponent } from './components/progress-stepper/progress-stepper.component'
 
 @NgModule({
   declarations: [
@@ -74,6 +77,7 @@ import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image
     CommentsComponent,
     NotificationComponent,
     CommentsDialogComponent,
+    CommentsViewComponent,
     CertificateDialogComponent,
     IprDialogComponent,
     ConfirmDialogComponent,
@@ -95,7 +99,9 @@ import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image
     ImageUploadIntroPopupComponent,
     PlayerNavigationWidgetComponent,
     CertificateStatusDialogComponentDialogComponent,
-    UserIndexConfirmComponent
+    UserIndexConfirmComponent,
+    PageTrackComponent,
+    ProgressStepperComponent
   ],
   imports: [
     CommonModule,
@@ -131,6 +137,7 @@ import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image
     MatRadioModule,
     MatProgressBarModule,
     ImageCropModule,
+    NewImageCropModule,
     PipeContentRouteModule,
   ],
   exports: [
@@ -159,6 +166,7 @@ import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image
     MatSnackBarModule,
     NotificationComponent,
     CommentsDialogComponent,
+    CommentsViewComponent,
     CertificateDialogComponent,
     CompetencyPopupComponent,
     ImageUploadIntroPopupComponent,
@@ -175,6 +183,7 @@ import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image
     MatProgressBarModule,
     IprDialogComponent,
     ImageCropModule,
+    NewImageCropModule,
     AuthEditorStepsComponent,
     ErrorParserComponent,
     PipeContentRouteModule,
@@ -190,7 +199,9 @@ import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image
     SuccessDialogComponent,
     UserIndexConfirmComponent,
     PlayerNavigationWidgetComponent,
-    CertificateStatusDialogComponentDialogComponent
+    CertificateStatusDialogComponentDialogComponent,
+    PageTrackComponent,
+    ProgressStepperComponent
   ],
   providers: [
     ApiService,
@@ -202,10 +213,12 @@ import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image
     { provide: MatDialogRef, useValue: {} },
   ],
   entryComponents: [
+    CommentsComponent,
     AuthExpiryDateConfirmComponent,
     NotificationComponent,
     IprDialogComponent,
     CommentsDialogComponent,
+    CommentsViewComponent,
     CertificateDialogComponent,
     CompetencyPopupComponent,
     ImageUploadIntroPopupComponent,

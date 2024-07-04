@@ -1,0 +1,15 @@
+::ng-deep.mat-tab-labels {
+    display: flex;
+    flex:1
+}
+
+.flex-1{
+  text-align: center;
+  flex:1
+}
+
+::ng-deep.theme-igot.day-mode .mat-tab-label, .theme-igot.day-mode .mat-tab-link{
+  text-align: center;
+  flex:1
+}
+

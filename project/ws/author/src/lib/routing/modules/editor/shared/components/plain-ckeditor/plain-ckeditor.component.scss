@@ -16,6 +16,74 @@
   min-height: 100px !important;
 }
 
-::ng-deep.cke_dialog_container {
+::ng-deep .cke_dialog_container {
   z-index: 10010 !important;
 }
+::ng-deep .header-block{
+      border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  display: flex;
+    justify-content: space-between;
+height: 46px;    background-color: #F7F7F7 !important;
+    align-items: center;
+background: #FFF;
+box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
+}
+::ng-deep .cke_inner .cke_reset{
+    height: 224px;
+    border-radius: 12px;
+}
+::ng-deep .cke_bottom .cke_reset_all {
+  display: none !important;
+  border-top: none !important;
+}
+::ng-deep .cke_inner .cke_reset{
+ .cke_bottom .cke_reset_all {
+  display: none !important;
+  border-top: none !important;
+}
+}
+/* Add this CSS to your stylesheet */
+.ck.ck-editor__editable.ck-rounded-corners {
+    /* Adjust the padding as needed */
+    padding-bottom: 0 !important;
+}
+
+.ck.ck-editor__editable.ck-rounded-corners .ck-editor__bottom-bar {
+    display: none !important;
+}
+/* Add this CSS to your stylesheet */
+.ck.ck-editor__editable.ck-rounded-corners .ck-editor__bottom-bar {
+    display: none !important;
+}
+.cke_bottom{
+  display: none !important;
+}
+
+
+
+
+
+::ng-deep .cke_contents {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+.advanced-format{
+  cursor: pointer;
+}
+::ng-deep #cke_editor1{
+  border-bottom-left-radius: 12px ;
+  border-bottom-right-radius: 12px ;
+  padding-bottom: 6px;
+}
+
+ ::ng-deep .ws-active{
+.cke_wysiwyg_div {
+  height: 100px !important;
+}
+}
+::ng-deep .cke_wysiwyg_div {
+  height: 196px !important;
+}
+
+

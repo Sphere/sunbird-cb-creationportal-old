@@ -39,7 +39,9 @@ import _ from 'lodash'
 import moment from 'moment'
 import { SuccessDialogComponent } from '../../../../../../../../modules/shared/components/success-dialog/success-dialog.component'
 // import { VariableAst } from '@angular/compiler'
-
+import {
+  ContentProgressService,
+} from '@ws-widget/collection'
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'ws-author-course-collection',
@@ -56,6 +58,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     { title: 'Content', disabled: false },
     { title: 'Details', disabled: false },
   ]
+  currentSteps!: string
   isSubmitPressed = false
   showLanguageBar = false
   actionButton: IActionButtonConfig | null = null
@@ -96,6 +99,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   isModelHeaderView: boolean = false;
   showResource: boolean = false;
   clickedNext: boolean = false;
+  isSelfAssessment: boolean = false
   isMoveCourseToDraft: boolean = false;
   createModule: any
   isLoading: boolean = false;
@@ -104,6 +108,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   isReviewChecklistEnabled: boolean = false;
   // isReviewChecklistSkipEnabled: boolean = false;
   backToDashboard: boolean = false;
+  steps: any = [
+    { label: '1. Introduction', key: 'Introduction', activeStep: true, completed: false },
+    { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: false },
+    { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
+    { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+  ];
+  allowAuthorContentCreate = false
+  header: any = 'Course Details'
   constructor(
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -123,6 +135,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     private rootSvc: RootService,
     // private contentSvc: WidgetContentService,
     private _configurationsService: ConfigurationsService,
+    private progressSvc: ContentProgressService,
   ) {
     if (sessionStorage.getItem('isReviewChecklist')) {
       this.dialog.closeAll()
@@ -162,39 +175,98 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.clickedNext = false
         }
       })
-
+    this.backToCourse = this.initService.currentNavigationMessage.subscribe(
+      (data: any) => {
+        // tslint:disable-next-line:no-console
+        console.log("data: ", data, this.currentSteps)
+        if (sessionStorage.getItem('isSettingsPage') === '1') {
+          sessionStorage.setItem('isSettingsPage', '0')
+          this.initService.backToHome('fromSettings')
+        }
+        if (this.viewMode === 'assessment' && data === 'CourseDetails') {
+          this.initService.isEditMetaPageAction('backFromModulePage')
+          this.clickedNext = false
+          this.showAddchapter = false
+          this.isModulePageEnabled = false
+          this.viewMode = 'meta'
+        }
+        if (data === 'CourseDetails') {
+          this.viewMode = 'meta'
+          this.initService.publishData('backToCourseDetailsPage')
+          this.initService.isEditMetaPageAction('backFromModulePage')
+          this.clickedNext = false
+          this.showAddchapter = false
+          this.isModulePageEnabled = false
+        } else if (data === 'CourseBuilder') {
+          this.clickedNext = true
+          this.showAddchapter = false
+          this.isModulePageEnabled = false
+        }
+        else if (data === 'AssessmentBuilder') {
+          this.clickedNext = true
+        }
+      })
 
     this.backToCourse = this.initService.isBackButtonClickedMessage.subscribe(
       (data: any) => {
         // tslint:disable-next-line:no-console
-        console.log("isBackButtonClickedMessage data " + data)
+        console.log("data: ", data, this.isSelfAssessment)
         if (sessionStorage.getItem('isSettingsPage') === '1') {
+          if (this.isSelfAssessment) {
+            this.receiveSteps('AssessmentBuilder')
+          } else {
+            this.receiveSteps('CourseBuilder')
+          }
           sessionStorage.setItem('isSettingsPage', '0')
-          // tslint:disable-next-line:no-console
-          console.log("inside ")
           this.initService.backToHome('fromSettings')
         } else {
           sessionStorage.setItem('isSettingsPage', '0')
           if (this.viewMode === 'assessment') {
+            if (this.isSelfAssessment) {
+              this.receiveSteps('AssessmentBuilder')
+            } else {
+              this.receiveSteps('CourseBuilder')
+            }
             this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
           } else if (this.showAddchapter) {
             if (this.viewMode === 'meta' && this.clickedNext) {
+              if (this.isSelfAssessment) {
+                this.receiveSteps('AssessmentBuilder')
+              } else {
+                this.receiveSteps('CourseDetails')
+              }
               console.log("fadfasdf")
               this.initService.isEditMetaPageAction('backFromModulePage')
               this.clickedNext = false
               this.showAddchapter = false
               this.isModulePageEnabled = false
             } else if (this.viewMode === '') {
+              if (this.isSelfAssessment) {
+                this.receiveSteps('AssessmentBuilder')
+              } else {
+                this.receiveSteps('CourseDetails')
+              }
+              console.log("this.viewMode")
               this.viewMode = 'meta'
               this.initService.publishData('backToCourseDetailsPage')
             }
           } else {
-            if (this.viewMode === 'meta' && this.clickedNext) {
-              this.initService.publishData('backToCourseDetailsPage')
-            } else {
+            if (this.isSelfAssessment && this.clickedNext) {
               this.router.navigateByUrl('/author/home')
             }
-
+            if (this.viewMode === 'meta' && this.clickedNext && !this.isSelfAssessment) {
+              console.log("this.meta")
+              if (this.isSelfAssessment) {
+                this.receiveSteps('AssessmentBuilder')
+              } else {
+                this.receiveSteps('CourseDetails')
+              }
+              this.initService.publishData('backToCourseDetailsPage')
+            } else {
+              if (!this.isSelfAssessment) {
+                this.router.navigateByUrl('/author/home')
+              }
+            }
           }
         }
       })
@@ -223,6 +295,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.showAddchapter = true
           this.viewMode = ''
           this.clickedNext = true
+          this.steps = [
+            { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+            { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+            { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
+            { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+          ]
           setTimeout(() => {
             this.isLoading = false
           }, 500)
@@ -268,7 +346,21 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       console.log("this.viewMeta", this.viewMode, this.clickedNext, this.showAddchapter, this.isReviewChecklistEnabled)
       console.log("fasrwerweeeeeeeee")
       this.initService.isEditMetaPageAction('backFromModulePage')
-
+      if (this.isSelfAssessment) {
+        this.header = "Self Assessment Details"
+        this.steps = [
+          { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+          { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: false, completed: true },
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false }
+        ]
+      } else {
+        this.steps = [
+          { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+          { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+          { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: true },
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: true, completed: false }
+        ]
+      }
     }
     this.initService.updateAssessmentMessage.subscribe(
       (data: any) => {
@@ -315,9 +407,73 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     //   })
   }
 
+  receiveSteps(steps: any) {
+    this.currentSteps = steps
+    if (this.isSelfAssessment) {
+      this.header = "Self Assessment Details"
+      if (steps === 'AssessmentBuilder') {
+        this.steps = [
+          { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+          { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+        ]
+      } else if (steps === 'AssessmentSettings') {
+        this.steps = [
+          { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+          { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: false, completed: true },
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false }
+        ]
+      }
+    } else {
+      if (steps === 'CourseDetails') {
+        this.steps = [
+          { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+          { label: '2. Course Details', key: 'CourseDetails', activeStep: true, completed: false },
+          { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+        ]
+      } else if (steps === 'CourseBuilder') {
+
+        this.steps = [
+          { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+          { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+          { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+        ]
+      } else if (steps === 'CourseSettings') {
+        this.steps = [
+          { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+          { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+          { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: true },
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: true, completed: false }
+        ]
+      }
+    }
+
+
+  }
+  canShow(role: string): boolean {
+    switch (role) {
+      case 'review':
+        //return this.accessService.hasRole(REVIEW_ROLE)
+        return this._configurationsService.userRoles!.has('content_reviewer')
+      case 'publish':
+        //return this.accessService.hasRole(PUBLISH_ROLE)
+        return this._configurationsService.userRoles!.has('content_publisher')
+      case 'author':
+        // return this.accessService.hasRole(CREATE_ROLE) || this.accessService.hasRole(REVIEW_ROLE)
+        //   || this.accessService.hasRole(PUBLISH_ROLE)
+        return this._configurationsService.userRoles!.has('content_reviewer') || this._configurationsService.userRoles!.has('content_creator') || this._configurationsService.userRoles!.has('content_publisher')
+      case 'author_create':
+        //return this.accessService.hasRole(CREATE_ROLE)
+        return this._configurationsService.userRoles!.has('content_creator')
+      default:
+        return false
+    }
+  }
   ngOnInit() {
     this.routerValuesCall()
-
+    this.allowAuthorContentCreate = this.canShow('author_create')
     this.courseId = this.storeService.parentNode[0]
     this.parentNodeId = this.storeService.currentParentNode
 
@@ -365,14 +521,37 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     if (sessionStorage.getItem('isReviewClicked')) {
       // sessionStorage.removeItem('isReviewClicked')
       this.clickedNext = true
-      this.showAddchapter = true
 
+      if (this.isSelfAssessment) {
+        this.header = "Self Assessment Details"
+        this.steps = [
+          { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+          { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: false, completed: true },
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false }
+        ]
+      } else {
+        this.steps = [
+          { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+          { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+          { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: true },
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: true, completed: false }
+        ]
+      }
+      this.showAddchapter = true
     }
     if (sessionStorage.getItem('isReviewChecklistSkip')) {
       // this.dialog.closeAll()
       sessionStorage.removeItem('isReviewChecklistSkip')
       // this.isReviewChecklistSkipEnabled = true
       this.action("push")
+    }
+    if (this.viewMode === 'meta' && !this.clickedNext) {
+      this.steps = [
+        { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+        { label: '2. Course Details', key: 'CourseDetails', activeStep: true, completed: false },
+        { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
+        { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+      ]
     }
   }
 
@@ -388,7 +567,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.routerSubscription = this.activateRoute.parent.parent.data.subscribe(data => {
 
         this.courseName = data.contents[0].content.name
-
+        this.clickedNext = data.contents[0].content.competency
+        this.isSelfAssessment = data.contents[0].content.competency
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
 
         data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
@@ -675,8 +855,17 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             duration: NOTIFICATION_TIME * 1000,
           })
 
-          if (this.isModulePageEnabled && this.viewMode !== 'assessment')
+          if (this.isModulePageEnabled && this.viewMode !== 'assessment') {
             this.clickedNext = true
+            console.log("this.viewMode", this.viewMode)
+
+            this.steps = [
+              { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+              { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+              { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
+              { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+            ]
+          }
 
           // window.location.reload()
         },
@@ -731,6 +920,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         })
         if (this.isModulePageEnabled && this.viewMode !== 'assessment') {
           this.clickedNext = true
+
+          this.steps = [
+            { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+            { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+            { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
+            { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+          ]
         }
       }
     }
@@ -826,17 +1022,65 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         //   this.finalCall(commentsForm)
         // })
         dialogRef.afterClosed().subscribe((d) => {
+          console.log(d)
           // this.finalCall(contentAction)
           if (d) {
             if (this.getAction() === 'sendForReview' && d.value.action === 'reject') {
               contentAction = 'rejectContent'
               // tslint:disable-next-line:no-console
               console.log("rejectContent")
-              this.finalCall(contentAction)
+              let dat = {
+                "userId": this._configurationsService!.userProfile!.userId,
+                "courseId": this.courseData.identifier,
+                "role": "reviewer",
+                "comments": d.value.comments,
+                "currentStatus": "Sent for Review",
+                "nextStatus": "Draft",
+                "readComments": false,
+                "createdDate": moment(new Date()).toISOString(),
+                "updatedDate": moment(new Date()).toISOString(),
+                "username": this._configurationsService!.userProfile!.userName
+              }
+              console.log(dat)
+              this.progressSvc.addComment(dat).subscribe(res => {
+                console.log(res)
+                if (res) {
+                  this.finalCall(contentAction)
+                }
+                //this.commentsList = res
+              }, (err: any) => {
+                console.log(err)
+                this.finalCall(contentAction)
+              })
+
+              //this.finalCall(contentAction)
             } else {
               // tslint:disable-next-line:no-console
               console.log("contentAction", contentAction)
-              this.finalCall(contentAction)
+              let dat = {
+                "userId": this._configurationsService!.userProfile!.userId,
+                "courseId": this.courseData.identifier,
+                "role": "reviewer",
+                "comments": d.value.comments,
+                "currentStatus": "Sent for Review",
+                "nextStatus": "Sent for Publish",
+                "readComments": false,
+                "createdDate": moment(new Date()).toISOString(),
+                "updatedDate": moment(new Date()).toISOString(),
+                "username": this._configurationsService!.userProfile!.userName
+              }
+              console.log(dat)
+              this.progressSvc.addComment(dat).subscribe(res => {
+                console.log(res)
+                if (res) {
+                  this.finalCall(contentAction)
+                }
+                //this.commentsList = res
+              }, (err: any) => {
+                console.log(err)
+                this.finalCall(contentAction)
+              })
+              //this.finalCall(contentAction)
             }
           }
         })
@@ -1349,6 +1593,25 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 "createdBy": this._configurationsService.userProfile!.userId
               }
             }
+            let dat = {
+              "userId": this._configurationsService!.userProfile!.userId,
+              "courseId": this.courseData.identifier,
+              "role": "publisher",
+              "comments": "Publisher approved this course to go live.",
+              "currentStatus": "Sent for Publish",
+              "nextStatus": "Course Published",
+              "readComments": false,
+              "createdDate": moment(new Date()).toISOString(),
+              "updatedDate": moment(new Date()).toISOString(),
+              "username": this._configurationsService!.userProfile!.userName
+            }
+            console.log(dat)
+            this.progressSvc.addComment(dat).subscribe(res => {
+              console.log(res)
+              //this.commentsList = res
+            }, (err: any) => {
+              console.log(err)
+            })
             // tslint:disable-next-line:no-console
             console.log(obj)
             let data = await this.editorService.createBatch(obj).toPromise().catch(_error => { })
@@ -1393,6 +1656,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         requestPayload.request.content.versionKey = element.versionKey
         if (element.status === 'Live' && element.parentStatus === 'Review') {
           flag += 1
+        }
+        //added to verify element status is Review
+        else if (element.status === 'Review' && element.reviewerStatus === 'Reviewed' && element.parentStatus === 'Review') {
+          flag += 1
         } else if (element.reviewerStatus === 'InReview' && element.status === 'Review') {
           const updateRes =
             await this.editorService.updateContentForReviwer(requestPayload, element.identifier).toPromise().catch(_error => { })
@@ -1403,6 +1670,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           }
         }
       }
+      console.log("here", flag, resourceList)
+
       if (flag === resourceList.length) {
         requestPayload.request.content.versionKey = metaData.versionKey
         // const tempRequset: NSApiRequest.IContentUpdateV3 = {
@@ -2752,7 +3021,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           }
           // tslint:disable-next-line:no-console
           console.log("sum", sum)
+          if (!this.versionKey.competency) {
+            requestBody.request.content.competency = false
+            console.log(requestBody, this.versionKey, this.versionKey.competency)
 
+          }
           return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
             tap(() => {
               this.storeService.changedHierarchy = {}
@@ -2989,6 +3262,22 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           && this._configurationsService.userProfile.userId === content.createdBy)
           ? true : false
         this.checkCreator = isCreator
+        if (this.isSelfAssessment) {
+          this.header = "Self Assessment Details"
+          this.steps = [
+            { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+            { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
+            { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+          ]
+        } else {
+
+          this.steps = [
+            { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+            { label: '2. Course Details', key: 'CourseDetails', activeStep: true, completed: false },
+            { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
+            { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+          ]
+        }
 
         // if (['application/pdf', 'application/x-mpegURL'].includes(content.mimeType)) {
         //   this.viewMode = 'upload'

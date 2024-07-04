@@ -161,6 +161,7 @@ export class EditorService {
           framework: environment.framework,
           mimeType: meta.mimeType,
           name: meta.name,
+          isAssessment: meta.isAssessment,
           instructions: '',
           // organisation: [environment.organisation],
           organisation: [
@@ -602,5 +603,13 @@ export class EditorService {
       })
     )
   }
-
+  rolesMapped(): Observable<any> {
+    return this.apiService.get<any>(
+      `https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json`
+    ).pipe(
+      map((data: any) => {
+        return data.roles
+      })
+    )
+  }
 }

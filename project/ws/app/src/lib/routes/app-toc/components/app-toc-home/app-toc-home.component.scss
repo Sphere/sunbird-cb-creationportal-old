@@ -9,7 +9,7 @@
 }
 
 .toc-body {
-  padding: 0px 10.9rem;
+  padding: 0px 3.8rem;
   padding-top: 0px !important;
   @include breakpoint-s {
     padding-right: 1rem;
@@ -26,6 +26,7 @@
     .link-active {
       color: #424242 !important;
       border-bottom: 2px solid;
+      opacity: 1;
     }
   }
 }
@@ -86,4 +87,154 @@
     padding-top: 0px;
     padding-bottom: 0px;
     margin-bottom: 16px;
+}
+
+::ng-deep .mat-tab-link {
+    padding: 0px !important; // adjust this to whatever padding you need
+    justify-content: left !important;
+    min-width: 80px !important;
+    margin-right: 40px;
+  }
+  ::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
+  opacity: 1;
+}
+.showData {
+  display: none;
+}
+
+#commentSection {
+  padding: 10px 60px;
+}
+.heading {
+    line-height: 38px !important;
+    letter-spacing: -0.02em;
+    text-align: left;
+}
+
+.display {
+  padding: 10px 20px;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+.in-line {
+  font-family: 'Roboto';
+line-height: 17px;
+letter-spacing: -0.02em;
+text-align: left;
+display: flex;
+}
+.p-r-10{
+  padding-right: 10px;
+}
+.highlight {
+  font-size: 17px !important;
+  font-weight: 400 !important;
+  text-transform: capitalize
+}
+.time {
+  color:#989898;
+  font-size: 11px !important;
+}
+.commentBox {
+      margin-left: 50px !important;
+    font-size: 13px !important;
+    margin-top: -18px !important;
+}
+.overlay {
+position: fixed;
+top: 0;
+left: 0;
+bottom: 0;
+right: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+z-index: 2000 !important;
+background-color: #fff;
+}
+
+.relative-content {
+position: relative;
+top: 7px;
+left: 10px;
+font-weight: 800;
+color: white;
+}
+
+.loader-container {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+}
+
+.loader-ripple {
+display: inline-block;
+position: relative;
+width: 84px;
+height: 84px;
+}
+
+.loader-ripple div {
+position: absolute;
+border: 4px solid #000;
+opacity: 1;
+border-radius: 50%;
+animation: loader-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+.loader-ripple div:nth-child(2) {
+animation-delay: -0.5s;
+}
+
+@keyframes loader-ripple {
+0% {
+  top: 38px;
+  left: 38px;
+  width: 0;
+  height: 0;
+  opacity: 1;
+}
+
+100% {
+  top: -1px;
+  left: -1px;
+  width: 78px;
+  height: 78px;
+  opacity: 0;
+}
+}
+.comments-text{
+  display: flex;
+  align-items: center;
+}
+.role-txt{
+  color: #1C5D95;
+      // margin: 0px 0px 0px 4px;
+          margin: 0px 0px 0px 4px !important;
+
+}
+.new-text{
+    padding: 2px 7px !important;
+    font-size: 11px;
+    border-radius: 30px !important;
+    background-color: #F88808 !important;
+    color: #fff !important;
+}
+.mark-read-block{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.check-text{
+   font-size: 14px;
+  color: #1C5D95 !important;
+}
+.check-text .mat-checkbox-layout {
+  border-radius: 30px !important;
+}
+::ng-deep .mat-checkbox-inner-container{
+  width: 13px !important;
+  height: 13px !important;
 }

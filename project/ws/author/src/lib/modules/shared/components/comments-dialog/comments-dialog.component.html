@@ -2,8 +2,10 @@
   <div style=" float: right;">
     <mat-icon style="cursor: pointer;" mat-dialog-close mat-raised-button i18n>close</mat-icon>
   </div>
-  <h2 class="text-bold">Publishing Course: {{contentMeta.name}}</h2>
-  <div *ngIf="qualityResponse" class="percentage-container">
+  <span class="publish-course">Publishing Course: {{contentMeta.name}}</span>
+  <ws-auth-status-track *ngIf="showNewFlow" [isDialog]="false" [content]="contentMeta"></ws-auth-status-track>
+
+  <!-- <div *ngIf="qualityResponse" class="percentage-container">
     <h4 class="percentage-text text-bold">Reviewer Checklist Score: <span [ngClass]="{
   'green': getQualityPercent > 70,
   'orange': getQualityPercent > 30 && getQualityPercent <= 70,
@@ -13,14 +15,14 @@
       i18n>
       <mat-icon>info</mat-icon>
     </button>
-  </div>
+  </div> -->
   <p class="publish-course-note">Note: Status of all the resources has to be live, before publishing the course</p>
-  <div style="float: right; margin-top: -42px;">
+  <!-- <div style="float: right; margin-top: -42px;">
     <button style="font-size: 14px !important;" class="margin-left-s
                     mat-button-base save-btn-mt send-to-creator-link" (click)="refreshCourse()" mat-raised-button i18n>
       Refresh Status <mat-icon>refresh</mat-icon>
     </button>
-  </div>
+  </div> -->
 
   <div class="fixTableHead">
     <table style="border: none;">
@@ -60,11 +62,10 @@
     </div>
     <div style="float: right;">
 
-      <!-- <button i18n class="refresh-button margin-left-s
-          mat-button-base save-btn-mt publish-button" id="refresh" (click)="refreshCourse()">
-        Refresh Status
+      <button i18n class="refresh-button margin-left-s
+          mat-button-base save-btn-mt " id="refresh" (click)="refreshCourse()">
         <mat-icon style="margin-top: 4px;">refresh</mat-icon>
-      </button> -->
+      </button>
       <button class="margin-left-s
           text-white ws-mat-primary-background  mat-button-base save-btn-mt publish-button"
         (click)="click('publishResources'); showPublishResourceBtn=true" mat-raised-button i18n
@@ -111,6 +112,7 @@
         drafts.
       </h3>
     </div>
+    <ws-auth-status-track *ngIf="showNewFlow" [isDialog]="false" [content]="contentMeta"></ws-auth-status-track>
     <div>
       <div class="margin-bottom-l" style="float: left;">
         <button [disabled]="commentsForm?.invalid" class="text-white mat-button-base save-btn-mt send-back-button"
@@ -137,7 +139,7 @@
         required></textarea>
     </mat-form-field>
     <mat-hint i18n class="margin-top-l margin-bottom-l">
-      For eg. this content is accepted/rejected because...
+      For example: Please provide an comment...
     </mat-hint>
     <mat-error i18n *ngIf="showError(commentsForm.controls.comments)"
       i18n="Comments Error|Explains Comments is mandatory field">
