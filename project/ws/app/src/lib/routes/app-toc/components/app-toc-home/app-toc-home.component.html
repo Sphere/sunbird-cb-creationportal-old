@@ -42,23 +42,25 @@
           </div>
 
           <h6 style="font-weight: 500;font-size: 15px"
-            *ngIf="comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Sent for Review'">
-            <span>Course sent to the reviewer</span>
+            *ngIf="(comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Sent for Review') || (comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Review')">
+            <span><span>{{content?.competency === false ? 'course' : 'self assessment' }}</span> sent to the
+              reviewer</span>
           </h6>
           <h6 class="" style="font-weight: 500;font-size: 15px"
             *ngIf="comment.role === 'creator' && comment.currentStatus === 'course-created'">{{ comment.comments
             }} by <span style="text-transform: capitalize;color: #1C5D95;">{{ comment.role }} </span>
           </h6>
           <!-- *ngIf="comment.role === 'reviewer' || comment.role === 'publisher'" -->
-          <h6 class="" style="font-weight: 500;font-size: 15px;"
-            *ngIf="(comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Draft') || (comment.currentStatus === 'Sent for Publish' &&  comment.nextStatus === 'Draft')">
+          <h6 class="" style="font-weight: 500;font-size: 15px;" *ngIf="(comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Draft') || (comment.currentStatus === 'Sent for Publish' &&  comment.nextStatus === 'Draft') ||
+            (comment.currentStatus === 'Review' && comment.nextStatus === 'Draft') ||
+            (comment.currentStatus === 'Publish' && comment.nextStatus === 'Draft')">
             <span style="text-transform: capitalize;">{{ comment.role }}</span>
-            sent the course back to you
+            sent the <span>{{content?.competency === false ? 'course' : 'self assessment' }}</span> back to you
           </h6>
           <h6 class="" style="font-weight: 500;font-size: 15px;"
-            *ngIf="comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Sent for Publish'">
+            *ngIf="(comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Sent for Publish') || (comment.currentStatus === 'Review' && comment.nextStatus === 'Review')">
             <span style="text-transform: capitalize;">{{ comment.role }}</span>
-            sent the course to the Publisher
+            sent the <span>{{content?.competency === false ? 'course' : 'self assessment' }}</span> to the Publisher
           </h6>
           <h6 class="" style="font-weight: 500;font-size: 15px;"
             *ngIf="comment.currentStatus === 'Sent for Publish' && comment.nextStatus === 'Course Published'">
