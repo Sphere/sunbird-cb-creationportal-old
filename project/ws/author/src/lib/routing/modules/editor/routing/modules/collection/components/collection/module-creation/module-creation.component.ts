@@ -970,6 +970,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                 "readComments": false,
                 "createdDate": moment(new Date()).toISOString(),
                 "updatedDate": moment(new Date()).toISOString(),
+                "username": this._configurationsService!.userProfile!.userName
 
               }
               this.progressSvc.addComment(dat).subscribe(res => {
@@ -996,6 +997,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   "readComments": false,
                   "createdDate": moment(new Date()).toISOString(),
                   "updatedDate": moment(new Date()).toISOString(),
+                  "username": this._configurationsService!.userProfile!.userName
 
                 }
                 this.progressSvc.addComment(dat).subscribe(res => {

@@ -40,16 +40,44 @@
             <!-- <h5 class="p-r-10 highlight">{{ comment.role }}</h5> -->
             <!-- <h5 class="time">{{ comment.createdDate | timeDifference : 'short' }}</h5> -->
           </div>
-          <h6 class="" style="font-weight: 500;font-size: 14px" *ngIf="comment.role === 'creator'">{{ comment.comments
-            }} by <span style="text-transform: capitalize;color: #1C5D95;">{{ comment.role }} </span></h6>
-          <h6 class="" style="font-weight: 500;font-size: 14px"
-            *ngIf="comment.role === 'reviewer' || comment.role === 'publisher'">Comment added by <span
-              style="color: #1C5D95; text-transform: capitalize;">{{ comment.role
-              }} :</span>
-            {{ comment.comments }}</h6>
+
+          <h6 style="font-weight: 500;font-size: 15px"
+            *ngIf="(comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Sent for Review') || (comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Review')">
+            <span><span>{{content?.competency === false ? 'course' : 'self assessment' }}</span> sent to the
+              reviewer</span>
+          </h6>
+          <h6 class="" style="font-weight: 500;font-size: 15px"
+            *ngIf="comment.role === 'creator' && comment.currentStatus === 'course-created'">{{ comment.comments
+            }} by <span style="text-transform: capitalize;color: #1C5D95;">{{ comment.role }} </span>
+          </h6>
+          <!-- *ngIf="comment.role === 'reviewer' || comment.role === 'publisher'" -->
+          <h6 class="" style="font-weight: 500;font-size: 15px;" *ngIf="(comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Draft') || (comment.currentStatus === 'Sent for Publish' &&  comment.nextStatus === 'Draft') ||
+            (comment.currentStatus === 'Review' && comment.nextStatus === 'Draft') ||
+            (comment.currentStatus === 'Publish' && comment.nextStatus === 'Draft')">
+            <span style="text-transform: capitalize;">{{ comment.role }}</span>
+            sent the <span>{{content?.competency === false ? 'course' : 'self assessment' }}</span> back to you
+          </h6>
+          <h6 class="" style="font-weight: 500;font-size: 15px;"
+            *ngIf="(comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Sent for Publish') || (comment.currentStatus === 'Review' && comment.nextStatus === 'Review')">
+            <span style="text-transform: capitalize;">{{ comment.role }}</span>
+            sent the <span>{{content?.competency === false ? 'course' : 'self assessment' }}</span> to the Publisher
+          </h6>
+          <h6 class="" style="font-weight: 500;font-size: 15px;"
+            *ngIf="comment.currentStatus === 'Sent for Publish' && comment.nextStatus === 'Course Published'">
+            <!-- <span style="text-transform: capitalize;">{{ comment.role }},</span> -->
+            Your <span>{{content?.competency === false ? 'course' : 'self assessment' }}</span> is live now.
+          </h6>
           <!-- <h5 style="font-size: 14px">Current Course Status : {{comment.currentStatus}}</h5>
           <h5 style="font-size: 14px">Next Course Status : {{comment.nextStatus}}</h5> -->
-          <h5 class="time">{{ comment.createdDate | momentDate:'DD/MM/YYYY hh:mm:ss A' }}</h5>
+          <div style="display: inline-flex;">
+            <h5 class="time">{{ comment.createdDate | momentDate }}</h5>
+            <span *ngIf="comment.currentStatus !== 'course-created'" (click)="toggleComments(comment)"
+              style="color: #1C5D95; text-transform: capitalize;text-decoration: underline; margin-left: 15px;font-size: 13px !important; cursor: pointer;">
+              {{comment.readComments ? 'Hide' : 'View' }} comment</span>
+          </div>
+          <div *ngIf="comment.readComments">
+            <p style="font-size: 14px;"> {{ comment.comments }}</p>
+          </div>
         </div>
       </div>
     </ng-container>
@@ -64,8 +92,8 @@
     <!-- Check if there are comments for the current role -->
     <ng-container *ngIf="filteredComments[role].length > 0">
       <span class="comments-text">Comments by <h3 class="role-txt">{{ role | titlecase }}</h3></span>
-      <div *ngFor="let comment of filteredComments[role]" class="display">
-        <div>
+      <div *ngFor="let comment of filteredComments[role]">
+        <div *ngIf="comment.currentStatus !== 'course-created'" class="display">
           <!-- <div class="mark-read-block" *ngIf="hasPublishAccess">
             <div>
               <mat-checkbox style="margin-left: 0px;border-radius: 24px;" class="check-text">Mark as
