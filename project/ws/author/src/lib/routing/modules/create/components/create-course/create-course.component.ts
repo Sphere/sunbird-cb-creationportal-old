@@ -196,10 +196,10 @@ export class CreateCourseComponent implements OnInit {
         }))
         .subscribe(
           async (data: any) => {
-            let competencies_obj = {
+            let competencies_obj = [{
               competencyName: this.courseData.proficiency.name,
-              competencyId: this.courseData.proficiency.id,
-            }
+              competencyId: this.courseData.proficiency.id.toString(),
+            }]
             let link = "https://sunbirdcontent.s3-ap-south-1.amazonaws.com/content/do_1139718921061744641126/artifact/do_1139718921061744641126_1705553236239_justwhiteplainwhitewhitewallpaperpreview1705553235473.jpg"
 
             const updateContentReq: any = {
