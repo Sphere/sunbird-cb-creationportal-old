@@ -1533,6 +1533,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       requestData.request.filters['reviewStatus'] = 'InReview'
     } else if (this.status == 'selfToPublishedCourse' || this.status == 'selfPublishedCourse') {
       requestData.request.filters['competency'] = true
+    } else if (this.status == 'published') {
+      requestData.request.filters['competency'] = false
     } else if (this.status == 'selfRetiredCourse' || this.status == 'selfCourseRevision') {
       requestData.request.filters['competency'] = true
 

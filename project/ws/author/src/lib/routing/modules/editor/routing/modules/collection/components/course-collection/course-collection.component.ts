@@ -295,12 +295,22 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.showAddchapter = true
           this.viewMode = ''
           this.clickedNext = true
-          this.steps = [
-            { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
-            { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
-            { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
-            { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
-          ]
+          if (this.isSelfAssessment) {
+            this.header = "Self Assessment Details"
+            this.steps = [
+              { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+              { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
+              { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+            ]
+          } else {
+            this.steps = [
+              { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+              { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+              { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
+              { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+            ]
+          }
+
           setTimeout(() => {
             this.isLoading = false
           }, 500)
