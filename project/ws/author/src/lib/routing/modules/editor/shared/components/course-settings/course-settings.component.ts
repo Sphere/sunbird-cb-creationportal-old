@@ -216,13 +216,13 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   ngOnInit() {
     this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {
       this.proficiencyList = await res.result.response
-      this.searchComp = this.proficiencyList
       this.proficiencyList = this.proficiencyList.map((item: any) => ({
         competencyId: item.id,
         competencyName: item.name,
         code: item.additionalProperties.Code
       }))
     })
+    this.searchComp = this.proficiencyList
     this.ordinals = this.authInitService.ordinals
     this.audienceList = this.ordinals.audience
     this.jobProfileList = this.ordinals.jobProfile
