@@ -129,9 +129,10 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     },
     {
       "name": 'Hindi',
-      "value": 'hn'
+      "value": 'hi'
     }
   ]
+  proficiency: any
   isAddCerticate: boolean = false;
   isEnableTitle: boolean = true
   mainCourseDuration: string = ''
@@ -160,6 +161,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   roles$!: Observable<any[]>
   userId!: any
   givenName!: any
+  getAllEntities: any
+  proficiencyList: any[] = [];
   constructor(
     private formBuilder: FormBuilder,
     private uploadService: UploadService,
@@ -207,9 +210,19 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     }, 100)
   }
   rolesSubscription!: Subscription
+  searchComp: any = ''
 
   contentForm!: FormGroup
   ngOnInit() {
+    this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {
+      this.proficiencyList = await res.result.response
+      this.searchComp = this.proficiencyList
+      this.proficiencyList = this.proficiencyList.map((item: any) => ({
+        competencyId: item.id,
+        competencyName: item.name,
+        code: item.additionalProperties.Code
+      }))
+    })
     this.ordinals = this.authInitService.ordinals
     this.audienceList = this.ordinals.audience
     this.jobProfileList = this.ordinals.jobProfile
@@ -259,7 +272,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     this.editorsCtrl = new FormControl()
     this.creatorDetailsCtrl = new FormControl()
     this.keywordsCtrl = new FormControl('')
-
     this.audienceCtrl = new FormControl()
     this.rolesMappedCtrl = new FormControl()
     this.jobProfileCtrl = new FormControl()
@@ -423,6 +435,30 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     //   distinctUntilChanged(),
     //   switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
     // )
+  }
+  onKey(value: string) {
+    this.proficiencyList = this.search(value)
+  }
+  eventSelection(event: any) {
+    console.log("event", event)
+    let competencies_obj = {
+      competencyName: event.competencyName,
+      competencyId: event.competencyId,
+    }
+    console.log("competencies", competencies_obj)
+    this.contentForm.controls.name.setValue(event.name)
+    // this.contentForm.controls.courseDescription.setValue(event.description)
+    this.contentForm.controls.competencies_v1.setValue([competencies_obj])
+    console.log("yes here proficiency", this.contentForm.controls.competencies_v1.value)
+  }
+  search(value: string) {
+    let filter = value.toLowerCase()
+    if (!filter) {
+      return this.searchComp
+    }
+    return this.proficiencyList = this.searchComp.filter((option: any) =>
+      option.name.toLowerCase().includes(filter)
+    )
   }
   getFilterData(firstArray: any, secondArray: any) {
     const valuesNotInSecondArray = firstArray.filter((key: any) => {
@@ -636,8 +672,9 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             )
           }
         }
+
         this.contentForm.controls.sourceName.setValue(this.contentMeta.sourceName)
-        // this.contentForm.controls.langName.setValue(this.contentMeta.lang)
+
         this.contentForm.controls.trackContactsCtrl.setValue(this.contentMeta.trackContactsCtrl)
         this.contentForm.controls.publisherDetailsCtrl.setValue(this.contentMeta.publisherDetailsCtrl)
         this.contentForm.controls.gatingEnabled.setValue(this.contentMeta.gatingEnabled)
@@ -657,10 +694,11 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       } catch (ex) { }
     })
     this.canUpdate = true
-
     // tslint:disable-next-line:no-console
     console.log('saved', this.contentForm.controls, this.contentMeta)
     this.storeData()
+    this.initializeForm()
+
     if (this.isSubmitPressed) {
       this.contentForm.markAsDirty()
       this.contentForm.markAsTouched()
@@ -669,7 +707,25 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       this.contentForm.markAsUntouched()
     }
   }
+  initializeForm() {
+    if (this.contentMeta.competencies_v1) {
+      try {
+        const parsedCompetencies = JSON.parse(this.contentMeta.competencies_v1)
 
+        if (Array.isArray(parsedCompetencies)) {
+          const selectedCompetency = this.proficiencyList.find(
+            (competency: { competencyId: number }) => competency.competencyId === parsedCompetencies[0].competencyId
+          )
+
+          if (selectedCompetency) {
+            this.contentForm.controls.competencies_v1.setValue(selectedCompetency)
+          }
+        }
+      } catch (e) {
+        console.error('Failed to parse competencies_v1', e)
+      }
+    }
+  }
   convertToISODate(date = ''): Date {
     try {
       return new Date(
@@ -815,6 +871,9 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             if (!currentMeta.issueCertification) {
               currentMeta.issueCertification = parentData.issueCertification !== false ? parentData.issueCertification : currentMeta.issueCertification
             }
+            // if (!currentMeta.competencies_v1) {
+            //   currentMeta.competencies_v1 = parentData.competencies_v1 !== false ? parentData.competencies_v1 : currentMeta.competencies_v1
+            // }
             if (!currentMeta.previewLinkFormControl) {
               currentMeta.previewLinkFormControl = parentData.previewLinkFormControl !== '' ? parentData.previewLinkFormControl : currentMeta.previewLinkFormControl
             }
@@ -1754,6 +1813,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       org: [],
       gatingEnabled: new FormControl(''),
       issueCertification: !this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
+      competencies_v1: this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
+      lang: '',
       creatorDetails: [],
       // passPercentage: [],
       plagScan: [],
