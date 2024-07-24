@@ -204,19 +204,16 @@
               </div>
             </label>
             <div class="margin-top-xs">
-              <mat-form-field appearance="fill" class="margin-top-xs"
-                [ngClass]="{ 'mat-form-field-invalid': showError('competencies_v1') }">
-                <mat-select (selectionChange)="eventSelection($event.value)" formControlName="competencies_v1"
-                  i18n-placeholder placeholder="Select Competency">
+              <mat-form-field appearance="fill" class="margin-top-xs">
+                <mat-select formControlName="competencies_v1" [(ngModel)]="competencies_v1"
+                  placeholder="Select Competency" (selectionChange)="eventSelection($event.value)">
                   <input placeholder="Search Competency" matInput class="module-input"
                     (keyup)="onKey($event.target.value)">
                   <mat-option *ngFor="let list of proficiencyList" [value]="list">
-                    {{ list.code }} - {{ list.competencyName }}
-                  </mat-option>
+                    {{ list.additionalProperties?list.additionalProperties.Code:''}} - {{list.name }}</mat-option>
                 </mat-select>
-                <mat-error *ngIf="showError('competencies_v1')">This field is mandatory</mat-error>
+                <mat-error i18n>This field is mandatory </mat-error>
               </mat-form-field>
-
 
             </div>
           </div>

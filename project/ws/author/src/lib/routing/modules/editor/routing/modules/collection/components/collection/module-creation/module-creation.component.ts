@@ -737,12 +737,20 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       } else {
         tempUpdateContent.versionKey = this.versionID === undefined ? this.versionKey.versionKey : this.versionID.versionKey
       }
-
-      requestBody = {
-        request: {
-          content: tempUpdateContent,
+      if (this.isSelfAssessment) {
+        let competencies_obj = [{
+          competencyName: tempUpdateContent.competencies_v1.name,
+          competencyId: tempUpdateContent.competencies_v1.id,
+        }]
+        tempUpdateContent.competencies_v1 = competencies_obj
+        console.log("yes here comes", tempUpdateContent)
+        requestBody = {
+          request: {
+            content: tempUpdateContent,
+          }
         }
       }
+
       // tslint:disable-next-line:no-console
 
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)

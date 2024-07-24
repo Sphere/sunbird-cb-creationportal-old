@@ -163,6 +163,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   givenName!: any
   getAllEntities: any
   proficiencyList: any[] = [];
+  competencies_v1: any
+
   constructor(
     private formBuilder: FormBuilder,
     private uploadService: UploadService,
@@ -187,6 +189,13 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       this.givenName = this.configSvc.userProfile.givenName
 
     }
+    this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {
+      this.proficiencyList = await res.result.response
+      this.searchComp = this.proficiencyList
+      console.log("yes shree", this.proficiencyList)
+      this.initializeForm()
+
+    })
   }
 
   async ngAfterViewInit() {
@@ -214,14 +223,15 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
   contentForm!: FormGroup
   ngOnInit() {
-    this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {
-      this.proficiencyList = await res.result.response
-      this.proficiencyList = this.proficiencyList.map((item: any) => ({
-        competencyId: item.id,
-        competencyName: item.name,
-        code: item.additionalProperties.Code
-      }))
-    })
+
+    // this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {
+    //   this.proficiencyList = await res.result.response
+    //   this.proficiencyList = this.proficiencyList.map((item: any) => ({
+    //     competencyId: item.id,
+    //     competencyName: item.name,
+    //     code: item.additionalProperties.Code
+    //   }))
+    // })
     this.searchComp = this.proficiencyList
     this.ordinals = this.authInitService.ordinals
     this.audienceList = this.ordinals.audience
@@ -436,21 +446,36 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     //   switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
     // )
   }
-  onKey(value: string) {
-    this.proficiencyList = this.search(value)
-  }
+
   eventSelection(event: any) {
     console.log("event", event)
-    let competencies_obj = {
-      competencyName: event.competencyName,
-      competencyId: event.competencyId,
-    }
+    let competencies_obj = [{
+      competencyName: event.name,
+      competencyId: event.id,
+    }]
     console.log("competencies", competencies_obj)
     this.contentForm.controls.name.setValue(event.name)
     // this.contentForm.controls.courseDescription.setValue(event.description)
-    this.contentForm.controls.competencies_v1.setValue([competencies_obj])
     console.log("yes here proficiency", this.contentForm.controls.competencies_v1.value)
+    this.competencies_v1 = event
+    // this.contentForm.controls.competencies_v1.setValue(competencies_obj)
   }
+
+  onKey(value: string) {
+    this.proficiencyList = this.search(value)
+  }
+  // eventSelection(event: any) {
+  //   console.log("event", event)
+  //   let competencies_obj = {
+  //     competencyName: event.competencyName,
+  //     competencyId: event.competencyId,
+  //   }
+  //   console.log("competencies", competencies_obj)
+  //   this.contentForm.controls.name.setValue(event.name)
+  //   // this.contentForm.controls.courseDescription.setValue(event.description)
+  //   this.contentForm.controls.competencies_v1.setValue([competencies_obj])
+  //   console.log("yes here proficiency", this.contentForm.controls.competencies_v1.value)
+  // }
   search(value: string) {
     let filter = value.toLowerCase()
     if (!filter) {
@@ -683,7 +708,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         this.contentForm.controls.courseVisibility.setValue(this.contentMeta.courseVisibility)
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification)
         this.contentForm.controls.cneName.setValue(this.contentMeta.cneName)
-
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
           this.contentForm.controls[v].markAsTouched()
@@ -695,9 +719,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     })
     this.canUpdate = true
     // tslint:disable-next-line:no-console
-    console.log('saved', this.contentForm.controls, this.contentMeta)
+    console.log('saved', this.contentForm.controls, this.proficiencyList)
     this.storeData()
-    this.initializeForm()
 
     if (this.isSubmitPressed) {
       this.contentForm.markAsDirty()
@@ -707,20 +730,45 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       this.contentForm.markAsUntouched()
     }
   }
+  isJsonString(str: any) {
+    try {
+      JSON.parse(str)
+      return true // It's valid JSON!
+    } catch (e) {
+      return false // Not valid JSON.
+    }
+  }
   initializeForm() {
     if (this.contentMeta.competencies_v1) {
       try {
-        const parsedCompetencies = JSON.parse(this.contentMeta.competencies_v1)
-
-        if (Array.isArray(parsedCompetencies)) {
-          const selectedCompetency = this.proficiencyList.find(
-            (competency: { competencyId: number }) => competency.competencyId === parsedCompetencies[0].competencyId
-          )
-
-          if (selectedCompetency) {
-            this.contentForm.controls.competencies_v1.setValue(selectedCompetency)
+        console.log("yes valid", this.contentMeta.competencies_v1)
+        let jsonVerify = this.isJsonString(this.contentMeta.competencies_v1)
+        if (jsonVerify) {
+          const parsedCompetencies = JSON.parse(this.contentMeta.competencies_v1)
+          console.log("parsedCompetencies", this.contentMeta.competencies_v1, this.proficiencyList)
+          if (Array.isArray(parsedCompetencies)) {
+            const selectedCompetency = this.proficiencyList.find(
+              (competency: { id: number }) => competency.id === parsedCompetencies[0].competencyId
+            )
+            console.log("yes here selected: ", selectedCompetency)
+            if (selectedCompetency) {
+              this.competencies_v1 = selectedCompetency
+            }
+          }
+        } else {
+          let comp = this.contentMeta.competencies_v1
+          console.log("comp", this.contentMeta.competencies_v1, this.proficiencyList)
+          if (comp) {
+            const selectedCompetency = this.proficiencyList.find(
+              (competency: { id: number }) => competency.id === comp.id
+            )
+            console.log("yes here selected: ", selectedCompetency)
+            if (selectedCompetency) {
+              this.competencies_v1 = selectedCompetency
+            }
           }
         }
+
       } catch (e) {
         console.error('Failed to parse competencies_v1', e)
       }
@@ -948,6 +996,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
 
         // console.log('meta', meta, this.contentMeta.identifier)
         this.contentService.setUpdatedMeta(meta, this.contentMeta.identifier)
+        // this.initializeForm()
 
       }
     } catch (ex) {
@@ -1815,6 +1864,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       issueCertification: !this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
       competencies_v1: this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
       lang: '',
+      // proficiency: new FormControl('', [Validators.required]),
       creatorDetails: [],
       // passPercentage: [],
       plagScan: [],
