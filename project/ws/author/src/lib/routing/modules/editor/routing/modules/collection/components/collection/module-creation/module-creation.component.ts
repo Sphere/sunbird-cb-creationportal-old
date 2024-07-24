@@ -743,14 +743,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           competencyId: tempUpdateContent.competencies_v1.id,
         }]
         tempUpdateContent.competencies_v1 = competencies_obj
-        console.log("yes here comes", tempUpdateContent)
-        requestBody = {
-          request: {
-            content: tempUpdateContent,
-          }
+      }
+      requestBody = {
+        request: {
+          content: tempUpdateContent,
         }
       }
-
       // tslint:disable-next-line:no-console
 
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
