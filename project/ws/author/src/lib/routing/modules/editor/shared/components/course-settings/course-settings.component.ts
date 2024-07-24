@@ -447,35 +447,74 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     // )
   }
 
-  eventSelection(event: any) {
-    console.log("event", event)
-    let competencies_obj = [{
-      competencyName: event.name,
-      competencyId: event.id,
-    }]
-    console.log("competencies", competencies_obj)
+  async eventSelection(event: any) {
+
     this.contentForm.controls.name.setValue(event.name)
-    // this.contentForm.controls.courseDescription.setValue(event.description)
-    console.log("yes here proficiency", this.contentForm.controls.competencies_v1.value)
+    this.contentForm.controls.description.setValue(event.description)
     this.competencies_v1 = event
+    if (event.additionalProperties.competencyLevelDescription) {
+      let children: any = this.contentMeta.children
+      let competencyLevelDescription = JSON.parse(event.additionalProperties.competencyLevelDescription)
+      const identifiers = children.map((val: any) => {
+        const matchedItem = {
+          "identifier": val.identifier,
+          "versionKey": val.versionKey
+        }
+        return matchedItem
+      })
+
+      const mergedArray = competencyLevelDescription.map((item: any, index: string | number) => {
+        return {
+          ...item,
+          identifier: identifiers[index].identifier,
+          versionKey: identifiers[index].versionKey
+        }
+      })
+      if (mergedArray.length > 0) {
+        this.loader.changeLoad.next(true)
+        for (const level of mergedArray) {
+          if (level) {
+            const newData = {
+              name: '( Level ' + level.level + ') ' + level.name ? level.name : 'Resource',
+              description: level.description ? level.description : '',
+              versionKey: level.versionKey
+            }
+            let requestBody = {
+              request: {
+                content: newData
+              },
+            }
+            await this.editorService.updateNewContentV3(requestBody, level.identifier).toPromise().catch((_error: any) => { })
+          }
+        }
+        let competencies_obj = [{
+          competencyName: event.name,
+          competencyId: event.id.toString(),
+        }]
+        let courseData = {
+          name: event.name,
+          versionKey: this.contentMeta.identifier,
+          competencies_v1: competencies_obj
+        }
+
+        let requestBody = {
+          request: {
+            content: courseData
+          },
+        }
+        await this.editorService.updateNewContentV3(requestBody, this.contentMeta.identifier).toPromise().catch((_error: any) => { })
+
+      }
+      this.loader.changeLoad.next(false)
+
+    }
+
     // this.contentForm.controls.competencies_v1.setValue(competencies_obj)
   }
 
   onKey(value: string) {
     this.proficiencyList = this.search(value)
   }
-  // eventSelection(event: any) {
-  //   console.log("event", event)
-  //   let competencies_obj = {
-  //     competencyName: event.competencyName,
-  //     competencyId: event.competencyId,
-  //   }
-  //   console.log("competencies", competencies_obj)
-  //   this.contentForm.controls.name.setValue(event.name)
-  //   // this.contentForm.controls.courseDescription.setValue(event.description)
-  //   this.contentForm.controls.competencies_v1.setValue([competencies_obj])
-  //   console.log("yes here proficiency", this.contentForm.controls.competencies_v1.value)
-  // }
   search(value: string) {
     let filter = value.toLowerCase()
     if (!filter) {
@@ -745,10 +784,10 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         let jsonVerify = this.isJsonString(this.contentMeta.competencies_v1)
         if (jsonVerify) {
           const parsedCompetencies = JSON.parse(this.contentMeta.competencies_v1)
-          console.log("parsedCompetencies", this.contentMeta.competencies_v1, this.proficiencyList)
+          console.log("parsedCompetencies", parsedCompetencies, this.proficiencyList)
           if (Array.isArray(parsedCompetencies)) {
             const selectedCompetency = this.proficiencyList.find(
-              (competency: { id: number }) => competency.id === parsedCompetencies[0].competencyId
+              (competency: { id: number }) => competency.id == parsedCompetencies[0].competencyId
             )
             console.log("yes here selected: ", selectedCompetency)
             if (selectedCompetency) {
@@ -1862,7 +1901,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       org: [],
       gatingEnabled: new FormControl(''),
       issueCertification: !this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
-      competencies_v1: this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
+      // competencies_v1: this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
+      competencies_v1: this.isSelfAssessment ? new FormControl('') : new FormControl(''),
       lang: '',
       // proficiency: new FormControl('', [Validators.required]),
       creatorDetails: [],

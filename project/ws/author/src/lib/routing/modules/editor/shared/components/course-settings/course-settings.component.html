@@ -199,13 +199,13 @@
           <div class="margin-left-l" [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
             <label>
               <div class="margin-top-xs">
-                <span class="label-heading" style="color: #d32f2f">*</span><mat-label class="label-heading">Competency
+                <span class="label-heading">*</span><mat-label class="label-heading">Competency
                 </mat-label>
               </div>
             </label>
             <div class="margin-top-xs">
-              <mat-form-field appearance="fill" class="margin-top-xs">
-                <mat-select formControlName="competencies_v1" [(ngModel)]="competencies_v1"
+              <mat-form-field aria-readonly="true" appearance="fill" class="margin-top-xs">
+                <mat-select [disabled]="true" formControlName="competencies_v1" [(ngModel)]="competencies_v1"
                   placeholder="Select Competency" (selectionChange)="eventSelection($event.value)">
                   <input placeholder="Search Competency" matInput class="module-input"
                     (keyup)="onKey($event.target.value)">

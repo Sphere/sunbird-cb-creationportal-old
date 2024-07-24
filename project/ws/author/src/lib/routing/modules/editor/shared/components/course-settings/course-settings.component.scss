@@ -9,6 +9,10 @@
 //   display: flex;
 //   // justify-content: space-around;
 // }
+.read-only-select .mat-select-trigger {
+  pointer-events: none;
+  opacity: 1;
+}
 
 .image-border {
   border: 2px solid;
