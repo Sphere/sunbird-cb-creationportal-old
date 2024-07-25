@@ -737,13 +737,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       } else {
         tempUpdateContent.versionKey = this.versionID === undefined ? this.versionKey.versionKey : this.versionID.versionKey
       }
-      // if (this.isSelfAssessment) {
-      //   let competencies_obj = [{
-      //     competencyName: tempUpdateContent.competencies_v1.name,
-      //     competencyId: tempUpdateContent.competencies_v1.id.toString(),
-      //   }]
-      //   tempUpdateContent.competencies_v1 = competencies_obj
-      // }
+      if (this.isSelfAssessment) {
+        let competencies_obj = [{
+          competencyName: tempUpdateContent.competencies_v1.name,
+          competencyId: tempUpdateContent.competencies_v1.id.toString(),
+        }]
+        tempUpdateContent.competencies_v1 = competencies_obj
+      }
       requestBody = {
         request: {
           content: tempUpdateContent,
