@@ -193,7 +193,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       this.proficiencyList = await res.result.response
       this.searchComp = this.proficiencyList
       console.log("yes shree", this.proficiencyList)
-      this.initializeForm()
+      if (this.isSelfAssessment)
+        this.initializeForm()
 
     })
   }
@@ -989,7 +990,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         // tslint:disable-next-line:no-console
         console.log("currentMeta", currentMeta)
         Object.keys(currentMeta).map(v => {
-          if (
+          if ((this.isSelfAssessment ? true : v !== 'competencies_v1') &&
             v !== 'versionKey' && v !== 'visibility' &&
             JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !==
             JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta]) && v !== 'jobProfile'
@@ -1018,6 +1019,9 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             //   meta[v as keyof NSContent.IContentMeta] = 'Default'
             // }
           }
+          else if (v === 'competencies_v1') {
+            // meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
+          }
         })
 
         if (this.stage >= 1 && !this.type) {
@@ -1033,7 +1037,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         //   // console.log("roles", rolesId)
         // }
 
-        // console.log('meta', meta, this.contentMeta.identifier)
+        console.log('meta', meta, this.contentMeta.identifier)
         this.contentService.setUpdatedMeta(meta, this.contentMeta.identifier)
         // this.initializeForm()
 
