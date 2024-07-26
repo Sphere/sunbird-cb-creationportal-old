@@ -231,6 +231,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           } else if (this.showAddchapter) {
             if (this.viewMode === 'meta' && this.clickedNext) {
               if (this.isSelfAssessment) {
+                this.router.navigateByUrl('/author/home')
+              }
+              if (this.isSelfAssessment) {
                 this.receiveSteps('AssessmentBuilder')
               } else {
                 this.receiveSteps('CourseDetails')
