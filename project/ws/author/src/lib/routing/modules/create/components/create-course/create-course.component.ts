@@ -165,9 +165,18 @@ export class CreateCourseComponent implements OnInit {
   createSelfAssessmentCourse() {
     this.loaderService.changeLoad.next(true)
     const competency = this.proficiencyList.find((obj: any) => obj.id === this.courseData.proficiency.id)
-    this.courseData.courseName = this.courseData.proficiency.name
-    this.courseData.courseDescription = this.courseData.proficiency.description
+    let competencyLevelDescription = competency.additionalProperties
+    let lang = this.courseData.lang
+    if (lang == 'hi') {
+      this.courseData.courseName = competencyLevelDescription['lang-hi-name'] ? competencyLevelDescription['lang-hi-name'] : this.courseData.proficiency.name
+      this.courseData.courseDescription = competencyLevelDescription['lang-hi-description'] ? competencyLevelDescription['lang-hi-description'] : this.courseData.proficiency.description
+      console.log("competency.additionalProperties", this.courseData)
+    } else {
+      this.courseData.courseName = this.courseData.proficiency.name
+      this.courseData.courseDescription = this.courseData.proficiency.description
+    }
 
+    console.log("complete", competency, this.courseData)
 
     if (this.content && competency && this.courseData.proficiency.name) {
       this.svc
@@ -197,7 +206,7 @@ export class CreateCourseComponent implements OnInit {
         .subscribe(
           async (data: any) => {
             let competencies_obj = [{
-              competencyName: this.courseData.proficiency.name,
+              competencyName: this.courseData.courseName,
               competencyId: this.courseData.proficiency.id.toString(),
             }]
             let link = "https://sunbirdcontent.s3-ap-south-1.amazonaws.com/content/do_1139718921061744641126/artifact/do_1139718921061744641126_1705553236239_justwhiteplainwhitewhitewallpaperpreview1705553235473.jpg"
@@ -253,6 +262,12 @@ export class CreateCourseComponent implements OnInit {
                   this.loaderService.changeLoad.next(true)
                   for (const level of competencyLevelDescription) {
                     if (level) {
+                      if (lang == 'hi') {
+                        level.name = level['lang-hi-name'] ? level['lang-hi-name'] : level.name
+                        level.description = level['lang-hi-description'] ? level['lang-hi-description'] : level.description
+                        console.log("level 1", level)
+                      }
+                      console.log("level", level)
                       this.courseData = await this.editorService.readcontentV3(this.editorStore.parentContent).toPromise()
                       this.editorStore.setOriginalMeta(data)
                       await this.setContentType('assessment', level, '')
