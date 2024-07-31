@@ -188,7 +188,7 @@
               <mat-form-field appearance="fill" class="margin-top-xs" class="margin-top-xs"
                 [ngClass]="{ 'mat-form-field-invalid': showError('lang') }">
 
-                <mat-select formControlName="lang" i18n-placeholder placeholder="Select language">
+                <mat-select [disabled]="true" formControlName="lang" i18n-placeholder placeholder="Select language">
                   <mat-option *ngFor="let lang of languageList" [value]="lang.value">
                     {{ lang.name }}</mat-option>
                 </mat-select>
