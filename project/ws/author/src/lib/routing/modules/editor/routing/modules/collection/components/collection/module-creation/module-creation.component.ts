@@ -737,12 +737,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       } else {
         tempUpdateContent.versionKey = this.versionID === undefined ? this.versionKey.versionKey : this.versionID.versionKey
       }
-      let competencyLevelDescription = tempUpdateContent.competencies_v1.additionalProperties
-      let lang = this.courseData.lang
-      if (lang == 'hi') {
-        tempUpdateContent.competencies_v1.name = competencyLevelDescription['lang-hi-name'] ? competencyLevelDescription['lang-hi-name'] : tempUpdateContent.competencies_v1.name
-      }
+
       if (this.isSelfAssessment) {
+        let competencyLevelDescription = tempUpdateContent.competencies_v1.additionalProperties
+        let lang = this.courseData.lang
+        if (lang == 'hi') {
+          tempUpdateContent.competencies_v1.name = competencyLevelDescription['lang-hi-name'] ? competencyLevelDescription['lang-hi-name'] : tempUpdateContent.competencies_v1.name
+        }
         let competencies_obj = [{
           competencyName: tempUpdateContent.competencies_v1.name,
           competencyId: tempUpdateContent.competencies_v1.id.toString(),
