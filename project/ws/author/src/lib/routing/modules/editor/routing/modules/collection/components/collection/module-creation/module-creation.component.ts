@@ -1817,7 +1817,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       if (data.children.length > 0) {
         this.loader.changeLoad.next(true)
         data.children.forEach((element: any) => {
-          if (element.duration) {
+          if (element.contentType !== 'CourseUnit' && element.duration) {
             this.resourceDurat.push(parseInt(element.duration))
           }
           if (element.children && element.children.length > 0) {
