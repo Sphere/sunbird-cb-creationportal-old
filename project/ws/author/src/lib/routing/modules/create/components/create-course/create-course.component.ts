@@ -233,7 +233,10 @@ export class CreateCourseComponent implements OnInit {
                 },
                 duration: NOTIFICATION_TIME * 3000,
               })
-              let competencyLevelDescription = JSON.parse(competency.additionalProperties.competencyLevelDescription)
+              let competencyLevelDescription: any = []
+              if (competency.additionalProperties.competencyLevelDescription) {
+                competencyLevelDescription = JSON.parse(competency.additionalProperties.competencyLevelDescription)
+              }
               // console.log("competencyLevelDescription", competencyLevelDescription)
               this.editorStore.parentContent = this.identifier.identifier
               this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
@@ -668,9 +671,9 @@ export class CreateCourseComponent implements OnInit {
       console.log("level", level)
       const newData = {
         topicDescription: level.description ? level.description : '',
-        topicName: '( Level ' + level.level + ') ' + level.name ? level.name : 'Resource',
+        topicName: 'Level ' + level.level + ' : ' + (level.name ? level.name : 'Resource'),
       }
-
+      console.log("level name", newData)
       if (type.type === 'collection') {
         this.storeService.parentData = this.courseData
       }
