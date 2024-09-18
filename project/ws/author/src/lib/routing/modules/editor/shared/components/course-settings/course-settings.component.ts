@@ -748,6 +748,9 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         this.contentForm.controls.courseVisibility.setValue(this.contentMeta.courseVisibility)
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification)
         this.contentForm.controls.cneName.setValue(this.contentMeta.cneName)
+        // hardcoded aastrika publisher id
+        this.contentForm.controls.publisherDetails.setValue([{ id: 'b4509d72-87cc-4317-9012-d4b03e307fa5', name: 'Publisher Aastrika' }])
+
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
           this.contentForm.controls[v].markAsTouched()
@@ -1984,7 +1987,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         )
       })
     }
-
+    this.contentForm.controls.publisherDetails.setValue({ id: 'b4509d72-87cc-4317-9012-d4b03e307fa5', name: 'Publisher Aastrika' })
+    console.log("publisher", this.contentForm.controls.publisherDetailsCtrl)
     //     this.contentForm.controls.publisherDetails.valueChanges.subscribe(() => {
     //   this.contentForm.controls.publisherDetails.setValue(
     //     this.contentForm.controls.publisherDetails.value || [],
