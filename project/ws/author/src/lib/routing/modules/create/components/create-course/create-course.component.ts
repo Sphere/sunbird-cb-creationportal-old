@@ -672,6 +672,7 @@ export class CreateCourseComponent implements OnInit {
       const newData = {
         topicDescription: level.description ? level.description : '',
         topicName: 'Level ' + level.level + ' : ' + (level.name ? level.name : 'Resource'),
+        isAssessment: true
       }
       console.log("level name", newData)
       if (type.type === 'collection') {
