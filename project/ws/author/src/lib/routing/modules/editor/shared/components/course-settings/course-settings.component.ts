@@ -448,14 +448,14 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     // )
   }
 
-  async eventSelection(event: any) {
-
-    this.contentForm.controls.name.setValue(event.name)
-    this.contentForm.controls.description.setValue(event.description)
-    this.competencies_v1 = event
-    if (event.additionalProperties.competencyLevelDescription) {
+  async eventSelection(event: any, comp: any) {
+    // this.contentForm.controls.name.setValue(event.name)
+    // this.contentForm.controls.description.setValue(event.description)
+    // this.competencies_v1 = event
+    let competencyDetail = comp.additionalProperties
+    if (comp.additionalProperties.competencyLevelDescription) {
       let children: any = this.contentMeta.children
-      let competencyLevelDescription = JSON.parse(event.additionalProperties.competencyLevelDescription)
+      let competencyLevelDescription = JSON.parse(comp.additionalProperties.competencyLevelDescription)
       const identifiers = children.map((val: any) => {
         const matchedItem = {
           "identifier": val.identifier,
@@ -463,7 +463,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         }
         return matchedItem
       })
-
       const mergedArray = competencyLevelDescription.map((item: any, index: string | number) => {
         return {
           ...item,
@@ -475,8 +474,12 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         this.loader.changeLoad.next(true)
         for (const level of mergedArray) {
           if (level) {
+            if (event == 'hi') {
+              level.name = level['lang-hi-name'] ? level['lang-hi-name'] : level.name
+              level.description = level['lang-hi-description'] ? level['lang-hi-description'] : level.description
+            }
             const newData = {
-              name: '( Level ' + level.level + ') ' + level.name ? level.name : 'Resource',
+              name: 'Level ' + level.level + ' : ' + (level.name ? level.name : 'Resource'),
               description: level.description ? level.description : '',
               versionKey: level.versionKey
             }
@@ -488,15 +491,34 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             await this.editorService.updateNewContentV3(requestBody, level.identifier).toPromise().catch((_error: any) => { })
           }
         }
+
         let competencies_obj = [{
-          competencyName: event.name,
-          competencyId: event.id.toString(),
+          competencyName: comp.name,
+          competencyId: comp.id.toString(),
         }]
         let courseData = {
-          name: event.name,
+          name: comp.name,
+          description: comp.description,
           versionKey: this.contentMeta.identifier,
-          competencies_v1: competencies_obj
+          competencies_v1: competencies_obj,
+          lang: event
         }
+        if (event == 'hi') {
+          this.courseData.name = competencyDetail['lang-hi-name'] ? competencyDetail['lang-hi-name'] : comp.name
+          this.courseData.description = competencyDetail['lang-hi-description'] ? competencyDetail['lang-hi-description'] : comp.description
+          let competencies_obj = [{
+            competencyName: competencyDetail['lang-hi-name'] ? competencyDetail['lang-hi-name'] : comp.name,
+            competencyId: comp.id.toString(),
+          }]
+          courseData = {
+            name: competencyDetail['lang-hi-name'] ? competencyDetail['lang-hi-name'] : comp.name,
+            description: competencyDetail['lang-hi-description'] ? competencyDetail['lang-hi-description'] : comp.description,
+            versionKey: this.contentMeta.identifier,
+            competencies_v1: competencies_obj,
+            lang: event
+          }
+        }
+
 
         let requestBody = {
           request: {
@@ -504,7 +526,11 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
           },
         }
         await this.editorService.updateNewContentV3(requestBody, this.contentMeta.identifier).toPromise().catch((_error: any) => { })
-
+        await this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
+          this.courseData = await data
+          this.contentService.setUpdatedMeta(this.courseData, this.courseData.id)
+          this.authInitService.updateResources('update')
+        })
       }
       this.loader.changeLoad.next(false)
 

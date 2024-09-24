@@ -89,7 +89,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   assessmentDuration: any
   randomCount: any
   passPercentage: any
-  isQuiz: string = 'Quiz'
+  isQuiz: string = 'Assessment'
   mediumSizeBreakpoint$ = this.breakpointObserver
     .observe([Breakpoints.XSmall, Breakpoints.Small])
     .pipe(map((res: BreakpointState) => res.matches))
@@ -102,6 +102,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   @Input() callSave = false
 
   @Input() isCreatorEnable = true
+  courseCompetency: any
+  courseDetails: any
+  resourceDetails: any
 
   constructor(
     private router: Router,
@@ -143,6 +146,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
           this.isQuiz = 'Quiz'
         }
       })
+    console.log("Quiz12", this.isQuiz)
   }
 
   ngOnDestroy() {
@@ -286,9 +290,17 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
               // const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
 
               let quizContent: any = await this.editorService.readcontentV3(this.metaContentService.currentContent).toPromise()
+              this.courseDetails = v.contents[0].content
+              this.courseCompetency = v.contents[0].content.competency
               this.isQuiz = quizContent.isAssessment ? 'Assessment' : 'Quiz'
+              if (this.courseCompetency) {
+                this.isQuiz = 'Assessment'
+              }
+              console.log("Quiz12", this.isQuiz)
+
               console.log("this is quiz", v.contents[0].content, this.isQuiz)
               this.resourceName = quizContent ? quizContent.name : 'Resource'
+              this.resourceDetails = quizContent
               console.log("quizContent", quizContent, this.metaContentService.currentContent, this.resourceName)
               // console.log(quizContent)
               if (quizContent && quizContent.mimeType === 'application/json') {
@@ -306,14 +318,21 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                         if (jsonResponse.passPercentage >= 0) {
                           this.validPercentage = true
                         }
-                        console.log("yes here", jsonResponse.isAssessment, quizContent.competency)
-                        if (jsonResponse.isAssessment && quizContent.competency) {
+                        console.log("jsonResponse.isAssessment:", jsonResponse.isAssessment, "quizContent.competency:", quizContent.competency)
+
+                        if (jsonResponse.isAssessment === true && quizContent.competency) {
+                          console.log("Condition 1 met")
+                          this.isQuiz = 'Assessment'
+                        } else if (this.courseCompetency === true) {
+                          console.log("Condition 2 met")
                           this.isQuiz = 'Assessment'
                         } else {
+                          console.log("Condition 3 met")
                           this.validPercentage = true
                           this.isQuiz = 'Quiz'
                         }
 
+                        console.log("this.isQuiz 1", this.isQuiz)
                         this.assessmentDuration = (jsonResponse.timeLimit) / 60
                         this.passPercentage = jsonResponse.passPercentage
                         this.randomCount = jsonResponse.randomCount
@@ -386,6 +405,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                     this.validPercentage = true
                     this.isQuiz = 'Quiz'
                   }
+                  if (this.courseCompetency) {
+                    this.isQuiz = 'Assessment'
+                    console.log("this.isQuiz 1", this.isQuiz)
+                    this.cdr.detectChanges()  // Manually trigger change detection
+                  }
+                  console.log("this.isQuiz 1", this.isQuiz)
                 })
               }
               if (v.contents[0].content.competency) {
@@ -411,6 +436,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
             this.isLoading = false
           }, 500)
         }
+        if (this.courseCompetency) {
+          this.isQuiz = 'Assessment'
+          console.log("this.isQuiz 1", this.isQuiz)
+          this.cdr.detectChanges()  // Manually trigger change detection
+        }
+        console.log("Quiz", this.isQuiz)
       })
     })()
   }
@@ -560,13 +591,31 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     //   .updateContent(requestBody)
     //   .pipe(tap(() => this.metaContentService.resetOriginalMeta(meta, id)))
     // tslint:disable-next-line:no-console
-    console.log(meta, id)
+    console.log('resourceSave', meta, id)
+
+    let isAssessment = this.resourceDetails.isAssessment
+    //For assessment and quiz
+    if (this.isQuiz === 'Assessment') {
+      console.log("yes Assessment")
+      isAssessment = true
+    } else {
+      isAssessment = false
+    }
+    //for self assessment
+    if (this.courseCompetency) {
+      this.passPercentage = this.passPercentage
+      isAssessment = true
+    }
+
     if (meta && id) {
       this.metaContentService.setUpdatedMeta(meta, id)
       //this.data.emit('save')
       let requestBody = {
         request: {
-          content: meta,
+          content: {
+            ...meta,
+            isAssessment: isAssessment
+          }
         }
       }
       // tslint:disable-next-line:no-console
@@ -766,18 +815,33 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   uploadJson(array: any[], fileName: string) {
     // tslint:disable-next-line:no-console
-    console.log(this.assessmentDuration, this.passPercentage, this.isQuiz)
+    console.log(this.assessmentDuration, this.passPercentage, this.isQuiz, this.courseDetails)
     this.quizDuration = (this.metaContentService.getUpdatedMeta(this.currentId).duration &&
       this.metaContentService.getUpdatedMeta(this.currentId).duration !== '0') ?
       this.metaContentService.getUpdatedMeta(this.currentId).duration : this.assessmentDuration
     this.passPercentage = this.isQuiz === 'Quiz' ? 0 : this.passPercentage
+    console.log("this.course", this.courseCompetency, this.isQuiz)
+    let isAssessment = this.resourceDetails.isAssessment
+    //For assessment and quiz
+    if (this.isQuiz === 'Assessment') {
+      console.log("yes Assessment")
+      isAssessment = true
+    } else {
+      isAssessment = false
+    }
+    //for self assessment
+    if (this.courseCompetency) {
+      this.passPercentage = this.passPercentage
+      isAssessment = true
+    }
+
     const quizData = {
       // tslint:disable-next-line: prefer-template
       //timeLimit: parseInt(this.quizDuration + '', 10) || 300
       timeLimit: (this.assessmentDuration) * 60,
       //assessmentDuration: (this.assessmentDuration) * 60 || '300',
       passPercentage: this.passPercentage,
-      isAssessment: this.isQuiz === 'Assessment' ? true : false,
+      isAssessment: isAssessment,
       randomCount: this.randomCount || this.questionsArr.length,
       questions: array,
     }

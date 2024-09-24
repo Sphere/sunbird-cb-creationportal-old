@@ -100,7 +100,7 @@
               <div *ngIf="questionsArr.length">
                 <div class="headerpadding font-weight-bold margin-top-s" i18n>{{isQuiz}} Details
                 </div>
-                <mat-form-field *ngIf="isQuiz === 'Assessment'" appearance="outline"
+                <mat-form-field *ngIf="isQuiz == 'Assessment'" appearance="outline"
                   style="padding: 5px 15px 0px 0.75rem">
                   <label [ngClass]="{'starlabel': isQuiz === 'Assessment'}">Pass Percentage</label>
                   <input matInput placeholder="Enter pass percentage" max="100" [(ngModel)]="passPercentage"
