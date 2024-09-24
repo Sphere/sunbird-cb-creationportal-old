@@ -44,7 +44,7 @@ import {
   switchMap,
   map,
 } from 'rxjs/operators'
-import { Router } from '@angular/router'
+import { NavigationEnd, Router } from '@angular/router'
 
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
 
@@ -528,11 +528,17 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         await this.editorService.updateNewContentV3(requestBody, this.contentMeta.identifier).toPromise().catch((_error: any) => { })
         await this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
           this.courseData = await data
-          this.contentService.setUpdatedMeta(this.courseData, this.courseData.id)
-          this.authInitService.updateResources('update')
+          this.router.navigate([`/author/editor/${this.contentMeta.identifier}/collection`])
+
+          this.router.events.subscribe(event => {
+            if (event instanceof NavigationEnd) {
+              window.location.reload()
+            }
+          })
+          this.loader.changeLoad.next(false)
+
         })
       }
-      this.loader.changeLoad.next(false)
 
     }
 
