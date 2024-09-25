@@ -41,6 +41,7 @@ import {
 
 export class CreateCourseComponent implements OnInit {
   @Input() content: any
+  lang: string = 'en'; // Default to English
   currentContent!: string
   currentCourseId!: string
   language = ''
@@ -157,10 +158,18 @@ export class CreateCourseComponent implements OnInit {
     if (!filter) {
       return this.searchComp
     }
-    return this.proficiencyList = this.searchComp.filter((option: any) =>
-      option.name.toLowerCase().includes(filter)
-    )
+
+    return this.proficiencyList = this.searchComp.filter((option: any) => {
+      const nameMatches = option.name.toLowerCase().includes(filter)
+      const codeMatches = option.additionalProperties && option.additionalProperties.Code
+        ? option.additionalProperties.Code.toLowerCase().includes(filter)
+        : false
+
+      return nameMatches || codeMatches
+    })
   }
+
+
 
   createSelfAssessmentCourse() {
     this.loaderService.changeLoad.next(true)
@@ -394,7 +403,9 @@ export class CreateCourseComponent implements OnInit {
         )
     }
   }
-
+  langSelected(selectedLang: string) {
+    this.lang = selectedLang
+  }
   createForm() {
     this.createCourseForm = this.formBuilder.group({
       name: new FormControl('', []),
