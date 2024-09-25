@@ -2325,10 +2325,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   async editContent(content: any) {
     this.currentCourseId = content.identifier
+    console.log("this.currentCourseId", this.currentCourseId)
+    this.loaderService.changeLoad.next(true)
     if (content.contentType !== 'CourseUnit') {
       await this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
         this.updatedVersionKey = resData.versionKey
         content = resData
+        this.moduleName = resData.name
+        this.loaderService.changeLoad.next(false)
       })
     }
 
@@ -2451,8 +2455,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   editAssessmentRes(content?: any) {
-    console.log("content", content, this.moduleName)
-    if (content.name !== this.moduleName && this.moduleName) {
+    console.log("content module", content, this.moduleName, this.isSelfAssessment)
+    if (content.name !== this.moduleName && this.moduleName && !this.isSelfAssessment) {
       this.loaderService.changeLoadState(true)
       const requestBody: any = {
         name: this.moduleName,
