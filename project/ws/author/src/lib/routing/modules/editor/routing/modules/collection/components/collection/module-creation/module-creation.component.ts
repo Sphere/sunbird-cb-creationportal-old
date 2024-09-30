@@ -2328,6 +2328,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     console.log("this.currentCourseId", this.currentCourseId)
     this.loaderService.changeLoad.next(true)
     if (content.contentType !== 'CourseUnit') {
+      this.loaderService.changeLoad.next(true)
       await this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
         this.updatedVersionKey = resData.versionKey
         content = resData
@@ -2335,6 +2336,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.loaderService.changeLoad.next(false)
       })
     }
+
 
     this.editItem = content.identifier
     this.currentContent = content.identifier
@@ -2452,6 +2454,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         // this.setContentType(type)
         // this.getassessment()
       }
+    }
+    if (content.contentType === 'CourseUnit') {
+      this.loaderService.changeLoad.next(false)
     }
   }
   editAssessmentRes(content?: any) {
