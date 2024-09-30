@@ -237,7 +237,7 @@
                     <img *ngIf="editItem === resource.identifier" src="cbp-assets/icons/Vector_white.svg" alt="dragDrop"
                       class="dragIcon" />
                     <span *ngIf="resource.mimeType=='application/json'" style="white-space: normal;"
-                      class="resourse-text">Level {{resource.index}}:{{resource.name}}
+                      class="resourse-text">{{resource.name}}
                     </span>
                     <span *ngIf="resource.duration>0" class="resource-duration-txt">(
                       {{ resource.duration | formatDuration }} )</span>
@@ -251,9 +251,7 @@
                   <img *ngIf="editItem === module.identifier" loading="lazy" src="cbp-assets/icons/Vector_white.svg"
                     alt="dragDrop" class="dragIcon" />
                   <span *ngIf="module.mimeType=='application/json'" title="{{module.name}}" class="resourse-text"
-                    style="white-space: normal;">Level
-                    {{module.index}} : {{
-                    module.name}}</span>
+                    style="white-space: normal;">{{ module.name}}</span>
                   <span *ngIf="module.duration>0" class="resource-duration-txt">(
                     {{ module.duration | formatDuration }} )</span>
                 </div>

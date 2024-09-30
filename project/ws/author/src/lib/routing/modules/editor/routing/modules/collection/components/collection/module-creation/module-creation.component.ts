@@ -738,6 +738,18 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         tempUpdateContent.versionKey = this.versionID === undefined ? this.versionKey.versionKey : this.versionID.versionKey
       }
 
+      if (this.isSelfAssessment) {
+        let competencyLevelDescription = tempUpdateContent.competencies_v1.additionalProperties
+        let lang = this.courseData.lang
+        if (lang == 'hi') {
+          tempUpdateContent.competencies_v1.name = competencyLevelDescription['lang-hi-name'] ? competencyLevelDescription['lang-hi-name'] : tempUpdateContent.competencies_v1.name
+        }
+        let competencies_obj = [{
+          competencyName: tempUpdateContent.competencies_v1.name,
+          competencyId: tempUpdateContent.competencies_v1.id.toString(),
+        }]
+        tempUpdateContent.competencies_v1 = competencies_obj
+      }
       requestBody = {
         request: {
           content: tempUpdateContent,
@@ -1805,7 +1817,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       if (data.children.length > 0) {
         this.loader.changeLoad.next(true)
         data.children.forEach((element: any) => {
-          if (element.duration) {
+          if (element.contentType !== 'CourseUnit' && element.duration) {
             this.resourceDurat.push(parseInt(element.duration))
           }
           if (element.children && element.children.length > 0) {
@@ -2313,12 +2325,18 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   async editContent(content: any) {
     this.currentCourseId = content.identifier
+    console.log("this.currentCourseId", this.currentCourseId)
+    this.loaderService.changeLoad.next(true)
     if (content.contentType !== 'CourseUnit') {
+      this.loaderService.changeLoad.next(true)
       await this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
         this.updatedVersionKey = resData.versionKey
         content = resData
+        this.moduleName = resData.name
+        this.loaderService.changeLoad.next(false)
       })
     }
+
 
     this.editItem = content.identifier
     this.currentContent = content.identifier
@@ -2437,10 +2455,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         // this.getassessment()
       }
     }
+    if (content.contentType === 'CourseUnit') {
+      this.loaderService.changeLoad.next(false)
+    }
   }
   editAssessmentRes(content?: any) {
-    console.log("content", content, this.moduleName)
-    if (content.name !== this.moduleName && this.moduleName) {
+    console.log("content module", content, this.moduleName, this.isSelfAssessment)
+    if (content.name !== this.moduleName && this.moduleName && !this.isSelfAssessment) {
       this.loaderService.changeLoadState(true)
       const requestBody: any = {
         name: this.moduleName,
