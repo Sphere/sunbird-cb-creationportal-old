@@ -1,5 +1,5 @@
 <mat-card class="ws-mat-primary-lite-background-on-day margin-top-s ml-5"
-  *ngIf="(showIframeSupportWarning || isIntranetUrl || htmlContent?.isInIntranet)&&htmlContent.isIframeSupported === 'Yes'">
+  *ngIf="(showIframeSupportWarning || isIntranetUrl || htmlContent?.isInIntranet)&&htmlContent?.isIframeSupported === 'Yes'">
   <mat-card-content>
     <h2 class="mat-h2" *ngIf="
         isIntranetUrl || htmlContent?.isInIntranet || htmlContent?.isIframeSupported === 'Maybe'
@@ -68,7 +68,7 @@
   </mat-card-content>
 </mat-card>
 
-<h2 class="text-center mat-primary-text margin-top-m load" *ngIf="showIsLoadingMessage || (htmlContent && htmlContent.isIframeSupported === 'Yes'
+<h2 class="text-center mat-primary-text margin-top-m load" *ngIf="showIsLoadingMessage || (htmlContent && htmlContent?.isIframeSupported === 'Yes'
   && htmlContent.mimeType !== 'application/vnd.ekstep.html-archive')">
   Please wait! Content requested is loading
 </h2>
