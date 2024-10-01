@@ -23,6 +23,7 @@ import { ViewerDataService } from '../../viewer-data.service'
 import { ViewerUtilService } from '../../viewer-util.service'
 import { SCORMAdapterService } from 'project/ws/viewer/src/lib/plugins/html/SCORMAdapter/scormAdapter'
 interface IViewerTocCard {
+  artifactUrl: string
   identifier: string
   viewerUrl: string
   thumbnailUrl: string
@@ -282,6 +283,7 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
     //     content.children.map(child => this.convertContentToIViewerTocCard(child)) : null,
     // }
     return {
+      artifactUrl: content.artifactUrl,
       identifier: content.identifier,
       viewerUrl: `${this.forPreview ? '/author' : ''}/viewer/${VIEWER_ROUTE_FROM_MIME(
         content.mimeType,
