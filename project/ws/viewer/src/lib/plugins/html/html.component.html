@@ -45,11 +45,11 @@
     </h2>
     <mat-divider></mat-divider>
     <mat-progress-bar mode="determinate"
-      *ngIf="progress > 0 && htmlContent?.isIframeSupported?.toLowerCase() === 'yes'&&htmlContent.mimeType !== 'application/vnd.ekstep.html-archive'"
+      *ngIf="progress > 0 && htmlContent?.isIframeSupported?.toLowerCase() === 'yes'&&htmlContent?.mimeType !== 'application/vnd.ekstep.html-archive'"
       [value]="progress"></mat-progress-bar>
 
     <div class="flex flex-between padding-top-s"
-      *ngIf="htmlContent?.isIframeSupported === 'Yes'&&htmlContent.mimeType !== 'application/vnd.ekstep.html-archive'">
+      *ngIf="htmlContent?.isIframeSupported === 'Yes'&&htmlContent?.mimeType !== 'application/vnd.ekstep.html-archive'">
       <a type="button" [ngClass]="mobAppSvc?.isMobile ? 'block' : 'hidden'" mat-button
         [href]="this.htmlContent?.artifactUrl" target="_blank" #mobileOpenInNewTab>Open in New Tab</a>
 
@@ -69,7 +69,7 @@
 </mat-card>
 
 <h2 class="text-center mat-primary-text margin-top-m load" *ngIf="showIsLoadingMessage || (htmlContent && htmlContent?.isIframeSupported === 'Yes'
-  && htmlContent.mimeType !== 'application/vnd.ekstep.html-archive')">
+  && htmlContent?.mimeType !== 'application/vnd.ekstep.html-archive')">
   Please wait! Content requested is loading
 </h2>
 
@@ -85,7 +85,7 @@
 </div>
 
 <div class="container-v2"
-  *ngIf="htmlContent && htmlContent?.isIframeSupported === 'No' || iframeSupport === 'No'||htmlContent.mimeType === 'application/vnd.ekstep.html-archive'">
+  *ngIf="htmlContent && htmlContent?.isIframeSupported === 'No' || iframeSupport === 'No'||htmlContent?.mimeType === 'application/vnd.ekstep.html-archive'">
   <iframe #iframeElem title="HTML Content Viewer" i18n-title [src]="iframeUrl"
     (load)="onIframeLoadOrError('load',iframeElem,$event)" (error)="onIframeLoadOrError('error')"
     allow="fullscreen; accelerometer; autoplay; encrypted-media; gyroscope; microphone; camera;"
