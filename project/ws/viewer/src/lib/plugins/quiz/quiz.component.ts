@@ -16,6 +16,7 @@ import { SubmitQuizDialogComponent } from './components/submit-quiz-dialog/submi
 import { OnConnectionBindInfo } from 'jsplumb'
 import { QuizService } from './quiz.service'
 import { EventService } from '../../../../../../../library/ws-widget/utils/src/public-api'
+import { HttpClient } from '@angular/common/http'
 export type FetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
 
 @Component({
@@ -79,10 +80,26 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     private events: EventService,
     public dialog: MatDialog,
     private quizSvc: QuizService,
+    private http: HttpClient,
+
   ) { }
 
-  ngOnInit() { }
-
+  async ngOnInit() {
+    this.quizJson = await this.transformQuiz(this.artifactUrl)
+    console.log("Quiz JSON: ", this.quizJson)
+  }
+  private async transformQuiz(artifactUrl: any): Promise<any> {
+    if (artifactUrl) {
+      let quizJSON: NSQuiz.IQuiz = await this.http
+        .get<any>(this.artifactUrl || '')
+        .toPromise()
+        .catch((_err: any) => {
+          // throw new DataResponseError('MANIFEST_FETCH_FAILED');
+        })
+      console.log("yes here", quizJSON)
+      return quizJSON
+    }
+  }
   scroll(qIndex: number) {
     if (!this.sidenavOpenDefault) {
       if (this.sideNav) {

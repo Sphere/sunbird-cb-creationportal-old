@@ -192,8 +192,9 @@
               'hms'
               }}</span>
             <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
-            <button title="Click this to check if scrom emits success / failure" class="debug-btn" mat-raised-button
-              color="primary" (click)="showAlert()">
+            <button
+              title="Enable Debug Mode to track SCORM progress and completion data sent to the LMS. When activated, a popup window will appear at the top of the screen during SCORM playback, displaying real-time status updates on data transmission. This will help you to take decisions in making SCORM compatible to the LMS."
+              class="debug-btn" mat-raised-button color="primary" (click)="showAlert()">
               Debug
             </button>
 
