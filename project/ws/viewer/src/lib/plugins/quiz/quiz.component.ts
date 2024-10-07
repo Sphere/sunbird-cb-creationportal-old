@@ -17,6 +17,7 @@ import { OnConnectionBindInfo } from 'jsplumb'
 import { QuizService } from './quiz.service'
 import { EventService } from '../../../../../../../library/ws-widget/utils/src/public-api'
 import { HttpClient } from '@angular/common/http'
+import { ActivatedRoute } from '@angular/router'
 export type FetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
 
 @Component({
@@ -81,12 +82,10 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     public dialog: MatDialog,
     private quizSvc: QuizService,
     private http: HttpClient,
-
+    private activatedRoute: ActivatedRoute
   ) { }
 
   async ngOnInit() {
-    this.quizJson = await this.transformQuiz(this.artifactUrl)
-    console.log("Quiz JSON: ", this.quizJson)
   }
   private async transformQuiz(artifactUrl: any): Promise<any> {
     if (artifactUrl) {
@@ -112,6 +111,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   ngOnChanges(changes: SimpleChanges) {
+    this.activatedRoute.data.subscribe(
+      async data => {
+        this.quizJson = await this.transformQuiz(data.content.data.artifactUrl)
+
+      })
     for (const change in changes) {
       if (change === 'quiz') {
         if (
