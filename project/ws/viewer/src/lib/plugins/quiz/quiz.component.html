@@ -55,6 +55,7 @@
             [itemSelectedList]="questionAnswerHash[(question?.questionId)]"
             (itemSelected)="fillSelectedItems(question, $event)">
           </viewer-question>
+          <span *ngIf="!quizJson">Add Question to view here</span>
         </ng-container>
         <mat-card class="margin-bottom-m margin-top-m" *ngIf="viewState === 'review' || viewState === 'answer'">
           <div class="margin-m" *ngIf="fetchingResultsStatus === 'fetching'">

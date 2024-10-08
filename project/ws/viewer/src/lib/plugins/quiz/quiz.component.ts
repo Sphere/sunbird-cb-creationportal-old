@@ -75,6 +75,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   telemetrySubscription: Subscription | null = null
   timeLeft = 0
   timerSubscription: Subscription | null = null
+  getAssessment: Subscription | null = null
   viewState: NSQuiz.TQuizViewMode = 'initial'
   paramSubscription: Subscription | null = null
   constructor(
@@ -95,7 +96,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         .catch((_err: any) => {
           // throw new DataResponseError('MANIFEST_FETCH_FAILED');
         })
-      console.log("yes here", quizJSON)
+      console.log("yes here", artifactUrl, quizJSON)
       return quizJSON
     }
   }
@@ -111,8 +112,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   ngOnChanges(changes: SimpleChanges) {
-    this.activatedRoute.data.subscribe(
+    this.getAssessment = this.activatedRoute.data.subscribe(
       async data => {
+        console.log("quiz subscribe", data)
         this.quizJson = await this.transformQuiz(data.content.data.artifactUrl)
 
       })
@@ -131,6 +133,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy() {
     if (this.timerSubscription) {
       this.timerSubscription.unsubscribe()
+    }
+    if (this.getAssessment) {
+      this.getAssessment.unsubscribe()
     }
     if (this.telemetrySubscription) {
       this.telemetrySubscription.unsubscribe()
@@ -153,8 +158,10 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     this.markedQuestions = new Set([])
     this.questionAnswerHash = {}
     this.currentQuestionIndex = 0
-    this.timeLeft = this.quizJson.timeLimit
-    if (this.quizJson.timeLimit > -1) {
+    console.log("this.quizJson", this.quizJson)
+    if (this.quizJson)
+      this.timeLeft = this.quizJson.timeLimit
+    if (this.quizJson && this.quizJson.timeLimit !== undefined && this.quizJson.timeLimit > -1) {
       this.timerSubscription = interval(100)
         .pipe(
           map(

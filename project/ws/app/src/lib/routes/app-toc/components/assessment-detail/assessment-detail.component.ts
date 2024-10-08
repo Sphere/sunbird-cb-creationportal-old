@@ -42,7 +42,7 @@ export class AssessmentDetailComponent implements OnInit {
 
 
 
-    console.log("this.content", this.assesmentdata)
+    console.log("this.content", this.content, this.assesmentdata)
 
   }
   /* api call to get info of quiz or assessment */

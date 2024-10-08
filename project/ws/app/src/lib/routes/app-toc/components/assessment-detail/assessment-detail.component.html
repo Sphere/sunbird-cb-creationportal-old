@@ -16,11 +16,11 @@
   </div> -->
   <div class="row">
     <div class=" m-2 ml-0 p-2 ellips">
-      <h4 *ngIf="assesmentdata.timeLimit" class="label2">{{
-        assesmentdata.timeLimit | pipeAssessmentDurationTransform: 'mnts'
-        }}
+      <h4 *ngIf="assesmentdata?.timeLimit" class="label2">
+        {{ assesmentdata.timeLimit | pipeAssessmentDurationTransform: 'mnts' }}
       </h4>
-      <h4 *ngIf="assesmentdata.duration" class="label2">{{
+
+      <h4 *ngIf="assesmentdata?.duration" class="label2">{{
         assesmentdata.duration | pipeAssessmentDurationTransform: 'mnts'
         }}
       </h4>
@@ -28,11 +28,11 @@
     </div>
     <div class="m-2 p-2 ellips">
       <h4 class="label2">
-        {{assesmentdata.questions.length}}</h4>
+        {{assesmentdata?.questions.length}}</h4>
       <h4 class="label3" i18n>Questions</h4>
     </div>
     <div class=" m-2 p-2 ellips">
-      <h4 class="label2">{{assesmentdata.passPercentage ? assesmentdata.passPercentage : '0' }}<span>%</span></h4>
+      <h4 class="label2">{{assesmentdata?.passPercentage ? assesmentdata?.passPercentage : '0' }}<span>%</span></h4>
       <h4 class="label3" i18n>Required</h4>
 
     </div>
