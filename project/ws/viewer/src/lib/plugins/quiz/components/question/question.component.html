@@ -78,31 +78,34 @@
           <p class="margin-remove mat-body-1" [innerHTML]="option?.hint"></p>
         </div>
       </div>
-      <span class="correct-answer" *ngIf="option?.isCorrect">Correct Answer</span>
     </div>
   </mat-selection-list>
 
   <mat-radio-group *ngIf="question.questionType === 'mcq-sca'" class="quiz-radio-group">
     <div *ngFor="let option of question?.options">
-      <mat-radio-button class="quiz-radio-button" [ngClass]="{
+      <mat-radio-button aria-readonly="true" class="quiz-radio-button" [ngClass]="{
           'correct-answer':
             (viewState === 'review' && option?.isCorrect && isSelected(option)) ||
             (viewState === 'answer' && option?.isCorrect),
-          'incorrect-answer': viewState === 'review' && !option?.isCorrect && isSelected(option)
-        }" [value]="option.optionId" (change)="itemSelected.emit(option.optionId)">
+          'incorrect-answer': viewState === 'review' && !option?.isCorrect && isSelected(option),
+          'checked-radio': option?.isCorrect
+        }" [checked]="option?.isCorrect" [value]="option.optionId" [disabled]="true"
+        (change)="itemSelected.emit(option.optionId)">
         <span class="wrap-mat-radio-label">
           <mat-error *ngIf="viewState === 'review' && !option?.isCorrect && isSelected(option)">
             {{ option?.text }}
           </mat-error>
           <div [ngClass]="{
-              'correct-option':
-                (viewState === 'review' && option?.isCorrect && isSelected(option)) ||
-                (viewState === 'answer' && option?.isCorrect)
+              'correct-option': (viewState === 'review' && option?.isCorrect && isSelected(option)) ||
+                (viewState === 'answer' && option?.isCorrect),
+              'blue-text': option?.isCorrect
             }" [hidden]="viewState === 'review' && !option?.isCorrect && isSelected(option)">
             {{ option?.text }}
           </div>
         </span>
       </mat-radio-button>
+
+
       <div class="background-well padding-left-m padding-xs"
         *ngIf="viewState === 'review' && isSelected(option) && option?.hint">
         <mat-error *ngIf="viewState === 'review' && !option?.isCorrect && isSelected(option)">
@@ -122,7 +125,6 @@
           <p class="margin-remove mat-body-1" [innerHTML]="option?.hint"></p>
         </div>
       </div>
-      <span class="correct-answer" *ngIf="option?.isCorrect">Correct Answer</span>
     </div>
   </mat-radio-group>
 

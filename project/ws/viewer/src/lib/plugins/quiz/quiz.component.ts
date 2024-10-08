@@ -116,7 +116,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       async data => {
         console.log("quiz subscribe", data)
         this.quizJson = await this.transformQuiz(data.content.data.artifactUrl)
-
+        this.timeLeft = this.quizJson.timeLimit
       })
     for (const change in changes) {
       if (change === 'quiz') {
