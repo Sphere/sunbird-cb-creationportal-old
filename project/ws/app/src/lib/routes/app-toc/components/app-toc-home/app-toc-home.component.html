@@ -116,8 +116,8 @@
 </div>
 
 <div [ngClass]="{'showData': changeText === 'comments' || changeText === 'history'}">
-  <ws-app-toc-banner *ngIf="changeText !== 'preview'||changeText==='backFromPreview'" role="banner" [banners]="banners"
-    [forPreview]="forPreview" [content]="content" [analytics]="analytics" [resumeData]="resumeData">
+  <ws-app-toc-banner *ngIf="changeText !== 'preview'" role="banner" [banners]="banners" [forPreview]="forPreview"
+    [content]="content" [analytics]="analytics" [resumeData]="resumeData">
   </ws-app-toc-banner>
   <ws-app-learner-banner *ngIf="changeText === 'preview'" role="banner" [banners]="banners" [forPreview]="forPreview"
     [content]="content" [resumeData]="resumeData" [optmisticPercentage]="optmisticPercentage"> </ws-app-learner-banner>
