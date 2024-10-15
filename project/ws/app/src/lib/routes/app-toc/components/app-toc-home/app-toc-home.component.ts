@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewChecked, HostListener, ElementRef, ViewChild } from '@angular/core'
+import { Component, OnDestroy, OnInit, AfterViewChecked, HostListener, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core'
 import { ActivatedRoute, Data } from '@angular/router'
 import { NsContent, WidgetContentService, ContentProgressService } from '@ws-widget/collection'
 import { NsWidgetResolver } from '@ws-widget/resolver'
@@ -48,6 +48,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       type: 'mat-button',
     },
   }
+  optmisticPercentage: number = 100
   // Define roles array
   roles: string[] = ['reviewer', 'publisher', 'creator'];
   // Filter comments for each role
@@ -97,6 +98,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     private authAccessControlSvc: AccessControlService,
     private location: Location,
     private progressSvc: ContentProgressService,
+    private cdr: ChangeDetectorRef
   ) {
     // Initialize filteredComments for each role as an empty array
     this.roles.forEach(role => {
@@ -114,6 +116,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       this.roles = ['creator', 'reviewer']
     }
     this.tocSvc.currentMessage.subscribe(async (data: any) => {
+      console.log("yes here", data)
       if (data === 'comments') {
         this.isLoading = true
         this.changeText = 'comments'
@@ -128,7 +131,10 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
             this.isLoading = false
           })
         }
-      } else {
+      } else if (data === 'preview') {
+        this.changeText = 'preview'
+        this.cdr.detectChanges()
+      } else if (data === 'history') {
         this.isLoading = true
         this.changeText = 'history'
         if (this.content) {
@@ -137,6 +143,8 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
             this.isLoading = false
           })
         }
+      } else if (data === 'backFromPreview') {
+        this.changeText = 'backFromPreview'
       }
     })
   }

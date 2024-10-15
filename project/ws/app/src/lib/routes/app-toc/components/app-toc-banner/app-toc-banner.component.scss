@@ -1,6 +1,21 @@
 @import 'ws-vars';
 @import 'ws-mixins';
 
+.activity-length{
+  background: #F88808;
+    position: absolute;
+    color: white !important;
+    right: -4px;
+    top: -5px !important;
+    width: 25px;
+    height: 24px;
+    border-radius: 28px;
+    font-size: 12px;
+    text-align: center;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
 %container-padding {
   padding: $size-xl 2 * $size-xl;
 

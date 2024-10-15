@@ -40,6 +40,7 @@ const API_END_POINTS = {
   providedIn: 'root',
 })
 export class WidgetContentService {
+  showConformation: any
   constructor(
     private http: HttpClient,
     private configSvc: ConfigurationsService

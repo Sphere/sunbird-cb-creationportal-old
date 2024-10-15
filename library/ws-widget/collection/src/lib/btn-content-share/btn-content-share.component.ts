@@ -16,6 +16,7 @@ export class BtnContentShareComponent extends WidgetBaseComponent
   @Input() isDisabled = false
   @Input() showText = false
   @Input() forPreview = false
+  @Input() isTocBanner = false
   showBtn = false
   isShareEnabled = false
 
@@ -32,13 +33,13 @@ export class BtnContentShareComponent extends WidgetBaseComponent
   }
 
   shareContent() {
-    if (!this.forPreview) {
-      this.dialog.open<BtnContentShareDialogComponent, { content: NsContent.IContent }>(
-        BtnContentShareDialogComponent,
-        {
-          data: { content: this.widgetData },
-        },
-      )
-    }
+    // if (!this.forPreview) {
+    this.dialog.open<BtnContentShareDialogComponent, { content: NsContent.IContent }>(
+      BtnContentShareDialogComponent,
+      {
+        data: { content: this.widgetData },
+      },
+    )
+    // }
   }
 }

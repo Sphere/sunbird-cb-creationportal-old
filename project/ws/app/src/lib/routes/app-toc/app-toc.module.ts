@@ -103,6 +103,9 @@ import { AppTocSinglePageComponent as AppTocSinglePageRootComponent } from './ro
 import { AppTocSinglePageDirective } from './routes/app-toc-single-page/app-toc-single-page.directive'
 import { LicenseComponent } from './components/license/license.component'
 import { AssessmentDetailComponent } from './components/assessment-detail/assessment-detail.component'
+import { AppLearnerBannerComponent } from './components/app-learner-banner/app-learner-banner.component'
+import { AppTocDesktopModalComponent } from './components/app-toc-desktop-modal/app-toc-desktop-modal.component'
+import { AppTocCertificateModalComponent } from './components/app-toc-certificate-modal/app-toc-certificate-modal.component'
 @NgModule({
   declarations: [
     AppTocAnalyticsComponent,
@@ -110,6 +113,7 @@ import { AssessmentDetailComponent } from './components/assessment-detail/assess
     AppTocHomeComponent,
     AppTocOverviewComponent,
     AppTocBannerComponent,
+    AppLearnerBannerComponent,
     AppTocCohortsComponent,
     AppTocContentCardComponent,
     AppTocDiscussionComponent,
@@ -128,7 +132,9 @@ import { AssessmentDetailComponent } from './components/assessment-detail/assess
     LicenseComponent,
     TimeDifferencePipe,
     MomentDatePipe,
-    AssessmentDetailComponent
+    AssessmentDetailComponent,
+    AppTocDesktopModalComponent,
+    AppTocCertificateModalComponent,
   ],
   imports: [
     CommonModule,
@@ -212,6 +218,8 @@ import { AssessmentDetailComponent } from './components/assessment-detail/assess
     AppTocHomeComponent,
     AppTocSinglePageComponent,
     AppTocSinglePageRootComponent,
+    AppTocDesktopModalComponent,
+    AppTocCertificateModalComponent,
   ],
 })
 export class AppTocModule { }
