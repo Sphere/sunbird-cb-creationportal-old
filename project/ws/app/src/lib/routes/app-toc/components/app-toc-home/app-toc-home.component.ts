@@ -166,19 +166,19 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     if (this.route) {
       this.routeSubscription = this.route.data.subscribe((data: Data) => {
         // CHecking for JSON DATA
-        if (this.checkJson(data.content.data.creatorContacts)) {
+        if (this.checkJson(data.content.data && data.content.data.creatorContacts)) {
           data.content.data.creatorContacts = JSON.parse(data.content.data.creatorContacts)
         }
 
-        if (this.checkJson(data.content.data.creatorDetails)) {
+        if (this.checkJson(data.content.data && data.content.data.creatorDetails)) {
           data.content.data.creatorDetails = JSON.parse(data.content.data.creatorDetails)
         }
 
-        if (this.checkJson(data.content.data.reviewer)) {
+        if (this.checkJson(data.content.data && data.content.data.reviewer)) {
           data.content.data.reviewer = JSON.parse(data.content.data.reviewer)
         }
 
-        if (this.checkJson(data.content.data.publisherDetails)) {
+        if (this.checkJson(data.content.data && data.content.data.publisherDetails)) {
           data.content.data.publisherDetails = JSON.parse(data.content.data.publisherDetails)
         }
 

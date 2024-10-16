@@ -83,3 +83,11 @@
   font-size: 26px;
   font-weight: 500;
 }
+.certificate-preview {
+  display: flex;                   /* Use Flexbox layout */
+  justify-content: center;         /* Center horizontally */
+  align-items: center;             /* Center vertically */
+  height: 100%;                    /* Ensure it takes full height of the parent */
+  text-align: center;              /* Center the text inside the span */
+  padding: 20px;                   /* Optional: Add some padding for aesthetics */
+}
