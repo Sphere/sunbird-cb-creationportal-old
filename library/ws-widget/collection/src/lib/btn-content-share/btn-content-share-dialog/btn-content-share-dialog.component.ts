@@ -41,7 +41,7 @@ export class BtnContentShareDialogComponent implements OnInit {
     }
     let url = `https://sphere.aastrika.org/public/toc/overview?courseId=${id}`
 
-    this.qrdata = `${newUrl}${url}`
+    this.qrdata = `${url}`
 
     this.shareSvc.fetchConfigFile().subscribe((data: ICommon) => {
       if (data && data.shareMessage) {
