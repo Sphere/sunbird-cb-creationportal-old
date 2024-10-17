@@ -75,7 +75,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
   commentsList: any
   @ViewChild('stickyMenu', { static: true }) menuElement!: ElementRef
   @HostListener('window:scroll', ['$event'])
-  isLoading = false
+  isLoading: boolean = false
   isReviewer: boolean = false
   isPublisher: boolean = false
   isCreator: boolean = false
@@ -146,6 +146,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       } else if (data === 'backFromPreview') {
         this.changeText = 'backFromPreview'
       }
+      this.isLoading = false
     })
   }
 
