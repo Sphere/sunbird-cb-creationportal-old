@@ -39,7 +39,7 @@ export class BtnContentShareDialogComponent implements OnInit {
     if (newUrl.includes('hi')) {
       newUrl = newUrl.replace(/hi\//g, '')
     }
-    let url = `public/toc/overview?courseId=${id}`
+    let url = `https://sphere.aastrika.org/public/toc/overview?courseId=${id}`
 
     this.qrdata = `${newUrl}${url}`
 
@@ -145,10 +145,11 @@ export class BtnContentShareDialogComponent implements OnInit {
 
   get detailUrl() {
     // let locationOrigin = environment.sitePath ? `https://${environment.sitePath}` : location.origin
-    let locationOrigin = location.origin
+    let locationOrigin = "https://sphere.aastrika.org"
     if (this.configSvc.activeLocale && this.configSvc.activeLocale.path) {
       locationOrigin += `/${this.configSvc.activeLocale.path}`
     }
+    locationOrigin = "https://sphere.aastrika.org"
     switch (this.data.content.contentType) {
       case NsContent.EContentTypes.CHANNEL:
         return `${locationOrigin}${this.data.content.artifactUrl}`

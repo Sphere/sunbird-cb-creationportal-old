@@ -5,6 +5,7 @@ import { DomSanitizer } from '@angular/platform-browser'
 // import moment from 'moment'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
+// import { WidgetContentService } from '@ws-widget/collection'
 
 @Component({
   selector: 'ws-app-app-toc-certificate-modal',
@@ -21,6 +22,7 @@ export class AppTocCertificateModalComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private editorService: EditorService,
     private loader: LoaderService,
+    // private contentSvc: WidgetContentService,
 
   ) { }
 
@@ -63,53 +65,33 @@ export class AppTocCertificateModalComponent implements OnInit {
   }
   async downloadCertificate() {
     this.isLoading = true
-    const img = new Image()
-    const name = this.content.tocConfig || 'certificate'  // Fallback if tocConfig is undefined
+    const name = this.content.tocConfig || 'certificate' // Fallback if tocConfig is undefined
     const url = this.url
 
-    img.crossOrigin = 'anonymous' // Ensure CORS is handled properly for the image
-    img.onload = () => {
-      const canvas: HTMLCanvasElement = document.getElementById('certCanvas') as HTMLCanvasElement
-      const ctx = canvas.getContext('2d')
+    try {
+      // Fetch the SVG content as a text response
+      const response = await fetch(url)
+      if (!response.ok) throw new Error('Network response was not ok')
 
-      if (ctx) {
-        // Set canvas dimensions to match the image
-        canvas.width = img.width
-        canvas.height = img.height
-        ctx.drawImage(img, 0, 0, img.width, img.height)
+      const svgContent = await response.text() // Get SVG content as text
+      const blob = new Blob([svgContent], { type: 'image/svg+xml' }) // Create a blob from the SVG content
+      const blobUrl = URL.createObjectURL(blob) // Create an object URL for the blob
 
-        // Convert canvas content to base64 image (JPEG)
-        const imgURI = canvas.toDataURL('image/jpeg')
+      // Use FileSaver.js to download the SVG file
+      FileSaver.saveAs(blobUrl, `${name}.svg`)
 
-        // Convert base64 to Blob
-        const byteString = atob(imgURI.split(',')[1])
-        const mimeString = imgURI.split(',')[0].split(':')[1].split(';')[0]
-        const ab = new ArrayBuffer(byteString.length)
-        const ia = new Uint8Array(ab)
-        for (let i = 0; i < byteString.length; i++) {
-          ia[i] = byteString.charCodeAt(i)
-        }
-        const blob = new Blob([ab], { type: mimeString })
+      // Clean up the object URL after downloading
+      URL.revokeObjectURL(blobUrl)
 
-        // Save the Blob as a file
-        FileSaver.saveAs(blob, `${name}.jpg`)
-
-        // Remove any local storage entry if needed
-        if (localStorage.getItem(`certificate_downloaded_${this.content ? this.content.content.identifier : ''}`)) {
-          localStorage.removeItem(`certificate_downloaded_${this.content.content.identifier}`)
-        }
-      }
-
+    } catch (error) {
+      console.error('Error downloading the certificate:', error)
+      alert('Failed to download the certificate. Please try again.')
+    } finally {
       this.isLoading = false
     }
-
-    img.onerror = () => {
-      console.error('Image loading failed.')
-      this.isLoading = false
-    }
-
-    img.src = url // Trigger image load
   }
+
+
   //   })
   // }
 
