@@ -454,7 +454,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
   openCompetency(content: any) {
     this.dialog.open(AppTocDesktopModalComponent, {
       width: '600px',
-      data: { competency: content.competencies_v1, type: 'COMPETENCY' },
+      data: { competency: content.competencies_v1, type: 'COMPETENCY', lang: content.lang },
     })
   }
 }

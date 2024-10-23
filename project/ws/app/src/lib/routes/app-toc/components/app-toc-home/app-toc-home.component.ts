@@ -48,7 +48,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       type: 'mat-button',
     },
   }
-  optmisticPercentage: number = 100
+  optmisticPercentage: number = 0
   // Define roles array
   roles: string[] = ['reviewer', 'publisher', 'creator'];
   // Filter comments for each role

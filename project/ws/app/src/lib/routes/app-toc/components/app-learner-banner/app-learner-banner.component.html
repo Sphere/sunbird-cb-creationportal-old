@@ -36,8 +36,7 @@
       <div class="mt-2">
         <mat-progress-bar [mode]="'determinate'" [value]="
                     optmisticPercentage" class="new-w desktop " [attr.aria-labelledby]="'m-c-'+ content?.identifier"
-          [ngClass]="{ 'visibility-0': optmisticPercentage === null || optmisticPercentage === 0, 'thick': optmisticPercentage}"
-          i18n-aria-label>
+          [ngClass]="{ 'thick': optmisticPercentage}" i18n-aria-label>
           {{optmisticPercentage}} %
         </mat-progress-bar>
         <span class="value">{{optmisticPercentage}}%</span>

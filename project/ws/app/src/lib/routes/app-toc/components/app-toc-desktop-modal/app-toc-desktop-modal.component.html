@@ -16,13 +16,24 @@
   </ng-container>
 
   <ng-container *ngIf="content.type === 'COMPETENCY'">
-    <h1>{{cometencyData[0].name}}</h1>
-    <div class="flex flex-row">
-      <ng-container *ngFor="let item of cometencyData; let last = last; ">
-        <div *ngIf="item.levels" class="levels">{{item.levels}}
-          <span *ngIf="!last">, </span>
-        </div>
+    <h1>{{courseName}}</h1>
+    <div class="flex flex-col">
+      <ng-container *ngFor="let list of competencyLevelDescription; let last = last;">
+        <span *ngIf="content.lang  == 'en'">
+          <ng-container>
+            Level {{ list.level }} - {{ list.name}}
+          </ng-container>
+        </span>
+        <span *ngIf="content.lang == 'hi'">
+          <ng-container>
+            Level {{ list.level }} - {{ list.name}}
+          </ng-container>
+          <ng-container *ngIf="list.level" class="levels">
+            <span *ngIf="!last">, </span>
+          </ng-container>
+        </span>
       </ng-container>
+      <span *ngIf="competencyLevelDescription.length<0">{{competencyLevelDescription}}</span>
     </div>
   </ng-container>
 </div>
