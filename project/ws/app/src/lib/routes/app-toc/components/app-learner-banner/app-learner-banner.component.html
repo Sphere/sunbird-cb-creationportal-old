@@ -21,7 +21,7 @@
         (click)="showOrgprofile(content?.sourceName)">{{content?.sourceName}}</span></div>
 
     <div class="rating-block mb-2">
-      <span class="average-rating">4.5</span>
+      <span class="average-rating">N/A</span>
       <ng-container>
         <img *ngFor="let star of stars; let i = index" [src]="getStarImage(i)" alt="Star">
       </ng-container>
@@ -52,36 +52,38 @@
           <span class="btn-tittle" i18n>Details</span>
         </div>
 
-        <div *ngIf="content?.competencies_v1" class="flex flex-col gap-1 justify-content-center align-items-center">
-          <button mat-icon-button class="button-border" (click)="openCompetency(content)">
+        <div aria-disabled="true" *ngIf="content?.competencies_v1"
+          class="flex flex-col gap-1 justify-content-center align-items-center">
+          <button mat-icon-button class="button-border-gray" (click)="openCompetency(content)">
             <img loading="lazy" src=".\cbp-assets\icons\competency.svg" alt="competency-icon">
           </button>
-          <span class="btn-tittle" i18n>Competency</span>
+          <span class="btn-title-gray" i18n>Competency</span>
         </div>
 
         <!-- #if cetification ininrollment api -->
-        <div class="flex flex-col gap-1 justify-content-center align-items-center">
+        <div aria-disabled="true" class="flex flex-col gap-1 justify-content-center align-items-center">
           <ng-container>
             <!-- sendApi() -->
-            <button mat-icon-button (click)="downloadCertificate(content)" data-toggle="modal" class="button-border"
-              i18n-matTooltip matTooltip="Preview Certificate">
-              <img loading="lazy" src=".\cbp-assets\icons\certificate-icon.svg" alt="download"
-                style="background-color: cornflowerblue;width: 25px;height: auto;">
+            <!-- (click)="downloadCertificate(content)" -->
+            <button mat-icon-button data-toggle="modal" class="button-border-gray" i18n-matTooltip
+              matTooltip="Preview Certificate">
+              <img loading="lazy" src=".\cbp-assets\icons\Vector.png" alt="download" style="width: 25px;height: auto;">
             </button>
-            <span class="btn-tittle" i18n>Certificate</span>
+            <span class="btn-title-gray" i18n>Certificate</span>
           </ng-container>
         </div>
-        <div class="flex flex-col gap-1 justify-content-center align-items-center">
-          <ws-widget-btn-content-share [isTocBanner]="isTocBanner" [forPreview]="forPreview" [widgetData]="content">
+        <div style="cursor: none;" class="flex flex-col gap-1 justify-content-center align-items-center">
+          <ws-widget-btn-content-share [isGray]="true" [isTocBanner]="isTocBanner" [forPreview]="forPreview"
+            [widgetData]="content">
           </ws-widget-btn-content-share>
-          <span class="btn-tittle" i18n>Share</span>
+          <span class="btn-title-gray" i18n>Share</span>
         </div>
       </div>
-      <div class="flex gap-1">
+      <!-- <div class="flex gap-1">
         <button id="start-btn" class="banner-btn cursor-pointer" (click)="enrollUser()" i18n>
           Start
         </button>
-      </div>
+      </div> -->
     </div>
     <!-- <canvas id="certCanvas"></canvas> -->
   </div>

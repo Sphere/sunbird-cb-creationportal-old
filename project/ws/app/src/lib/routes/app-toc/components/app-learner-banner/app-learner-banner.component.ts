@@ -152,7 +152,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
     const fullStarUrl = '/cbp-assets/icons/toc_star.png'
     const halfStarUrl = '/cbp-assets/icons/Half_star1.svg'
     const emptyStarUrl = '/cbp-assets/icons/empty_star.png'
-    this.averageRating = 4.5
+    this.averageRating = 0
     const decimalPart = this.averageRating - Math.floor(this.averageRating) // Calculate the decimal part of the average rating
 
     if (index + 1 <= Math.floor(this.averageRating)) {

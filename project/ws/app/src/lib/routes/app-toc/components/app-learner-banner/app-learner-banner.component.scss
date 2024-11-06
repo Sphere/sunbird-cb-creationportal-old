@@ -221,7 +221,7 @@
 .value {
   position: relative;
   bottom: 19px;
-  color: #1C5D95;
+  color: #898989;
   width: 275px;
   display: flex;
   justify-content: center;
@@ -241,7 +241,13 @@
 .banner-btn:hover {
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.35);
 }
-
+.button-border-gray{
+    border: 1px solid #898989;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .button-border {
   border: 1px solid #1c5d95;
   border-radius: 50%;
@@ -255,7 +261,9 @@
 .btn-tittle {
   color: #1c5d95;
 }
-
+.btn-title-gray{
+  color: #898989;
+}
 .modal {
   overflow: inherit !important;
 }
@@ -271,7 +279,7 @@ font-weight: 400;
 line-height: 13.53px;
 letter-spacing: -0.02em;
 text-align: left;
-color: #747474;
+color: #898989;
 padding-top: 3px !important;
 
 }
@@ -283,6 +291,6 @@ font-weight: 400;
 line-height: 16.8px;
 letter-spacing: -0.02em;
 text-align: left;
-color: #000000;
+color: #898989;
 
 }
