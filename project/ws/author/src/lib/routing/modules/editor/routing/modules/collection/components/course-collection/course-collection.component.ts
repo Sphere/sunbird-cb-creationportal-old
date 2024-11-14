@@ -68,7 +68,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   activeContentSubscription: Subscription | null = null
   routerSubscription: Subscription | null = null
   changeMessageSubscription: Subscription | null = null
-  saveContent: Subscription | null = null
   isChanged = false
   previewIdentifier: string | null = null
   viewMode = 'meta'
@@ -220,7 +219,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           }
           sessionStorage.setItem('isSettingsPage', '0')
           this.initService.backToHome('fromSettings')
-          this.initService.isEditMetaPageAction('backFromSettings')
         } else {
           sessionStorage.setItem('isSettingsPage', '0')
           if (this.viewMode === 'assessment') {
@@ -332,7 +330,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.save('upload')
         }
       })
-    this.saveContent = this.initService.saveContentMessage.subscribe(
+    this.initService.saveContentMessage.subscribe(
       (data: any) => {
         if (data) {
           this.isModulePageEnabled = true
@@ -584,9 +582,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         this.courseName = data.contents[0].content.name
         this.clickedNext = data.contents[0].content.competency
         this.isSelfAssessment = data.contents[0].content.competency
-        if (this.isSelfAssessment) {
-          this.backToDashboard = true
-        }
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
 
         data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
@@ -689,10 +684,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.changeMessageSubscription) {
       this.changeMessageSubscription.unsubscribe()
-    }
-
-    if (this.saveContent) {
-      this.saveContent.unsubscribe()
     }
     this.loaderService.changeLoad.next(false)
     this.headerService.showCreatorHeader('showlogo')
@@ -1718,9 +1709,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           })
           // await this.sendEmailNotification('sendForPublish')
           this.dialog.open(SuccessDialogComponent, {
-            width: '450px',
+            width: '550px',
             height: '300x',
-            data: { 'message': 'Course Accepted and sent to Publisher', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+            data: { 'message': 'The course has been sent to the Aastrika publisher. Please contact the Aastrika team for course publication.', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
           })
           // this.router.navigate(['author', 'cbp'])
           // } else {
