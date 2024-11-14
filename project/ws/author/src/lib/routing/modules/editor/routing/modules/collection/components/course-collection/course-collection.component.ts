@@ -1709,9 +1709,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           })
           // await this.sendEmailNotification('sendForPublish')
           this.dialog.open(SuccessDialogComponent, {
-            width: '450px',
+            width: '550px',
             height: '300x',
-            data: { 'message': 'Course Accepted and sent to Publisher', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+            data: { 'message': 'The course has been sent to the Aastrika publisher. Please contact the Aastrika team for course publication.', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
           })
           // this.router.navigate(['author', 'cbp'])
           // } else {
