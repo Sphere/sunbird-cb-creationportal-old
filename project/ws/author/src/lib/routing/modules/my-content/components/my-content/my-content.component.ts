@@ -544,6 +544,10 @@ export class MyContentComponent implements OnInit, OnDestroy {
     if (this.allowPublish && status == 'Draft') {
       status = 'Courses to publish'
     }
+    if (this.allowReview && status == 'selfAssessmentDraft') {
+      status = 'Self Sent for review'
+    }
+
     if ((this.allowPublish) && (status == 'selfAssessmentDraft' || status == 'Self Courses to publish')) {
       status = 'Self Courses to publish'
     }

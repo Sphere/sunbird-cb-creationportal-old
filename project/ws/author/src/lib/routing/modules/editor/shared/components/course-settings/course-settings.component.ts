@@ -182,8 +182,8 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     private http: HttpClient,
     private router: Router,
     private storeService: CollectionStoreService,
-
   ) {
+
     if (this.configSvc.userProfile) {
       this.userId = this.configSvc.userProfile.userId
       this.givenName = this.configSvc.userProfile.givenName
@@ -200,6 +200,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   async ngAfterViewInit() {
+
     this.editorService.readcontentV3(this.contentService.parentUpdatedMeta().identifier).subscribe(async (data: any) => {
       this.courseData = await data
 
@@ -1075,6 +1076,9 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         console.log('meta', meta, this.contentMeta.identifier)
         this.contentService.setUpdatedMeta(meta, this.contentMeta.identifier)
         // this.initializeForm()
+        if (this.isSelfAssessment) {
+          this.authInitService.isEditMetaPageAction('isSettingsPage')
+        }
 
       }
     } catch (ex) {
