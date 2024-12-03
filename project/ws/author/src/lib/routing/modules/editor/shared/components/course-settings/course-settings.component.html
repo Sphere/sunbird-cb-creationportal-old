@@ -75,27 +75,28 @@
                 <span class="label-heading" i18n>Publishers</span>
               </div>
             </label>
-            <div class="margin-top-xs">
-              <mat-form-field appearance="outline" class="margin-top-xs" class="margin-top-xs"
+            <div class="margin-top-xs" [ngClass]="{ disable: true }">
+              <mat-form-field aria-readonly="true" appearance="outline" class="margin-top-xs" class="margin-top-xs"
                 [ngClass]="{ 'mat-form-field-invalid': showError('publisherDetails') }">
                 <mat-chip-list #publisherChipList aria-label="Publisher selection">
-                  <mat-chip style="color: white !important;
+                  <!-- <mat-chip style="color: white !important;
                             background-color: #1C5D95 !important;"
                     *ngFor="let author of contentForm.controls.publisherDetails.value" [selectable]="selectable"
                     [removable]="removable" (removed)="removeEmployee(author, 'publisherDetails')"
                     class="selectedOption">
                     {{ author.name }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                  </mat-chip>
+                  </mat-chip> -->
                   <!-- hardcoded Aastrika publisher id -->
-                  <!-- <mat-chip style="color: white !important;background-color: #1C5D95 !important;"
+                  <mat-chip style="color: white !important;background-color: #1C5D95 !important;"
                     [selectable]="selectable" [removable]="removable" class="selectedOption">
                     Pubisher Aastrika
-                  </mat-chip> -->
-                  <input formControlName="publisherDetails" i18n-placeholder placeholder="Search by mail"
-                    #publisherDetailsView [formControl]="publisherDetailsCtrl" [matChipInputFor]="publisherChipList"
-                    [matAutocomplete]="publisherAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
+                  </mat-chip>
+                  <input disabled="true" formControlName="publisherDetails" i18n-placeholder
+                    placeholder="Search by mail" #publisherDetailsView [formControl]="publisherDetailsCtrl"
+                    [matChipInputFor]="publisherChipList" [matAutocomplete]="publisherAuto"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
+                    (matChipInputTokenEnd)="removeField($event)" />
                 </mat-chip-list>
                 <mat-autocomplete #publisherAuto="matAutocomplete"
                   (optionSelected)="addEmployee($event, 'publisherDetails')">
