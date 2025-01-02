@@ -66,7 +66,7 @@ import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
 })
 
 export class ModuleCreationComponent implements OnInit, AfterViewInit {
-  guideline!: TemplateRef<HTMLElement>
+  @ViewChild('guideline', { static: false }) guideline!: TemplateRef<HTMLElement>
   @ViewChild('errorFile', { static: false }) errorFile!: TemplateRef<HTMLElement>
   @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>
   @Output() data = new EventEmitter<any>()
