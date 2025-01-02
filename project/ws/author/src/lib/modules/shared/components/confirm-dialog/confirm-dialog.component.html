@@ -47,6 +47,9 @@
       <ng-container *ngIf="data === 'deleteAudio'">
         <span i18n> Are you sure you want to delete the audio file attached for this page ?</span>
       </ng-container>
+      <ng-container *ngIf="data.type === 'deleteVideoQuestion'">
+        <span i18n> Are you sure you want to delete this Question</span>-{{ data.index }} ?
+      </ng-container>
     </h3>
   </div>
   <div mat-dialog-content [ngClass]="data.type === 'editAssessment' ? 'scroll' : ''">

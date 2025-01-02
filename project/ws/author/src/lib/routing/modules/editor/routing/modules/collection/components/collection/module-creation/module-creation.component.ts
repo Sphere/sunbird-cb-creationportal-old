@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter, Input } from '@angular/core'
+import { Component, ChangeDetectorRef, OnInit, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter, Input } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 // import { ConfigurationsService,  } from '@ws-widget/utils'
@@ -43,7 +43,7 @@ import {
   CONTENT_BASE_WEBHOST,
 } from '@ws/author/src/lib/constants/apiEndpoints'
 import { ProfanityService } from '../../../../upload/services/profanity.service'
-import { IQuizQuestionType } from '../../../../quiz/interface/quiz-interface'
+import { IQuizQuestionType, IVideoQuestionData } from '../../../../quiz/interface/quiz-interface'
 import { QUIZ_QUESTION_TYPE } from '../../../../quiz/constants/quiz-constants'
 import { FlatTreeControl } from '@angular/cdk/tree'
 import { QuizStoreService } from '../../../../quiz/services/store.service'
@@ -64,8 +64,9 @@ import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
   providers: [CollectionStoreService, CollectionResolverService, QuizResolverService],
 
 })
+
 export class ModuleCreationComponent implements OnInit, AfterViewInit {
-  @ViewChild('guideline', { static: false }) guideline!: TemplateRef<HTMLElement>
+  guideline!: TemplateRef<HTMLElement>
   @ViewChild('errorFile', { static: false }) errorFile!: TemplateRef<HTMLElement>
   @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>
   @Output() data = new EventEmitter<any>()
@@ -77,7 +78,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   dragEle1: any
   dragEle2: any
   dragEle3: any
+  showQuizForm: boolean = false;
   currentIndex: any
+  activeTabIndex: number = 0;
+
+
+  videoQuestions: IVideoQuestionData[] = []; // Initialize videoQuestions as an empty array
   contentList: any[] = [
     {
       name: 'Link',
@@ -209,6 +215,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   entryPoint: any
   uploadText!: string
   uploadFileName: string = '';
+  uploadVideoUrl: string = '';
   uploadIcon!: string
   isSelfAssessment: boolean = false
   hideModule: boolean = false
@@ -253,6 +260,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   showChildrenMap: { [key: string]: boolean } = {};
 
   constructor(
+    private cdr: ChangeDetectorRef,
     public dialog: MatDialog,
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -358,6 +366,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     )
     // this.isSettingsPage = false
     this.routerValuesCalls()
+    this.showQuizForm = true
     if (sessionStorage.getItem('isReviewClicked') && this.clickedNext) {
       sessionStorage.removeItem('isReviewClicked')
       sessionStorage.setItem('isSettingsPageFromPreview', '1')
@@ -591,6 +600,73 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         return 'sendForReview'
     }
   }
+
+  addVideoQuestion(): void {
+    console.log('Add Video Question button clicked')
+
+    this.showQuizForm = true
+    this.videoQuestions.push({
+      timestamp: { hours: 0, minutes: 0, seconds: 0 },
+      timestampInSeconds: 0,
+      question: [ // Ensure 'question' is used here
+        {
+          text: '',
+          options: [{ text: '', optionId: this.generateOptionId(), isCorrect: false, answerInfo: '' }]
+        }
+      ]
+    })
+    this.activeTabIndex = this.videoQuestions.length - 1 // Set active tab to the newly added question
+    console.log('Video Questions:', this.videoQuestions) // Debugging step
+    this.cdr.detectChanges()
+
+  }
+  deleteQuestion(index: number) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {
+        type: 'deleteVideoQuestion',
+        index: index + 1,
+      },
+    })
+
+    dialogRef.afterClosed().subscribe(confirm => {
+      if (confirm) {
+        this.videoQuestions.splice(index, 1)
+        if (this.activeTabIndex >= this.videoQuestions.length) {
+          this.activeTabIndex = this.videoQuestions.length - 1
+        }
+      }
+    })
+  }
+  deleteOption(questionIndex: number, subQuestionIndex: number, optionIndex: number) {
+    console.log(`Deleting option at questionIndex: ${questionIndex}, subQuestionIndex: ${subQuestionIndex}, optionIndex: ${optionIndex}`)
+    this.videoQuestions[questionIndex].question[subQuestionIndex].options.splice(optionIndex, 1)
+    console.log(this.videoQuestions)
+  }
+  setCorrectOption(i: number, j: number, k: number): void {
+    this.videoQuestions[i].question[j].options.forEach((option, index) => {
+      option.isCorrect = (index === k)
+    })
+  }
+  updateTimestampInSeconds(index: number): void {
+    const { hours, minutes, seconds } = this.videoQuestions[index].timestamp
+    this.videoQuestions[index].timestampInSeconds = (hours * 3600) + (minutes * 60) + seconds
+  }
+  addOption(questionIndex: number, subQuestionIndex: number) {
+    this.videoQuestions[questionIndex].question[subQuestionIndex].options.push({ optionId: this.generateOptionId(), text: '', isCorrect: false, answerInfo: '' })
+  }
+
+  clearOption(questionIndex: number, subQuestionIndex: number, optionIndex: number) {
+    this.videoQuestions[questionIndex].question[subQuestionIndex].options[optionIndex].text = ''
+    this.videoQuestions[questionIndex].question[subQuestionIndex].options[optionIndex].answerInfo = ''
+  }
+  generateOptionId(): number {
+    return Math.floor(Math.random() * 1000000)
+  }
+  setActiveTab(index: number) {
+    this.activeTabIndex = index
+  }
+
   async saves(nextAction?: string) {
     if (this.resourseSelected !== '') {
       this.update()
@@ -750,6 +826,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }]
         tempUpdateContent.competencies_v1 = competencies_obj
       }
+      this.uploadVideoUrl = tempUpdateContent.artifactUrl ? tempUpdateContent.artifactUrl : ''
+      console.log("tempUpdateContent", this.uploadVideoUrl)
       requestBody = {
         request: {
           content: tempUpdateContent,
@@ -2049,6 +2127,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   async deleteUploadedFile() {
     this.contentService.removeListOfFilesAndUpdatedIPR(this.currentContent)
     this.uploadFileName = ''
+    this.videoQuestions = []
+    this.uploadVideoUrl = ''
     this.file = null
     this.duration = '0'
     this.mimeType = ''
@@ -2058,6 +2138,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     meta['downloadUrl'] = null
     if (this.content.mimeType === 'video/mp4' || this.content.mimeType === 'audio/mpeg') {
       meta['duration'] = "0"
+      meta['videoQuestions'] = []
     }
     let requestBody = {
       request: {
@@ -2196,6 +2277,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.setContentType(type, 'audio')
     } else if (name == 'Video') {
+      this.videoQuestions = []
+      this.uploadVideoUrl = ''
       this.uploadText = 'mp4, m4v'
       this.isLinkEnabled = false
       this.isShowDownloadBtnEnabled = true
@@ -2402,6 +2485,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       // tslint:disable-next-line:no-console
       console.log("this.uploadFile", content.artifactUrl)
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('/').pop() : ''
+      this.uploadVideoUrl = content.artifactUrl ? content.artifactUrl : ''
+      this.videoQuestions = content.videoQuestions ? JSON.parse(content.videoQuestions) : []
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
       this.isShowDownloadBtnEnabled = true
       this.uploadText = 'mp4, m4v'
@@ -2736,6 +2821,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
           this.contentService.setUpdatedMeta(meta, this.content.identifier)
           if (this.content.contentType === 'Resource') {
+            if (this.content.mimeType === 'video/mp4') {
+              meta.videoQuestions = this.videoQuestions
+            }
+            console.log("this.questions", this.videoQuestions)
             this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
               async (info: any) => {
                 // tslint:disable-next-line:no-console
@@ -3672,6 +3761,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           dialogRef.afterClosed().subscribe(result => {
             if (result) {
               this.uploadFileName = fileName
+              // this.uploadVideoUrl = fileName
               this.assignFileValues(file, fileName)
               this.triggerUpload()
             }
@@ -3848,6 +3938,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   async resourcePdfSave() {
+    console.log("this.resource", this.resourcePdfForm)
     if (this.resourcePdfForm.status == 'INVALID' || this.uploadFileName == '') {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -3901,6 +3992,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
           duration: this.resourcePdfForm.value.duration,
           versionKey: this.updatedVersionKey,
+          videoQuestions: this.videoQuestions ? this.videoQuestions : []
         }
         await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
         await this.update()

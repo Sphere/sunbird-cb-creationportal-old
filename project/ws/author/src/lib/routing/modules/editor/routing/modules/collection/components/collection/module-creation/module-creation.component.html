@@ -406,12 +406,25 @@
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
           <div class="module-txt-block" *ngIf="content?.contentType === 'Resource'&&!isSelfAssessment">
-            <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
-              class=" module-input margin-top-s" placeholder="Name of the Resource" autocomplete="off"
-              maxlength="100" /><br>
+            <div class="flex align-item-center gap-50">
+              <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
+                class=" module-input margin-top-s" placeholder="Name of the Resource" autocomplete="off"
+                maxlength="100" /><br>
+              <ng-container
+                *ngIf="content?.contentType === 'Resource'&&uploadVideoUrl &&content?.mimeType === 'video/mp4'">
+                <div class="module-txt-block margin-top-xs">
+                  <button class="re-upload-btn text-white  mat-button-base save-btn-bottom"
+                    (click)="deleteUploadedFile();$event.stopPropagation()"><img alt="" class="image max-width"
+                      src="cbp-assets/icons/mage_reload.svg">Re-upload</button>
+                </div>
+              </ng-container>
+            </div>
+
             <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint><br>
+
             <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
+
           <div class="module-txt-block" *ngIf="content?.contentType === 'Collection'">
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
               class=" module-input margin-top-s" placeholder="Name of the Resource" autocomplete="off"
@@ -472,9 +485,9 @@
           <div class="module-txt-block thumnail-row margin-top-xs"
             *ngIf="isPdfOrAudioOrVedioEnabled&&content?.mimeType !== 'application/json'">
             <div>
-              <img alt="" class="image max-width" height="144" width="256"
+              <img *ngIf="uploadFileName === ''" alt="" class="image max-width" height="144" width="256"
                 src="cbp-assets/images/default-white-background.png">
-              <div class="empty-file" *ngIf="uploadFileName != ''">
+              <div class="empty-file" *ngIf="uploadFileName != ''&&content?.mimeType !== 'video/mp4'">
                 <mat-icon title="Remove"
                   class="material-icons margin-left-m text-medium edit-close-uploadIcon cursor-pointer"
                   (click)="deleteUploadedFile();$event.stopPropagation()">close</mat-icon>
@@ -486,6 +499,14 @@
                     <p class="text-wrap">{{uploadFileName}}</p>
                   </div>
                 </div>
+              </div>
+              <div *ngIf="uploadVideoUrl && content?.mimeType === 'video/mp4'">
+                <video width="640px" height="360px" crossorigin="anonymous" [poster]="uploadVideoUrl" class="video-js"
+                  controls>
+                  <source [src]="uploadVideoUrl" type="video/mp4">
+                  <source [src]="uploadVideoUrl" type="application/x-mpegURL">
+                  <track kind="captions" [src]="uploadVideoUrl" srclang="en" label="English" default>
+                </video>
               </div>
               <div class="pdf" *ngIf="uploadFileName == ''">
                 <img alt="" class="pdf-img" src="{{resourceImg}}" (error)="changeToDefaultImg($event)">
@@ -510,7 +531,6 @@
                 Files allowed : {{uploadText}}<br> Max.file size : 200MB
               </div>
             </div>
-
           </div>
           <div class="module-txt-block" *ngIf="isPdfOrAudioOrVedioEnabled&&content?.mimeType !== 'application/json'">
             <!-- <span style="color:#808080">Resource file</span><br> -->
@@ -598,13 +618,98 @@
 
 
           </div>
+
           <span
             *ngIf="!hours&&!minutes&&!seconds&&content?.contentType !== 'CourseUnit'&&content?.mimeType !== 'application/json'"
             class="module-txt-block invalid-text">This
             field
             is Required</span>
+          <!-- To add question to video resource-->
+          <div class="module-txt-block margin-top-m" *ngIf="content?.mimeType === 'video/mp4'">
+            <span [ngClass]="{'disabled-text': !uploadVideoUrl&&uploadFileName == ''|| videoQuestions.length >= 4}"
+              class="video-quiz-text">Add
+              In-video Quiz</span>
+          </div>
+          <div class="module-txt-block margin-top-xs" *ngIf="content?.mimeType === 'video/mp4'">
+            <button [disabled]="!uploadVideoUrl && uploadFileName == '' ||videoQuestions.length >= 4"
+              class="add-video-question-btn margin-bottom-m text-white save-btn-bottom" (click)="addVideoQuestion()">Add
+              Quiz</button>
+          </div>
 
+          <div *ngIf="showQuizForm" class="module-txt-block quiz-form">
+            <div class="tabs">
+              <div *ngFor="let question of videoQuestions; let i = index" class="tab"
+                [ngClass]="{'active-tab': i === activeTabIndex}" (click)="setActiveTab(i)"
+                (keydown)="handleKeyDown($event, i)">
+                Question {{i + 1}}
+                <img *ngIf="videoQuestions.length > 0 &&i === activeTabIndex" class="ml-2" loading="lazy"
+                  (click)="deleteQuestion(i)" (keydown)="deleteQuestion(activeTabIndex)" src="cbp-assets/icons/bin.svg"
+                  alt="delete-icon">
+              </div>
+            </div>
+            <div *ngFor="let question of videoQuestions; let i = index" class="question-form"
+              [ngClass]="{'active-form': i === activeTabIndex}">
+              <div class="duration-style margin-bottom-s timestamp">
+                <span class="timestamp-text">Timestamp:</span>
+                <input matInput class="numberInput" id="timestamp" type="number" [(ngModel)]="question.timestamp.hours"
+                  placeholder="hh" min="0" max="12" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
+                <div class="colon-block">:</div>
+                <input matInput class="numberInput" type="number" [(ngModel)]="question.timestamp.minutes"
+                  placeholder="mm" min="0" max="59" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
+                <div class="colon-block">:</div>
+                <input matInput class="numberInput" type="number" [(ngModel)]="question.timestamp.seconds"
+                  placeholder="ss" min="0" max="59" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
+              </div>
+              <div class="mb-2" *ngFor="let subQuestion of question.question; let j = index">
+                <div class="question">
+                  <textarea maxlength="100" rows="2" matInput [(ngModel)]="subQuestion.text"
+                    class="module-input question-text margin-top-s" placeholder="Question" autocomplete="off"
+                    maxlength="100"></textarea><br>
+                  <mat-hint class="mt-hint">{{ subQuestion.text.length }}/100</mat-hint><br>
+                </div>
+                <div class="flex flex-direction-column mb-2">
+                  <div class="options-header">
+                    <span class="video-quiz-text">Options</span>
+                  </div>
+                  <div class="options-note-container">
+                    <span class="options-note">Note: Check the correct answer circle only. Add notes to explain in the
+                      text field next to it.</span>
+                  </div>
+                </div>
+                <div class="mt-1 option-block" *ngFor="let option of subQuestion.options; let k = index">
+                  <div class="input-container">
+                    <div class="option-container">
+                      <input type="radio" name="isCorrect-{{i}}-{{j}}" [checked]="option.isCorrect"
+                        (click)="setCorrectOption(i, j, k)" class="radio-button">
+                      <input class="option-input" matInput type="text" [(ngModel)]="option.text"
+                        placeholder="Add Option" autocomplete="off" maxlength="80">
+                      <img loading="lazy" (click)="deleteOption(i, j, k)"
+                        src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-icon"
+                        class="option-delete-icon">
+                    </div>
+                    <mat-hint class="mt-hint">{{ option.text.length }}/80</mat-hint>
+                  </div>
+                  <div class="answer-info-container">
+                    <input class="option-input option-answerinfo-input pl-0" matInput type="text"
+                      [(ngModel)]="option.answerInfo" placeholder="Add Note" autocomplete="off" maxlength="80">
+                    <mat-hint class="mt-hint">{{ option.answerInfo.length }}/80</mat-hint>
+                  </div>
+                </div>
+                <button class="add-option-btn" (click)="addOption(i, j)" [disabled]="subQuestion.options.length >= 4">
+                  <img class="delete-icon" loading="lazy" src="cbp-assets/icons/ant-design_plus-circle-outlined.svg"
+                    alt="delete-icons" />
+                  Add Option
+                </button>
+                <button [disabled]="(uploadFileName?uploadFileName == '':true)" mat-raised-button
+                  *ngIf="moduleButtonName === 'Save'&&content?.contentType !== 'Collection' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course'&& !isLinkEnabled && content?.mimeType !== 'application/json'"
+                  class="width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave qweqwe"
+                  (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab,isShowBtn,content?.mimeType)">
+                  {{moduleButtonName}}</button>
+              </div>
+            </div>
+          </div>
         </div>
+
         <!--Onclick of reosurce type page-->
         <div class="module-right-content scroll-bar"
           *ngIf="!isResourceTypeEnabled && showAddModuleForm && isOnClickOfResourceTypeEnabled">
@@ -735,22 +840,33 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Ass
             <!--link form end-->
             <!--PDF/audio/vedio form start-->
             <form [formGroup]="resourcePdfForm" class="resource-details-form" *ngIf="isPdfOrAudioOrVedioEnabled">
-              <mat-form-field appearance="outline" class="module-txt-block margin-top-xs field-width"
-                style="margin-bottom: 0vh;">
-                <input class="" matInput #name formControlName="name" maxlength="100" i18n-placeholder
-                  placeholder="Name of the resource" />
-                <mat-hint style="padding: 0px;" class="mt-hint">{{ this.resourcePdfForm.value.name.length
-                  }}/100</mat-hint>
-              </mat-form-field>
+              <div class="flex align-item-center gap-50">
+                <mat-form-field appearance="outline" class="module-txt-block margin-top-xs field-width"
+                  style="margin-bottom: 0vh;">
+                  <input class="" matInput #name formControlName="name" maxlength="100" i18n-placeholder
+                    placeholder="Name of the resource" />
+
+                  <mat-hint style="padding: 0px;" class="mt-hint">{{ this.resourcePdfForm.value.name.length
+                    }}/100</mat-hint>
+                </mat-form-field>
+                <ng-container
+                  *ngIf="content?.contentType === 'Resource'&&uploadVideoUrl &&content?.mimeType === 'video/mp4'">
+                  <div class="module-txt-block margin-top-xs">
+                    <button class="re-upload-btn text-white  mat-button-base save-btn-bottom"
+                      (click)="deleteUploadedFile();$event.stopPropagation()"><img alt="" class="image max-width"
+                        src="cbp-assets/icons/mage_reload.svg">Re-upload</button>
+                  </div>
+                </ng-container>
+              </div>
               <span *ngIf="resourcePdfForm.get('name').hasError('required')" class="module-txt-block invalid-text">This
                 field
                 is Required</span>
 
               <div class="module-txt-block thumnail-row margin-top-xs">
                 <div>
-                  <img alt="" class="image max-width" height="144" width="256"
+                  <img *ngIf="uploadFileName === ''" alt="" class="image max-width" height="144" width="256"
                     src="cbp-assets/images/default-white-background.png">
-                  <ng-container *ngIf="uploadFileName != ''">
+                  <ng-container *ngIf="uploadFileName != ''&&content?.mimeType !== 'video/mp4'">
                     <mat-icon class="material-icons margin-left-m text-medium close-uploadIcon"
                       (click)="deleteUploadedFile();$event.stopPropagation()">close</mat-icon>
                     <div class="upload-file-name">
@@ -773,6 +889,14 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Ass
                   <div class="margin-bottom-s" *ngIf="acceptType == 'pdf'">
                     <span style="color: #808080 !important;">Note : The PDF should have high resolution</span>
                   </div>
+                </div>
+                <div *ngIf="uploadVideoUrl && content?.mimeType === 'video/mp4'">
+                  <video width="640px" height="360px" crossorigin="anonymous" [poster]="uploadVideoUrl" class="video-js"
+                    controls>
+                    <source [src]="uploadVideoUrl" type="video/mp4">
+                    <source [src]="uploadVideoUrl" type="application/x-mpegURL">
+                    <track kind="captions" [src]="uploadVideoUrl" srclang="en" label="English" default>
+                  </video>
                 </div>
                 <div [ngClass]="acceptType == '.pdf'&&uploadFileName !== ''?'pdf-new-info':'file-new-info'">
                   Files allowed : {{uploadText}}<br> Max.file size : 200MB
@@ -813,7 +937,93 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Ass
                 class="module-txt-block invalid-text">This
                 field
                 is Required</span>
+              <div class="module-txt-block margin-top-m" *ngIf="content?.mimeType === 'video/mp4'">
+                <span [ngClass]="{'disabled-text': !uploadVideoUrl&&uploadFileName == ''|| videoQuestions.length >= 4}"
+                  class="video-quiz-text">Add
+                  In-video Quiz</span>
+              </div>
+              <div class="module-txt-block margin-top-xs" *ngIf="content?.mimeType === 'video/mp4'">
+                <button [disabled]="!uploadVideoUrl && uploadFileName == '' || videoQuestions.length >= 4"
+                  class="add-video-question-btn margin-bottom-m text-white save-btn-bottom"
+                  (click)="addVideoQuestion()">Add
+                  Quiz</button>
+              </div>
 
+              <div *ngIf="showQuizForm&&content?.mimeType === 'video/mp4'" class="module-txt-block quiz-form">
+                <div class="tabs">
+                  <div *ngFor="let question of videoQuestions; let i = index" class="tab"
+                    [ngClass]="{'active-tab': i === activeTabIndex}" (click)="setActiveTab(i)"
+                    (keydown)="handleKeyDown($event, i)">
+                    Question {{i + 1}}
+                    <img *ngIf="videoQuestions.length > 0 && i === activeTabIndex" class="ml-2" loading="lazy"
+                      (click)="deleteQuestion(i)" (keydown)="deleteQuestion(activeTabIndex)"
+                      src="cbp-assets/icons/bin.svg" alt="delete-icon">
+                  </div>
+                </div>
+                <div *ngFor="let question of videoQuestions; let i = index" class="question-form"
+                  [ngClass]="{'active-form': i === activeTabIndex}">
+                  <div class="duration-style margin-bottom-s timestamp">
+                    <span class="timestamp-text">Timestamp:</span>
+                    <input matInput class="numberInput" id="timestamp" type="number"
+                      [(ngModel)]="question.timestamp.hours" [ngModelOptions]="{standalone: true}" placeholder="hh"
+                      min="0" max="12" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
+                    <div class="colon-block">:</div>
+                    <input matInput class="numberInput" type="number" [(ngModel)]="question.timestamp.minutes"
+                      [ngModelOptions]="{standalone: true}" placeholder="mm" min="0" max="59" step="1"
+                      (ngModelChange)="updateTimestampInSeconds(i)">
+                    <div class="colon-block">:</div>
+                    <input matInput class="numberInput" type="number" [(ngModel)]="question.timestamp.seconds"
+                      [ngModelOptions]="{standalone: true}" placeholder="ss" min="0" max="59" step="1"
+                      (ngModelChange)="updateTimestampInSeconds(i)">
+                  </div>
+                  <div class="mb-2" *ngFor="let subQuestion of question.question; let j = index">
+                    <div class="question">
+                      <textarea maxlength="100" rows="2" matInput [(ngModel)]="subQuestion.text"
+                        [ngModelOptions]="{standalone: true}" class="module-input question-text margin-top-s"
+                        placeholder="Question" autocomplete="off" maxlength="100"></textarea><br>
+                      <mat-hint class="mt-hint">{{ subQuestion.text.length }}/100</mat-hint><br>
+                    </div>
+                    <div class="flex flex-direction-column mb-2">
+                      <div class="options-header">
+                        <span class="video-quiz-text">Options</span>
+                      </div>
+                      <div class="options-note-container">
+                        <span class="options-note">Note: Check the correct answer circle only. Add notes to explain in
+                          the text field next to it.</span>
+                      </div>
+                    </div>
+                    <div class="mt-1 option-block" *ngFor="let option of subQuestion.options; let k = index">
+                      <div class="input-container">
+                        <div class="option-container">
+                          <input type="radio" name="isCorrect-{{i}}-{{j}}" [checked]="option.isCorrect"
+                            (click)="setCorrectOption(i, j, k)" class="radio-button">
+                          <input class="option-input" matInput type="text" [(ngModel)]="option.text"
+                            [ngModelOptions]="{standalone: true}" placeholder="Add Option" autocomplete="off"
+                            maxlength="80">
+                          <img loading="lazy" (click)="deleteOption(i, j, k)"
+                            src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-icon"
+                            class="option-delete-icon">
+                        </div>
+                        <mat-hint class="mt-hint">{{ option.text.length }}/80</mat-hint>
+                      </div>
+                      <div class="answer-info-container">
+                        <input class="option-input option-answerinfo-input pl-0" matInput type="text"
+                          [(ngModel)]="option.answerInfo" [ngModelOptions]="{standalone: true}" placeholder="Add Note"
+                          autocomplete="off" maxlength="80">
+                        <mat-hint class="mt-hint">{{ option.answerInfo.length }}/80</mat-hint>
+                      </div>
+                    </div>
+                    <button class="add-option-btn" (click)="addOption(i, j)"
+                      [disabled]="subQuestion.options.length >= 4"><img class="delete-icon" loading="lazy"
+                        src="cbp-assets/icons/ant-design_plus-circle-outlined.svg" alt="delete-iconsss" />Add
+                      Option</button>
+                    <div *ngIf="isPdfOrAudioOrVedioEnabled"><button [disabled]=" uploadFileName==''" mat-raised-button
+                        class="width-15 mb-2 text-white mat-button-base save-btn-bottom resourcePdfSave"
+                        (click)="resourcePdfSave()">Save</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
             </form>
           </div>
