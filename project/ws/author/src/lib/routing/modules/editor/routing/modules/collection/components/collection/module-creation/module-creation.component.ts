@@ -826,8 +826,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }]
         tempUpdateContent.competencies_v1 = competencies_obj
       }
-      this.uploadVideoUrl = tempUpdateContent.artifactUrl ? tempUpdateContent.artifactUrl : ''
-      console.log("tempUpdateContent", this.uploadVideoUrl)
+
+      // this.uploadVideoUrl = tempUpdateContent.artifactUrl ? tempUpdateContent.artifactUrl : ''
+      console.log("tempUpdateContent", tempUpdateContent, this.uploadVideoUrl)
       requestBody = {
         request: {
           content: tempUpdateContent,
@@ -4446,6 +4447,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             this.fileUploadForm.controls.artifactUrl.setValue(v ? artifactUrl : '')
             this.fileUploadForm.controls.downloadUrl.setValue(v ? artifactUrl : '')
           }
+          if (this.mimeType === 'video/mp4') {
+            this.uploadVideoUrl = artifactUrl
+          }
+
           this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
           if (this.mimeType === 'application/vnd.ekstep.html-archive' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
             this.fileUploadForm.controls.isExternal.setValue(false)
@@ -4491,6 +4496,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             this.courseData = data
           })
           this.loaderService.changeLoad.next(false)
+          console.log("uploadVideoUrl", this.uploadVideoUrl)
         },
         () => {
           this.loaderService.changeLoad.next(false)
