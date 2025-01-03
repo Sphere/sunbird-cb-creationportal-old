@@ -782,8 +782,9 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification)
         this.contentForm.controls.cneName.setValue(this.contentMeta.cneName)
         // hardcoded aastrika publisher id
-        const baseUrl = window.location.origin
-        const publisherId = baseUrl === 'https://cbp-aastrika-stage.tarento.com/'
+        const baseUrl = window.location.origin.trim()
+        const targetUrl = 'https://cbp-aastrika-stage.tarento.com'.trim()
+        const publisherId = baseUrl === targetUrl
           ? '8eab395d-46f4-47ff-90af-9d51d5126fc3'
           : 'b4509d72-87cc-4317-9012-d4b03e307fa5'
         this.contentForm.controls.publisherDetails.setValue([{ id: publisherId, name: 'Publisher Aastrika' }])
@@ -2027,8 +2028,9 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         )
       })
     }
-    const baseUrl = window.location.origin
-    const publisherId = baseUrl === 'https://cbp-aastrika-stage.tarento.com/'
+    const baseUrl = window.location.origin.trim()
+    const targetUrl = 'https://cbp-aastrika-stage.tarento.com'.trim()
+    const publisherId = baseUrl === targetUrl
       ? '8eab395d-46f4-47ff-90af-9d51d5126fc3'
       : 'b4509d72-87cc-4317-9012-d4b03e307fa5'
     this.contentForm.controls.publisherDetails.setValue({ id: publisherId, name: 'Publisher Aastrika' })

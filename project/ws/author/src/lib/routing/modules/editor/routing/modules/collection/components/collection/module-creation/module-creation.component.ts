@@ -638,6 +638,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
     })
   }
+  removeEmptyQuestions(): void {
+    this.videoQuestions = this.videoQuestions.filter(question => {
+      return question.question.some(subQuestion => {
+        const nonEmptyOptions = subQuestion.options.filter(option => option.text.trim() !== '')
+        return subQuestion.text.trim() !== '' && nonEmptyOptions.length >= 2
+      })
+    })
+  }
   deleteOption(questionIndex: number, subQuestionIndex: number, optionIndex: number) {
     console.log(`Deleting option at questionIndex: ${questionIndex}, subQuestionIndex: ${subQuestionIndex}, optionIndex: ${optionIndex}`)
     this.videoQuestions[questionIndex].question[subQuestionIndex].options.splice(optionIndex, 1)
@@ -2825,6 +2833,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.contentService.setUpdatedMeta(meta, this.content.identifier)
           if (this.content.contentType === 'Resource') {
             if (this.content.mimeType === 'video/mp4') {
+              this.removeEmptyQuestions()
               meta.videoQuestions = this.videoQuestions
             }
             console.log("this.questions", this.videoQuestions)
@@ -3984,6 +3993,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
         this.duration = this.resourcePdfForm.value.duration
         // this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+        this.removeEmptyQuestions()
+
         const rBody: any = {
           name: this.resourcePdfForm.value.name,
           instructions: this.resourcePdfForm.value.instructions,
