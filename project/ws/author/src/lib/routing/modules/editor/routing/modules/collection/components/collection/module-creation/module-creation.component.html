@@ -487,6 +487,8 @@
             <div>
               <img *ngIf="content?.mimeType !== 'video/mp4'" alt="" class="image max-width" height="144" width="256"
                 src="cbp-assets/images/default-white-background.png">
+              <img *ngIf="content?.mimeType === 'video/mp4'&&uploadVideoUrl==''" alt="" class="image max-width"
+                height="144" width="256" src="cbp-assets/images/default-white-background.png">
               <div class="empty-file" *ngIf="uploadFileName != ''&&content?.mimeType !== 'video/mp4'">
                 <mat-icon title="Remove"
                   class="material-icons margin-left-m text-medium edit-close-uploadIcon cursor-pointer"
@@ -864,8 +866,10 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Ass
 
               <div class="module-txt-block thumnail-row margin-top-xs">
                 <div>
-                  <img alt="" class="image max-width" height="144" width="256"
+                  <img *ngIf="content?.mimeType !== 'video/mp4'" alt="" class="image max-width" height="144" width="256"
                     src="cbp-assets/images/default-white-background.png">
+                  <img *ngIf="content?.mimeType === 'video/mp4'&&uploadVideoUrl==''" alt="" class="image max-width"
+                    height="144" width="256" src="cbp-assets/images/default-white-background.png">
                   <ng-container *ngIf="uploadFileName != ''&&content?.mimeType !== 'video/mp4'">
                     <mat-icon class="material-icons margin-left-m text-medium close-uploadIcon"
                       (click)="deleteUploadedFile();$event.stopPropagation()">close</mat-icon>

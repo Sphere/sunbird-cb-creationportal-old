@@ -2448,6 +2448,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.isGating = content.gatingEnabled
     this.duration = content.duration
     this.isPdfOrAudioOrVedioEnabled = false
+    this.uploadVideoUrl = ''
+    this.videoQuestions = []
     if (content.mimeType == 'text/x-url') {
       this.isLinkEnabled = true
       this.isShowDownloadBtnEnabled = false
