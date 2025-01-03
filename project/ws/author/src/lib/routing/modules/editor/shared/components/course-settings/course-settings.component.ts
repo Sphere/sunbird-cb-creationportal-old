@@ -786,7 +786,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         const publisherId = baseUrl === 'https://cbp-aastrika-stage.tarento.com/'
           ? '8eab395d-46f4-47ff-90af-9d51d5126fc3'
           : 'b4509d72-87cc-4317-9012-d4b03e307fa5'
-        this.contentForm.controls.publisherDetails.setValue({ id: publisherId, name: 'Publisher Aastrika' })
+        this.contentForm.controls.publisherDetails.setValue([{ id: publisherId, name: 'Publisher Aastrika' }])
 
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
