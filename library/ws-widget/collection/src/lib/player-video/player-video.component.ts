@@ -1,9 +1,8 @@
-import { AfterViewInit, Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
 import { EventService } from '@ws-widget/utils'
 import videoJs from 'video.js'
-// import { ViewerUtilService } from '../../../../../../project/ws/viewer/src/lib/viewer-util.service'
 import { ROOT_WIDGET_CONFIG } from '../collection.config'
 import { IWidgetsPlayerMediaData } from '../_models/player-media.model'
 import {
@@ -14,6 +13,9 @@ import {
   videoJsInitializer,
 } from '../_services/videojs-util'
 import { WidgetContentService } from '../_services/widget-content.service'
+import { ViewerDataService } from 'project/ws/viewer/src/lib/viewer-data.service'
+import { PlayerVideoPopupComponent } from '../player-video-popup/player-video-popup-component'
+import { MatDialog } from '@angular/material/dialog'
 
 const videoJsOptions: videoJs.PlayerOptions = {
   controls: true,
@@ -45,31 +47,61 @@ export class PlayerVideoComponent extends WidgetBaseComponent
   AfterViewInit,
   OnDestroy,
   NsWidgetResolver.IWidgetData<IWidgetsPlayerMediaData> {
-  @Input() widgetData!: IWidgetsPlayerMediaData
+  @Input() widgetData!: any
   @ViewChild('videoTag', { static: false }) videoTag!: ElementRef<HTMLVideoElement>
   @ViewChild('realvideoTag', { static: false }) realvideoTag!: ElementRef<HTMLVideoElement>
-  @HostBinding('id')
-  public id = 'v-player'
   private player: videoJs.Player | null = null
   private dispose: (() => void) | null = null
+  contentData: any
+  popupShown = false;
+  progressData: any
+  videoQuestions!: {
+    timestamp: { hours: 0, minutes: 0, seconds: 0 },
+    timestampInSeconds: 0,
+    question: [ // Ensure 'question' is used here
+      {
+        text: '',
+        options: [{ text: '', optionId: '', isCorrect: false, answerInfo: '' }]
+      }
+    ]
+  }
+
   constructor(
     private eventSvc: EventService,
     private contentSvc: WidgetContentService,
-    // private viewerSvc: ViewerUtilService,
     private activatedRoute: ActivatedRoute,
+    public viewerDataSvc: ViewerDataService,
+    private dialog: MatDialog
   ) {
     super()
+    // console.log(window.innerWidth)
+    // if (window.innerWidth < 768) {
+    //   screen.orientation.lock('landscape');
+    //   //this.isMobileResolution = true;
+    // } else {
+    //   //this.isMobileResolution = false;
+    // }
   }
 
-  ngOnInit() { }
+  ngOnInit() { console.log("videoDatas", this.widgetData, this.contentData) }
+
 
   async ngAfterViewInit() {
+    console.log("Initial resume point:", this.widgetData.resumePoint)
     this.widgetData = {
       ...this.widgetData,
     }
-    if (this.widgetData && this.widgetData.identifier && !this.widgetData.url) {
-      await this.fetchContent()
+    // if (this.widgetData && this.widgetData.identifier && !this.widgetData.url) {
+    await this.fetchContent()
+    console.log("this.widgetData.videoQuestions", this.widgetData)
+    //enable below code to show popup questions
+    if (this.videoTag) {
+      this.addTimeUpdateListener(this.videoTag.nativeElement)
     }
+    if (this.realvideoTag) {
+      this.addTimeUpdateListener(this.realvideoTag.nativeElement)
+    }
+
     if (this.widgetData.url) {
       if (this.widgetData.isVideojs) {
         this.initializePlayer()
@@ -78,6 +110,50 @@ export class PlayerVideoComponent extends WidgetBaseComponent
       }
     }
   }
+
+  addTimeUpdateListener(videoElement: HTMLVideoElement): void {
+    let popupTriggered = false
+    let currentMilestone: any
+    videoElement.addEventListener('timeupdate', () => {
+      const currentTimeInSeconds = Math.round(videoElement.currentTime) // Round to nearest integer
+      if (this.widgetData.videoQuestions && this.widgetData.videoQuestions.length > 0) {
+        // console.log("Current Time:", currentTimeInSeconds)
+        // console.log("Milestones:", this.widgetData.videoQuestions)
+        for (const milestone of this.widgetData.videoQuestions) {
+          if (currentTimeInSeconds === milestone.timestampInSeconds && !popupTriggered) {
+            videoElement.pause()
+            console.log("Popup triggered for milestone:", milestone.timestampInSeconds)
+            this.openPopup(milestone.question, videoElement)
+            popupTriggered = true
+            currentMilestone = milestone
+            break
+          } else if (currentTimeInSeconds > milestone.timestampInSeconds && currentMilestone === milestone) {
+            popupTriggered = false
+            currentMilestone = null
+          }
+        }
+      }
+
+    })
+  }
+
+
+  openPopup(questions: any, videoElement: any): void {
+    const confirmdialog = this.dialog.open(PlayerVideoPopupComponent, {
+      width: '600px',
+      data: { questions }
+    })
+
+    if (confirmdialog) {
+      confirmdialog.afterClosed().subscribe((_res: any) => {
+        console.log("closed popup", _res)
+        this.dialog.closeAll()
+        videoElement.play()
+      })
+    }
+  }
+
+
   ngOnDestroy() {
     if (this.player) {
       this.player.dispose()
@@ -87,6 +163,7 @@ export class PlayerVideoComponent extends WidgetBaseComponent
     }
   }
   private initializeVPlayer() {
+    console.log("initializeVPlayer")
     const dispatcher: telemetryEventDispatcherFunction = event => {
       if (this.widgetData.identifier) {
         this.eventSvc.dispatchEvent(event)
@@ -94,7 +171,6 @@ export class PlayerVideoComponent extends WidgetBaseComponent
     }
     const saveCLearning: saveContinueLearningFunction = data => {
       if (this.widgetData.identifier) {
-
         if (this.activatedRoute.snapshot.queryParams.collectionType &&
           this.activatedRoute.snapshot.queryParams.collectionType.toLowerCase() === 'playlist') {
           const continueLearningData = {
@@ -234,10 +310,9 @@ export class PlayerVideoComponent extends WidgetBaseComponent
     )
     this.player = initObj.player
     this.dispose = initObj.dispose
-
     initObj.player.ready(() => {
       if (Array.isArray(this.widgetData.subtitles)) {
-        this.widgetData.subtitles.forEach((u, index) => {
+        this.widgetData.subtitles.forEach((u: any, index: any) => {
           initObj.player.addRemoteTextTrack(
             {
               default: index === 0,
@@ -255,16 +330,21 @@ export class PlayerVideoComponent extends WidgetBaseComponent
       }
     })
   }
+
   async fetchContent() {
     const content = await this.contentSvc
-      .fetchContent(this.widgetData.identifier || '', 'minimal')
+      .readcontentV3(this.widgetData.identifier)
       .toPromise()
+
+    console.log("content", content)
+    if (content && content.videoQuestions)
+      this.widgetData.videoQuestions = content.videoQuestions ? JSON.parse(content.videoQuestions) : []
+    console.log("this.widgetData.videoQuestions", this.widgetData.videoQuestions)
     if (content.artifactUrl && content.artifactUrl.indexOf('/content-store/') > -1) {
       this.widgetData.url = content.artifactUrl
       this.widgetData.posterImage = content.appIcon
-      await this.contentSvc.setS3Cookie(this.widgetData.identifier || '').toPromise()
+      // await this.contentSvc.setS3Cookie(this.widgetData.identifier || '').toPromise()
     }
-
-    this.widgetData.subtitles = content.subTitles
   }
 }
+

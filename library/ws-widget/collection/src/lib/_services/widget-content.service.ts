@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { ConfigurationsService } from '@ws-widget/utils/src/lib/services/configurations.service'
 import { Observable, of } from 'rxjs'
-import { catchError, retry } from 'rxjs/operators'
+import { catchError, map, retry } from 'rxjs/operators'
 import { NsContentStripMultiple } from '../content-strip-multiple/content-strip-multiple.model'
 import { IContentRating } from '../_models/contentRating.model'
 import { NsContent } from './widget-content.model'
@@ -50,7 +50,15 @@ export class WidgetContentService {
     const url = API_END_POINTS.MARK_AS_COMPLETE_META(identifier)
     return this.http.get(url).toPromise()
   }
-
+  readcontentV3(id: string): Observable<NsContent.IContent> {
+    return this.http.get<NsContent.IContent>(
+      `/apis/proxies/v8/action/content/v3/hierarchy/${id}?mode=edit`
+    ).pipe(
+      map((data: any) => {
+        return data.result.content
+      })
+    )
+  }
   fetchContent(
     contentId: string,
     hierarchyType: 'all' | 'minimal' | 'detail' = 'detail',

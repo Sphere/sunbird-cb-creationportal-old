@@ -63,6 +63,7 @@ import { AuthInitService } from '../../project/ws/author/src/lib/services/init.s
 // import { ServiceWorkerModule } from '@angular/service-worker'
 // import { environment } from '../environments/environment'
 import { OrgComponent } from '../../project/ws/app/src/lib/routes/org/components/org/org.component'
+import { PlayerVideoPopupComponent } from '../../library/ws-widget/collection/src/lib/player-video-popup/player-video-popup-component'
 
 import { SharedModule } from '../../project/ws/author/src/lib/modules/shared/shared.module'
 @Injectable()
@@ -98,6 +99,7 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     LoginRootComponent,
     LoginRootDirective,
     OrgComponent,
+    PlayerVideoPopupComponent
   ],
   imports: [
     SharedModule,
@@ -147,6 +149,7 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
   entryComponents: [
     DialogConfirmComponent,
     LoginComponent,
+    PlayerVideoPopupComponent
   ],
   providers: [
     {
