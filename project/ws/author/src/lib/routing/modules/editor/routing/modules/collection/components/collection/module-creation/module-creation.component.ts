@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, OnInit, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter, Input } from '@angular/core'
+import { Component, ChangeDetectorRef, OnInit, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter, Input, ElementRef } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 // import { ConfigurationsService,  } from '@ws-widget/utils'
@@ -69,6 +69,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   @ViewChild('guideline', { static: false }) guideline!: TemplateRef<HTMLElement>
   @ViewChild('errorFile', { static: false }) errorFile!: TemplateRef<HTMLElement>
   @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>
+  @ViewChild('videoPlayer', { static: false }) videoPlayer!: ElementRef<HTMLVideoElement>
   @Output() data = new EventEmitter<any>()
   @Output() sendSteps = new EventEmitter<any>();
   contents: NSContent.IContentMeta[] = []
@@ -2138,6 +2139,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.uploadFileName = ''
     this.videoQuestions = []
     this.uploadVideoUrl = ''
+    this.cdr.detectChanges()
+    if (this.videoPlayer) {
+      const videoElement = this.videoPlayer.nativeElement
+      videoElement.load()
+    }
     this.file = null
     this.duration = '0'
     this.mimeType = ''
@@ -2288,6 +2294,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     } else if (name == 'Video') {
       this.videoQuestions = []
       this.uploadVideoUrl = ''
+      this.cdr.detectChanges() // Ensure template updates before manipulating the DOM
+      if (this.videoPlayer) {
+        const videoElement = this.videoPlayer.nativeElement
+        videoElement.load()
+      }
       this.uploadText = 'mp4, m4v'
       this.isLinkEnabled = false
       this.isShowDownloadBtnEnabled = true
@@ -2417,6 +2428,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   async editContent(content: any) {
     this.currentCourseId = content.identifier
+    console.log("content", content)
     console.log("this.currentCourseId", this.currentCourseId)
     this.loaderService.changeLoad.next(true)
     if (content.contentType !== 'CourseUnit') {
@@ -2458,6 +2470,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.duration = content.duration
     this.isPdfOrAudioOrVedioEnabled = false
     this.uploadVideoUrl = ''
+
     this.videoQuestions = []
     if (content.mimeType == 'text/x-url') {
       this.isLinkEnabled = true
@@ -2497,6 +2510,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       console.log("this.uploadFile", content.artifactUrl)
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('/').pop() : ''
       this.uploadVideoUrl = content.artifactUrl ? content.artifactUrl : ''
+      this.cdr.detectChanges() // Ensure template updates before manipulating the DOM
+      if (this.videoPlayer) {
+        const videoElement = this.videoPlayer.nativeElement
+        videoElement.load()
+      }
       this.videoQuestions = content.videoQuestions ? JSON.parse(content.videoQuestions) : []
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
       this.isShowDownloadBtnEnabled = true
@@ -4460,6 +4478,11 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           }
           if (this.mimeType === 'video/mp4') {
             this.uploadVideoUrl = artifactUrl
+            this.cdr.detectChanges() // Ensure template updates before manipulating the DOM
+            if (this.videoPlayer) {
+              const videoElement = this.videoPlayer.nativeElement
+              videoElement.load()
+            }
           }
 
           this.fileUploadForm.controls.mimeType.setValue(this.mimeType)

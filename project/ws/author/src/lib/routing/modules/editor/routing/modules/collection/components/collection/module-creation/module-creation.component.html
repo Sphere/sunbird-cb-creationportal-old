@@ -503,8 +503,8 @@
                 </div>
               </div>
               <div *ngIf="uploadVideoUrl && content?.mimeType === 'video/mp4'">
-                <video width="640px" height="360px" crossorigin="anonymous" [poster]="uploadVideoUrl" class="video-js"
-                  controls>
+                <video #videoPlayer width="640px" height="360px" crossorigin="anonymous" [poster]="uploadVideoUrl"
+                  class="video-js" controls>
                   <source [src]="uploadVideoUrl" type="video/mp4">
                   <source [src]="uploadVideoUrl" type="application/x-mpegURL">
                   <track kind="captions" [src]="uploadVideoUrl" srclang="en" label="English" default>
@@ -895,8 +895,8 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Ass
                   </div>
                 </div>
                 <div *ngIf="uploadVideoUrl && content?.mimeType === 'video/mp4'">
-                  <video width="640px" height="360px" crossorigin="anonymous" [poster]="uploadVideoUrl" class="video-js"
-                    controls>
+                  <video #videoPlayer width="640px" height="360px" crossorigin="anonymous" [poster]="uploadVideoUrl"
+                    class="video-js" controls>
                     <source [src]="uploadVideoUrl" type="video/mp4">
                     <source [src]="uploadVideoUrl" type="application/x-mpegURL">
                     <track kind="captions" [src]="uploadVideoUrl" srclang="en" label="English" default>
