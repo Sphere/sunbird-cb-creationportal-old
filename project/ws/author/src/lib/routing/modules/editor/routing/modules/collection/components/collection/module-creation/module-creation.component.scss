@@ -294,7 +294,10 @@ font-family: Roboto;
     border: none;
     padding: 10px;
 }
-
+.video-js{
+  width: 400px;
+  height: 250px;
+}
 .max-width {
   max-width: 256px;
   max-height: 150px;
@@ -523,11 +526,13 @@ box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }
 .edit-close-uploadIcon{
+  cursor: pointer;
   position: relative;
   bottom: 9rem;
   left: 13.5rem;
 }
 .close-uploadIcon{
+    cursor: pointer;
   position: relative;
     bottom: 7.8rem;
     left: -2.5rem;
