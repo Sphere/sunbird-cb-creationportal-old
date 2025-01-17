@@ -44,19 +44,62 @@
 .wrap-mat-radio-label {
   white-space: normal;
 }
+.question-option {
+  white-space: break-spaces;
+}
+.options-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.options-container {
+  display: flex;
+}
 
+.option {
+  margin-bottom: 10px;
+}
+
+/* horizontal layout */
+
+  .rowView{
+    .options-container {
+  flex-direction: row;
+
+  }
+}
+
+.option {
+  margin-right: 10px;
+}
+
+/* vertical layout */
+
+  .columnView{
+    .options-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .option{
+    width: 100%;
+  }
+
+}
+::ng-deep .cdk-overlay-pane{
+overflow: auto;
+}
+c
 .quiz-question {
   font-family: Roboto;
 font-size: 16px;
 font-weight: 400;
-line-height: 18.75px;
+line-height: 12.75px;
 text-align: left;
 text-underline-position: from-font;
 text-decoration-skip-ink: none;
-
   overflow-x: auto;
-  margin: 10px 0 0 0 !important;
-
+  margin: 10px 0 10 0 !important;
+color: #000000 !important;
   @include breakpoint-xs {
     margin: 0 !important;
   }
@@ -240,7 +283,7 @@ font-size: 16px;
 font-weight: 400;
 line-height: 24px;
 letter-spacing: -0.02em;
-text-align: right;
+text-align: left;
 text-underline-position: from-font;
 text-decoration-skip-ink: none;
 color: #000000 !important;
@@ -264,7 +307,7 @@ color: #000000 !important;
   display: flex;
     justify-content: end;
     /* align-items: end; */
-    width: 50%;
+    // width: 50%;
     flex-direction: column;
 }
 .result-answer-info{
