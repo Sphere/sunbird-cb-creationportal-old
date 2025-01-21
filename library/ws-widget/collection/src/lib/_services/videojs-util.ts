@@ -184,6 +184,13 @@ export function videoJsInitializer(
   mimeType: NsContent.EMimeTypes,
 ): { player: videoJs.Player; dispose: () => void } {
   const player = videoJs(elem, config)
+  player.volume(0.8) // Set default volume to 80%
+  player.muted(false) // Ensure video is not muted
+
+  marker(widgetData, player)
+
+
+
   const eventDispatcher = enableTelemetry
     ? generateEventDispatcherHelper(passThroughData, dispatcher, widgetSubType)
     : () => undefined
@@ -268,6 +275,11 @@ export function videoInitializer(
   widgetData: IWidgetsPlayerMediaData,
   mimeType: NsContent.EMimeTypes,
 ): { dispose: () => void } {
+  const player = videoJs(elem)
+  player.volume(0.8) // Set default volume to 80%
+  player.muted(false) // Ensure video is not muted
+
+  marker(widgetData, player)
   const eventDispatcher = enableTelemetry
     ? generateEventDispatcherHelper(passThroughData, dispatcher, widgetSubType)
     : () => undefined
@@ -439,4 +451,37 @@ export function youtubeInitializer(
     }
   }
   return { dispose }
+}
+function marker(widgetData: any, player: any) {
+  console.log("yes ere quiz")
+  if (widgetData.videoQuestions) {
+    console.log("yes", widgetData.videoQuestions)
+    let markers = convertData(widgetData.videoQuestions)
+    if (player.markers) {
+      console.log("markers", markers)
+      player.markers({
+        markerStyle: {
+          width: '8px',
+          'background-color': 'yellow',
+        },
+        markerTip: {
+          display: true,
+          text: function () {
+            return "Quiz"
+          }
+        },
+        markers: markers,
+      })
+    } else {
+      console.error('Markers plugin is not loaded.')
+    }
+  }
+}
+function convertData(data: any[]): { time: number, text: string }[] {
+  return data.map(item => {
+    return {
+      time: item.timestampInSeconds,
+      text: item.question[0].text
+    }
+  })
 }

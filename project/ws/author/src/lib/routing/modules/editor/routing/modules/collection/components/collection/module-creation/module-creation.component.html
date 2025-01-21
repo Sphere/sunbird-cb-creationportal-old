@@ -684,12 +684,12 @@
                       <input type="radio" name="isCorrect-{{i}}-{{j}}" [checked]="option.isCorrect"
                         (click)="setCorrectOption(i, j, k)" class="radio-button">
                       <input class="option-input" matInput type="text" [(ngModel)]="option.text"
-                        placeholder="Add Option" autocomplete="off" maxlength="80">
+                        placeholder="Add Option" autocomplete="off" maxlength="30">
                       <img loading="lazy" (click)="deleteOption(i, j, k)"
                         src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-icon"
                         class="option-delete-icon">
                     </div>
-                    <mat-hint class="mt-hint">{{ option.text.length }}/80</mat-hint>
+                    <mat-hint class="mt-hint">{{ option.text.length }}/30</mat-hint>
                   </div>
                   <div class="answer-info-container">
                     <input class="option-input option-answerinfo-input pl-0" matInput type="text"
@@ -1003,12 +1003,12 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Ass
                             (click)="setCorrectOption(i, j, k)" class="radio-button">
                           <input class="option-input" matInput type="text" [(ngModel)]="option.text"
                             [ngModelOptions]="{standalone: true}" placeholder="Add Option" autocomplete="off"
-                            maxlength="80">
+                            maxlength="30">
                           <img loading="lazy" (click)="deleteOption(i, j, k)"
                             src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-icon"
                             class="option-delete-icon">
                         </div>
-                        <mat-hint class="mt-hint">{{ option.text.length }}/80</mat-hint>
+                        <mat-hint class="mt-hint">{{ option.text.length }}/30</mat-hint>
                       </div>
                       <div class="answer-info-container">
                         <input class="option-input option-answerinfo-input pl-0" matInput type="text"

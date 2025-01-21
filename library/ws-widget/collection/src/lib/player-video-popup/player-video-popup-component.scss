@@ -65,8 +65,12 @@
   .rowView{
     .options-container {
   flex-direction: row;
+  justify-content: space-between;
 
   }
+  .option {
+  width: 40%;
+}
 }
 
 .option {
@@ -90,6 +94,7 @@ overflow: auto;
 }
 c
 .quiz-question {
+  margin-bottom: 5px;
   font-family: Roboto;
 font-size: 16px;
 font-weight: 400;
