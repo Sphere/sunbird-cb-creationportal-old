@@ -21,9 +21,9 @@
             <div *ngIf="resultMessage" class="result-message p-2" [ngClass]="{'correct-answer': resultMessage === 'Correct',
                                 'wrong-answer': resultMessage === 'Wrong'}">
                 <img title="correct-answer" alt="correct-answer" *ngIf="resultMessage === 'Correct'"
-                    src="/fusion-assets/icons/charm_tick.png" />
+                    src="/cbp-assets/icons/charm_tick.png" />
                 <img title="wrong-answer" alt="correct-answer" *ngIf="resultMessage === 'Wrong'"
-                    src="/fusion-assets/icons/wrong_red_icon.png" />
+                    src="/cbp-assets/icons/wrong_red_icon.png" />
                 <span [ngClass]="{'correct-answer': resultMessage === 'Correct',
                                 'wrong-answer': resultMessage === 'Wrong'}" class="result-text ml-2">{{ resultMessage
                     }}</span>
