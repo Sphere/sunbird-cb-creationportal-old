@@ -660,7 +660,7 @@
                   placeholder="mm" min="0" max="59" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
                 <div class="colon-block">:</div>
                 <input matInput class="numberInput" type="number" [(ngModel)]="question.timestamp.seconds"
-                  placeholder="ss" min="0" max="59" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
+                  placeholder="ss" min="1" max="59" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
               </div>
               <div class="mb-2" *ngFor="let subQuestion of question.question; let j = index">
                 <div class="question">
@@ -697,7 +697,8 @@
                     <mat-hint class="mt-hint">{{ option.answerInfo.length }}/80</mat-hint>
                   </div>
                 </div>
-                <button class="add-option-btn" (click)="addOption(i, j)" [disabled]="subQuestion.options.length >= 4">
+                <button *ngIf="subQuestion.options.length < 4" class="add-option-btn" (click)="addOption(i, j)"
+                  [disabled]="subQuestion.options.length >= 4">
                   <img class="delete-icon" loading="lazy" src="cbp-assets/icons/ant-design_plus-circle-outlined.svg"
                     alt="delete-icons" />
                   Add Option
@@ -977,7 +978,7 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Ass
                       (ngModelChange)="updateTimestampInSeconds(i)">
                     <div class="colon-block">:</div>
                     <input matInput class="numberInput" type="number" [(ngModel)]="question.timestamp.seconds"
-                      [ngModelOptions]="{standalone: true}" placeholder="ss" min="0" max="59" step="1"
+                      [ngModelOptions]="{standalone: true}" placeholder="ss" min="1" max="59" step="1"
                       (ngModelChange)="updateTimestampInSeconds(i)">
                   </div>
                   <div class="mb-2" *ngFor="let subQuestion of question.question; let j = index">
@@ -1017,7 +1018,7 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Ass
                         <mat-hint class="mt-hint">{{ option.answerInfo.length }}/80</mat-hint>
                       </div>
                     </div>
-                    <button class="add-option-btn" (click)="addOption(i, j)"
+                    <button *ngIf="subQuestion.options.length < 4" class="add-option-btn" (click)="addOption(i, j)"
                       [disabled]="subQuestion.options.length >= 4"><img class="delete-icon" loading="lazy"
                         src="cbp-assets/icons/ant-design_plus-circle-outlined.svg" alt="delete-iconsss" />Add
                       Option</button>

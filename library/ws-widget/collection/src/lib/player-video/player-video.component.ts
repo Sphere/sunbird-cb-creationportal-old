@@ -143,10 +143,11 @@ export class PlayerVideoComponent extends WidgetBaseComponent
 
     // Handle play event
     player.on(this.videojsEventNames.play, () => {
-      const intervalId = interval(1000).subscribe(() => {
+      const intervalId = interval(500).subscribe(() => {
         const currentTimeInSeconds = Math.round(player.currentTime())
         if (this.widgetData.videoQuestions && this.widgetData.videoQuestions.length > 0) {
           for (const milestone of this.widgetData.videoQuestions) {
+            console.log("currentTimeInSeconds", currentTimeInSeconds, milestone.timestampInSeconds)
             // Check if popup has already been triggered for this milestone
             if (
               currentTimeInSeconds === milestone.timestampInSeconds &&

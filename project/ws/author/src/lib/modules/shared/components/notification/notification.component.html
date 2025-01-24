@@ -310,3 +310,28 @@
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
   <span i18n>Removed file successfully, Upload new file </span>
 </p>
+
+<p *ngIf="type === notify.DURATION_CANT_BE_GREATER">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Question {{ otherData.index+1 }}: Question timestamp is greater than video resource duration </span>
+</p>
+<p *ngIf="type === notify.INVALID_QUESTION">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Question {{ otherData.index+1 }}: Question field cannot be empty </span>
+</p>
+<p *ngIf="type === notify.INVALID_OPTION">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Question {{ otherData.index+1 }}: Options field cannot be empty </span>
+</p>
+<p *ngIf="type === notify.INVALID_IS_CORRECT">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Question {{ otherData.index+1 }}: Atleast one option should be marked as correct </span>
+</p>
+<p *ngIf="type === notify.INVALID_MIN_OPTION">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Question {{ otherData.index+1 }}: Atleast 2 options are required </span>
+</p>
+<p *ngIf="type === notify.QUESTION_DURATION_CANT_BE_0">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Question {{ otherData.index+1 }}: Question timestamp cannot be 0 </span>
+</p>
