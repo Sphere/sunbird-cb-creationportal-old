@@ -2793,6 +2793,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     })
   }
   findInvalidEntriesIndices(data: any): any[] {
+    const seenTimestamps = new Set<number>()
     return data.map((item: any, index: number) => {
       const result: any = { index }
 
@@ -2805,7 +2806,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       } else {
         result.invalidTime = false
       }
-
+      // Check for duplicate timestamps
+      if (seenTimestamps.has(item.timestampInSeconds)) {
+        result.duplicateTimestamp = true
+      } else {
+        seenTimestamps.add(item.timestampInSeconds)
+      }
       // Check all questions
       const hasInvalidQuestion = item.question.some((q: { text: any; options: any[] }) => {
         // Check if question text is empty
@@ -2831,11 +2837,17 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           result.invalidIsCorrect = true
           return true
         }
+        const hasMissingAnswerInfo = q.options.some((opt: { answerInfo: any }) => {
+          return !opt.answerInfo
+        })
+        if (hasMissingAnswerInfo) {
+          result.invalidAnswerInfo = true
+          return true
+        }
 
         return false
       })
-
-      if (hasInvalidQuestion || result.invalidOption || result.invalidIsCorrect || result.invalidTime || result.invalidSec) {
+      if (hasInvalidQuestion || result.invalidOption || result.invalidIsCorrect || result.duplicateTimestamp || result.invalidAnswerInfo || result.invalidTime || result.invalidSec) {
         return result
       }
 
@@ -2850,6 +2862,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.DURATION_CANT_BE_GREATER,
+          data: invalid
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    }
+    if (invalid.duplicateTimestamp) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.DUPLICATE_TIMESTAMP,
           data: invalid
         },
         duration: NOTIFICATION_TIME * 1000,
@@ -2877,6 +2898,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_OPTION,
+          data: invalid
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    }
+    if (invalid.invalidAnswerInfo) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.INVALID_ANSWER_INFO,
           data: invalid
         },
         duration: NOTIFICATION_TIME * 1000,

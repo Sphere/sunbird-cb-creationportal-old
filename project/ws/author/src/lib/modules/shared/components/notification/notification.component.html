@@ -335,3 +335,11 @@
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
   <span i18n>Question {{ otherData.index+1 }}: Question timestamp cannot be 0 </span>
 </p>
+<p *ngIf="type === notify.INVALID_ANSWER_INFO">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Question {{ otherData.index+1 }}: Answer info field cannot be empty </span>
+</p>
+<p *ngIf="type === notify.DUPLICATE_TIMESTAMP">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Question {{ otherData.index+1 }}: Question timestamp should be unique </span>
+</p>
