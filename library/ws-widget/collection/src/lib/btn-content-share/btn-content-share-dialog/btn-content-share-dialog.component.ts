@@ -21,18 +21,28 @@ export class BtnContentShareDialogComponent implements OnInit {
   sendInProgress = false
   message = ''
   isSocialMediaShareEnabled = false
+  qrdata = ''
   sendStatus: 'INVALID_IDS_ALL' | 'SUCCESS' | 'INVALID_ID_SOME' | 'ANY' | 'NONE' = 'NONE'
-  qrdata = window.location.href
   constructor(
-    private events: EventService,
-    private snackBar: MatSnackBar,
+    public events: EventService,
+    public snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<BtnContentShareDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { content: NsContent.IContent },
-    private shareSvc: WidgetContentShareService,
-    private configSvc: ConfigurationsService,
+    public shareSvc: WidgetContentShareService,
+    public configSvc: ConfigurationsService,
   ) { }
 
   ngOnInit() {
+    let cUrl = window.location.href
+    let id = cUrl.split('/')[5]
+    let newUrl = `${document.baseURI}`
+    if (newUrl.includes('hi')) {
+      newUrl = newUrl.replace(/hi\//g, '')
+    }
+    let url = `https://sphere.aastrika.org/public/toc/overview?courseId=${id}`
+
+    this.qrdata = `${url}`
+
     this.shareSvc.fetchConfigFile().subscribe((data: ICommon) => {
       if (data && data.shareMessage) {
         this.message = data.shareMessage
@@ -45,8 +55,19 @@ export class BtnContentShareDialogComponent implements OnInit {
       this.isSocialMediaShareEnabled =
         !this.configSvc.restrictedFeatures.has('socialMediaFacebookShare') ||
         !this.configSvc.restrictedFeatures.has('socialMediaLinkedinShare') ||
-        !this.configSvc.restrictedFeatures.has('socialMediaTwitterShare')
+        !this.configSvc.restrictedFeatures.has('socialMediaTwitterShare') ||
+        !this.configSvc.restrictedFeatures.has('socialMediaWhatsappShare')
     }
+  }
+
+  saveAsImage(code: any) {
+    domToImage.toPng(code.qrcElement.nativeElement)
+      .then((dataUrl: string) => {
+        const link = document.createElement('a')
+        link.download = 'qrcode.png'
+        link.href = dataUrl
+        link.click()
+      })
   }
 
   updateUsers(users: NsAutoComplete.IUserAutoComplete[]) {
@@ -124,10 +145,11 @@ export class BtnContentShareDialogComponent implements OnInit {
 
   get detailUrl() {
     // let locationOrigin = environment.sitePath ? `https://${environment.sitePath}` : location.origin
-    let locationOrigin = location.origin
+    let locationOrigin = "https://sphere.aastrika.org"
     if (this.configSvc.activeLocale && this.configSvc.activeLocale.path) {
       locationOrigin += `/${this.configSvc.activeLocale.path}`
     }
+    locationOrigin = "https://sphere.aastrika.org"
     switch (this.data.content.contentType) {
       case NsContent.EContentTypes.CHANNEL:
         return `${locationOrigin}${this.data.content.artifactUrl}`
@@ -139,16 +161,6 @@ export class BtnContentShareDialogComponent implements OnInit {
       default:
         return `${locationOrigin}/app/toc/${this.data.content.identifier}/overview`
     }
-  }
-
-  saveAsImage(code: any) {
-    domToImage.toPng(code.qrcElement.nativeElement)
-      .then((dataUrl: string) => {
-        const link = document.createElement('a')
-        link.download = 'qrcode.png'
-        link.href = dataUrl
-        link.click()
-      })
   }
 
   raiseTelemetry() {

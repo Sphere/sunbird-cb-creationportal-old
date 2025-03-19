@@ -207,9 +207,9 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
       }
       if (typeof iframeSupport !== 'boolean') {
         console.log(this.htmlContent.isIframeSupported)
-        iframeSupport = this.htmlContent.isIframeSupported ? this.htmlContent.isIframeSupported : 'Yes'
+        iframeSupport = this.htmlContent.isIframeSupported ? this.htmlContent.isIframeSupported : 'No'
         this.iframeSupport = iframeSupport
-        if (iframeSupport === 'No') {
+        if (iframeSupport === 'Yes' && this.htmlContent.mimeType !== 'application/vnd.ekstep.html-archive') {
           this.showIframeSupportWarning = true
           setTimeout(
             () => {
@@ -490,11 +490,12 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
         iframe.onload(event)
       }
       iframe.onload = (data => {
+        console.log("data: " + data)
         if (data.target) {
           this.pageFetchStatus = 'done'
-          this.showIsLoadingMessage = false
         }
       })
+      this.showIsLoadingMessage = false
     }
   }
 }

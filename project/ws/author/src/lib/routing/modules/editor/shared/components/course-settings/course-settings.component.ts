@@ -44,7 +44,7 @@ import {
   switchMap,
   map,
 } from 'rxjs/operators'
-import { Router } from '@angular/router'
+import { NavigationEnd, Router } from '@angular/router'
 
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
 
@@ -129,9 +129,10 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     },
     {
       "name": 'Hindi',
-      "value": 'hn'
+      "value": 'hi'
     }
   ]
+  proficiency: any
   isAddCerticate: boolean = false;
   isEnableTitle: boolean = true
   mainCourseDuration: string = ''
@@ -160,6 +161,10 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   roles$!: Observable<any[]>
   userId!: any
   givenName!: any
+  getAllEntities: any
+  proficiencyList: any[] = [];
+  competencies_v1: any
+
   constructor(
     private formBuilder: FormBuilder,
     private uploadService: UploadService,
@@ -177,16 +182,25 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     private http: HttpClient,
     private router: Router,
     private storeService: CollectionStoreService,
-
   ) {
+
     if (this.configSvc.userProfile) {
       this.userId = this.configSvc.userProfile.userId
       this.givenName = this.configSvc.userProfile.givenName
 
     }
+    this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {
+      this.proficiencyList = await res.result.response
+      this.searchComp = this.proficiencyList
+      console.log("yes shree", this.proficiencyList)
+      if (this.isSelfAssessment)
+        this.initializeForm()
+
+    })
   }
 
   async ngAfterViewInit() {
+
     this.editorService.readcontentV3(this.contentService.parentUpdatedMeta().identifier).subscribe(async (data: any) => {
       this.courseData = await data
 
@@ -207,9 +221,20 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     }, 100)
   }
   rolesSubscription!: Subscription
+  searchComp: any = ''
 
   contentForm!: FormGroup
   ngOnInit() {
+
+    // this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {
+    //   this.proficiencyList = await res.result.response
+    //   this.proficiencyList = this.proficiencyList.map((item: any) => ({
+    //     competencyId: item.id,
+    //     competencyName: item.name,
+    //     code: item.additionalProperties.Code
+    //   }))
+    // })
+    this.searchComp = this.proficiencyList
     this.ordinals = this.authInitService.ordinals
     this.audienceList = this.ordinals.audience
     this.jobProfileList = this.ordinals.jobProfile
@@ -259,7 +284,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     this.editorsCtrl = new FormControl()
     this.creatorDetailsCtrl = new FormControl()
     this.keywordsCtrl = new FormControl('')
-
     this.audienceCtrl = new FormControl()
     this.rolesMappedCtrl = new FormControl()
     this.jobProfileCtrl = new FormControl()
@@ -423,6 +447,116 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     //   distinctUntilChanged(),
     //   switchMap(value => this.interestSvc.fetchAutocompleteInterestsV2(value)),
     // )
+  }
+
+  async eventSelection(event: any, comp: any) {
+    // this.contentForm.controls.name.setValue(event.name)
+    // this.contentForm.controls.description.setValue(event.description)
+    // this.competencies_v1 = event
+    let competencyDetail = comp.additionalProperties
+    if (comp.additionalProperties.competencyLevelDescription) {
+      let children: any = this.contentMeta.children
+      let competencyLevelDescription = JSON.parse(comp.additionalProperties.competencyLevelDescription)
+      const identifiers = children.map((val: any) => {
+        const matchedItem = {
+          "identifier": val.identifier,
+          "versionKey": val.versionKey
+        }
+        return matchedItem
+      })
+      const mergedArray = competencyLevelDescription.map((item: any, index: string | number) => {
+        return {
+          ...item,
+          identifier: identifiers[index].identifier,
+          versionKey: identifiers[index].versionKey
+        }
+      })
+      if (mergedArray.length > 0) {
+        this.loader.changeLoad.next(true)
+        for (const level of mergedArray) {
+          if (level) {
+            if (event == 'hi') {
+              level.name = level['lang-hi-name'] ? level['lang-hi-name'] : level.name
+              level.description = level['lang-hi-description'] ? level['lang-hi-description'] : level.description
+            }
+            const newData = {
+              name: 'Level ' + level.level + ' : ' + (level.name ? level.name : 'Resource'),
+              description: level.description ? level.description : '',
+              versionKey: level.versionKey
+            }
+            let requestBody = {
+              request: {
+                content: newData
+              },
+            }
+            await this.editorService.updateNewContentV3(requestBody, level.identifier).toPromise().catch((_error: any) => { })
+          }
+        }
+
+        let competencies_obj = [{
+          competencyName: comp.name,
+          competencyId: comp.id.toString(),
+        }]
+        let courseData = {
+          name: comp.name,
+          description: comp.description,
+          versionKey: this.contentMeta.identifier,
+          competencies_v1: competencies_obj,
+          lang: event
+        }
+        if (event == 'hi') {
+          this.courseData.name = competencyDetail['lang-hi-name'] ? competencyDetail['lang-hi-name'] : comp.name
+          this.courseData.description = competencyDetail['lang-hi-description'] ? competencyDetail['lang-hi-description'] : comp.description
+          let competencies_obj = [{
+            competencyName: competencyDetail['lang-hi-name'] ? competencyDetail['lang-hi-name'] : comp.name,
+            competencyId: comp.id.toString(),
+          }]
+          courseData = {
+            name: competencyDetail['lang-hi-name'] ? competencyDetail['lang-hi-name'] : comp.name,
+            description: competencyDetail['lang-hi-description'] ? competencyDetail['lang-hi-description'] : comp.description,
+            versionKey: this.contentMeta.identifier,
+            competencies_v1: competencies_obj,
+            lang: event
+          }
+        }
+
+
+        let requestBody = {
+          request: {
+            content: courseData
+          },
+        }
+        await this.editorService.updateNewContentV3(requestBody, this.contentMeta.identifier).toPromise().catch((_error: any) => { })
+        await this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
+          this.courseData = await data
+          this.router.navigate([`/author/editor/${this.contentMeta.identifier}/collection`])
+
+          this.router.events.subscribe(event => {
+            if (event instanceof NavigationEnd) {
+              window.location.reload()
+            }
+          })
+          this.loader.changeLoad.next(false)
+
+        })
+      }
+
+    }
+
+    // this.contentForm.controls.competencies_v1.setValue(competencies_obj)
+  }
+
+  onKey(value: string) {
+    this.proficiencyList = this.search(value)
+  }
+  search(value: string) {
+    let filter = value.toLowerCase()
+    if (!filter) {
+      return this.searchComp
+    }
+    return this.proficiencyList = this.searchComp.filter((option: any) =>
+      option.name.toLowerCase().includes(filter)
+    )
   }
   getFilterData(firstArray: any, secondArray: any) {
     const valuesNotInSecondArray = firstArray.filter((key: any) => {
@@ -636,8 +770,9 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             )
           }
         }
+
         this.contentForm.controls.sourceName.setValue(this.contentMeta.sourceName)
-        // this.contentForm.controls.langName.setValue(this.contentMeta.lang)
+
         this.contentForm.controls.trackContactsCtrl.setValue(this.contentMeta.trackContactsCtrl)
         this.contentForm.controls.publisherDetailsCtrl.setValue(this.contentMeta.publisherDetailsCtrl)
         this.contentForm.controls.gatingEnabled.setValue(this.contentMeta.gatingEnabled)
@@ -646,6 +781,13 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         this.contentForm.controls.courseVisibility.setValue(this.contentMeta.courseVisibility)
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification)
         this.contentForm.controls.cneName.setValue(this.contentMeta.cneName)
+        // hardcoded aastrika publisher id
+        const baseUrl = window.location.origin.trim()
+        const targetUrl = 'https://cbp-aastrika-stage.tarento.com'.trim()
+        const publisherId = baseUrl === targetUrl
+          ? '8eab395d-46f4-47ff-90af-9d51d5126fc3'
+          : 'b4509d72-87cc-4317-9012-d4b03e307fa5'
+        this.contentForm.controls.publisherDetails.setValue([{ id: publisherId, name: 'Publisher Aastrika' }])
 
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
@@ -657,10 +799,10 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       } catch (ex) { }
     })
     this.canUpdate = true
-
     // tslint:disable-next-line:no-console
-    console.log('saved', this.contentForm.controls, this.contentMeta)
+    console.log('saved', this.contentForm.controls, this.proficiencyList)
     this.storeData()
+
     if (this.isSubmitPressed) {
       this.contentForm.markAsDirty()
       this.contentForm.markAsTouched()
@@ -669,7 +811,50 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       this.contentForm.markAsUntouched()
     }
   }
+  isJsonString(str: any) {
+    try {
+      JSON.parse(str)
+      return true // It's valid JSON!
+    } catch (e) {
+      return false // Not valid JSON.
+    }
+  }
+  initializeForm() {
+    if (this.contentMeta.competencies_v1) {
+      try {
+        console.log("yes valid", this.contentMeta.competencies_v1)
+        let jsonVerify = this.isJsonString(this.contentMeta.competencies_v1)
+        if (jsonVerify) {
+          const parsedCompetencies = JSON.parse(this.contentMeta.competencies_v1)
+          console.log("parsedCompetencies", parsedCompetencies, this.proficiencyList)
+          if (Array.isArray(parsedCompetencies)) {
+            const selectedCompetency = this.proficiencyList.find(
+              (competency: { id: number }) => competency.id == parsedCompetencies[0].competencyId
+            )
+            console.log("yes here selected: ", selectedCompetency)
+            if (selectedCompetency) {
+              this.competencies_v1 = selectedCompetency
+            }
+          }
+        } else {
+          let comp = this.contentMeta.competencies_v1
+          console.log("comp", this.contentMeta.competencies_v1, this.proficiencyList)
+          if (comp) {
+            const selectedCompetency = this.proficiencyList.find(
+              (competency: { id: number }) => competency.id === comp.id
+            )
+            console.log("yes here selected: ", selectedCompetency)
+            if (selectedCompetency) {
+              this.competencies_v1 = selectedCompetency
+            }
+          }
+        }
 
+      } catch (e) {
+        console.error('Failed to parse competencies_v1', e)
+      }
+    }
+  }
   convertToISODate(date = ''): Date {
     try {
       return new Date(
@@ -815,6 +1000,9 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             if (!currentMeta.issueCertification) {
               currentMeta.issueCertification = parentData.issueCertification !== false ? parentData.issueCertification : currentMeta.issueCertification
             }
+            // if (!currentMeta.competencies_v1) {
+            //   currentMeta.competencies_v1 = parentData.competencies_v1 !== false ? parentData.competencies_v1 : currentMeta.competencies_v1
+            // }
             if (!currentMeta.previewLinkFormControl) {
               currentMeta.previewLinkFormControl = parentData.previewLinkFormControl !== '' ? parentData.previewLinkFormControl : currentMeta.previewLinkFormControl
             }
@@ -843,7 +1031,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         // tslint:disable-next-line:no-console
         console.log("currentMeta", currentMeta)
         Object.keys(currentMeta).map(v => {
-          if (
+          if ((this.isSelfAssessment ? true : v !== 'competencies_v1') &&
             v !== 'versionKey' && v !== 'visibility' &&
             JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !==
             JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta]) && v !== 'jobProfile'
@@ -872,6 +1060,9 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
             //   meta[v as keyof NSContent.IContentMeta] = 'Default'
             // }
           }
+          else if (v === 'competencies_v1') {
+            // meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
+          }
         })
 
         if (this.stage >= 1 && !this.type) {
@@ -887,8 +1078,12 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         //   // console.log("roles", rolesId)
         // }
 
-        // console.log('meta', meta, this.contentMeta.identifier)
+        console.log('meta', meta, this.contentMeta.identifier)
         this.contentService.setUpdatedMeta(meta, this.contentMeta.identifier)
+        // this.initializeForm()
+        if (this.isSelfAssessment) {
+          this.authInitService.isEditMetaPageAction('isSettingsPage')
+        }
 
       }
     } catch (ex) {
@@ -1754,6 +1949,10 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
       org: [],
       gatingEnabled: new FormControl(''),
       issueCertification: !this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
+      // competencies_v1: this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
+      competencies_v1: this.isSelfAssessment ? new FormControl('') : new FormControl(''),
+      lang: '',
+      // proficiency: new FormControl('', [Validators.required]),
       creatorDetails: [],
       // passPercentage: [],
       plagScan: [],
@@ -1829,7 +2028,13 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         )
       })
     }
-
+    const baseUrl = window.location.origin.trim()
+    const targetUrl = 'https://cbp-aastrika-stage.tarento.com'.trim()
+    const publisherId = baseUrl === targetUrl
+      ? '8eab395d-46f4-47ff-90af-9d51d5126fc3'
+      : 'b4509d72-87cc-4317-9012-d4b03e307fa5'
+    this.contentForm.controls.publisherDetails.setValue({ id: publisherId, name: 'Publisher Aastrika' })
+    console.log("publisher", this.contentForm.controls.publisherDetailsCtrl)
     //     this.contentForm.controls.publisherDetails.valueChanges.subscribe(() => {
     //   this.contentForm.controls.publisherDetails.setValue(
     //     this.contentForm.controls.publisherDetails.value || [],

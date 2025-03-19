@@ -119,7 +119,7 @@ export class CompetencyPopupComponent implements OnInit {
             arr1.push(competencyID)
             competencies_obj = {
               competencyName: proficiency.name,
-              competencyId: proficiency.id,
+              competencyId: proficiency.id.toString(),
               level: item.value
             }
             filteredComps.push(competencies_obj)
@@ -130,7 +130,7 @@ export class CompetencyPopupComponent implements OnInit {
           filteredComp = []
           competencies_obj = {
             competencyName: proficiency.name,
-            competencyId: proficiency.id,
+            competencyId: proficiency.id.toString(),
           }
           filteredComp.push(competencies_obj)
 
@@ -165,7 +165,7 @@ export class CompetencyPopupComponent implements OnInit {
             arr1.push(competencyID)
             competencies_obj = {
               competencyName: proficiency.name,
-              competencyId: proficiency.id,
+              competencyId: proficiency.id.toString(),
               level: item.value
             }
             filteredComps.push(competencies_obj)
@@ -188,7 +188,7 @@ export class CompetencyPopupComponent implements OnInit {
           // arr1.push(competencyID)
           competencies_obj = {
             competencyName: proficiency.name,
-            competencyId: proficiency.id,
+            competencyId: proficiency.id.toString(),
           }
           filteredComp.push(competencies_obj)
         }

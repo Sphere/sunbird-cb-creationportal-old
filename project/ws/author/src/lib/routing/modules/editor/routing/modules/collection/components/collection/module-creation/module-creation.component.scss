@@ -170,7 +170,7 @@ letter-spacing: -0.4px;
 
 .save-btn-bottom {
   color: white !important;
-  border-radius: 17px;
+  border-radius: 25px;
   font-size: 14px;
   font-family: Roboto !important;
   position: relative;
@@ -282,6 +282,7 @@ letter-spacing: -0.4px;
 }
 
 .module-input{
+font-family: Roboto;
   line-height: 5vh;
   line-height: 1.5rem;
   width: 35% !important;
@@ -293,7 +294,10 @@ letter-spacing: -0.4px;
     border: none;
     padding: 10px;
 }
-
+.video-js{
+  width: 400px;
+  height: 250px;
+}
 .max-width {
   max-width: 256px;
   max-height: 150px;
@@ -522,11 +526,13 @@ box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }
 .edit-close-uploadIcon{
+  cursor: pointer;
   position: relative;
   bottom: 9rem;
   left: 13.5rem;
 }
 .close-uploadIcon{
+    cursor: pointer;
   position: relative;
     bottom: 7.8rem;
     left: -2.5rem;
@@ -970,7 +976,7 @@ display: flex;
   .module-right-content{
     min-height: 482px;
     margin: 4px;
-    overflow: hidden;
+    overflow-y: scroll;
     height: 580px;
     border-radius: 12px;
     background: #FFF;
@@ -1119,6 +1125,7 @@ letter-spacing: -0.32px;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
+    padding-left: 45px;
 }
 
   .pdf-new-info {
@@ -1250,4 +1257,281 @@ letter-spacing: -0.36px;
   position: relative;
   top: -67px;
   right: -57px;
+}
+.video-quiz-text{
+  font-family: Roboto;
+font-size: 14px;
+font-weight: 400;
+line-height: 16.8px;
+letter-spacing: -0.02em;
+text-align: left;
+text-underline-position: from-font;
+text-decoration-skip-ink: none;
+color:  #000000 !important;
+}
+.video-quiz-text:disabled{
+    color:#808080 !important;
+}
+.add-video-question-btn{
+   width: 120px;
+    border: 1px solid #1C5D95;
+    height: 40px;
+  color:#1C5D95 !important;
+  background-color: #fff !important;
+      cursor: pointer;
+
+}
+.disabled-text {
+  color: grey !important;
+}
+.add-video-question-btn[disabled] {
+    color:#808080 !important;
+    background-color: #fff !important;
+  cursor: not-allowed !important;
+  border: 1px solid #808080 !important;
+}
+.align-items-center{
+  align-items: center;
+}
+.gap-50{
+  gap: 50px;
+}
+.re-upload-btn {
+    width: 120px;
+    border: 1px solid #1C5D95;
+    height: 40px;
+    color: #1C5D95 !important;
+    border-color: #1C5D95 !important;
+    background-color: #fff !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.quiz-form {
+  margin-top: 20px;
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.tab {
+  padding: 10px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  // margin-right: 5px;
+  //styleName: Body;
+font-family: Roboto;
+font-size: 16px;
+font-weight: 400;
+line-height: 24px;
+letter-spacing: -0.02em;
+text-align: center;
+text-underline-position: from-font;
+text-decoration-skip-ink: none;
+color: #808080;
+background-color: #EBEBEB;
+  width: Hug (92px)px;
+height: Fixed (34px)px;
+padding: 4px 0px 0px 0px;
+gap: 4px;
+border-radius: 8px 8px 0px 0px;
+display: flex;
+    align-items: center;
+    padding: 8px;
+}
+
+.active-tab {
+  background-color: #F3F8FD !important;
+  color: #000000 !important;
+  border-bottom: 1px solid #1C5D95 !important;
+
+}
+
+.question-form {
+  display: none;
+}
+
+.active-form {
+  display: block;
+}
+
+.timestamp, .question, .options {
+  margin-bottom: 10px;
+}
+
+.timestamp input, .question input, .options input {
+  margin-right: 10px;
+}
+
+.colon-block {
+  display: inline-block;
+  margin: 0 5px;
+}
+
+.timestamp-seconds {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.answer-info-input {
+  margin-left: 10px;
+  width: 200px;
+}
+
+.options-note{
+  font-family: Roboto;
+font-size: 14px;
+font-weight: 400;
+line-height: 16.8px;
+letter-spacing: -0.02em;
+text-align: left;
+color:#808080
+}
+
+
+.module-input {
+  width: 100%;
+  padding-right: 30px; /* Adjust padding to make space for the delete icon */
+}
+
+.answer-info-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.input-container {
+  display: flex;
+  margin-bottom: 5px;
+  flex-direction: column;
+  width: 50%;
+}
+
+.radio-input {
+  position: absolute;
+  left: 10px;
+  z-index: 1;
+}
+
+.option-input {
+  width: 100%;
+  padding-left: 30px; /* Adjust padding to make space for the radio button */
+  padding-right: 30px; /* Adjust padding to make space for the delete icon */
+  box-sizing: border-box; /* Ensure padding is included in the width */
+}
+
+.option-delete-icon {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.mt-hint {
+  align-self: flex-start; /* Align the hint to the left */
+  margin-top: 5px; /* Add some space above the hint */
+  font-size: 12px; /* Adjust the font size if needed */
+  color: #757575; /* Adjust the color if needed */
+}
+.flex {
+  display: flex;
+
+}
+.flex-direction-column {
+  flex-direction: column;
+}
+.option-input{
+  line-height: 5vh;
+  line-height: 1.5rem;
+  border-radius: 1vh;
+  background-color: white;
+  border-radius: 6px;
+  background: #FFF;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
+  border: none;
+  padding: 10px;
+}
+.option-container{
+  position: relative;
+}
+.add-option-btn{
+background-color: #FFF;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    //styleName: Body;
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    padding-left: 0px !important;
+    margin: 10px 0px;
+
+}
+.question-text{
+  font-family: Roboto;
+font-size: 16px;
+font-weight: 400;
+line-height: 18.75px;
+letter-spacing: -0.02em;
+text-align: left;
+text-underline-position: from-font;
+text-decoration-skip-ink: none;
+color: #000000;
+}
+.timestamp-text{
+  //styleName: Body;
+font-family: Roboto;
+font-size: 16px;
+font-weight: 400;
+line-height: 24px;
+letter-spacing: -0.02em;
+text-align: left;
+text-underline-position: from-font;
+text-decoration-skip-ink: none;
+color: #000000;
+}
+
+.option-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.option-answerinfo-input{
+  padding-left: 5px !important;
+}
+.option-input {
+  padding-left: 30px; /* Adjust padding to make space for the radio button */
+  padding-right: 30px; /* Adjust padding to make space for the delete icon */
+}
+
+.radio-button {
+  position: absolute;
+  left: 5px; /* Adjust position as needed */
+}
+
+.option-delete-icon {
+  position: absolute;
+  right: 5px; /* Adjust position as needed */
+  cursor: pointer;
+}
+.option-block{
+  display: flex;
+  gap: 20px;
+  margin-right: 20px;
+}
+
+.add-option-btn[disabled] {
+    color: #808080 !important;
+    background-color: #fff !important;
+    cursor: not-allowed !important;
 }

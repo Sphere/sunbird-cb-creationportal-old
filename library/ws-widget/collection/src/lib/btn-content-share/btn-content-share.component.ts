@@ -16,6 +16,8 @@ export class BtnContentShareComponent extends WidgetBaseComponent
   @Input() isDisabled = false
   @Input() showText = false
   @Input() forPreview = false
+  @Input() isTocBanner = false
+  @Input() isGray: boolean | undefined // or specify a default value
   showBtn = false
   isShareEnabled = false
 
@@ -24,6 +26,8 @@ export class BtnContentShareComponent extends WidgetBaseComponent
   }
 
   ngOnInit() {
+    console.log("isGray", this.isGray)
+
     if (this.configSvc.restrictedFeatures) {
       this.isShareEnabled = !this.configSvc.restrictedFeatures.has('share')
     }
@@ -32,13 +36,14 @@ export class BtnContentShareComponent extends WidgetBaseComponent
   }
 
   shareContent() {
-    if (!this.forPreview) {
+    if (!this.isGray)
+      // if (!this.forPreview) {
       this.dialog.open<BtnContentShareDialogComponent, { content: NsContent.IContent }>(
         BtnContentShareDialogComponent,
         {
           data: { content: this.widgetData },
         },
       )
-    }
+    // }
   }
 }

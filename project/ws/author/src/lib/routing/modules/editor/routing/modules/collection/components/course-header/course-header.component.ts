@@ -53,6 +53,9 @@ export class CourseHeaderComponent implements OnInit {
     } else {
       this.isEditMetaPage = false
     }
+    if (this.backToDashboard) {
+      this.isEditMetaPage = true
+    }
 
     this.activeSubscription = this.initService.isEditMetaPageClickedClickedMessage.subscribe((message) => {
       if (sessionStorage.getItem('isSettingsPageFromPreview') && !this.clickedNext) {
@@ -63,7 +66,13 @@ export class CourseHeaderComponent implements OnInit {
       } else {
         this.isEditMetaPage = true
       }
+      if (message === 'isSettingsPage') {
+        this.isEditMetaPage = false
+      }
+      if (message === 'backFromSettings') {
+        this.isEditMetaPage = true
 
+      }
     })
     if (sessionStorage.getItem('isSettingsPageFromPreview')) {
       sessionStorage.removeItem('isSettingsPageFromPreview')

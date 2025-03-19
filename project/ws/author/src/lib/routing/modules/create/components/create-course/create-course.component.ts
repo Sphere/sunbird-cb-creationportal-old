@@ -41,6 +41,7 @@ import {
 
 export class CreateCourseComponent implements OnInit {
   @Input() content: any
+  lang: string = 'en'; // Default to English
   currentContent!: string
   currentCourseId!: string
   language = ''
@@ -157,17 +158,34 @@ export class CreateCourseComponent implements OnInit {
     if (!filter) {
       return this.searchComp
     }
-    return this.proficiencyList = this.searchComp.filter((option: any) =>
-      option.name.toLowerCase().includes(filter)
-    )
+
+    return this.proficiencyList = this.searchComp.filter((option: any) => {
+      const nameMatches = option.name.toLowerCase().includes(filter)
+      const codeMatches = option.additionalProperties && option.additionalProperties.Code
+        ? option.additionalProperties.Code.toLowerCase().includes(filter)
+        : false
+
+      return nameMatches || codeMatches
+    })
   }
+
+
 
   createSelfAssessmentCourse() {
     this.loaderService.changeLoad.next(true)
     const competency = this.proficiencyList.find((obj: any) => obj.id === this.courseData.proficiency.id)
-    this.courseData.courseName = this.courseData.proficiency.name
-    this.courseData.courseDescription = this.courseData.proficiency.description
+    let competencyLevelDescription = competency.additionalProperties
+    let lang = this.courseData.lang
+    if (lang == 'hi') {
+      this.courseData.courseName = competencyLevelDescription['lang-hi-name'] ? competencyLevelDescription['lang-hi-name'] : this.courseData.proficiency.name
+      this.courseData.courseDescription = competencyLevelDescription['lang-hi-description'] ? competencyLevelDescription['lang-hi-description'] : this.courseData.proficiency.description
+      console.log("competency.additionalProperties", this.courseData)
+    } else {
+      this.courseData.courseName = this.courseData.proficiency.name
+      this.courseData.courseDescription = this.courseData.proficiency.description
+    }
 
+    console.log("complete", competency, this.courseData)
 
     if (this.content && competency && this.courseData.proficiency.name) {
       this.svc
@@ -196,10 +214,10 @@ export class CreateCourseComponent implements OnInit {
         }))
         .subscribe(
           async (data: any) => {
-            let competencies_obj = {
-              competencyName: this.courseData.proficiency.name,
-              competencyId: this.courseData.proficiency.id,
-            }
+            let competencies_obj = [{
+              competencyName: this.courseData.courseName,
+              competencyId: this.courseData.proficiency.id.toString(),
+            }]
             let link = "https://sunbirdcontent.s3-ap-south-1.amazonaws.com/content/do_1139718921061744641126/artifact/do_1139718921061744641126_1705553236239_justwhiteplainwhitewhitewallpaperpreview1705553235473.jpg"
 
             const updateContentReq: any = {
@@ -224,7 +242,10 @@ export class CreateCourseComponent implements OnInit {
                 },
                 duration: NOTIFICATION_TIME * 3000,
               })
-              let competencyLevelDescription = JSON.parse(competency.additionalProperties.competencyLevelDescription)
+              let competencyLevelDescription: any = []
+              if (competency.additionalProperties.competencyLevelDescription) {
+                competencyLevelDescription = JSON.parse(competency.additionalProperties.competencyLevelDescription)
+              }
               // console.log("competencyLevelDescription", competencyLevelDescription)
               this.editorStore.parentContent = this.identifier.identifier
               this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
@@ -253,6 +274,12 @@ export class CreateCourseComponent implements OnInit {
                   this.loaderService.changeLoad.next(true)
                   for (const level of competencyLevelDescription) {
                     if (level) {
+                      if (lang == 'hi') {
+                        level.name = level['lang-hi-name'] ? level['lang-hi-name'] : level.name
+                        level.description = level['lang-hi-description'] ? level['lang-hi-description'] : level.description
+                        console.log("level 1", level)
+                      }
+                      console.log("level", level)
                       this.courseData = await this.editorService.readcontentV3(this.editorStore.parentContent).toPromise()
                       this.editorStore.setOriginalMeta(data)
                       await this.setContentType('assessment', level, '')
@@ -376,7 +403,9 @@ export class CreateCourseComponent implements OnInit {
         )
     }
   }
-
+  langSelected(selectedLang: string) {
+    this.lang = selectedLang
+  }
   createForm() {
     this.createCourseForm = this.formBuilder.group({
       name: new FormControl('', []),
@@ -653,9 +682,10 @@ export class CreateCourseComponent implements OnInit {
       console.log("level", level)
       const newData = {
         topicDescription: level.description ? level.description : '',
-        topicName: '( Level ' + level.level + ') ' + level.name ? level.name : 'Resource',
+        topicName: 'Level ' + level.level + ' : ' + (level.name ? level.name : 'Resource'),
+        isAssessment: true
       }
-
+      console.log("level name", newData)
       if (type.type === 'collection') {
         this.storeService.parentData = this.courseData
       }

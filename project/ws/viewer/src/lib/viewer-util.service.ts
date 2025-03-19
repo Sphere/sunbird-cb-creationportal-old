@@ -84,5 +84,8 @@ export class ViewerUtilService {
       })
     return quizJSON
   }
+  getCompetencyAuthoringUrl(url: string): string {
+    return `apis/public/v8/mobileApp/v1/assessment/content${url}`
+  }
 
 }

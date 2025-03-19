@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter, Input } from '@angular/core'
+import { Component, ChangeDetectorRef, OnInit, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter, Input, ElementRef } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 // import { ConfigurationsService,  } from '@ws-widget/utils'
@@ -43,7 +43,7 @@ import {
   CONTENT_BASE_WEBHOST,
 } from '@ws/author/src/lib/constants/apiEndpoints'
 import { ProfanityService } from '../../../../upload/services/profanity.service'
-import { IQuizQuestionType } from '../../../../quiz/interface/quiz-interface'
+import { IQuizQuestionType, IVideoQuestionData } from '../../../../quiz/interface/quiz-interface'
 import { QUIZ_QUESTION_TYPE } from '../../../../quiz/constants/quiz-constants'
 import { FlatTreeControl } from '@angular/cdk/tree'
 import { QuizStoreService } from '../../../../quiz/services/store.service'
@@ -64,10 +64,12 @@ import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
   providers: [CollectionStoreService, CollectionResolverService, QuizResolverService],
 
 })
+
 export class ModuleCreationComponent implements OnInit, AfterViewInit {
   @ViewChild('guideline', { static: false }) guideline!: TemplateRef<HTMLElement>
   @ViewChild('errorFile', { static: false }) errorFile!: TemplateRef<HTMLElement>
   @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>
+  @ViewChild('videoPlayer', { static: false }) videoPlayer!: ElementRef<HTMLVideoElement>
   @Output() data = new EventEmitter<any>()
   @Output() sendSteps = new EventEmitter<any>();
   contents: NSContent.IContentMeta[] = []
@@ -77,7 +79,12 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   dragEle1: any
   dragEle2: any
   dragEle3: any
+  showQuizForm: boolean = false;
   currentIndex: any
+  activeTabIndex: number = 0;
+
+
+  videoQuestions: IVideoQuestionData[] = []; // Initialize videoQuestions as an empty array
   contentList: any[] = [
     {
       name: 'Link',
@@ -209,6 +216,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   entryPoint: any
   uploadText!: string
   uploadFileName: string = '';
+  uploadVideoUrl: string = '';
   uploadIcon!: string
   isSelfAssessment: boolean = false
   hideModule: boolean = false
@@ -253,6 +261,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   showChildrenMap: { [key: string]: boolean } = {};
 
   constructor(
+    private cdr: ChangeDetectorRef,
     public dialog: MatDialog,
     private contentService: EditorContentService,
     private activateRoute: ActivatedRoute,
@@ -358,6 +367,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     )
     // this.isSettingsPage = false
     this.routerValuesCalls()
+    this.showQuizForm = true
     if (sessionStorage.getItem('isReviewClicked') && this.clickedNext) {
       sessionStorage.removeItem('isReviewClicked')
       sessionStorage.setItem('isSettingsPageFromPreview', '1')
@@ -591,6 +601,81 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         return 'sendForReview'
     }
   }
+
+  addVideoQuestion(): void {
+    console.log('Add Video Question button clicked')
+
+    this.showQuizForm = true
+    this.videoQuestions.push({
+      timestamp: { hours: 0, minutes: 0, seconds: 0 },
+      timestampInSeconds: 0,
+      question: [ // Ensure 'question' is used here
+        {
+          text: '',
+          options: [{ text: '', optionId: this.generateOptionId(), isCorrect: false, answerInfo: '' }]
+        }
+      ]
+    })
+    this.activeTabIndex = this.videoQuestions.length - 1 // Set active tab to the newly added question
+    console.log('Video Questions:', this.videoQuestions) // Debugging step
+    this.cdr.detectChanges()
+
+  }
+  deleteQuestion(index: number) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {
+        type: 'deleteVideoQuestion',
+        index: index + 1,
+      },
+    })
+
+    dialogRef.afterClosed().subscribe(confirm => {
+      if (confirm) {
+        this.videoQuestions.splice(index, 1)
+        if (this.activeTabIndex >= this.videoQuestions.length) {
+          this.activeTabIndex = this.videoQuestions.length - 1
+        }
+      }
+    })
+  }
+  removeEmptyQuestions(): void {
+    this.videoQuestions = this.videoQuestions.filter(question => {
+      return question.question.some(subQuestion => {
+        const nonEmptyOptions = subQuestion.options.filter(option => option.text.trim() !== '')
+        return subQuestion.text.trim() !== '' && nonEmptyOptions.length >= 2
+      })
+    })
+  }
+  deleteOption(questionIndex: number, subQuestionIndex: number, optionIndex: number) {
+    console.log(`Deleting option at questionIndex: ${questionIndex}, subQuestionIndex: ${subQuestionIndex}, optionIndex: ${optionIndex}`)
+    this.videoQuestions[questionIndex].question[subQuestionIndex].options.splice(optionIndex, 1)
+    console.log(this.videoQuestions)
+  }
+  setCorrectOption(i: number, j: number, k: number): void {
+    this.videoQuestions[i].question[j].options.forEach((option, index) => {
+      option.isCorrect = (index === k)
+    })
+  }
+  updateTimestampInSeconds(index: number): void {
+    const { hours, minutes, seconds } = this.videoQuestions[index].timestamp
+    this.videoQuestions[index].timestampInSeconds = (hours * 3600) + (minutes * 60) + seconds
+  }
+  addOption(questionIndex: number, subQuestionIndex: number) {
+    this.videoQuestions[questionIndex].question[subQuestionIndex].options.push({ optionId: this.generateOptionId(), text: '', isCorrect: false, answerInfo: '' })
+  }
+
+  clearOption(questionIndex: number, subQuestionIndex: number, optionIndex: number) {
+    this.videoQuestions[questionIndex].question[subQuestionIndex].options[optionIndex].text = ''
+    this.videoQuestions[questionIndex].question[subQuestionIndex].options[optionIndex].answerInfo = ''
+  }
+  generateOptionId(): number {
+    return Math.floor(Math.random() * 1000000)
+  }
+  setActiveTab(index: number) {
+    this.activeTabIndex = index
+  }
+
   async saves(nextAction?: string) {
     if (this.resourseSelected !== '') {
       this.update()
@@ -738,6 +823,21 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         tempUpdateContent.versionKey = this.versionID === undefined ? this.versionKey.versionKey : this.versionID.versionKey
       }
 
+      if (this.isSelfAssessment) {
+        let competencyLevelDescription = tempUpdateContent.competencies_v1.additionalProperties
+        let lang = this.courseData.lang
+        if (lang == 'hi') {
+          tempUpdateContent.competencies_v1.name = competencyLevelDescription['lang-hi-name'] ? competencyLevelDescription['lang-hi-name'] : tempUpdateContent.competencies_v1.name
+        }
+        let competencies_obj = [{
+          competencyName: tempUpdateContent.competencies_v1.name,
+          competencyId: tempUpdateContent.competencies_v1.id.toString(),
+        }]
+        tempUpdateContent.competencies_v1 = competencies_obj
+      }
+
+      // this.uploadVideoUrl = tempUpdateContent.artifactUrl ? tempUpdateContent.artifactUrl : ''
+      console.log("tempUpdateContent", tempUpdateContent, this.uploadVideoUrl)
       requestBody = {
         request: {
           content: tempUpdateContent,
@@ -1718,9 +1818,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           })
           await this.sendEmailNotification('sendForPublish')
           this.dialog.open(SuccessDialogComponent, {
-            width: '450px',
+            width: '550px',
             height: '300x',
-            data: { 'message': 'Course Accepted and sent to Publisher', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+            data: { 'message': 'The course has been sent to the Aastrika publisher. Please contact the Aastrika team for course publication.', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
           })
           // this.router.navigate(['author', 'cbp'])
           // } else {
@@ -1805,7 +1905,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       if (data.children.length > 0) {
         this.loader.changeLoad.next(true)
         data.children.forEach((element: any) => {
-          if (element.duration) {
+          if (element.contentType !== 'CourseUnit' && element.duration) {
             this.resourceDurat.push(parseInt(element.duration))
           }
           if (element.children && element.children.length > 0) {
@@ -2035,75 +2135,94 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   }
   async deleteUploadedFile() {
-    this.contentService.removeListOfFilesAndUpdatedIPR(this.currentContent)
-    this.uploadFileName = ''
-    this.file = null
-    this.duration = '0'
-    this.mimeType = ''
-    let meta: any = {}
-    meta['versionKey'] = this.content.versionKey
-    meta['artifactUrl'] = null
-    meta['downloadUrl'] = null
-    if (this.content.mimeType === 'video/mp4' || this.content.mimeType === 'audio/mpeg') {
-      meta['duration'] = "0"
-    }
-    let requestBody = {
-      request: {
-        content: meta
-      }
-    }
-    this.editorStore.setUpdatedMeta(meta, this.currentContent)
-    this.loader.changeLoad.next(true)
-    await this.editorService.updateNewContentV3(requestBody, this.currentContent).subscribe(
-      async (info: any) => {
-        // tslint:disable-next-line:no-console
-        console.log('info', info, this.editorStore.parentContent)
-        if (info) {
-          await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
-            this.courseData = data
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: 'delete'
+    })
+    dialogRef.afterClosed().subscribe(async confirm => {
+      console.log("confirm", confirm)
+      if (confirm) {
+        this.contentService.removeListOfFilesAndUpdatedIPR(this.currentContent)
+        this.uploadFileName = ''
+        this.videoQuestions = []
+        this.uploadVideoUrl = ''
+        this.cdr.detectChanges()
+        if (this.videoPlayer) {
+          const videoElement = this.videoPlayer.nativeElement
+          videoElement.load()
+        }
+        this.file = null
+        this.duration = '0'
+        this.mimeType = ''
+        let meta: any = {}
+        meta['versionKey'] = this.content.versionKey
+        meta['artifactUrl'] = null
+        meta['downloadUrl'] = null
+        if (this.content.mimeType === 'video/mp4' || this.content.mimeType === 'audio/mpeg') {
+          meta['duration'] = "0"
+          meta['videoQuestions'] = []
+        }
+        let requestBody = {
+          request: {
+            content: meta
+          }
+        }
+        this.editorStore.setUpdatedMeta(meta, this.currentContent)
+        this.loader.changeLoad.next(true)
+        await this.editorService.updateNewContentV3(requestBody, this.currentContent).subscribe(
+          async (info: any) => {
             // tslint:disable-next-line:no-console
-            console.log("this.courseData", this.courseData)
+            console.log('info', info, this.editorStore.parentContent)
             if (info) {
-              const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+              await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+                this.courseData = data
+                // tslint:disable-next-line:no-console
+                console.log("this.courseData", this.courseData)
+                if (info) {
+                  const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
 
-              const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-                request: {
-                  data: {
-                    nodesModified: this.editorStore.getNodeModifyData(),
-                    hierarchy: hierarchyData,
-                  },
-                },
-              }
-              this.loaderService.changeLoad.next(true)
-              await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-                this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-                  this.courseData = data
-
-                  if (this.courseData && this.courseData.children.length >= 2) {
-                    this.showSettingsPage = true
-                  } else {
-                    this.showSettingsPage = false
-                  }
-                  this.getChildrenCount()
-
-                  this.loader.changeLoad.next(false)
-                  this.snackBar.openFromComponent(NotificationComponent, {
-                    data: {
-                      type: Notify.UPLOAD_FILE_REMOVED,
+                  const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+                    request: {
+                      data: {
+                        nodesModified: this.editorStore.getNodeModifyData(),
+                        hierarchy: hierarchyData,
+                      },
                     },
-                    duration: NOTIFICATION_TIME * 1000,
-                  })
-                  this.editorStore.resetOriginalMetaWithHierarchy(data)
-                  if (this.content.mimeType === 'video/mp4' || this.content.mimeType === 'audio/mpeg') {
-                    this.updateCouseDuration(data)
-                    this.setDuration(0)
                   }
-                })
+                  this.loaderService.changeLoad.next(true)
+                  await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+                    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                      this.courseData = data
+
+                      if (this.courseData && this.courseData.children.length >= 2) {
+                        this.showSettingsPage = true
+                      } else {
+                        this.showSettingsPage = false
+                      }
+                      this.getChildrenCount()
+
+                      this.loader.changeLoad.next(false)
+                      this.snackBar.openFromComponent(NotificationComponent, {
+                        data: {
+                          type: Notify.UPLOAD_FILE_REMOVED,
+                        },
+                        duration: NOTIFICATION_TIME * 1000,
+                      })
+                      this.editorStore.resetOriginalMetaWithHierarchy(data)
+                      if (this.content.mimeType === 'video/mp4' || this.content.mimeType === 'audio/mpeg') {
+                        this.updateCouseDuration(data)
+                        this.setDuration(0)
+                      }
+                    })
+                  })
+                }
               })
             }
           })
-        }
-      })
+
+      }
+    })
+
   }
 
   updateCouseDuration(data: any) {
@@ -2184,6 +2303,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.setContentType(type, 'audio')
     } else if (name == 'Video') {
+      this.videoQuestions = []
+      this.uploadVideoUrl = ''
+      this.cdr.detectChanges() // Ensure template updates before manipulating the DOM
+      if (this.videoPlayer) {
+        const videoElement = this.videoPlayer.nativeElement
+        videoElement.load()
+      }
       this.uploadText = 'mp4, m4v'
       this.isLinkEnabled = false
       this.isShowDownloadBtnEnabled = true
@@ -2313,12 +2439,19 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   async editContent(content: any) {
     this.currentCourseId = content.identifier
+    console.log("content", content)
+    console.log("this.currentCourseId", this.currentCourseId)
+    this.loaderService.changeLoad.next(true)
     if (content.contentType !== 'CourseUnit') {
+      this.loaderService.changeLoad.next(true)
       await this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
         this.updatedVersionKey = resData.versionKey
         content = resData
+        this.moduleName = resData.name
+        this.loaderService.changeLoad.next(false)
       })
     }
+
 
     this.editItem = content.identifier
     this.currentContent = content.identifier
@@ -2347,6 +2480,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.isGating = content.gatingEnabled
     this.duration = content.duration
     this.isPdfOrAudioOrVedioEnabled = false
+    this.uploadVideoUrl = ''
+
+    this.videoQuestions = []
     if (content.mimeType == 'text/x-url') {
       this.isLinkEnabled = true
       this.isShowDownloadBtnEnabled = false
@@ -2381,9 +2517,18 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'video/mp4') {
+      this.activeTabIndex = 0
       // tslint:disable-next-line:no-console
       console.log("this.uploadFile", content.artifactUrl)
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('/').pop() : ''
+      this.uploadVideoUrl = content.artifactUrl ? content.artifactUrl : ''
+      this.cdr.detectChanges() // Ensure template updates before manipulating the DOM
+      if (this.videoPlayer) {
+        this.activeTabIndex = 0
+        const videoElement = this.videoPlayer.nativeElement
+        videoElement.load()
+      }
+      this.videoQuestions = content.videoQuestions ? JSON.parse(content.videoQuestions) : []
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
       this.isShowDownloadBtnEnabled = true
       this.uploadText = 'mp4, m4v'
@@ -2437,10 +2582,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         // this.getassessment()
       }
     }
+    if (content.contentType === 'CourseUnit') {
+      this.loaderService.changeLoad.next(false)
+    }
   }
   editAssessmentRes(content?: any) {
-    console.log("content", content, this.moduleName)
-    if (content.name !== this.moduleName && this.moduleName) {
+    console.log("content module", content, this.moduleName, this.isSelfAssessment)
+    if (content.name !== this.moduleName && this.moduleName && !this.isSelfAssessment) {
       this.loaderService.changeLoadState(true)
       const requestBody: any = {
         name: this.moduleName,
@@ -2644,99 +2792,254 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
     })
   }
+  findInvalidEntriesIndices(data: any): any[] {
+    const seenTimestamps = new Set<number>()
+    return data.map((item: any, index: number) => {
+      const result: any = { index }
+
+      // Check if timestampInSeconds is greater than timeToSeconds
+      console.log("this.timeToSeconds", item.timestampInSeconds, this.timeToSeconds())
+      if (item.timestampInSeconds > this.timeToSeconds()) {
+        result.invalidTime = true
+      } else if (item.timestampInSeconds === 0) {
+        result.invalidSec = true
+      } else {
+        result.invalidTime = false
+      }
+      // Check for duplicate timestamps
+      if (seenTimestamps.has(item.timestampInSeconds)) {
+        result.duplicateTimestamp = true
+      } else {
+        seenTimestamps.add(item.timestampInSeconds)
+      }
+      // Check all questions
+      const hasInvalidQuestion = item.question.some((q: { text: any; options: any[] }) => {
+        // Check if question text is empty
+        if (!q.text) {
+          result.invalidQuestion = true
+          return true
+        }
+
+        // Check if options array is empty or contains invalid options (empty text)
+        // Check if options array contains fewer than 2 options or has empty option text
+        const hasEmptyOptionText = q.options.some((opt: { text: any }) => !opt.text)
+        if (!q.options || hasEmptyOptionText) {
+          result.invalidOption = true
+          return true
+        }
+        if (q.options.length < 2) {
+          result.invalidMinOption = true
+          return true
+        }
+        // Ensure at least one option is correct
+        const isCorrectInvalid = !q.options.some((opt: { isCorrect: any }) => opt.isCorrect)
+        if (isCorrectInvalid) {
+          result.invalidIsCorrect = true
+          return true
+        }
+        const hasMissingAnswerInfo = q.options.some((opt: { answerInfo: any }) => {
+          return !opt.answerInfo
+        })
+        if (hasMissingAnswerInfo) {
+          result.invalidAnswerInfo = true
+          return true
+        }
+
+        return false
+      })
+      if (hasInvalidQuestion || result.invalidOption || result.invalidIsCorrect || result.duplicateTimestamp || result.invalidAnswerInfo || result.invalidTime || result.invalidSec) {
+        return result
+      }
+
+      return null
+    }).filter((entry: any) => entry !== null)[0] // Return the first object with issues
+  }
+
+
+
+  notifyInvalid(invalid: any) {
+    if (invalid.invalidTime) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.DURATION_CANT_BE_GREATER,
+          data: invalid
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    }
+    if (invalid.duplicateTimestamp) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.DUPLICATE_TIMESTAMP,
+          data: invalid
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    }
+    if (invalid.invalidSec) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.QUESTION_DURATION_CANT_BE_0,
+          data: invalid
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    }
+    if (invalid.invalidQuestion) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.INVALID_QUESTION,
+          data: invalid
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    }
+    if (invalid.invalidOption) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.INVALID_OPTION,
+          data: invalid
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    }
+    if (invalid.invalidAnswerInfo) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.INVALID_ANSWER_INFO,
+          data: invalid
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    }
+    if (invalid.invalidMinOption) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.INVALID_MIN_OPTION,
+          data: invalid
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    }
+    if (invalid.invalidIsCorrect) {
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.INVALID_IS_CORRECT,
+          data: invalid
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    }
+  }
+
 
   async saveDetails(name: string, topicDescription: string, thumbnail: string, isNewTab: any, isShowBtn: any, content: string) {
     let meta: any = {}
     let requestBody: any
-    // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
-    //   console.log(resData)
-    // })
-    let iframeSupported, showDownloadBtn
-    // if (topicDescription != '') {
-    if (this.timeToSeconds() == 0 && content !== 'application/json' && this.content.contentType === 'Resource') {
-      this.snackBar.openFromComponent(NotificationComponent, {
-        data: {
-          type: Notify.DURATION_CANT_BE_0,
-        },
-        duration: NOTIFICATION_TIME * 1000,
-      })
+    let invalid: any = this.findInvalidEntriesIndices(this.videoQuestions)
+
+    console.log("this.videoQuestions", invalid, this.videoQuestions)
+    if (invalid) {
+      this.notifyInvalid(invalid)
     } else {
-      if (isNewTab)
-        iframeSupported = 'Yes'
-      else
-        iframeSupported = 'No'
-      if (isShowBtn)
-        showDownloadBtn = 'Yes'
-      else
-        showDownloadBtn = 'No'
-      if (this.acceptType === '.zip') {
-        iframeSupported = 'Yes'
-      }
-      meta["appIcon"] = thumbnail
-      meta["thumbnail"] = thumbnail
-      meta["versionKey"] = this.updatedVersionKey
-      meta["instructions"] = topicDescription
-      meta["description"] = topicDescription
-      meta["name"] = name ? name.trim() : name
-      meta["duration"] = this.timeToSeconds().toString()
-      // meta["gatingEnabled"] = isGating
-      meta["isIframeSupported"] = iframeSupported
-      meta["showDownloadBtn"] = showDownloadBtn
-
-
-      var res = this.editResourceLinks.match(/^(?:https?:\/\/)(?:www\.)(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/)
-      // var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
-      if (res !== null && this.content.mimeType === 'text/x-url') {
-        meta["artifactUrl"] = this.editResourceLinks
-      }
-      if (res == null && this.content.mimeType === 'text/x-url') {
+      this.activeTabIndex = 0
+      // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
+      //   console.log(resData)
+      // })
+      let iframeSupported, showDownloadBtn
+      // if (topicDescription != '') {
+      if (this.timeToSeconds() == 0 && content !== 'application/json' && this.content.contentType === 'Resource') {
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
-            type: Notify.LINK_IS_INVALID,
+            type: Notify.DURATION_CANT_BE_0,
           },
           duration: NOTIFICATION_TIME * 1000,
         })
       } else {
-        if (name.trim() === '') {
+        if (isNewTab)
+          iframeSupported = 'Yes'
+        else
+          iframeSupported = 'No'
+        if (isShowBtn)
+          showDownloadBtn = 'Yes'
+        else
+          showDownloadBtn = 'No'
+        if (this.acceptType === '.zip') {
+          iframeSupported = 'Yes'
+        }
+        meta["appIcon"] = thumbnail
+        meta["thumbnail"] = thumbnail
+        meta["versionKey"] = this.updatedVersionKey
+        meta["instructions"] = topicDescription
+        meta["description"] = topicDescription
+        meta["name"] = name ? name.trim() : name
+        meta["duration"] = this.timeToSeconds().toString()
+        // meta["gatingEnabled"] = isGating
+        meta["isIframeSupported"] = iframeSupported
+        meta["showDownloadBtn"] = showDownloadBtn
+
+
+        var res = this.editResourceLinks.match(/^(?:https?:\/\/)(?:www\.)(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/)
+        // var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+        if (res !== null && this.content.mimeType === 'text/x-url') {
+          meta["artifactUrl"] = this.editResourceLinks
+        }
+        if (res == null && this.content.mimeType === 'text/x-url') {
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
-              type: (this.content.contentType === 'Resource' ? Notify.INVALID_RESOURCE_NAME : Notify.INVALID_MODULE_NAME),
+              type: Notify.LINK_IS_INVALID,
             },
             duration: NOTIFICATION_TIME * 1000,
           })
         } else {
-          this.editorStore.currentContentData = meta
-          this.editorStore.currentContentID = this.content.identifier
-          requestBody = {
-            request: {
-              content: meta
-            }
-          }
-
-          this.contentService.setUpdatedMeta(meta, this.content.identifier)
-          if (this.content.contentType === 'Resource') {
-            this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
-              async (info: any) => {
-                // tslint:disable-next-line:no-console
-                console.log('info', info)
-                if (info) {
-                  let result = await this.update()
-                  // tslint:disable-next-line:no-console
-                  console.log(result)
-                  this.clearForm()
-                  this.editItem = ''
-                }
-              })
+          if (name.trim() === '') {
+            this.snackBar.openFromComponent(NotificationComponent, {
+              data: {
+                type: (this.content.contentType === 'Resource' ? Notify.INVALID_RESOURCE_NAME : Notify.INVALID_MODULE_NAME),
+              },
+              duration: NOTIFICATION_TIME * 1000,
+            })
           } else {
-            let result = await this.update()
-            // tslint:disable-next-line:no-console
-            console.log(result)
-            this.clearForm()
-            this.editItem = ''
+            this.editorStore.currentContentData = meta
+            this.editorStore.currentContentID = this.content.identifier
+            requestBody = {
+              request: {
+                content: meta
+              }
+            }
+
+            this.contentService.setUpdatedMeta(meta, this.content.identifier)
+            if (this.content.contentType === 'Resource') {
+              if (this.content.mimeType === 'video/mp4') {
+                // this.removeEmptyQuestions()
+                meta.videoQuestions = this.videoQuestions
+              }
+              console.log("this.questions", this.videoQuestions)
+              this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
+                async (info: any) => {
+                  // tslint:disable-next-line:no-console
+                  console.log('info', info)
+                  if (info) {
+                    let result = await this.update()
+                    // tslint:disable-next-line:no-console
+                    console.log(result)
+                    this.clearForm()
+                    this.editItem = ''
+                  }
+                })
+            } else {
+              let result = await this.update()
+              // tslint:disable-next-line:no-console
+              console.log(result)
+              this.clearForm()
+              this.editItem = ''
+            }
           }
         }
       }
+
     }
+
   }
 
   generateUrl(oldUrl: any) {
@@ -3651,6 +3954,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           dialogRef.afterClosed().subscribe(result => {
             if (result) {
               this.uploadFileName = fileName
+              // this.uploadVideoUrl = fileName
               this.assignFileValues(file, fileName)
               this.triggerUpload()
             }
@@ -3827,72 +4131,84 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   async resourcePdfSave() {
-    if (this.resourcePdfForm.status == 'INVALID' || this.uploadFileName == '') {
-      this.snackBar.openFromComponent(NotificationComponent, {
-        data: {
-          type: Notify.REQUIRED_FIELD,
-        },
-        duration: NOTIFICATION_TIME * 1000,
-      })
+    console.log("this.resource", this.resourcePdfForm, this.videoQuestions)
+    let invalid: any = this.findInvalidEntriesIndices(this.videoQuestions)
+
+    console.log("this.videoQuestions", invalid, this.videoQuestions)
+    if (invalid) {
+      this.notifyInvalid(invalid)
     } else {
-      if (this.resourcePdfForm.value.duration == 0) {
+      if (this.resourcePdfForm.status == 'INVALID' || this.uploadFileName == '') {
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
-            type: Notify.DURATION_CANT_BE_0,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-      } else if (this.resourcePdfForm.value.name.trim() === '') {
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.INVALID_RESOURCE_NAME,
+            type: Notify.REQUIRED_FIELD,
           },
           duration: NOTIFICATION_TIME * 1000,
         })
       } else {
-        this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
-        let iframeSupported, showDownloadBtn
-        if (this.resourcePdfForm.value.isIframeSupported)
-          iframeSupported = 'Yes'
-        else
-          iframeSupported = 'No'
-        if (this.resourcePdfForm.value.showDownloadBtn)
-          showDownloadBtn = 'Yes'
-        else
-          showDownloadBtn = 'No'
+        if (this.resourcePdfForm.value.duration == 0) {
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: Notify.DURATION_CANT_BE_0,
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+        } else if (this.resourcePdfForm.value.name.trim() === '') {
+          this.snackBar.openFromComponent(NotificationComponent, {
+            data: {
+              type: Notify.INVALID_RESOURCE_NAME,
+            },
+            duration: NOTIFICATION_TIME * 1000,
+          })
+        } else {
+          this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
+          let iframeSupported, showDownloadBtn
+          if (this.resourcePdfForm.value.isIframeSupported)
+            iframeSupported = 'Yes'
+          else
+            iframeSupported = 'No'
+          if (this.resourcePdfForm.value.showDownloadBtn)
+            showDownloadBtn = 'Yes'
+          else
+            showDownloadBtn = 'No'
 
-        if (this.acceptType === '.zip') {
-          iframeSupported = 'Yes'
-        }
+          if (this.acceptType === '.zip') {
+            iframeSupported = 'Yes'
+          }
 
-        //this.triggerUpload()
-        this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
-        this.duration = this.resourcePdfForm.value.duration
-        // this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
-        const rBody: any = {
-          name: this.resourcePdfForm.value.name,
-          instructions: this.resourcePdfForm.value.instructions,
-          description: this.resourcePdfForm.value.instructions,
-          appIcon: this.resourcePdfForm.value.appIcon,
-          thumbnail: this.resourcePdfForm.value.thumbnail,
-          isIframeSupported: iframeSupported,
-          showDownloadBtn,
-          gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
-          duration: this.resourcePdfForm.value.duration,
-          versionKey: this.updatedVersionKey,
+          //this.triggerUpload()
+          this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
+          this.duration = this.resourcePdfForm.value.duration
+          // this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
+          // this.removeEmptyQuestions()
+
+          const rBody: any = {
+            name: this.resourcePdfForm.value.name,
+            instructions: this.resourcePdfForm.value.instructions,
+            description: this.resourcePdfForm.value.instructions,
+            appIcon: this.resourcePdfForm.value.appIcon,
+            thumbnail: this.resourcePdfForm.value.thumbnail,
+            isIframeSupported: iframeSupported,
+            showDownloadBtn,
+            gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
+            duration: this.resourcePdfForm.value.duration,
+            versionKey: this.updatedVersionKey,
+            videoQuestions: this.videoQuestions ? this.videoQuestions : []
+          }
+          await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+          await this.update()
+          await this.save()
+          // this.loaderService.changeLoad.next(false)
+          this.clearForm()
+          this.editItem = ''
         }
-        await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
-        await this.update()
-        await this.save()
-        // this.loaderService.changeLoad.next(false)
-        this.clearForm()
-        this.editItem = ''
       }
     }
   }
 
   clearForm() {
     this.showAddModuleForm = false
+    this.activeTabIndex = 0
     this.resourcePdfForm.setValue({
       name: '',
       instructions: '',
@@ -4331,6 +4647,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             this.fileUploadForm.controls.artifactUrl.setValue(v ? artifactUrl : '')
             this.fileUploadForm.controls.downloadUrl.setValue(v ? artifactUrl : '')
           }
+          if (this.mimeType === 'video/mp4') {
+            this.uploadVideoUrl = artifactUrl
+            this.cdr.detectChanges() // Ensure template updates before manipulating the DOM
+            if (this.videoPlayer) {
+              const videoElement = this.videoPlayer.nativeElement
+              videoElement.load()
+            }
+          }
+
           this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
           if (this.mimeType === 'application/vnd.ekstep.html-archive' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
             this.fileUploadForm.controls.isExternal.setValue(false)
@@ -4376,6 +4701,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             this.courseData = data
           })
           this.loaderService.changeLoad.next(false)
+          console.log("uploadVideoUrl", this.uploadVideoUrl)
         },
         () => {
           this.loaderService.changeLoad.next(false)

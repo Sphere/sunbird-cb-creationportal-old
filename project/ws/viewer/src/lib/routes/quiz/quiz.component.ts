@@ -149,8 +149,10 @@ export class QuizComponent implements OnInit, OnDestroy {
     const quizObj = {
       artifactUrl,
     }
-
-    let quizJSON = await this.viewSvc.getQuizJson(quizObj)
+    let quizJSON
+    if (artifactUrl) {
+      quizJSON = await this.viewSvc.getQuizJson(quizObj)
+    }
 
     // let qq = await this.http
     //   .post<any>(`apis/protected/v8/assessment/get`, quizObj)
@@ -162,13 +164,14 @@ export class QuizComponent implements OnInit, OnDestroy {
     if (this.forPreview && quizJSON) {
       quizJSON = this.viewSvc.replaceToAuthUrl(quizJSON)
     }
-    quizJSON.questions.forEach((question: NSQuiz.IQuestion) => {
-      if (question.multiSelection && question.questionType === undefined) {
-        question.questionType = 'mcq-mca'
-      } else if (!question.multiSelection && question.questionType === undefined) {
-        question.questionType = 'mcq-sca'
-      }
-    })
+    if (quizJSON)
+      quizJSON.questions.forEach((question: NSQuiz.IQuestion) => {
+        if (question.multiSelection && question.questionType === undefined) {
+          question.questionType = 'mcq-mca'
+        } else if (!question.multiSelection && question.questionType === undefined) {
+          question.questionType = 'mcq-sca'
+        }
+      })
     return quizJSON
 
   }
@@ -186,7 +189,7 @@ export class QuizComponent implements OnInit, OnDestroy {
   generateUrl(oldUrl: any) {
     // @ts-ignore: Unreachable code error
     let bucket = window["env"]["azureBucket"]
-    if (oldUrl.includes(bucket)) {
+    if (oldUrl && oldUrl.includes(bucket)) {
       return oldUrl
     }
     // const chunk = oldUrl.split('/')
