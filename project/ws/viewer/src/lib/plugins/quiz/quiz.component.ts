@@ -16,6 +16,8 @@ import { SubmitQuizDialogComponent } from './components/submit-quiz-dialog/submi
 import { OnConnectionBindInfo } from 'jsplumb'
 import { QuizService } from './quiz.service'
 import { EventService } from '../../../../../../../library/ws-widget/utils/src/public-api'
+import { HttpClient } from '@angular/common/http'
+import { ActivatedRoute } from '@angular/router'
 export type FetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
 
 @Component({
@@ -73,16 +75,31 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   telemetrySubscription: Subscription | null = null
   timeLeft = 0
   timerSubscription: Subscription | null = null
+  getAssessment: Subscription | null = null
   viewState: NSQuiz.TQuizViewMode = 'initial'
   paramSubscription: Subscription | null = null
   constructor(
     private events: EventService,
     public dialog: MatDialog,
     private quizSvc: QuizService,
+    private http: HttpClient,
+    private activatedRoute: ActivatedRoute
   ) { }
 
-  ngOnInit() { }
-
+  async ngOnInit() {
+  }
+  private async transformQuiz(artifactUrl: any): Promise<any> {
+    if (artifactUrl) {
+      let quizJSON: NSQuiz.IQuiz = await this.http
+        .get<any>(this.artifactUrl || '')
+        .toPromise()
+        .catch((_err: any) => {
+          // throw new DataResponseError('MANIFEST_FETCH_FAILED');
+        })
+      console.log("yes here", artifactUrl, quizJSON)
+      return quizJSON
+    }
+  }
   scroll(qIndex: number) {
     if (!this.sidenavOpenDefault) {
       if (this.sideNav) {
@@ -95,6 +112,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   ngOnChanges(changes: SimpleChanges) {
+    this.getAssessment = this.activatedRoute.data.subscribe(
+      async data => {
+        console.log("quiz subscribe", data)
+        this.quizJson = await this.transformQuiz(data.content.data.artifactUrl)
+        this.timeLeft = this.quizJson.timeLimit
+      })
     for (const change in changes) {
       if (change === 'quiz') {
         if (
@@ -110,6 +133,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy() {
     if (this.timerSubscription) {
       this.timerSubscription.unsubscribe()
+    }
+    if (this.getAssessment) {
+      this.getAssessment.unsubscribe()
     }
     if (this.telemetrySubscription) {
       this.telemetrySubscription.unsubscribe()
@@ -132,8 +158,10 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     this.markedQuestions = new Set([])
     this.questionAnswerHash = {}
     this.currentQuestionIndex = 0
-    this.timeLeft = this.quizJson.timeLimit
-    if (this.quizJson.timeLimit > -1) {
+    console.log("this.quizJson", this.quizJson)
+    if (this.quizJson)
+      this.timeLeft = this.quizJson.timeLimit
+    if (this.quizJson && this.quizJson.timeLimit !== undefined && this.quizJson.timeLimit > -1) {
       this.timerSubscription = interval(100)
         .pipe(
           map(

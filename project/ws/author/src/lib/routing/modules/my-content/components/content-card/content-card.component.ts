@@ -36,7 +36,7 @@ export class ContentCardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
+    this.data.appIcon = this.data.appIcon || 'cbp-assets/icons/default.png'
     if (this.accessService.hasRole(['content_reviewer']) || this.accessService.hasRole(['content_publisher'])) {
       this.isReviewerOrPublisher = true
     } else {
@@ -230,6 +230,6 @@ export class ContentCardComponent implements OnInit {
   }
 
   changeToDefaultImg($event: any) {
-    $event.target.src = this.accessService.defaultLogo
+    $event.target.src = this.accessService.defaultLogo || 'cbp-assets/icons/default.png'
   }
 }

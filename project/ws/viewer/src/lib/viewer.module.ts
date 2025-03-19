@@ -27,6 +27,7 @@ import {
   PipeLimitToModule,
   DefaultThumbnailModule,
   PipePartialContentModule,
+  PipeAssessmentDurationTransformModule
 } from '@ws-widget/utils'
 
 import {
@@ -52,6 +53,7 @@ import { ViewerTopBarModule } from './components/viewer-top-bar/viewer-top-bar.m
 import { ReviewDialogComponent } from './components/review-checklist/review-dialog.component'
 import { MatDialogModule } from '@angular/material/dialog'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { AppTocModule } from '@ws/app'
 
 @NgModule({
   declarations: [ViewerComponent, ViewerTocComponent, ReviewDialogComponent],
@@ -73,6 +75,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
     ViewerRoutingModule,
     ErrorResolverModule,
     PipeDurationTransformModule,
+    PipeAssessmentDurationTransformModule,
     PipeLimitToModule,
     DefaultThumbnailModule,
     BtnPageBackModule,
@@ -95,7 +98,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
     MatDialogModule,
     MatProgressBarModule,
     MatRadioModule,
-    MatTableModule
+    MatTableModule,
+    AppTocModule
   ],
   entryComponents: [
     ReviewDialogComponent

@@ -55,6 +55,7 @@
             [itemSelectedList]="questionAnswerHash[(question?.questionId)]"
             (itemSelected)="fillSelectedItems(question, $event)">
           </viewer-question>
+          <span *ngIf="!quizJson">Add Question to view here</span>
         </ng-container>
         <mat-card class="margin-bottom-m margin-top-m" *ngIf="viewState === 'review' || viewState === 'answer'">
           <div class="margin-m" *ngIf="fetchingResultsStatus === 'fetching'">
@@ -106,7 +107,7 @@
           </ng-container>
         </mat-card>
         <div class="text-center">
-          <button class="margin-right-m" mat-raised-button color="primary"
+          <!-- <button class="margin-right-m" mat-raised-button color="primary"
             *ngIf="!(viewState === 'answer' && quizJson?.isAssessment)" (click)="proceedToSubmit()"
             i18n="button quiz submit">
             Submit
@@ -114,7 +115,7 @@
           <button mat-raised-button color="primary" *ngIf="viewState === 'review'" (click)="showAnswers()"
             i18n="button quiz show answers">
             Show Answers
-          </button>
+          </button> -->
         </div>
       </div>
       <div id="quiz-end"></div>

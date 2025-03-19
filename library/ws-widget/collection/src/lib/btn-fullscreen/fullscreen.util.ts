@@ -57,11 +57,20 @@ export function requestExitFullScreen() {
   }
 }
 
+// export function hasFullScreenSupport(elem: HTMLElement) {
+//   return (
+//     Boolean(elem.requestFullscreen) ||
+//     Boolean(elem.mozRequestFullScreen) ||
+//     Boolean(elem.webkitRequestFullscreen) ||
+//     Boolean(elem.msRequestFullscreen)
+//   )
+// }
 export function hasFullScreenSupport(elem: HTMLElement) {
-  return (
-    Boolean(elem.requestFullscreen) ||
-    Boolean(elem.mozRequestFullScreen) ||
-    Boolean(elem.webkitRequestFullscreen) ||
-    Boolean(elem.msRequestFullscreen)
+  return !!(
+    elem.requestFullscreen ||
+    elem.mozRequestFullScreen ||
+    elem.webkitRequestFullscreen ||
+    elem.msRequestFullscreen
   )
 }
+

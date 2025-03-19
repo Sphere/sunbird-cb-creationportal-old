@@ -53,6 +53,7 @@ import {
   DefaultThumbnailModule,
   PipeNameTransformModule,
   PipeCountTransformModule,
+  PipeAssessmentDurationTransformModule
 } from '@ws-widget/utils'
 import {
   BtnCallModule,
@@ -101,6 +102,10 @@ import { AppTocSinglePageComponent } from './components/app-toc-single-page/app-
 import { AppTocSinglePageComponent as AppTocSinglePageRootComponent } from './routes/app-toc-single-page/app-toc-single-page.component'
 import { AppTocSinglePageDirective } from './routes/app-toc-single-page/app-toc-single-page.directive'
 import { LicenseComponent } from './components/license/license.component'
+import { AssessmentDetailComponent } from './components/assessment-detail/assessment-detail.component'
+import { AppLearnerBannerComponent } from './components/app-learner-banner/app-learner-banner.component'
+import { AppTocDesktopModalComponent } from './components/app-toc-desktop-modal/app-toc-desktop-modal.component'
+import { AppTocCertificateModalComponent } from './components/app-toc-certificate-modal/app-toc-certificate-modal.component'
 @NgModule({
   declarations: [
     AppTocAnalyticsComponent,
@@ -108,6 +113,7 @@ import { LicenseComponent } from './components/license/license.component'
     AppTocHomeComponent,
     AppTocOverviewComponent,
     AppTocBannerComponent,
+    AppLearnerBannerComponent,
     AppTocCohortsComponent,
     AppTocContentCardComponent,
     AppTocDiscussionComponent,
@@ -125,7 +131,10 @@ import { LicenseComponent } from './components/license/license.component'
     AppTocSinglePageDirective,
     LicenseComponent,
     TimeDifferencePipe,
-    MomentDatePipe
+    MomentDatePipe,
+    AssessmentDetailComponent,
+    AppTocDesktopModalComponent,
+    AppTocCertificateModalComponent,
   ],
   imports: [
     CommonModule,
@@ -155,6 +164,7 @@ import { LicenseComponent } from './components/license/license.component'
     DisplayContentTypeModule,
     DisplayContentTypeIconModule,
     PipeDurationTransformModule,
+    PipeAssessmentDurationTransformModule,
     PipeSafeSanitizerModule,
     PipeLimitToModule,
     PipeNameTransformModule,
@@ -201,13 +211,15 @@ import { LicenseComponent } from './components/license/license.component'
     ApiService,
     AccessControlService,
   ],
-  exports: [AppTocDiscussionComponent],
+  exports: [AppTocDiscussionComponent, AssessmentDetailComponent],
   entryComponents: [
     AppTocDialogIntroVideoComponent,
     AppTocOverviewComponent,
     AppTocHomeComponent,
     AppTocSinglePageComponent,
     AppTocSinglePageRootComponent,
+    AppTocDesktopModalComponent,
+    AppTocCertificateModalComponent,
   ],
 })
 export class AppTocModule { }

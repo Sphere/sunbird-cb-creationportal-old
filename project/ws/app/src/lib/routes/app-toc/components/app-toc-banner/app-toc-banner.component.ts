@@ -442,6 +442,9 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   gotoHistory() {
     this.tocSvc.changeMessage('history')
   }
+  goToPreview() {
+    this.tocSvc.changeMessage('preview')
+  }
   gotoComments() {
     this.tocSvc.changeMessage('comments')
   }

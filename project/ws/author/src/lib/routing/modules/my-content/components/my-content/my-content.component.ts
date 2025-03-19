@@ -544,6 +544,10 @@ export class MyContentComponent implements OnInit, OnDestroy {
     if (this.allowPublish && status == 'Draft') {
       status = 'Courses to publish'
     }
+    if (this.allowReview && status == 'selfAssessmentDraft') {
+      status = 'Self Sent for review'
+    }
+
     if ((this.allowPublish) && (status == 'selfAssessmentDraft' || status == 'Self Courses to publish')) {
       status = 'Self Courses to publish'
     }
@@ -1533,6 +1537,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       requestData.request.filters['reviewStatus'] = 'InReview'
     } else if (this.status == 'selfToPublishedCourse' || this.status == 'selfPublishedCourse') {
       requestData.request.filters['competency'] = true
+    } else if (this.status == 'published') {
+      requestData.request.filters['competency'] = false
     } else if (this.status == 'selfRetiredCourse' || this.status == 'selfCourseRevision') {
       requestData.request.filters['competency'] = true
 
@@ -1621,6 +1627,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         if (this.accessService.hasRole(['content_publisher'])) {
           requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
         }
+        requestData.request.filters['competency'] = false
         break
       case 'inreview':
         requestData.request.filters['reviewStatus'] = 'InReview'
@@ -1629,8 +1636,10 @@ export class MyContentComponent implements OnInit, OnDestroy {
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         } else
           if (this.accessService.hasRole(['content_reviewer'])) {
+            requestData.request.filters['competency'] = false
             requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
           } else if (this.accessService.hasRole(['content_publisher'])) {
+            requestData.request.filters['competency'] = false
             requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
           }
         break
@@ -1669,16 +1678,18 @@ export class MyContentComponent implements OnInit, OnDestroy {
           requestData.request.filters['competency'] = false
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         } else if (this.accessService.hasRole(['content_reviewer'])) {
+          requestData.request.filters['competency'] = false
           requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
         } else if (this.accessService.hasRole(['content_publisher'])) {
+          requestData.request.filters['competency'] = false
           requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
         }
         break
       case 'selfRetiredCourse':
         if (this.accessService.hasRole(['content_creator'])) {
-          requestData.request.filters['competency'] = true
           requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
         }
+        requestData.request.filters['competency'] = true
         break
       case 'selfToPublishedCourse':
         requestData.request.filters['reviewStatus'] = 'Reviewed'

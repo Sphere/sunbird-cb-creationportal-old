@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewChecked, HostListener, ElementRef, ViewChild } from '@angular/core'
+import { Component, OnDestroy, OnInit, AfterViewChecked, HostListener, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core'
 import { ActivatedRoute, Data } from '@angular/router'
 import { NsContent, WidgetContentService, ContentProgressService } from '@ws-widget/collection'
 import { NsWidgetResolver } from '@ws-widget/resolver'
@@ -48,6 +48,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       type: 'mat-button',
     },
   }
+  optmisticPercentage: number = 0
   // Define roles array
   roles: string[] = ['reviewer', 'publisher', 'creator'];
   // Filter comments for each role
@@ -74,7 +75,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
   commentsList: any
   @ViewChild('stickyMenu', { static: true }) menuElement!: ElementRef
   @HostListener('window:scroll', ['$event'])
-  isLoading = false
+  isLoading: boolean = false
   isReviewer: boolean = false
   isPublisher: boolean = false
   isCreator: boolean = false
@@ -97,6 +98,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     private authAccessControlSvc: AccessControlService,
     private location: Location,
     private progressSvc: ContentProgressService,
+    private cdr: ChangeDetectorRef
   ) {
     // Initialize filteredComments for each role as an empty array
     this.roles.forEach(role => {
@@ -114,6 +116,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       this.roles = ['creator', 'reviewer']
     }
     this.tocSvc.currentMessage.subscribe(async (data: any) => {
+      console.log("yes here", data)
       if (data === 'comments') {
         this.isLoading = true
         this.changeText = 'comments'
@@ -128,7 +131,10 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
             this.isLoading = false
           })
         }
-      } else {
+      } else if (data === 'preview') {
+        this.changeText = 'preview'
+        this.cdr.detectChanges()
+      } else if (data === 'history') {
         this.isLoading = true
         this.changeText = 'history'
         if (this.content) {
@@ -137,7 +143,10 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
             this.isLoading = false
           })
         }
+      } else if (data === 'backFromPreview') {
+        this.changeText = 'backFromPreview'
       }
+      this.isLoading = false
     })
   }
 
@@ -158,19 +167,19 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     if (this.route) {
       this.routeSubscription = this.route.data.subscribe((data: Data) => {
         // CHecking for JSON DATA
-        if (this.checkJson(data.content.data.creatorContacts)) {
+        if (this.checkJson(data.content.data && data.content.data.creatorContacts)) {
           data.content.data.creatorContacts = JSON.parse(data.content.data.creatorContacts)
         }
 
-        if (this.checkJson(data.content.data.creatorDetails)) {
+        if (this.checkJson(data.content.data && data.content.data.creatorDetails)) {
           data.content.data.creatorDetails = JSON.parse(data.content.data.creatorDetails)
         }
 
-        if (this.checkJson(data.content.data.reviewer)) {
+        if (this.checkJson(data.content.data && data.content.data.reviewer)) {
           data.content.data.reviewer = JSON.parse(data.content.data.reviewer)
         }
 
-        if (this.checkJson(data.content.data.publisherDetails)) {
+        if (this.checkJson(data.content.data && data.content.data.publisherDetails)) {
           data.content.data.publisherDetails = JSON.parse(data.content.data.publisherDetails)
         }
 

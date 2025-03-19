@@ -231,6 +231,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           } else if (this.showAddchapter) {
             if (this.viewMode === 'meta' && this.clickedNext) {
               if (this.isSelfAssessment) {
+                this.router.navigateByUrl('/author/home')
+              }
+              if (this.isSelfAssessment) {
                 this.receiveSteps('AssessmentBuilder')
               } else {
                 this.receiveSteps('CourseDetails')
@@ -295,12 +298,22 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.showAddchapter = true
           this.viewMode = ''
           this.clickedNext = true
-          this.steps = [
-            { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
-            { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
-            { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
-            { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
-          ]
+          if (this.isSelfAssessment) {
+            this.header = "Self Assessment Details"
+            this.steps = [
+              { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+              { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
+              { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+            ]
+          } else {
+            this.steps = [
+              { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+              { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+              { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
+              { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+            ]
+          }
+
           setTimeout(() => {
             this.isLoading = false
           }, 500)
@@ -1696,9 +1709,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           })
           // await this.sendEmailNotification('sendForPublish')
           this.dialog.open(SuccessDialogComponent, {
-            width: '450px',
+            width: '550px',
             height: '300x',
-            data: { 'message': 'Course Accepted and sent to Publisher', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+            data: { 'message': 'The course has been sent to the Aastrika publisher. Please contact the Aastrika team for course publication.', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
           })
           // this.router.navigate(['author', 'cbp'])
           // } else {

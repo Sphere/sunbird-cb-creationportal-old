@@ -50,7 +50,8 @@
         <div class="select-block">
           <mat-form-field appearance="fill" class="margin-top-xs field-edit-width">
             <mat-label>Language </mat-label>
-            <mat-select class="input-field" formControlName="lang" i18n-placeholder placeholder="Course Language">
+            <mat-select (selectionChange)="langSelected($event.value)" class="input-field" formControlName="lang"
+              i18n-placeholder placeholder="Course Language">
               <mat-option *ngFor="let lang of languageList" [value]="lang.value">
                 {{ lang.name }}</mat-option>
             </mat-select>
@@ -64,16 +65,22 @@
               formControlName="proficiency" [(ngModel)]="proficiency" placeholder="Select Competency"
               (selectionChange)="eventSelection($event.value)">
               <input placeholder="Search Competency" matInput class="module-input" (keyup)="onKey($event.target.value)">
-              <mat-option *ngFor="let list of proficiencyList" [value]="list">
-                {{ list.additionalProperties?list.additionalProperties.Code:''}} - {{list.name }}</mat-option>
+              <ng-container *ngFor="let list of proficiencyList">
+                <mat-option *ngIf="lang === 'hi'&&list.additionalProperties['lang-hi-name']" [value]="list">
+                  <ng-container>
+                    {{ list.additionalProperties.Code }} - {{ list.additionalProperties['lang-hi-name'] }}
+                  </ng-container>
+                </mat-option>
+                <mat-option *ngIf="lang !== 'hi'" [value]="list">
+                  <ng-container>
+                    {{ list.additionalProperties.Code}} - {{ list.name }}
+                  </ng-container>
+                </mat-option>
+              </ng-container>
+
             </mat-select>
             <mat-error i18n>This field is mandatory </mat-error>
           </mat-form-field>
-          <!-- <div>
-            <mat-hint class="mt-hint">Competency for the self assessment will be visible here once you start adding
-              them.
-              Note: only one competency can be selected</mat-hint>
-          </div> -->
         </div>
       </div>
 

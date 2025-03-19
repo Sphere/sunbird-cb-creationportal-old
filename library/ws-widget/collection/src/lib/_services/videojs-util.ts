@@ -1,8 +1,4 @@
 import videoJs from 'video.js'
-import 'videojs-youtube'
-import 'videojs-contrib-quality-levels'
-import 'videojs-hls-quality-selector'
-import 'videojs-vr'
 
 import { Subscription, interval, fromEvent } from 'rxjs'
 import { WsEvents } from '@ws-widget/utils'
@@ -188,6 +184,13 @@ export function videoJsInitializer(
   mimeType: NsContent.EMimeTypes,
 ): { player: videoJs.Player; dispose: () => void } {
   const player = videoJs(elem, config)
+  player.volume(0.8) // Set default volume to 80%
+  player.muted(false) // Ensure video is not muted
+
+  marker(widgetData, player)
+
+
+
   const eventDispatcher = enableTelemetry
     ? generateEventDispatcherHelper(passThroughData, dispatcher, widgetSubType)
     : () => undefined
@@ -201,9 +204,9 @@ export function videoJsInitializer(
       try {
         if (resumePoint) {
           const start = Number(resumePoint)
-          if (start > 10 && player.duration() - start > 20) {
-            player.currentTime(start - 10)
-          }
+          // if (start > 10 && player.duration() - start > 20) {
+          player.currentTime(start)
+
         }
       } catch (err) { }
     })
@@ -224,16 +227,14 @@ export function videoJsInitializer(
         loaded = true
       }
       currentTimeInterval = interval(500).subscribe(_ => {
-        if (player.currentTime() >= player.duration() * 5 / 100 && player.currentTime() < player.duration() * 95 / 100
-          && !readyToRaise) {
-          readyToRaise = true
-        }
-        if (player.currentTime() >= player.duration() * 95 / 100 && readyToRaise) {
+        const currPercentage = (player.currentTime() / player.duration()) * 100
+        const roundedPercentage = Math.round(currPercentage / 5) * 5
+        if (roundedPercentage !== currTime) {
+          currTime = roundedPercentage
           fireRealTimeProgress(mimeType, widgetData, fireRProgress, player.currentTime(), player.duration())
-          readyToRaise = false
         }
-        currTime = player.currentTime()
       })
+
 
     })
     player.on(videojsEventNames.pause, () => {
@@ -274,6 +275,11 @@ export function videoInitializer(
   widgetData: IWidgetsPlayerMediaData,
   mimeType: NsContent.EMimeTypes,
 ): { dispose: () => void } {
+  const player = videoJs(elem)
+  player.volume(0.8) // Set default volume to 80%
+  player.muted(false) // Ensure video is not muted
+
+  marker(widgetData, player)
   const eventDispatcher = enableTelemetry
     ? generateEventDispatcherHelper(passThroughData, dispatcher, widgetSubType)
     : () => undefined
@@ -445,4 +451,37 @@ export function youtubeInitializer(
     }
   }
   return { dispose }
+}
+function marker(widgetData: any, player: any) {
+  console.log("yes ere quiz")
+  if (widgetData.videoQuestions) {
+    console.log("yes", widgetData.videoQuestions)
+    let markers = convertData(widgetData.videoQuestions)
+    if (player.markers) {
+      console.log("markers", markers)
+      player.markers({
+        markerStyle: {
+          width: '8px',
+          'background-color': 'yellow',
+        },
+        markerTip: {
+          display: true,
+          text: function () {
+            return "Quiz"
+          }
+        },
+        markers: markers,
+      })
+    } else {
+      console.error('Markers plugin is not loaded.')
+    }
+  }
+}
+function convertData(data: any[]): { time: number, text: string }[] {
+  return data.map(item => {
+    return {
+      time: item.timestampInSeconds,
+      text: item.question[0].text
+    }
+  })
 }

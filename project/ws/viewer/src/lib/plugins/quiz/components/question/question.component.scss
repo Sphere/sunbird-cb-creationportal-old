@@ -1,5 +1,15 @@
 @import 'ws-vars';
 
+.correct-answer{
+  background-color: #357a38 !important;
+  color: #ffff;
+  padding: 8px;
+    border-radius: 20px;
+}
+.fitb-answer{
+  display: flex;
+  gap: 5px;
+}
 .app-class .mat-list-option {
   padding-top: $size-m;
   padding-bottom: $size-m;
@@ -65,3 +75,37 @@
 .background-well {
   background: #eee;
 }
+
+/* Change the text color to #1C5D95 when the option is correct */
+.blue-text {
+  color: #1C5D95 !important;
+}
+
+
+
+
+.correct-answer {
+  background-color: #e0ffe0; /* Example: Green background for correct answers */
+}
+
+.incorrect-answer {
+  background-color: #000000; /* Example: Red background for incorrect answers */
+}
+
+
+/* Override the default style for the inner circle with higher specificity */
+::ng-deep .theme-igot.day-mode .mat-radio-button.checked-radio .mat-radio-inner-circle {
+  background-color: #1C5D95 !important;
+}
+
+/* Override the outer circle as well to ensure proper styling */
+::ng-deep .theme-igot.day-mode .mat-radio-button.checked-radio .mat-radio-outer-circle {
+  border-color: #1C5D95 !important;
+}
+
+/* Adjust the ripple color */
+::ng-deep .theme-igot.day-mode .mat-radio-button.checked-radio .mat-radio-ripple .mat-ripple-element {
+  background-color: rgba(28, 93, 149, 0.1) !important;
+}
+
+

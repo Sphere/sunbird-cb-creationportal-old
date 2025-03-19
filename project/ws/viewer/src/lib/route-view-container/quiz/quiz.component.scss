@@ -1,6 +1,8 @@
 @import 'ws-vars';
 @import 'ws-mixins';
-
+.mat-card{
+  box-shadow: none !important;
+}
 .video-player-summary-container {
   height: auto;
   display: flex;

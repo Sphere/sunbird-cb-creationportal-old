@@ -39,7 +39,7 @@
   <ul [hidden]="tocMode !== 'TREE'" class="toc-tree">
     <mat-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
-        <li class="mat-tree-node leaf-node">
+        <li class="mat-tree-node leaf-node ml-3">
           <ng-container *ngTemplateOutlet="TocContentList; context: { $implicit: node }"></ng-container>
           <!-- <ng-container
             *ngTemplateOutlet="TocContentCard; context: { $implicit: node }"
@@ -52,7 +52,7 @@
           <div [ngClass]="{ 'mat-toolbar': pathSet.has(node.identifier) }" class="module-border">
             <!-- <ws-widget-display-content-type-icon class="flex" [displayContentType]="node?.type">
             </ws-widget-display-content-type-icon> -->
-            <div>
+            <div class="mt-1 mb-2">
               <span role="button" [ngClass]="{ 'content-active': pathSet.has(node.identifier) }" matRipple
                 matTreeNodeToggle class="margin-left-xs moduleName">
                 <div>
@@ -157,59 +157,67 @@
         queryParamsHandling="preserve">
         <h3 *ngIf="content?.type !== enumContentTypes.ASSESSMENT" class="margin-remove text-truncate flex">
           {{ content?.title }}
-          <img *ngIf="isGetingEnabled" class="lock-style" src="cbp-assets/images/lock.png">
         </h3>
         <h1 *ngIf="content?.type === enumContentTypes.ASSESSMENT" class="margin-remove text-truncate flex">
           {{ content?.title }}
-          <img *ngIf="isGetingEnabled" class="lock-style" src="cbp-assets/images/lock.png">
         </h1>
       </a>
-      <div [ngSwitch]="content.mimeType">
-        <div *ngSwitchCase="'application/pdf'">
-          <img src="cbp-assets/images/pdf-icon.png">
-          <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform:
-            'hms'
-            }}</span>
-          <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
-        </div>
-        <div *ngSwitchCase="'audio/mpeg'">
-          <img style="width: 14px; height: 17px;background-color: black;" src="cbp-assets/images/audio-img.svg">
-          <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform:
-            'hms'
-            }}</span>
-          <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
-        </div>
-        <div *ngSwitchCase="'video/mp4'">
-          <img style="width: 14px; height: 17px;" src="cbp-assets/images/vedio-img.svg">
-          <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform:
-            'hms'
-            }}</span>
-          <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
-        </div>
-        <div *ngSwitchCase="'application/vnd.ekstep.html-archive'">
-          <img style="width: 14px; height: 17px;background-color: black;" src="cbp-assets/images/SCROM-img.svg">
-          <span style="margin-left: 10px; margin-right: 10px;" *ngIf="content?.duration > 0">{{ content?.duration |
-            pipeDurationTransform:
-            'hms'
-            }}</span>
-          <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
-          <button style="float: right;
-    margin-right: 10px;
-    height: 30px;
-    border-radius: 20px;" mat-raised-button color="primary" (click)="showAlert()">
-            Debug
-          </button>
+      <div *ngIf="content?.mimeType !== 'Assessment' " class="flex">
+        <div [ngSwitch]="content.mimeType">
+          <div class="flex items-center" *ngSwitchCase="'application/pdf'">
+            <img src="cbp-assets/icons/pdf-icon.png">
+            <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform:
+              'hms'
+              }}</span>
+            <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
+          </div>
+          <div class="flex items-center" *ngSwitchCase="'audio/mpeg'">
+            <img src="cbp-assets/icons/video-icon.png">
+            <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform:
+              'hms'
+              }}</span>
+            <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
+          </div>
+          <div class="flex items-center" *ngSwitchCase="'video/mp4'">
+            <img src="cbp-assets/icons/video-icon.png">
+            <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform:
+              'hms'
+              }}</span>
+            <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
+          </div>
+          <div class="flex items-center" *ngSwitchCase="'application/vnd.ekstep.html-archive'">
+            <img src="cbp-assets/icons/video-icon.png">
+            <span style="margin-left: 10px; margin-right: 10px;" *ngIf="content?.duration > 0">{{ content?.duration |
+              pipeDurationTransform:
+              'hms'
+              }}</span>
+            <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
+            <button
+              title="Enable Debug Mode to track SCORM progress and completion data sent to the LMS. When activated, a popup window will appear at the top of the screen during SCORM playback, displaying real-time status updates on data transmission. This will help you to take decisions in making SCORM compatible to the LMS."
+              class="debug-btn" mat-raised-button color="primary" (click)="showAlert()">
+              Debug
+            </button>
 
+          </div>
+          <div class="flex items-center" *ngSwitchCase="'text/x-url'">
+            <img style="width: 14px; height: 17px;" src="cbp-assets/icons/link-icon.png">
+            <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform:
+              'hms'
+              }}</span>
+            <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
+          </div>
         </div>
-        <div *ngSwitchCase="'text/x-url'">
-          <img style="width: 14px; height: 17px;" src="cbp-assets/images/link-icon.png">
-          <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform:
-            'hms'
-            }}</span>
-          <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
+        <div *ngIf="isGetingEnabled &&content?.mimeType !== 'application/json'" class="align-rt progrss-box">
+          <!-- <img [src]="redTickIcon" class="image" name="redtick-icon" /> -->
+          <ng-container>
+            <img src="cbp-assets/icons/lock.png">
+          </ng-container>
         </div>
       </div>
+      <div class="d-flex align-items-center" *ngIf="content?.mimeType === 'application/json' ">
+        <ws-app-assessment-detail [content]="content"></ws-app-assessment-detail>
 
+      </div>
     </div>
   </div>
 </ng-template>

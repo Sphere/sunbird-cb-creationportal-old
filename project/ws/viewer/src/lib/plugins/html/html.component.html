@@ -1,5 +1,5 @@
 <mat-card class="ws-mat-primary-lite-background-on-day margin-top-s ml-5"
-  *ngIf="showIframeSupportWarning || isIntranetUrl || htmlContent?.isInIntranet">
+  *ngIf="(showIframeSupportWarning || isIntranetUrl || htmlContent?.isInIntranet)&&htmlContent?.isIframeSupported === 'Yes'">
   <mat-card-content>
     <h2 class="mat-h2" *ngIf="
         isIntranetUrl || htmlContent?.isInIntranet || htmlContent?.isIframeSupported === 'Maybe'
@@ -29,7 +29,7 @@
           !isUserInIntranet
         " i18n>This content can only be viewed in Intranet
       </ng-container>
-      <ng-container *ngIf="htmlContent?.isIframeSupported === 'No' || !htmlContent?.isIframeSupported">
+      <ng-container *ngIf="htmlContent?.isIframeSupported === 'Yes' || !htmlContent?.isIframeSupported">
         <span i18n>Content will open in a new window. If you are unable to view it, click on the button below.</span>
         <a [routerLink]="'/app/info/faq'" [queryParams]="{tab: 'popup'}">
           <mat-icon matTooltip="How to Disable Pop-ups" class="align-text-top ws-mat-primary-text">help
@@ -44,10 +44,12 @@
       This content can only be viewed in Intranet.
     </h2>
     <mat-divider></mat-divider>
-    <mat-progress-bar mode="determinate" *ngIf="progress > 0 && htmlContent?.isIframeSupported?.toLowerCase() === 'no'"
+    <mat-progress-bar mode="determinate"
+      *ngIf="progress > 0 && htmlContent?.isIframeSupported?.toLowerCase() === 'yes'&&htmlContent?.mimeType !== 'application/vnd.ekstep.html-archive'"
       [value]="progress"></mat-progress-bar>
 
-    <div class="flex flex-between padding-top-s">
+    <div class="flex flex-between padding-top-s"
+      *ngIf="htmlContent?.isIframeSupported === 'Yes'&&htmlContent?.mimeType !== 'application/vnd.ekstep.html-archive'">
       <a type="button" [ngClass]="mobAppSvc?.isMobile ? 'block' : 'hidden'" mat-button
         [href]="this.htmlContent?.artifactUrl" target="_blank" #mobileOpenInNewTab>Open in New Tab</a>
 
@@ -66,8 +68,8 @@
   </mat-card-content>
 </mat-card>
 
-<h2 class="text-center mat-primary-text margin-top-m load" *ngIf="showIsLoadingMessage || (htmlContent && htmlContent.isIframeSupported === 'Yes'
-  && htmlContent.mimeType !== 'application/vnd.ekstep.html-archive')">
+<h2 class="text-center mat-primary-text margin-top-m load" *ngIf="showIsLoadingMessage || (htmlContent && htmlContent?.isIframeSupported === 'Yes'
+  && htmlContent?.mimeType !== 'application/vnd.ekstep.html-archive')">
   Please wait! Content requested is loading
 </h2>
 
@@ -82,7 +84,8 @@
   </h2>
 </div>
 
-<div class="container-v2" *ngIf="htmlContent && htmlContent.isIframeSupported === 'Yes' || iframeSupport === 'Yes'">
+<div class="container-v2"
+  *ngIf="htmlContent && htmlContent?.isIframeSupported === 'No' || iframeSupport === 'No'||htmlContent?.mimeType === 'application/vnd.ekstep.html-archive'">
   <iframe #iframeElem title="HTML Content Viewer" i18n-title [src]="iframeUrl"
     (load)="onIframeLoadOrError('load',iframeElem,$event)" (error)="onIframeLoadOrError('error')"
     allow="fullscreen; accelerometer; autoplay; encrypted-media; gyroscope; microphone; camera;"
