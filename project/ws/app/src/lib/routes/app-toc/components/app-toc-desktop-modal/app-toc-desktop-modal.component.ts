@@ -35,8 +35,8 @@ export class AppTocDesktopModalComponent implements OnInit {
     console.log("data[0].competencyName", data[0].competencyName)
     let competencyId: any = 0
     if (data && data.length > 0) {
-      competencyId = parseInt(data[0].competencyId, 10)  // Convert to a number
-      console.log(competencyId)  // Log the converted number
+      competencyId = parseInt(data[0].competencyId, 10) // Convert to a number
+      console.log(competencyId) // Log the converted number
     }
 
     let proficiencyList = []
@@ -50,9 +50,15 @@ export class AppTocDesktopModalComponent implements OnInit {
           this.competencyLevelDescription = 'Levels data not found'
         }
         console.log(this.competencyLevelDescription, "competencyLevelDescription")
+
+        // Filter the proficiencyList based on the level if it exists
+        if (data[0].level) {
+          const levels = data.map((item: any) => item.level)
+          this.competencyLevelDescription = this.competencyLevelDescription.filter((item: any) => levels.includes(item.level))
+        }
+        console.log(this.content.lang, this.competencyLevelDescription, "competencyLevelDescription")
       }
     })
-
   }
 
 }
