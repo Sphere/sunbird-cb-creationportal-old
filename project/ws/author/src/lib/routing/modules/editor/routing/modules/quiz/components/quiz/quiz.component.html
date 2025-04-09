@@ -91,14 +91,29 @@
           </div>
           <mat-sidenav-container autosize="true" class="nav-container quiz-list">
             <mat-sidenav #sideNavBar class="h-full custom-scroll" [mode]="mode$ | async" [(opened)]="sideNavBarOpened">
-              <ws-auth-question-editor-sidebar [showContent]="showContent" [type]="'assessment'" [(data)]="questionsArr"
-                [canEdit]="canEditJson"></ws-auth-question-editor-sidebar>
+              <ws-auth-question-editor-sidebar (questionTypeChanged)="questionType($event)" [showContent]="showContent"
+                [type]="'assessment'" [(data)]="questionsArr" [canEdit]="canEditJson"></ws-auth-question-editor-sidebar>
             </mat-sidenav>
             <mat-sidenav-content>
               <div *ngIf="resourceName" class="headerpadding resourceName font-weight-bold" i18n>
                 {{resourceName}}</div>
               <div *ngIf="questionsArr.length">
-                <div class="headerpadding font-weight-bold margin-top-s" i18n>{{isQuiz}} Details
+                <div class="flex items-center justify-between margin-right-xs">
+                  <div>
+                    <div class="headerpadding font-weight-bold margin-top-s" i18n>{{isQuiz}} Details
+                    </div>
+                  </div>
+                  <div *ngIf="questionTypeText==='mcq-sca' || questionTypeText==='mcq-mca'" class="flex gap-2">
+                    <button mat-raised-button
+                      class="margin-top-m ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+                      (click)="downloadTemplate()">Download Sample template</button>
+                    <button mat-raised-button
+                      class="margin-top-m ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+                      (click)="uploadFile.click()">Bulk Upload</button>
+                    <button mat-raised-button
+                      class="margin-top-m ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+                      (click)="downloadUploadedQuestion()">Download questions</button>
+                  </div>
                 </div>
                 <mat-form-field *ngIf="isQuiz == 'Assessment'" appearance="outline"
                   style="padding: 5px 15px 0px 0.75rem">
@@ -116,11 +131,15 @@
                   <input matInput type="number" class="form-control" placeholder="Enter Random Question Count"
                     [(ngModel)]="randomCount" (change)="addTodo(randomCount, 'randomCount')" />
                 </mat-form-field>
+
                 <mat-icon class="fill-current cursor-pointer w-4 h-4 mr-2" (click)="OpenUploadIntro()">info</mat-icon>
                 <!-- <mat-card-title class="w-full h-6 text-center ws-mat-primary-background text-white h-12 rounded flex items-center justify-center"
                                 *ngIf="selectedQuizIndex !== undefined && canEditJson">
                                 <span i18n>Quiz-</span>{{selectedQuizIndex + 1}}
                             </mat-card-title> -->
+
+                <input type="file" #uploadFile (change)="convertExcelToJson($event.target.files[0]);"
+                  style="display: none" />
                 <ws-auth-question-editor *ngIf="questionsArr.length && canEditJson" [submitPressed]="canValidate">
                 </ws-auth-question-editor>
 

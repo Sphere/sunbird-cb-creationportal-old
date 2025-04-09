@@ -44,13 +44,27 @@ import { AccessControlService } from '@ws/author/src/lib/modules/shared/services
 import { isNumber } from 'lodash'
 // import { environment } from '../../../../../../../../../../../../../src/environments/environment'
 import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image-upload-intro-popup.component'
+import * as XLSX from 'xlsx'
+interface QuizOption {
+  text: string
+  optionId: string
+  isCorrect: boolean
+}
 
+interface QuizQuestion {
+  questionId: string
+  question: string
+  questionType: string
+  options: QuizOption[]
+  multiSelection: boolean
+}
 @Component({
   selector: 'ws-auth-quiz',
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.scss'],
   providers: [QuizResolverService, QuizStoreService],
 })
+
 export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   selectedQuizIndex!: number
@@ -105,7 +119,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   courseCompetency: any
   courseDetails: any
   resourceDetails: any
-
+  questionTypeText: any = 'mcq-sca'
   constructor(
     private router: Router,
     private activateRoute: ActivatedRoute,
@@ -147,8 +161,15 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         }
       })
     console.log("Quiz12", this.isQuiz)
+    // this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
+    //   const val = this.quizStoreSvc.getQuiz(index)
+    //   console.log("val of type", val)
+    //   // }
+    // })
   }
-
+  questionType(type: any) {
+    this.questionTypeText = type
+  }
   ngOnDestroy() {
     this.cdr.detach()
     if (this.activeIndexSubscription) {
@@ -444,6 +465,171 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         console.log("Quiz", this.isQuiz)
       })
     })()
+  }
+
+  convertExcelToJson(file: File): void {
+    const reader = new FileReader()
+    reader.onload = (e: any) => {
+      const data = new Uint8Array(e.target.result)
+      const workbook = XLSX.read(data, { type: 'array' })
+      const sheetName = workbook.SheetNames[0]
+      const worksheet = workbook.Sheets[sheetName]
+      const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
+
+      // Process the Excel data
+      const quizJson = this.generateQuizJson(jsonData)
+      console.log('Generated Quiz JSON:', this.questionsArr, quizJson)
+
+      // Assign to questionsArr or any other variable as needed
+      this.questionsArr = quizJson.questions
+      this.quizStoreSvc.collectiveQuiz[this.currentId] = this.questionsArr
+      this.checkValidity()
+      this.quizStoreSvc.changeQuiz(0)
+      console.log('Generated Quiz JSON 2:', this.questionsArr)
+      this.cdr.detectChanges()
+      this.cdr.markForCheck() // Explicitly mark the component for change detection
+
+    }
+    reader.readAsArrayBuffer(file)
+  }
+  generateQuizJson(data: any[]): any {
+    const quizJson = {
+      timeLimit: 0, // Default time limit
+      passPercentage: 0, // Default pass percentage
+      isAssessment: this.resourceDetails.isAssessment,
+      randomCount: 0, // Default random count
+      questions: [] as QuizQuestion[], // Explicitly type the questions array
+    }
+    this.assessmentDuration = ''
+    this.passPercentage = ''
+    this.randomCount = ''
+    // Extract column names from the first row
+    const headers = data[0]
+
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i]
+      if (!row || row.length === 0) {
+        console.warn(`Skipping empty row ${i + 1}`)
+        continue
+      }
+
+      // Map column names to their respective values
+      const rowData: { [key: string]: any } = {}
+      headers.forEach((header: string, index: number) => {
+        rowData[header] = row[index] !== undefined && row[index] !== null ? row[index] : "" // Explicitly handle undefined or null
+      })
+
+      // Skip rows with insufficient data
+      if (!rowData["Question"] || !rowData["Correct Answer"]) {
+        console.warn(`Skipping row ${i + 1} due to missing required fields.`)
+        continue
+      }
+
+      const questionId = `Q${100 + i}`
+      const options: QuizOption[] = []
+
+      // Parse the "Correct Answer" column to handle multiple correct options
+      const correctAnswers = rowData["Correct Answer"]
+        .split(",")
+        .map((answer: string) => answer.trim()) // Ensure no extra spaces
+
+      // Track last non-empty option
+      let lastNonEmptyIndex = 0
+
+      // First pass: Determine the last non-empty option index
+      for (let optionIndex = 1; optionIndex <= 6; optionIndex++) {
+        const key = `Option ${optionIndex}`
+        if (rowData[key] !== undefined && rowData[key] !== null && String(rowData[key]).trim() !== "") {
+          lastNonEmptyIndex = optionIndex
+        }
+      }
+
+      // Second pass: Add options correctly
+      for (let optionIndex = 1; optionIndex <= lastNonEmptyIndex; optionIndex++) {
+        const key = `Option ${optionIndex}`
+        const optionText = rowData[key] !== undefined && rowData[key] !== null ? String(rowData[key]).trim() : ""
+
+        options.push({
+          text: optionText, // Keep the text (even if empty, but only up to lastNonEmptyIndex)
+          optionId: `${questionId}-${String.fromCharCode(96 + optionIndex)}`, // Sequential IDs (a, b, c...)
+          isCorrect: correctAnswers.includes(`Option ${optionIndex}`), // Match option number
+        })
+      }
+
+      const multiSelection =
+        String(rowData["Multi Selection"]).toUpperCase() === "TRUE"
+
+      quizJson.questions.push({
+        questionId,
+        question: rowData["Question"].trim(), // Trim unnecessary spaces
+        questionType: multiSelection ? "mcq-mca" : "mcq-sca",
+        options,
+        multiSelection,
+      })
+    }
+
+    return quizJson
+  }
+  downloadTemplate(): void {
+    const s3Url = 'https://aastar-app-assets.s3.ap-south-1.amazonaws.com/final_single_row_questions.xlsx' // Replace with your S3 file URL
+    const anchor = document.createElement('a')
+    anchor.href = s3Url
+    anchor.download = 'Sample_Bulk_Upload_Template.xlsx' // Set the desired file name
+    // anchor.target = '_blank'
+    anchor.click()
+  }
+
+  downloadUploadedQuestion(): void {
+    // Prepare the data for Excel
+    const excelData = this.questionsArr.map((question: any) => {
+      const row: any = {
+        Question: question.question.replace(/<[^>]*>/g, ''), // Remove HTML tags like <p>
+        'Multi Selection': question.multiSelection ? 'TRUE' : 'FALSE',
+        'Option 1': question.options[0] ? question.options[0].text : '',
+        'Option 2': question.options[1] ? question.options[1].text : '',
+        'Option 3': question.options[2] ? question.options[2].text : '',
+        'Option 4': question.options[3] ? question.options[3].text : '',
+        'Option 5': question.options[4] ? question.options[4].text : '',
+        'Option 6': question.options[5] ? question.options[5].text : '',
+        'Correct Answer': question.options
+          .filter((option: any) => option.isCorrect)
+          .map((_option: any, index: number) => `Option ${index + 1}`)
+          .join(', '), // Combine correct answers into a single string
+      }
+      return row
+    })
+
+    // Convert the data to a worksheet
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excelData)
+
+    // Make headers bold
+    const range = XLSX.utils.decode_range(worksheet['!ref'] || '')
+    for (let col = range.s.c; col <= range.e.c; col++) {
+      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col })
+      if (worksheet[cellAddress]) {
+        worksheet[cellAddress].s = {
+          font: { bold: true }, // Set font to bold
+        }
+      }
+    }
+
+    // Create a new workbook and append the worksheet
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Questions')
+
+    // Generate the Excel file and trigger the download
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+    const blob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
+
+    // Create a temporary anchor element to trigger the download
+    const anchor = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    anchor.href = url
+    anchor.download = 'Uploaded_Questions.xlsx' // Set the desired file name
+    anchor.click()
+
+    // Clean up the URL object
+    URL.revokeObjectURL(url)
   }
   addTodo(event: any, field: string) {
     const meta: any = {}
