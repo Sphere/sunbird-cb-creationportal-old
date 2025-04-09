@@ -168,6 +168,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     // })
   }
   questionType(type: any) {
+    this.isAtLeastOneQuestionPresent()
     this.questionTypeText = type
   }
   ngOnDestroy() {
@@ -435,7 +436,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                 })
               }
               if (v.contents[0].content.competency) {
-                console.log("ye sasdfsdaf")
                 this.isQuiz = 'Assessment'
               }
             })
@@ -466,8 +466,24 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       })
     })()
   }
-
+  isAtLeastOneQuestionPresent(): boolean {
+    return this.questionsArr.some((question: any) => {
+      // Check if the question text is non-empty or if at least one option has text
+      return (
+        question.question.trim() !== '' &&
+        question.options.some((option: any) => option.text.trim() !== '')
+      )
+    })
+  }
   convertExcelToJson(file: File): void {
+    const validExtensions = ['xlsx', 'xls'] // Allowed extensions
+    const fileExtension = file.name.split('.').pop() // Extract file extension
+
+    if (!fileExtension || validExtensions.indexOf(fileExtension.toLowerCase()) === -1) {
+      console.error('Invalid file type. Please upload an Excel file.')
+      this.showNotification(Notify.UPLOAD_EXCEL_FILE)
+      return // Stop further processing
+    }
     const reader = new FileReader()
     reader.onload = (e: any) => {
       const data = new Uint8Array(e.target.result)
