@@ -310,7 +310,10 @@
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
   <span i18n>Removed file successfully, Upload new file </span>
 </p>
-
+<p *ngIf="type === notify.UPLOAD_EXCEL_FILE">
+  <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
+  <span i18n>Upload excel file (Supported format .xlsx or .xls) </span>
+</p>
 <p *ngIf="type === notify.DURATION_CANT_BE_GREATER">
   <mat-icon class="icon" aria-hidden="false" i18n-aria-label aria-label="Notification">error</mat-icon>
   <span i18n>Question {{ otherData.index+1 }}: Question timestamp is greater than video resource duration </span>

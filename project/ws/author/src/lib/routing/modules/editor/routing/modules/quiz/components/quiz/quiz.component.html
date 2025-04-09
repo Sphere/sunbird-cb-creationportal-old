@@ -103,17 +103,7 @@
                     <div class="headerpadding font-weight-bold margin-top-s" i18n>{{isQuiz}} Details
                     </div>
                   </div>
-                  <div *ngIf="questionTypeText==='mcq-sca' || questionTypeText==='mcq-mca'" class="flex gap-2">
-                    <button mat-raised-button
-                      class="margin-top-m ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-                      (click)="downloadTemplate()">Download Sample template</button>
-                    <button mat-raised-button
-                      class="margin-top-m ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-                      (click)="uploadFile.click()">Bulk Upload</button>
-                    <button mat-raised-button
-                      class="margin-top-m ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-                      (click)="downloadUploadedQuestion()">Download questions</button>
-                  </div>
+
                 </div>
                 <mat-form-field *ngIf="isQuiz == 'Assessment'" appearance="outline"
                   style="padding: 5px 15px 0px 0.75rem">
@@ -138,8 +128,25 @@
                                 <span i18n>Quiz-</span>{{selectedQuizIndex + 1}}
                             </mat-card-title> -->
 
-                <input type="file" #uploadFile (change)="convertExcelToJson($event.target.files[0]);"
-                  style="display: none" />
+
+                <div *ngIf="questionTypeText==='mcq-sca' || questionTypeText==='mcq-mca'"
+                  class="headerpadding font-weight-bold" i18n>Bulk Upload Question
+                </div>
+                <div style="padding: 5px 15px 0px 0.75rem"
+                  *ngIf="questionTypeText==='mcq-sca' || questionTypeText==='mcq-mca'"
+                  class="flex gap-2 margin-bottom-s">
+                  <button mat-raised-button
+                    class=" ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+                    (click)="downloadTemplate()">Sample template</button>
+                  <button mat-raised-button
+                    class=" ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+                    (click)="uploadFile.click()">Upload file</button>
+                  <button *ngIf="isAtLeastOneQuestionPresent()" mat-raised-button
+                    class=" ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+                    (click)="downloadUploadedQuestion()">Download created questions</button>
+                  <input type="file" accept=".xlsx,.xls" #uploadFile
+                    (change)="convertExcelToJson($event.target.files[0]);" style="display: none" />
+                </div>
                 <ws-auth-question-editor *ngIf="questionsArr.length && canEditJson" [submitPressed]="canValidate">
                 </ws-auth-question-editor>
 
