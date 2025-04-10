@@ -608,8 +608,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         'Option 5': question.options[4] ? question.options[4].text : '',
         'Option 6': question.options[5] ? question.options[5].text : '',
         'Correct Answer': question.options
-          .filter((option: any) => option.isCorrect)
-          .map((_option: any, index: number) => `Option ${index + 1}`)
+          .map((option: any, index: number) => (option.isCorrect ? `Option ${index + 1}` : null))
+          .filter((option: string | null) => option !== null)
           .join(', '), // Combine correct answers into a single string
       }
       return row
@@ -617,17 +617,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
     // Convert the data to a worksheet
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excelData)
-
-    // Make headers bold
-    const range = XLSX.utils.decode_range(worksheet['!ref'] || '')
-    for (let col = range.s.c; col <= range.e.c; col++) {
-      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col })
-      if (worksheet[cellAddress]) {
-        worksheet[cellAddress].s = {
-          font: { bold: true }, // Set font to bold
-        }
-      }
-    }
 
     // Create a new workbook and append the worksheet
     const workbook: XLSX.WorkBook = XLSX.utils.book_new()
