@@ -49,7 +49,36 @@ label.starlabel {
   align-items: center;
   grid-template-columns: 0.2fr auto 1fr;
 }
-
+.blue-button{
+  color: #1C5D95 !important;
+  box-shadow: none !important;
+  border-radius: 25px !important;
+  font-family: Roboto !important;
+font-weight: 400 !important;
+font-size: 14px !important;
+padding: 0px 25px !important;
+.mat-button-wrapper{
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+}
+.white-button{
+  background-color: #fff !important;
+  color: #1C5D95 !important;
+  border: 1px solid #1C5D95 !important;
+  box-shadow: none !important;
+  border-radius: 25px !important;
+  font-family: Roboto !important;
+font-weight: 400 !important;
+font-size: 14px !important;
+padding: 0px 25px !important;
+.mat-button-wrapper{
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+}
 .text-white {
   color: #fff !important;
 }

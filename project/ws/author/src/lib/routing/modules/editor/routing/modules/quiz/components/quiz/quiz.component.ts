@@ -1,5 +1,5 @@
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
-import { Component, OnInit, ChangeDetectorRef, OnDestroy, Input, Output, EventEmitter, OnChanges } from '@angular/core'
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, Input, Output, EventEmitter, OnChanges, ElementRef, ViewChild } from '@angular/core'
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
 // import { map, mergeMap, tap, catchError } from 'rxjs/operators'
@@ -120,6 +120,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   courseDetails: any
   resourceDetails: any
   questionTypeText: any = 'mcq-sca'
+  @ViewChild('uploadFile', { static: false }) uploadFile!: ElementRef
+
   constructor(
     private router: Router,
     private activateRoute: ActivatedRoute,
@@ -475,6 +477,23 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       )
     })
   }
+  uploadFileModal(): void {
+    if (this.isAtLeastOneQuestionPresent()) {
+      const confirmDelete = this.dialog.open(ConfirmDialogComponent, {
+        width: '400px',
+        data: 'uploadFile',
+      })
+
+      confirmDelete.afterClosed().subscribe((confirm) => {
+        if (confirm && this.uploadFile && this.uploadFile.nativeElement) {
+          this.uploadFile.nativeElement.click()
+        }
+      })
+    } else {
+      this.uploadFile.nativeElement.click()
+    }
+
+  }
   convertExcelToJson(file: File): void {
     const validExtensions = ['xlsx', 'xls'] // Allowed extensions
     const fileExtension = file.name.split('.').pop() // Extract file extension
@@ -519,11 +538,15 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     this.assessmentDuration = ''
     this.passPercentage = ''
     this.randomCount = ''
+
     // Extract column names from the first row
     const headers = data[0]
 
-    for (let i = 1; i < data.length; i++) {
-      const row = data[i]
+    // Limit the rows to 500 questions (excluding the header row)
+    const limitedData = data.slice(1, 503) // Start from row 1 (skip header) and include up to row 500
+
+    for (let i = 0; i < limitedData.length; i++) {
+      const row = limitedData[i]
       if (!row || row.length === 0) {
         console.warn(`Skipping empty row ${i + 1}`)
         continue
@@ -532,11 +555,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       // Map column names to their respective values
       const rowData: { [key: string]: any } = {}
       headers.forEach((header: string, index: number) => {
-        rowData[header] = row[index] !== undefined && row[index] !== null ? row[index] : "" // Explicitly handle undefined or null
+        rowData[header] = row[index] !== undefined && row[index] !== null ? row[index] : '' // Explicitly handle undefined or null
       })
 
       // Skip rows with insufficient data
-      if (!rowData["Question"] || !rowData["Correct Answer"]) {
+      if (!rowData['Question'] || !rowData['Correct Answer']) {
         console.warn(`Skipping row ${i + 1} due to missing required fields.`)
         continue
       }
@@ -545,8 +568,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       const options: QuizOption[] = []
 
       // Parse the "Correct Answer" column to handle multiple correct options
-      const correctAnswers = rowData["Correct Answer"]
-        .split(",")
+      const correctAnswers = rowData['Correct Answer']
+        .split(',')
         .map((answer: string) => answer.trim()) // Ensure no extra spaces
 
       // Track last non-empty option
@@ -555,7 +578,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       // First pass: Determine the last non-empty option index
       for (let optionIndex = 1; optionIndex <= 6; optionIndex++) {
         const key = `Option ${optionIndex}`
-        if (rowData[key] !== undefined && rowData[key] !== null && String(rowData[key]).trim() !== "") {
+        if (rowData[key] !== undefined && rowData[key] !== null && String(rowData[key]).trim() !== '') {
           lastNonEmptyIndex = optionIndex
         }
       }
@@ -563,7 +586,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       // Second pass: Add options correctly
       for (let optionIndex = 1; optionIndex <= lastNonEmptyIndex; optionIndex++) {
         const key = `Option ${optionIndex}`
-        const optionText = rowData[key] !== undefined && rowData[key] !== null ? String(rowData[key]).trim() : ""
+        const optionText = rowData[key] !== undefined && rowData[key] !== null ? String(rowData[key]).trim() : ''
 
         options.push({
           text: optionText, // Keep the text (even if empty, but only up to lastNonEmptyIndex)
@@ -573,12 +596,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       const multiSelection =
-        String(rowData["Multi Selection"]).toUpperCase() === "TRUE"
+        String(rowData['Multi Selection']).toUpperCase() === 'TRUE'
 
       quizJson.questions.push({
         questionId,
-        question: rowData["Question"].trim(), // Trim unnecessary spaces
-        questionType: multiSelection ? "mcq-mca" : "mcq-sca",
+        question: rowData['Question'].trim(), // Trim unnecessary spaces
+        questionType: multiSelection ? 'mcq-mca' : 'mcq-sca',
         options,
         multiSelection,
       })
