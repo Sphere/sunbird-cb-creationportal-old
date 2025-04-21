@@ -135,15 +135,19 @@
                 <div style="padding: 5px 15px 0px 0.75rem"
                   *ngIf="questionTypeText==='mcq-sca' || questionTypeText==='mcq-mca'"
                   class="flex gap-2 margin-bottom-s">
-                  <button mat-raised-button
-                    class=" ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-                    (click)="downloadTemplate()">Sample template</button>
-                  <button mat-raised-button
-                    class=" ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-                    (click)="uploadFile.click()">Upload file</button>
-                  <button *ngIf="isAtLeastOneQuestionPresent()" mat-raised-button
-                    class=" ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-                    (click)="downloadUploadedQuestion()">Download created questions</button>
+                  <button title="Upload the question file similar to the sample template" mat-raised-button
+                    class="blue-button ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+                    (click)="uploadFileModal()"><img src="cbp-assets/icons/Upload_.svg" alt="sample" />
+                    Upload file</button>
+                  <button title="Use this sample template to add questions and answers for bulk upload"
+                    mat-raised-button class="white-button ml-2 mat-button-base save-btn-bottom"
+                    (click)="downloadTemplate()"><img src="cbp-assets/icons/Download_quiz.svg" alt="sample" /> Download
+                    Sample template</button>
+                  <button title="Download the created questions" *ngIf="isAtLeastOneQuestionPresent()" mat-raised-button
+                    class=" white-button ml-2   mat-button-base save-btn-bottom"
+                    (click)="downloadUploadedQuestion()"><img src="cbp-assets/icons/Download_quiz.svg" alt="sample" />
+                    Download created questions</button>
+
                   <input type="file" accept=".xlsx,.xls" #uploadFile
                     (change)="convertExcelToJson($event.target.files[0]);" style="display: none" />
                 </div>
@@ -185,8 +189,9 @@
     </div>
 
     <button *ngIf="questionsArr.length && canEditJson" (click)="action('save')"
-      style="float: right;margin-right: 35px;height: 35px;top: 35vh;" mat-raised-button color="accent"
-      id="assessmentSave" [ngClass]="{ disable: !isCreatorEnable  || !(assessmentDuration && validPercentage)}">
+      style="float: right;margin-right: 35px;height: 35px;top: 35vh;border-radius: 25px !important; box-shadow: none !important;padding: 0px 25px !important"
+      mat-raised-button color="accent" id="assessmentSave"
+      [ngClass]="{ disable: !isCreatorEnable  || !(assessmentDuration && validPercentage)}">
       <ng-container i18n>Save</ng-container>
     </button>
   </div>
