@@ -543,7 +543,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     const headers = data[0]
 
     // Limit the rows to 500 questions (excluding the header row)
-    const limitedData = data.slice(1, 503) // Start from row 1 (skip header) and include up to row 500
+    const limitedData = data.slice(1, 501) // Start from row 1 (skip header) and include up to row 500
 
     for (let i = 0; i < limitedData.length; i++) {
       const row = limitedData[i]
@@ -595,15 +595,15 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         })
       }
 
-      const multiSelection =
-        String(rowData['Multi Selection']).toUpperCase() === 'TRUE'
+      const correctOptions = options.filter((option: any) => option.isCorrect) // Get correct options
+      const multiSelection = correctOptions.length > 1 // Set to true if multiple correct options exist, otherwise false
 
       quizJson.questions.push({
         questionId,
         question: rowData['Question'].trim(), // Trim unnecessary spaces
-        questionType: multiSelection ? 'mcq-mca' : 'mcq-sca',
+        questionType: multiSelection ? 'mcq-mca' : 'mcq-sca', // Set question type based on multiSelection
         options,
-        multiSelection,
+        multiSelection, // Assign the boolean value
       })
     }
 
@@ -621,9 +621,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   downloadUploadedQuestion(): void {
     // Prepare the data for Excel
     const excelData = this.questionsArr.map((question: any) => {
+      const correctOptions = question.options.filter((option: any) => option.isCorrect) // Get correct options
+
       const row: any = {
         Question: question.question.replace(/<[^>]*>/g, ''), // Remove HTML tags like <p>
-        'Multi Selection': question.multiSelection ? 'TRUE' : 'FALSE',
+        'Multi Selection': correctOptions.length > 1 ? 'true' : 'FALSE', // Set multiSelection based on correct options
         'Option 1': question.options[0] ? question.options[0].text : '',
         'Option 2': question.options[1] ? question.options[1].text : '',
         'Option 3': question.options[2] ? question.options[2].text : '',
