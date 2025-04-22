@@ -170,7 +170,10 @@
       </div>
     </ng-container>
   </div>
-  <div mat-dialog-actions class="flex-row-reverse" *ngIf="data.type !== 'editAssessment'">
+  <div mat-dialog-actions class="flex-row-reverse" *ngIf="data === 'transcodeMessage'">
+    <button i18n mat-raised-button class="buttonColor yesButtonColor" [mat-dialog-close]="true">Ok</button>
+  </div>
+  <div mat-dialog-actions class="flex-row-reverse" *ngIf="data.type !== 'editAssessment'&& data !== 'transcodeMessage'">
     <button i18n mat-raised-button class="buttonColor yesButtonColor" [mat-dialog-close]="true">Yes</button>
     <button i18n mat-raised-button mat-dialog-close cdkFocusInitial class="buttonColor noButtonColor">No</button>
   </div>
