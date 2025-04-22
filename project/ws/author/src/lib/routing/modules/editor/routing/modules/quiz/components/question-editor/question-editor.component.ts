@@ -74,6 +74,8 @@ export class QuestionEditorComponent implements OnInit, OnChanges, OnDestroy {
       for (let i = 0; i < updatedVal.options.length; i = i + 1) {
         updatedVal.options[i] = { ...quizData.options[i], ...$event.options[i] }
       }
+      const correctOptions = updatedVal.options.filter((option: any) => option.isCorrect)
+      updatedVal.multiSelection = correctOptions.length > 1 // true if multiple correct options, false otherwise
     }
     this.quizStoreSvc.updateQuiz(this.quizIndex, updatedVal)
     console.log("updateSelectedQuiz")
