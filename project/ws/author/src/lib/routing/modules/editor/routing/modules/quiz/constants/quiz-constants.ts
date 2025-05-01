@@ -5,7 +5,7 @@ export const QUESTION_CONFIG = {
     colNameMinLength: 1,
     colNameMaxLength: 30,
     minOptions: 3,
-    maxOptions: 7,
+    maxOptions: 6,
   },
   fillUpsOptionsConfig: {
     minOptions: 1,

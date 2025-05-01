@@ -535,12 +535,13 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       randomCount: 0, // Default random count
       questions: [] as QuizQuestion[], // Explicitly type the questions array
     }
+
     this.assessmentDuration = ''
     this.passPercentage = ''
     this.randomCount = ''
 
     // Extract column names from the first row
-    const headers = data[0]
+    const headers = data[0].map((header: string) => header.trim())
 
     // Limit the rows to 500 questions (excluding the header row)
     const limitedData = data.slice(1, 501) // Start from row 1 (skip header) and include up to row 500
@@ -567,10 +568,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       const questionId = `Q${100 + i}`
       const options: QuizOption[] = []
 
-      // Parse the "Correct Answer" column to handle multiple correct options
+      // Parse the "Correct Answer" column to handle numeric values
       const correctAnswers = rowData['Correct Answer']
+        .toString()
         .split(',')
-        .map((answer: string) => answer.trim()) // Ensure no extra spaces
+        .map((answer: string) => parseInt(answer.trim(), 10)) // Convert numeric values to integers
 
       // Track last non-empty option
       let lastNonEmptyIndex = 0
@@ -591,7 +593,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         options.push({
           text: optionText, // Keep the text (even if empty, but only up to lastNonEmptyIndex)
           optionId: `${questionId}-${String.fromCharCode(96 + optionIndex)}`, // Sequential IDs (a, b, c...)
-          isCorrect: correctAnswers.includes(`Option ${optionIndex}`), // Match option number
+          isCorrect: correctAnswers.includes(optionIndex), // Match option number
         })
       }
 
@@ -606,7 +608,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         multiSelection, // Assign the boolean value
       })
     }
-
+    console.log("quizJson", quizJson)
     return quizJson
   }
   downloadTemplate(): void {
@@ -621,11 +623,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   downloadUploadedQuestion(): void {
     // Prepare the data for Excel
     const excelData = this.questionsArr.map((question: any) => {
-      const correctOptions = question.options.filter((option: any) => option.isCorrect) // Get correct options
+      // const correctOptions = question.options.filter((option: any) => option.isCorrect) // Get correct options
 
       const row: any = {
         Question: question.question.replace(/<[^>]*>/g, ''), // Remove HTML tags like <p>
-        'Multi Selection': correctOptions.length > 1 ? 'true' : 'FALSE', // Set multiSelection based on correct options
+        // 'Multi Selection': correctOptions.length > 1 ? 'true' : 'FALSE', // Set multiSelection based on correct options
         'Option 1': question.options[0] ? question.options[0].text : '',
         'Option 2': question.options[1] ? question.options[1].text : '',
         'Option 3': question.options[2] ? question.options[2].text : '',
@@ -633,7 +635,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         'Option 5': question.options[4] ? question.options[4].text : '',
         'Option 6': question.options[5] ? question.options[5].text : '',
         'Correct Answer': question.options
-          .map((option: any, index: number) => (option.isCorrect ? `Option ${index + 1}` : null))
+          .map((option: any, index: number) => (option.isCorrect ? index + 1 : null))
           .filter((option: string | null) => option !== null)
           .join(', '), // Combine correct answers into a single string
       }
