@@ -528,88 +528,133 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     reader.readAsArrayBuffer(file)
   }
   generateQuizJson(data: any[]): any {
-    const quizJson = {
-      timeLimit: 0, // Default time limit
-      passPercentage: 0, // Default pass percentage
-      isAssessment: this.resourceDetails.isAssessment,
-      randomCount: 0, // Default random count
-      questions: [] as QuizQuestion[], // Explicitly type the questions array
-    }
+    const quizJson = this.initializeQuizJson()
 
-    this.assessmentDuration = ''
-    this.passPercentage = ''
-    this.randomCount = ''
+    const headers = this.extractHeaders(data)
+    const limitedData = this.limitRows(data)
 
-    // Extract column names from the first row
-    const headers = data[0].map((header: string) => header.trim())
+    limitedData.forEach((row, index) => {
+      if (!this.isValidRow(row, index)) return
 
-    // Limit the rows to 500 questions (excluding the header row)
-    const limitedData = data.slice(1, 501) // Start from row 1 (skip header) and include up to row 500
+      const rowData = this.mapRowToData(headers, row)
+      if (!this.hasRequiredFields(rowData, index)) return
 
-    for (let i = 0; i < limitedData.length; i++) {
-      const row = limitedData[i]
-      if (!row || row.length === 0) {
-        console.warn(`Skipping empty row ${i + 1}`)
-        continue
-      }
+      const questionId = this.generateQuestionId(index)
+      const options = this.generateOptions(rowData, questionId)
 
-      // Map column names to their respective values
-      const rowData: { [key: string]: any } = {}
-      headers.forEach((header: string, index: number) => {
-        rowData[header] = row[index] !== undefined && row[index] !== null ? row[index] : '' // Explicitly handle undefined or null
-      })
+      const correctOptions = this.getCorrectOptions(options)
+      const multiSelection = this.isMultiSelection(correctOptions)
 
-      // Skip rows with insufficient data
-      if (!rowData['Question'] || !rowData['Correct Answer']) {
-        console.warn(`Skipping row ${i + 1} due to missing required fields.`)
-        continue
-      }
+      quizJson.questions.push(this.createQuestion(rowData, questionId, options, multiSelection))
+    })
 
-      const questionId = `Q${100 + i}`
-      const options: QuizOption[] = []
-
-      // Parse the "Correct Answer" column to handle numeric values
-      const correctAnswers = rowData['Correct Answer']
-        .toString()
-        .split(',')
-        .map((answer: string) => parseInt(answer.trim(), 10)) // Convert numeric values to integers
-
-      // Track last non-empty option
-      let lastNonEmptyIndex = 0
-
-      // First pass: Determine the last non-empty option index
-      for (let optionIndex = 1; optionIndex <= 6; optionIndex++) {
-        const key = `Option ${optionIndex}`
-        if (rowData[key] !== undefined && rowData[key] !== null && String(rowData[key]).trim() !== '') {
-          lastNonEmptyIndex = optionIndex
-        }
-      }
-
-      // Second pass: Add options correctly
-      for (let optionIndex = 1; optionIndex <= lastNonEmptyIndex; optionIndex++) {
-        const key = `Option ${optionIndex}`
-        const optionText = rowData[key] !== undefined && rowData[key] !== null ? String(rowData[key]).trim() : ''
-
-        options.push({
-          text: optionText, // Keep the text (even if empty, but only up to lastNonEmptyIndex)
-          optionId: `${questionId}-${String.fromCharCode(96 + optionIndex)}`, // Sequential IDs (a, b, c...)
-          isCorrect: correctAnswers.includes(optionIndex), // Match option number
-        })
-      }
-
-      const correctOptions = options.filter((option: any) => option.isCorrect) // Get correct options
-      const multiSelection = correctOptions.length > 1 // Set to true if multiple correct options exist, otherwise false
-
-      quizJson.questions.push({
-        questionId,
-        question: rowData['Question'].trim(), // Trim unnecessary spaces
-        questionType: multiSelection ? 'mcq-mca' : 'mcq-sca', // Set question type based on multiSelection
-        options,
-        multiSelection, // Assign the boolean value
-      })
-    }
-    console.log("quizJson", quizJson)
     return quizJson
+  }
+
+  private initializeQuizJson(): any {
+    return {
+      timeLimit: 0,
+      passPercentage: 0,
+      isAssessment: this.resourceDetails.isAssessment,
+      randomCount: 0,
+      questions: [] as QuizQuestion[],
+    }
+  }
+
+  private extractHeaders(data: any[]): string[] {
+    return data[0].map((header: string) => header.trim())
+  }
+
+  private limitRows(data: any[]): any[] {
+    return data.slice(1, 501) // Start from row 1 (skip header) and include up to row 500
+  }
+
+  private isValidRow(row: any, index: number): boolean {
+    if (!row || row.length === 0) {
+      console.warn(`Skipping empty row ${index + 1}`)
+      return false
+    }
+    return true
+  }
+
+  private mapRowToData(headers: string[], row: any): { [key: string]: any } {
+    const rowData: { [key: string]: any } = {}
+    headers.forEach((header: string, index: number) => {
+      rowData[header] = row[index] !== undefined && row[index] !== null ? row[index] : ''
+    })
+    return rowData
+  }
+
+  private hasRequiredFields(rowData: { [key: string]: any }, index: number): boolean {
+    if (!rowData['Question'] || !rowData['Correct Answer']) {
+      console.warn(`Skipping row ${index + 1} due to missing required fields.`)
+      return false
+    }
+    return true
+  }
+
+  private generateQuestionId(index: number): string {
+    return `Q${100 + index}`
+  }
+
+  private generateOptions(rowData: { [key: string]: any }, questionId: string): QuizOption[] {
+    const options: QuizOption[] = []
+    const correctAnswers = this.parseCorrectAnswers(rowData['Correct Answer'])
+    const lastNonEmptyIndex = this.getLastNonEmptyOptionIndex(rowData)
+
+    for (let optionIndex = 1; optionIndex <= lastNonEmptyIndex; optionIndex++) {
+      const key = `Option ${optionIndex}`
+      const optionText = rowData[key] !== undefined && rowData[key] !== null ? String(rowData[key]).trim() : ''
+
+      options.push({
+        text: optionText,
+        optionId: `${questionId}-${String.fromCharCode(96 + optionIndex)}`, // Sequential IDs (a, b, c...)
+        isCorrect: correctAnswers.includes(optionIndex),
+      })
+    }
+
+    return options
+  }
+
+  private parseCorrectAnswers(correctAnswer: string): number[] {
+    return correctAnswer
+      .toString()
+      .split(',')
+      .map((answer: string) => parseInt(answer.trim(), 10)) // Convert numeric values to integers
+  }
+
+  private getLastNonEmptyOptionIndex(rowData: { [key: string]: any }): number {
+    let lastNonEmptyIndex = 0
+    for (let optionIndex = 1; optionIndex <= 6; optionIndex++) {
+      const key = `Option ${optionIndex}`
+      if (rowData[key] !== undefined && rowData[key] !== null && String(rowData[key]).trim() !== '') {
+        lastNonEmptyIndex = optionIndex
+      }
+    }
+    return lastNonEmptyIndex
+  }
+
+  private getCorrectOptions(options: QuizOption[]): QuizOption[] {
+    return options.filter((option: QuizOption) => option.isCorrect)
+  }
+
+  private isMultiSelection(correctOptions: QuizOption[]): boolean {
+    return correctOptions.length > 1
+  }
+
+  private createQuestion(
+    rowData: { [key: string]: any },
+    questionId: string,
+    options: QuizOption[],
+    multiSelection: boolean
+  ): QuizQuestion {
+    return {
+      questionId,
+      question: rowData['Question'].trim(),
+      questionType: multiSelection ? 'mcq-mca' : 'mcq-sca',
+      options,
+      multiSelection,
+    }
   }
   downloadTemplate(): void {
     const s3Url = 'https://aastar-app-assets.s3.ap-south-1.amazonaws.com/final_single_row_questions.xlsx' // Replace with your S3 file URL
@@ -624,9 +669,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     // Prepare the data for Excel
     const excelData = this.questionsArr.map((question: any) => {
       // const correctOptions = question.options.filter((option: any) => option.isCorrect) // Get correct options
+      const tmp = document.createElement('div')
+      tmp.innerHTML = question.question
+      const cleanText = tmp.textContent || tmp.innerText || ''
 
       const row: any = {
-        Question: question.question.replace(/<[^>]*>/g, ''), // Remove HTML tags like <p>
+        Question: cleanText,// Remove HTML tags like <p>
         // 'Multi Selection': correctOptions.length > 1 ? 'true' : 'FALSE', // Set multiSelection based on correct options
         'Option 1': question.options[0] ? question.options[0].text : '',
         'Option 2': question.options[1] ? question.options[1].text : '',
