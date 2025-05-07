@@ -126,7 +126,7 @@ describe('PlayerVideoComponent', () => {
     // Setup default widgetData
     component.widgetData = {
       identifier: 'test-video',
-      url: 'http://test.video',
+      url: 'https://test.video',
       isVideojs: false,
       autoplay: false,
       posterImage: 'test-poster.jpg',

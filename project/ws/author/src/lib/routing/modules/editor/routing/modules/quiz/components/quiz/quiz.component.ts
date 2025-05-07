@@ -485,7 +485,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       })
 
       confirmDelete.afterClosed().subscribe((confirm) => {
-        if (confirm && this.uploadFile && this.uploadFile.nativeElement) {
+        if (confirm && this.uploadFile?.nativeElement) {
           this.uploadFile.nativeElement.click()
         }
       })
@@ -580,7 +580,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   private mapRowToData(headers: string[], row: any): { [key: string]: any } {
     const rowData: { [key: string]: any } = {}
     headers.forEach((header: string, index: number) => {
-      rowData[header] = row[index] !== undefined && row[index] !== null ? row[index] : ''
+      rowData[header] = row[index] ?? ''
     })
     return rowData
   }
@@ -671,7 +671,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       // const correctOptions = question.options.filter((option: any) => option.isCorrect) // Get correct options
       const tmp = document.createElement('div')
       tmp.innerHTML = question.question
-      const cleanText = tmp.textContent || tmp.innerText || ''
+      const cleanText = tmp.textContent ?? tmp.innerText ?? ''
 
       const row: any = {
         Question: cleanText,// Remove HTML tags like <p>

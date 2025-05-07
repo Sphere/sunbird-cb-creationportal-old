@@ -10,7 +10,6 @@ module.exports = {
   preset: 'jest-preset-angular',
   setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'], // Ensure this path is correct
   transform: {
     '^.+\\.ts$': 'ts-jest',
   },
@@ -106,8 +105,5 @@ module.exports = {
 
     '^project/ws/author/src/lib/services/loader.service':
       '<rootDir>/project/ws/author/src/lib/services/loader.service.ts',
-  },
-  transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
   },
 }
