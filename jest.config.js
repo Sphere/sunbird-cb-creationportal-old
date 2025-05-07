@@ -9,7 +9,22 @@ globalThis.ngJest = {
 module.exports = {
   preset: 'jest-preset-angular',
   setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'], // Ensure this path is correct
+  transform: {
+    '^.+\\.ts$': 'ts-jest',
+  },
+  transformIgnorePatterns: ['/node_modules/(?!flat)/'],
+  testEnvironmentOptions: {
+    url: 'http://localhost',
+    resources: 'usable',
+  },
+  coverageDirectory: '<rootDir>/coverage/',
+  coverageReporters: ['text', 'lcov', 'html'],
+  collectCoverage: true,
+  moduleDirectories: ['node_modules', 'src'],
   moduleNameMapper: {
+    '^project/ws/viewer(.*)$': '<rootDir>/project/ws/viewer$1',
     '^@ws-widget/utils$': '<rootDir>/library/ws-widget/utils',
     '^@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component':
       '<rootDir>/project/ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component.ts',
@@ -91,5 +106,8 @@ module.exports = {
 
     '^project/ws/author/src/lib/services/loader.service':
       '<rootDir>/project/ws/author/src/lib/services/loader.service.ts',
+  },
+  transform: {
+    '^.+\\.(ts|tsx)$': 'ts-jest',
   },
 }

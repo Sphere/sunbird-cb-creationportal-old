@@ -52,8 +52,8 @@ export class PlayerVideoComponent extends WidgetBaseComponent
   @Input() widgetData!: any
   @ViewChild('videoTag', { static: false }) videoTag!: ElementRef<HTMLVideoElement>
   @ViewChild('realvideoTag', { static: false }) realvideoTag!: ElementRef<HTMLVideoElement>
-  private player: videoJs.Player | null = null
-  private dispose: (() => void) | null = null
+  public player: videoJs.Player | null = null
+  public dispose: (() => void) | null = null
   contentData: any
   popupShown = false;
   progressData: any
@@ -205,7 +205,7 @@ export class PlayerVideoComponent extends WidgetBaseComponent
       this.dispose()
     }
   }
-  private initializeVPlayer() {
+  public initializeVPlayer() {
     console.log("initializeVPlayer")
     const dispatcher: telemetryEventDispatcherFunction = event => {
       if (this.widgetData.identifier) {
@@ -278,7 +278,7 @@ export class PlayerVideoComponent extends WidgetBaseComponent
     ).dispose
   }
 
-  private initializePlayer() {
+  public initializePlayer() {
     const dispatcher: telemetryEventDispatcherFunction = event => {
       if (this.widgetData.identifier) {
         this.eventSvc.dispatchEvent(event)
