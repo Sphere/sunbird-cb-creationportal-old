@@ -1,5 +1,5 @@
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
-import { Component, OnInit, ChangeDetectorRef, OnDestroy, Input, Output, EventEmitter, OnChanges } from '@angular/core'
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, Input, Output, EventEmitter, OnChanges, ElementRef, ViewChild } from '@angular/core'
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar'
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
 // import { map, mergeMap, tap, catchError } from 'rxjs/operators'
@@ -44,13 +44,27 @@ import { AccessControlService } from '@ws/author/src/lib/modules/shared/services
 import { isNumber } from 'lodash'
 // import { environment } from '../../../../../../../../../../../../../src/environments/environment'
 import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image-upload-intro-popup.component'
+import * as XLSX from 'xlsx'
+interface QuizOption {
+  text: string
+  optionId: string
+  isCorrect: boolean
+}
 
+interface QuizQuestion {
+  questionId: string
+  question: string
+  questionType: string
+  options: QuizOption[]
+  multiSelection: boolean
+}
 @Component({
   selector: 'ws-auth-quiz',
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.scss'],
   providers: [QuizResolverService, QuizStoreService],
 })
+
 export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   selectedQuizIndex!: number
@@ -105,6 +119,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   courseCompetency: any
   courseDetails: any
   resourceDetails: any
+  questionTypeText: any = 'mcq-sca'
+  @ViewChild('uploadFile', { static: false }) uploadFile!: ElementRef
 
   constructor(
     private router: Router,
@@ -147,8 +163,16 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         }
       })
     console.log("Quiz12", this.isQuiz)
+    // this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
+    //   const val = this.quizStoreSvc.getQuiz(index)
+    //   console.log("val of type", val)
+    //   // }
+    // })
   }
-
+  questionType(type: any) {
+    this.isAtLeastOneQuestionPresent()
+    this.questionTypeText = type
+  }
   ngOnDestroy() {
     this.cdr.detach()
     if (this.activeIndexSubscription) {
@@ -414,7 +438,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                 })
               }
               if (v.contents[0].content.competency) {
-                console.log("ye sasdfsdaf")
                 this.isQuiz = 'Assessment'
               }
             })
@@ -444,6 +467,249 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         console.log("Quiz", this.isQuiz)
       })
     })()
+  }
+  isAtLeastOneQuestionPresent(): boolean {
+    return this.questionsArr.some((question: any) => {
+      // Check if the question text is non-empty or if at least one option has text
+      return (
+        question.question.trim() !== '' &&
+        question.options.some((option: any) => option.text.trim() !== '')
+      )
+    })
+  }
+  uploadFileModal(): void {
+    if (this.isAtLeastOneQuestionPresent()) {
+      const confirmDelete = this.dialog.open(ConfirmDialogComponent, {
+        width: '400px',
+        data: 'uploadFile',
+      })
+
+      confirmDelete.afterClosed().subscribe((confirm) => {
+        if (confirm && this.uploadFile?.nativeElement) {
+          this.uploadFile.nativeElement.click()
+        }
+      })
+    } else {
+      this.uploadFile.nativeElement.click()
+    }
+
+  }
+  convertExcelToJson(file: File): void {
+    const validExtensions = ['xlsx', 'xls'] // Allowed extensions
+    const fileExtension = file.name.split('.').pop() // Extract file extension
+
+    if (!fileExtension || validExtensions.indexOf(fileExtension.toLowerCase()) === -1) {
+      console.error('Invalid file type. Please upload an Excel file.')
+      this.showNotification(Notify.UPLOAD_EXCEL_FILE)
+      return // Stop further processing
+    }
+    const reader = new FileReader()
+    reader.onload = (e: any) => {
+      const data = new Uint8Array(e.target.result)
+      const workbook = XLSX.read(data, { type: 'array' })
+      const sheetName = workbook.SheetNames[0]
+      const worksheet = workbook.Sheets[sheetName]
+      const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
+
+      // Process the Excel data
+      const quizJson = this.generateQuizJson(jsonData)
+      console.log('Generated Quiz JSON:', this.questionsArr, quizJson)
+
+      // Assign to questionsArr or any other variable as needed
+      this.questionsArr = quizJson.questions
+      this.quizStoreSvc.collectiveQuiz[this.currentId] = this.questionsArr
+      this.checkValidity()
+      this.quizStoreSvc.changeQuiz(0)
+      console.log('Generated Quiz JSON 2:', this.questionsArr)
+      this.cdr.detectChanges()
+      this.cdr.markForCheck() // Explicitly mark the component for change detection
+
+    }
+    reader.readAsArrayBuffer(file)
+  }
+  generateQuizJson(data: any[]): any {
+    const quizJson = this.initializeQuizJson()
+
+    const headers = this.extractHeaders(data)
+    const limitedData = this.limitRows(data)
+
+    limitedData.forEach((row, index) => {
+      if (!this.isValidRow(row, index)) return
+
+      const rowData = this.mapRowToData(headers, row)
+      if (!this.hasRequiredFields(rowData, index)) return
+
+      const questionId = this.generateQuestionId(index)
+      const options = this.generateOptions(rowData, questionId)
+
+      const correctOptions = this.getCorrectOptions(options)
+      const multiSelection = this.isMultiSelection(correctOptions)
+
+      quizJson.questions.push(this.createQuestion(rowData, questionId, options, multiSelection))
+    })
+
+    return quizJson
+  }
+
+  private initializeQuizJson(): any {
+    return {
+      timeLimit: 0,
+      passPercentage: 0,
+      isAssessment: this.resourceDetails.isAssessment,
+      randomCount: 0,
+      questions: [] as QuizQuestion[],
+    }
+  }
+
+  private extractHeaders(data: any[]): string[] {
+    return data[0].map((header: string) => header.trim())
+  }
+
+  private limitRows(data: any[]): any[] {
+    return data.slice(1, 501) // Start from row 1 (skip header) and include up to row 500
+  }
+
+  private isValidRow(row: any, index: number): boolean {
+    if (!row || row.length === 0) {
+      console.warn(`Skipping empty row ${index + 1}`)
+      return false
+    }
+    return true
+  }
+
+  private mapRowToData(headers: string[], row: any): { [key: string]: any } {
+    const rowData: { [key: string]: any } = {}
+    headers.forEach((header: string, index: number) => {
+      rowData[header] = row[index] ?? ''
+    })
+    return rowData
+  }
+
+  private hasRequiredFields(rowData: { [key: string]: any }, index: number): boolean {
+    if (!rowData['Question'] || !rowData['Correct Answer']) {
+      console.warn(`Skipping row ${index + 1} due to missing required fields.`)
+      return false
+    }
+    return true
+  }
+
+  private generateQuestionId(index: number): string {
+    return `Q${100 + index}`
+  }
+
+  private generateOptions(rowData: { [key: string]: any }, questionId: string): QuizOption[] {
+    const options: QuizOption[] = []
+    const correctAnswers = this.parseCorrectAnswers(rowData['Correct Answer'])
+    const lastNonEmptyIndex = this.getLastNonEmptyOptionIndex(rowData)
+
+    for (let optionIndex = 1; optionIndex <= lastNonEmptyIndex; optionIndex++) {
+      const key = `Option ${optionIndex}`
+      const optionText = rowData[key] !== undefined && rowData[key] !== null ? String(rowData[key]).trim() : ''
+
+      options.push({
+        text: optionText,
+        optionId: `${questionId}-${String.fromCharCode(96 + optionIndex)}`, // Sequential IDs (a, b, c...)
+        isCorrect: correctAnswers.includes(optionIndex),
+      })
+    }
+
+    return options
+  }
+
+  private parseCorrectAnswers(correctAnswer: string): number[] {
+    return correctAnswer
+      .toString()
+      .split(',')
+      .map((answer: string) => parseInt(answer.trim(), 10)) // Convert numeric values to integers
+  }
+
+  private getLastNonEmptyOptionIndex(rowData: { [key: string]: any }): number {
+    let lastNonEmptyIndex = 0
+    for (let optionIndex = 1; optionIndex <= 6; optionIndex++) {
+      const key = `Option ${optionIndex}`
+      if (rowData[key] !== undefined && rowData[key] !== null && String(rowData[key]).trim() !== '') {
+        lastNonEmptyIndex = optionIndex
+      }
+    }
+    return lastNonEmptyIndex
+  }
+
+  private getCorrectOptions(options: QuizOption[]): QuizOption[] {
+    return options.filter((option: QuizOption) => option.isCorrect)
+  }
+
+  private isMultiSelection(correctOptions: QuizOption[]): boolean {
+    return correctOptions.length > 1
+  }
+
+  private createQuestion(
+    rowData: { [key: string]: any },
+    questionId: string,
+    options: QuizOption[],
+    multiSelection: boolean
+  ): QuizQuestion {
+    return {
+      questionId,
+      question: rowData['Question'].trim(),
+      questionType: multiSelection ? 'mcq-mca' : 'mcq-sca',
+      options,
+      multiSelection,
+    }
+  }
+  downloadTemplate(): void {
+    const s3Url = 'https://aastar-app-assets.s3.ap-south-1.amazonaws.com/final_single_row_questions.xlsx' // Replace with your S3 file URL
+    const anchor = document.createElement('a')
+    anchor.href = s3Url
+    anchor.download = 'Sample_Bulk_Upload_Template.xlsx' // Set the desired file name
+    // anchor.target = '_blank'
+    anchor.click()
+  }
+
+  downloadUploadedQuestion(): void {
+    // Prepare the data for Excel
+    const excelData = this.questionsArr.map((question: any) => {
+      // const correctOptions = question.options.filter((option: any) => option.isCorrect) // Get correct options
+      const tmp = document.createElement('div')
+      tmp.innerHTML = question.question
+      const cleanText = tmp.textContent ?? tmp.innerText ?? ''
+
+      const row: any = {
+        Question: cleanText,// Remove HTML tags like <p>
+        // 'Multi Selection': correctOptions.length > 1 ? 'true' : 'FALSE', // Set multiSelection based on correct options
+        'Option 1': question.options[0] ? question.options[0].text : '',
+        'Option 2': question.options[1] ? question.options[1].text : '',
+        'Option 3': question.options[2] ? question.options[2].text : '',
+        'Option 4': question.options[3] ? question.options[3].text : '',
+        'Option 5': question.options[4] ? question.options[4].text : '',
+        'Option 6': question.options[5] ? question.options[5].text : '',
+        'Correct Answer': question.options
+          .map((option: any, index: number) => (option.isCorrect ? index + 1 : null))
+          .filter((option: string | null) => option !== null)
+          .join(', '), // Combine correct answers into a single string
+      }
+      return row
+    })
+
+    // Convert the data to a worksheet
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excelData)
+
+    // Create a new workbook and append the worksheet
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Questions')
+
+    // Generate the Excel file and trigger the download
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+    const blob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
+
+    // Create a temporary anchor element to trigger the download
+    const anchor = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    anchor.href = url
+    anchor.download = 'Uploaded_Questions.xlsx' // Set the desired file name
+    anchor.click()
+
+    // Clean up the URL object
+    URL.revokeObjectURL(url)
   }
   addTodo(event: any, field: string) {
     const meta: any = {}

@@ -830,7 +830,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
     }
     else if (status == 'for revision') {
-      this.createCourseBtn = false
+      this.createCourseBtn = true
       this.currentTab = 'For revision'
       this.currentStatus = 'For revision'
       this.isSelectedColor = false
@@ -1034,6 +1034,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
       case 'All Courses':
         this.isAihub = false
+        this.createCourseBtn = true
         this.link = 'All Courses'
         this.activeLink = 'All Courses'
         this.isSelectedColor = false
@@ -1050,6 +1051,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
       case 'Courses without certificate':
         this.isAihub = false
+        this.createCourseBtn = true
         this.link = 'Courses without certificate'
         this.activeLink = 'Courses without certificate'
         this.isSelectedColor = false
@@ -1066,6 +1068,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
       case 'Courses with certificate':
         this.isAihub = false
+        this.createCourseBtn = true
         this.link = 'Courses with certificate'
         this.activeLink = 'Courses with certificate'
         this.isSelectedColor = false
@@ -1083,6 +1086,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'selfAssessmentDraft':
       case 'Self Assessment Draft':
         this.isAihub = false
+        this.createCourseBtn = false
         this.link = 'Self Assessment Draft'
         this.activeLink = 'Self Assessment Draft'
         this.isSelectedColor = false
