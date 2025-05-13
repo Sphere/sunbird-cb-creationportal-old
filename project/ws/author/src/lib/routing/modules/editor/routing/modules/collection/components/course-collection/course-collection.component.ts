@@ -73,6 +73,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   viewMode = 'meta'
   mimeTypeRoute = ''
   courseData: any
+  courseID: any
   mediumScreen = false
   sideBarOpened = false
   mediumSizeBreakpoint$ = this.breakpointObserver
@@ -833,6 +834,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     if (this.resourseSelected !== '') {
       this.update()
     }
+    const url = this.router.url
+    const id = url.split('/')
+
+    this.courseID = id[3]
+    console.log("this.currentCourseId", this.currentCourseId)
     const updatedContent = this.contentService.upDatedContent || {}
     // console.log(updatedContent)
     if (this.viewMode === 'assessment') {
@@ -3038,6 +3044,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             requestBody.request.content.competency = false
             console.log(requestBody, this.versionKey, this.versionKey.competency)
 
+          }
+          if (this.courseID !== this.currentCourseId) {
+            return true
           }
           return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
             tap(() => {

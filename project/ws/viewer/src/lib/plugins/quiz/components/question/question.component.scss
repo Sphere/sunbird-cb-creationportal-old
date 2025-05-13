@@ -15,7 +15,9 @@
   padding-bottom: $size-m;
   height: auto;
 }
-
+::ng-deep .theme-igot.day-mode .mat-list-item-disabled{
+  background-color: white !important;
+}
 .wrap-mat-radio-label {
   white-space: normal;
 }
@@ -91,7 +93,12 @@
 .incorrect-answer {
   background-color: #000000; /* Example: Red background for incorrect answers */
 }
-
+::ng-deep .app-class .mat-list-option{
+  color: rgba(0, 0, 0, 0.38) !important;
+}
+.checked-radio {
+  color: #1C5D95 !important;
+}
 
 /* Override the default style for the inner circle with higher specificity */
 ::ng-deep .theme-igot.day-mode .mat-radio-button.checked-radio .mat-radio-inner-circle {
@@ -108,4 +115,7 @@
   background-color: rgba(28, 93, 149, 0.1) !important;
 }
 
-
+::ng-deep .theme-igot.day-mode .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-disabled, .theme-igot.day-mode .mat-pseudo-checkbox-indeterminate.mat-pseudo-checkbox-disabled{
+  background-color: #1C5D95 !important;
+  border-color: #1C5D95 !important;
+}
