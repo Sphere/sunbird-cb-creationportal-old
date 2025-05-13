@@ -17,7 +17,7 @@ import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
-import { of, Subscription } from 'rxjs'
+import { Observable, of, Subscription } from 'rxjs'
 // import { map, mergeMap, tap, catchError } from 'rxjs/operators'
 import { map, mergeMap, tap } from 'rxjs/operators'
 import { IContentNode, IContentTreeNode } from '../../interface/icontent-tree'
@@ -775,17 +775,16 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
 
     this.loaderService.changeLoad.next(true)
-    this.triggerSave().subscribe(
-      () => {
-        this.loaderService.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.SAVE_SUCCESS,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-        // window.location.reload()
-      },
+    this.triggerSave().subscribe(() => {
+      this.loaderService.changeLoad.next(false)
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.SAVE_SUCCESS,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+      // window.location.reload()
+    },
       (error: any) => {
         if (error.status === 409) {
           const errorMap = new Map<string, NSContent.IContentMeta>()
@@ -2832,7 +2831,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   // }
 
-  triggerSave() {
+  triggerSave(): Observable<true | null> {
     if (this.showAddchapter) {
       if (!this.clickedNext) {
         this.backToDashboard = false
@@ -3046,7 +3045,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
           }
           if (this.courseID !== this.currentCourseId) {
-            return true
+            return of(true) // <- wrap boolean in Observable
           }
           return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
             tap(() => {
