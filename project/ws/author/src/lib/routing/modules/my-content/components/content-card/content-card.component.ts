@@ -94,7 +94,7 @@ export class ContentCardComponent implements OnInit {
           const matchingValue = this.competencyData.find((value: any) => value.id == element.competencyId)
           finalComp = {
             ...element,
-            ...matchingValue.additionalProperties
+            ...(matchingValue?.additionalProperties || {})
           }
           return finalComp
         }
