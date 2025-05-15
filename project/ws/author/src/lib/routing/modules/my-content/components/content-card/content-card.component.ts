@@ -84,11 +84,14 @@ export class ContentCardComponent implements OnInit {
   }
   getCourseCompetency() {
     let combinedArray = ''
-    console.log("this.data", this.competencyData)
     if (this.data.competencies_v1 && this.data.competencies_v1.length > 0) {
-      debugger
-      const competencies = JSON.parse(this.data.competencies_v1)
+      let competencies = JSON.parse(this.data.competencies_v1)
       let finalComp = ""
+      console.log("competencies", competencies)
+      if (!Array.isArray(competencies)) {
+        competencies = [competencies]
+      }
+
       combinedArray = competencies.map((element: any) => {
         if (element.competencyId) {
           const matchingValue = this.competencyData.find((value: any) => value.id == element.competencyId)
@@ -105,7 +108,6 @@ export class ContentCardComponent implements OnInit {
     }
 
     this.addedCompetency = combinedArray
-    console.log("addedCompetency", this.addedCompetency)
   }
 
   getName(lang: string): string {
