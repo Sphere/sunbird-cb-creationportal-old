@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
+import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core'
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { Router } from '@angular/router'
@@ -15,10 +15,12 @@ import { CertificateStatusDialogComponentDialogComponent } from '../../../../../
 })
 export class ContentCardComponent implements OnInit {
   @Input() data: any
+  @Input() competencyData: any
   @Input() ordinals: any
   @Input() forExpiry = false
   @Input() forDelete = false
   @Input() changeView = false
+  addedCompetency: any
   filteredSubTitles: any[] = []
   translationArray: any = []
   userId!: string
@@ -74,6 +76,36 @@ export class ContentCardComponent implements OnInit {
     else if (this.data.status == 'Retired') {
       this.CourseStatusName = 'Retired'
     }
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['competencyData'] && this.competencyData && this.data) {
+      this.getCourseCompetency()
+    }
+  }
+  getCourseCompetency() {
+    let combinedArray = ''
+    console.log("this.data", this.competencyData)
+    if (this.data.competencies_v1 && this.data.competencies_v1.length > 0) {
+      debugger
+      const competencies = JSON.parse(this.data.competencies_v1)
+      let finalComp = ""
+      combinedArray = competencies.map((element: any) => {
+        if (element.competencyId) {
+          const matchingValue = this.competencyData.find((value: any) => value.id == element.competencyId)
+          finalComp = {
+            ...element,
+            ...matchingValue.additionalProperties
+          }
+          return finalComp
+        }
+        return finalComp
+
+
+      })
+    }
+
+    this.addedCompetency = combinedArray
+    console.log("addedCompetency", this.addedCompetency)
   }
 
   getName(lang: string): string {
