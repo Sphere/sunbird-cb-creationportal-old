@@ -82,7 +82,20 @@
           cursor: data.contentType === 'Knowledge Board'
         }" [routerLink]="(data | pipeContentRoute : true).url" [title]="data.name" aria-label="Content"
         i18n-aria-label="Content | Click to view">
-        <span class="font-weight-500">{{ data.name || 'Untitled Content' }} </span>
+        <div class="flex">
+          <span class="font-weight-500">
+            {{ data.name || 'Untitled Content' }}&nbsp;
+          </span>
+          <div class="flex" *ngIf="addedCompetency?.length > 0">
+            <div *ngFor="let comp of addedCompetency; let isLast = last; let isFirst = first">
+              <p style="display: inline;">
+                <span *ngIf="isFirst">(</span>{{ comp.Code }}<span *ngIf="!data.competency"> - {{ comp.level
+                  }}</span><span *ngIf="!isLast">, </span><span *ngIf="isLast">)</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
       </a>
     </div>
     <div *ngIf="pageName">
@@ -95,6 +108,13 @@
           : (data | pipeContentRoute : true).url
       " [title]="data.name" aria-label="Content" i18n-aria-label="Content | Click to view">
         <span class="font-weight-500">{{ data.name || 'Untitled Content' }} </span>
+        <div *ngIf="addedCompetency?.length > 0">
+          <div *ngFor="let comp of addedCompetency">
+            <div style="padding: 10px;margin-left: 5px;margin-right: 5px;padding-bottom: 0px;">
+              <p style="float: left;margin-bottom: 0px;">{{comp.Code}} - {{ comp.level }}</p>
+            </div>
+          </div>
+        </div>
       </a>
     </div>
     <!-- <span class="ws-mat-primary-text uppercase font-weight-500">{{

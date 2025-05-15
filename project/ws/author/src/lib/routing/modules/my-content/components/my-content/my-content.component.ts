@@ -30,6 +30,8 @@ import { map } from 'rxjs/operators'
 // } from '@ws/author/src/lib/constants/content-role'
 import * as l from 'lodash'
 import { ConfigurationsService } from '@ws-widget/utils'
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 @Component({
   selector: 'ws-auth-my-content',
   templateUrl: './my-content.component.html',
@@ -47,6 +49,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private authInitService: AuthInitService,
     private configService: ConfigurationsService,
+    private editorService: EditorService,
   ) {
     this.filterMenuTreeControl = new FlatTreeControl<IMenuFlatNode>(
       node => node.levels,
@@ -131,6 +134,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
   currentTab = 'My Courses'
   currentStatus = 'Drafts'
   createCourseBtn = true
+  proficiencyList: any
   public filterMenuItems: any = []
 
   dataSource: any
@@ -1719,6 +1723,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         )
         : this.myContSvc.fetchContent(requestData)
     this.loadService.changeLoad.next(true)
+
     observable.subscribe(
       data => {
         this.loadService.changeLoad.next(false)
@@ -1738,6 +1743,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
             : data && data.result.content
               ? data.result.content
               : []
+        this.editorService.getAllEntities().subscribe(async (res: any) => {
+          this.proficiencyList = await res.result.response
+        })
         if (this.status === 'draft' || this.status === 'selfAssessmentDraft') {
           console.log("this.status = ", this.status)
           const filteredContent = (data && data.result && data.result.content) ?
