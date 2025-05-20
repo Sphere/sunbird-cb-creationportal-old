@@ -32,7 +32,7 @@ export class AppTocDesktopModalComponent implements OnInit {
   competencyData(data: any) {
     console.log("data", data)
     let combinedMap = new Map<string, any>()
-    let competencies = JSON.parse(data.competency)
+    let competencies = JSON.parse(data.competency.competencies_v1)
 
     if (!Array.isArray(competencies)) {
       competencies = [competencies]
@@ -40,31 +40,42 @@ export class AppTocDesktopModalComponent implements OnInit {
 
     if (competencies && competencies.length > 0) {
       competencies.forEach((element: any) => {
-        if (!element.competencyId) return
 
         const matchingValue = data.proficiencyList.find((value: any) => value.id == element.competencyId)
 
-        let levelName = ''
+        let levels: string[] = []
+
         if (
           matchingValue &&
           matchingValue.additionalProperties &&
           matchingValue.additionalProperties.competencyLevelDescription
         ) {
           const levelDescriptions = JSON.parse(matchingValue.additionalProperties.competencyLevelDescription)
-          const levelMatch = levelDescriptions.find((desc: any) => desc.level === element.level)
-          if (levelMatch && levelMatch.name) {
-            levelName = `Level ${element.level} - ${levelMatch.name}`
+          if (data.competency && data.competency.competency === true) {
+            if (data.lang === 'hi') {
+              levels = levelDescriptions.map((desc: any) => `Level ${desc.level} - ${desc['lang-hi-name']}`)
+            } else {
+              levels = levelDescriptions.map((desc: any) => `Level ${desc.level} - ${desc.name}`)
+            }
+
+          } else {
+            const levelMatch = levelDescriptions.find((desc: any) => desc.level === element.level)
+            if (levelMatch && levelMatch.name) {
+              levels = [`Level ${element.level} - ${levelMatch.name}`]
+            }
           }
         }
 
         if (combinedMap.has(element.competencyId)) {
           const existing = combinedMap.get(element.competencyId)
-          existing.levels.push(levelName)
+          existing.levels.push(...levels)
+          // Remove duplicates
+          existing.levels = Array.from(new Set(existing.levels))
         } else {
           combinedMap.set(element.competencyId, {
             ...element,
             ...(matchingValue && matchingValue.additionalProperties ? matchingValue.additionalProperties : {}),
-            levels: levelName ? [levelName] : []
+            levels: levels
           })
         }
       })
@@ -73,6 +84,7 @@ export class AppTocDesktopModalComponent implements OnInit {
     this.addedCompetency = Array.from(combinedMap.values())
     console.log("this.addedCompetency", this.addedCompetency)
   }
+
 
 
 
