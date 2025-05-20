@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material'
 import { Router } from '@angular/router'
-import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+// import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 
 @Component({
   selector: 'ws-app-app-toc-desktop-modal',
@@ -12,16 +12,17 @@ export class AppTocDesktopModalComponent implements OnInit {
   cometencyData: { name: any; levels: string }[] = []
   competencyLevelDescription: any = []
   courseName!: ''
+  addedCompetency!: any
   constructor(
     public dialogRef: MatDialogRef<AppTocDesktopModalComponent>,
     private router: Router,
-    private editorService: EditorService,
+    // private editorService: EditorService,
     @Inject(MAT_DIALOG_DATA) public content: any,
   ) { }
 
   ngOnInit() {
     if (this.content.type === 'COMPETENCY') {
-      this.competencyData(this.content.competency)
+      this.competencyData(this.content)
     }
   }
   showOrgprofile(orgId: string) {
@@ -30,35 +31,49 @@ export class AppTocDesktopModalComponent implements OnInit {
   }
   competencyData(data: any) {
     console.log("data", data)
-    data = JSON.parse(data)
-    this.courseName = data[0].competencyName
-    console.log("data[0].competencyName", data[0].competencyName)
-    let competencyId: any = 0
-    if (data && data.length > 0) {
-      competencyId = parseInt(data[0].competencyId, 10) // Convert to a number
-      console.log(competencyId) // Log the converted number
+    let combinedMap = new Map<string, any>()
+    let competencies = JSON.parse(data.competency)
+
+    if (!Array.isArray(competencies)) {
+      competencies = [competencies]
     }
 
-    let proficiencyList = []
-    this.editorService.getEntities(competencyId).subscribe(async (res: any) => {
-      proficiencyList = await res.result.response
-      if (proficiencyList.length > 0) {
-        console.log("proficiency list", proficiencyList)
-        if (proficiencyList[0].additionalProperties.competencyLevelDescription) {
-          this.competencyLevelDescription = JSON.parse(proficiencyList[0].additionalProperties.competencyLevelDescription)
-        } else {
-          this.competencyLevelDescription = 'Levels data not found'
-        }
-        console.log(this.competencyLevelDescription, "competencyLevelDescription")
+    if (competencies && competencies.length > 0) {
+      competencies.forEach((element: any) => {
+        if (!element.competencyId) return
 
-        // Filter the proficiencyList based on the level if it exists
-        if (data[0].level) {
-          const levels = data.map((item: any) => item.level)
-          this.competencyLevelDescription = this.competencyLevelDescription.filter((item: any) => levels.includes(item.level))
+        const matchingValue = data.proficiencyList.find((value: any) => value.id == element.competencyId)
+
+        let levelName = ''
+        if (
+          matchingValue &&
+          matchingValue.additionalProperties &&
+          matchingValue.additionalProperties.competencyLevelDescription
+        ) {
+          const levelDescriptions = JSON.parse(matchingValue.additionalProperties.competencyLevelDescription)
+          const levelMatch = levelDescriptions.find((desc: any) => desc.level === element.level)
+          if (levelMatch && levelMatch.name) {
+            levelName = `Level ${element.level} - ${levelMatch.name}`
+          }
         }
-        console.log(this.content.lang, this.competencyLevelDescription, "competencyLevelDescription")
-      }
-    })
+
+        if (combinedMap.has(element.competencyId)) {
+          const existing = combinedMap.get(element.competencyId)
+          existing.levels.push(levelName)
+        } else {
+          combinedMap.set(element.competencyId, {
+            ...element,
+            ...(matchingValue && matchingValue.additionalProperties ? matchingValue.additionalProperties : {}),
+            levels: levelName ? [levelName] : []
+          })
+        }
+      })
+    }
+
+    this.addedCompetency = Array.from(combinedMap.values())
+    console.log("this.addedCompetency", this.addedCompetency)
   }
+
+
 
 }

@@ -10,6 +10,7 @@ import { AppTocService } from '../../services/app-toc.service'
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
 import { AccessControlService } from '@ws/author/src/public-api'
 import { Location } from '@angular/common'
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 
 export enum ErrorType {
   internalServer = 'internalServer',
@@ -41,6 +42,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       errorType: 'internalServer',
     },
   }
+  proficiencyList: any
   isAuthor = false
   authorBtnWidget: NsPage.INavLink = {
     actionBtnId: 'feature_authoring',
@@ -98,7 +100,9 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     private authAccessControlSvc: AccessControlService,
     private location: Location,
     private progressSvc: ContentProgressService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private editorService: EditorService,
+
   ) {
     // Initialize filteredComments for each role as an empty array
     this.roles.forEach(role => {
@@ -121,6 +125,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
         this.isLoading = true
         this.changeText = 'comments'
         if (this.content) {
+
           this.progressSvc.getComments(this.content.identifier).subscribe(res => {
             console.log(res)
             this.commentsList = res
@@ -132,6 +137,10 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
           })
         }
       } else if (data === 'preview') {
+        this.editorService.getAllEntities().subscribe(async (res: any) => {
+          this.proficiencyList = await res.result.response
+          console.log("this.proficiencyList", this.proficiencyList)
+        })
         this.changeText = 'preview'
         this.cdr.detectChanges()
       } else if (data === 'history') {
