@@ -87,7 +87,6 @@ export class ContentCardComponent implements OnInit {
     if (this.data.competencies_v1 && this.data.competencies_v1.length > 0) {
       let competencies = JSON.parse(this.data.competencies_v1)
       let finalComp = ""
-      console.log("competencies", competencies)
       if (!Array.isArray(competencies)) {
         competencies = [competencies]
       }

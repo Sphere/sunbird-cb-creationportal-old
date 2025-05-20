@@ -1751,7 +1751,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
           const filteredContent = (data && data.result && data.result.content) ?
             data.result.content.filter((item: any) => item.prevStatus !== 'Review') : []
           this.cardContent = filteredContent
-          console.log("filteredContent", data.result, this.cardContent, filteredContent)
         }
 
 
