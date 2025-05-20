@@ -119,8 +119,9 @@
   <ws-app-toc-banner *ngIf="changeText !== 'preview'" role="banner" [banners]="banners" [forPreview]="forPreview"
     [content]="content" [analytics]="analytics" [resumeData]="resumeData">
   </ws-app-toc-banner>
-  <ws-app-learner-banner *ngIf="changeText === 'preview'" role="banner" [banners]="banners" [forPreview]="forPreview"
-    [content]="content" [resumeData]="resumeData" [optmisticPercentage]="optmisticPercentage"> </ws-app-learner-banner>
+  <ws-app-learner-banner [proficiencyList]="proficiencyList" *ngIf="changeText === 'preview'" role="banner"
+    [banners]="banners" [forPreview]="forPreview" [content]="content" [resumeData]="resumeData"
+    [optmisticPercentage]="optmisticPercentage"> </ws-app-learner-banner>
   <ng-container>
     <div role="main" class="toc-body" *ngIf="!errorCode; else tocError">
       <nav mat-tab-nav-bar class="toc-links mat-app-background">

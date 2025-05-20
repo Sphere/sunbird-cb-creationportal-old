@@ -33,6 +33,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() banners: NsAppToc.ITocBanner | null = null
   @Input() content: NsContent.IContent | null = null
   @Input() resumeData: NsContent.IContinueLearningData | null = null
+  @Input() proficiencyList: any
   // @Input() analytics: NsAnalytics.IAnalytics | null = null
   @Input() forPreview = false
   @Input() batchData!: any
@@ -454,7 +455,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
   openCompetency(content: any) {
     this.dialog.open(AppTocDesktopModalComponent, {
       width: '600px',
-      data: { competency: content.competencies_v1, type: 'COMPETENCY', lang: content.lang },
+      data: { competency: content.competencies_v1, type: 'COMPETENCY', lang: content.lang, proficiencyList: this.proficiencyList },
     })
   }
 }
