@@ -17,7 +17,9 @@
   <ng-container *ngIf="content.type === 'COMPETENCY'">
     <div class="flex flex-col">
       <ng-container *ngFor="let list of addedCompetency">
-        <h1 class="mt-2">{{ list.competencyName }}</h1>
+        <h1 *ngIf="content.lang==='en'" class="mt-2">{{ list.competencyName }}</h1>
+        <h1 *ngIf="content.lang==='hi'" class="mt-2">{{ list['lang-hi-name']?list['lang-hi-name']:list.competencyName }}
+        </h1>
         <ng-container *ngFor="let level of list.levels">
           <div>
             {{ level }}

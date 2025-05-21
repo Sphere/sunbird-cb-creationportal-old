@@ -61,7 +61,12 @@ export class AppTocDesktopModalComponent implements OnInit {
           } else {
             const levelMatch = levelDescriptions.find((desc: any) => desc.level === element.level)
             if (levelMatch && levelMatch.name) {
-              levels = [`Level ${element.level} - ${levelMatch.name}`]
+              if (data.lang === 'hi') {
+                levels = [`Level ${element.level} - ${levelMatch['lang-hi-name']}`]
+                // levels = levelDescriptions.map((desc: any) => `Level ${desc.level} - ${desc['lang-hi-name']}`)
+              } else {
+                levels = [`Level ${element.level} - ${levelMatch.name}`]
+              }
             }
           }
         }
@@ -84,8 +89,6 @@ export class AppTocDesktopModalComponent implements OnInit {
     this.addedCompetency = Array.from(combinedMap.values())
     console.log("this.addedCompetency", this.addedCompetency)
   }
-
-
 
 
 }
