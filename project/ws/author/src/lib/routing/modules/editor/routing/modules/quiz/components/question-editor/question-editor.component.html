@@ -20,7 +20,7 @@
 
   <ng-container *ngIf="selectedQuiz.questionType === 'mcq-mca' || selectedQuiz.questionType === 'mcq-sca'">
     <ws-auth-multiple-choice-question [currentId]="currentId" [showHint]="showHint" [submitPressed]="submitPressed"
-      (value)="updateSelectedQuiz($event)"></ws-auth-multiple-choice-question>
+      (value)="updateSelectedQuiz($event,selectedQuiz.questionType)"></ws-auth-multiple-choice-question>
   </ng-container>
 
   <ng-container *ngIf="selectedQuiz.questionType === 'fitb'">
