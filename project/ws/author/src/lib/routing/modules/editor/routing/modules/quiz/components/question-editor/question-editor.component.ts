@@ -61,6 +61,7 @@ export class QuestionEditorComponent implements OnInit, OnChanges, OnDestroy {
    * @param type updated property name
    */
   updateSelectedQuiz($event: any, type?: string) {
+    console.log("$event", $event, type)
     const quizData = JSON.parse(JSON.stringify(this.quizStoreSvc.getQuiz(this.quizIndex)))
     let updatedVal: any = {}
     if (type === 'question') {
@@ -76,6 +77,9 @@ export class QuestionEditorComponent implements OnInit, OnChanges, OnDestroy {
       }
       const correctOptions = updatedVal.options.filter((option: any) => option.isCorrect)
       updatedVal.multiSelection = correctOptions.length > 1 // true if multiple correct options, false otherwise
+      if (type === 'mcq-mca' || type === 'mcq-sca') {
+        updatedVal.questionType = correctOptions.length > 1 ? 'mcq-mca' : 'mcq-sca'// true if multiple correct options, false otherwise
+      }
     }
     this.quizStoreSvc.updateQuiz(this.quizIndex, updatedVal)
     console.log("updateSelectedQuiz")
