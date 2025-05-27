@@ -7,7 +7,8 @@
     <mat-form-field appearance="fill" style="width:100%">
       <mat-select [(ngModel)]="proficiency" placeholder="Select Competency"
         (selectionChange)="eventSelection($event.value)">
-        <input placeholder="Search Competency" matInput class="module-input" (keyup)="onKey($event.target.value)">
+        <input type="text" placeholder="Search Competency" matInput class="module-input"
+          (keyup)="onKey($event.target.value)">
         <mat-option *ngFor="let list of proficiencyList" [value]="list">
           {{ list.additionalProperties?list.additionalProperties.Code:''}} - {{list.name }}</mat-option>
       </mat-select>

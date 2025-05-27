@@ -247,8 +247,14 @@ export class CompetencyPopupComponent implements OnInit {
     if (!filter) {
       return this.searchComp
     }
-    return this.proficiencyList = this.searchComp.filter((option: any) =>
-      option.name.toLowerCase().includes(filter)
-    )
+
+    return this.proficiencyList = this.searchComp.filter((option: any) => {
+      const nameMatches = option.name.toLowerCase().includes(filter)
+      const codeMatches = option.additionalProperties && option.additionalProperties.Code
+        ? option.additionalProperties.Code.toLowerCase().includes(filter)
+        : false
+
+      return nameMatches || codeMatches
+    })
   }
 }
