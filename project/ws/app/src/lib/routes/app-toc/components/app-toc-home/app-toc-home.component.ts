@@ -266,7 +266,12 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     }
     return returnValue
   }
-
+  showTocBanner(): void {
+    // Set changeText to a value other than 'comments', 'history', or 'preview'
+    // so that ws-app-toc-banner is visible.
+    // For example, an empty string will work if ws-app-toc-banner is shown when changeText !== 'preview'
+    this.changeText = ''
+  }
   redirect(url: string) {
     window.location.assign(`${location.origin}${url}`)
   }
