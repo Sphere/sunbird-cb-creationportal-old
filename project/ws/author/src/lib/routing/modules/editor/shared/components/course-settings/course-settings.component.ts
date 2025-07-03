@@ -92,6 +92,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   canUpdate = true
   ordinals!: any
   resourceTypes: string[] = []
+  sourceName: string[] = []
   employeeList: any[] = []
   audienceList: any[] = []
   rolesMappedListData!: any
@@ -159,6 +160,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   isSaveModuleFormEnable: boolean = false;
   moduleButtonName: string = 'Create';
   roles$!: Observable<any[]>
+  sourceNames$!: Observable<any[]>
   userId!: any
   givenName!: any
   getAllEntities: any
@@ -221,6 +223,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     }, 100)
   }
   rolesSubscription!: Subscription
+  sourceNameSubscription!: Subscription
   searchComp: any = ''
 
   contentForm!: FormGroup
@@ -255,6 +258,12 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     // })
 
     this.roles$ = this.editorService.rolesMapped() // Assign the observable
+    this.sourceNames$ = this.editorService.sourceNames() // Assign the observable
+    this.sourceNameSubscription = this.sourceNames$.subscribe(async (data: any) => {
+      if (data.length > 0) {
+        this.sourceName = data
+      }
+    })
     this.rolesSubscription = this.roles$.subscribe(async (data: any) => {
       console.log(data)
       if (data) {

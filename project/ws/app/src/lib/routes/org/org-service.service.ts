@@ -33,7 +33,11 @@ export class OrgServiceService {
   }
 
   getOrgMetadata() {
-    const orgMeta = this.http.get(`${this.sitePath}/orgmeta.config.json`)
+    const cacheBuster = new Date().getTime()
+    const orgMeta = this.http.get<any>(
+      `https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json?v=${cacheBuster}`
+    )
+
     return orgMeta
   }
 

@@ -127,8 +127,8 @@
                 [ngClass]="{ 'mat-form-field-invalid': showError('sourceName') }">
 
                 <mat-select formControlName="sourceName" i18n-placeholder placeholder="Select SourceName">
-                  <mat-option *ngFor="let sourceName of ordinals.sourceName" [value]="sourceName">
-                    {{ sourceName }}</mat-option>
+                  <mat-option *ngFor="let name of sourceName" [value]="name">
+                    {{ name }}</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
