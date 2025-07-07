@@ -135,7 +135,15 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     {
       "name": 'Kannada',
       "value": 'kn'
-    }
+    },
+    {
+      "name": 'Assamese',
+      "value": 'as'
+    },
+    {
+      "name": 'Odia',
+      "value": 'or'
+    },
   ]
   isAddCerticate: boolean = false;
   resourceDurat: any = []
