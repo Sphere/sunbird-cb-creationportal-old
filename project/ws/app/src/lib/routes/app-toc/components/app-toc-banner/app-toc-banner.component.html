@@ -1,4 +1,5 @@
-<div style="color: #1C5D95 !important;padding: 16px 2.9rem; height:50px; background: #F3F8FD;">
+<div *ngIf="!allowExternalContentReviewer"
+  style="color: #1C5D95 !important;padding: 16px 2.9rem; height:50px; background: #F3F8FD;">
   <h3 *ngIf=" content?.status==='Deleted' || content?.status==='Expired'" class=" margin-remove-bottom pt-4 info-msg"
     i18n>
     The content is expired or deleted.

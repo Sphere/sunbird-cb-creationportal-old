@@ -161,12 +161,13 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('regionView', { static: false }) regionView!: ElementRef
   @ViewChild('accessPathsView', { static: false }) accessPathsView!: ElementRef
   @ViewChild('keywordsSearch', { static: true }) keywordsSearch!: ElementRef<any>
+  languageListSubscription!: Subscription
 
   timer: any
 
   filteredOptions$: Observable<string[]> = of([])
   saveParent: any
-
+  languageList$!: Observable<any[]>
   //UI variables
   moduleName: string = 'undefined title';
   isSaveModuleFormEnable: boolean = false;
@@ -234,6 +235,12 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.regionCtrl = new FormControl()
     this.accessPathsCtrl = new FormControl()
     this.accessPathsCtrl.disable()
+    this.languageList$ = this.editorService.languageList() // Assign the observable
+    this.languageListSubscription = this.languageList$.subscribe(async (data: any) => {
+      if (data.length > 0) {
+        this.languageList = data
+      }
+    })
     this.creatorContactsCtrl.valueChanges
       .pipe(
         debounceTime(500),

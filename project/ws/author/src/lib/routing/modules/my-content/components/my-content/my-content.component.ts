@@ -101,6 +101,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
   isSelectedSelfRevisionCourse: boolean = false;
   isSelectedPublishCourse: boolean = false;
   isSelectedToPublishCourse: boolean = false;
+  isSelectedToExternalCouseReview: boolean = false;
+  isSelectedToExternalSelfAssessmentReview: boolean = false
   isSelectedAllCourse: boolean = false
   isSelectedCourseWithoutCertificate: boolean = false
   isSelectedCourseWithCertificate: boolean = false
@@ -128,6 +130,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
   allowAuthorContentCreate = false
   allowRedo = false
   allowPublish = false
+  allowExternalContentReviewer = false
   allowExpiry = false
   allowRestore = false
   isNewDesign = false
@@ -175,7 +178,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // this.router.navigate(['/author/my-content'], { queryParams: { status: 'draft' } })
 
     // tslint:disable-next-line:no-console
-    console.log(this.configService.unMappedUser.roles)
+    console.log(this.configService.unMappedUser.roles, this.configService.userRoles)
+
     // this.newDesign = this.accessService.authoringConfig.newDesign
     this.newDesign = l.get(this.accessService, 'authoringConfig.newDesign')
     this.ordinals = this.authInitService.ordinals
@@ -200,6 +204,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.allowExpiry = this.accessService.authoringConfig.allowExpiry
     this.allowReview = this.canShow('review') && this.accessService.authoringConfig.allowReview
     this.allowPublish = this.canShow('publish') && this.accessService.authoringConfig.allowPublish
+    this.allowExternalContentReviewer = this.canShow('external_content_reviewer')
     this.isContentExpanded = true
     console.log("status: ", this.status)
     if (this.status === 'allCourses' || this.status === 'coursesWithoutCertificate' || this.status === 'courseWithCertificate') {
@@ -436,6 +441,54 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
     }
+    else if (this.status === 'externalCourseReview') {
+      this.isSelfAssessmentExpanded = false
+      this.createCourseBtn = false
+      this.currentTab = 'Live Courses'
+      this.currentStatus = 'Courses to Review'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+      this.isSelectedToExternalCouseReview = true
+      this.isSelectedToExternalSelfAssessmentReview = false
+
+    } else if (this.status == 'externalSelfAssessmentReview') {
+      this.isSelfAssessmentExpanded = true
+      this.createCourseBtn = false
+      this.currentTab = 'Live Self Assessment'
+      this.currentStatus = 'Self Assessment to Review'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+      this.isSelectedToExternalCouseReview = false
+      this.isSelectedToExternalSelfAssessmentReview = true
+
+    }
     else if (this.status === 'published') {
       this.isSelfAssessmentExpanded = false
       this.createCourseBtn = false
@@ -565,6 +618,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.links = ['Sent for review', 'Published Courses', 'Retired']
     } else if (this.allowPublish) {
       this.links = ['Courses to publish', 'Published Courses']
+    } else if (this.allowExternalContentReviewer) {
+      this.links = ['Courses to Review']
     }
     if (status == 'Sent for review') {
       this.createCourseBtn = true
@@ -875,6 +930,52 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
 
+    } else if (status == 'External Courses to Review') {
+      this.createCourseBtn = false
+      this.currentTab = 'Live Courses'
+      this.currentStatus = 'Courses to Review'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+      this.isSelectedToExternalCouseReview = true
+      this.isSelectedToExternalSelfAssessmentReview = false
+
+    } else if (status == 'External Self Assessment to Review') {
+      this.createCourseBtn = false
+      this.currentTab = 'Live Self Assessment'
+      this.currentStatus = 'Self Assessment to Review'
+      this.isSelectedColor = false
+      this.isSelectedPublishCourse = false
+      this.isSelectedReviewCourse = false
+      this.isSelectedRevisionCourse = false
+      this.isSelectedSelfRevisionCourse = false
+
+      this.isSelectedToPublishCourse = false
+      this.isSelectedRetiredCourse = false
+      this.isSelectedAllCourse = false
+      this.isSelectedCourseWithoutCertificate = false
+      this.isSelectedCourseWithCertificate = false
+      this.isSelfAssessmentSelectedColor = false
+      this.isSelectedSelfReviewCourse = false
+      this.isSelectedSelfPublishCourse = false
+      this.isSelectedToSelfPublishCourse = false
+      this.isSelectedSelfRetiredCourse = false
+      this.isSelectedToExternalCouseReview = false
+      this.isSelectedToExternalSelfAssessmentReview = true
+
     }
 
     this.navigateContents(status)
@@ -884,6 +985,48 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
   navigateContents(data: string): void {
     switch (data) {
+      case 'External Courses to Review':
+        this.createCourseBtn = false
+        this.currentTab = 'Live Courses'
+        this.currentStatus = 'Courses to Review'
+        this.link = 'Courses to Review'
+        this.activeLink = 'Courses to Review'
+        this.isSelectedColor = true
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedCertificate = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+        this.isSelectedToExternalCouseReview = true
+        this.isSelectedToExternalSelfAssessmentReview = false
+
+        this.isAihub = false
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'externalCourseReview' } })
+        break
+      case 'External Self Assessment to Review':
+        this.createCourseBtn = false
+        this.currentTab = 'Live Self Assessment'
+        this.currentStatus = 'Self Assessment to Review'
+        this.link = 'Self Assessment to Review'
+        this.activeLink = 'Self Assessment to Review'
+        this.isSelectedColor = true
+        this.isSelectedPublishCourse = false
+        this.isSelectedToPublishCourse = false
+        this.isSelectedReviewCourse = false
+        this.isSelectedRetiredCourse = false
+        this.isSelectedCertificate = false
+        this.isSelectedAllCourse = false
+        this.isSelectedCourseWithoutCertificate = false
+        this.isSelectedCourseWithCertificate = false
+        this.isSelectedToExternalCouseReview = false
+        this.isSelectedToExternalSelfAssessmentReview = true
+
+        this.isAihub = false
+        this.router.navigate(['/author/my-content'], { queryParams: { status: 'externalSelfAssessmentReview' } })
+        break
       case 'AIHub':
         this.createCourseBtn = false
         this.currentTab = 'AIHub'
@@ -1193,6 +1336,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'allCourses':
         return ['Live']
       case 'coursesWithoutCertificate':
+      case 'externalCourseReview':
+      case 'externalSelfAssessmentReview':
         return ['Live']
       case 'courseWithCertificate':
         return ['Live']
@@ -1236,253 +1381,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
     }
   }
-
-  // fetchContent(loadMoreFlag: boolean, changeFilter = true) {
-  //   console.log('fetch content ')
-  //   const searchV6Data = this.myContSvc.getSearchBody(
-  //     this.status,
-  //     this.searchLanguage ? [this.searchLanguage] : [],
-  //     loadMoreFlag ? this.pagination.offset : 0,
-  //     this.queryFilter,
-  //     this.isAdmin,
-  //   )
-  //   const requestData = {
-  //     request: {
-  //       locale: this.searchLanguage ? [this.searchLanguage] : [],
-  //       query: this.queryFilter,
-  //       filters: {
-  //         status: this.fetchStatus(),
-  //         creatorContacts: <string[]>[],
-  //         trackContacts: <string[]>[],
-  //         publisherDetails: <string[]>[],
-  //         isMetaEditingDisabled: [false],
-  //         isContentEditingDisabled: [false],
-  //       },
-  //       pageNo: loadMoreFlag ? this.pagination.offset : 0,
-  //       sort: [{ lastUpdatedOn: 'desc' }],
-  //       pageSize: this.pagination.limit,
-  //       uuid: this.userId,
-  //       rootOrg: this.accessService.rootOrg,
-  //       // this is for Author Only
-  //       isUserRecordEnabled: !this.isAdmin,
-  //     },
-  //   }
-  //   if (this.finalFilters.length) {
-  //     this.finalFilters.forEach((v: any) => {
-  //       searchV6Data.filters.forEach((filter: any) => {
-  //         filter.andFilters[0] = {
-  //           ...filter.andFilters[0],
-  //           [v.key]: v.value,
-  //         }
-  //       })
-  //       requestData.request.filters = { ...requestData.request.filters, [v.key]: v.value }
-  //     })
-  //   }
-  //   if (this.queryFilter) {
-  //     delete requestData.request.sort
-  //   }
-  //   if (
-  //     [
-  //       'draft',
-  //       'rejected',
-  //       'inreview',
-  //       'published',
-  //       'unpublished',
-  //       'processing',
-  //       'deleted',
-  //     ].indexOf(this.status) > -1 &&
-  //     !this.isAdmin
-  //   ) {
-  //     requestData.request.filters.creatorContacts.push(this.userId)
-  //   }
-  //   if (this.status === 'review' && !this.isAdmin) {
-  //     requestData.request.filters.trackContacts.push(this.userId)
-  //   }
-  //   if (this.status === 'publish' && !this.isAdmin) {
-  //     requestData.request.filters.publisherDetails.push(this.userId)
-  //   }
-
-  //   this.loadService.changeLoad.next(true)
-  //   const observable =
-  //     this.status === 'expiry' || this.newDesign
-  //       ? this.myContSvc.fetchFromSearchV6(searchV6Data, this.isAdmin).pipe(
-  //         map((v: any) => {
-  //           return {
-  //             result: {
-  //               response: v,
-  //             },
-  //           }
-  //         }),
-  //       )
-  //       : this.myContSvc.fetchContent(requestData)
-  //   this.loadService.changeLoad.next(true)
-  //   observable.subscribe(
-  //     data => {
-  //       this.loadService.changeLoad.next(false)
-  //       if (changeFilter) {
-  //         this.filterMenuItems =
-  //           data && data.result && data.result.response && data.result.response.filters
-  //             ? data.result.response.filters
-  //             : this.filterMenuItems
-  //         this.dataSource.data = this.filterMenuItems
-  //       }
-  //       this.cardContent =
-  //         loadMoreFlag && !this.queryFilter
-  //           ? (this.cardContent || []).concat(
-  //             data && data.result && data.result.response ? data.result.response.result : [],
-  //           )
-  //           : data && data.result.response
-  //             ? data.result.response.result
-  //             : []
-  //       this.totalContent = data && data.result.response ? data.result.response.totalHits : 0
-  //       this.showLoadMore =
-  //         this.pagination.offset * this.pagination.limit + this.pagination.limit < this.totalContent
-  //           ? true
-  //           : false
-  //       this.fetchError = false
-  //     },
-  //     () => {
-  //       this.fetchError = true
-  //       this.cardContent = []
-  //       this.showLoadMore = false
-  //       this.loadService.changeLoad.next(false)
-  //     },
-  //   )
-  // }
-
-  // fetchContent(loadMoreFlag: boolean, changeFilter = true) {
-  //   const searchV6Data = this.myContSvc.getSearchBody(
-  //     this.status,
-  //     this.searchLanguage ? [this.searchLanguage] : [],
-  //     loadMoreFlag ? this.pagination.offset : 0,
-  //     this.queryFilter,
-  //     this.isAdmin,
-  //   )
-
-  //   console.log('fetchContent my-component ')
-
-  //   let isUserRecordEnabled = true
-  //   const adminOnlyRoles = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor', 'content-creator'])
-  //   if (adminOnlyRoles && isUserRecordEnabled) {
-  //     isUserRecordEnabled = true
-  //   } else if (this.accessService.hasRole(['reviewer', 'publisher'])) {
-  //     isUserRecordEnabled = false
-  //   }
-
-  //   const requestData = {
-  //     locale: this.searchLanguage ? [this.searchLanguage] : ['en'],
-  //     query: this.queryFilter,
-  //     request: {
-  //       query: this.queryFilter,
-  //       filters: {
-  //         status: this.fetchStatus(),
-  //         // creatorContacts: <string[]>[],
-  //         // trackContacts: <string[]>[],
-  //         // publisherDetails: <string[]>[],
-  //         // isMetaEditingDisabled: [false],
-  //         // isContentEditingDisabled: [false]
-  //         contentType: [                              // filter according to type
-  //           'Collection',
-  //           'Course',
-  //           'Learning Path',
-  //         ],
-  //       },
-  //       // pageNo: loadMoreFlag ? this.pagination.offset : 0,
-  //       sort_by: { lastUpdatedOn: 'desc' },
-  //       // pageSize: this.pagination.limit,
-  //       fields: [
-  //         'name',
-  //         'appIcon',
-  //         'mimeType',
-  //         'gradeLevel',
-  //         'identifier',
-  //         'medium',
-  //         'pkgVersion',
-  //         'board',
-  //         'subject',
-  //         'resourceType',
-  //         'primaryCategory',
-  //         'contentType',
-  //         'channel',
-  //         'organisation',
-  //         'trackable',
-  //         'status',
-  //         'authoringDisabled',
-  //       ],
-  //       facets: [
-  //         'primaryCategory',
-  //         'mimeType',
-  //       ],
-  //       // pageNo: loadMoreFlag ? this.pagination.offset : 0,
-  //       // sort: [{ lastUpdatedOn: 'desc' }],
-  //       // pageSize: this.pagination.limit,
-  //       // uuid: this.userId,
-  //       // rootOrg: this.accessService.rootOrg,
-  //       // // this is for Author Only
-  //       // isUserRecordEnabled: true,
-  //     },
-  //   }
-
-  //   if (this.finalFilters.length) {
-  //     this.finalFilters.forEach((v: any) => {
-  //       searchV6Data.filters.forEach((filter: any) => {
-  //         filter.andFilters[0] = {
-  //           ...filter.andFilters[0],
-  //           [v.key]: v.value,
-  //         }
-  //       })
-  //       requestData.request.filters = { ...requestData.request.filters, [v.key]: v.value }
-  //     })
-  //   }
-
-  //   this.loadService.changeLoad.next(true)
-  //   const observable =
-  //     this.status === 'expiry' || this.newDesign
-  //       ? this.myContSvc.fetchFromSearchV6(searchV6Data, this.isAdmin).pipe(
-  //         map((v: any) => {
-  //           return {
-  //             result: {
-  //               response: v,
-  //             },
-  //           }
-  //         }),
-  //       )
-  //       : this.myContSvc.fetchContent(requestData)
-  //   this.loadService.changeLoad.next(false)
-
-  //   observable.subscribe(
-  //     data => {
-  //       this.loadService.changeLoad.next(false)
-  //       if (changeFilter) {
-  //         this.filterMenuItems =
-  //           data && data.result && data.result.facets
-  //             ? data.result.facets
-  //             : this.filterMenuItems
-  //         this.dataSource.data = this.filterMenuItems
-  //       }
-  //       this.cardContent =
-  //         loadMoreFlag && !this.queryFilter
-  //           ? (this.cardContent || []).concat(
-  //             data && data.result ? data.result.content : [],
-  //           )
-  //           : data && data.result.content
-  //             ? data.result.content
-  //             : []
-  //       this.totalContent = data && data.result ? data.result.count : 0
-  //       this.showLoadMore =
-  //         this.pagination.offset * this.pagination.limit + this.pagination.limit < this.totalContent
-  //           ? true
-  //           : false
-  //       this.fetchError = false
-  //     },
-  //     () => {
-  //       this.fetchError = true
-  //       this.cardContent = []
-  //       this.showLoadMore = false
-  //       this.loadService.changeLoad.next(false)
-  //     },
-  //   )
-  // }
 
   fetchContent(loadMoreFlag: boolean, changeFilter = true) {
     const searchV6Data = this.myContSvc.getSearchBody(
@@ -1548,6 +1446,13 @@ export class MyContentComponent implements OnInit, OnDestroy {
     } else if (this.status == 'published') {
       requestData.request.filters['competency'] = false
     } else if (this.status == 'selfRetiredCourse' || this.status == 'selfCourseRevision') {
+      requestData.request.filters['competency'] = true
+
+    }
+    else if (this.status == 'externalCourseReview') {
+      requestData.request.filters['competency'] = false
+
+    } else if (this.status == 'externalSelfAssessmentReview') {
       requestData.request.filters['competency'] = true
 
     }
@@ -1723,7 +1628,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
         )
         : this.myContSvc.fetchContent(requestData)
     this.loadService.changeLoad.next(true)
-
     observable.subscribe(
       data => {
         this.loadService.changeLoad.next(false)
@@ -1734,7 +1638,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
               : this.filterMenuItems
           this.dataSource.data = this.filterMenuItems
         }
-        console.log("1667")
+        console.log("1667", data.result.content)
         this.cardContent =
           loadMoreFlag && !this.queryFilter
             ? (this.cardContent || []).concat(
@@ -1753,7 +1657,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
           this.cardContent = filteredContent
         }
 
-
+        console.log("this.cardContent", this.cardContent)
 
         this.totalContent = data && data.result ? data.result.count : 0
         // const index = _.findIndex(this.count, i => i.n === this.status)
@@ -2153,6 +2057,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'author_create':
         //return this.accessService.hasRole(CREATE_ROLE)
         return this.configService.userRoles!.has('content_creator')
+      case 'external_content_reviewer':
+        //return this.accessService.hasRole(CREATE_ROLE)
+        return this.configService.userRoles!.has('external_content_reviewer_live')
       default:
         return false
     }

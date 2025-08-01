@@ -635,4 +635,15 @@ export class EditorService {
       })
     )
   }
+  languageList(): Observable<any> {
+    const cacheBuster = new Date().getTime()
+    return this.apiService.get<any>(
+      `https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json?v=${cacheBuster}`
+    ).pipe(
+      map((data: any) => {
+        console.log("response languageList", data)
+        return data.languageList
+      })
+    )
+  }
 }

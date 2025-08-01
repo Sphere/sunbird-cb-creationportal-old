@@ -39,7 +39,7 @@ export class ContentCardComponent implements OnInit {
 
   ngOnInit() {
     this.data.appIcon = this.data.appIcon || 'cbp-assets/icons/default.png'
-    if (this.accessService.hasRole(['content_reviewer']) || this.accessService.hasRole(['content_publisher'])) {
+    if (this.accessService.hasRole(['content_reviewer']) || this.accessService.hasRole(['external_content_reviewer_live']) || this.accessService.hasRole(['content_publisher'])) {
       this.isReviewerOrPublisher = true
     } else {
       this.isReviewerOrPublisher = false
