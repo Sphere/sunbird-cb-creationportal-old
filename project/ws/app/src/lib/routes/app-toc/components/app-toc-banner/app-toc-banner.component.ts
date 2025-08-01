@@ -72,6 +72,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   isReviewer: boolean = false
   isCreator: boolean = false
   isPublisher: boolean = false
+  allowExternalContentReviewer: boolean = false
   commentsList: any
   historyList: any
   constructor(
@@ -98,6 +99,8 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     if (this.authAccessService.hasRole(['content_creator'])) {
       this.isCreator = true
     }
+    this.allowExternalContentReviewer = this.authAccessService.hasRole(['external_content_reviewer_live'])
+
     this.route.data.subscribe(data => {
       this.tocConfig = data.pageData.data
       if (this.content && this.isPostAssessment) {
