@@ -319,7 +319,12 @@
                   Quiz
                 </div>
                 <div *ngSwitchCase="'application/json'">
-                  Assessment
+                  <ng-container *ngIf="content?.isAssessment; else quizBlock">
+                    Assessment
+                  </ng-container>
+                  <ng-template #quizBlock>
+                    Quiz
+                  </ng-template>
                 </div>
                 <!-- <div *ngSwitchDefault><img src="cbp-assets/images/link-icon.png"> Link</div> -->
               </div>
