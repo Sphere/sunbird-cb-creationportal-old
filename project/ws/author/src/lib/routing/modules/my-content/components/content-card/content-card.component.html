@@ -182,10 +182,10 @@
     <mat-icon>cloud_upload</mat-icon>
     <span i18n>Upload Certificate</span>
   </a>
-  <a *ngIf="showMenuItem('delete')" mat-menu-item (click)="takeAction('delete')">
+  <!-- <a *ngIf="showMenuItem('delete')" mat-menu-item (click)="takeAction('delete')">
     <mat-icon>delete</mat-icon>
     <span i18n>Delete </span>
-  </a>
+  </a> -->
   <a *ngIf="showMenuItem('publish')" mat-menu-item [routerLink]="(data | pipeContentRoute : true).url">
     <mat-icon>publish</mat-icon>
     <span i18n>Publish</span>
@@ -194,11 +194,11 @@
     <mat-icon>check_circle</mat-icon>
     <span i18n>Reviewer Checklist</span>
   </a>
-  <a *ngIf="showMenuItem('unpublish')" mat-menu-item (click)="takeAction('unpublish')">
-    <mat-icon>reply</mat-icon>
-    <!-- <span i18n>Unpublish content</span> -->
-    <span i18n>Retire content</span>
-  </a>
+  <!-- <a *ngIf="showMenuItem('unpublish')" mat-menu-item (click)="takeAction('unpublish')">
+    <mat-icon>reply</mat-icon> -->
+  <!-- <span i18n>Unpublish content</span> -->
+  <!-- <span i18n>Retire content</span>
+  </a> -->
   <a *ngIf="showMenuItem('review')" mat-menu-item [routerLink]="(data | pipeContentRoute : true).url">
     <mat-icon>rate_review</mat-icon>
     <span i18n>Review</span>
