@@ -58,6 +58,8 @@ export class CertificateDialogComponent implements OnInit {
       const month = (date.getMonth() + 1).toString().padStart(2, '0')
       const year = date.getFullYear()
       const rmNumber = '#09123'
+      const maxScore = '100%'
+      const courseName = 'Normal Labour Course'
 
       const newIssuedDate = `${day}-${month}-${year}`
       // let qrCode = "https://ibb.co/wNbdr4m"
@@ -159,6 +161,46 @@ export class CertificateDialogComponent implements OnInit {
 
         newTextElement.appendChild(tspanElement)
         svgDoc.documentElement.appendChild(newTextElement)
+      }
+
+      let maxScoreText = svgDoc.querySelector('text[id="${maxScore}"] tspan')
+      if (maxScoreText) {
+        maxScoreText.textContent = maxScore
+      } else {
+        const maxScoreTextElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "text")
+        maxScoreTextElement.setAttribute("id", "maxScore")
+        maxScoreTextElement.setAttribute("fill", "black")
+        maxScoreTextElement.setAttribute("xml:space", "preserve")
+        maxScoreTextElement.setAttribute("style", "white-space: pre")
+        maxScoreTextElement.setAttribute("font-family", "Roboto")
+        maxScoreTextElement.setAttribute("font-size", "20")
+        maxScoreTextElement.setAttribute("letter-spacing", "0em")
+        const tspanElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "tspan")
+        tspanElement.setAttribute("x", "640")
+        tspanElement.setAttribute("y", "780")
+        tspanElement.textContent = maxScore
+        maxScoreTextElement.appendChild(tspanElement)
+        svgDoc.documentElement.appendChild(maxScoreTextElement)
+      }
+
+      let courseNameText = svgDoc.querySelector('text[id="${courseName}"] tspan')
+      if (courseNameText) {
+        courseNameText.textContent = courseName
+      } else {
+        const courseNameTextElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "text")
+        courseNameTextElement.setAttribute("id", "courseName")
+        courseNameTextElement.setAttribute("fill", "black")
+        courseNameTextElement.setAttribute("xml:space", "preserve")
+        courseNameTextElement.setAttribute("style", "white-space: pre")
+        courseNameTextElement.setAttribute("font-family", "Roboto")
+        courseNameTextElement.setAttribute("font-size", "24")
+        courseNameTextElement.setAttribute("letter-spacing", "0em")
+        const tspanElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "tspan")
+        tspanElement.setAttribute("x", "600")
+        tspanElement.setAttribute("y", "500")
+        tspanElement.textContent = courseName
+        courseNameTextElement.appendChild(tspanElement)
+        svgDoc.documentElement.appendChild(courseNameTextElement)
       }
 
       // Serialize the modified SVG back to a string
