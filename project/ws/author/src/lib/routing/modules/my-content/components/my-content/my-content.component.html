@@ -588,6 +588,13 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                     <mat-icon>arrow_drop_down</mat-icon>
                   </button>
                 </div>
+                <div class="border-right flex items-center" *ngIf="sourceName?.length && allowExternalContentReviewer">
+                  <button mat-button [matMenuTriggerFor]="sortSource">
+                    <span *ngIf="selectedSourceName">{{ selectedSourceName }}</span>
+                    <span *ngIf="!selectedSourceName" i18n>All Sources</span>
+                    <mat-icon>arrow_drop_down</mat-icon>
+                  </button>
+                </div>
                 <div class="width-3-4 pl-2">
                   <mat-form-field class="w-full" appearance="none" [floatLabel]="'never'">
                     <input type="text" (keyup.enter)="search()" matInput #searchInput name="searchBox"
@@ -677,10 +684,26 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
           </span>
         </button>
         <button mat-menu-item class="flex flex-between" *ngFor="let lang of allLanguages"
-          (click)="setCurrentLanguage(lang.srclang)">
+          (click)="setCurrentLanguage(lang.value)">
           <span class="flex items-center w-full">
-            <span>{{ lang.label | uppercase }}</span>
-            <mat-icon class="ml-2" *ngIf="lang.srclang === searchLanguage">check</mat-icon>
+            <span>{{ lang.name | uppercase }}</span>
+            <mat-icon class="ml-2" *ngIf="lang.value === searchLanguage">check</mat-icon>
+          </span>
+        </button>
+      </ng-template>
+    </mat-menu>
+    <mat-menu #sortSource="matMenu">
+      <ng-template matMenuContent>
+        <button mat-menu-item class="flex flex-between" (click)="setCurrentSourceName('')">
+          <span i18n class="flex items-center w-full">All Sources
+            <mat-icon class="ml-2" *ngIf="selectedSourceName === ''">check</mat-icon>
+          </span>
+        </button>
+        <button mat-menu-item class="flex flex-between" *ngFor="let source of sourceName"
+          (click)="setCurrentSourceName(source)">
+          <span class="flex items-center w-full">
+            <span>{{ source }}</span>
+            <mat-icon class="ml-2" *ngIf="source === selectedSourceName">check</mat-icon>
           </span>
         </button>
       </ng-template>

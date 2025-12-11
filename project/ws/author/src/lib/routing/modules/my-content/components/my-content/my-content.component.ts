@@ -20,7 +20,7 @@ import { NotificationComponent } from '@ws/author/src/lib/modules/shared/compone
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
-import { Subscription } from 'rxjs'
+import { Observable, Subscription } from 'rxjs'
 import { MyContentService } from '../../services/my-content.service'
 import { map } from 'rxjs/operators'
 // import {
@@ -81,8 +81,21 @@ export class MyContentComponent implements OnInit, OnDestroy {
   complexityLevel: string[] = []
   unit: string[] = []
   finalFilters: any = []
-  allLanguages: any[] = []
+  allLanguages: any[] = [
+    {
+      "name": "English",
+      "value": "en"
+    },
+    {
+      "name": "Hindi",
+      "value": "hi"
+    }
+  ]
   searchLanguage = ''
+  allLanguages$!: Observable<any>
+  sourceNames$!: Observable<any>
+  sourceName: string[] = []
+  selectedSourceName = ''
   public pagination!: IAuthoringPagination
   userId!: string
   totalContent!: number
@@ -183,7 +196,15 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // this.newDesign = this.accessService.authoringConfig.newDesign
     this.newDesign = l.get(this.accessService, 'authoringConfig.newDesign')
     this.ordinals = this.authInitService.ordinals
-    this.allLanguages = this.authInitService.ordinals.subTitles || []
+    this.allLanguages$ = this.editorService.languageList() || []
+    this.allLanguages$.subscribe((langs: any) => { this.allLanguages = langs })
+    this.sourceNames$ = this.editorService.sourceNames() // Assign the observable
+    this.sourceNames$.subscribe(async (data: any) => {
+      if (data.length > 0) {
+        this.sourceName = data
+      }
+    })
+    console.log("this.allLanguages", this.authInitService.ordinals.subTitles)
     this.activatedRoute.queryParams.subscribe(params => {
       if (this.configService.unMappedUser.roles.length === 1 && this.configService.unMappedUser.roles[0] === "PUBLIC") {
         this.status = 'draft'
@@ -1429,7 +1450,12 @@ export class MyContentComponent implements OnInit, OnDestroy {
         // isUserRecordEnabled: true,
       },
     }
+    // if (this.searchLanguage)
+    requestData.request.filters['lang'] = this.searchLanguage ? [this.searchLanguage] : []
     requestData.request.filters['status'] = this.fetchStatus()
+    if (this.selectedSourceName) {
+      requestData.request.filters['sourceName'] = [this.selectedSourceName]
+    }
     if (this.status == 'coursesWithoutCertificate') {
       requestData.request.filters['issueCertification'] = false
     } else if (this.status == 'courseRevision' || this.status == 'selfCourseRevision') {
@@ -2041,7 +2067,14 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
   setCurrentLanguage(lang: string) {
     this.searchLanguage = lang
+    this.fetchContent(false)
   }
+
+  setCurrentSourceName(sourceName: string) {
+    this.selectedSourceName = sourceName
+    this.fetchContent(false)
+  }
+
   canShow(role: string): boolean {
     switch (role) {
       case 'review':
