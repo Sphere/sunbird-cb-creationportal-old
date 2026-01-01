@@ -546,6 +546,10 @@
             <!-- <mat-checkbox *ngIf="isShowDownloadBtnEnabled" [(ngModel)]="isShowBtn" [checked]="isShowBtn"
               style="margin-left: 0px; margin-top: 5px;" class="check-text">Show Download button</mat-checkbox> -->
           </div>
+          <div class="module-txt-block margin-top-m" *ngIf="content?.isAssessment&&!isSelfAssessment">
+            <mat-checkbox [(ngModel)]="content.isCorrectAnswerPopUp" style="margin-left: 0px;border-radius: 4px;"
+              class="check-text">Show Correct Answer Popup</mat-checkbox>
+          </div>
           <div class="margin-top-s module-txt-block" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
             <button mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
@@ -777,7 +781,12 @@ line-height: 14.4px; /* 90% */
 letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Assessment':'Quiz'}} details before
                   clicking on add Questions</span>
               </div>
-
+              <div class="module-txt-block margin-top-m"
+                *ngIf="isAssessmentOrQuizEnabled&&content?.isAssessment&&!isSelfAssessment">
+                <mat-checkbox [(ngModel)]="content.isCorrectAnswerPopUp" [ngModelOptions]="{standalone: true}"
+                  style="margin-left: 0px;border-radius: 4px;" class="check-text">Show Correct Answer
+                  Popup</mat-checkbox>
+              </div>
               <div class="module-txt-block" style="display:flex; flex-direction:row"
                 *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
                 <mat-form-field appearance="outline" class="margin-top-xs field-width">

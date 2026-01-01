@@ -2096,6 +2096,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               duration: this.resourceLinkForm.value.duration,
               versionKey: this.updatedVersionKey,
             }
+            // Add isCorrectAnswerPopUp for assessments
+            if (this.content && this.content.isAssessment && !this.isSelfAssessment) {
+              rBody['isCorrectAnswerPopUp'] = this.content.isCorrectAnswerPopUp !== undefined ? this.content.isCorrectAnswerPopUp : true
+            }
             await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
             await this.saves()
             this.clearForm()
@@ -2124,6 +2128,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               isIframeSupported: iframeSupported,
               //gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
               versionKey: this.versionKey.versionKey,
+            }
+            // Add isCorrectAnswerPopUp for assessments
+            if (this.content && this.content.isAssessment && !this.isSelfAssessment) {
+              rBody['isCorrectAnswerPopUp'] = this.content.isCorrectAnswerPopUp !== undefined ? this.content.isCorrectAnswerPopUp : true
             }
             await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
             await this.saves()
@@ -2471,6 +2479,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.isShowDownloadBtnEnabled = false
     this.moduleButtonName = 'Save'
     this.content = content
+    // Initialize isCorrectAnswerPopUp to true if not present (for assessments)
+    if (this.content.isAssessment && !this.isSelfAssessment && this.content.isCorrectAnswerPopUp === undefined) {
+      this.content.isCorrectAnswerPopUp = true
+    }
     this.moduleName = content.name
     this.topicDescription = content.instructions ? content.instructions.replace(/<(.|\n)*?>/g, '') : ''
     this.thumbnail = content.thumbnail
@@ -2977,6 +2989,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         // meta["gatingEnabled"] = isGating
         meta["isIframeSupported"] = iframeSupported
         meta["showDownloadBtn"] = showDownloadBtn
+        // Save isCorrectAnswerPopUp for assessments
+        if (this.content && this.content.isAssessment && !this.isSelfAssessment && this.content.isCorrectAnswerPopUp !== undefined) {
+          meta["isCorrectAnswerPopUp"] = this.content.isCorrectAnswerPopUp
+        }
 
 
         var res = this.editResourceLinks.match(/^(?:https?:\/\/)(?:www\.)(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/)
@@ -3452,8 +3468,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         if (content.contentType === 'Resource') {
           this.editItem = content.identifier
           this.content = content
-
-
+          // Initialize isCorrectAnswerPopUp to true if not present (for assessments)
+          if (this.content.isAssessment && !this.isSelfAssessment && this.content.isCorrectAnswerPopUp === undefined) {
+            this.content.isCorrectAnswerPopUp = true
+          }
           // this.resourceLinkForm.controls.name.setValue(content.name)
         }
         const isCreator = (this._configurationsService.userProfile
@@ -3509,7 +3527,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     const newData = {
       topicDescription: '',
       topicName: type.type === 'collection' ? 'Add Module' : 'Resource',
-      isAssessment: this.assessment
+      isAssessment: this.assessment,
+      isCorrectAnswerPopUp: this.assessment && !this.isSelfAssessment ? true : undefined
     }
     if (type.type === 'collection') {
       this.storeService.parentData = this.courseData
