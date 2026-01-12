@@ -652,14 +652,14 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     if (typeof this.contentMeta.creatorDetails === 'string') {
       const parsedDetails: NSContent.IAuthorDetails = JSON.parse(this.contentMeta.creatorDetails)
       this.contentMeta.creatorDetails = [parsedDetails]
+    } else if (!this.contentMeta.creatorDetails || this.contentMeta.creatorDetails.length === 0) {
+      // Only set default author if no authors exist
+      const authorDetails: NSContent.IAuthorDetails = {
+        id: this.userId,
+        name: this.givenName,
+      }
+      this.contentMeta.creatorDetails = [authorDetails]
     }
-
-    const authorDetails: NSContent.IAuthorDetails = {
-      id: this.userId,
-      name: this.givenName,
-    }
-
-    this.contentMeta.creatorDetails = [authorDetails]
 
     if (this.contentMeta.publisherDetails && typeof this.contentMeta.publisherDetails === 'string') {
       this.contentMeta.publisherDetails = JSON.parse(this.contentMeta.publisherDetails)
@@ -1804,15 +1804,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
               name: event.option.value.displayName,
             })
             this.contentForm.controls[field].setValue(this.contentForm.controls[field].value)
-            if (field === 'creatorDetails') {
-              this.contentForm.controls[field].value.push({
-                id: this.userId,
-                name: this.givenName,
-              })
-
-              this.contentForm.controls[field].setValue(this.contentForm.controls[field].value)
-            }
-
           } else {
             this.snackBar.openFromComponent(NotificationComponent, {
               data: {

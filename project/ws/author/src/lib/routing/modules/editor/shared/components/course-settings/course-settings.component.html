@@ -142,7 +142,7 @@
               <mat-label class="label-heading">Authors</mat-label>
             </div>
           </label>
-          <div class="margin-top-xs" [ngClass]="{ disable: true }">
+          <div class="margin-top-xs" [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
             <mat-form-field appearance="outline" class="margin-top-xs"
               [ngClass]="{ 'mat-form-field-invalid': showError('creatorDetails') }">
 
