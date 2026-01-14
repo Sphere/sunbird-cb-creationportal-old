@@ -22,6 +22,7 @@ import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 import { Observable, Subscription } from 'rxjs'
 import { MyContentService } from '../../services/my-content.service'
+import { FilterStateService } from '../../services/filter-state.service'
 import { map } from 'rxjs/operators'
 // import {
 //   REVIEW_ROLE,
@@ -50,6 +51,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     private authInitService: AuthInitService,
     private configService: ConfigurationsService,
     private editorService: EditorService,
+    private filterStateService: FilterStateService,
   ) {
     this.filterMenuTreeControl = new FlatTreeControl<IMenuFlatNode>(
       node => node.levels,
@@ -205,6 +207,25 @@ export class MyContentComponent implements OnInit, OnDestroy {
       }
     })
     console.log("this.allLanguages", this.authInitService.ordinals.subTitles)
+
+    // Restore filters from service
+    const savedFilters = this.filterStateService.getFilters()
+    if (savedFilters && savedFilters.length > 0) {
+      this.finalFilters = savedFilters
+    }
+
+    // Restore selected source name from service
+    const savedSourceName = this.filterStateService.getSourceName()
+    if (savedSourceName) {
+      this.selectedSourceName = savedSourceName
+    }
+
+    // Restore selected language from service
+    const savedLanguage = this.filterStateService.getLanguage()
+    if (savedLanguage) {
+      this.searchLanguage = savedLanguage
+    }
+
     this.activatedRoute.queryParams.subscribe(params => {
       if (this.configService.unMappedUser.roles.length === 1 && this.configService.unMappedUser.roles[0] === "PUBLIC") {
         this.status = 'draft'
@@ -1741,6 +1762,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.filters.splice(filterIndex, 1)
       this.finalFilters.splice(ind, 1)
     }
+    // Save filters to service for persistence across navigation
+    this.filterStateService.setFilters(this.finalFilters)
     this.dataSource.data = this.filterMenuItems
     this.fetchContent(false, false)
   }
@@ -1863,6 +1886,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.filterMenuItems.map((val: any) => val.content.map((v: any) => (v.checked = false)))
     this.dataSource.data = this.filterMenuItems
     this.filters = []
+    // Clear filters from service
+    this.filterStateService.clearFilters()
     this.fetchContent(false)
   }
 
@@ -2067,11 +2092,15 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
   setCurrentLanguage(lang: string) {
     this.searchLanguage = lang
+    // Save language to service for persistence across navigation
+    this.filterStateService.setLanguage(lang)
     this.fetchContent(false)
   }
 
   setCurrentSourceName(sourceName: string) {
     this.selectedSourceName = sourceName
+    // Save source name to service for persistence across navigation
+    this.filterStateService.setSourceName(sourceName)
     this.fetchContent(false)
   }
 
