@@ -16,8 +16,6 @@ import { SubmitQuizDialogComponent } from './components/submit-quiz-dialog/submi
 import { OnConnectionBindInfo } from 'jsplumb'
 import { QuizService } from './quiz.service'
 import { EventService } from '../../../../../../../library/ws-widget/utils/src/public-api'
-import { HttpClient } from '@angular/common/http'
-import { ActivatedRoute } from '@angular/router'
 export type FetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
 
 @Component({
@@ -82,24 +80,15 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     private events: EventService,
     public dialog: MatDialog,
     private quizSvc: QuizService,
-    private http: HttpClient,
-    private activatedRoute: ActivatedRoute
   ) { }
 
   async ngOnInit() {
-  }
-  private async transformQuiz(artifactUrl: any): Promise<any> {
-    if (artifactUrl) {
-      let quizJSON: NSQuiz.IQuiz = await this.http
-        .get<any>(this.artifactUrl || '')
-        .toPromise()
-        .catch((_err: any) => {
-          // throw new DataResponseError('MANIFEST_FETCH_FAILED');
-        })
-      console.log("yes here", artifactUrl, quizJSON)
-      return quizJSON
+    // Use pre-loaded quizJson from @Input()
+    if (this.quizJson && this.quizJson.timeLimit) {
+      this.timeLeft = this.quizJson.timeLimit * 1000
     }
   }
+
   scroll(qIndex: number) {
     if (!this.sidenavOpenDefault) {
       if (this.sideNav) {
@@ -111,21 +100,13 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       questionElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }
+
   ngOnChanges(changes: SimpleChanges) {
-    this.getAssessment = this.activatedRoute.data.subscribe(
-      async data => {
-        console.log("quiz subscribe", data)
-        this.quizJson = await this.transformQuiz(data.content.data.artifactUrl)
-        this.timeLeft = this.quizJson.timeLimit
-      })
-    for (const change in changes) {
-      if (change === 'quiz') {
-        if (
-          this.quizJson &&
-          this.quizJson.timeLimit
-        ) {
-          this.quizJson.timeLimit *= 1000
-        }
+    // Handle quizJson input changes
+    if (changes['quizJson'] && changes['quizJson'].currentValue) {
+      this.quizJson = changes['quizJson'].currentValue
+      if (this.quizJson && this.quizJson.timeLimit) {
+        this.timeLeft = this.quizJson.timeLimit * 1000
       }
     }
   }
