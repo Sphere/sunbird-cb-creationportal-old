@@ -192,6 +192,11 @@ export class QuizComponent implements OnInit, OnDestroy {
     if (oldUrl && oldUrl.includes(bucket)) {
       return oldUrl
     }
+    // @ts-ignore: Unreachable code error
+    let bucket_cdn = window["env"]["cdnBucket"]
+    if (oldUrl && oldUrl.includes(bucket_cdn)) {
+      return oldUrl
+    }
     // const chunk = oldUrl.split('/')
     // const newChunk = environment.azureHost.split('/')
     // const newLink = []
