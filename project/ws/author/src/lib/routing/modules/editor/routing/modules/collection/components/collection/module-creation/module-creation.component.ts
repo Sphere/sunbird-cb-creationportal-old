@@ -2479,9 +2479,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.isShowDownloadBtnEnabled = false
     this.moduleButtonName = 'Save'
     this.content = content
-    // Initialize isCorrectAnswerPopUp to true if not present (for assessments)
+    // Initialize isCorrectAnswerPopUp to false if not present (for assessments)
     if (this.content.isAssessment && !this.isSelfAssessment && this.content.isCorrectAnswerPopUp === undefined) {
-      this.content.isCorrectAnswerPopUp = true
+      this.content.isCorrectAnswerPopUp = false
     }
     this.moduleName = content.name
     this.topicDescription = content.instructions ? content.instructions.replace(/<(.|\n)*?>/g, '') : ''
@@ -3468,9 +3468,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         if (content.contentType === 'Resource') {
           this.editItem = content.identifier
           this.content = content
-          // Initialize isCorrectAnswerPopUp to true if not present (for assessments)
+          // Initialize isCorrectAnswerPopUp to false if not present (for assessments)
           if (this.content.isAssessment && !this.isSelfAssessment && this.content.isCorrectAnswerPopUp === undefined) {
-            this.content.isCorrectAnswerPopUp = true
+            this.content.isCorrectAnswerPopUp = false
           }
           // this.resourceLinkForm.controls.name.setValue(content.name)
         }
@@ -3528,7 +3528,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       topicDescription: '',
       topicName: type.type === 'collection' ? 'Add Module' : 'Resource',
       isAssessment: this.assessment,
-      isCorrectAnswerPopUp: this.assessment && !this.isSelfAssessment ? true : undefined
+      isCorrectAnswerPopUp: this.assessment && !this.isSelfAssessment ? false : undefined
     }
     if (type.type === 'collection') {
       this.storeService.parentData = this.courseData
