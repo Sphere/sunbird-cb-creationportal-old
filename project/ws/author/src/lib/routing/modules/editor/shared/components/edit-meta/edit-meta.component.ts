@@ -1422,12 +1422,32 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       return
     }
 
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => {
+      const img = new Image()
+      img.src = reader.result as string
+      img.onload = () => {
+        if (img.width < 760 || img.height < 400) {
+          this.snackBar.open(
+            `Image resolution must be at least 760 x 400 px. Current: ${img.width} x ${img.height} px`,
+            undefined,
+            { duration: 4000 },
+          )
+          return
+        }
+        this.openThumbnailCropDialog(file, fileName, formdata)
+      }
+    }
+  }
+
+  private openThumbnailCropDialog(file: File, fileName: string, formdata: FormData) {
     const dialogRef = this.dialog.open(NewImageCropComponent, {
       width: '70%',
       data: {
         isRoundCrop: false,
         imageFile: file,
-        width: 265,
+        width: 256,
         height: 150,
         isThumbnail: true,
         imageFileName: fileName,
@@ -1688,6 +1708,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     // const newUrl = newLink.join('/')
     // console.log(newUrl)
     // return newUrl
+    return oldUrl
   }
 
   showError(meta: string) {

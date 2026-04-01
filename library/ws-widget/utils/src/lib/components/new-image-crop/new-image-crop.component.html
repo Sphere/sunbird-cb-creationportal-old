@@ -7,7 +7,7 @@
     </div>
     <div class="text-sm pl-4">
       <div i18n class="pb-2">Note:</div>
-      <div i18n class="pb-2">Required dimensions : 265 * 150</div>
+      <div i18n class="pb-2">Required dimensions : 256 * 150</div>
       <div class="flex flex-wrap items-baseline">
         <div>Current dimensions:</div>
         <div class="pl-1">{{ width }} * {{ height }} px</div>
@@ -73,8 +73,8 @@
       <div class="flex flex-between">
         <div class="Slides">
           <image-cropper #imageCropper class="image-cropper padding-remove" [imageFile]="imageFile"
-            [maintainAspectRatio]="true" [aspectRatio]="opWidth / opHeight" [resizeToWidth]="opWidth"
-            [roundCropper]="isRoundCrop" [resizeToHeight]="opHeight" [cropperMinWidth]="opWidth" [format]="'jpeg'"
+            [maintainAspectRatio]="true" [aspectRatio]="opWidth / opHeight"
+            [roundCropper]="isRoundCrop" [cropperMinWidth]="opWidth" [format]="'jpeg'"
             [transform]="transform" [canvasRotation]="canvasRotation" (imageCropped)="imageCropped($event)">
           </image-cropper>
           <div class="edit-feature-window rotate-block" *ngIf="!isXSmall">
@@ -106,7 +106,7 @@
             <!-- <mat-icon class="ws-mat-primary-text padding-right-s">visibility</mat-icon> -->
             <b class="preview-txt" i18n>Preview</b>
           </div>
-          <img [src]="imageFileBase64" height="auto" width="100%" (error)="changeToDefaultImg($event)" />
+          <img [src]="imageFileBase64" width="256" height="150" style="object-fit: cover; display: block;" (error)="changeToDefaultImg($event)" />
         </mat-card>
       </div>
     </mat-dialog-content>
