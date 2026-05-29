@@ -1,14 +1,25 @@
 import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core'
+
 import { ValueService, ConfigurationsService } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 import { NSSearch } from '../../_services/widget-search.model'
+
 import { SearchApiService } from '@ws/app/src/lib/routes/search/apis/search-api.service'
+
 import { SearchServService } from '@ws/app/src/lib/routes/search/services/search-serv.service'
+
 import { IWidgetData, IAppliedFilters } from './content-picker-v2.model'
+
 import { NsContent } from '../../_services/widget-content.model'
+
 import { ContentPickerV2Service } from './content-picker-v2.service'
+
 import { FormControl } from '@angular/forms'
+
 import { distinctUntilChanged } from 'rxjs/operators'
+
 
 @Component({
   selector: 'ws-widget-content-picker-v2',

@@ -1,10 +1,17 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { TreeCatalogService } from './tree-catalog.service'
+
 import { IWsTree } from '@ws-widget/collection'
+
 import { NSCatalog } from './tree-catalog.model'
+
 import { NSSearch } from '../_services/widget-search.model'
+
 import { TFetchStatus } from '@ws-widget/utils'
+
 
 @Component({
   selector: 'ws-widget-tree-catalog',

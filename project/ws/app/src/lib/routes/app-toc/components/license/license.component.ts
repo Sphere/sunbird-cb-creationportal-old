@@ -1,9 +1,15 @@
 // import { WidgetContentService } from '@ws-widget/collection'
+
 // import { ConfigurationsService } from './../../../../../../../../../library/ws-widget/utils/src/lib/services/configurations.service'
+
 import { Component, OnInit } from '@angular/core'
+
 import { ValueService } from '@ws-widget/utils/src/public-api'
+
 import { ActivatedRoute } from '@angular/router'
+
 // import { HttpErrorResponse } from '@angular/common/http'
+
 
 @Component({
   selector: 'ws-app-license',

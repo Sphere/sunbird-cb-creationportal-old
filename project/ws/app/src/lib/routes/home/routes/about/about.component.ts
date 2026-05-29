@@ -1,5 +1,6 @@
 
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core'
+
 @Component({
   selector: 'ws-app-about',
   templateUrl: './about.component.html',

@@ -1,6 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core'
+
 import { ICustomCreateEntity } from './../../interface/create-menu'
+
 import { CollectionStoreService } from './../../services/store.service'
+
 
 @Component({
   selector: 'ws-auth-collection-matmenu',

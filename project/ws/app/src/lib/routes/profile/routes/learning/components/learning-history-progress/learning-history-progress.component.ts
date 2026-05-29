@@ -1,6 +1,9 @@
 import { Component, Input } from '@angular/core'
+
 import { NSLearningHistory } from '../../models/learning.models'
+
 import { LearningHistoryService } from '../../services/learning-history.service'
+
 
 @Component({
   selector: 'ws-app-learning-history-progress',

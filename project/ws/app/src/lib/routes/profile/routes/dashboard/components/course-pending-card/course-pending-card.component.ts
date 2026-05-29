@@ -1,6 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { Router } from '@angular/router'
+
 
 @Component({
   selector: 'ws-app-course-pending-card',

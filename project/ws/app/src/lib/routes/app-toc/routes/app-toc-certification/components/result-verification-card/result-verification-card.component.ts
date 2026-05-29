@@ -1,18 +1,30 @@
 import { Component, Input, OnDestroy } from '@angular/core'
+
 import { throwError, Subscription, Subject } from 'rxjs'
+
 import { switchMap, takeWhile, tap } from 'rxjs/operators'
 
+
 import { NsContent } from '@ws-widget/collection'
+
 import { TFetchStatus, TSendStatus } from '@ws-widget/utils'
 
+
 import { CertificationApiService } from '../../apis/certification-api.service'
+
 import { CertificationService } from '../../services/certification.service'
 
+
 import { ICertificationMeta, TCertificationRequestType } from '../../models/certification.model'
+
 import { FileDownloadService } from '../../services/file-download.service'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { RequestCancelDialogComponent } from '../request-cancel-dialog/request-cancel-dialog.component'
+
 import { SnackbarComponent } from '../snackbar/snackbar.component'
+
 
 @Component({
   selector: 'ws-app-toc-certification-result-verification-card',

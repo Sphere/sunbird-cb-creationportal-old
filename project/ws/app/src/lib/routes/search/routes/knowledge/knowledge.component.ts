@@ -1,12 +1,21 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { SearchServService } from '../../services/search-serv.service'
+
 import { Router, ActivatedRoute } from '@angular/router'
+
 import { IFilterUnitResponse } from '../../models/search.model'
+
 import { Subscription } from 'rxjs'
+
 import { ValueService } from '@ws-widget/utils'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { NsError, ROOT_WIDGET_CONFIG } from '@ws-widget/collection'
+
 import { IKhubItemTile, IKhubViewResultDocs } from '../../models/knowledgeHub.model'
+
 export type IKhubFetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
 
 @Component({

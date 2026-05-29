@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { NsContent } from '../../_services/widget-content.model'
+
 
 @Component({
   selector: 'ws-widget-display-content-type',

@@ -1,15 +1,27 @@
 import { AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { NsContent } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { UtilityService, ValueService } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 import { RootService } from '../../../../../src/app/component/root/root.service'
+
 import { ApiService } from '../../../author/src/public-api'
+
 import { TStatus, ViewerDataService } from './viewer-data.service'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { ReviewDialogComponent } from '@ws/viewer/src/lib/components/review-checklist/review-dialog.component'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 
 export enum ErrorType {
   accessForbidden = 'accessForbidden',

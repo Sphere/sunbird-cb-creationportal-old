@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core'
 
+
 @Component({
   selector: 'viewer-plugin-rdbms-hands-on',
   templateUrl: './rdbms-hands-on.component.html',

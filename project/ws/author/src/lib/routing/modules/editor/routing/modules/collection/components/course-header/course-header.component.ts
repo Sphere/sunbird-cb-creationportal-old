@@ -1,12 +1,20 @@
 
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
+
 import { ConfigurationsService, NsPage } from '@ws-widget/utils/src/public-api'
+
 import { SafeUrl, DomSanitizer } from '@angular/platform-browser'
+
 import { HeaderServiceService } from './../../../../../../../../../../../../../src/app/services/header-service.service'
+
 import { IActionButtonConfig, IActionButton } from '@ws/author/src/lib/interface/action-button'
+
 import { CollectionStoreService } from '../../services/store.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { Subscription } from 'rxjs'
+
 
 @Component({
   // tslint:disable-next-line:component-selector

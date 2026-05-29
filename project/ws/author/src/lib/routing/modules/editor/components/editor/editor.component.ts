@@ -1,18 +1,32 @@
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { Component, OnDestroy, OnInit } from '@angular/core'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { EditorContentV2Service } from '@ws/author/src/lib/routing/modules/editor/services/editor-content-v2.service'
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { Subscription } from 'rxjs'
+
 import { filter } from 'rxjs/operators'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { ValueService } from '@ws-widget/utils'
+
 import { StatusTrackComponent } from '../../../../../modules/shared/components/status-track/status-track.component'
+
 
 @Component({
   selector: 'ws-auth-root-editor',

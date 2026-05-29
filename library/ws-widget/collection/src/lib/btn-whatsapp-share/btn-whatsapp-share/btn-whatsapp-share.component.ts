@@ -1,6 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { SafeResourceUrl } from '@angular/platform-browser'
+
 import { ConfigurationsService } from '../../../../../utils/src/public-api'
+
 
 @Component({
   selector: 'ws-widget-btn-whatsapp-share',

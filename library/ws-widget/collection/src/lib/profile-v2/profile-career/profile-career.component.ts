@@ -1,7 +1,11 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core'
+
 import { WidgetBaseComponent, NsWidgetResolver } from '@ws-widget/resolver'
+
 import { IProfileCareer } from './profile-career.model'
+
 import moment from 'moment'
+
 
 @Component({
   selector: 'ws-widget-profile-v2-career',

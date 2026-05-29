@@ -1,4 +1,5 @@
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import {
   Component,
   OnInit,
@@ -9,7 +10,9 @@ import {
   Input,
   OnChanges,
 } from '@angular/core'
+
 import { SafeUrl } from '@angular/platform-browser'
+
 
 export interface IPreviewDevice {
   value: string

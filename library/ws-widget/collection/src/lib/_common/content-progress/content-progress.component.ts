@@ -1,5 +1,7 @@
 import { Component, HostBinding, Input, OnChanges } from '@angular/core'
+
 import { ContentProgressService } from './content-progress.service'
+
 
 @Component({
   selector: 'ws-widget-content-progress',

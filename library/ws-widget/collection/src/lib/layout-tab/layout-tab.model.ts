@@ -1,5 +1,6 @@
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
+
 export namespace NsWidgetLayoutTab {
   export interface ILayout {
     tabs: ITabDetails[]

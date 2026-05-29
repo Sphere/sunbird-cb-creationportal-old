@@ -1,6 +1,9 @@
 import { Component, ElementRef, OnInit, OnDestroy, Input, AfterViewInit } from '@angular/core'
+
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
+
 import quill from 'quill'
+
 
 @Component({
   selector: 'ws-auth-root-ws-quill',

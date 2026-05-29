@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core'
+
 import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router'
+
 import { Observable, of } from 'rxjs'
+
 import { HttpClient } from '@angular/common/http'
+
 import { map, catchError } from 'rxjs/operators'
+
 import { IResolveResponse } from '@ws-widget/utils'
+
 
 @Injectable({
   providedIn: 'root',

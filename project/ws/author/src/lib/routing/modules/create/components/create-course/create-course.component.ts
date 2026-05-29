@@ -1,36 +1,67 @@
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
+
 import { Component, OnInit, Input } from '@angular/core'
+
 import { Router } from '@angular/router'
+
 import { ICreateEntity } from '@ws/author/src/lib/interface/create-entity'
-import { MatSnackBar, MatDialog } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { MatDialog } from '@angular/material/dialog'
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { CreateService } from '../create/create.service'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { IprDialogComponent } from '@ws/author/src/lib/modules/shared/components/ipr-dialog/ipr-dialog.component'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { mergeMap } from 'rxjs/operators'
+
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '../../../../../constants/upload'
+
 import { ConfigurationsService } from '../../../../../../../../../../library/ws-widget/utils/src/lib/services/configurations.service'
+
 import { ImageCropComponent } from '../../../../../../../../../../library/ws-widget/utils/src/public-api'
+
 import { NSApiRequest } from '../../../../../interface/apiRequest'
+
 import { HttpClient } from '@angular/common/http'
+
 import { AUTHORING_BASE, CONTENT_BASE_STATIC } from '../../../../../constants/apiEndpoints'
+
 import { UploadService } from '../../../editor/shared/services/upload.service'
+
 // import { environment } from '../../../../../../../../../../src/environments/environment'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { CollectionStoreService } from '../../../../../../../../author/src/lib/routing/modules/editor/routing/modules/collection/services/store.service'
+
 import { EditorContentService } from 'project/ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { CollectionResolverService } from 'project/ws/author/src/lib/routing/modules/editor/routing/modules/collection/services/resolver.service'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import moment from 'moment'
+
 import {
   ContentProgressService,
 } from '@ws-widget/collection'
+
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'ws-author-create-course',

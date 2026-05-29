@@ -1,20 +1,37 @@
 import { HttpClient } from '@angular/common/http'
+
 import { Component, OnInit } from '@angular/core'
+
 import { FormControl, FormGroup } from '@angular/forms'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { ImageCropComponent } from '../../../../../../../../../../../../../../library/ws-widget/utils/src/public-api'
+
 import { NotificationComponent } from '../../../../../../../../../../../../app/src/lib/routes/notification/components/notification/notification.component'
+
 import { AUTHORING_BASE, CONTENT_BASE_STATIC } from '../../../../../../../../../constants/apiEndpoints'
+
 import { NOTIFICATION_TIME } from '../../../../../../../../../constants/constant'
+
 import { Notify } from '../../../../../../../../../constants/notificationMessage'
+
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '../../../../../../../../../constants/upload'
+
 import { NSApiRequest } from '../../../../../../../../../interface/apiRequest'
+
 import { AccessControlService } from '../../../../../../../../../modules/shared/services/access-control.service'
+
 import { AuthInitService } from '../../../../../../../../../services/init.service'
+
 import { LoaderService } from '../../../../../../../../../services/loader.service'
+
 import { UploadService } from '../../../../../../shared/services/upload.service'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 
 @Component({
   selector: 'ws-author-resource-module',

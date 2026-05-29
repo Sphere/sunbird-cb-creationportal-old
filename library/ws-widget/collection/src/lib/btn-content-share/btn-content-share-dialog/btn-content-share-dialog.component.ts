@@ -1,13 +1,23 @@
 import { COMMA, ENTER, SEMICOLON } from '@angular/cdk/keycodes'
+
 import { Component, Inject, OnInit } from '@angular/core'
-import { MatDialogRef, MatSnackBar, MAT_DIALOG_DATA } from '@angular/material'
+
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { ConfigurationsService, EventService } from '@ws-widget/utils'
+
 import { NsAutoComplete } from '../../_common/user-autocomplete/user-autocomplete.model'
+
 import { WidgetContentShareService } from '../../_services/widget-content-share.service'
+
 import { NsContent } from '../../_services/widget-content.model'
+
 import { NsShare } from '../../_services/widget-share.model'
+
 import { ICommon } from '../../_models/common.model'
+
 import domToImage from 'dom-to-image'
+
 
 @Component({
   selector: 'ws-widget-btn-content-share-dialog',

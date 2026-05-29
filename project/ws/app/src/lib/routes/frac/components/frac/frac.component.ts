@@ -1,8 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { FracService } from '../../services/frac.service'
+
 // import { ConfigurationsService } from '@ws-widget/utils/src/lib/services/configurations.service'
+
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
+
 import { IFrac } from '../../interfaces/frac.model'
+
 
 @Component({
   selector: 'ws-app-frac',

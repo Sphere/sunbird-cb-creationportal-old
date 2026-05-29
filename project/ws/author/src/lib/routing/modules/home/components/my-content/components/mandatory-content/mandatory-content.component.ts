@@ -1,38 +1,66 @@
 import { AuthExpiryDateConfirmComponent } from '@ws/author/src/lib/modules/shared/components/auth-expiry-date-confirm/auth-expiry-date-confirm.component'
+
 // import { FlatTreeControl } from '@angular/cdk/tree'
+
 import { Component, OnDestroy, OnInit, Input } from '@angular/core'
+
 import { FormGroup } from '@angular/forms'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
+
 import {
   IAuthoringPagination,
   // IFilterMenuNode,
   // IMenuFlatNode,
 } from '@ws/author/src/lib/interface/authored'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/components/comments-dialog/comments-dialog.component'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { Subscription } from 'rxjs'
 
+
 import { map } from 'rxjs/operators'
+
 import { PipeDurationTransformPipe, ValueService } from '@ws-widget/utils'
+
 
 /* tslint:disable */
 import _ from 'lodash'
+
 import { IAtGlanceComponentData, IAuthorData, ITable } from '@ws-widget/collection'
+
 import { MyContentService } from '../../services/my-content.service'
+
 import { LocalDataService } from '../../../content-detail/services/local-data.service'
+
 import { MyTocService } from '../../../content-detail/services/my-toc.service'
+
 import { environment } from '../../../../../../../../../../../../src/environments/environment'
+
 // import { NsAppToc } from '../../interface/app-toc.model'
+
 /* tslint:enable */
 
 @Component({

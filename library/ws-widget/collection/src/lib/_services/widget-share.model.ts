@@ -1,4 +1,5 @@
 import { NsContent } from './widget-content.model'
+
 export namespace NsShare {
 
   export interface IEmailContact {

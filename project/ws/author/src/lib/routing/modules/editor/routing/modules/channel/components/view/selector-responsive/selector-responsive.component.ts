@@ -1,7 +1,11 @@
 import { IWidgetAuthor } from './../../../interface/widget'
+
 import { Component, OnInit, Input, OnChanges } from '@angular/core'
+
 import { ChannelStoreService } from './../../../services/store.service'
+
 import { ChannelResolverService } from './../../../services/resolver.service'
+
 
 @Component({
   selector: 'ws-auth-selector-responsive',

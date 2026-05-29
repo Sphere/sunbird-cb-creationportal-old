@@ -1,8 +1,13 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { ICarousel } from './sliders.model'
+
 import { Subscription, interval } from 'rxjs'
+
 import { EventService } from '../../../../utils/src/public-api'
+
 
 @Component({
   selector: 'ws-widget-sliders',

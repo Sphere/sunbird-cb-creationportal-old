@@ -1,6 +1,9 @@
 import { Directive, Input, OnInit, HostBinding, OnDestroy, AfterViewInit } from '@angular/core'
+
 import { Subscription, fromEvent } from 'rxjs'
+
 import { debounceTime } from 'rxjs/operators'
+
 
 enum ScrollingStateEnum {
   ScrollingUp,

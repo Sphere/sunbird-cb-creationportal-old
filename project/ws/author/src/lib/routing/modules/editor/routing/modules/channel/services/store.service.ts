@@ -1,13 +1,23 @@
 import { Injectable } from '@angular/core'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { NsWidgetResolver } from '@ws-widget/resolver/src/public-api'
+
 import { BehaviorSubject } from 'rxjs'
+
 import { IWidgetAuthor } from '../interface/widget'
+
 import { EditorContentService } from './../../../../services/editor-content.service'
+
 import { InputComponent } from './../components/input/input/input.component'
+
 import { InputV2Component } from './../components/v2/input-v2/input-v2.component'
+
 import { WIDGET_LIBRARY } from './../constants/widet'
+
 import { ChannelResolverService } from './resolver.service'
+
 
 @Injectable()
 export class ChannelStoreService {

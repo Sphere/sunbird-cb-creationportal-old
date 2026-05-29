@@ -1,7 +1,10 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser'
+
 import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router'
+
 import {
   ContentProgressService,
   NsContent,
@@ -10,15 +13,25 @@ import {
   viewerRouteGenerator,
   WidgetContentService,
 } from '@ws-widget/collection'
+
 import { ConfigurationsService, TFetchStatus } from '@ws-widget/utils'
+
 import { UtilityService } from '@ws-widget/utils/src/lib/services/utility.service'
+
 import { AccessControlService } from '@ws/author'
+
 import { Subscription } from 'rxjs'
+
 import { NsAnalytics } from '../../models/app-toc-analytics.model'
+
 import { NsAppToc, NsCohorts } from '../../models/app-toc.model'
+
 import { AppTocService } from '../../services/app-toc.service'
+
 import { AppTocDialogIntroVideoComponent } from '../app-toc-dialog-intro-video/app-toc-dialog-intro-video.component'
+
 import { MobileAppsService } from 'src/app/services/mobile-apps.service'
+
 
 @Component({
   selector: 'ws-app-toc-banner',

@@ -1,5 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, Input, OnChanges, OnDestroy } from '@angular/core'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import {
   FormGroup,
   FormBuilder,
@@ -8,19 +10,31 @@ import {
   FormArray,
   AbstractControl,
 } from '@angular/forms'
+
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'
+
 import { debounceTime, map } from 'rxjs/operators'
+
 import { Observable, Subscription } from 'rxjs'
+
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout'
 
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
-import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component.ts'
+
+import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { FillUps, Option } from '../quiz-class'
+
 import { NOTIFICATION_TIME } from '../../constants/quiz-constants'
 
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { QuizStoreService } from '../../services/store.service'
+
 import { OpenPlainCkEditorComponent } from '../../shared/components/open-plain-ck-editor/open-plain-ck-editor.component'
+
 
 @Component({
   selector: 'ws-auth-fill-ups-editor',

@@ -1,11 +1,18 @@
 import { Injectable } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { FormGroup } from '@angular/forms'
+
 import { throwError, of, Observable } from 'rxjs'
+
 import { switchMap } from 'rxjs/operators'
 
+
 import { NsContent } from '@ws-widget/collection'
+
 import { IResolveResponse } from '@ws-widget/utils'
+
 
 import {
   ICertificationMeta,
@@ -14,8 +21,11 @@ import {
   ISubmitOrWithdrawRequest,
   ICertificationDate,
 } from '../models/certification.model'
+
 import { CertificationApiService } from '../apis/certification-api.service'
+
 import { HttpErrorResponse } from '@angular/common/http'
+
 
 @Injectable()
 export class CertificationService {

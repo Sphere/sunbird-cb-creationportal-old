@@ -1,11 +1,17 @@
 import { Injectable } from '@angular/core'
+
 import { Observable } from 'rxjs'
+
 import { tap } from 'rxjs/operators'
+
 import { HttpClient } from '@angular/common/http'
+
 import { NSIQuality } from '../../interface/content-quality'
+
 
 /* tslint:disable */
 import _ from 'lodash'
+
 /* tslint:enable */
 const PROTECTED_SLAG_V8 = '/apis/protected/v8'
 

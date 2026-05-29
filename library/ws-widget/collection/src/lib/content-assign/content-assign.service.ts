@@ -1,6 +1,9 @@
 import { HttpClient } from '@angular/common/http'
+
 import { Injectable } from '@angular/core'
+
 import { IContentAssignModel, IUserSearchRequestModel } from './content-assign.model'
+
 
 const API_END_POINTS = {
   assignContent: `/apis/protected/v8/user/content-assign/assignContent`,

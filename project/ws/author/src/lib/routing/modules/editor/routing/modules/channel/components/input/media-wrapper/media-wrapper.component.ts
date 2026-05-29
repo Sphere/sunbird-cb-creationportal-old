@@ -1,8 +1,10 @@
 import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angular/core'
-import { IWidgetWrapperMedia } from '@ws-widget/collection/src/lib/video-wrapper/video-wrapper.model'
-import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
-import { MatDialog } from '@angular/material'
 
+import { IWidgetWrapperMedia } from '@ws-widget/collection/src/lib/video-wrapper/video-wrapper.model'
+
+import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
+import { MatDialog } from '@angular/material/dialog'
 @Component({
   selector: 'ws-auth-media-wrapper',
   templateUrl: './media-wrapper.component.html',

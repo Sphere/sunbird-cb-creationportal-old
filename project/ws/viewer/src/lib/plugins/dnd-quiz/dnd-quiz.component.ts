@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 
+
 @Component({
   selector: 'viewer-plugin-dnd-quiz',
   templateUrl: './dnd-quiz.component.html',

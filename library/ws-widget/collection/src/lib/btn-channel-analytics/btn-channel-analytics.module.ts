@@ -1,12 +1,14 @@
-import { NgModule } from '@angular/core'
+﻿import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { BtnChannelAnalyticsComponent } from './btn-channel-analytics.component'
+
 import { RouterModule } from '@angular/router'
-import {
-  MatIconModule,
-  MatButtonModule,
-  MatTooltipModule,
-} from '@angular/material'
+
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatTooltipModule } from '@angular/material/tooltip'
 @NgModule({
   declarations: [BtnChannelAnalyticsComponent],
   imports: [
@@ -17,6 +19,5 @@ import {
     MatTooltipModule,
   ],
   exports: [BtnChannelAnalyticsComponent],
-  entryComponents: [BtnChannelAnalyticsComponent],
 })
 export class BtnChannelAnalyticsModule { }

@@ -7,6 +7,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core'
+
 import {
   NavigationCancel,
   NavigationEnd,
@@ -14,8 +15,11 @@ import {
   NavigationStart,
   Router,
 } from '@angular/router'
+
 // import { interval, concat, timer } from 'rxjs'
+
 import { BtnPageBackService } from '@ws-widget/collection'
+
 import {
   AuthKeycloakService,
   ConfigurationsService,
@@ -23,12 +27,18 @@ import {
   ValueService,
   WsEvents,
 } from '@ws-widget/utils'
+
 import { MobileAppsService } from '../../services/mobile-apps.service'
+
 import { RootService } from './root.service'
+
 // import { SwUpdate } from '@angular/service-worker'
+
 // import { environment } from '../../../environments/environment'
-// import { MatDialog } from '@angular/material'
+
+// import { MatDialog } from '@angular/material/dialog'
 // import { DialogConfirmComponent } from '../dialog-confirm/dialog-confirm.component'
+
 
 @Component({
   selector: 'ws-root',

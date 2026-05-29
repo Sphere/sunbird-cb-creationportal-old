@@ -1,17 +1,26 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { Subscription } from 'rxjs'
+
 import { ValueService } from '@ws-widget/utils'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { AccessControlService } from '@ws/author'
+
 import {
   NsContent,
   IWidgetsPlayerMediaData,
   NsDiscussionForum,
   WidgetContentService,
 } from '@ws-widget/collection'
+
 import { ViewerUtilService } from '../../viewer-util.service'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 // import { environment } from '../../../../../../../src/environments/environment'
+
 
 @Component({
   selector: 'viewer-audio',

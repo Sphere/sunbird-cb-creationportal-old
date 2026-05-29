@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
+
 import { IAuthSteps } from '@ws/author/src/lib/interface/auth-stepper'
+
 
 @Component({
   selector: 'ws-auth-editor-steps',

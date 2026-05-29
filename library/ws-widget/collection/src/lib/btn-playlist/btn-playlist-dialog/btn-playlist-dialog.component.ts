@@ -1,7 +1,10 @@
 import { Component, Inject } from '@angular/core'
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material'
+
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { TFetchStatus } from '@ws-widget/utils'
+
 import { NsPlaylist } from '../btn-playlist.model'
+
 
 @Component({
   selector: 'ws-widget-btn-playlist-dialog',

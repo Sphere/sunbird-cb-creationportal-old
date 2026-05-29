@@ -1,14 +1,25 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { NsContent, NsError, NSSearch, ROOT_WIDGET_CONFIG } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ConfigurationsService, ValueService, UtilityService } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 // import { IKhubFetchStatus } from '../../../infy/routes/knowledge-hub/models/knowledgeHub.model'
+
 // import { TrainingService } from '../../../infy/routes/training/services/training.service'
+
 import { FilterDisplayComponent } from '../../components/filter-display/filter-display.component'
+
 import { IFilterUnitResponse, ISearchRequest, ISearchTab } from '../../models/search.model'
+
 import { SearchServService } from '../../services/search-serv.service'
+
 interface IThing {
   prop?: string
 }

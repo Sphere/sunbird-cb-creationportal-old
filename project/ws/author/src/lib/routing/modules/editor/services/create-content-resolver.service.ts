@@ -1,8 +1,13 @@
 import { EditorService } from './editor.service'
+
 import { Injectable } from '@angular/core'
+
 import { Router, ActivatedRouteSnapshot } from '@angular/router'
+
 import { Observable, of } from 'rxjs'
+
 import { catchError } from 'rxjs/operators'
+
 
 @Injectable({
   providedIn: 'root',

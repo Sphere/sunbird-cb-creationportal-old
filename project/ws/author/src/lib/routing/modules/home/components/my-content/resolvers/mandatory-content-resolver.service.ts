@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core'
+
 import { Resolve } from '@angular/router'
+
 import { Observable, of } from 'rxjs'
+
 import { catchError, map } from 'rxjs/operators'
+
 import { MyContentService } from '../services/my-content.service'
+
 
 @Injectable()
 export class MandatoryContentResolverService

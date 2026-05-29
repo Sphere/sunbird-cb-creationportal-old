@@ -1,6 +1,9 @@
 import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core'
+
 import { BtnFollowService } from './btn-follow.service'
+
 import { Subscription } from 'rxjs'
+
 
 @Component({
   selector: 'ws-widget-btn-follow',

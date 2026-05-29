@@ -1,10 +1,17 @@
 // import { HttpClient } from '@angular/common/http'
+
 import { Injectable } from '@angular/core'
+
 import { KeycloakEvent, KeycloakEventType, KeycloakInitOptions, KeycloakService } from 'keycloak-angular'
+
 import { fromEvent, ReplaySubject } from 'rxjs'
+
 import { filter } from 'rxjs/operators'
+
 import { AuthMicrosoftService } from './auth-microsoft.service'
+
 import { ConfigurationsService } from './configurations.service'
+
 
 interface IParsedToken {
   email?: string

@@ -1,18 +1,29 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, ViewChild, AfterViewInit, HostListener } from '@angular/core'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import {
   NsContent,
   //WidgetContentService
 } from '@ws-widget/collection'
+
 import { ConfigurationsService, EventService, TelemetryService } from '@ws-widget/utils'
+
 import { TFetchStatus } from '@ws-widget/utils/src/public-api'
+
 import { MobileAppsService } from '../../../../../../../src/app/services/mobile-apps.service'
+
 import { SCORMAdapterService } from 'project/ws/viewer/src/lib/plugins/html/SCORMAdapter/scormAdapter'
 
+
 // import { Interval, Observable, Subscription } from 'rxjs'
+
 //import { ViewerUtilService } from '../../../../../../../project/ws/viewer/src/lib/viewer-util.service'
+
 
 @Component({
   selector: 'viewer-plugin-html',

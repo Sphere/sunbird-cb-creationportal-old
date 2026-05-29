@@ -11,7 +11,9 @@ import {
   Output,
   ViewChild,
 } from '@angular/core'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import {
   AUTHORING_CONTENT_BASE,
   CONTENT_BASE_STATIC,
@@ -19,21 +21,33 @@ import {
   CONTENT_BASE_WEBHOST,
   CONTENT_BASE_WEBHOST_ASSETS,
 } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import {
   FILE_MAX_SIZE,
   IMAGE_MAX_SIZE,
   IMAGE_SUPPORT_TYPES,
 } from '@ws/author/src/lib/constants/upload'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { UploadService } from '@ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { ConfigurationsService } from 'library/ws-widget/utils/src/lib/services/configurations.service'
+
 import { Subscription } from 'rxjs'
+
 import { HttpClient } from '@angular/common/http'
+
 import { AUTHORING_BASE } from '@ws/author/src/lib/constants/apiEndpoints'
+
 
 declare const CKEDITOR: any
 

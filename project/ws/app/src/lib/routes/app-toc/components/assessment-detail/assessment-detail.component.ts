@@ -1,6 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { NSQuiz } from '../../../../../../../viewer/src/lib/plugins/quiz/quiz.model'
+
 import { HttpClient } from '@angular/common/http'
+
 
 @Component({
   selector: 'ws-app-assessment-detail',

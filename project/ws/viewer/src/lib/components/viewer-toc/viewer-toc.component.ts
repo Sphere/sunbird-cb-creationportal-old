@@ -1,27 +1,41 @@
 import { NestedTreeControl } from '@angular/cdk/tree'
+
 import { Component, EventEmitter, OnDestroy, OnInit, Output, Input } from '@angular/core'
-import { MatTreeNestedDataSource } from '@angular/material'
+
+import { MatTreeNestedDataSource } from '@angular/material/tree'
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
+
 import { ActivatedRoute } from '@angular/router'
+
 import {
   ContentProgressService,
   NsContent,
   VIEWER_ROUTE_FROM_MIME,
   WidgetContentService,
 } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import {
   // LoggerService,
   ConfigurationsService,
   UtilityService,
 } from '@ws-widget/utils'
+
 import { of, Subscription } from 'rxjs'
+
 import { delay } from 'rxjs/operators'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { PlayerStateService } from '../../player-state.service'
+
 import { ViewerDataService } from '../../viewer-data.service'
+
 import { ViewerUtilService } from '../../viewer-util.service'
+
 import { SCORMAdapterService } from 'project/ws/viewer/src/lib/plugins/html/SCORMAdapter/scormAdapter'
+
 interface IViewerTocCard {
   artifactUrl: string
   identifier: string

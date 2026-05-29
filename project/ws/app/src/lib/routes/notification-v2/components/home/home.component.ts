@@ -1,11 +1,18 @@
 import { Component, OnInit } from '@angular/core'
+
 import { ConfigurationsService, NsPage, TFetchStatus } from '@ws-widget/utils'
 
+
 import { NotificationApiService } from '../../services/notification-api.service'
+
 import { ENotificationType, INotification } from '../../models/notifications.model'
+
 import { NotificationService } from '../../services/notification.service'
+
 import { noop } from 'rxjs'
+
 import { Router } from '@angular/router'
+
 
 @Component({
   selector: 'ws-app-home',

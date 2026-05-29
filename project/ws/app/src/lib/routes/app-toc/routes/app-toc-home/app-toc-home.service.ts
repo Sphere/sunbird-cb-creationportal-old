@@ -1,5 +1,7 @@
 import { Injectable, Type } from '@angular/core'
+
 import { AppTocHomeComponent } from '../../components/app-toc-home/app-toc-home.component'
+
 
 @Injectable({
   providedIn: 'root',

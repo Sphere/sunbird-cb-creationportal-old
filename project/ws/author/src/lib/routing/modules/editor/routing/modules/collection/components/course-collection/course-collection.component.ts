@@ -1,47 +1,88 @@
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
+
 import { Component, OnDestroy, OnInit } from '@angular/core'
+
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { IActionButton, IActionButtonConfig } from '@ws/author/src/lib/interface/action-button'
+
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
+
 import { IAuthSteps } from '@ws/author/src/lib/interface/auth-stepper'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/components/comments-dialog/comments-dialog.component'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { Observable, of, Subscription } from 'rxjs'
+
 // import { map, mergeMap, tap, catchError } from 'rxjs/operators'
+
 import { map, mergeMap, tap } from 'rxjs/operators'
+
 import { IContentNode, IContentTreeNode } from '../../interface/icontent-tree'
+
 import { CollectionResolverService } from './../../services/resolver.service'
+
 import { CollectionStoreService } from './../../services/store.service'
+
 // import { VIEWER_ROUTE_FROM_MIME, WidgetContentService } from '@ws-widget/collection'
+
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
+
 // import { NotificationService } from '@ws/author/src/lib/services/notification.service'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
+
 import { HeaderServiceService } from './../../../../../../../../../../../../../src/app/services/header-service.service'
+
 import { RootService } from 'src/app/component/root/root.service'
+
 import { FlatTreeControl } from '@angular/cdk/tree'
+
 import { isNumber } from 'lodash'
+
 import { environment } from '../../../../../../../../../../../../../src/environments/environment'
+
 import { ConfigurationsService } from '../../../../../../../../../../../../../library/ws-widget/utils/src/public-api'
+
 /* tslint:disable */
 import _ from 'lodash'
+
 import moment from 'moment'
+
 import { SuccessDialogComponent } from '../../../../../../../../modules/shared/components/success-dialog/success-dialog.component'
+
 // import { VariableAst } from '@angular/compiler'
+
 import {
   ContentProgressService,
 } from '@ws-widget/collection'
+
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'ws-author-course-collection',
@@ -2509,11 +2550,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //     //       requestBody.request.content.reviewer = requestBody.request.content.reviewer + ', ' + element.id
   //     //     }
   //     //   })
-  //     //   delete requestBody.request.content.trackContacts
+  //     //   delete (requestBody as any).request.content.trackContacts
   //     // }
 
   //     if (requestBody.request.content.category) {
-  //       delete requestBody.request.content.category
+  //       delete (requestBody as any).request.content.category
   //     }
   //     console.log('requestBody updateContentV3', requestBody)
   //     return this.editorService.updateContentV3(requestBody, this.contentService.currentContent).pipe(
@@ -2595,7 +2636,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //       }
 
   //       if (requestBody.request.content.category) {
-  //         delete requestBody.request.content.category
+  //         delete (requestBody as any).request.content.category
   //       }
   //       // console.log('requestBody updateContentV3', requestBody)
   //       return this.editorService.updateContentV3(requestBody, this.contentService.currentContent).pipe(
@@ -2799,7 +2840,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //             requestBody.request.content.duration)
   //       }
   //       if (requestBody.request.content.category) {
-  //         delete requestBody.request.content.category
+  //         delete (requestBody as any).request.content.category
   //       }
 
   //       // console.log('UPDATE AUTH TABLE Parent ', requestBody)
@@ -2900,7 +2941,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       }
 
       if (requestBody.request.content.category) {
-        delete requestBody.request.content.category
+        delete (requestBody as any).request.content.category
       }
 
       if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
@@ -2911,7 +2952,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           tempTrackRecords.push(element.id)
         })
         requestBody.request.content.reviewerIDs = tempTrackRecords
-        delete requestBody.request.content.trackContacts
+        delete (requestBody as any).request.content.trackContacts
       }
 
       if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
@@ -2922,7 +2963,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           tempTrackRecords.push(element.id)
         })
         requestBody.request.content.reviewerIDs = tempTrackRecords
-        delete requestBody.request.content.trackContacts
+        delete (requestBody as any).request.content.trackContacts
       }
       if (requestBody.request.content.publisherDetails && requestBody.request.content.publisherDetails.length > 0) {
         requestBody.request.content.publisherIDs = []

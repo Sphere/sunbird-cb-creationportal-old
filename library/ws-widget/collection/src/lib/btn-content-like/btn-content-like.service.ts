@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core'
+
 import { Observable, ReplaySubject } from 'rxjs'
+
 import { map, tap, take } from 'rxjs/operators'
+
 import { HttpClient } from '@angular/common/http'
+
 
 const API_END_POINTS = {
   USER_CONTENT_LIKE: `/apis/protected/v8/user/content/like`,

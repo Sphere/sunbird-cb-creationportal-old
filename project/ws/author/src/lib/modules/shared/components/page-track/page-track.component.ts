@@ -1,8 +1,13 @@
 import { ISearchContent } from '@ws/author/src/lib/interface/search'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { Component, Input, OnInit } from '@angular/core'
+
 import { Router } from '@angular/router'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 
 
 

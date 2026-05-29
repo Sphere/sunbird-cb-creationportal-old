@@ -1,10 +1,17 @@
 import { Injectable } from '@angular/core'
+
 import { Resolve, ActivatedRouteSnapshot, Router } from '@angular/router'
+
 import { Observable, of } from 'rxjs'
+
 import { ApiService } from '../modules/shared/services/api.service'
+
 import { NSContent } from '../interface/content'
+
 // import { CONTENT_READ_HIERARCHY_AND_DATA } from '../constants/apiEndpoints'
+
 import { catchError, map } from 'rxjs/operators'
+
 
 @Injectable()
 export class ContentAndDataReadMultiLangTOCResolver implements Resolve<{ content: NSContent.IContentMeta, data: any }[] | null> {

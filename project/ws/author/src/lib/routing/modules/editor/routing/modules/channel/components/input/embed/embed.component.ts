@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
 
+
 interface IEmbedWidget {
   title: string
   iframeSrc: string

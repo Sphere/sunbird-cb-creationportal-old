@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { IBadge } from '../../badges.model'
+
 
 @Component({
   selector: 'ws-app-badges-not-earned',

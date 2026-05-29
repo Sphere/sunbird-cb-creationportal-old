@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, OnDestroy } from '@angular/core'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import {
   FormGroup,
   FormBuilder,
@@ -8,20 +9,33 @@ import {
   AbstractControl,
   FormControl,
 } from '@angular/forms'
+
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'
+
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar'
+
 import { debounceTime, map } from 'rxjs/operators'
+
 import { Observable, Subscription } from 'rxjs'
+
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout'
 
+
 import { NOTIFICATION_TIME } from '../../constants/quiz-constants'
+
 import { QuizStoreService } from '../../services/store.service'
 
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
-import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component.ts'
+
+import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { McqQuiz, Option } from '../quiz-class'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { OpenPlainCkEditorComponent } from '../../shared/components/open-plain-ck-editor/open-plain-ck-editor.component'
+
 
 @Component({
   selector: 'ws-auth-multiple-choice-question',

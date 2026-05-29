@@ -1,8 +1,13 @@
-import { NgModule } from '@angular/core'
+﻿import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { CardDetailsComponent } from './card-details.component'
+
 import { RouterModule } from '@angular/router'
+
 import { MatDividerModule } from '@angular/material/divider'
+
 
 @NgModule({
   declarations: [CardDetailsComponent],
@@ -11,7 +16,6 @@ import { MatDividerModule } from '@angular/material/divider'
     RouterModule,
     MatDividerModule,
   ],
-  entryComponents: [],
   exports: [CardDetailsComponent],
 })
 

@@ -1,8 +1,13 @@
 import { Component, Input, OnInit, ChangeDetectorRef, AfterViewChecked } from '@angular/core'
+
 import { IUserDetails } from '../../interfaces/user-details.model'
+
 import { ISpeakerDetails } from '../../interfaces/speaker-details.model'
+
 import { IEventDetails } from '../../interfaces/event-details.model'
+
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router'
+
 interface ITimer {
   hours: number
   mins: number

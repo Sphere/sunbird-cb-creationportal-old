@@ -1,8 +1,13 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { Subscription, timer } from 'rxjs'
+
 import { ISpeakerDetails } from '../../interfaces/speaker-details.model'
+
 import { EventService } from '../../services/event.service'
+
 
 @Component({
   selector: 'ws-app-event-sessions',

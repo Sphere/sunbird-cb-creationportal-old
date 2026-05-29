@@ -1,7 +1,10 @@
 import { Component, OnInit, Input, ElementRef } from '@angular/core'
+
 import { IBadgeRecent } from '../../../badges/badges.model'
+
 import { BadgesShareDialogComponent } from '../badges-share-dialog/badges-share-dialog.component'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 @Component({
   selector: 'ws-app-badges-card',
   templateUrl: './badges-card.component.html',

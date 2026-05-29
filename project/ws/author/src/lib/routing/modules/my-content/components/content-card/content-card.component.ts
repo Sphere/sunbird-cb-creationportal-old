@@ -1,12 +1,21 @@
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { Router } from '@angular/router'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { CertificateDialogComponent } from '@ws/author/src/lib/modules/shared/components/certificate-upload-dialog/certificate-upload-dialog.component'
+
 import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
+
 import { CertificateStatusDialogComponentDialogComponent } from '../../../../../modules/shared/components/cert-upload-status-dialog/cert-upload-status-dialogcomponent'
+
 
 @Component({
   selector: 'ws-auth-root-content-card',

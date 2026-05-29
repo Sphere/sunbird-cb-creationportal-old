@@ -1,17 +1,20 @@
-import { NgModule } from '@angular/core'
+﻿import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { BtnFeatureComponent } from './btn-feature.component'
+
 import { RouterModule } from '@angular/router'
-import {
-  MatIconModule,
-  MatButtonModule,
-  MatTooltipModule,
-  MatCardModule,
-  MatMenuModule,
-  MatRippleModule,
-  MatBadgeModule,
-} from '@angular/material'
+
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatTooltipModule } from '@angular/material/tooltip'
+import { MatCardModule } from '@angular/material/card'
+import { MatMenuModule } from '@angular/material/menu'
+import { MatRippleModule } from '@angular/material/core'
+import { MatBadgeModule } from '@angular/material/badge'
 import { WidgetUrlResolverDirective } from './widget-url-resolver.directive'
+
 
 @NgModule({
   declarations: [BtnFeatureComponent, WidgetUrlResolverDirective],
@@ -27,6 +30,5 @@ import { WidgetUrlResolverDirective } from './widget-url-resolver.directive'
     MatBadgeModule,
   ],
   exports: [BtnFeatureComponent],
-  entryComponents: [BtnFeatureComponent],
 })
 export class BtnFeatureModule {}

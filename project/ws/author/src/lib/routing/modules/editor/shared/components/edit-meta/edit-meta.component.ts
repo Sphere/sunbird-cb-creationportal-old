@@ -1,4 +1,5 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes'
+
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -11,33 +12,60 @@ import {
   Output,
   ViewChild,
 } from '@angular/core'
+
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-import { MatAutocompleteSelectedEvent } from '@angular/material'
+
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete'
 import { MatChipInputEvent } from '@angular/material/chips'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
+
 import { AUTHORING_BASE, CONTENT_BASE_STATIC } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '@ws/author/src/lib/constants/upload'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { Observable, of, Subscription } from 'rxjs'
+
 // import { InterestService } from '../../../../../../../../../app/src/lib/routes/profile/routes/interest/services/interest.service'
+
 import { UploadService } from '../../services/upload.service'
+
 import { CatalogSelectComponent } from '../catalog-select/catalog-select.component'
+
 import { IFormMeta } from './../../../../../../interface/form'
+
 import { AccessControlService } from './../../../../../../modules/shared/services/access-control.service'
+
 import { AuthInitService } from './../../../../../../services/init.service'
+
 import { LoaderService } from './../../../../../../services/loader.service'
+
 // import { CollectionStoreService } from './../../../routing/modules/collection/services/store.service'
+
 import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-popup.component'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 
 import {
   debounceTime,
@@ -47,15 +75,24 @@ import {
   switchMap,
   map,
 } from 'rxjs/operators'
+
 import { Router } from '@angular/router'
+
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
 
+
 // import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
+
 // import { NSApiResponse } from '../../../../../../interface/apiResponse'
+
 //import { environment } from '../../../../../../../../../../../src/environments/environment'
+
 import { HttpClient } from '@angular/common/http'
+
 import { isNumber } from 'lodash'
+
 import _ from 'lodash'
+
 @Component({
   selector: 'ws-auth-edit-meta',
   templateUrl: './edit-meta.component.html',

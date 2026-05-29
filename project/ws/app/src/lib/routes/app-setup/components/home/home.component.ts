@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core'
+
 import { ConfigurationsService } from '../../../../../../../../../library/ws-widget/utils/src/public-api'
+
 import { SafeUrl, DomSanitizer } from '@angular/platform-browser'
+
 import { Event, NavigationEnd, Router } from '@angular/router'
+
 
 @Component({
   selector: 'ws-app-home',

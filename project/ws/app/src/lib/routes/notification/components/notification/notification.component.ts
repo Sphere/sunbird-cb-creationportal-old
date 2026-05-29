@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core'
+
 import { IUserNotification } from '../../models/notifications.model'
+
 import { NsPlaylist, BtnPlaylistService } from '@ws-widget/collection'
+
 import { TFetchStatus, NsPage, ConfigurationsService } from '@ws-widget/utils'
+
 
 @Component({
   selector: 'ws-app-notification',

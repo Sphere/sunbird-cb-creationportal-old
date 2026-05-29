@@ -1,9 +1,15 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '../../../../resolver/src/public-api'
+
 import { NsError } from './error-resolver.model'
+
 import { ConfigurationsService } from '../../../../utils/src/public-api'
+
 import { ErrorResolverService } from './error-resolver.service'
+
 import { ActivatedRoute } from '@angular/router'
+
 @Component({
   selector: 'ws-widget-error-resolver',
   templateUrl: './error-resolver.component.html',

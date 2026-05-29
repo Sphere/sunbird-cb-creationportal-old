@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Observable } from 'rxjs'
+
 // import { getStringifiedQueryParams } from '@ws-widget/utils'
+
 // import { NsNetworkStripNewMultiple } from './network-strip-multiple.model'
+
 
 @Injectable({
   providedIn: 'root',

@@ -8,19 +8,27 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core'
+
 import {
   NsInstanceConfig,
   ConfigurationsService,
   UserPreferenceService,
   UtilityService,
 } from '@ws-widget/utils'
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
-import { BtnSettingsService } from '@ws-widget/collection'
-import { FormControl } from '@angular/forms'
-import { Subscription } from 'rxjs'
-import { Router, ActivatedRoute } from '@angular/router'
-import { MatSnackBar, MatSelectChange, MatTabChangeEvent } from '@angular/material'
 
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+
+import { BtnSettingsService } from '@ws-widget/collection'
+
+import { FormControl } from '@angular/forms'
+
+import { Subscription } from 'rxjs'
+
+import { Router, ActivatedRoute } from '@angular/router'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { MatSelectChange } from '@angular/material/select'
+import { MatTabChangeEvent } from '@angular/material/tabs'
 @Component({
   selector: 'ws-app-settings',
   templateUrl: './settings.component.html',

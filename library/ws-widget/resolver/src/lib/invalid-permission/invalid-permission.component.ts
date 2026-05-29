@@ -1,6 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { WidgetBaseComponent } from '../widget-base.component'
+
 @Component({
   selector: 'ws-resolver-invalid-permission',
   templateUrl: './invalid-permission.component.html',

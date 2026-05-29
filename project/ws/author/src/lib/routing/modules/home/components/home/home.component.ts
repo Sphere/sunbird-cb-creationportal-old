@@ -1,9 +1,15 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core'
+
 import { map } from 'rxjs/operators'
+
 import { ValueService } from '@ws-widget/utils/src/public-api'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE, EXTERNAL_CONTENT_REVIEWER_LIVE } from '@ws/author/src/lib/constants/content-role'
+
 import { Router } from '@angular/router'
+
 
 @Component({
   selector: 'ws-auth-root-home',

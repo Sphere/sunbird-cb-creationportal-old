@@ -1,26 +1,26 @@
-import { NgModule } from '@angular/core'
+﻿import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
 
-import {
-  MatCardModule,
-  MatSidenavModule,
-  MatToolbarModule,
-  MatIconModule,
-  MatButtonModule,
-  MatDividerModule,
-  MatSlideToggleModule,
-  MatListModule,
-  MatTreeModule,
-  MatProgressSpinnerModule,
-  MatSnackBarModule,
-  MatTabsModule,
-  MatCheckboxModule,
-  MatProgressBarModule,
-  MatRadioModule,
-  MatTableModule
-} from '@angular/material'
 
+import { MatCardModule } from '@angular/material/card'
+import { MatSidenavModule } from '@angular/material/sidenav'
+import { MatToolbarModule } from '@angular/material/toolbar'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatDividerModule } from '@angular/material/divider'
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'
+import { MatListModule } from '@angular/material/list'
+import { MatTreeModule } from '@angular/material/tree'
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MatSnackBarModule } from '@angular/material/snack-bar'
+import { MatTabsModule } from '@angular/material/tabs'
+import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatProgressBarModule } from '@angular/material/progress-bar'
+import { MatRadioModule } from '@angular/material/radio'
+import { MatTableModule } from '@angular/material/table'
 import { ViewerRoutingModule } from './viewer-routing.module'
+
 
 import {
   PipeDurationTransformModule,
@@ -29,6 +29,7 @@ import {
   PipePartialContentModule,
   PipeAssessmentDurationTransformModule
 } from '@ws-widget/utils'
+
 
 import {
   ErrorResolverModule,
@@ -46,14 +47,23 @@ import {
   // PlayerBriefModule,
 } from '@ws-widget/collection'
 
+
 import { WidgetResolverModule } from '@ws-widget/resolver'
+
 import { ViewerComponent } from './viewer.component'
+
 import { ViewerTocComponent } from './components/viewer-toc/viewer-toc.component'
+
 import { ViewerTopBarModule } from './components/viewer-top-bar/viewer-top-bar.module'
+
 import { ReviewDialogComponent } from './components/review-checklist/review-dialog.component'
+
 import { MatDialogModule } from '@angular/material/dialog'
+
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+
 import { AppTocModule } from '@ws/app'
+
 
 @NgModule({
   declarations: [ViewerComponent, ViewerTocComponent, ReviewDialogComponent],
@@ -100,9 +110,6 @@ import { AppTocModule } from '@ws/app'
     MatRadioModule,
     MatTableModule,
     AppTocModule
-  ],
-  entryComponents: [
-    ReviewDialogComponent
   ],
 })
 export class ViewerModule { }

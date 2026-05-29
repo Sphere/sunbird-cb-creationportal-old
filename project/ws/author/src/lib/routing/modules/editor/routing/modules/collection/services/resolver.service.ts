@@ -1,11 +1,19 @@
 import { Injectable } from '@angular/core'
+
 import { ICON_TYPE } from '@ws/author/src/lib/constants/icons'
+
 import { MIME_TYPE } from '@ws/author/src/lib/constants/mimeType'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { NSContent } from '../../../../../../../interface/content'
+
 import { IContentNode, IContentTreeNode } from '../interface/icontent-tree'
+
 import { AuthInitService } from './../../../../../../../services/init.service'
+
 
 @Injectable()
 /**

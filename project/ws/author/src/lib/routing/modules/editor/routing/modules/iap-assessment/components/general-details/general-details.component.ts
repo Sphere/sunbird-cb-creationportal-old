@@ -1,18 +1,34 @@
 import { animate, transition, trigger } from '@angular/animations'
+
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core'
+
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms'
-import { MatDialog, MatPaginator, MatTableDataSource } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatPaginator } from '@angular/material/paginator'
+import { MatTableDataSource } from '@angular/material/table'
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { LoaderService } from '../../../../../../../../services/loader.service'
+
 import { EditorContentService } from '../../../../../services/editor-content.service'
+
 import { IAssessmentDetails, IQuestionDetail, IQuestionDetailsContent, ISectionDetailsContent, IResponseQuestion } from '../../interface/iap-assessment.interface'
+
 import { IapAssessmentService } from '../../services/iap-assessment.service'
+
 import { SectionDialogComponent } from '../section-dialog/section-dialog.component'
+
 import { ViewQuestionDialogComponent } from '../view-question-dialog/view-question-dialog.component'
+
 import { CONTENT_BASE_WEBHOST_ASSETS } from '../../../../../../../../constants/apiEndpoints'
+
 
 @Component({
   selector: 'ws-auth-general-details',

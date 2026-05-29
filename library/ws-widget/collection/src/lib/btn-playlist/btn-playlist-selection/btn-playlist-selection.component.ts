@@ -1,9 +1,15 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core'
+
 import { FormControl, Validators } from '@angular/forms'
-import { MatListOption, MatSnackBar } from '@angular/material'
+
+import { MatListOption } from '@angular/material/list'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { EventService, TFetchStatus } from '@ws-widget/utils'
+
 import { NsPlaylist } from '../btn-playlist.model'
+
 import { BtnPlaylistService } from '../btn-playlist.service'
+
 
 @Component({
   selector: 'ws-widget-btn-playlist-selection',

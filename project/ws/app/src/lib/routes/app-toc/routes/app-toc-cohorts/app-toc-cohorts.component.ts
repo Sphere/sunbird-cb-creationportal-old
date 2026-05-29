@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular/core'
+
 import { AppTocCohortsService } from './app-toc-cohorts.service'
+
 import { AppTocCohortsDirective } from './app-toc-cohorts.directive'
+
 
 @Component({
   selector: 'ws-app-app-toc-cohorts',

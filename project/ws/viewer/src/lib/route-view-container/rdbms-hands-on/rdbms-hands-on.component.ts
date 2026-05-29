@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core'
+
 import { NsContent } from '@ws-widget/collection'
+
 
 @Component({
   selector: 'viewer-rdbms-hands-on-container',

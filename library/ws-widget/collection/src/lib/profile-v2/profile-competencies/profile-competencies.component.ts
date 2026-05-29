@@ -1,5 +1,7 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core'
+
 import { WidgetBaseComponent, NsWidgetResolver } from '@ws-widget/resolver'
+
 
 @Component({
   selector: 'ws-widget-profile-v2-competencies',

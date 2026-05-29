@@ -1,20 +1,22 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core'
+
 import { EventService } from '@ws-widget/utils'
-import 'brace'
-import 'brace/ext/language_tools'
-import 'brace/mode/css'
-import 'brace/mode/html'
-import 'brace/mode/javascript'
-import 'brace/mode/text'
-import 'brace/snippets/css'
-import 'brace/snippets/html'
-import 'brace/snippets/javascript'
-import 'brace/snippets/text'
-import 'brace/theme/cobalt'
-import 'brace/worker/css'
-import 'brace/worker/html'
-import 'brace/worker/javascript'
+
+import 'ace-builds/src-noconflict/ext-language_tools'
+import 'ace-builds/src-noconflict/mode-css'
+import 'ace-builds/src-noconflict/mode-html'
+import 'ace-builds/src-noconflict/mode-javascript'
+import 'ace-builds/src-noconflict/mode-text'
+import 'ace-builds/src-noconflict/snippets/css'
+import 'ace-builds/src-noconflict/snippets/html'
+import 'ace-builds/src-noconflict/snippets/javascript'
+import 'ace-builds/src-noconflict/snippets/text'
+import 'ace-builds/src-noconflict/theme-cobalt'
+import 'ace-builds/src-noconflict/worker-css'
+import 'ace-builds/src-noconflict/worker-html'
+import 'ace-builds/src-noconflict/worker-javascript'
 import { IHtmlPicker } from './html-picker.model'
+
 
 @Component({
   selector: 'viewer-plugin-html-picker',

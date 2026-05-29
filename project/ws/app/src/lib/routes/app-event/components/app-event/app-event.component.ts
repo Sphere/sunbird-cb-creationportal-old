@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { EventService } from '../../services/event.service'
+
 import { ConfigurationsService, NsPage } from '@ws-widget/utils'
+
 
 @Component({
   selector: 'ws-app-app-event',

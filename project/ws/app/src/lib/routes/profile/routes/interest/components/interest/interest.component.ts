@@ -1,13 +1,22 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core'
+
 import { FormControl } from '@angular/forms'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { ActivatedRoute } from '@angular/router'
+
 import { ConfigurationsService, EventService } from '@ws-widget/utils'
+
 // import { startWith, map } from 'rxjs/operators'
+
 import { IResolveResponse } from 'library/ws-widget/utils/src/lib/resolvers/resolver.model'
+
 import { Observable, of } from 'rxjs'
+
 // import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs/operators'
+
 import { InterestService } from '../../services/interest.service'
+
 
 @Component({
   selector: 'ws-app-interest',

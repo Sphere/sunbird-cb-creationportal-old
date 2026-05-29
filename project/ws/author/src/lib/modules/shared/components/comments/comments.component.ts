@@ -1,5 +1,7 @@
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { Component, OnInit, Input } from '@angular/core'
+
 
 @Component({
   selector: 'ws-auth-root-comments',

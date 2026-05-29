@@ -1,14 +1,23 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { noop, Subject, throwError, of } from 'rxjs'
 
+
 import { NsContent } from '@ws-widget/collection'
+
 import { TFetchStatus } from '@ws-widget/utils'
 
+
 import { ICertificationMeta } from '../../models/certification.model'
+
 import { CertificationService } from '../../services/certification.service'
+
 import { switchMap, catchError, takeUntil } from 'rxjs/operators'
+
 import { CertificationApiService } from '../../apis/certification-api.service'
+
 
 @Component({
   selector: 'ws-app-toc-certification',

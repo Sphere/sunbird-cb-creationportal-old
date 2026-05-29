@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { IWsSocialSearchResultData } from '../../models/search.model'
+
 
 @Component({
   selector: 'ws-app-blogs-card',

@@ -1,4 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections'
+
 import {
   AfterViewInit,
   Component,
@@ -13,12 +14,19 @@ import {
   // SimpleChange,
   ViewChild,
 } from '@angular/core'
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material'
+
+import { MatPaginator } from '@angular/material/paginator'
+import { MatSort } from '@angular/material/sort'
+import { MatTableDataSource } from '@angular/material/table'
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { IColums, ITable } from './card-table.model'
+
 /* tslint:disable */
 import _ from 'lodash'
+
 import { NSContent } from '../../../../../../project/ws/author/src/lib/interface/content'
+
 /* tslint:enable */
 @Component({
   selector: 'ws-widget-table-card-content',

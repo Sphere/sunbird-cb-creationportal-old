@@ -1,13 +1,23 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core'
+
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { ConfigurationsService, NsPage, ValueService } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 import { ViewerDataService } from '../../viewer-data.service'
+
 import { NsContent } from '@ws-widget/collection/src/lib/_services/widget-content.model'
+
 import { AccessControlService } from '../../../../../author/src/lib/modules/shared/services/access-control.service'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { ReviewDialogComponent } from '@ws/viewer/src/lib/components/review-checklist/review-dialog.component'
+
 
 @Component({
   selector: 'viewer-viewer-top-bar',

@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core'
 
+
 @Component({
   selector: 'ws-widget-avatar-photo',
   templateUrl: './avatar-photo.component.html',

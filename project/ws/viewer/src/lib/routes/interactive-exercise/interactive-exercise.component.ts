@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 
+
 @Component({
   selector: 'viewer-interactive-exercise',
   templateUrl: './interactive-exercise.component.html',

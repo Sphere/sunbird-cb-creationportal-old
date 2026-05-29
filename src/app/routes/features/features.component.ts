@@ -1,13 +1,22 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { FormControl } from '@angular/forms'
+
 import { Subscription } from 'rxjs'
+
 import { Router, ActivatedRoute } from '@angular/router'
+
 import { startWith, debounceTime, distinctUntilChanged } from 'rxjs/operators'
+
 import { NsAppsConfig, ConfigurationsService, NsPage, LogoutComponent, SubapplicationRespondService, ValueService } from '@ws-widget/utils'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ROOT_WIDGET_CONFIG, CustomTourService } from '@ws-widget/collection'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 // import { AccessControlService } from '../../../../project/ws/author/src/public-api'
+
 interface IGroupWithFeatureWidgets extends NsAppsConfig.IGroup {
   featureWidgets: NsWidgetResolver.IRenderConfigWithTypedData<NsPage.INavLink>[]
 }

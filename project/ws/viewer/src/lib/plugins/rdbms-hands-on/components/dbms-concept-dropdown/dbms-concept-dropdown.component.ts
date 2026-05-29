@@ -1,9 +1,14 @@
 import { Component, Input, ViewChild, ElementRef, OnDestroy, OnChanges } from '@angular/core'
+
 import { FormGroup, FormBuilder } from '@angular/forms'
+
 import { RdbmsHandsOnService } from '../../rdbms-hands-on.service'
+
 import { NSRdbmsHandsOn } from '../../rdbms-hands-on.model'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { EventService } from '@ws-widget/utils'
+
 
 @Component({
   selector: 'viewer-dbms-concept-dropdown',

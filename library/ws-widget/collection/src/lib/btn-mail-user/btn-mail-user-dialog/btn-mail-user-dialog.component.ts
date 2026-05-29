@@ -1,8 +1,13 @@
 import { Component, OnInit, Inject } from '@angular/core'
-import { MatSnackBar, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { WidgetContentShareService } from '../../_services/widget-content-share.service'
+
 import { IBtnMailUser } from '../btn-mail-user.component'
+
 import { EventService } from '@ws-widget/utils'
+
 
 @Component({
   selector: 'ws-widget-btn-mail-user-dialog',

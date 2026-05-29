@@ -1,5 +1,7 @@
 import { IInitialSetup } from '../interface/initialSetup'
+
 import { IFormMeta } from '../interface/form'
+
 
 export const AUTH_INIT: IInitialSetup = {
   contentTypes: [

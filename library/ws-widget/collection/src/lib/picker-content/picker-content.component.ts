@@ -9,16 +9,26 @@ import {
   Output,
   ViewChild,
 } from '@angular/core'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { ConfigurationsService, TFetchStatus } from '@ws-widget/utils'
+
 import { SearchServService } from '@ws/app/src/lib/routes/search/services/search-serv.service'
+
 import { BehaviorSubject, EMPTY, Subscription, timer } from 'rxjs'
+
 import { debounce, mergeMap } from 'rxjs/operators'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import { NSSearch } from '../_services/widget-search.model'
+
 import { IPickerContentData, ISearchConfig } from './picker-content.model'
+
 import { PickerContentService } from './picker-content.service'
+
 
 @Component({
   selector: 'ws-widget-picker-content[widgetData]',

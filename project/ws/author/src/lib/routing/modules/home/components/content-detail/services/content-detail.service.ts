@@ -1,7 +1,11 @@
 import { ISearchResult } from '@ws/author/src/lib/interface/search'
+
 import { HttpHeaders } from '@angular/common/http'
+
 import { Injectable } from '@angular/core'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import {
   CONTENT_CREATE,
   CONTENT_DELETE,
@@ -14,15 +18,25 @@ import {
   SEARCH_V6_ADMIN,
   SEARCH_V6_AUTH,
 } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
+
 import { NSApiResponse } from '@ws/author/src/lib/interface/apiResponse'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
+
 import { Observable } from 'rxjs'
+
 import { map, mergeMap } from 'rxjs/operators'
+
 import { IFormMeta } from '@ws/author/src/lib/interface/form'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 
 @Injectable()
 export class MyContentService {

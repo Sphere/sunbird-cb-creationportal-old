@@ -10,12 +10,19 @@ import {
   ViewChild,
   ElementRef,
 } from '@angular/core'
+
 import { DomSanitizer } from '@angular/platform-browser'
+
 import { Subscription, interval } from 'rxjs'
+
 import { NSClassDiagram } from './class-diagram.model'
+
 import { map } from 'rxjs/operators'
+
 import { jsPlumb, jsPlumbInstance } from 'jsplumb'
+
 import { ClassDiagramService } from './class-diagram.service'
+
 
 @Component({
   selector: 'viewer-plugin-class-diagram',

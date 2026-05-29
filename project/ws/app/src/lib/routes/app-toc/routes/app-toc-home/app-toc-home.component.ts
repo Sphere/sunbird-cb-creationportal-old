@@ -1,6 +1,9 @@
 import { Component, OnInit, ComponentFactoryResolver, ViewChild } from '@angular/core'
+
 import { AppTocHomeDirective } from './app-toc-home.directive'
+
 import { AppTocHomeService } from './app-toc-home.service'
+
 @Component({
   selector: 'ws-app-app-toc-home-root',
   templateUrl: './app-toc-home.component.html',

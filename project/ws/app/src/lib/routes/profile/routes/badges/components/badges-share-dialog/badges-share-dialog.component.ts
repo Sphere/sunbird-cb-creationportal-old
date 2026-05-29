@@ -1,8 +1,10 @@
 import { Component, ElementRef, TemplateRef, ViewChild, OnInit , Inject } from '@angular/core'
-import {  NsAutoComplete } from '@ws-widget/collection'
-import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
-import { MAT_DIALOG_DATA } from '@angular/material'
 
+import {  NsAutoComplete } from '@ws-widget/collection'
+
+import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
+
+import { MAT_DIALOG_DATA } from '@angular/material/dialog'
 @Component({
   selector: 'ws-app-badges-share-dialog',
   templateUrl: './badges-share-dialog.component.html',

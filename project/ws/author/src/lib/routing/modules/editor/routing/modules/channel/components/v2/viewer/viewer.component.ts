@@ -1,8 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { ChannelStoreService } from '../../../services/store.service'
+
 import { ChannelResolverService } from '../../../services/resolver.service'
+
 import { NsWidgetResolver } from '@ws-widget/resolver/src/public-api'
+
 import { isNotEmptyWidget } from './viewer.function'
+
 
 @Component({
   selector: 'ws-auth-viewer-v2',

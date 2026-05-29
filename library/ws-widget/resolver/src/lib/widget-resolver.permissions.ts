@@ -1,5 +1,6 @@
 import { NsWidgetResolver } from './widget-resolver.model'
 
+
 function isStringArray(strArr: string[] | any): boolean {
   return Array.isArray(strArr) && strArr.every(u => typeof u === 'string')
 }

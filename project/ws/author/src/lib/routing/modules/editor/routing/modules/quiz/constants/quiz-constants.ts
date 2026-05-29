@@ -1,5 +1,6 @@
 import { IQuizQuestionType } from '../interface/quiz-interface'
 
+
 export const QUESTION_CONFIG = {
   matchOptionsConfig: {
     colNameMinLength: 1,

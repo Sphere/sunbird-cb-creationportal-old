@@ -1,11 +1,19 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Subscription } from 'rxjs'
+
 import { NsContent, NsDiscussionForum, WidgetContentService } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { EventService, WsEvents } from '@ws-widget/utils'
+
 import { ViewerUtilService } from '../../viewer-util.service'
+
 
 @Component({
   selector: 'viewer-web-module',

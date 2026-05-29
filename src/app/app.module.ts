@@ -1,35 +1,31 @@
 import { FullscreenOverlayContainer, OverlayContainer } from '@angular/cdk/overlay'
 import { APP_BASE_HREF, PlatformLocation } from '@angular/common'
 import { HttpClientJsonpModule, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
-import { APP_INITIALIZER, Injectable, NgModule, ErrorHandler } from '@angular/core'
-import {
-  GestureConfig,
-  MatButtonModule,
-  MatCardModule,
-  MatDialogModule,
-  MatDividerModule,
-  MatExpansionModule,
-  MatIconModule,
-  MatMenuModule,
-  MatProgressBarModule,
-  MatRippleModule,
-  MatSliderModule,
-  MatToolbarModule,
-  MatTooltipModule,
-  MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,
-  MAT_SNACK_BAR_DEFAULT_OPTIONS,
-  MatInputModule,
-  MatFormFieldModule,
-  MatListModule,
-} from '@angular/material'
-import { BrowserModule, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser'
+import { APP_INITIALIZER, NgModule, ErrorHandler } from '@angular/core'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
+import { MatDialogModule } from '@angular/material/dialog'
+import { MatDividerModule } from '@angular/material/divider'
+import { MatExpansionModule } from '@angular/material/expansion'
+import { MatIconModule } from '@angular/material/icon'
+import { MatMenuModule } from '@angular/material/menu'
+import { MatProgressBarModule } from '@angular/material/progress-bar'
+import { MatRippleModule } from '@angular/material/core'
+import { MatSliderModule } from '@angular/material/slider'
+import { MatToolbarModule } from '@angular/material/toolbar'
+import { MatTooltipModule } from '@angular/material/tooltip'
+import { MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS } from '@angular/material/progress-spinner'
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar'
+import { MatInputModule } from '@angular/material/input'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatListModule } from '@angular/material/list'
+import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { BtnFeatureModule, ErrorResolverModule, TourModule, WIDGET_REGISTERED_MODULES, WIDGET_REGISTRATION_CONFIG, PipeContentRoutePipe } from '@ws-widget/collection'
 import { StickyHeaderModule } from '@ws-widget/collection/src/lib/_common/sticky-header/sticky-header.module'
 import { WidgetResolverModule } from '@ws-widget/resolver'
 import { LoggerService, PipeSafeSanitizerModule } from '@ws-widget/utils'
 import { SearchModule } from '@ws/app/src/public-api'
-import 'hammerjs'
 import { KeycloakAngularModule } from 'keycloak-angular'
 import { AppRoutingModule } from './app-routing.module'
 import { InitService } from './services/init.service'
@@ -40,8 +36,6 @@ import { LoginComponent } from './component/login/login.component'
 import { AppFooterComponent } from './component/app-footer/app-footer.component'
 import { AppNavBarComponent } from './component/app-nav-bar/app-nav-bar.component'
 import { AppPublicNavBarComponent } from './component/app-public-nav-bar/app-public-nav-bar.component'
-// import { ServiceWorkerModule } from '@angular/service-worker'
-// import { environment } from '../environments/environment'
 import { DialogConfirmComponent } from './component/dialog-confirm/dialog-confirm.component'
 import { InvalidUserComponent } from './component/invalid-user/invalid-user.component'
 import { LoginRootComponent } from './component/login-root/login-root.component'
@@ -60,18 +54,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { PublicReleaseModule } from './routes/public/public-release/public-about.module'
 import { AppTocResolverService } from '@ws/author'
 import { AuthInitService } from '../../project/ws/author/src/lib/services/init.service'
-// import { ServiceWorkerModule } from '@angular/service-worker'
-// import { environment } from '../environments/environment'
 import { OrgComponent } from '../../project/ws/app/src/lib/routes/org/components/org/org.component'
 import { PlayerVideoPopupComponent } from '../../library/ws-widget/collection/src/lib/player-video-popup/player-video-popup-component'
-
 import { SharedModule } from '../../project/ws/author/src/lib/modules/shared/shared.module'
-@Injectable()
-export class HammerConfig extends GestureConfig {
-  buildHammer(element: HTMLElement) {
-    return new GestureConfig({ touchAction: 'pan-y' }).buildHammer(element)
-  }
-}
+
 const appInitializer = (initSvc: InitService, logger: LoggerService) => async () => {
   try {
     await initSvc.init()
@@ -84,7 +70,6 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
   return platformLocation.getBaseHrefFromDOM()
 }
 
-// tslint:disable-next-line: max-classes-per-file
 @NgModule({
   declarations: [
     RootComponent,
@@ -99,7 +84,7 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     LoginRootComponent,
     LoginRootDirective,
     OrgComponent,
-    PlayerVideoPopupComponent
+    PlayerVideoPopupComponent,
   ],
   imports: [
     SharedModule,
@@ -140,17 +125,11 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     MobileAppModule,
     PipeSafeSanitizerModule,
     TourModule,
-    // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   exports: [
     TncComponent,
   ],
   bootstrap: [RootComponent],
-  entryComponents: [
-    DialogConfirmComponent,
-    LoginComponent,
-    PlayerVideoPopupComponent
-  ],
   providers: [
     {
       deps: [InitService, LoggerService],
@@ -181,9 +160,8 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
       deps: [PlatformLocation],
     },
     { provide: OverlayContainer, useClass: FullscreenOverlayContainer },
-    { provide: HAMMER_GESTURE_CONFIG, useClass: HammerConfig },
     { provide: ErrorHandler, useClass: GlobalErrorHandlingService },
-    AuthInitService
+    AuthInitService,
   ],
 })
 export class AppModule { }

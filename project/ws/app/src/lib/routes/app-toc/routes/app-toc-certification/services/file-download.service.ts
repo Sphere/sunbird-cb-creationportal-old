@@ -1,7 +1,11 @@
 import { Injectable, Inject } from '@angular/core'
+
 import { Observable, of, throwError } from 'rxjs'
+
 import { WINDOW } from './window.service'
+
 import { DOCUMENT } from '@angular/common'
+
 
 @Injectable()
 export class FileDownloadService {
@@ -42,7 +46,7 @@ export class FileDownloadService {
       const downloadLink = this.document.createElement('a')
       downloadLink.style.display = 'none'
       this.document.body.appendChild(downloadLink)
-      downloadLink.setAttribute('href', this.window.URL.createObjectURL(file))
+      downloadLink.setAttribute('href', (this.window as any).URL.createObjectURL(file))
       downloadLink.setAttribute('download', documentName)
       downloadLink.click()
       this.document.body.removeChild(downloadLink)

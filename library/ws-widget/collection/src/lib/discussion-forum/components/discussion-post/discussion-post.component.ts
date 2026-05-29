@@ -1,10 +1,17 @@
 import { Component, OnInit, Input, Output, ViewChild, EventEmitter } from '@angular/core'
+
 import { NsDiscussionForum } from '../../ws-discussion-forum.model'
+
 import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { WsDiscussionForumService } from '../../ws-discussion-forum.services'
+
 import { EditorQuillComponent } from '../../editor-quill/editor-quill.component'
+
 import { DialogSocialDeletePostComponent } from '../../dialog/dialog-social-delete-post/dialog-social-delete-post.component'
+
 
 @Component({
   selector: 'ws-widget-discussion-post',

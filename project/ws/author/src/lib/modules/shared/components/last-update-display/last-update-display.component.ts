@@ -1,5 +1,7 @@
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { Component, OnInit, Input } from '@angular/core'
+
 
 @Component({
   selector: 'ws-auth-last-update-display',

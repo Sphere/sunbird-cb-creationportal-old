@@ -1,22 +1,41 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
+
 import { QuizComponent } from './quiz.component'
+
 import { UploadService } from '@ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
+
 import { MatMenuModule } from '@angular/material/menu'
+
 import { MatIconModule } from '@angular/material/icon'
+
 import { MatSidenavModule } from '@angular/material/sidenav'
+
 import { MatFormFieldModule } from '@angular/material/form-field'
+
 import { QuestionEditorComponent } from './../question-editor/question-editor.component'
+
 import { CUSTOM_ELEMENTS_SCHEMA, InjectionToken } from '@angular/core'
+
 import { ViewerComponent } from '../../../../../../../components/viewer/viewer.component'
+
 import { EditMetaComponent } from '../../../../../shared/components/edit-meta/edit-meta.component'
+
 import { QuestionEditorSidenavComponent } from '../../shared/components/question-editor-sidenav/question-editor-sidenav.component'
+
 import { PipeSafeSanitizerPipe } from '../../../../../../../../../../../../../library/ws-widget/utils/src/lib/pipes/pipe-safe-sanitizer/pipe-safe-sanitizer.pipe'
+
 import { CommonModule } from '@angular/common'
+
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+
 import { MatInputModule } from '@angular/material/input'
+
 import { MatSelectModule } from '@angular/material/select'
+
 import { MatChipsModule } from '@angular/material/chips'
+
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
+
 export const appBaseHrefToken = new InjectionToken<string>('appBaseHref')
 
 describe('QuizComponent', () => {

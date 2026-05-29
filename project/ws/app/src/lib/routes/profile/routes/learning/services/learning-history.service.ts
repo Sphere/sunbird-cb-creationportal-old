@@ -1,8 +1,13 @@
 import { HttpClient } from '@angular/common/http'
+
 import { Injectable } from '@angular/core'
+
 import { Observable } from 'rxjs'
+
 import { map } from 'rxjs/operators'
+
 import { NSLearningHistory } from '../models/learning.models'
+
 
 const PROTECTED_SLAG_V8 = '/apis/protected/v8'
 const LH_API_END_POINTS = {

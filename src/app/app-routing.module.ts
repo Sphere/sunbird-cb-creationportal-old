@@ -1,36 +1,65 @@
 import { NgModule } from '@angular/core'
+
 import { RouterModule, Routes } from '@angular/router'
+
 import { ErrorResolverComponent, PageComponent, PageModule } from '@ws-widget/collection'
+
 import { ExploreDetailResolve, PageResolve } from '@ws-widget/utils'
+
 // import { LearningGuard } from '../../project/ws/app/src/lib/routes/my-learning/guards/my-learning.guard'
+
 import { InvalidUserComponent } from './component/invalid-user/invalid-user.component'
+
 import { LoginRootComponent } from './component/login-root/login-root.component'
+
 import { ETopBar } from './constants/topBar.constants'
+
 // import { ETopBar } from './constants/topBar.constants'
+
 import { EmptyRouteGuard } from './guards/empty-route.guard'
+
 import { ExternalUrlResolverService } from './guards/external-url-resolver.service'
+
 import { GeneralGuard } from './guards/general.guard'
+
 import { LoginGuard } from './guards/login.guard'
+
 import { FeaturesComponent } from './routes/features/features.component'
+
 import { FeaturesModule } from './routes/features/features.module'
+
 import { MobileAppHomeComponent } from './routes/public/mobile-app/components/mobile-app-home.component'
+
 import { PublicAboutComponent } from './routes/public/public-about/public-about.component'
+
 import { PublicContactComponent } from './routes/public/public-contact/public-contact.component'
+
 import { PublicFaqComponent } from './routes/public/public-faq/public-faq.component'
+
 import { PublicReleaseComponent } from './routes/public/public-release/public-release.component'
+
 import { TncComponent } from './routes/tnc/tnc.component'
+
 import { TncAppResolverService } from './services/tnc-app-resolver.service'
+
 import { TncPublicResolverService } from './services/tnc-public-resolver.service'
+
 // import { AppTocResolverService } from '@ws/app/src/lib/routes/app-toc/resolvers/app-toc-resolver.service'
+
 // import { QualityJSONResolver } from '../../../../../../author/src/lib/services/quality-json-resolver.service'
+
 import { QualityJSONResolver } from '../../project/ws/author/src/lib/services/quality-json-resolver.service'
+
 import { InitResolver } from '@ws/author/src/lib/services/init-resolve.service'
+
 
 // 💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥
 // Please declare routes in alphabetical order
 // 😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵
 import { OrgComponent } from '../../project/ws/app/src/lib/routes/org/components/org/org.component'
+
 import { OrgServiceService } from '../../project/ws/app/src/lib/routes/org/org-service.service'
+
 const routes: Routes = [
 
   {

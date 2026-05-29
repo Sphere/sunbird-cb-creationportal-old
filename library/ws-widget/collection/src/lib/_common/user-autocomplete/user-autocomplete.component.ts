@@ -1,12 +1,21 @@
 import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter, Input } from '@angular/core'
+
 import { UserAutocompleteService } from './user-autocomplete.service'
+
 import { ENTER, COMMA } from '@angular/cdk/keycodes'
+
 import { FormControl } from '@angular/forms'
+
 import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
-import { MatAutocompleteSelectedEvent, MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete'
 import { debounceTime, distinctUntilChanged, switchMap, catchError, filter } from 'rxjs/operators'
+
 import { NsAutoComplete } from './user-autocomplete.model'
+
 import { of } from 'rxjs'
+
 
 @Component({
   selector: 'ws-widget-user-autocomplete',

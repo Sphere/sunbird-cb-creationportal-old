@@ -1,12 +1,16 @@
 import { Component, Input, OnInit, OnDestroy, Output, EventEmitter, HostBinding } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { Subscription, fromEvent } from 'rxjs'
+
 import {
   getFullScreenElement,
   requestExitFullScreen,
   requestFullScreen,
   hasFullScreenSupport,
 } from './fullscreen.util'
+
 
 @Component({
   selector: 'ws-widget-btn-fullscreen',

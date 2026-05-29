@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, AfterViewInit, ElementRef, ViewChild, OnDestroy } from '@angular/core'
+
 import { Chart } from 'chart.js'
+
 @Component({
   selector: 'ws-app-bubble-chart',
   templateUrl: './bubble-chart.component.html',

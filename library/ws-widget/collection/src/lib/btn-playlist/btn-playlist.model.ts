@@ -1,5 +1,6 @@
 import { NsContent } from '../_services/widget-content.model'
 
+
 export namespace NsPlaylist {
   export enum EPlaylistUserAction {
     CREATE = 'create',

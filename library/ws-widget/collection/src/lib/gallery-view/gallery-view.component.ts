@@ -1,7 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { WidgetBaseComponent, NsWidgetResolver } from '@ws-widget/resolver'
+
 import { NsGalleryView } from './gallery-view.model'
+
 import { Subscription } from 'rxjs'
+
 
 @Component({
   selector: 'ws-widget-gallery-view',

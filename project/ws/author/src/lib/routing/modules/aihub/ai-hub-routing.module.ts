@@ -1,8 +1,13 @@
 import { NgModule } from '@angular/core'
+
 import { Routes, RouterModule } from '@angular/router'
+
 import { AIHubDashboardComponent } from './components/aihub-dashboard/aihub-dashboard.component'
+
 import { TranslateComponent } from './components/translate/translate.component'
+
 import { QuestionGeneratorComponent } from './components/question-generator/question-generator.component'
+
 const routes: Routes = [
   {
     path: '',

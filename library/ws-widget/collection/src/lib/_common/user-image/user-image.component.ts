@@ -1,7 +1,11 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 // import { UserMiniProfileService } from '../../mini-profile/user-mini-profile.service'
+
 // import { NsMiniProfile } from '../../mini-profile/mini-profile.model'
+
 
 @Component({
   selector: 'ws-widget-user-image',

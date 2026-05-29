@@ -1,7 +1,11 @@
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { NSSearch } from '../_services/widget-search.model'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import { NsCardContent } from '../card-content/card-content.model'
+
 
 export namespace NsContentStripVertical {
   export interface IContentStripVertical {

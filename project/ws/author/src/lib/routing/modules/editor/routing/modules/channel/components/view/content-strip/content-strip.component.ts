@@ -1,7 +1,11 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core'
+
 import { IWidgetAuthor } from './../../../interface/widget'
+
 import { ChannelStoreService } from './../../../services/store.service'
+
 import { ChannelResolverService } from './../../../services/resolver.service'
+
 
 interface IContentStripWidgetMap {
   error: string

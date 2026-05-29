@@ -1,8 +1,13 @@
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { noop, Observable } from 'rxjs'
+
 import { NsContent } from '@ws-widget/collection'
+
 
 @Injectable({
   providedIn: 'root',

@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core'
+
 import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router'
+
 import { NsContent, WidgetContentService } from '@ws-widget/collection'
+
 // import { IResolveResponse } from '@ws-widget/utils/src/public-api'
+
 import { Observable, of } from 'rxjs'
+
 import { catchError } from 'rxjs/operators'
+
 
 const ADDITIONAL_FIELDS_IN_CONTENT = [
   'averageRating',

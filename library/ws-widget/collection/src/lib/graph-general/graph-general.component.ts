@@ -8,12 +8,19 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core'
+
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { Chart, ChartOptions } from 'chart.js'
+
 import { IWidgetGraphData, TChartJsGraphType, TChartJsColorPalette } from './graph-general.model'
+
 import { COLOR_PALETTE, GRAPH_TYPES, colorPalettes } from './graph-general-color-palette'
+
 import { GraphGeneralService } from './graph-general.service'
+
 @Component({
   selector: 'ws-widget-graph-general',
   templateUrl: './graph-general.component.html',

@@ -1,7 +1,11 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core'
+
 import { NsContent, viewerRouteGenerator } from '@ws-widget/collection'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { NsAppToc } from '../../models/app-toc.model'
+
 
 @Component({
   selector: 'ws-app-toc-content-card',

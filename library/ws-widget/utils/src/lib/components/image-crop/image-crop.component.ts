@@ -1,10 +1,16 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core'
+
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
 
+
 import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper'
+
 import { ConfigurationsService } from '../../services/configurations.service'
+
 import { ValueService } from '../../services/value.service'
+
 
 @Component({
   selector: 'ws-utils-image-crop',

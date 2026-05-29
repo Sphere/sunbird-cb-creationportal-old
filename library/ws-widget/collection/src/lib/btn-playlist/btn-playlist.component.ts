@@ -1,11 +1,18 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import { BtnPlaylistDialogComponent } from './btn-playlist-dialog/btn-playlist-dialog.component'
+
 import { NsPlaylist } from './btn-playlist.model'
+
 import { BtnPlaylistService } from './btn-playlist.service'
+
 
 const VALID_CONTENT_TYPES: NsContent.EContentTypes[] = [
   NsContent.EContentTypes.MODULE,

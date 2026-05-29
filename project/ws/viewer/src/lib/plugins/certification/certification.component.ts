@@ -1,7 +1,11 @@
 import { Component, Input } from '@angular/core'
+
 // import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser'
+
 // import { CertificationService } from './certification.service'
+
 import { NsContent } from '@ws-widget/collection'
+
 // import { ConfigurationsService } from '@ws-widget/utils';
 
 @Component({

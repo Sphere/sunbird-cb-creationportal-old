@@ -1,12 +1,19 @@
 import { Injectable } from '@angular/core'
+
 import { Resolve, ActivatedRouteSnapshot } from '@angular/router'
+
 import { Observable, of } from 'rxjs'
+
 
 import { IResolveResponse } from '@ws-widget/utils'
 
+
 import { ICertificationMeta } from '../models/certification.model'
+
 import { CertificationApiService } from '../apis/certification-api.service'
+
 import { map, catchError } from 'rxjs/operators'
+
 
 @Injectable()
 export class CertificationMetaResolver implements Resolve<IResolveResponse<ICertificationMeta>> {

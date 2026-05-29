@@ -1,11 +1,18 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core'
+
 import { TFetchStatus, LoggerService, ConfigurationsService } from '@ws-widget/utils'
+
 import { IBadgeResponse } from './badges.model'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { Subscription, fromEvent } from 'rxjs'
+
 import { BadgesService } from './badges.service'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { debounceTime, throttleTime } from 'rxjs/operators'
+
 
 @Component({
   selector: 'ws-app-badges',

@@ -1,5 +1,6 @@
 import { NsContent } from '@ws-widget/collection'
 
+
 export namespace NsAppToc {
   export interface IWsTocResponse {
     content: NsContent.IContent | null

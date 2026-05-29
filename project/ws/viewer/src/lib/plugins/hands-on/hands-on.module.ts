@@ -1,23 +1,27 @@
-import { NgModule } from '@angular/core'
+﻿import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
 
-import {
-  MatCardModule,
-  MatIconModule,
-  MatProgressBarModule,
-  MatExpansionModule,
-  MatButtonModule,
-  MatDialogModule,
-  MatProgressSpinnerModule,
-} from '@angular/material'
 
-import { AceEditorModule } from 'ng2-ace-editor'
+import { MatCardModule } from '@angular/material/card'
+import { MatIconModule } from '@angular/material/icon'
+import { MatProgressBarModule } from '@angular/material/progress-bar'
+import { MatExpansionModule } from '@angular/material/expansion'
+import { MatButtonModule } from '@angular/material/button'
+import { MatDialogModule } from '@angular/material/dialog'
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { AceEditorCompatModule } from '@ws-widget/utils'
+
 
 import { PipeSafeSanitizerModule, PipeDurationTransformModule } from '@ws-widget/utils'
+
 import { CompletionSpinnerModule } from '@ws-widget/collection'
 
+
 import { HandsOnComponent } from './hands-on.component'
+
 import { HandsOnDialogComponent } from './components/hands-on-dialog/hands-on-dialog.component'
+
 @NgModule({
   declarations: [HandsOnComponent, HandsOnDialogComponent],
   imports: [
@@ -28,7 +32,7 @@ import { HandsOnDialogComponent } from './components/hands-on-dialog/hands-on-di
     MatExpansionModule,
     MatButtonModule,
     MatDialogModule,
-    AceEditorModule,
+    AceEditorCompatModule,
     MatProgressSpinnerModule,
     PipeSafeSanitizerModule,
     PipeDurationTransformModule,
@@ -37,6 +41,5 @@ import { HandsOnDialogComponent } from './components/hands-on-dialog/hands-on-di
   exports: [
     HandsOnComponent,
   ],
-  entryComponents: [HandsOnDialogComponent],
 })
 export class HandsOnModule { }

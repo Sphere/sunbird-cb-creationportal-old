@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 
+
 @Component({
   selector: 'ws-app-toc-certification-at-desk-card',
   templateUrl: './at-desk-card.component.html',

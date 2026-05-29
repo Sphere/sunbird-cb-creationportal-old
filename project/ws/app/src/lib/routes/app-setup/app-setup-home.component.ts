@@ -1,11 +1,18 @@
-import { MatDialog } from '@angular/material'
+import { MatDialog } from '@angular/material/dialog'
 import { StepperSelectionEvent, STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper'
+
 import { AfterViewInit, Component, OnInit } from '@angular/core'
+
 import { IWidgetsPlayerMediaData } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ConfigurationsService } from '../../../../../../../library/ws-widget/utils/src/public-api'
+
 // import { InterestComponent } from '../profile/routes/interest/components/interest/interest.component'
+
 // import { SettingsComponent } from '../profile/routes/settings/settings.component'
+
 
 @Component({
   selector: 'ws-app-app-setup-home',

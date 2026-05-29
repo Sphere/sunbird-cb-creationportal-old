@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { ENotificationEvent } from '../../models/notifications.model'
+
 
 @Component({
   selector: 'ws-app-notification-event',

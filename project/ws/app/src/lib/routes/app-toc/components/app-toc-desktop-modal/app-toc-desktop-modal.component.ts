@@ -1,7 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core'
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material'
+
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { Router } from '@angular/router'
+
 // import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 
 @Component({
   selector: 'ws-app-app-toc-desktop-modal',

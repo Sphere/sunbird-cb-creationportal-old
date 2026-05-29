@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 
+
 @Component({
   selector: 'viewer-submission-dialog',
   templateUrl: './submission-dialog.component.html',

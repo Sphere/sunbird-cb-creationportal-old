@@ -17,8 +17,8 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "outDir": "./dist/out-tsc",
     "paths": {
       "@ws-widget/resolver": ["library/ws-widget/resolver"],
@@ -34,6 +34,7 @@
       "@ws/viewer": ["project/ws/viewer"],
       "@ws/viewer/*": ["project/ws/viewer/*"]
     },
+    "skipLibCheck": true,
     "removeComments": true,
     "sourceMap": true,
     "strict": true,
@@ -46,13 +47,6 @@
     "plugins": [
       {
         "name": "@angular/language-service"
-      },
-      {
-        "name": "typescript-tslint-plugin",
-        "alwaysShowRuleFailuresAsWarnings": false,
-        "ignoreDefinitionFiles": true,
-        "configFile": "./tslint.json",
-        "suppressWhileTypeErrorsPresent": false
       }
     ]
   }

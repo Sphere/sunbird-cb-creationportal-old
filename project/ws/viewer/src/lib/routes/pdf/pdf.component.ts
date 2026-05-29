@@ -1,15 +1,24 @@
 import { AccessControlService } from '@ws/author'
+
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { Subscription } from 'rxjs'
+
 import {
   NsContent, NsDiscussionForum,
   // WidgetContentService
 } from '@ws-widget/collection'
+
 import { WsEvents, EventService } from '@ws-widget/utils'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { ViewerUtilService } from '../../viewer-util.service'
+
 //import { environment } from '../../../../../../../src/environments/environment'
+
 
 @Component({
   selector: 'viewer-pdf',

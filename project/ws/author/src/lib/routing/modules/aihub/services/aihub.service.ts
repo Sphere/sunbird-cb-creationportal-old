@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { saveAs } from 'file-saver'
+
 const PROTECTED_SLAG_V8 = '/apis/protected/v8'
 const API_END_POINTS = {
   TRANSLATE: `${PROTECTED_SLAG_V8}/AI/translate`,

@@ -1,8 +1,12 @@
-import { NgModule } from '@angular/core'
-import { CommonModule } from '@angular/common'
-import { BtnContentDownloadComponent } from './btn-content-download.component'
-import { MatButtonModule, MatIconModule, MatTooltipModule } from '@angular/material'
+﻿import { NgModule } from '@angular/core'
 
+import { CommonModule } from '@angular/common'
+
+import { BtnContentDownloadComponent } from './btn-content-download.component'
+
+import { MatButtonModule } from '@angular/material/button'
+import { MatIconModule } from '@angular/material/icon'
+import { MatTooltipModule } from '@angular/material/tooltip'
 @NgModule({
   declarations: [BtnContentDownloadComponent],
   imports: [
@@ -12,6 +16,5 @@ import { MatButtonModule, MatIconModule, MatTooltipModule } from '@angular/mater
     MatTooltipModule,
   ],
   exports: [BtnContentDownloadComponent],
-  entryComponents: [BtnContentDownloadComponent],
 })
 export class BtnContentDownloadModule { }

@@ -1,9 +1,15 @@
 import { map, catchError } from 'rxjs/operators'
+
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Observable, of, BehaviorSubject } from 'rxjs'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 // import { environment } from './../../../../../../../src/environments/environment'
+
 
 // let instanceConfigPath: string | null = window.location.host
 

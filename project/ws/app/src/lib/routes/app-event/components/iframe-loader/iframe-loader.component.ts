@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core'
+
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { EiframeUrl } from '../../interfaces/event-details.model'
+
 import { EventService } from '../../services/event.service'
+
 
 @Component({
   selector: 'ws-app-iframe-loader',

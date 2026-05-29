@@ -1,20 +1,37 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { Router } from '@angular/router'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { ICreateEntity } from '@ws/author/src/lib/interface/create-entity'
+
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { Subscription } from 'rxjs'
+
 import { CreateService } from './create.service'
+
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
+
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms'
+
 import { ActivatedRoute } from '@angular/router'
+
 
 @Component({
   selector: 'ws-auth-generic',

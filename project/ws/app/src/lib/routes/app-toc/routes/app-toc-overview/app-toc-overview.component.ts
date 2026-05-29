@@ -1,6 +1,9 @@
 import { Component, OnInit, ComponentFactoryResolver, ViewChild } from '@angular/core'
+
 import { AppTocOverviewDirective } from './app-toc-overview.directive'
+
 import { AppTocOverviewService } from './app-toc-overview.service'
+
 
 @Component({
   selector: 'ws-app-app-toc-overview-root',

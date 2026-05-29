@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core'
-import { NsSettings } from '../../settings.model'
-import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
-import { SettingsService } from '../../settings.service'
-import { MatSnackBar } from '@angular/material'
 
+import { NsSettings } from '../../settings.model'
+
+import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
+
+import { SettingsService } from '../../settings.service'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 @Component({
   selector: 'ws-app-notification-settings',
   templateUrl: './notification-settings.component.html',

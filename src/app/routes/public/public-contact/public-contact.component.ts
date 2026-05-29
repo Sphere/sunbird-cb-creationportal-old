@@ -1,7 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { ConfigurationsService, NsPage } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 import { ActivatedRoute } from '@angular/router'
+
 
 @Component({
   selector: 'ws-public-contact',

@@ -1,6 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core'
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material'
+
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { FormControl } from '@angular/forms'
+
 @Component({
   selector: 'ws-app-view-users',
   templateUrl: './view-users.component.html',

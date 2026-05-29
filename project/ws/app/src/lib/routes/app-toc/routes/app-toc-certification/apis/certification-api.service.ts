@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient, HttpParams } from '@angular/common/http'
+
 import { Observable, of } from 'rxjs'
+
 import { catchError } from 'rxjs/operators'
+
 
 import {
   IAccLocation,
@@ -22,6 +26,7 @@ import {
   TCertificationCompletionStatus,
   ICertificationUserPrivileges,
 } from '../models/certification.model'
+
 
 @Injectable()
 export class CertificationApiService {

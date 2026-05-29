@@ -1,10 +1,17 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core'
+
 import { FormControl } from '@angular/forms'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { ConfigurationsService, NsPage } from '@ws-widget/utils'
+
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+
 import { ISearchAutoComplete, ISearchQuery, ISuggestedFilters } from '../../models/search.model'
+
 import { SearchServService } from '../../services/search-serv.service'
+
 @Component({
   selector: 'ws-app-home',
   templateUrl: './home.component.html',

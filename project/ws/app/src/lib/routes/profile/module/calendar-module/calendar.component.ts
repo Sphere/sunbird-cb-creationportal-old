@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core'
-import { MatCalendarCellCssClasses } from '@angular/material'
 
+import { MatCalendarCellCssClasses } from '@angular/material/datepicker'
 @Component({
   selector: 'ws-app-calendar',
   templateUrl: './calendar.component.html',

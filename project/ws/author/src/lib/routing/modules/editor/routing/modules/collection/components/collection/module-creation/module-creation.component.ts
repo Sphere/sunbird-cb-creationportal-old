@@ -1,62 +1,114 @@
 import { Component, ChangeDetectorRef, OnInit, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter, Input, ElementRef } from '@angular/core'
+
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
+
 import { MatDialog } from '@angular/material/dialog'
+
 // import { ConfigurationsService,  } from '@ws-widget/utils'
+
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '@ws/author/src/lib/constants/upload'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { LoaderService } from '../../../../../../../../../services/loader.service'
+
 import { NSApiRequest } from '../../../../../../../../../interface/apiRequest'
+
 import { AccessControlService } from '../../../../../../../../../modules/shared/services/access-control.service'
+
 import { UploadService } from '../../../../../../shared/services/upload.service'
+
 import { AUTHORING_BASE } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { HttpClient } from '@angular/common/http'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { EditorContentService } from 'project/ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { of, Subscription } from 'rxjs'
+
 import { HeaderServiceService } from './../../../../../.././.././../.././../../../../.././src/app/services/header-service.service'
+
 // import { ConfigurationsService } from '../../../../../../../../../../../../../library/ws-widget/utils/src/public-api'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { mergeMap, tap, map } from 'rxjs/operators'
+
 import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/components/comments-dialog/comments-dialog.component'
+
 import * as _ from 'lodash'
+
 import { Router } from '@angular/router'
+
 import { environment } from '../../../../../../../../../../../../../.././src/environments/environment'
+
 import { ConfigurationsService, ImageCropComponent, ValueService } from '../../../../../../../../../../../../../.././library/ws-widget/utils/src/public-api'
+
 import { SuccessDialogComponent } from '../../../../../../../../.././modules/shared/components/success-dialog/success-dialog.component'
+
 import { CollectionStoreService } from '../../../services/store.service'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { CollectionResolverService } from '../../../services/resolver.service'
+
 import { IContentNode, IContentTreeNode } from '../../../interface/icontent-tree'
+
 import { isNumber } from 'lodash'
+
 /* tslint:disable */
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
+
 import { IFormMeta } from '../../../../../../../../../interface/form'
+
 import { VIDEO_MAX_SIZE } from '@ws/author/src/lib/constants/upload'
+
 import {
   CONTENT_BASE_STATIC,
   CONTENT_BASE_STREAM,
   CONTENT_BASE_WEBHOST,
 } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { ProfanityService } from '../../../../upload/services/profanity.service'
+
 import { IQuizQuestionType, IVideoQuestionData } from '../../../../quiz/interface/quiz-interface'
+
 import { QUIZ_QUESTION_TYPE } from '../../../../quiz/constants/quiz-constants'
+
 import { FlatTreeControl } from '@angular/cdk/tree'
+
 import { QuizStoreService } from '../../../../quiz/services/store.service'
+
 import { QuizResolverService } from '../../../../quiz/services/resolver.service'
+
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
+
 import { UserIndexConfirmComponent } from '@ws/author/src/lib/modules/shared/components/user-index-confirm/user-index-confirm.component'
+
 import {
   ContentProgressService,
 } from '@ws-widget/collection'
+
 import moment from 'moment'
+
 //import { M } from '@angular/cdk/keycodes'
+
 //import { CdkDragDrop } from '@angular/cdk/drag-drop'
+
 import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
+
 @Component({
   selector: 'ws-author-module-creation',
   templateUrl: './module-creation.component.html',
@@ -854,7 +906,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
 
       if (requestBody.request.content.category) {
-        delete requestBody.request.content.category
+        delete (requestBody as any).request.content.category
       }
 
       if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
@@ -865,13 +917,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           tempTrackRecords.push(element.id)
         })
         requestBody.request.content.reviewerIDs = tempTrackRecords
-        delete requestBody.request.content.trackContacts
+        delete (requestBody as any).request.content.trackContacts
       }
 
       // if (requestBody.request.content.gatingEnabled && requestBody.request.content.gatingEnabled) {
 
       //   requestBody.request.content.gatingEnabled = requestBody.request.content.gatingEnabled
-      //   delete requestBody.request.content.gatingEnabled
+      //   delete (requestBody as any).request.content.gatingEnabled
       // }
 
       if (requestBody.request.content.publisherDetails && requestBody.request.content.publisherDetails.length > 0) {
@@ -3324,7 +3376,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
 
       if (requestBody.request.content.category) {
-        delete requestBody.request.content.category
+        delete (requestBody as any).request.content.category
       }
 
       if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
@@ -3335,7 +3387,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           tempTrackRecords.push(element.id)
         })
         requestBody.request.content.reviewerIDs = tempTrackRecords
-        delete requestBody.request.content.trackContacts
+        delete (requestBody as any).request.content.trackContacts
       }
 
       if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
@@ -3346,7 +3398,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           tempTrackRecords.push(element.id)
         })
         requestBody.request.content.reviewerIDs = tempTrackRecords
-        delete requestBody.request.content.trackContacts
+        delete (requestBody as any).request.content.trackContacts
       }
 
       if (requestBody.request.content.publisherDetails && requestBody.request.content.publisherDetails.length > 0) {
@@ -4612,7 +4664,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
 
       if (requestBody.request.content.category) {
-        delete requestBody.request.content.category
+        delete (requestBody as any).request.content.category
       }
       const contenUpdateRes: any =
         await this.editorService.updateContentV3(requestBody, currentContent).toPromise().catch(_error => { })
@@ -4859,7 +4911,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         Object.keys(hierarchyData).forEach(async (ele: any) => {
           if (ele === node.identifier) {
             this.storeService.deleteContentNode(node)
-            delete hierarchyData[ele]
+            delete (hierarchyData as any)[ele]
           }
           if (ele === node.parent) {
             const index = hierarchyData[ele]["children"].indexOf(node.identifier)

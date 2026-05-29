@@ -1,12 +1,18 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
 
+
 import { Subscription } from 'rxjs'
+
 import { debounceTime } from 'rxjs/operators'
+
 
 import { ConfigurationsService } from '@ws-widget/utils'
 
+
 import { IWidgetErrorInternalServer } from './error-internal-server.model'
+
 @Component({
   selector: 'ws-widget-error-internal-server',
   templateUrl: './error-internal-server.component.html',

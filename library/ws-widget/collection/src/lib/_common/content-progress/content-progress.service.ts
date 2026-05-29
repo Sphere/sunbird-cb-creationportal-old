@@ -1,7 +1,11 @@
 import { HttpClient } from '@angular/common/http'
+
 import { Injectable } from '@angular/core'
+
 import { Observable, ReplaySubject } from 'rxjs'
+
 import { map } from 'rxjs/operators'
+
 
 // TODO: move this in some common place
 const PROTECTED_SLAG_V8 = '/apis/protected/v8'

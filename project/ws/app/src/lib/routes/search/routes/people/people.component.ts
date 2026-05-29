@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core'
+
 import { Router } from '@angular/router'
+
 import { NsAutoComplete } from '@ws-widget/collection'
+
 
 @Component({
   selector: 'ws-app-people',

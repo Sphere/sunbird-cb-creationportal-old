@@ -1,0 +1,44 @@
+{
+  "root": true,
+  "ignorePatterns": ["projects/**/*", "dist/**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
+        "project": ["tsconfig.app.json", "tsconfig.spec.json"],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "plugin:@typescript-eslint/recommended"
+      ],
+      "rules": {
+        "@angular-eslint/component-selector": [
+          "error",
+          { "type": "element", "prefix": ["ws", "viewer"], "style": "kebab-case" }
+        ],
+        "@angular-eslint/directive-selector": [
+          "error",
+          { "type": "attribute", "prefix": "ws", "style": "camelCase" }
+        ],
+        "no-console": "error",
+        "max-len": ["warn", { "code": 140, "ignoreImports": true, "ignorePattern": "^export \\{" }],
+        "@typescript-eslint/no-explicit-any": "warn",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "@typescript-eslint/no-empty-function": "warn",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/ban-types": "warn",
+        "@typescript-eslint/no-non-null-assertion": "warn",
+        "semi": ["error", "never"]
+      }
+    },
+    {
+      "files": ["*.html"],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended"
+      ],
+      "rules": {}
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { NsPage } from '../resolvers/page.model'
+
 export namespace NsInstanceConfig {
   export interface IConfig {
     authoring: {

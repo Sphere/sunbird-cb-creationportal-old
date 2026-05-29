@@ -1,13 +1,23 @@
 import { HttpClient } from '@angular/common/http'
+
 import { Inject, Injectable, LOCALE_ID } from '@angular/core'
+
 import { ActivatedRouteSnapshot, Resolve } from '@angular/router'
+
 import { forkJoin, Observable, of } from 'rxjs'
+
 import { catchError, map, mergeMap } from 'rxjs/operators'
+
 import { ConfigurationsService } from '../services/configurations.service'
+
 import { JSON_MAP } from './page.constant'
+
 import { NsPage } from './page.model'
+
 import { IResolveResponse } from './resolver.model'
+
 import { NsContent } from '../../../../collection/src/lib/_services/widget-content.model'
+
 
 @Injectable({
   providedIn: 'root',

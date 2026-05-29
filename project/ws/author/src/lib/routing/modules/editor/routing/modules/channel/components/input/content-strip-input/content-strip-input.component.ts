@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
 
+
 @Component({
   selector: 'ws-auth-content-strip-input',
   templateUrl: './content-strip-input.component.html',

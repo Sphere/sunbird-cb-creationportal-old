@@ -1,5 +1,7 @@
 import { AUTHORING_CONTENT_BASE } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { Pipe, PipeTransform } from '@angular/core'
+
 
 @Pipe({
   name: 'relativeUrl',

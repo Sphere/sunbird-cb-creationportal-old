@@ -1,16 +1,23 @@
 import { APP_BASE_HREF } from '@angular/common'
+
 // import { retry } from 'rxjs/operators'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Inject, Injectable } from '@angular/core'
-import { MatIconRegistry } from '@angular/material'
+
+import { MatIconRegistry } from '@angular/material/icon'
 import { DomSanitizer } from '@angular/platform-browser'
+
 import { BtnSettingsService } from '@ws-widget/collection'
+
 import {
   hasPermissions,
   hasUnitPermission,
   NsWidgetResolver,
   WidgetResolverService,
 } from '@ws-widget/resolver'
+
 import {
   AuthKeycloakService,
   ConfigurationsService,
@@ -20,12 +27,18 @@ import {
   // NsUser,
   UserPreferenceService,
 } from '@ws-widget/utils'
+
 // import { map, retry } from 'rxjs/operators'
+
 import { map } from 'rxjs/operators'
+
 import { environment } from '../../environments/environment'
+
 import { v4 as uuid } from 'uuid'
+
 /* tslint:disable */
 import _ from 'lodash'
+
 /* tslint:enable */
 // interface IDetailsResponse {
 //   tncStatus: boolean

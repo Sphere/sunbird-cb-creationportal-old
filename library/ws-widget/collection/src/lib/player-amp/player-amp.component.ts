@@ -7,14 +7,23 @@ import {
   AfterViewInit,
   OnDestroy,
 } from '@angular/core'
+
 import { IWidgetsPlayerAmpData } from './player-amp.model'
+
 import { Subscription, interval, timer } from 'rxjs'
+
 import { EventService, WsEvents } from '@ws-widget/utils'
+
 import { DynamicAssetsLoaderService } from '../_services/dynamic-assets-loader.service'
+
 import { getAmpConfig, isIOS, LINKS } from './player-amp.utility'
+
 import { ROOT_WIDGET_CONFIG } from '../collection.config'
+
 import { first, filter } from 'rxjs/operators'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 
 @Component({
   selector: 'ws-widget-player-amp',

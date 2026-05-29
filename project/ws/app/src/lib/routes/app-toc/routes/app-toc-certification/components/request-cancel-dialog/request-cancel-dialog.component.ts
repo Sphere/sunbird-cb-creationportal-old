@@ -1,6 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core'
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material'
+
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { TCertificationRequestType } from '../../models/certification.model'
+
 
 @Component({
   selector: 'ws-app-request-cancel-dialog',

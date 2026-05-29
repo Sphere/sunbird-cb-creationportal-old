@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { PipePartialContentPipe } from './pipe-partial-content.pipe'
+
 
 @NgModule({
   declarations: [PipePartialContentPipe],

@@ -1,10 +1,14 @@
 // This file defines providers for the native Window object.
 
 import { InjectionToken, PLATFORM_ID, FactoryProvider, ClassProvider } from '@angular/core'
+
 import { isPlatformBrowser } from '@angular/common'
 
+
 import { WindowRef } from '../classes/WindowRef'
+
 import { BrowserWindowRef } from '../classes/BrowserWindowRef'
+
 
 export const WINDOW = new InjectionToken('WindowToken')
 

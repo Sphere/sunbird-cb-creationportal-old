@@ -1,11 +1,19 @@
 // import { WsApiCatalogService } from '@ws-shared/apis/src/lib/ws-api-catalog.service'
+
 // import { WsSharedUtilityService } from '@ws-shared/services'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Injectable } from '@angular/core'
+
 import { NSSearch, TreeCatalogService } from '@ws-widget/collection'
+
 import { Observable } from 'rxjs'
+
 import { map } from 'rxjs/operators'
+
 import { ITopic, ITopicRecommended } from '../models/interest.model'
+
 const PROTECTED_SLAG_V8 = `/apis/protected/v8`
 const API_END_POINTS = {
   userTopics: `${PROTECTED_SLAG_V8}/user/topics`,

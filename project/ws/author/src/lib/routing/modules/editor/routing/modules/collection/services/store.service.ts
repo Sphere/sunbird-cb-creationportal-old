@@ -1,21 +1,39 @@
 import { Injectable } from '@angular/core'
+
 import { LoggerService, ConfigurationsService } from '@ws-widget/utils'
+
 import { DEPTH_RUE } from '@ws/author/src/lib/constants/depth-rule'
+
 import { IAllowedType } from '@ws/author/src/lib/interface/collection-child-config'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { ICreateEntity } from '@ws/author/src/lib/interface/create-entity'
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { BehaviorSubject, ReplaySubject } from 'rxjs'
+
 // import { tap } from 'rxjs/operators'
+
 import { IContentNode, IContentTreeNode } from './../interface/icontent-tree'
+
 import { CollectionResolverService } from './resolver.service'
+
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
+
 import { Router } from '@angular/router'
+
 // import { v4 as uuidv4 } from 'uuid'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { environment } from '../../../../../../../../../../../../src/environments/environment'
+
 
 interface IProcessedError {
   id: string | number

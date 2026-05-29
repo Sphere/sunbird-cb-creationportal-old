@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core'
+
 import { Router } from '@angular/router'
+
 import { ConfigurationsService, NsPage } from '../../../../../../../../../library/ws-widget/utils/src/public-api'
+
 
 @Component({
   selector: 'ws-app-my-dashboard-home',

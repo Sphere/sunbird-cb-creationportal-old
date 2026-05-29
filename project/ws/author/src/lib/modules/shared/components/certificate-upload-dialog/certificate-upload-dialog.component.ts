@@ -1,13 +1,20 @@
 import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core'
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
-import { NSContent } from '@ws/author/src/lib/interface/content'
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
-import { UploadService } from 'project/ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
-import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
-import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
-import { SuccessDialogComponent } from '../success-dialog/success-dialog.component'
-import { MatDialog } from '@angular/material'
 
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+
+import { NSContent } from '@ws/author/src/lib/interface/content'
+
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
+
+import { UploadService } from 'project/ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
+
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
+import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
+
+import { SuccessDialogComponent } from '../success-dialog/success-dialog.component'
+
+import { MatDialog } from '@angular/material/dialog'
 @Component({
   selector: 'ws-auth-root-certificate-upload-dialog',
   templateUrl: './certificate-upload-dialog.component.html',

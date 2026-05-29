@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core'
 
+
 @Component({
   selector: 'ws-widget-locale-translator',
   templateUrl: './locale-translator.component.html',

@@ -1,6 +1,9 @@
 import { Component } from '@angular/core'
+
 import { SafeUrl, DomSanitizer } from '@angular/platform-browser'
+
 import { ConfigurationsService, ValueService } from '@ws-widget/utils'
+
 
 @Component({
   selector: 'ws-app-footer',

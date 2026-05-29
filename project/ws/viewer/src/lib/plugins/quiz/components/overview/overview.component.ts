@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
+
 import { NSQuiz } from '../../quiz.model'
+
 
 @Component({
   selector: 'viewer-overview',

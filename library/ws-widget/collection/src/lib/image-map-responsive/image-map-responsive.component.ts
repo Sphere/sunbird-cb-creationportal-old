@@ -1,9 +1,15 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, Input, ViewChild, ElementRef } from '@angular/core'
+
 import { fromEvent, Subscription } from 'rxjs'
+
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
+
 import { debounceTime } from 'rxjs/operators'
+
 import { WidgetBaseComponent, NsWidgetResolver } from '../../../../resolver/src/public-api'
+
 import { IWidgetImageMap, IWidgetMapMeta, IWidgetScale, IWidgetMapCoords } from './image-map-responsive.model'
+
 
 @Component({
   selector: 'ws-widget-image-map-responsive',

@@ -1,10 +1,16 @@
 import { Injectable } from '@angular/core'
+
 import { Resolve } from '@angular/router'
 
+
 import { Observable, of } from 'rxjs'
+
 import { InterestService } from '../services/interest.service'
+
 import { map, catchError } from 'rxjs/operators'
+
 import { IResolveResponse } from 'library/ws-widget/utils/src/lib/resolvers/resolver.model'
+
 
 @Injectable()
 export class InterestUserResolve

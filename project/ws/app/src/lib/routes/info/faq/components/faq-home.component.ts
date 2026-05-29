@@ -1,10 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { Subscription } from 'rxjs'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { map } from 'rxjs/operators'
 
+
 import { ValueService, ConfigurationsService, EFeatures, NsPage } from '@ws-widget/utils'
+
 import { IFAQ, IContent } from '../faq.model'
+
 
 @Component({
   selector: 'ws-app-faq-home',

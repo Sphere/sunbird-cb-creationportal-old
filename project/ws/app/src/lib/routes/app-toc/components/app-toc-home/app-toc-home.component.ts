@@ -1,16 +1,29 @@
 import { Component, OnDestroy, OnInit, AfterViewChecked, HostListener, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core'
+
 import { ActivatedRoute, Data } from '@angular/router'
+
 import { NsContent, WidgetContentService, ContentProgressService } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ConfigurationsService, LoggerService, NsPage } from '@ws-widget/utils'
+
 import { Subscription, Observable } from 'rxjs'
+
 import { share } from 'rxjs/operators'
+
 import { NsAppToc } from '../../models/app-toc.model'
+
 import { AppTocService } from '../../services/app-toc.service'
+
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
+
 import { AccessControlService } from '@ws/author/src/public-api'
+
 import { Location } from '@angular/common'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 
 export enum ErrorType {
   internalServer = 'internalServer',
@@ -200,7 +213,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       })
     }
     this.currentFragment = 'overview'
-    this.route.fragment.subscribe((fragment: string) => {
+    this.route.fragment.subscribe((fragment: string | null) => {
       this.currentFragment = fragment || 'overview'
     })
   }

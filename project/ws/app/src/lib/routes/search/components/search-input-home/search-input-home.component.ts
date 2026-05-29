@@ -1,11 +1,19 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, ViewChild, ViewEncapsulation } from '@angular/core'
+
 import { FormControl } from '@angular/forms'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { ConfigurationsService } from '@ws-widget/utils/src/public-api'
+
 import { Observable } from 'rxjs'
+
 import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs/operators'
+
 import { ISearchAutoComplete } from '../../models/search.model'
+
 import { SearchServService } from '../../services/search-serv.service'
+
 
 @Component({
   selector: 'ws-app-search-input-home',

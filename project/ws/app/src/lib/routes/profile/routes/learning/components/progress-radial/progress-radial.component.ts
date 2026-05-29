@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core'
+
 import { ContentProgressService } from '@ws-widget/collection'
+
 
 @Component({
   selector: 'ws-app-progress-radial',

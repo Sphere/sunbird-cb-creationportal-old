@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { IEventDetails } from '../../interfaces/event-details.model'
+
 import { EventService } from '../../services/event.service'
+
 
 @Component({
   selector: 'ws-app-event-overview',

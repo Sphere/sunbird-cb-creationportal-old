@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 
 interface ILinearWidgets {
   widgets: NsWidgetResolver.IRenderConfigWithAnyData[]

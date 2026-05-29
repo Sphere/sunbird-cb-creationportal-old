@@ -1,12 +1,21 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { Subscription } from 'rxjs'
+
 import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
+
 import { ActivatedRoute, Data } from '@angular/router'
+
 // import { AppTocService } from '../../services/app-toc.service'
+
 import { NsContent, ROOT_WIDGET_CONFIG, IGraphWidget, NsError } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { NsAnalytics, NsCourseAnalytics } from '../../interface/app-toc-analytics.model'
+
 import { MyTocService } from '../../services/my-toc.service'
+
 
 @Component({
   selector: 'ws-auth-content-insights',

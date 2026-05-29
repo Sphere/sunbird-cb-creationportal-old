@@ -8,19 +8,33 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core'
+
 import { FormControl } from '@angular/forms'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { EventService, WsEvents, UtilityService } from '@ws-widget/utils'
+
 // import * as PDFJS from 'pdfjs-dist/webpack'
+
 import { interval, merge, Subject, Subscription } from 'rxjs'
+
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+
 // import { ViewerUtilService } from '../../../../../../project/ws/viewer/src/lib/viewer-util.service'
+
 import { ROOT_WIDGET_CONFIG } from '../collection.config'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import { WidgetContentService } from '../_services/widget-content.service'
+
 import { IWidgetsPlayerPdfData } from './player-pdf.model'
+
 import { pdfDefaultOptions } from 'ngx-extended-pdf-viewer'
+
 
 // const pdfjsViewer = require('pdfjs-dist/web/pdf_viewer')
 @Component({

@@ -2,12 +2,19 @@ import {
   // AuthKeycloakService,
   ConfigurationsService,
 } from '@ws-widget/utils'
+
 import { OrgServiceService } from './../../org-service.service'
+
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { ActivatedRoute, Router, Data } from '@angular/router'
+
 // import { MdePopoverTrigger } from '@material-extended/mde'
+
 import forEach from 'lodash/forEach'
+
 import get from 'lodash/get'
+
 
 @Component({
   selector: 'ws-app-org',

@@ -1,13 +1,23 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { Subscription } from 'rxjs'
+
 import { HttpClient } from '@angular/common/http'
+
 import { NsContent, WidgetContentService } from '@ws-widget/collection'
+
 import { NSQuiz } from '../../plugins/quiz/quiz.model'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { WsEvents, EventService } from '@ws-widget/utils'
+
 import { ViewerUtilService } from '../../viewer-util.service'
+
 //import { environment } from '../../../../../../../src/environments/environment'
+
 // import { take } from 'rxjs/operators'
+
 
 @Component({
   selector: 'viewer-quiz',

@@ -1,11 +1,17 @@
 
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core'
+
 import { NSProfileDataV2 } from '../../models/profile-v2.model'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { ConfigurationsService } from '@ws-widget/utils/src/public-api'
+
 /* tslint:disable */
 import _ from 'lodash'
+
 
 @Component({
   selector: 'ws-app-users-view',

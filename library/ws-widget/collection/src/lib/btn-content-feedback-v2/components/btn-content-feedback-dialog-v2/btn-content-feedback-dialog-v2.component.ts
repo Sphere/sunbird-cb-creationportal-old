@@ -1,11 +1,19 @@
 import { Component, Inject, OnInit } from '@angular/core'
-import { MAT_DIALOG_DATA, MatSnackBar, MatDialogRef } from '@angular/material'
+
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { FormGroup, FormControl, Validators } from '@angular/forms'
+
 import { TSendStatus, TFetchStatus } from '@ws-widget/utils'
+
 import { NsContent } from '../../../_services/widget-content.model'
+
 import { FeedbackService } from '../../services/feedback.service'
+
 import { EFeedbackType, EFeedbackRole, IFeedbackConfig } from '../../models/feedback.model'
+
 import { FeedbackSnackbarComponent } from '../feedback-snackbar/feedback-snackbar.component'
+
 
 @Component({
   selector: 'ws-widget-btn-content-feedback-dialog-v2',

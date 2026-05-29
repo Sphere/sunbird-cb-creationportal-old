@@ -1,21 +1,39 @@
 import { NgModule } from '@angular/core'
+
 import { Routes, RouterModule } from '@angular/router'
+
 import { ViewerComponent } from './viewer.component'
+
 import { ViewerResolve } from './viewer.resolve'
+
 import { AudioComponent } from './routes/audio/audio.component'
+
 import { AudioModule } from './routes/audio/audio.module'
+
 import { AudioNativeComponent } from './routes/audio-native/audio-native.component'
+
 import { AudioNativeModule } from './routes/audio-native/audio-native.module'
+
 import { HtmlComponent } from './routes/html/html.component'
+
 import { HtmlModule } from './routes/html/html.module'
+
 import { PdfComponent } from './routes/pdf/pdf.component'
+
 import { PdfModule } from './routes/pdf/pdf.module'
+
 import { ChannelComponent } from './routes/channel/channel.component'
+
 import { ChannelModule } from './routes/channel/channel.module'
+
 import { VideoComponent } from './routes/video/video.component'
+
 import { VideoModule } from './routes/video/video.module'
+
 import { YoutubeComponent } from './routes/youtube/youtube.component'
+
 import { YoutubeModule } from './routes/youtube/youtube.module'
+
 
 const routes: Routes = [
   {

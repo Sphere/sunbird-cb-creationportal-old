@@ -1,10 +1,17 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Subscription } from 'rxjs'
+
 import { NsContent, WidgetContentService } from '@ws-widget/collection'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { EventService, WsEvents } from '@ws-widget/utils'
+
 import { ViewerUtilService } from '../../viewer-util.service'
+
 
 @Component({
   selector: 'viewer-html-picker',

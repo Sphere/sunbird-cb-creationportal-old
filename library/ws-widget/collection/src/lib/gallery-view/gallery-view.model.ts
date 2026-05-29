@@ -1,5 +1,6 @@
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
+
 export namespace NsGalleryView {
   export interface IWidgetGalleryView {
     designVal?: string

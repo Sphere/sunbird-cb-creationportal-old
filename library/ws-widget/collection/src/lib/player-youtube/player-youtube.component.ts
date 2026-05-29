@@ -1,15 +1,27 @@
 import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { EventService, ValueService } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 import videoJs from 'video.js'
+
 import { ActivatedRoute } from '../../../../../../node_modules/@angular/router'
+
 import { ViewerUtilService } from '../../../../../../project/ws/viewer/src/lib/viewer-util.service'
+
 import { ROOT_WIDGET_CONFIG } from '../collection.config'
+
 import { IWidgetsPlayerMediaData } from '../_models/player-media.model'
+
 import { fireRealTimeProgressFunction, saveContinueLearningFunction, telemetryEventDispatcherFunction, videoJsInitializer, youtubeInitializer } from '../_services/videojs-util'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import { WidgetContentService } from '../_services/widget-content.service'
+
 interface IYTOptions extends videoJs.PlayerOptions {
   youtube: {
     ytControls: 0 | 1 | 2

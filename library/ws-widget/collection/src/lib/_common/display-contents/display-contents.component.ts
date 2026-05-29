@@ -1,7 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { NsContent } from '../../_services/widget-content.model'
+
 import { UtilityService, ConfigurationsService } from '../../../../../utils/src/public-api'
+
 import { Subscription } from 'rxjs'
+
 
 @Component({
   selector: 'ws-widget-display-contents[contents]',

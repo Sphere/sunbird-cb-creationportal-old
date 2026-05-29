@@ -1,18 +1,28 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { SearchApiService } from '../../apis/search-api.service'
+
 import { Router, ActivatedRoute } from '@angular/router'
+
 import { SearchServService } from '../../services/search-serv.service'
+
 import { Subscription } from 'rxjs'
+
 import {
   TSocialPostKind,
   IFilterUnitResponse,
   ISocialSearchResult,
   ISearchSocialSearchPartialRequest,
 } from '../../models/search.model'
+
 // import { IKhubFetchStatus } from '../../../infy/routes/knowledge-hub/models/knowledgeHub.model'
+
 import { NsContent, NsError, ROOT_WIDGET_CONFIG } from '@ws-widget/collection'
+
 import { ValueService } from '@ws-widget/utils'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 
 @Component({
   selector: 'ws-app-social',

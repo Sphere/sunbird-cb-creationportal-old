@@ -4,7 +4,6 @@
     "outDir": "./out-tsc/spec",
     "types": ["jest", "node"]
   },
-  "files": ["src/test.ts", "src/polyfills.ts"],
   "include": ["src/**/*.spec.ts", "src/**/*.d.ts"],
   "paths": {
     "@ws-widget/resolver": ["library/ws-widget/resolver"],
@@ -18,13 +17,7 @@
     "@ws/app/*": ["project/ws/app/*"],
     "@ws/author": ["project/ws/author"],
     "@ws/author/*": ["project/ws/author/*"],
-    "@ws/admin": ["project/ws/admin"],
-    "@ws/admin/*": ["project/ws/admin/*"],
-    "@ws/analytics": ["project/ws/analytics"],
-    "@ws/analytics/*": ["project/ws/analytics/*"],
     "@ws/viewer": ["project/ws/viewer"],
-    "@ws/viewer/*": ["project/ws/viewer/*"],
-    "@ws/learning-hub": ["project/ws/learning-hub"],
-    "@ws/learning-hub/*": ["project/ws/learning-hub/*"]
+    "@ws/viewer/*": ["project/ws/viewer/*"]
   }
 }

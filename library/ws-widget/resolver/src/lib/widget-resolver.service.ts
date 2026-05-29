@@ -6,18 +6,28 @@ import {
   ComponentRef,
   Type,
 } from '@angular/core'
+
 import {
   WIDGET_RESOLVER_GLOBAL_CONFIG,
   WIDGET_RESOLVER_SCOPED_CONFIG,
 } from './widget-resolver.constant'
+
 // import { LoggerService } from '@ws-widget/utils'
+
 import { NsWidgetResolver } from './widget-resolver.model'
+
 import { hasPermissions } from './widget-resolver.permissions'
+
 import { RestrictedComponent } from './restricted/restricted.component'
+
 import { InvalidRegistrationComponent } from './invalid-registration/invalid-registration.component'
+
 import { InvalidPermissionComponent } from './invalid-permission/invalid-permission.component'
+
 import { UnresolvedComponent } from './unresolved/unresolved.component'
+
 import { DomSanitizer } from '@angular/platform-browser'
+
 
 @Injectable({
   providedIn: 'root',

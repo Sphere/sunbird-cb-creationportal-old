@@ -1,6 +1,9 @@
 import { IWidgetElementHtml } from '@ws-widget/collection'
+
 import { CONTENT_BASE_WEBHOST_ASSETS } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
+
 
 @Component({
   selector: 'ws-auth-html-v2',

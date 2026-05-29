@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core'
+
 import { Router } from '@angular/router'
+
 import { PlayerStateService } from '../../../../../../project/ws/viewer/src/lib/player-state.service'
+
 
 @Component({
   selector: 'app-player-navigation-widget',

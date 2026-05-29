@@ -1,24 +1,45 @@
 import { FlatTreeControl } from '@angular/cdk/tree'
+
 import { Component, EventEmitter, OnDestroy, OnInit, Output, Input, AfterViewInit } from '@angular/core'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { EditorContentService } from '../../../../../services/editor-content.service'
+
 import { IContentNode } from '../../interface/icontent-tree'
+
 import { AuthPickerComponent } from './../../../../../shared/components/auth-picker/auth-picker.component'
+
 import { IContentTreeNode } from './../../interface/icontent-tree'
+
 import { CollectionStoreService } from './../../services/store.service'
+
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
+
 import { catchError, map, tap } from 'rxjs/operators'
+
 import { isNumber } from 'lodash'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
+
 import { EMPTY } from 'rxjs'
+
 
 declare var $: any
 @Component({
@@ -199,7 +220,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
               tempUpdateContent.duration)
         }
         if (tempUpdateContent.category) {
-          delete tempUpdateContent.category
+          delete (tempUpdateContent as any).category
         }
         let requestBody: NSApiRequest.IContentUpdateV2
         if (contentType === 'CourseUnit') {

@@ -1,11 +1,15 @@
 import { Router } from '@angular/router'
+
 import { Component, OnInit } from '@angular/core'
+
 import {
   ConfigurationsService,
   NsInstanceConfig,
   UserPreferenceService,
 } from '../../../../../../../../../library/ws-widget/utils/src/public-api'
+
 import { FormControl, Validators } from '@angular/forms'
+
 
 @Component({
   selector: 'ws-app-lang-select',

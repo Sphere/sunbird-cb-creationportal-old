@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { RouterModule } from '@angular/router'
 
-import {
-  MatCardModule,
-  MatDividerModule,
-  MatButtonModule,
-  MatSnackBarModule,
-} from '@angular/material'
 
+import { MatCardModule } from '@angular/material/card'
+import { MatDividerModule } from '@angular/material/divider'
+import { MatButtonModule } from '@angular/material/button'
+import { MatSnackBarModule } from '@angular/material/snack-bar'
 import {
   // BtnContentDownloadModule,
   // BtnContentFeedbackModule,
@@ -23,19 +23,25 @@ import {
   BtnContentFeedbackV2Module,
 } from '@ws-widget/collection'
 
+
 import {
   PipeDurationTransformModule,
   PipeLimitToModule,
   PipePartialContentModule,
 } from '@ws-widget/utils'
 
+
 import { WidgetResolverModule } from '@ws-widget/resolver'
+
 
 import { HtmlModule as HtmlViewContainerModule } from '../../route-view-container/html/html.module'
 
+
 import { HtmlComponent } from './html.component'
 
+
 import { AccessControlService } from '@ws/author'
+
 @NgModule({
   declarations: [HtmlComponent],
   imports: [

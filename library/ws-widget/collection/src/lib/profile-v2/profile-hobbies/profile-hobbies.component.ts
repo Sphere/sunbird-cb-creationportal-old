@@ -1,6 +1,9 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core'
+
 import { WidgetBaseComponent, NsWidgetResolver } from '@ws-widget/resolver'
+
 import { IProHobbies } from './profile-hobbies.model'
+
 
 @Component({
   selector: 'ws-widget-profile-v2-hobbies',

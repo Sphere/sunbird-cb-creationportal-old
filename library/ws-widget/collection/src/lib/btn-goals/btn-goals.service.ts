@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { NsGoal } from './btn-goals.model'
+
 import { forkJoin, of } from 'rxjs'
+
 import { catchError, map, tap } from 'rxjs/operators'
+
 
 const API_END_POINTS = {
   acceptRejectGoal: (action: string, goalType: string, goalId: string, confirm: boolean) =>

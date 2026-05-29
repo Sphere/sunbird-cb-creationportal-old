@@ -1,5 +1,6 @@
 import { NsContent } from '../_services/widget-content.model'
 
+
 export namespace NsCardContent {
   export interface ICard {
     content: NsContent.IContent

@@ -1,7 +1,13 @@
-import { NgModule } from '@angular/core'
+﻿import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
-import { MatIconModule, MatButtonModule, MatTooltipModule, MatBadgeModule } from '@angular/material'
+
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatTooltipModule } from '@angular/material/tooltip'
+import { MatBadgeModule } from '@angular/material/badge'
 import { BtnContentLikeComponent } from './btn-content-like.component'
+
 
 @NgModule({
   declarations: [BtnContentLikeComponent],
@@ -13,6 +19,5 @@ import { BtnContentLikeComponent } from './btn-content-like.component'
     MatBadgeModule,
   ],
   exports: [BtnContentLikeComponent],
-  entryComponents: [BtnContentLikeComponent],
 })
 export class BtnContentLikeModule { }

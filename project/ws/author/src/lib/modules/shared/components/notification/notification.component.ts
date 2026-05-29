@@ -1,6 +1,9 @@
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { Component, Inject } from '@angular/core'
+
 import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar'
+
 
 interface IData {
   type: keyof typeof Notify,

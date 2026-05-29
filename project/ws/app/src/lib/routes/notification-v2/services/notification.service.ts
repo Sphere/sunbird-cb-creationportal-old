@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core'
+
 import { Router } from '@angular/router'
+
 import { ENotificationEvent, INotification } from '../models/notifications.model'
+
 
 @Injectable()
 export class NotificationService {

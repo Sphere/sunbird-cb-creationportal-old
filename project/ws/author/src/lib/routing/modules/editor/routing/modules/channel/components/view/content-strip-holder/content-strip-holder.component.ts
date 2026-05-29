@@ -1,7 +1,11 @@
 import { Component, Input, OnInit, OnChanges } from '@angular/core'
+
 import { ContentStripMultipleService, NsContent, WidgetContentService } from '@ws-widget/collection'
+
 import { IWidgetAuthor } from './../../../interface/widget'
+
 import { ChannelStoreService } from './../../../services/store.service'
+
 
 @Component({
   selector: 'ws-auth-content-strip-holder',

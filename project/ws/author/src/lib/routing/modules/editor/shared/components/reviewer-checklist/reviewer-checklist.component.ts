@@ -5,15 +5,25 @@ import {
   OnInit,
 
 } from '@angular/core'
+
 import { NSIQuality } from '../../../interface/content-quality'
+
 import _ from 'lodash'
+
 import { ContentQualityService } from '../../services/content-quality.service'
+
 import { Router } from '@angular/router'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { LoaderService } from '../../../../../../services/loader.service'
+
 import { AccessControlService } from '@ws/author'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { CommentsViewComponent } from '../../../../../../modules/shared/components/comments-view/comments-view.component'
+
 
 @Component({
   selector: 'ws-reviewer-checklist-view',

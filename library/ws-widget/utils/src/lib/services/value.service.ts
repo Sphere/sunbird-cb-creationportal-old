@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core'
+
 import { Observable } from 'rxjs'
+
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
+
 import { map } from 'rxjs/operators'
+
 
 @Injectable({
   providedIn: 'root',

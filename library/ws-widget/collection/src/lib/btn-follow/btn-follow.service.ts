@@ -1,10 +1,17 @@
 import { Injectable } from '@angular/core'
+
 import { ConfigurationsService, EventService, WsEvents, TFetchStatus } from '@ws-widget/utils'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Observable, ReplaySubject } from 'rxjs'
+
 import { IFollowing } from './btn-follow.model'
+
 import { map, tap, take } from 'rxjs/operators'
+
 import { NsContent } from '../_services/widget-content.model'
+
 
 const API_END_POINTS = {
   follow: '/apis/protected/v8/user/follow',

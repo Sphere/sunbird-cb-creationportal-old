@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core'
 
+
 @Component({
   selector: 'ws-widget-completion-spinner',
   templateUrl: './completion-spinner.component.html',

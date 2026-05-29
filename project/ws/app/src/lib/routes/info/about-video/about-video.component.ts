@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core'
+
 import { IWidgetsPlayerMediaData } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ConfigurationsService, NsPage } from '../../../../../../../../library/ws-widget/utils/src/public-api'
+
 
 @Component({
   selector: 'ws-app-about-video',

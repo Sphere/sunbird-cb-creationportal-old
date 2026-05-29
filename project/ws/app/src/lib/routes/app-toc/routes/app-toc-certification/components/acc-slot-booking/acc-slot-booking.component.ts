@@ -1,11 +1,17 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core'
+
 import { FormGroup, FormControl, Validators } from '@angular/forms'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable, Subscription } from 'rxjs'
+
 import { finalize, startWith, map, tap, switchMap } from 'rxjs/operators'
 
+
 import { NsContent } from '@ws-widget/collection'
+
 import { TFetchStatus, TSendStatus } from '@ws-widget/utils'
+
 
 import {
   IAccLocation,
@@ -13,10 +19,15 @@ import {
   ITestCenterSlot,
   ICertificationMeta,
 } from '../../models/certification.model'
+
 import { CertificationApiService } from '../../apis/certification-api.service'
+
 import { CertificationService } from '../../services/certification.service'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { SnackbarComponent } from '../snackbar/snackbar.component'
+
 
 @Component({
   selector: 'ws-app-acc-slot-booking',

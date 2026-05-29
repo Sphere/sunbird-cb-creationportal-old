@@ -1,5 +1,6 @@
 import { IWidgetGraphData, NsContent } from '@ws-widget/collection'
 
+
 export namespace NSAnalyticsData {
   export interface ITimeSpentResponse {
     JL_wise: IProfileData[]

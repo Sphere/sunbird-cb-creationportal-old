@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 
+
 @Component({
   selector: 'ws-auth-language-select-bar',
   templateUrl: './auth-language-select-bar.component.html',

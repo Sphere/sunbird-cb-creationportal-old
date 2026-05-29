@@ -1,7 +1,11 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core'
+
 import { NSQuiz } from '../../quiz.model'
+
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
+
 import { jsPlumb, OnConnectionBindInfo } from 'jsplumb'
+
 
 @Component({
   selector: 'viewer-question',

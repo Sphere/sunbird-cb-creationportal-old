@@ -1,6 +1,9 @@
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 
 const ENDPOINTS = {
   checkIntranet: 'https://intranet.link',

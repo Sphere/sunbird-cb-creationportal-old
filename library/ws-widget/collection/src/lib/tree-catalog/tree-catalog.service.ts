@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core'
+
 import { Observable, of } from 'rxjs'
+
 import { HttpClient } from '@angular/common/http'
+
 import { tap } from 'rxjs/operators'
+
 import { NSSearch } from '../_services/widget-search.model'
+
 
 const API_END_POINTS = {
   catalog: '/apis/protected/v8/catalog',

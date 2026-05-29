@@ -1,18 +1,32 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
+
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms'
-// import { MatSnackBar } from '@angular/material'
+
+// import { MatSnackBar } from '@angular/material/snack-bar'
 // import { MatDialog } from '@angular/material/dialog'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 // import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 // import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 // import { IprDialogComponent } from '@ws/author/src/lib/modules/shared/components/ipr-dialog/ipr-dialog.component'
+
 // import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { IFormMeta } from './../../../../../../../../interface/form'
+
 import { AuthInitService } from './../../../../../../../../services/init.service'
+
 import { URLCheckerClass } from './url-upload.helper'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 
 @Component({
   selector: 'ws-auth-url-upload',

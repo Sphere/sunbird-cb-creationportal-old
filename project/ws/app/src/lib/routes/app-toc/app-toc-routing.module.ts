@@ -1,19 +1,35 @@
 import { NgModule } from '@angular/core'
+
 import { RouterModule, Routes } from '@angular/router'
+
 import { PageResolve } from '@ws-widget/utils'
+
 import { GeneralGuard } from '../../../../../../../src/app/guards/general.guard'
+
 import { AppTocDiscussionComponent } from './components/app-toc-discussion/app-toc-discussion.component'
+
 import { KnowledgeArtifactDetailsComponent } from './components/knowledge-artifact-details/knowledge-artifact-details.component'
+
 import { AppTocResolverService } from './resolvers/app-toc-resolver.service'
+
 import { AppTocAnalyticsComponent } from './routes/app-toc-analytics/app-toc-analytics.component'
+
 import { CertificationMetaResolver } from './routes/app-toc-certification/resolvers/certification-meta.resolver'
+
 import { ContentCertificationResolver } from './routes/app-toc-certification/resolvers/content-certification.resolver'
+
 import { AppTocContentsComponent } from './routes/app-toc-contents/app-toc-contents.component'
+
 import { AppTocHomeComponent } from './routes/app-toc-home/app-toc-home.component'
+
 import { AppTocSinglePageComponent as AppTocSinglePageRootComponent } from './routes/app-toc-single-page/app-toc-single-page.component'
+
 import { AppTocCohortsComponent } from './components/app-toc-cohorts/app-toc-cohorts.component'
+
 import { LicenseComponent } from './components/license/license.component'
+
 import { AppTocOverviewComponent as AppTocOverviewRootComponent } from './routes/app-toc-overview/app-toc-overview.component'
+
 
 const routes: Routes = [
   {

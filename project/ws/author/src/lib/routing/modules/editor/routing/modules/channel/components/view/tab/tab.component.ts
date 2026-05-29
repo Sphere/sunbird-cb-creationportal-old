@@ -1,6 +1,9 @@
 import { IWidgetAuthor } from './../../../interface/widget'
+
 import { Component, OnInit, Input, OnChanges } from '@angular/core'
+
 import { ChannelStoreService } from './../../../services/store.service'
+
 
 @Component({
   selector: 'ws-auth-tab',

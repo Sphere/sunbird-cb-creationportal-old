@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core'
+
 import { FormBuilder, FormGroup } from '@angular/forms'
+
 import { AIHubService } from '../../services/aihub.service'
+
 @Component({
   selector: 'ws-author-translate',
   templateUrl: './translate.component.html',

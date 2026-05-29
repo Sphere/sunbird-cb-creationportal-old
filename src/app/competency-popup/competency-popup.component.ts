@@ -1,17 +1,26 @@
 import {
   Component, OnInit, Inject
 } from '@angular/core'
+
 import {
   MatDialogRef,
   MAT_DIALOG_DATA
 } from '@angular/material/dialog'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { Router } from '@angular/router'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 
 @Component({
   selector: 'ws-competency-popup',

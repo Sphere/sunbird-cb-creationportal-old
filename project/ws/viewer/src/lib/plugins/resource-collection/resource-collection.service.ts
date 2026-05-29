@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 
 const END_POINTS = {
   exerciseBase: '/apis/protected/v8/user/exercise',

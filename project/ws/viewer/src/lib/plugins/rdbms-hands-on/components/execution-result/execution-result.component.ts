@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { NSRdbmsHandsOn } from '../../rdbms-hands-on.model'
+
 
 @Component({
   selector: 'viewer-execution-result',

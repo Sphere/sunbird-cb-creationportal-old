@@ -1,6 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { CollectionResolverService } from './../../services/resolver.service'
+
 
 @Component({
   selector: 'ws-auth-table-tree-label',

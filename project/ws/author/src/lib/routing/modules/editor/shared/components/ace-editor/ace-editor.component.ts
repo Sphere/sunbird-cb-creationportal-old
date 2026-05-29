@@ -1,9 +1,6 @@
 import { Component, OnInit, Input, EventEmitter, Output, ViewChild } from '@angular/core'
-import 'brace'
-import 'brace/ext/language_tools'
-import 'brace/mode/json'
-import 'brace/snippets/json'
-import 'brace/theme/textmate'
+
+// ace-builds mode/theme side-effects registered via angular.json scripts
 
 @Component({
   selector: 'ws-auth-ace-editor',

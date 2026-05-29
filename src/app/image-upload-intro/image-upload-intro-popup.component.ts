@@ -1,11 +1,15 @@
 import {
   Component, OnInit, Inject
 } from '@angular/core'
+
 import {
   MAT_DIALOG_DATA
 } from '@angular/material/dialog'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { HttpClient } from '@angular/common/http'
+
 
 @Component({
   selector: 'ws-image-upload-intro-popup',

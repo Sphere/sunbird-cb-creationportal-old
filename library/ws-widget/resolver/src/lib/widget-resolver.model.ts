@@ -1,5 +1,7 @@
 import { Type } from '@angular/core'
+
 import { SafeStyle } from '@angular/platform-browser'
+
 type TUrl = undefined | 'none' | 'back' | string
 export namespace NsWidgetResolver {
   export type UnitPermissionPrimitive = undefined | null | string

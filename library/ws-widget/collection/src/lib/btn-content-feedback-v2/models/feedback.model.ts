@@ -1,5 +1,6 @@
 import { NsContent } from '../../_services/widget-content.model'
 
+
 export interface IFeedbackSearchQuery {
   query: string
   filters: { [key: string]: string[] | boolean[] }

@@ -1,20 +1,24 @@
 import { Component, Inject, OnInit, ViewChild, ElementRef } from '@angular/core'
+
 import { NsAutoComplete, UserAutocompleteService } from '@ws-widget/collection'
-import {
-  MAT_DIALOG_DATA,
-  MatSnackBar,
-  MatDialogRef,
-  MatAutocompleteSelectedEvent,
-  MatChipInputEvent,
-} from '@angular/material'
+
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete'
+import { MatChipInputEvent } from '@angular/material/chips'
 import { FormControl } from '@angular/forms'
+
 import { FeedbackService } from '@ws-widget/collection/src/lib/btn-content-feedback-v2/services/feedback.service'
+
 import {
   EFeedbackType,
   EFeedbackRole,
 } from '@ws-widget/collection/src/lib/btn-content-feedback-v2/models/feedback.model'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import {
   debounceTime,
   distinctUntilChanged,
@@ -23,7 +27,9 @@ import {
   map,
   catchError,
 } from 'rxjs/operators'
+
 import { of } from 'rxjs'
+
 
 const NOTIFICATION_TIME = 5
 

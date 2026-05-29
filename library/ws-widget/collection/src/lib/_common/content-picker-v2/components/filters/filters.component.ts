@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
+
 import { IAppliedFilters, IFilter, IIncludedFilters } from '../../content-picker-v2.model'
+
 
 @Component({
   selector: 'ws-widget-filters',

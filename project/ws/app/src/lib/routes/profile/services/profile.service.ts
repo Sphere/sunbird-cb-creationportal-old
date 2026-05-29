@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient, HttpHeaders } from '@angular/common/http'
+
 import { Observable } from 'rxjs'
+
 import { NSProfileData } from '../models/profile.model'
+
 import { ITimeSpent } from '../routes/learning/models/learning.models'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 
 const PROTECTED_SLAG_V8 = `/apis/protected/v8`
 

@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Observable } from 'rxjs'
+
 import { map } from 'rxjs/operators'
+
 import { NSRdbmsHandsOn } from './rdbms-hands-on.model'
+
 
 const API_END_POINTS = {
   INITIALIZE_DB: `/apis/protected/v8/user/rdbms/initializeDb`,

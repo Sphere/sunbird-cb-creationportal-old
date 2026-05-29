@@ -1,6 +1,9 @@
 import { AfterViewInit, Component, HostBinding, Input } from '@angular/core'
+
 import { SafeStyle } from '@angular/platform-browser'
+
 import { NsWidgetResolver } from './widget-resolver.model'
+
 type TWidgetBase = Omit<NsWidgetResolver.IWidgetData<any>, 'widgetData'>
 
 @Component({

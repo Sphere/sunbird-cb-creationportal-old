@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Observable, throwError } from 'rxjs'
+
 import { catchError } from 'rxjs/operators'
+
 import { IUserGroupDetails } from './widget-user.model'
+
 
 const PROTECTED_SLAG_V8 = '/apis/protected/v8'
 const API_END_POINTS = {

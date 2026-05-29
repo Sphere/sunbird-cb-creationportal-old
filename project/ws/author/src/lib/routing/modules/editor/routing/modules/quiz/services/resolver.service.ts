@@ -1,13 +1,22 @@
 import { Injectable } from '@angular/core'
 
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { EMPTY, Observable, of } from 'rxjs'
+
 import { AccessControlService } from '../../../../../../../modules/shared/services/access-control.service'
+
 import { ApiService } from '../../../../../../../modules/shared/services/api.service'
+
 import { CONTENT_READ_HIERARCHY_AND_DATA } from '../../../../../../../constants/apiEndpoints'
+
 import { catchError, map } from 'rxjs/operators'
+
 import { Router } from '@angular/router'
+
 import { HttpClient, HttpBackend } from '@angular/common/http'
+
 
 @Injectable()
 export class QuizResolverService {

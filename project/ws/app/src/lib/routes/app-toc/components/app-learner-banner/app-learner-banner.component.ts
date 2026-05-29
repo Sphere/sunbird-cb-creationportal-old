@@ -1,25 +1,42 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, HostListener, Inject } from '@angular/core'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser'
+
 import { Router } from '@angular/router'
+
 import {
   NsContent,
   WidgetContentService,
   viewerRouteGenerator
 } from '@ws-widget/collection'
+
 import { TFetchStatus } from '@ws-widget/utils'
+
 import { UtilityService } from '@ws-widget/utils/src/lib/services/utility.service'
+
 import { Subscription } from 'rxjs'
+
 import { NsAppToc, NsCohorts } from '../../models/app-toc.model'
+
 import { AppTocService } from '../../services/app-toc.service'
+
 import { MobileAppsService } from 'src/app/services/mobile-apps.service'
+
 import { FormControl, Validators } from '@angular/forms'
+
 import { DOCUMENT } from '@angular/common'
+
 import { AppTocDesktopModalComponent } from '../app-toc-desktop-modal/app-toc-desktop-modal.component'
+
 import { AppTocCertificateModalComponent } from '../app-toc-certificate-modal/app-toc-certificate-modal.component'
+
 // import { AppTocDesktopModalComponent } from '../app-toc-desktop-modal/app-toc-desktop-modal.component'
+
 // import { AppTocCertificateModalComponent } from '../app-toc-certificate-modal/app-toc-certificate-modal.component'
+
 // import { ConfirmmodalComponent } from '../../../../../../../viewer/src/lib/plugins/quiz/confirm-modal-component'
+
 
 @Component({
   selector: 'ws-app-learner-banner',

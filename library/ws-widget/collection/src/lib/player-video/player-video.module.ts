@@ -1,6 +1,9 @@
-import { NgModule } from '@angular/core'
+﻿import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { PlayerVideoComponent } from './player-video.component'
+
 
 @NgModule({
   declarations: [PlayerVideoComponent],
@@ -8,6 +11,5 @@ import { PlayerVideoComponent } from './player-video.component'
     CommonModule,
   ],
   exports: [PlayerVideoComponent],
-  entryComponents: [PlayerVideoComponent],
 })
 export class PlayerVideoModule { }

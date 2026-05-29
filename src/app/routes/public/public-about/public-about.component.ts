@@ -1,11 +1,19 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout'
+
 import { DomSanitizer, SafeResourceUrl, SafeStyle } from '@angular/platform-browser'
+
 import { map } from 'rxjs/operators'
+
 import { ConfigurationsService, NsPage } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { IAboutObject } from './about.model'
+
 
 @Component({
   selector: 'ws-public-about',

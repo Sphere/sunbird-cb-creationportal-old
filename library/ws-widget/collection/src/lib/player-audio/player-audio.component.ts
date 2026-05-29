@@ -1,4 +1,5 @@
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import {
   Component,
   OnInit,
@@ -8,20 +9,30 @@ import {
   AfterViewInit,
   OnDestroy,
 } from '@angular/core'
+
 import videoJs from 'video.js'
+
 import { ROOT_WIDGET_CONFIG } from '../collection.config'
+
 import { IWidgetsPlayerMediaData } from '../_models/player-media.model'
+
 import { EventService } from '@ws-widget/utils'
+
 import {
   videoJsInitializer,
   telemetryEventDispatcherFunction,
   saveContinueLearningFunction,
   fireRealTimeProgressFunction,
 } from '../_services/videojs-util'
+
 // import { ViewerUtilService } from '../../../../../../project/ws/viewer/src/lib/viewer-util.service'
+
 import { WidgetContentService } from '../_services/widget-content.service'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import { ActivatedRoute } from '@angular/router'
+
 
 const videoJsOptions: videoJs.PlayerOptions = {
   controls: true,

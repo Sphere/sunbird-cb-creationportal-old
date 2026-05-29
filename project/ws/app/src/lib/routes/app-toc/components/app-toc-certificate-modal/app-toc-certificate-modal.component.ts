@@ -1,11 +1,18 @@
 import { Component, Inject, OnInit } from '@angular/core'
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material'
+
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import * as FileSaver from 'file-saver'
+
 import { DomSanitizer } from '@angular/platform-browser'
+
 // import moment from 'moment'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
+
 // import { WidgetContentService } from '@ws-widget/collection'
+
 
 @Component({
   selector: 'ws-app-app-toc-certificate-modal',

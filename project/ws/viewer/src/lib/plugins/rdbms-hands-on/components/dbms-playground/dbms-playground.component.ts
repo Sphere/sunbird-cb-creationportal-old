@@ -1,7 +1,11 @@
 import { Component, OnChanges, Input, ElementRef, ViewChild } from '@angular/core'
+
 import { RdbmsHandsOnService } from '../../rdbms-hands-on.service'
+
 import { NSRdbmsHandsOn } from '../../rdbms-hands-on.model'
+
 import { EventService } from '@ws-widget/utils'
+
 
 @Component({
   selector: 'viewer-dbms-playground',

@@ -1,9 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { ConfigurationsService, LogoutComponent, NsPage, ValueService } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 import { map } from 'rxjs/operators'
+
 
 @Component({
   selector: 'ws-app-profile',

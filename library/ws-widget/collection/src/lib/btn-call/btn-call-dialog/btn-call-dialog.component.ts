@@ -1,6 +1,9 @@
 import { Component, OnInit, Inject } from '@angular/core'
-import { MatSnackBar, MAT_DIALOG_DATA } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { EventService } from '@ws-widget/utils'
+
 
 export interface IWidgetBtnCallDialogData {
   name: string
