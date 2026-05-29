@@ -79,7 +79,7 @@ export class AssessmentService {
           if (!this.assessmentSubject) {
             this.assessmentSubject = new ReplaySubject(1)
           }
-          this.assessmentSubject.next()
+          this.assessmentSubject.next(undefined as any)
         },
       )
   }

@@ -1,6 +1,7 @@
 ﻿import { NgModule } from '@angular/core'
 
 import { CommonModule } from '@angular/common'
+import { TextFieldModule } from '@angular/cdk/text-field'
 
 import { MatIconModule } from '@angular/material/icon'
 import { MatButtonModule } from '@angular/material/button'
@@ -18,6 +19,7 @@ import { BtnMailUserDialogComponent } from './btn-mail-user-dialog/btn-mail-user
   declarations: [BtnMailUserComponent, BtnMailUserDialogComponent],
   imports: [
     CommonModule,
+    TextFieldModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,

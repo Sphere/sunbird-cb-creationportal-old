@@ -53,7 +53,7 @@ export class BookingCardComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptionSubject$.next()
+    this.subscriptionSubject$.next(undefined as any)
     this.subscriptionSubject$.complete()
   }
 
@@ -77,7 +77,7 @@ export class BookingCardComponent implements OnDestroy {
               this.certification.booking.icfdId,
             )
           }
-          return throwError('No data.')
+          return throwError(() => 'No data.')
         }),
       )
       .subscribe(

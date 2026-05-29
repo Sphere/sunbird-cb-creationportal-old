@@ -13,7 +13,6 @@
             <mat-chip
               *ngFor="let country of countriesChipList"
               [value]="country"
-              [selectable]="true"
               [removable]="true"
               (removed)="countryRemoved($event.value)"
             >

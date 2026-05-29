@@ -35,8 +35,8 @@ export class FileDownloadService {
   saveBlobToDevice(blob: Blob, documentName: string): boolean {
     try {
       // IE Download
-      if (this.window.navigator && this.window.navigator.msSaveOrOpenBlob) {
-        this.window.navigator.msSaveOrOpenBlob(blob, documentName)
+      if (this.window.navigator && (this.window.navigator as any).msSaveOrOpenBlob) {
+        (this.window.navigator as any).msSaveOrOpenBlob(blob, documentName)
         return true
       }
 
@@ -61,9 +61,9 @@ export class FileDownloadService {
     const blob = this.base64ToBlob(base64String)
 
     if (!blob) {
-      return throwError({})
+      return throwError(() => {})
     }
 
-    return this.saveBlobToDevice(blob, documentName) ? of({}) : throwError({})
+    return this.saveBlobToDevice(blob, documentName) ? of({}) : throwError(() => {})
   }
 }

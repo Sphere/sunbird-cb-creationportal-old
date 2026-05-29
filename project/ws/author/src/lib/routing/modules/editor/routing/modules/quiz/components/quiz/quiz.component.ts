@@ -877,7 +877,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
           console.log(data)
         })
     }
-    return of({})
+    return of({} as any)
   }
 
   generateUrl(oldUrl: any) {
@@ -969,7 +969,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       // tslint:disable-next-line: no-parameter-reassignment
       v = v[0].result || v[0]
       this.showNotification(Notify.SAVE_SUCCESS)
-      const updatedMeta = this.metaContentService.upDatedContent[this.currentId] || {}
+      const updatedMeta: any = this.metaContentService.upDatedContent[this.currentId] || {}
       // const check = this.resourceType === ASSESSMENT ? v.length && v[1] && v[1].code : true
       // if (v && v[0] && v[0].code && check) {
       if (v && (v.artifactUrl || v.content_url)) {
@@ -1385,8 +1385,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
             : 0,
       }
 
-      const updatedContent = this.metaContentService.upDatedContent[this.currentId] || {}
-      const updatedMeta = this.metaContentService.getUpdatedMeta(this.currentId)
+      const updatedContent: any = this.metaContentService.upDatedContent[this.currentId] || {}
+      const updatedMeta: any = this.metaContentService.getUpdatedMeta(this.currentId)
       const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || {})
         .length
       const saveCall = (needSave

@@ -26,7 +26,7 @@ export class WidgetUserService {
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Error: ${error.error.message}`
     }
-    return throwError(errorMessage)
+    return throwError(() => errorMessage)
   }
 
   fetchUserGroupDetails(userId: string): Observable<IUserGroupDetails[]> {

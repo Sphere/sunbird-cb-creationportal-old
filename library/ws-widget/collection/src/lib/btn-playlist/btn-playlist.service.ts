@@ -150,7 +150,7 @@ export class BtnPlaylistService {
         },
       )
     }
-    return throwError({ error: 'ERROR_PLAYLIST_UNDEFINED' })
+    return throwError(() => { error: 'ERROR_PLAYLIST_UNDEFINED' })
   }
 
   acceptPlaylist(playlistId: string) {

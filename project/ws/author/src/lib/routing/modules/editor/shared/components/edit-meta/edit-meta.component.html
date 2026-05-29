@@ -98,8 +98,7 @@
               <mat-form-field appearance="outline" class="margin-top-xs width-90"
                 [ngClass]="{ 'mat-form-field-invalid': showError('audience') }">
                 <mat-chip-list #audienceChipList i18n-aria-label aria-label="Audience selection">
-                  <mat-chip *ngFor="let job of contentForm.controls.audience.value" [selectable]="selectable"
-                    [removable]="removable" (removed)="removeFromFormControl(job, 'audience')">
+                  <mat-chip *ngFor="let job of contentForm.controls.audience.value" [removable]="removable" (removed)="removeFromFormControl(job, 'audience')">
                     {{ job }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                   </mat-chip>
@@ -139,8 +138,7 @@
               <mat-form-field appearance="outline" class="margin-top-xs width-90"
                 [ngClass]="{ 'mat-form-field-invalid': showError('jobProfile') }">
                 <mat-chip-list #jobProfileChipList i18n-aria-label aria-label="Job profile selection">
-                  <mat-chip *ngFor="let job of contentForm.controls.jobProfile.value" [selectable]="selectable"
-                    [removable]="removable" (removed)="removeFromFormControl(job, 'jobProfile')">
+                  <mat-chip *ngFor="let job of contentForm.controls.jobProfile.value" [removable]="removable" (removed)="removeFromFormControl(job, 'jobProfile')">
                     {{ job }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                   </mat-chip>
@@ -178,8 +176,7 @@
         <div class="margin-top-xs flex margin-right-xl" [ngClass]="{ 'mat-form-field-invalid': showError('skills') }">
           <mat-form-field class="keywords-chip-list margin-top-xs flex-grow80" appearance="outline">
             <mat-chip-list #skills aria-label="Keyword selection">
-              <mat-chip *ngFor="let key of contentForm.controls.skills.value" [selectable]="selectable"
-                [removable]="removable" (removed)="removeSkill(key)">
+              <mat-chip *ngFor="let key of contentForm.controls.skills.value" [removable]="removable" (removed)="removeSkill(key)">
                 {{ key }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip>
@@ -214,8 +211,7 @@
                 [ngClass]="{ 'mat-form-field-invalid': showError('trackContacts') }">
                 <mat-chip-list #reviewerChipList i18n-aria-label aria-label="Reviewer selection">
 
-                  <mat-chip *ngFor="let author of contentForm.controls.trackContacts.value" [selectable]="selectable"
-                    [removable]="removable" (removed)="removeEmployee(author, 'trackContacts')">
+                  <mat-chip *ngFor="let author of contentForm.controls.trackContacts.value" [removable]="removable" (removed)="removeEmployee(author, 'trackContacts')">
                     {{ author.name }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                   </mat-chip>
@@ -256,8 +252,7 @@
           <mat-form-field appearance="outline" class="margin-top-xs" class="margin-top-xs"
             [ngClass]="{ 'mat-form-field-invalid': showError('publisherDetails') }">
             <mat-chip-list #publisherChipList aria-label="Publisher selection">
-              <mat-chip *ngFor="let author of contentForm.controls.publisherDetails.value" [selectable]="selectable"
-                [removable]="removable" (removed)="removeEmployee(author, 'publisherDetails')">
+              <mat-chip *ngFor="let author of contentForm.controls.publisherDetails.value" [removable]="removable" (removed)="removeEmployee(author, 'publisherDetails')">
                 {{ author.name }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip>
@@ -303,8 +298,7 @@
             <mat-form-field class="keywords-chip-list margin-top-xs flex-grow80" appearance="outline"
               [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
               <mat-chip-list #keywords aria-label="Keyword selection">
-                <mat-chip *ngFor="let key of contentForm.controls.keywords.value" [selectable]="selectable"
-                  [removable]="removable" (removed)="removeKeyword(key)">
+                <mat-chip *ngFor="let key of contentForm.controls.keywords.value" [removable]="removable" (removed)="removeKeyword(key)">
                   {{ key }}
                   <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                 </mat-chip>
@@ -342,8 +336,7 @@
               <mat-form-field appearance="outline" class="margin-top-xs" class="margin-top-xs"
                 [ngClass]="{ 'mat-form-field-invalid': showError('creatorContacts') }">
                 <mat-chip-list #creatorChipList aria-label="Creator selection">
-                  <mat-chip *ngFor="let author of contentForm.controls.creatorContacts.value" [selectable]="selectable"
-                    [removable]="removable" (removed)="removeEmployee(author, 'creatorContacts')">
+                  <mat-chip *ngFor="let author of contentForm.controls.creatorContacts.value" [removable]="removable" (removed)="removeEmployee(author, 'creatorContacts')">
                     {{ author.name }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                   </mat-chip>
@@ -381,8 +374,7 @@
               <mat-form-field appearance="outline" class="margin-top-xs" class="margin-top-xs"
                 [ngClass]="{ 'mat-form-field-invalid': showError('creatorDetails') }">
                 <mat-chip-list #creatorDetailsChipList aria-label="Original Author selection">
-                  <mat-chip *ngFor="let author of contentForm.controls.creatorDetails.value" [selectable]="selectable"
-                    [removable]="removable" (removed)="removeCreatorDetails(author)">
+                  <mat-chip *ngFor="let author of contentForm.controls.creatorDetails.value" [removable]="removable" (removed)="removeCreatorDetails(author)">
                     {{ author.name }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                   </mat-chip>

@@ -2,7 +2,8 @@
 
 import { Injectable } from '@angular/core'
 
-import { KeycloakEvent, KeycloakEventType, KeycloakInitOptions, KeycloakService } from 'keycloak-angular'
+import { KeycloakEvent, KeycloakEventType, KeycloakService } from 'keycloak-angular'
+import type { KeycloakInitOptions } from 'keycloak-js'
 
 import { fromEvent, ReplaySubject } from 'rxjs'
 
@@ -54,7 +55,7 @@ export class AuthKeycloakService {
   get isLoggedIn$() {
     return this.loginChangeSubject.asObservable()
   }
-  get isLoggedIn(): Promise<boolean> {
+  get isLoggedIn(): boolean {
     return this.keycloakSvc.isLoggedIn()
   }
   get isAuthenticated(): boolean | undefined {
@@ -119,7 +120,6 @@ export class AuthKeycloakService {
           onLoad: instanceConfig.keycloak.onLoad || 'check-sso',
           checkLoginIframe: false,
         },
-        enableBearerInterceptor: true,
         loadUserProfileAtStartUp: false,
         bearerExcludedUrls: instanceConfig.keycloak.bearerExcludedUrls,
       })
@@ -180,7 +180,7 @@ export class AuthKeycloakService {
         case KeycloakEventType.OnAuthSuccess:
           break
         case KeycloakEventType.OnReady:
-          this.loginChangeSubject.next(event.args)
+          this.loginChangeSubject.next(event.args as boolean)
           if (event.args) {
             this.saveKeycloakConfig()
           }

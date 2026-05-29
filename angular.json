@@ -37,6 +37,7 @@
                 "input": "src/styles/libraries.scss",
                 "bundleName": "libraries"
               },
+              "node_modules/typeface-roboto/index.css",
               "node_modules/material-icons/iconfont/material-icons.scss",
               "src/styles/mat-typography.scss",
               "src/styles/styles.scss",

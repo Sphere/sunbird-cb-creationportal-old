@@ -7,6 +7,7 @@ import { ConditionCheckService } from './services/condition-check.service'
 import { PipeContentRouteModule } from '@ws-widget/collection'
 
 import { CommonModule } from '@angular/common'
+import { TextFieldModule } from '@angular/cdk/text-field'
 
 import { NgModule } from '@angular/core'
 
@@ -16,7 +17,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import { MatButtonModule } from '@angular/material/button'
 import { MatButtonToggleModule } from '@angular/material/button-toggle'
 import { MatCheckboxModule } from '@angular/material/checkbox'
-import { MatChipsModule } from '@angular/material/chips'
+import { MatLegacyChipsModule as MatChipsModule } from '@angular/material/legacy-chips'
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { MatMenuModule } from '@angular/material/menu'
 import { MatNativeDateModule } from '@angular/material/core'
@@ -154,6 +155,7 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
   ],
   imports: [
     CommonModule,
+    TextFieldModule,
     MatIconModule,
     MatToolbarModule,
     MatFormFieldModule,

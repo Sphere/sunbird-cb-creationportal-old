@@ -40,7 +40,7 @@ import { Injectable } from '@angular/core'
   providedIn: 'root',
 })
 export class AppTocService {
-  // analyticsReplaySubject: Subject<any> = new Subject()
+  // analyticsReplaySubject: Subject<any> = new Subject<void>()
   // analyticsFetchStatus: TFetchStatus = 'none'
   // private showSubtitleOnBanners = false
   // private canShowDescription = false

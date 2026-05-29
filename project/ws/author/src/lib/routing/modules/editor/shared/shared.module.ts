@@ -1,4 +1,5 @@
 ﻿import { CommonModule } from '@angular/common'
+import { TextFieldModule } from '@angular/cdk/text-field'
 
 import { NgModule } from '@angular/core'
 
@@ -65,6 +66,7 @@ import { ContentQualityService } from './services/content-quality.service'
   ],
   imports: [
     CommonModule,
+    TextFieldModule,
     DefaultThumbnailModule,
     PipeDurationTransformModule,
     DisplayContentTypeModule,

@@ -225,7 +225,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // this.newDesign = this.accessService.authoringConfig.newDesign
     this.newDesign = l.get(this.accessService, 'authoringConfig.newDesign')
     this.ordinals = this.authInitService.ordinals
-    this.allLanguages$ = this.editorService.languageList() || []
+    this.allLanguages$ = (this.editorService.languageList() || []) as any
     this.allLanguages$.subscribe((langs: any) => { this.allLanguages = langs })
     this.sourceNames$ = this.editorService.sourceNames() // Assign the observable
     this.sourceNames$.subscribe(async (data: any) => {

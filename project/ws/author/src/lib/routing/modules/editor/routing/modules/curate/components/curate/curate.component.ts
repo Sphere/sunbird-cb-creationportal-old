@@ -163,7 +163,7 @@ export class CurateComponent implements OnInit, OnDestroy {
   }
 
   save() {
-    const updatedContent = this.contentService.upDatedContent[this.currentContent] || {}
+    const updatedContent: any = this.contentService.upDatedContent[this.currentContent] || {}
     if (Object.keys(updatedContent).length) {
       this.isChanged = true
       this.loaderService.changeLoad.next(true)
@@ -283,7 +283,7 @@ export class CurateComponent implements OnInit, OnDestroy {
             : 0,
       }
 
-      const updatedContent = this.contentService.upDatedContent[this.currentContent] || {}
+      const updatedContent: any = this.contentService.upDatedContent[this.currentContent] || {}
       const updatedMeta = this.contentService.getUpdatedMeta(this.currentContent)
       const needSave = Object.keys(this.contentService.upDatedContent[this.currentContent] || {})
         .length
@@ -367,7 +367,7 @@ export class CurateComponent implements OnInit, OnDestroy {
   }
 
   preview() {
-    const updatedContent = this.contentService.upDatedContent[this.currentContent] || {}
+    const updatedContent: any = this.contentService.upDatedContent[this.currentContent] || {}
     const saveCall = Object.keys(updatedContent).length
       ? this.triggerSave(updatedContent, this.currentContent)
       : of({} as any)

@@ -242,7 +242,7 @@ export class ResultUploadComponent implements OnInit, OnDestroy {
       map(() => control.value),
       switchMap((value: string) => {
         if (!value) {
-          return throwError({ invalidEmail: true })
+          return throwError(() => { invalidEmail: true })
         }
 
         const trimmedEmail = value.split('@')[0]

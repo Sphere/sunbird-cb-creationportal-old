@@ -48,7 +48,7 @@ export class AppTocCertificationComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptionSubject$.next()
+    this.subscriptionSubject$.next(undefined as any)
     this.subscriptionSubject$.complete()
   }
 
@@ -95,7 +95,7 @@ export class AppTocCertificationComponent implements OnInit, OnDestroy {
             return this.certificationApi.getCertificationInfo(this.content.identifier)
           }
 
-          return throwError('no content')
+          return throwError(() => 'no content')
         }),
         catchError(() => of(this.certification)),
       )

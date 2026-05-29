@@ -20,7 +20,6 @@
               <mat-chip
                 *ngFor="let location of locationChipList"
                 [value]="location"
-                [selectable]="true"
                 [removable]="true"
                 (removed)="locationRemoved($event.value)"
               >

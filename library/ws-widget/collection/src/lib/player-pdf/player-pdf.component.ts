@@ -71,7 +71,7 @@ export class PlayerPdfComponent extends WidgetBaseComponent
   enableTelemetry = false
   // private pdfInstance: PDFJS.PDFDocumentProxy | null = null
   private activityStartedAt: Date | null = null
-  private renderSubject = new Subject()
+  private renderSubject = new Subject<void>()
   private lastRenderTask: any | null = null
   // Subscriptions
   private contextMenuSubs: Subscription | null = null

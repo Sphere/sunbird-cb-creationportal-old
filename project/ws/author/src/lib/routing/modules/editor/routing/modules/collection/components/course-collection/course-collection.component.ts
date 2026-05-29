@@ -1891,7 +1891,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         updateContentReq.request.content.versionKey = element.versionKey
         const updateContentRes =
           await this.editorService.updateNewContentV3(_.omit(updateContentReq, 'status'), element.identifier).toPromise().catch(_error => { })
-        if (updateContentRes) {
+        if ((updateContentRes as any) !== undefined) {
           flag += 1
         } else {
           flag -= 1
@@ -3423,7 +3423,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             data: 'publishMessage',
           })
           dialogRefForPublish.afterClosed().subscribe(result => {
-            if (result) {
+            if (true) {
               this.takeAction()
             }
           })

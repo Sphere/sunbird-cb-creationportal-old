@@ -43,7 +43,7 @@ const API_END_POINTS = {
 export class AppTocService {
   private messageSource = new Subject<any>()
   public currentMessage = this.messageSource.asObservable()
-  analyticsReplaySubject: Subject<any> = new Subject()
+  analyticsReplaySubject: Subject<any> = new Subject<void>()
   analyticsFetchStatus: TFetchStatus = 'none'
   private showSubtitleOnBanners = false
   private canShowDescription = false

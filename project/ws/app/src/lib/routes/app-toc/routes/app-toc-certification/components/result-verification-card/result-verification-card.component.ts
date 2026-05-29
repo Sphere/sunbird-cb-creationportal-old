@@ -115,7 +115,7 @@ export class ResultVerificationCardComponent implements OnDestroy {
             )
           }
 
-          return throwError('Missing parameters')
+          return throwError(() => 'Missing parameters')
         }),
         tap(
           res => {
@@ -135,14 +135,14 @@ export class ResultVerificationCardComponent implements OnDestroy {
             return this.certificationApi.getCertificationInfo(this.content.identifier)
           }
 
-          return throwError('No content.')
+          return throwError(() => 'No content.')
         }),
       )
       .subscribe(
         certification => {
           this.certification = certification
           this.resultWithdrawStatus = 'done'
-          this.certificationFetchSubject.next()
+          this.certificationFetchSubject.next(undefined as any)
         },
         () => {
           this.resultWithdrawStatus = 'error'

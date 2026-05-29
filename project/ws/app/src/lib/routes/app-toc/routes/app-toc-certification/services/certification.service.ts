@@ -48,7 +48,7 @@ export class CertificationService {
           >
 
           if (!certificationMetaResolve.data) {
-            return throwError('No certification data.')
+            return throwError(() => 'No certification data.')
           }
 
           return of(certificationMetaResolve.data)
@@ -56,7 +56,7 @@ export class CertificationService {
       )
     }
 
-    return throwError('No certification data.')
+    return throwError(() => 'No certification data.')
   }
 
   getContentMeta(route?: ActivatedRoute | null): Observable<NsContent.IContent> {
@@ -68,14 +68,14 @@ export class CertificationService {
           >
 
           if (!contentMetaResolve.data) {
-            return throwError('No content.')
+            return throwError(() => 'No content.')
           }
 
           return of(contentMetaResolve.data)
         }),
       )
     }
-    return throwError('No content.')
+    return throwError(() => 'No content.')
   }
 
   bookAtDeskSlot(

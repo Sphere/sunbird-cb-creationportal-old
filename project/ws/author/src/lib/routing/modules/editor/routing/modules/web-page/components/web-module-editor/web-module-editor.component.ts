@@ -248,7 +248,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
     // active lex id
     this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
       if (!this.userData[id]) {
-        this.userData[id] = new WebModuleData({})
+        this.userData[id] = new WebModuleData({} as any)
       }
       this.currentId = id
       this.changePage(0)
@@ -588,7 +588,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
             : 0,
       }
 
-      const updatedContent = this.metaContentService.upDatedContent[this.currentId] || {}
+      const updatedContent: any = this.metaContentService.upDatedContent[this.currentId] || {}
       const updatedMeta = this.metaContentService.getUpdatedMeta(this.currentId)
       const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || {})
         .length

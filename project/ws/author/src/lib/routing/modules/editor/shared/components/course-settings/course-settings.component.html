@@ -42,8 +42,7 @@
 
                   <mat-chip style="color: white !important;
                             background-color: #1C5D95 !important;"
-                    *ngFor="let author of contentForm.controls.trackContacts.value" [selectable]="selectable"
-                    [removable]="removable" (removed)="removeEmployee(author, 'trackContacts')" class="selectedOption">
+                    *ngFor="let author of contentForm.controls.trackContacts.value" [removable]="removable" (removed)="removeEmployee(author, 'trackContacts')" class="selectedOption">
                     {{ author.name }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                   </mat-chip>
@@ -81,15 +80,14 @@
                 <mat-chip-list #publisherChipList aria-label="Publisher selection">
                   <!-- <mat-chip style="color: white !important;
                             background-color: #1C5D95 !important;"
-                    *ngFor="let author of contentForm.controls.publisherDetails.value" [selectable]="selectable"
-                    [removable]="removable" (removed)="removeEmployee(author, 'publisherDetails')"
+                    *ngFor="let author of contentForm.controls.publisherDetails.value" [removable]="removable" (removed)="removeEmployee(author, 'publisherDetails')"
                     class="selectedOption">
                     {{ author.name }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                   </mat-chip> -->
                   <!-- hardcoded Aastrika publisher id -->
                   <mat-chip style="color: white !important;background-color: #1C5D95 !important;"
-                    [selectable]="selectable" [removable]="removable" class="selectedOption">
+                    [removable]="removable" class="selectedOption">
                     Pubisher Aastrika
                   </mat-chip>
                   <input disabled="true" formControlName="publisherDetails" i18n-placeholder
@@ -149,8 +147,7 @@
               <mat-chip-list #creatorDetailsChipList aria-label="Original Author selection">
                 <mat-chip style="color: white !important;
                   background-color: #1C5D95 !important;"
-                  *ngFor="let author of contentForm.controls.creatorDetails.value" [selectable]="selectable"
-                  [removable]="removable" (removed)="removeCreatorDetails(author)">
+                  *ngFor="let author of contentForm.controls.creatorDetails.value" [removable]="removable" (removed)="removeCreatorDetails(author)">
                   {{ author.name }}
                   <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                 </mat-chip>
@@ -323,8 +320,7 @@
                   <mat-chip-list #rolesMappedChipList i18n-aria-label aria-label="Roles Mapped selection">
                     <mat-chip style="color: white !important;
                                           background-color: #0074b6 !important;"
-                      *ngFor="let role of contentForm.controls.rolesMapped.value" [selectable]="selectable"
-                      [removable]="removable" (removed)="removeFromFormControl(role, 'rolesMapped')">
+                      *ngFor="let role of contentForm.controls.rolesMapped.value" [removable]="removable" (removed)="removeFromFormControl(role, 'rolesMapped')">
                       {{ role }}
                       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                     </mat-chip>
@@ -361,7 +357,7 @@
                   <mat-chip-list #keywords aria-label="Keyword selection">
                     <mat-chip style="color: white !important;
                     background-color: #1C5D95 !important;" *ngFor="let key of contentForm.controls.keywords.value"
-                      [selectable]="selectable" [removable]="removable" (removed)="removeKeyword(key)">
+                      [removable]="removable" (removed)="removeKeyword(key)">
                       {{ key }}
                       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                     </mat-chip>

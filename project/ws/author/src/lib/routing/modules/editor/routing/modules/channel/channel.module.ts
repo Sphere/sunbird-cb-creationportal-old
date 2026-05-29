@@ -1,6 +1,7 @@
 ﻿import { DragDropModule } from '@angular/cdk/drag-drop'
 
 import { CommonModule } from '@angular/common'
+import { TextFieldModule } from '@angular/cdk/text-field'
 
 import { NgModule } from '@angular/core'
 
@@ -138,6 +139,7 @@ import { DraggableModule } from '../../../../../../directives/draggable/draggabl
   ],
   imports: [
     CommonModule,
+    TextFieldModule,
     ChannelRoutingModule,
     SharedModule,
     EditorSharedModule,

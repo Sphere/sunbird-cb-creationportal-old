@@ -61,7 +61,7 @@ export class BudgetCardComponent {
           if (this.content) {
             return this.certificationApi.cancelBudgetApprovalRequest(this.content.identifier)
           }
-          return throwError('No content.')
+          return throwError(() => 'No content.')
         }),
       )
       .subscribe(
@@ -76,7 +76,7 @@ export class BudgetCardComponent {
           this.budgetCancelStatus = 'done'
 
           if (res.res_code === 1) {
-            this.certificationFetchSubject.next()
+            this.certificationFetchSubject.next(undefined as any)
           }
         },
         () => {

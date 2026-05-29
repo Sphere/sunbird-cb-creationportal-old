@@ -724,17 +724,34 @@
 
 
 
+// Angular Material 15 compatibility shim
+// mat-color() is replaced by direct map access since palettes are Sass maps
+@use 'sass:map';
+
+@function mat-color($palette, $hue: default, $opacity: null) {
+  $color: map.get($palette, $hue);
+  @if $color == null {
+    $color: map.get($palette, 500);
+  }
+  @if $opacity == null {
+    @return $color;
+  }
+  @return rgba($color, $opacity);
+}
+
 @mixin color-background-opacity($color, $opacity: 0.3) {
   background: rgba($color, $opacity);
 }
 
 @mixin theme-based-configurations($theme) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
-  $is-dark: map-get($theme, is-dark);
+  // Support Material 15 theme structure (color key) and old structure
+  $color-config: if(map.has-key($theme, color), map.get($theme, color), $theme);
+  $primary: map.get($color-config, primary);
+  $accent: map.get($color-config, accent);
+  $warn: map.get($color-config, warn);
+  $background: (); // background map no longer in Material 15 theme
+  $foreground: (); // foreground map no longer in Material 15 theme
+  $is-dark: false; // default to light mode — pass explicitly if needed
 
   $colorPrimaryDark: mat-color($primary, darker);
   $colorPrimaryLight: mat-color($primary, lighter);
@@ -748,9 +765,9 @@
   $colorWarnLight: mat-color($warn, lighter);
   $colorWarn: mat-color($warn, default);
 
-  $colorBackground: mat-color($background, background);
+  $colorBackground: #ffffff; // hardcoded for Material 15 (background map removed)
   $colorText: #424242;
-  $iconColor: mat-color($foreground, icon);
+  $iconColor: rgba(black, 0.54); // hardcoded for Material 15 (foreground map removed)
   $colorGreen: #5fa800;
   $colorRed: #ff0000;
   $footerColor: #f7f7f7;
@@ -1149,8 +1166,8 @@
     margin-top: 24%;
     background: linear-gradient(
       to bottom,
-      rgba(mat-color($background, card), 0),
-      mat-color($background, card) 100%
+      rgba(#ffffff, 0),
+      #ffffff 100%
     );
   }
 

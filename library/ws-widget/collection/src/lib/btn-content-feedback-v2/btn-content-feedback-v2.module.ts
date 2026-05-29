@@ -1,6 +1,7 @@
 ﻿import { NgModule } from '@angular/core'
 
 import { CommonModule } from '@angular/common'
+import { TextFieldModule } from '@angular/cdk/text-field'
 
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
@@ -30,6 +31,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
   ],
   imports: [
     CommonModule,
+    TextFieldModule,
     FormsModule,
     ReactiveFormsModule,
     // EditorQuillModule,

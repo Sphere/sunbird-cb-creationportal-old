@@ -1,6 +1,7 @@
 ﻿import { NgModule } from '@angular/core'
 
 import { CommonModule } from '@angular/common'
+import { TextFieldModule } from '@angular/cdk/text-field'
 
 import { RouterModule } from '@angular/router'
 
@@ -13,7 +14,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import { MatButtonToggleModule } from '@angular/material/button-toggle'
 import { MatDatepickerModule } from '@angular/material/datepicker'
-import { MatChipsModule } from '@angular/material/chips'
+import { MatLegacyChipsModule as MatChipsModule } from '@angular/material/legacy-chips'
 import { MatIconModule } from '@angular/material/icon'
 import { MatDialogModule } from '@angular/material/dialog'
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
@@ -87,6 +88,7 @@ import { SnackbarComponent } from './components/snackbar/snackbar.component'
   ],
   imports: [
     CommonModule,
+    TextFieldModule,
     RouterModule,
     ReactiveFormsModule,
     MatCardModule,

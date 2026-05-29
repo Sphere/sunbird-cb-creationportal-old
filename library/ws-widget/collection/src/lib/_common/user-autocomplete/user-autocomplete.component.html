@@ -1,6 +1,6 @@
 <mat-form-field class="w-full">
   <mat-chip-list #chipList>
-    <mat-chip *ngFor="let selectedUser of selectedUsers" [selectable]="true" [removable]="true"
+    <mat-chip *ngFor="let selectedUser of selectedUsers" [removable]="true"
       (removed)="removeUser(selectedUser)">
       {{ selectedUser.first_name }} {{ selectedUser.last_name }}
       <mat-icon matChipRemove>cancel</mat-icon>

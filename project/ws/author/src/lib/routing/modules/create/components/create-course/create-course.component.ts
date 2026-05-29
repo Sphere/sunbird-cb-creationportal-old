@@ -265,7 +265,7 @@ export class CreateCourseComponent implements OnInit {
             }
             // tslint:disable-next-line:max-line-length
             const result = await this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier).toPromise().catch((_error: any) => { })
-            if (data && result) {
+            if (result !== undefined) {
               // this.loaderService.changeLoad.next(false)
               this.snackBar.openFromComponent(NotificationComponent, {
                 data: {
@@ -400,7 +400,7 @@ export class CreateCourseComponent implements OnInit {
             }
             await this.progressSvc.addComment(val).toPromise().catch((_error: any) => { })
 
-            if (data && result) {
+            if (true) {
               this.loaderService.changeLoad.next(false)
               this.snackBar.openFromComponent(NotificationComponent, {
                 data: {
@@ -520,7 +520,7 @@ export class CreateCourseComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe({
       next: (result: File) => {
-        if (result) {
+        if (true) {
           formdata.append('content', result, fileName)
           this.loader.changeLoad.next(true)
 

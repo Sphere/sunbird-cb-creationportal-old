@@ -39,7 +39,7 @@ const PROXY_SLAG_V8 = '/apis/proxies/v8'
   providedIn: 'root',
 })
 export class MyTocService {
-  analyticsReplaySubject: Subject<any> = new Subject()
+  analyticsReplaySubject: Subject<any> = new Subject<void>()
   analyticsFetchStatus: TFetchStatus = 'none'
   private showSubtitleOnBanners = false
   private canShowDescription = false

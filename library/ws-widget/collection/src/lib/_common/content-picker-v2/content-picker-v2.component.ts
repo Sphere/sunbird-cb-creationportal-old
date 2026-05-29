@@ -136,14 +136,14 @@ export class ContentPickerV2Component implements OnInit, OnDestroy {
     this.sortByControl.valueChanges.pipe(
       distinctUntilChanged()
     ).subscribe(sortKey => {
-      this.searchReq.sort = [{ [sortKey]: this.sortOrderControl.value }]
+      this.searchReq.sort = [{ [sortKey]: this.sortOrderControl.value } as any]
       this.triggerSearch()
     })
     this.sortOrderControl.valueChanges.pipe(
       distinctUntilChanged()
     ).subscribe(sortOrder => {
       if (this.sortByControl.value) {
-        this.searchReq.sort = [{ [this.sortByControl.value]: sortOrder }]
+        this.searchReq.sort = [{ [this.sortByControl.value]: sortOrder } as any]
         this.triggerSearch()
       }
     })
