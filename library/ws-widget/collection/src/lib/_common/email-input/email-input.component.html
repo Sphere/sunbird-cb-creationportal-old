@@ -1,10 +1,10 @@
 <mat-form-field class="width-1-1 leading-normal" appearance="fill">
-  <mat-chip-list #userEmailList>
-    <mat-chip *ngFor="let user of userEmailIds" [removable]="true" (removed)="remove(user)"
+  <mat-chip-grid #userEmailList>
+    <mat-chip-row *ngFor="let user of userEmailIds" (removed)="remove(user)"
       [color]="user.color">
       {{ user.email }}
       <mat-icon matChipRemove>cancel</mat-icon>
-    </mat-chip>
+    </mat-chip-row>
     <input matInput i18n-placeholder placeholder="Please enter semi-colon (;) separated mail ids"
       [matChipInputFor]="userEmailList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
       [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="addAll($event)" autocomplete="off" />
@@ -14,5 +14,5 @@
     <mat-error class="mat-caption" *ngIf="errorType === 'invalid-domain'" i18n>
       Invalid domain name. This domain is not allowed for sharing content
     </mat-error>
-  </mat-chip-list>
+  </mat-chip-grid>
 </mat-form-field>

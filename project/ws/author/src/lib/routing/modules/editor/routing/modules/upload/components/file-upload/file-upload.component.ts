@@ -1,5 +1,7 @@
 // import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 
+declare const zip: any
+
 import { ValueService } from '@ws-widget/utils/src/public-api'
 
 import {
@@ -865,8 +867,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.errorFileList = []
     this.fileList = []
     zip.useWebWorkers = false
-    zip.createReader(new zip.BlobReader(this.file as File), (reader: zip.ZipReader) => {
-      reader.getEntries((entry: zip.Entry[]) => {
+    ;(zip as any).createReader(new (zip as any).BlobReader(this.file as File), (reader: any) => {
+      reader.getEntries((entry: any[]) => {
         entry.forEach(element => {
           // if (element.filename.match(/[^A-Za-z0-9_.\-\/]/g)) {
           //   this.errorFileList.push(element.filename)

@@ -15,7 +15,7 @@ import { MatCardModule } from '@angular/material/card'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatButtonModule } from '@angular/material/button'
 import { MatSnackBarModule } from '@angular/material/snack-bar'
-import { MatLegacyChipsModule as MatChipsModule } from '@angular/material/legacy-chips'
+import { MatChipsModule } from '@angular/material/chips'
 import { MatIconModule } from '@angular/material/icon'
 import {
   // BtnContentDownloadModule,

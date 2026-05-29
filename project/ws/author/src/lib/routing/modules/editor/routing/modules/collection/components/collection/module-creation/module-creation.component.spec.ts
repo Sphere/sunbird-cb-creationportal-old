@@ -24,7 +24,7 @@ import { MatInputModule } from '@angular/material/input'
 
 import { MatRadioModule } from '@angular/material/radio'
 
-import { MatLegacyChipsModule as MatChipsModule } from '@angular/material/legacy-chips'
+import { MatChipsModule } from '@angular/material/chips'
 
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
 

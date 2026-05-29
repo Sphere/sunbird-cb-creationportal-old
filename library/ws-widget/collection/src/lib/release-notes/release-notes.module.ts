@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core'
 
 import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
-import { MatLegacyChipsModule as MatChipsModule } from '@angular/material/legacy-chips'
+import { MatChipsModule } from '@angular/material/chips'
 import { MatExpansionModule } from '@angular/material/expansion'
 import { MatIconModule } from '@angular/material/icon'
 import { MatListModule } from '@angular/material/list'

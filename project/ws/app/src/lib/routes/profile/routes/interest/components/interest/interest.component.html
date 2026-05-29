@@ -52,21 +52,21 @@
       " i18n>
       No interests
     </h4>
-    <mat-chip-list>
-      <mat-chip color="primary" selected *ngFor="let userInterest of userInterests" [removable]="true"
+    <mat-chip-set>
+      <mat-chip color="primary" selected *ngFor="let userInterest of userInterests"
         (removed)="removeInterest(userInterest)">
         <a class="cursor-pointer" (click)="removeInterest(userInterest)">{{
           userInterest
           }}</a>
         <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>
-    </mat-chip-list>
+    </mat-chip-set>
 
     <ng-container *ngIf="suggestedInterests?.length">
       <h2 class="mat-h2 ws-mat-primary-text font-weight-bold margin-top-l" i18n>
         Suggestion
       </h2>
-      <mat-chip-list>
+      <mat-chip-set>
         <mat-chip #selectedChip class="ws-mat-primary-border-bold suggestions-chip" *ngFor="
             let suggestedInterest of suggestedInterests
               | pipeLimitTo: suggestionsLimit;
@@ -75,7 +75,7 @@
           <a class="cursor-pointer" (click)="addInterest(suggestedInterest, true, i)">{{ suggestedInterest }}</a>
           <mat-icon matChipRemove class="ws-mat-primary-text">add_circle</mat-icon>
         </mat-chip>
-      </mat-chip-list>
+      </mat-chip-set>
       <div class="text-right padding-top-xs padding-bottom-l" [hidden]="suggestionsLimit >= suggestedInterests.length">
         <button class="ws-mat-primary-text font-weight-bold" type="button" i18n-aria-label
           aria-label="see more interests" mat-button (click)="suggestionsLimit = suggestedInterests.length">

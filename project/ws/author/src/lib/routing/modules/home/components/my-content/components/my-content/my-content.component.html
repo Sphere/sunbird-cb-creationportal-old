@@ -142,17 +142,17 @@
                 <mat-icon>filter_list</mat-icon>
               </a>
             </h4>
-            <mat-chip-list *ngIf="filters && filters.length" #chipList aria-label="Filter">
-              <mat-chip [removable]="false">
+            <mat-chip-set *ngIf="filters && filters.length" #chipList aria-label="Filter">
+              <mat-chip>
                 <span class="ws-mat-primary-text" i18n>Clear All</span>
                 <mat-icon [color]="'primary'" (click)="clearAllFilters()" matChipRemove>cancel</mat-icon>
               </mat-chip>
-              <mat-chip *ngFor="let item of filters; let i = index" [removable]="true"
+              <mat-chip *ngFor="let item of filters; let i = index"
                 (removed)="filterApplyEvent(item)">
                 <span class="ws-mat-primary-text">{{ item.displayName }}</span>
                 <mat-icon [color]="'primary'" matChipRemove>cancel</mat-icon>
               </mat-chip>
-            </mat-chip-list>
+            </mat-chip-set>
           </div>
           <div class="flex flex-1 flex-row-reverse margin-right-xs">
             <div class="block">

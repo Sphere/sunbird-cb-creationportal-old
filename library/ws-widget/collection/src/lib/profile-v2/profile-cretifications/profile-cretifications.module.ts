@@ -4,7 +4,7 @@ import { ProfileCretificationsComponent } from './profile-cretifications.compone
 
 import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
-import { MatLegacyChipsModule as MatChipsModule } from '@angular/material/legacy-chips'
+import { MatChipsModule } from '@angular/material/chips'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatExpansionModule } from '@angular/material/expansion'
 import { MatIconModule } from '@angular/material/icon'

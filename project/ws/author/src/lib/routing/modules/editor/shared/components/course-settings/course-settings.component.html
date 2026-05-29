@@ -37,20 +37,20 @@
             <div class="margin-top-xs">
               <mat-form-field appearance="outline" class="margin-top-xs" class="margin-top-xs"
                 [ngClass]="{ 'mat-form-field-invalid': showError('trackContacts') }">
-                <mat-chip-list #reviewerChipList i18n-aria-label aria-label="Reviewer selection">
-                  <!-- <mat-chip *ngFor="let author of parseJsonData(contentForm.controls.trackContacts.value)" -->
+                <mat-chip-grid #reviewerChipList i18n-aria-label aria-label="Reviewer selection">
+                  <!-- <mat-chip-row *ngFor="let author of parseJsonData(contentForm.controls.trackContacts.value)" -->
 
-                  <mat-chip style="color: white !important;
+                  <mat-chip-row style="color: white !important;
                             background-color: #1C5D95 !important;"
-                    *ngFor="let author of contentForm.controls.trackContacts.value" [removable]="removable" (removed)="removeEmployee(author, 'trackContacts')" class="selectedOption">
+                    *ngFor="let author of contentForm.controls.trackContacts.value" (removed)="removeEmployee(author, 'trackContacts')" class="selectedOption">
                     {{ author.name }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                  </mat-chip>
+                  </mat-chip-row>
                   <input formControlName="trackContacts" i18n-placeholder placeholder="Search by mail"
                     #trackContactsView [formControl]="trackContactsCtrl" [matChipInputFor]="reviewerChipList"
                     [matAutocomplete]="reivewerAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                     [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
-                </mat-chip-list>
+                </mat-chip-grid>
                 <mat-autocomplete #reivewerAuto="matAutocomplete"
                   (optionSelected)="addEmployee($event, 'trackContacts')">
                   <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
@@ -77,25 +77,24 @@
             <div class="margin-top-xs" [ngClass]="{ disable: true }">
               <mat-form-field aria-readonly="true" appearance="outline" class="margin-top-xs" class="margin-top-xs"
                 [ngClass]="{ 'mat-form-field-invalid': showError('publisherDetails') }">
-                <mat-chip-list #publisherChipList aria-label="Publisher selection">
-                  <!-- <mat-chip style="color: white !important;
+                <mat-chip-grid #publisherChipList aria-label="Publisher selection">
+                  <!-- <mat-chip-row style="color: white !important;
                             background-color: #1C5D95 !important;"
-                    *ngFor="let author of contentForm.controls.publisherDetails.value" [removable]="removable" (removed)="removeEmployee(author, 'publisherDetails')"
+                    *ngFor="let author of contentForm.controls.publisherDetails.value" (removed)="removeEmployee(author, 'publisherDetails')"
                     class="selectedOption">
                     {{ author.name }}
                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                  </mat-chip> -->
+                  </mat-chip-row> -->
                   <!-- hardcoded Aastrika publisher id -->
-                  <mat-chip style="color: white !important;background-color: #1C5D95 !important;"
-                    [removable]="removable" class="selectedOption">
+                  <mat-chip-row style="color: white !important;background-color: #1C5D95 !important;" class="selectedOption">
                     Pubisher Aastrika
-                  </mat-chip>
+                  </mat-chip-row>
                   <input disabled="true" formControlName="publisherDetails" i18n-placeholder
                     placeholder="Search by mail" #publisherDetailsView [formControl]="publisherDetailsCtrl"
                     [matChipInputFor]="publisherChipList" [matAutocomplete]="publisherAuto"
                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
                     (matChipInputTokenEnd)="removeField($event)" />
-                </mat-chip-list>
+                </mat-chip-grid>
                 <mat-autocomplete #publisherAuto="matAutocomplete"
                   (optionSelected)="addEmployee($event, 'publisherDetails')">
                   <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
@@ -144,18 +143,18 @@
             <mat-form-field appearance="outline" class="margin-top-xs"
               [ngClass]="{ 'mat-form-field-invalid': showError('creatorDetails') }">
 
-              <mat-chip-list #creatorDetailsChipList aria-label="Original Author selection">
-                <mat-chip style="color: white !important;
+              <mat-chip-grid #creatorDetailsChipList aria-label="Original Author selection">
+                <mat-chip-row style="color: white !important;
                   background-color: #1C5D95 !important;"
-                  *ngFor="let author of contentForm.controls.creatorDetails.value" [removable]="removable" (removed)="removeCreatorDetails(author)">
+                  *ngFor="let author of contentForm.controls.creatorDetails.value" (removed)="removeCreatorDetails(author)">
                   {{ author.name }}
                   <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                </mat-chip>
+                </mat-chip-row>
                 <input i18n-placeholder placeholder="Add Author" #creatorDetailsView [formControl]="creatorDetailsCtrl"
                   [matChipInputFor]="creatorDetailsChipList" [matAutocomplete]="originalAuthorsAuto"
                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
                   (matChipInputTokenEnd)="addCreatorDetails($event)" />
-              </mat-chip-list>
+              </mat-chip-grid>
               <mat-autocomplete #originalAuthorsAuto="matAutocomplete"
                 (optionSelected)="addEmployee($event, 'creatorDetails')">
                 <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
@@ -317,18 +316,18 @@
               <div class="margin-top-xs" *ngIf="roles$ | async as roles;">
                 <mat-form-field appearance="outline" class="margin-top-xs width-90"
                   [ngClass]="{ 'mat-form-field-invalid': showError('rolesMapped') }">
-                  <mat-chip-list #rolesMappedChipList i18n-aria-label aria-label="Roles Mapped selection">
-                    <mat-chip style="color: white !important;
+                  <mat-chip-grid #rolesMappedChipList i18n-aria-label aria-label="Roles Mapped selection">
+                    <mat-chip-row style="color: white !important;
                                           background-color: #0074b6 !important;"
-                      *ngFor="let role of contentForm.controls.rolesMapped.value" [removable]="removable" (removed)="removeFromFormControl(role, 'rolesMapped')">
+                      *ngFor="let role of contentForm.controls.rolesMapped.value" (removed)="removeFromFormControl(role, 'rolesMapped')">
                       {{ role }}
                       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                    </mat-chip>
+                    </mat-chip-row>
                     <input i18n-placeholder placeholder="Select Roles" #rolesMappedView [formControl]="rolesMappedCtrl"
                       [matChipInputFor]="rolesMappedChipList" [matAutocomplete]="rolesMappedAuto"
                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
                       (matChipInputTokenEnd)="removeField($event)" />
-                  </mat-chip-list>
+                  </mat-chip-grid>
                   <mat-autocomplete #rolesMappedAuto="matAutocomplete"
                     (optionSelected)="addToFormControl($event, 'rolesMapped')">
                     <mat-option *ngIf="!checkCondition('rolesMapped', 'required')" i18n [value]="null">None
@@ -354,18 +353,17 @@
               <div class="margin-top-xs flex">
                 <mat-form-field class="keywords-chip-list margin-top-xs flex-grow80" appearance="outline"
                   [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
-                  <mat-chip-list #keywords aria-label="Keyword selection">
-                    <mat-chip style="color: white !important;
-                    background-color: #1C5D95 !important;" *ngFor="let key of contentForm.controls.keywords.value"
-                      [removable]="removable" (removed)="removeKeyword(key)">
+                  <mat-chip-grid #keywords aria-label="Keyword selection">
+                    <mat-chip-row style="color: white !important;
+                    background-color: #1C5D95 !important;" *ngFor="let key of contentForm.controls.keywords.value" (removed)="removeKeyword(key)">
                       {{ key }}
                       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                    </mat-chip>
+                    </mat-chip-row>
                     <input i18n-placeholder [formControl]="keywordsCtrl" [matAutocomplete]="auto"
                       placeholder="Add Keywords" #keywordsView [matChipInputFor]="keywords"
                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
                       (matChipInputTokenEnd)="addKeyword($event)" #keywordsSearch />
-                  </mat-chip-list>
+                  </mat-chip-grid>
                 </mat-form-field>
                 <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption
                   (optionSelected)="optionSelected($event.option.value); keywordsView.value = ''">

@@ -203,7 +203,7 @@ export class BubbleChartComponent implements OnInit, AfterViewInit, OnDestroy {
                 callback(value) {
                   return (
                     `${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                    [value > 12 ? +value - 13 : +value - 1]}${(value > 12 ? yearEnd : yearStart)}`
+                    [(value as number) > 12 ? +(value as number) - 13 : +(value as number) - 1]}${((value as number) > 12 ? yearEnd : yearStart)}`
                   )
                 },
 

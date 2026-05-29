@@ -10,7 +10,7 @@ import { UserAutocompleteComponent } from './user-autocomplete.component'
 import { MatInputModule } from '@angular/material/input'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
-import { MatLegacyChipsModule as MatChipsModule } from '@angular/material/legacy-chips'
+import { MatChipsModule } from '@angular/material/chips'
 import { MatIconModule } from '@angular/material/icon'
 import { UserImageModule } from '../user-image/user-image.module'
 

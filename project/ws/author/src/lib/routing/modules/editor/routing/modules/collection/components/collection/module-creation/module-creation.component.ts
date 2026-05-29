@@ -1,5 +1,7 @@
 import { Component, ChangeDetectorRef, OnInit, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter, Input, ElementRef } from '@angular/core'
 
+declare const zip: any
+
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 
 import { MatDialog } from '@angular/material/dialog'
@@ -4130,8 +4132,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.errorFileList = []
     this.fileList = []
     zip.useWebWorkers = false
-    zip.createReader(new zip.BlobReader(this.file as File), (reader: zip.ZipReader) => {
-      reader.getEntries((entry: zip.Entry[]) => {
+    ;(zip as any).createReader(new (zip as any).BlobReader(this.file as File), (reader: any) => {
+      reader.getEntries((entry: any[]) => {
         entry.forEach(element => {
           // if (element.filename.match(/[^A-Za-z0-9_.\-\/]/g)) {
           //   this.errorFileList.push(element.filename)

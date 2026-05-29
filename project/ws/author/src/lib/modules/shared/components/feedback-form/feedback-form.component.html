@@ -37,16 +37,16 @@
     </label>
     <div>
       <mat-form-field appearance="outline" class="margin-top-sm" class="w-full margin-top-xs">
-        <mat-chip-list #publisherChipList aria-label="Publisher selection">
-          <mat-chip *ngFor="let author of selectedUsersDetails" [removable]="true"
+        <mat-chip-grid #publisherChipList aria-label="Publisher selection">
+          <mat-chip-row *ngFor="let author of selectedUsersDetails"
             (removed)="removeEmployee(author)">
             {{ author.name }}
             <mat-icon matChipRemove>cancel</mat-icon>
-          </mat-chip>
+          </mat-chip-row>
           <input i18n-placeholder placeholder="Search by email" #publisherDetailsView
             [formControl]="publisherDetailsCtrl" [matChipInputFor]="publisherChipList" [matAutocomplete]="publisherAuto"
             [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
-        </mat-chip-list>
+        </mat-chip-grid>
         <mat-autocomplete #publisherAuto="matAutocomplete" (optionSelected)="addEmployee($event, 'publisherDetails')">
           <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
           <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>

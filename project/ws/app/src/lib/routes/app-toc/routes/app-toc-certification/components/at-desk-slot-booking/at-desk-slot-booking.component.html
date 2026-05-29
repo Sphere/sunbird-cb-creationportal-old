@@ -9,16 +9,15 @@
       <!-- Country -->
       <div class="my-2">
         <mat-form-field class="w-full">
-          <mat-chip-list #countryChips>
-            <mat-chip
+          <mat-chip-grid #countryChips>
+            <mat-chip-row 
               *ngFor="let country of countriesChipList"
               [value]="country"
-              [removable]="true"
               (removed)="countryRemoved($event.value)"
             >
               {{ country.country_name }}
               <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
+            </mat-chip-row>
             <input
               #countryInput
               matInput
@@ -44,7 +43,7 @@
                 {{ country.country_name }}
               </mat-option>
             </mat-autocomplete>
-          </mat-chip-list>
+          </mat-chip-grid>
 
           <mat-hint *ngIf="!countries" i18n>Fetching countries...</mat-hint>
           <mat-hint *ngIf="countries && !atDeskForm.value.country" i18n

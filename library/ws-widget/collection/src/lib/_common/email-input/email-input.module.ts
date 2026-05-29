@@ -6,7 +6,7 @@ import { TextFieldModule } from '@angular/cdk/text-field'
 import { EmailInputComponent } from './email-input.component'
 
 import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatLegacyChipsModule as MatChipsModule } from '@angular/material/legacy-chips'
+import { MatChipsModule } from '@angular/material/chips'
 import { MatInputModule } from '@angular/material/input'
 import { MatIconModule } from '@angular/material/icon'
 @NgModule({

@@ -33,11 +33,11 @@
         <div *ngIf="!interests?.length" class="pl-4 py-4">
           <span i18n="no interest">No interest added</span>
         </div>
-        <mat-chip-list>
+        <mat-chip-set>
           <mat-chip color="primary" selected *ngFor="let interest of interests">
             {{ interest }}
           </mat-chip>
-        </mat-chip-list>
+        </mat-chip-set>
       </div>
     </mat-card>
 
