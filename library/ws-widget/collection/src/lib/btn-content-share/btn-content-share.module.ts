@@ -23,7 +23,7 @@ import { BtnFacebookShareModule } from '../btn-facebook-share/btn-facebook-share
 
 import { BtnTwitterShareModule } from '../btn-twitter-share/btn-twitter-share.module'
 
-import { QRCodeModule } from 'angularx-qrcode'
+import { QRCodeComponent } from 'angularx-qrcode'
 
 import { BtnWhatsappShareModule } from '../btn-whatsapp-share/btn-whatsapp-share.module'
 
@@ -43,7 +43,7 @@ import { BtnWhatsappShareModule } from '../btn-whatsapp-share/btn-whatsapp-share
     BtnLinkedinShareModule,
     BtnFacebookShareModule,
     BtnTwitterShareModule,
-    QRCodeModule,
+    QRCodeComponent,
     BtnWhatsappShareModule
   ],
   exports: [BtnContentShareComponent],

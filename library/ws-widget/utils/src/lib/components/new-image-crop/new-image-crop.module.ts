@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatToolbarModule } from '@angular/material/toolbar'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { MatSliderModule } from '@angular/material/slider'
-import { ImageCropperModule } from 'ngx-image-cropper'
+import { ImageCropperComponent } from 'ngx-image-cropper'
 
 import { NewImageCropComponent } from './new-image-crop.component'
 
@@ -18,7 +18,7 @@ import { NewImageCropComponent } from './new-image-crop.component'
   declarations: [NewImageCropComponent],
   imports: [
     CommonModule,
-    ImageCropperModule,
+    ImageCropperComponent,
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
