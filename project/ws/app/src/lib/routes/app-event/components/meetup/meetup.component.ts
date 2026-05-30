@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-meetup',
   templateUrl: './meetup.component.html',
   styleUrls: ['./meetup.component.scss'],

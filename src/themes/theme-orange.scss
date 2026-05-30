@@ -1,32 +1,34 @@
 @use '@angular/material' as mat;
-@use './theme-mixins' as mixins;
 
-$theme-primary: mat.define-palette(mat.$orange-palette);
-$theme-accent: mat.define-palette(mat.$teal-palette);
-$theme-warn: mat.define-palette(mat.$red-palette);
+// Material 3 theme
+$theme-orange-light: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$orange-palette,
+  ),
+  typography: (
+    brand-family: 'Roboto',
+    plain-family: 'Roboto',
+  ),
+));
+
+$theme-orange-dark: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$orange-palette,
+  ),
+  typography: (
+    brand-family: 'Roboto',
+    plain-family: 'Roboto',
+  ),
+));
 
 .theme-orange {
   &.day-mode {
-    $theme: mat.define-light-theme((
-      color: (
-        primary: $theme-primary,
-        accent: $theme-accent,
-        warn: $theme-warn,
-      ),
-    ));
-    @include mat.all-component-themes($theme);
-    @include mixins.theme-based-configurations($theme);
+    @include mat.all-component-themes($theme-orange-light);
   }
 
   &.night-mode {
-    $theme: mat.define-dark-theme((
-      color: (
-        primary: $theme-primary,
-        accent: $theme-accent,
-        warn: $theme-warn,
-      ),
-    ));
-    @include mat.all-component-themes($theme);
-    @include mixins.theme-based-configurations($theme);
+    @include mat.all-component-themes($theme-orange-dark);
   }
 }

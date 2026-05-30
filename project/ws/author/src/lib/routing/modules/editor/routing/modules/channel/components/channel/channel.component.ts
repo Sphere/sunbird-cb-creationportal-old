@@ -51,6 +51,7 @@ import { ChannelStoreService } from './../../services/store.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-channel',
   templateUrl: './channel.component.html',
   styleUrls: ['./channel.component.scss'],

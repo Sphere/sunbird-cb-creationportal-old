@@ -46,6 +46,7 @@ interface IStripUnitContentData {
   } | null
 }
 @Component({
+  standalone: false,
   selector: 'ws-widget-content-strip-new-multiple',
   templateUrl: './content-strip-new-multiple.component.html',
   styleUrls: ['./content-strip-new-multiple.component.scss'],

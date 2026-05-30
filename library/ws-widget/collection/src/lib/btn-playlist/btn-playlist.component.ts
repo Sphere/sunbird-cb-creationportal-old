@@ -23,6 +23,7 @@ const VALID_CONTENT_TYPES: NsContent.EContentTypes[] = [
 ]
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-playlist',
   templateUrl: './btn-playlist.component.html',
   styleUrls: ['./btn-playlist.component.scss'],

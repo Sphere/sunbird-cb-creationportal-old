@@ -9,6 +9,7 @@ interface ICertificationDate {
 }
 
 @Pipe({
+  standalone: false,
   name: 'pipeDateConcat',
 })
 export class PipeDateConcatPipe implements PipeTransform {

@@ -10,6 +10,7 @@ import { EventService } from '../../../../utils/src/public-api'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-sliders',
   templateUrl: './sliders.component.html',
   styleUrls: ['./sliders.component.scss'],

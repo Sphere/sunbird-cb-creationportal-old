@@ -11,6 +11,7 @@ interface IData {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-notification',
   templateUrl: './notification.component.html',
   styleUrls: ['./notification.component.scss'],

@@ -8,6 +8,7 @@ import { jsPlumb, OnConnectionBindInfo } from 'jsplumb'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-question',
   templateUrl: './question.component.html',
   styleUrls: ['./question.component.scss'],
@@ -221,7 +222,7 @@ export class QuestionComponent implements OnInit, AfterViewInit {
   }
 
   @HostListener('window:resize')
-  onResize(_event: any) {
+  onResize() {
     if (this.question.questionType === 'mtf') {
       this.jsPlumbInstance.repaintEverything()
     }

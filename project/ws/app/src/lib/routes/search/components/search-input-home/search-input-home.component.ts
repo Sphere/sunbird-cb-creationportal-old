@@ -16,6 +16,7 @@ import { SearchServService } from '../../services/search-serv.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-search-input-home',
   templateUrl: './search-input-home.component.html',
   styleUrls: ['./search-input-home.component.scss'],

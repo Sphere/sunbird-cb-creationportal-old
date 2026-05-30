@@ -3,6 +3,7 @@ import { Component, OnInit, Input, AfterViewInit, ElementRef, ViewChild, OnDestr
 import { Chart } from 'chart.js'
 
 @Component({
+  standalone: false,
   selector: 'ws-app-bubble-chart',
   templateUrl: './bubble-chart.component.html',
   styleUrls: ['./bubble-chart.component.scss'],

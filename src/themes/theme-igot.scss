@@ -1,103 +1,36 @@
 @use '@angular/material' as mat;
-@use './_theme-mixins' as mixins;
 
-// Material 15: $dark-primary-text / $light-primary-text are now mat.$dark-primary-text etc.
-$dark-primary-text: rgba(black, 0.87);
-$light-primary-text: white;
-
-// Custom palettes (unchanged from original)
-$mat-blue: (
-  50: #eff1f3,
-  100: #FFFFFF,
-  200: #a5c1dc,
-  300: #68a0d6,
-  400: #4788c7,
-  500: #FFFFFF,
-  600: #0358ab,
-  700: #5F5F5F,
-  800: #154a7d,
-  900: #b3bdc7,
-  A100: #617284,
-  A200: #587594,
-  A400: #3e6792,
-  A700: #062c54,
-  contrast: (
-    50: $dark-primary-text,
-    100: $light-primary-text,
-    200: $dark-primary-text,
-    300: $dark-primary-text,
-    400: $dark-primary-text,
-    500: $dark-primary-text,
-    600: $light-primary-text,
-    700: $light-primary-text,
-    800: $light-primary-text,
-    900: $light-primary-text,
-    A100: $dark-primary-text,
-    A200: $dark-primary-text,
-    A400: $dark-primary-text,
-    A700: $dark-primary-text,
+// Material 3 theme (replaces old Material 2 define-palette / define-light-theme API)
+$theme-igot-light: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
   ),
-);
-
-$mat-orange-custom: (
-  50: #fff3e0,
-  100: #D9F2FE,
-  200: #ffcc80,
-  300: #ffb74d,
-  400: #ffa726,
-  500: #1C5D95,
-  600: #fb8c00,
-  700: #15A9F4,
-  800: #F58634,
-  900: #2095cc,
-  A100: #ffd180,
-  A200: #ffab40,
-  A400: #ff9100,
-  A700: #ff6d00,
-  contrast: (
-    50: $dark-primary-text,
-    100: $dark-primary-text,
-    200: $dark-primary-text,
-    300: $dark-primary-text,
-    400: $dark-primary-text,
-    500: $dark-primary-text,
-    600: $dark-primary-text,
-    700: $dark-primary-text,
-    800: $light-primary-text,
-    900: $light-primary-text,
-    A100: $dark-primary-text,
-    A200: $dark-primary-text,
-    A400: $dark-primary-text,
-    A700: $dark-primary-text,
+  typography: (
+    brand-family: 'Roboto',
+    plain-family: 'Roboto',
   ),
-);
+));
 
-$theme-primary: mat.define-palette($mat-blue);
-$theme-accent: mat.define-palette($mat-orange-custom, 500, 700, 800);
-$theme-warn: mat.define-palette(mat.$red-palette);
+$theme-igot-dark: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  typography: (
+    brand-family: 'Roboto',
+    plain-family: 'Roboto',
+  ),
+));
 
 .theme-igot {
   &.day-mode {
-    $theme: mat.define-light-theme((
-      color: (
-        primary: $theme-primary,
-        accent: $theme-accent,
-        warn: $theme-warn,
-      ),
-    ));
-    @include mat.all-component-themes($theme);
-    @include mixins.theme-based-configurations($theme);
+    @include mat.all-component-themes($theme-igot-light);
   }
 
   &.night-mode {
-    $theme: mat.define-dark-theme((
-      color: (
-        primary: $theme-primary,
-        accent: $theme-accent,
-        warn: $theme-warn,
-      ),
-    ));
-    @include mat.all-component-themes($theme);
-    @include mixins.theme-based-configurations($theme);
+    @include mat.all-component-themes($theme-igot-dark);
   }
 }

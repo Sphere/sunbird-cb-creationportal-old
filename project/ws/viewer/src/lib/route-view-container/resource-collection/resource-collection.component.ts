@@ -10,6 +10,7 @@ import { ConfigurationsService } from '../../../../../../../library/ws-widget/ut
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-resource-collection-container',
   templateUrl: './resource-collection.component.html',
   styleUrls: ['./resource-collection.component.scss'],

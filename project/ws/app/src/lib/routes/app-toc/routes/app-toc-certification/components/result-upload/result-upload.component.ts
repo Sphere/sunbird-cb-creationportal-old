@@ -37,6 +37,7 @@ import { SnackbarComponent } from '../snackbar/snackbar.component'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-result-upload',
   templateUrl: './result-upload.component.html',
   styleUrls: ['./result-upload.component.scss'],

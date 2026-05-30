@@ -17,6 +17,7 @@ export interface IWidgetBtnCall {
   replaceIconWithLabel?: boolean
 }
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-call',
   templateUrl: './btn-call.component.html',
   styleUrls: ['./btn-call.component.scss'],

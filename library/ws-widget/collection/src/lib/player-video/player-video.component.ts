@@ -52,6 +52,7 @@ const videoJsOptions: videoJs.PlayerOptions = {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-player-video',
   templateUrl: './player-video.component.html',
   styleUrls: ['./player-video.component.scss'],

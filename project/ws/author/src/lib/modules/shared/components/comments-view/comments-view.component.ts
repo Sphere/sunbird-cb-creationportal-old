@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-comments-view',
   templateUrl: './comments-view.component.html',
   styleUrls: ['./comments-view.component.scss'],

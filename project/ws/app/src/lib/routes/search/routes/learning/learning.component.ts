@@ -24,6 +24,7 @@ interface IThing {
   prop?: string
 }
 @Component({
+  standalone: false,
   selector: 'ws-app-learning',
   templateUrl: './learning.component.html',
   styleUrls: ['./learning.component.scss'],

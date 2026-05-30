@@ -15,6 +15,7 @@ import { debounceTime, throttleTime } from 'rxjs/operators'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-badges',
   templateUrl: './badges.component.html',
   styleUrls: ['./badges.component.scss'],

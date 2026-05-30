@@ -22,6 +22,7 @@ export interface IWidgetBtnDownload {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-content-download',
   templateUrl: './btn-content-download.component.html',
   styleUrls: ['./btn-content-download.component.scss'],

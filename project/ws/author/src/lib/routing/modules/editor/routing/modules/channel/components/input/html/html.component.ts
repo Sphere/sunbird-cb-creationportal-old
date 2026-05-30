@@ -21,6 +21,7 @@ import mustache from 'mustache'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-html',
   templateUrl: './html.component.html',
   styleUrls: ['./html.component.scss'],

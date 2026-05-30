@@ -7,6 +7,7 @@ import { NSSearch } from '../../_services/widget-search.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-tree-catalog-menu',
   templateUrl: './tree-catalog-menu.component.html',
   styleUrls: ['./tree-catalog-menu.component.scss'],

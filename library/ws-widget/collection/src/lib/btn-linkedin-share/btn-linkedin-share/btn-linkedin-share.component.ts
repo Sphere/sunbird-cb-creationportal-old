@@ -6,6 +6,7 @@ import { ConfigurationsService } from '../../../../../utils/src/public-api'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-linkedin-share',
   templateUrl: './btn-linkedin-share.component.html',
   styleUrls: ['./btn-linkedin-share.component.scss'],

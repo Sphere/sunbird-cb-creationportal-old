@@ -20,6 +20,7 @@ import { CertificationApiService } from '../../apis/certification-api.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-toc-certification',
   templateUrl: './app-toc-certification.component.html',
   styleUrls: ['./app-toc-certification.component.scss'],

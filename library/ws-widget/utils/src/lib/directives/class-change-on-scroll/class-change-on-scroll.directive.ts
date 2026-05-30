@@ -12,6 +12,7 @@ enum ScrollingStateEnum {
 }
 
 @Directive({
+  standalone: false,
   selector: '[wsUtilsClassChangeOnScroll]',
 })
 export class ClassChangeOnScrollDirective implements OnInit, OnDestroy, AfterViewInit {

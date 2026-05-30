@@ -34,6 +34,7 @@ import { of } from 'rxjs'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-unpublish-dialog',
   templateUrl: './unpublish-dialog.component.html',
   styleUrls: ['./unpublish-dialog.component.scss'],

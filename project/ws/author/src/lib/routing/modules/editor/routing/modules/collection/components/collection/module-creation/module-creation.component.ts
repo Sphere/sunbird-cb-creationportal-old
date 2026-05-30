@@ -112,6 +112,7 @@ import moment from 'moment'
 import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
 
 @Component({
+  standalone: false,
   selector: 'ws-author-module-creation',
   templateUrl: './module-creation.component.html',
   styleUrls: ['./module-creation.component.scss'],

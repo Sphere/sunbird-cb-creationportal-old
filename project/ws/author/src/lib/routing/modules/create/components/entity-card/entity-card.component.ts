@@ -8,6 +8,7 @@ import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-entity-card',
   templateUrl: './entity-card.component.html',
   styleUrls: ['./entity-card.component.scss'],

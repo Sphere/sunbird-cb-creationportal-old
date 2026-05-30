@@ -5,6 +5,7 @@ import { DialogSocialDeletePostComponent } from '../../dialog/dialog-social-dele
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-social-delete',
   templateUrl: './btn-social-delete.component.html',
   styleUrls: ['./btn-social-delete.component.scss'],

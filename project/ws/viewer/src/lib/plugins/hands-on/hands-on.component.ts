@@ -52,6 +52,7 @@ import 'ace-builds/src-noconflict/snippets/php'
 import 'ace-builds/src-noconflict/theme-eclipse'
 
 @Component({
+  standalone: false,
   selector: 'viewer-plugin-hands-on',
   templateUrl: './hands-on.component.html',
   styleUrls: ['./hands-on.component.scss'],

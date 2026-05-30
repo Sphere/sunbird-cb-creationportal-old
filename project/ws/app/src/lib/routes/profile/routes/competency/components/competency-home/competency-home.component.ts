@@ -6,6 +6,7 @@ import { ConfigurationsService } from '../../../../../../../../../../../library/
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-competency-home',
   templateUrl: './competency-home.component.html',
   styleUrls: ['./competency-home.component.scss'],

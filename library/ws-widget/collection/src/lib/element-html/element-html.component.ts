@@ -11,6 +11,7 @@ import mustache from 'mustache'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-element-html',
   templateUrl: './element-html.component.html',
   styleUrls: ['./element-html.component.scss'],

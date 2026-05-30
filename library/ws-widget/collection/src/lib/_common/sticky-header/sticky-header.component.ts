@@ -34,6 +34,7 @@ import {
 // }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-sticky-header',
   templateUrl: './sticky-header.component.html',
   styleUrls: ['./sticky-header.component.scss'],

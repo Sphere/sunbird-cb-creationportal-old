@@ -72,6 +72,7 @@ import { NotificationService } from '@ws/author/src/lib/services/notification.se
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-web-module-editor',
   templateUrl: './web-module-editor.component.html',
   styleUrls: ['./web-module-editor.component.scss'],

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-expiry-date-display',
   templateUrl: './expiry-date-display.component.html',
   styleUrls: ['./expiry-date-display.component.scss'],

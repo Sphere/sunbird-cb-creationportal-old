@@ -19,6 +19,7 @@ import { InterestService } from '../../services/interest.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-interest',
   templateUrl: './interest.component.html',
   styleUrls: ['./interest.component.scss'],

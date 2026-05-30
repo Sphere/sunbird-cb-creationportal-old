@@ -24,6 +24,7 @@ import { AppTocService } from '../../services/app-toc.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-knowledge-artifact-details',
   templateUrl: './knowledge-artifact-details.component.html',
   styleUrls: ['./knowledge-artifact-details.component.scss'],

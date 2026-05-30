@@ -35,6 +35,7 @@ import {
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],

@@ -39,8 +39,8 @@
     [htmlText]="(exerciseData?.starterCodes)[0]"
   ></ws-quill-code-editor> -->
 
-  <ace-editor class="code-container" (textChanged)="raiseInputChange()" theme="eclipse" [mode]="(exerciseData?.supportedLanguages)[0].mode"
-    [options]="options" [(text)]="(exerciseData?.starterCodes)[0]" #editor></ace-editor>
+  <ace-editor class="code-container" (textChanged)="raiseInputChange()" theme="eclipse" [mode]="exerciseData?.supportedLanguages?.[0]?.mode"
+    [options]="options" [text]="exerciseData?.starterCodes?.[0] || ''" #editor></ace-editor>
   <mat-card-actions>
     <div class="flex flex-between flex-wrapped">
       <div class="flex flex flex-between flex-wrapped">

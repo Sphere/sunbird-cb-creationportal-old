@@ -32,6 +32,7 @@ import { of } from 'rxjs'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-delete-dialog',
   templateUrl: './delete-dialog.component.html',
   styleUrls: ['./delete-dialog.component.scss'],

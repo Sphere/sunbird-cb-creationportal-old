@@ -22,6 +22,7 @@ import { COLOR_PALETTE, GRAPH_TYPES, colorPalettes } from './graph-general-color
 import { GraphGeneralService } from './graph-general.service'
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-graph-general',
   templateUrl: './graph-general.component.html',
   styleUrls: ['./graph-general.component.scss'],

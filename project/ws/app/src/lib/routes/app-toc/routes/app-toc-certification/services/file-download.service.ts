@@ -24,7 +24,7 @@ export class FileDownloadService {
         int8Array[i] = byteString.charCodeAt(i)
       }
 
-      const blob = new Blob([int8Array])
+      const blob = new Blob([int8Array.buffer as ArrayBuffer])
 
       return blob
     } catch (e) {

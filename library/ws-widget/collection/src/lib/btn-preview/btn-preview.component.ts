@@ -4,6 +4,7 @@ import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-preview',
   templateUrl: './btn-preview.component.html',
   styleUrls: ['./btn-preview.component.scss'],

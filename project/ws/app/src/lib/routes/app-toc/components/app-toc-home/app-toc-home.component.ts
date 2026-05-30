@@ -31,6 +31,7 @@ export enum ErrorType {
   somethingWrong = 'somethingWrong',
 }
 @Component({
+  standalone: false,
   selector: 'ws-app-app-toc-home',
   templateUrl: './app-toc-home.component.html',
   styleUrls: ['./app-toc-home.component.scss'],

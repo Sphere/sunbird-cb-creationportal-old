@@ -21,6 +21,7 @@ const VALID_CONTENT_TYPES: NsContent.EContentTypes[] = [
 ]
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-goals',
   templateUrl: './btn-goals.component.html',
   styleUrls: ['./btn-goals.component.scss'],

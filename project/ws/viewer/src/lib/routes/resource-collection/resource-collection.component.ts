@@ -16,6 +16,7 @@ import { ViewerUtilService } from '../../viewer-util.service'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-resource-collection',
   templateUrl: './resource-collection.component.html',
   styleUrls: ['./resource-collection.component.scss'],

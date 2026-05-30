@@ -10,6 +10,7 @@ import { ConfigurationsService } from '../../../../../../../../../library/ws-wid
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-toc-discussion',
   templateUrl: './app-toc-discussion.component.html',
   styleUrls: ['./app-toc-discussion.component.scss'],

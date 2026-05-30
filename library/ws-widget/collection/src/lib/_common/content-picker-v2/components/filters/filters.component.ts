@@ -4,6 +4,7 @@ import { IAppliedFilters, IFilter, IIncludedFilters } from '../../content-picker
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-filters',
   templateUrl: './filters.component.html',
   styleUrls: ['./filters.component.scss'],

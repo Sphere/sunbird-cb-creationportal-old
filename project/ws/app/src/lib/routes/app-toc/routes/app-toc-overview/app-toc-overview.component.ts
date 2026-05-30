@@ -6,6 +6,7 @@ import { AppTocOverviewService } from './app-toc-overview.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-app-toc-overview-root',
   templateUrl: './app-toc-overview.component.html',
   styleUrls: ['./app-toc-overview.component.scss'],

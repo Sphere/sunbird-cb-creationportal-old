@@ -6,6 +6,7 @@ import { AppTocCohortsDirective } from './app-toc-cohorts.directive'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-app-toc-cohorts',
   templateUrl: './app-toc-cohorts.component.html',
   styleUrls: ['./app-toc-cohorts.component.scss'],

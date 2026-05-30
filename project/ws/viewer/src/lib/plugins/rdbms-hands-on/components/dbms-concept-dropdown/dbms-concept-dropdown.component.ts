@@ -11,6 +11,7 @@ import { EventService } from '@ws-widget/utils'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-dbms-concept-dropdown',
   templateUrl: './dbms-concept-dropdown.component.html',
   styleUrls: ['./dbms-concept-dropdown.component.scss'],

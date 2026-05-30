@@ -10,6 +10,7 @@ import { ActivatedRoute, Data, Router } from '@angular/router'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-achievements',
   templateUrl: './achievements.component.html',
   styleUrls: ['./achievements.component.scss'],

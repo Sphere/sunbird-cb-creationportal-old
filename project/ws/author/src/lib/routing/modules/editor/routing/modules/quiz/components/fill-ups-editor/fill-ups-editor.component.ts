@@ -37,6 +37,7 @@ import { OpenPlainCkEditorComponent } from '../../shared/components/open-plain-c
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-fill-ups-editor',
   templateUrl: './fill-ups-editor.component.html',
   styleUrls: ['./fill-ups-editor.component.scss'],

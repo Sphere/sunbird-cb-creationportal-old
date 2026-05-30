@@ -14,6 +14,7 @@ import { EditorContentService } from '../../../../../services/editor-content.ser
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-question-editor',
   templateUrl: './question-editor.component.html',
   styleUrls: ['./question-editor.component.scss'],

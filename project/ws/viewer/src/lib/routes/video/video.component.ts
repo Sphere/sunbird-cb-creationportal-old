@@ -25,6 +25,7 @@ import { Platform } from '@angular/cdk/platform'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-video',
   templateUrl: './video.component.html',
   styleUrls: ['./video.component.scss'],

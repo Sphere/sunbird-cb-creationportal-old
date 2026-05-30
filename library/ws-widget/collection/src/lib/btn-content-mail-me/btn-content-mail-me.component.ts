@@ -31,6 +31,7 @@ interface IMailMeResponseObj extends IWidgetMailMeDialogComponentResponse {
 const VALID_CATEGORIES = new Set(['leave behind'])
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-content-mail-me',
   templateUrl: './btn-content-mail-me.component.html',
   styleUrls: ['./btn-content-mail-me.component.scss'],

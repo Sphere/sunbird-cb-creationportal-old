@@ -32,6 +32,7 @@ import { ITimeSpent, NSLearningGraph } from '../../models/learning.models'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-learning-time',
   templateUrl: './learning-time.component.html',
   styleUrls: ['./learning-time.component.scss'],

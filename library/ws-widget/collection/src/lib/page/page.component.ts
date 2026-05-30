@@ -18,6 +18,7 @@ import { CustomTourService } from '../_common/tour-guide/tour-guide.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-page',
   templateUrl: './page.component.html',
   styleUrls: ['./page.component.scss'],

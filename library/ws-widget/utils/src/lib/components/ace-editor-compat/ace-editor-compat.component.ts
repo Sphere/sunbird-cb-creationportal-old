@@ -14,6 +14,7 @@ import {
 declare const ace: any
 
 @Component({
+  standalone: false,
   // Drop-in replacement for ng2-ace-editor — matches both element and attribute selector
   selector: 'ace-editor, [ace-editor]',
   template: '<div #aceHost style="width:100%;height:100%;min-height:150px"></div>',

@@ -23,6 +23,7 @@ import { ICarousel } from '@ws-widget/collection/src/public-api'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-slider',
   templateUrl: './slider.component.html',
   styleUrls: ['./slider.component.scss'],

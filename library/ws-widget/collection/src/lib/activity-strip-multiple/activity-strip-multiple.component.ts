@@ -49,6 +49,7 @@ interface IStripUnitContentData {
   } | null
 }
 @Component({
+  standalone: false,
   selector: 'ws-widget-activity-strip-multiple',
   templateUrl: './activity-strip-multiple.component.html',
   styleUrls: ['./activity-strip-multiple.component.scss'],

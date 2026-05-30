@@ -29,6 +29,7 @@ interface IAuthorGrid {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-renderer-v2',
   templateUrl: './renderer-v2.component.html',
   styleUrls: ['./renderer-v2.component.scss'],

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-ws-tour',
   templateUrl: './tour-guide.component.html',
   styleUrls: ['./tour-guide.component.scss'],

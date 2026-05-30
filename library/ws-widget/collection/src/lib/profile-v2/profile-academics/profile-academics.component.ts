@@ -5,6 +5,7 @@ import { WidgetBaseComponent, NsWidgetResolver } from '@ws-widget/resolver'
 import { IProfileAcademic } from './profile-academics.model'
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-profile-v2-academics',
   templateUrl: './profile-academics.component.html',
   styleUrls: ['./profile-academics.component.scss'],

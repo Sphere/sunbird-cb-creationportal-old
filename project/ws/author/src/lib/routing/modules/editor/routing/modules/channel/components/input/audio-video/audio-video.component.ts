@@ -29,6 +29,7 @@ interface ISubtitle {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-audio-video',
   templateUrl: './audio-video.component.html',
   styleUrls: ['./audio-video.component.scss'],

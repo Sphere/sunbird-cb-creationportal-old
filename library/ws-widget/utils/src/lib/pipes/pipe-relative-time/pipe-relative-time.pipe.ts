@@ -4,6 +4,7 @@ import moment from 'moment'
 
 
 @Pipe({
+  standalone: false,
   name: 'pipeRelativeTime',
 })
 export class PipeRelativeTimePipe implements PipeTransform {

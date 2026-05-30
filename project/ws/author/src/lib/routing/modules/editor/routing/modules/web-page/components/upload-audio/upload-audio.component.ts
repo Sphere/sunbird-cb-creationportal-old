@@ -27,6 +27,7 @@ export interface IUsersData {
   languages: any[]
 }
 @Component({
+  standalone: false,
   selector: 'ws-auth-upload-audio',
   templateUrl: './upload-audio.component.html',
   styleUrls: ['./upload-audio.component.scss'],

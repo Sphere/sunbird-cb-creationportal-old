@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { FormControl } from '@angular/forms'
 
 @Component({
+  standalone: false,
   selector: 'ws-app-view-users',
   templateUrl: './view-users.component.html',
   styleUrls: ['./view-users.component.scss'],

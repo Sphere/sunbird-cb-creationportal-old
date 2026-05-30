@@ -6,6 +6,7 @@ import { CollectionResolverService } from './../../services/resolver.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-table-tree-label',
   templateUrl: './auth-table-tree-label.component.html',
   styleUrls: ['./auth-table-tree-label.component.scss'],

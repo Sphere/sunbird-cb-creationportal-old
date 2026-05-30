@@ -42,6 +42,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-base',
   templateUrl: './base.component.html',
   styleUrls: ['./base.component.scss'],

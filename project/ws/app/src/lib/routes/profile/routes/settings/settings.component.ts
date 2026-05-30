@@ -30,6 +30,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatSelectChange } from '@angular/material/select'
 import { MatTabChangeEvent } from '@angular/material/tabs'
 @Component({
+  standalone: false,
   selector: 'ws-app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],

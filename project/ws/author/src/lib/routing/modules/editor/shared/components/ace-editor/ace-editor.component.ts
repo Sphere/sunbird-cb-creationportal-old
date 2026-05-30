@@ -3,6 +3,7 @@ import { Component, OnInit, Input, EventEmitter, Output, ViewChild } from '@angu
 // ace-builds mode/theme side-effects registered via angular.json scripts
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-ace-editor',
   templateUrl: './ace-editor.component.html',
   styleUrls: ['./ace-editor.component.scss'],

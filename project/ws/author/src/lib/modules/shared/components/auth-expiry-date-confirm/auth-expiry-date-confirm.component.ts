@@ -32,6 +32,7 @@ import { of } from 'rxjs'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-expiry-date-confirm',
   templateUrl: './auth-expiry-date-confirm.component.html',
   styleUrls: ['./auth-expiry-date-confirm.component.scss'],

@@ -64,6 +64,7 @@ import { environment } from '../../../../../../../../../../../../src/environment
 /* tslint:enable */
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-mandatory-content',
   templateUrl: './mandatory-content.component.html',
   styleUrls: ['./mandatory-content.component.scss'],

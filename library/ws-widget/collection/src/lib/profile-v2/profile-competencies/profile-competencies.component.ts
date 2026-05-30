@@ -4,6 +4,7 @@ import { WidgetBaseComponent, NsWidgetResolver } from '@ws-widget/resolver'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-profile-v2-competencies',
   templateUrl: './profile-competencies.component.html',
   styleUrls: ['./profile-competencies.component.scss'],

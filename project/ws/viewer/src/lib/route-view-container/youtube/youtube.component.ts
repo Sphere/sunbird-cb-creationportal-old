@@ -10,6 +10,7 @@ import { ConfigurationsService } from '../../../../../../../library/ws-widget/ut
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-youtube-container',
   templateUrl: './youtube.component.html',
   styleUrls: ['./youtube.component.scss'],

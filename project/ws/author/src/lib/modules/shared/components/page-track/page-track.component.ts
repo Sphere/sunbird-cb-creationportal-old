@@ -42,6 +42,7 @@ const steps: IWorkFlowStepper[] = [
   },
 ]
 @Component({
+  standalone: false,
   selector: 'ws-auth-page-track',
   templateUrl: './page-track.component.html',
   styleUrls: ['./page-track.component.scss'],

@@ -12,6 +12,7 @@ import { ActivatedRoute } from '@angular/router'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-license',
   templateUrl: './license.component.html',
   styleUrls: ['./license.component.scss'],

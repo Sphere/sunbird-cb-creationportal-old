@@ -8,6 +8,7 @@ import { BtnPageBackNavService } from './btn-page-back-nav.service'
 
 type TUrl = undefined | 'none' | 'back' | string
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-page-back-nav',
   templateUrl: './btn-page-back-nav.component.html',
   styleUrls: ['./btn-page-back-nav.component.scss'],

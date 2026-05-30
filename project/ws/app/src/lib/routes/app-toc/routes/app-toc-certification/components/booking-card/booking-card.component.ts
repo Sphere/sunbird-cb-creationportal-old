@@ -26,6 +26,7 @@ import { RequestCancelDialogComponent } from '../request-cancel-dialog/request-c
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-toc-certification-booking-card',
   templateUrl: './booking-card.component.html',
   styleUrls: ['./booking-card.component.scss'],

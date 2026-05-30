@@ -10,6 +10,7 @@ import { EventService } from '@ws-widget/utils'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-mail-user-dialog',
   templateUrl: './btn-mail-user-dialog.component.html',
   styleUrls: ['./btn-mail-user-dialog.component.scss'],

@@ -13,6 +13,7 @@ import { ROOT_WIDGET_CONFIG } from '../collection.config'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-profile',
   templateUrl: './btn-profile.component.html',
   styleUrls: ['./btn-profile.component.scss'],

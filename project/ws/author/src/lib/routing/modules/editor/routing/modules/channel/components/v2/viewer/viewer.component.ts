@@ -10,6 +10,7 @@ import { isNotEmptyWidget } from './viewer.function'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-viewer-v2',
   templateUrl: './viewer.component.html',
   styleUrls: ['./viewer.component.scss'],

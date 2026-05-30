@@ -6,6 +6,7 @@ import { NsAutoComplete } from '@ws-widget/collection'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-people',
   templateUrl: './people.component.html',
   styleUrls: ['./people.component.scss'],

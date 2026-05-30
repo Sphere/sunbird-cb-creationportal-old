@@ -9,6 +9,7 @@ import { UtilityService } from '../../services/utility.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-utils-logout',
   templateUrl: './logout.component.html',
   styleUrls: ['./logout.component.scss'],

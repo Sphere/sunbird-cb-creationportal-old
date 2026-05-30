@@ -8,6 +8,7 @@ import moment from 'moment'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-profile-v2-career',
   templateUrl: './profile-career.component.html',
   styleUrls: ['./profile-career.component.scss'],

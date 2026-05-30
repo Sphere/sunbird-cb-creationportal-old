@@ -34,6 +34,7 @@ import { of } from 'rxjs'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-draft-dialog',
   templateUrl: './draft-dialog.component.html',
   styleUrls: ['./draft-dialog.component.scss'],

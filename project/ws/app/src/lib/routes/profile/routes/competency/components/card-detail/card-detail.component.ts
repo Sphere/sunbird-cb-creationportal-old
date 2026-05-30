@@ -16,6 +16,7 @@ import { AssessmentService } from '../../services/competency.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-card-detail',
   templateUrl: './card-detail.component.html',
   styleUrls: ['./card-detail.component.scss'],

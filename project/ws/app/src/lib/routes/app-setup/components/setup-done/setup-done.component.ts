@@ -16,6 +16,7 @@ import { Globals } from '../../globals'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-setup-done',
   templateUrl: './setup-done.component.html',
   styleUrls: ['./setup-done.component.scss'],

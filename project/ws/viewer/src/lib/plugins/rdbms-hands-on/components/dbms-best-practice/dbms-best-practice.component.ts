@@ -9,6 +9,7 @@ import { FormGroup, FormBuilder } from '@angular/forms'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-dbms-best-practice',
   templateUrl: './dbms-best-practice.component.html',
   styleUrls: ['./dbms-best-practice.component.scss'],

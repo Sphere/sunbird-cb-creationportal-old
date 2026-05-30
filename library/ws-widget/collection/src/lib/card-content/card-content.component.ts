@@ -17,6 +17,7 @@ import { NsCardContent } from './card-content.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-card-content',
   templateUrl: './card-content.component.html',
   styleUrls: ['./card-content.component.scss'],

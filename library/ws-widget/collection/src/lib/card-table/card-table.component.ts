@@ -29,6 +29,7 @@ import { NSContent } from '../../../../../../project/ws/author/src/lib/interface
 
 /* tslint:enable */
 @Component({
+  standalone: false,
   selector: 'ws-widget-table-card-content',
   templateUrl: './card-table.component.html',
   styleUrls: ['./card-table.component.scss'],

@@ -52,6 +52,7 @@ import { AUTHORING_BASE } from '@ws/author/src/lib/constants/apiEndpoints'
 declare const CKEDITOR: any
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-plain-ckeditor',
   templateUrl: './plain-ckeditor.component.html',
   styleUrls: ['./plain-ckeditor.component.scss'],

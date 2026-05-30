@@ -8,6 +8,7 @@ import { Router } from '@angular/router'
 
 import { MatDialog } from '@angular/material/dialog'
 @Component({
+  standalone: false,
   selector: 'ws-auth-success-dialog',
   templateUrl: './cert-upload-status-dialog.component.html',
   styleUrls: ['./cert-upload-status-dialog.component.scss'],

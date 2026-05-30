@@ -66,6 +66,7 @@ const defaultFilter = [
   },
 ]
 @Component({
+  standalone: false,
   selector: 'ws-auth-all-content',
   templateUrl: './all-content.component.html',
   styleUrls: ['./all-content.component.scss'],

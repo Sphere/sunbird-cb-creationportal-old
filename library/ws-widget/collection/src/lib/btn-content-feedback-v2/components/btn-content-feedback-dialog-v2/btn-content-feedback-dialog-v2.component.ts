@@ -16,6 +16,7 @@ import { FeedbackSnackbarComponent } from '../feedback-snackbar/feedback-snackba
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-content-feedback-dialog-v2',
   templateUrl: './btn-content-feedback-dialog-v2.component.html',
   styleUrls: ['./btn-content-feedback-dialog-v2.component.scss'],

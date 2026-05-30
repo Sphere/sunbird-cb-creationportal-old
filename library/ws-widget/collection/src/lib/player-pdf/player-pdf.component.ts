@@ -38,6 +38,7 @@ import { pdfDefaultOptions } from 'ngx-extended-pdf-viewer'
 
 // const pdfjsViewer = require('pdfjs-dist/web/pdf_viewer')
 @Component({
+  standalone: false,
   selector: 'ws-widget-player-pdf',
   templateUrl: './player-pdf.component.html',
   styleUrls: ['./player-pdf.component.scss'],

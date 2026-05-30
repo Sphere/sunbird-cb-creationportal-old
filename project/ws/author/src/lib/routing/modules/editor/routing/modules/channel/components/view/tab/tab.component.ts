@@ -6,6 +6,7 @@ import { ChannelStoreService } from './../../../services/store.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-tab',
   templateUrl: './tab.component.html',
   styleUrls: ['./tab.component.scss'],

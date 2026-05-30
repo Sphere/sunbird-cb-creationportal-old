@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core'
 
 
 @Pipe({
+  standalone: false,
   name: 'formatDuration'
 })
 export class FormatDurationPipe implements PipeTransform {

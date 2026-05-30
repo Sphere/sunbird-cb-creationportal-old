@@ -6,6 +6,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-html-v2',
   templateUrl: './html-v2.component.html',
   styleUrls: ['./html-v2.component.scss'],

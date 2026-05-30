@@ -4,6 +4,7 @@ import { Component, OnInit, Input } from '@angular/core'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-comments',
   templateUrl: './comments.component.html',
   styleUrls: ['./comments.component.scss'],

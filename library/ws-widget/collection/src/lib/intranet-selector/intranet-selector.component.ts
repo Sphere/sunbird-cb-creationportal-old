@@ -8,6 +8,7 @@ import { IntranetSelectorService } from './intranet-selector.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-intranet-selector',
   templateUrl: './intranet-selector.component.html',
   styleUrls: ['./intranet-selector.component.scss'],

@@ -6,6 +6,7 @@ import { BadgesShareDialogComponent } from '../badges-share-dialog/badges-share-
 
 import { MatDialog } from '@angular/material/dialog'
 @Component({
+  standalone: false,
   selector: 'ws-app-badges-card',
   templateUrl: './badges-card.component.html',
   styleUrls: ['./badges-card.component.scss'],

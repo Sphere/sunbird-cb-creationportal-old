@@ -6,6 +6,7 @@ import { IProHobbies } from './profile-hobbies.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-profile-v2-hobbies',
   templateUrl: './profile-hobbies.component.html',
   styleUrls: ['./profile-hobbies.component.scss'],

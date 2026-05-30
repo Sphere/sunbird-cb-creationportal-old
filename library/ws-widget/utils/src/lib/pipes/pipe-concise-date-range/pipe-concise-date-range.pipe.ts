@@ -8,6 +8,7 @@ interface IDateRange {
 }
 
 @Pipe({
+  standalone: false,
   name: 'pipeConciseDateRange',
 })
 export class PipeConciseDateRangePipe implements PipeTransform {

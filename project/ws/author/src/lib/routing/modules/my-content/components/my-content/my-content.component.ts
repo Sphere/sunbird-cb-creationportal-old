@@ -61,6 +61,7 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-my-content',
   templateUrl: './my-content.component.html',
   styleUrls: ['./my-content.component.scss'],

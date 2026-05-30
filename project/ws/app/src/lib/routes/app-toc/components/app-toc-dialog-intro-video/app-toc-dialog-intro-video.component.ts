@@ -7,6 +7,7 @@ import { NsWidgetResolver } from '@ws-widget/resolver'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-app-toc-dialog-intro-video',
   templateUrl: './app-toc-dialog-intro-video.component.html',
   styleUrls: ['./app-toc-dialog-intro-video.component.scss'],

@@ -15,6 +15,7 @@ import { ConfigurationsService } from '../../../../../../../library/ws-widget/ut
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-app-setup-home',
   templateUrl: './app-setup-home.component.html',
   styleUrls: ['./app-setup-home.component.scss'],

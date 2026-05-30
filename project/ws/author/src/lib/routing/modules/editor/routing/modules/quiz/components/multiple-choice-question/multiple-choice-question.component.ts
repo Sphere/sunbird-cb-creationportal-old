@@ -38,6 +38,7 @@ import { OpenPlainCkEditorComponent } from '../../shared/components/open-plain-c
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-multiple-choice-question',
   templateUrl: './multiple-choice-question.component.html',
   styleUrls: ['./multiple-choice-question.component.scss'],

@@ -27,6 +27,7 @@ import {
 import moment from 'moment'
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-comments-dialog',
   templateUrl: './comments-dialog.component.html',
   styleUrls: ['./comments-dialog.component.scss'],

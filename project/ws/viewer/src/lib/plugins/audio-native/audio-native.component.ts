@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-plugin-audio-native',
   templateUrl: './audio-native.component.html',
   styleUrls: ['./audio-native.component.scss'],

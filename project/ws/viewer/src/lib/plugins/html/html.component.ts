@@ -26,6 +26,7 @@ import { SCORMAdapterService } from 'project/ws/viewer/src/lib/plugins/html/SCOR
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-plugin-html',
   templateUrl: './html.component.html',
   styleUrls: ['./html.component.scss'],
@@ -51,7 +52,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
   mimeType = ''
   iframeSupport: any
 
-  @HostListener('window:blur', ['$event'])
+  @HostListener('window:blur')
   onBlur(): void {
     if (this.urlContains.includes('youtube') && this.htmlContent !== null) {
       // const collectionId = this.activatedRoute.snapshot.queryParams.collectionId ?

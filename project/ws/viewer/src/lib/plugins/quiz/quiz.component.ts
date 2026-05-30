@@ -29,6 +29,7 @@ import { EventService } from '../../../../../../../library/ws-widget/utils/src/p
 export type FetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
 
 @Component({
+  standalone: false,
   selector: 'viewer-plugin-quiz',
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.scss'],

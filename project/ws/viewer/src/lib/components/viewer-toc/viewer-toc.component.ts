@@ -63,6 +63,7 @@ interface ICollectionCard {
 }
 
 @Component({
+  standalone: false,
   selector: 'viewer-viewer-toc',
   templateUrl: './viewer-toc.component.html',
   styleUrls: ['./viewer-toc.component.scss'],

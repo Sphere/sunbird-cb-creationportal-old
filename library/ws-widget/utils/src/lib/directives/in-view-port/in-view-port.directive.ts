@@ -6,6 +6,7 @@ import { debounceTime } from 'rxjs/operators'
 
 
 @Directive({
+  standalone: false,
   selector: '[wsUtilsInViewPort]',
 })
 export class InViewPortDirective implements OnInit, OnDestroy {

@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core'
 
 
 @Pipe({
+  standalone: false,
   name: 'pipeHtmlTagRemoval',
 })
 export class PipeHtmlTagRemovalPipe implements PipeTransform {

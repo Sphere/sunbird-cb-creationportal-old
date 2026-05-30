@@ -39,6 +39,7 @@ import { SnackbarComponent } from '../snackbar/snackbar.component'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-at-desk-slot-booking',
   templateUrl: './at-desk-slot-booking.component.html',
   styleUrls: ['./at-desk-slot-booking.component.scss'],

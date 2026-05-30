@@ -6,6 +6,7 @@ import { ResourceCollectionService } from 'project/ws/viewer/src/lib/plugins/res
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-view-submission',
   templateUrl: './view-submission.component.html',
   styleUrls: ['./view-submission.component.scss'],

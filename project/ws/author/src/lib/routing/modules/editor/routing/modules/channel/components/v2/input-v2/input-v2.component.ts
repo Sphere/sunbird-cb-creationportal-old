@@ -16,6 +16,7 @@ import { COLUMN_WIDTH } from '../../input/image-v2/image-v2.constant'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-input-v2',
   templateUrl: './input-v2.component.html',
   styleUrls: ['./input-v2.component.scss'],

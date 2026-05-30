@@ -26,6 +26,7 @@ interface IProcessedMultiError {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-error-parser',
   templateUrl: './error-parser.component.html',
   styleUrls: ['./error-parser.component.scss'],

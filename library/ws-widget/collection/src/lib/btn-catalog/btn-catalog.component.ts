@@ -10,6 +10,7 @@ import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-catalog',
   templateUrl: './btn-catalog.component.html',
   styleUrls: ['./btn-catalog.component.scss'],

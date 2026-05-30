@@ -30,6 +30,7 @@ import { SnackbarComponent } from '../snackbar/snackbar.component'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-acc-slot-booking',
   templateUrl: './acc-slot-booking.component.html',
   styleUrls: ['./acc-slot-booking.component.scss'],

@@ -8,6 +8,7 @@ import { ConfigurationsService } from '@ws-widget/utils'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-quick-tour',
   templateUrl: './quick-tour.component.html',
   styleUrls: ['./quick-tour.component.scss'],

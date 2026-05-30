@@ -4,6 +4,7 @@ import { ConfigurationsService, NsPage } from '@ws-widget/utils'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-contact-home',
   templateUrl: './contact-home.component.html',
   styleUrls: ['./contact-home.component.scss'],

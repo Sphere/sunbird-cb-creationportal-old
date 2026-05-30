@@ -17,6 +17,7 @@ import { ILeftMenu } from '@ws-widget/collection'
 /* tslint:enable */
 
 @Component({
+  standalone: false,
   selector: 'ws-app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],

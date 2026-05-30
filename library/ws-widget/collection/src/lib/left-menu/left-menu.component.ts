@@ -8,6 +8,7 @@ import { ILeftMenu, IMenu } from './left-menu.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-left-menu',
   templateUrl: './left-menu.component.html',
   styleUrls: ['./left-menu.component.scss'],

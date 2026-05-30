@@ -22,6 +22,7 @@ import { filter } from 'rxjs/operators'
 import { ViewerUtilService } from '../../viewer-util.service'
 
 @Component({
+  standalone: false,
   selector: 'viewer-html',
   templateUrl: './html.component.html',
   styleUrls: ['./html.component.scss'],

@@ -33,6 +33,7 @@ import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/l
 import { map } from 'rxjs/operators'
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-table-of-contents',
   templateUrl: './auth-table-of-contents.component.html',
   styleUrls: ['./auth-table-of-contents.component.scss'],

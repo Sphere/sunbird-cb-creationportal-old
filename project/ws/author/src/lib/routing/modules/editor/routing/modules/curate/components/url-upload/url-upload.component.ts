@@ -29,6 +29,7 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-url-upload',
   templateUrl: './url-upload.component.html',
   styleUrls: ['./url-upload.component.scss'],

@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router'
 
 import { MatDialog } from '@angular/material/dialog'
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-review-dialog',
   templateUrl: './review-dialog.component.html',
   styleUrls: ['./review-dialog.component.scss'],

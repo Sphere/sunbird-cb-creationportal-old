@@ -6,6 +6,7 @@ import quill from 'quill'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-ws-quill',
   template: '',
   providers: [

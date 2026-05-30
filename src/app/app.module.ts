@@ -1,6 +1,6 @@
 import { FullscreenOverlayContainer, OverlayContainer } from '@angular/cdk/overlay'
 import { APP_BASE_HREF, PlatformLocation } from '@angular/common'
-import { HttpClientJsonpModule, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
+import { provideHttpClient, withInterceptorsFromDi, withJsonpSupport, HTTP_INTERCEPTORS } from '@angular/common/http'
 import { APP_INITIALIZER, NgModule, ErrorHandler } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
@@ -26,7 +26,7 @@ import { StickyHeaderModule } from '@ws-widget/collection/src/lib/_common/sticky
 import { WidgetResolverModule } from '@ws-widget/resolver'
 import { LoggerService, PipeSafeSanitizerModule } from '@ws-widget/utils'
 import { SearchModule } from '@ws/app/src/public-api'
-import { KeycloakAngularModule } from 'keycloak-angular'
+import { provideKeycloak } from 'keycloak-angular'
 import { AppRoutingModule } from './app-routing.module'
 import { InitService } from './services/init.service'
 import { GlobalErrorHandlingService } from './services/global-error-handling.service'
@@ -91,10 +91,7 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     FormsModule,
     ReactiveFormsModule,
     BrowserModule,
-    HttpClientModule,
-    HttpClientJsonpModule,
     BrowserAnimationsModule,
-    KeycloakAngularModule,
     AppRoutingModule,
     ...WIDGET_REGISTERED_MODULES,
     WidgetResolverModule.forRoot(WIDGET_REGISTRATION_CONFIG),
@@ -148,6 +145,14 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
         strokeWidth: 4,
       },
     },
+    provideHttpClient(
+      withInterceptorsFromDi(),
+      withJsonpSupport(),
+    ),
+    provideKeycloak({
+      config: { url: '', realm: '', clientId: '' },
+      initOptions: { onLoad: 'check-sso', checkLoginIframe: false },
+    }),
     { provide: HTTP_INTERCEPTORS, useClass: AppInterceptorService, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: AppRetryInterceptorService, multi: true },
     TncAppResolverService,

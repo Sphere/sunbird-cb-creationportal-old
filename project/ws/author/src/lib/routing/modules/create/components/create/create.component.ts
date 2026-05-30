@@ -34,6 +34,7 @@ import { ActivatedRoute } from '@angular/router'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-generic',
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.scss'],

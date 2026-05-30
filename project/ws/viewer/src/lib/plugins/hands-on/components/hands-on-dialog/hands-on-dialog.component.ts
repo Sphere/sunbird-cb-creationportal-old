@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-hands-on-dialog',
   templateUrl: './hands-on-dialog.component.html',
   styleUrls: ['./hands-on-dialog.component.scss'],

@@ -18,6 +18,7 @@ import {
 } from '@ws-widget/collection'
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-success-dialog',
   templateUrl: './success-dialog.component.html',
   styleUrls: ['./success-dialog.component.scss'],

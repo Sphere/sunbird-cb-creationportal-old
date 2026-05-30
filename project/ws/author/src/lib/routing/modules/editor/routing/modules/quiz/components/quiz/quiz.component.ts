@@ -92,6 +92,7 @@ interface QuizQuestion {
   multiSelection: boolean
 }
 @Component({
+  standalone: false,
   selector: 'ws-auth-quiz',
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.scss'],

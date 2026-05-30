@@ -12,6 +12,7 @@ import { PlayerStateService } from '../../player-state.service'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-pdf-container',
   templateUrl: './pdf.component.html',
   styleUrls: ['./pdf.component.scss'],

@@ -4,6 +4,7 @@ import { DraggableDirective } from './draggable.directive'
 
 
 @Directive({
+  standalone: false,
   selector: '[wsAuthSortable]',
   providers: [{ provide: DraggableDirective, useExisting: forwardRef(() => SortableDirective) }],
 })

@@ -8,6 +8,7 @@ import { TFetchStatus, NsPage, ConfigurationsService } from '@ws-widget/utils'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-notification',
   templateUrl: './notification.component.html',
   styleUrls: ['./notification.component.scss'],

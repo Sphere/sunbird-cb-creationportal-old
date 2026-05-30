@@ -32,6 +32,7 @@ import { of } from 'rxjs'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-restore-dialog',
   templateUrl: './restore-dialog.component.html',
   styleUrls: ['./restore-dialog.component.scss'],

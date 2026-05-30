@@ -16,6 +16,7 @@ import { ViewerUtilService } from '../../viewer-util.service'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-web-module',
   templateUrl: './web-module.component.html',
   styleUrls: ['./web-module.component.scss'],

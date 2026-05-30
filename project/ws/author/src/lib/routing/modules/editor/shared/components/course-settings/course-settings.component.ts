@@ -88,6 +88,7 @@ import { HttpClient } from '@angular/common/http'
 import { isNumber } from 'lodash'
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-course-settings',
   templateUrl: './course-settings.component.html',
   styleUrls: ['./course-settings.component.scss'],

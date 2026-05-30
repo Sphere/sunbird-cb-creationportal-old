@@ -16,6 +16,7 @@ export interface IWidgetBtnKbAnalytics {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-kb-analytics',
   templateUrl: './btn-kb-analytics.component.html',
   styleUrls: ['./btn-kb-analytics.component.scss'],

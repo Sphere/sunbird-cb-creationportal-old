@@ -22,6 +22,7 @@ import { SnackbarComponent } from '../snackbar/snackbar.component'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-toc-certification-budget-card',
   templateUrl: './budget-card.component.html',
   styleUrls: ['./budget-card.component.scss'],

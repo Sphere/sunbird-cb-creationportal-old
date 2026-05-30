@@ -4,6 +4,7 @@ import { ContentProgressService } from '@ws-widget/collection'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-progress-radial',
   templateUrl: './progress-radial.component.html',
   styleUrls: ['./progress-radial.component.scss'],

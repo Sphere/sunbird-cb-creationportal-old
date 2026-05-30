@@ -7,6 +7,7 @@ import { Pipe, PipeTransform } from '@angular/core'
 import moment from 'moment-timezone'
 
 @Pipe({
+  standalone: false,
   name: 'timeDifference'
 })
 export class TimeDifferencePipe implements PipeTransform {

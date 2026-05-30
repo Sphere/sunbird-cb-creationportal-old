@@ -4,6 +4,7 @@ import { Component, OnInit, Input } from '@angular/core'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-last-update-display',
   templateUrl: './last-update-display.component.html',
   styleUrls: ['./last-update-display.component.scss'],

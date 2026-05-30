@@ -10,6 +10,7 @@ import { IFrac } from '../../interfaces/frac.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-frac',
   templateUrl: './frac.component.html',
   styleUrls: ['./frac.component.scss'],

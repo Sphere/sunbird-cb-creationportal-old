@@ -14,6 +14,7 @@ import { DialogSocialDeletePostComponent } from '../../dialog/dialog-social-dele
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-discussion-post',
   templateUrl: './discussion-post.component.html',
   styleUrls: ['./discussion-post.component.scss'],

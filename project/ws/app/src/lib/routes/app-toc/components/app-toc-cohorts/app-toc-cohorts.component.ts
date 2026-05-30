@@ -12,6 +12,7 @@ import { Router } from '@angular/router'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-toc-cohorts',
   templateUrl: './app-toc-cohorts.component.html',
   styleUrls: ['./app-toc-cohorts.component.scss'],

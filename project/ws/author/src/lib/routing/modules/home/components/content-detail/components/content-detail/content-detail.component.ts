@@ -61,6 +61,7 @@ import { MyTocService } from '../../services/my-toc.service'
 /* tslint:enable */
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-detail',
   templateUrl: './content-detail.component.html',
   styleUrls: ['./content-detail.component.scss'],

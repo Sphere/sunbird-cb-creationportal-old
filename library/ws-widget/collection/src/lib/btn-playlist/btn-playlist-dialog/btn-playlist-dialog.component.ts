@@ -7,6 +7,7 @@ import { NsPlaylist } from '../btn-playlist.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-playlist-dialog',
   templateUrl: './btn-playlist-dialog.component.html',
   styleUrls: ['./btn-playlist-dialog.component.scss'],

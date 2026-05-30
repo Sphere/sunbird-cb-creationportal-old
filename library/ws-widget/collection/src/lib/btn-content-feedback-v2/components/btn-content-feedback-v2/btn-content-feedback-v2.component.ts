@@ -11,6 +11,7 @@ import { ConfigurationsService } from '../../../../../../utils/src/public-api'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-content-feedback-v2',
   templateUrl: './btn-content-feedback-v2.component.html',
   styleUrls: ['./btn-content-feedback-v2.component.scss'],

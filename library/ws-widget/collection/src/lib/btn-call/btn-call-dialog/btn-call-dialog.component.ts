@@ -11,6 +11,7 @@ export interface IWidgetBtnCallDialogData {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-call-dialog',
   templateUrl: './btn-call-dialog.component.html',
   styleUrls: ['./btn-call-dialog.component.scss'],

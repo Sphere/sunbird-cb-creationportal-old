@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core'
 
 
 @Pipe({
+  standalone: false,
   name: 'pipeContentType',
 })
 export class PipeContentTypePipe implements PipeTransform {

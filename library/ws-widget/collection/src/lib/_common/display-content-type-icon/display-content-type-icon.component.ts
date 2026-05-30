@@ -4,6 +4,7 @@ import { NsContent } from '../../_services/widget-content.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-display-content-type-icon',
   templateUrl: './display-content-type-icon.component.html',
   styleUrls: ['./display-content-type-icon.component.scss'],

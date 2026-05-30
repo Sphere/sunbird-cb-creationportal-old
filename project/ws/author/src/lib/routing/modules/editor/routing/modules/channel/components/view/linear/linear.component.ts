@@ -6,6 +6,7 @@ import { ChannelStoreService } from './../../../services/store.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-linear',
   templateUrl: './linear.component.html',
   styleUrls: ['./linear.component.scss'],

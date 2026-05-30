@@ -8,6 +8,7 @@ import {
 
 
 @Directive({
+  standalone: false,
   selector: '[wsAuthDragDrop]',
 })
 export class DragDropDirective {

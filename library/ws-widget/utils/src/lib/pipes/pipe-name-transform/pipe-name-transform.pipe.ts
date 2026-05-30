@@ -8,6 +8,7 @@ interface IUserName {
 }
 
 @Pipe({
+  standalone: false,
   name: 'pipeNameTransform',
 })
 export class PipeNameTransformPipe implements PipeTransform {

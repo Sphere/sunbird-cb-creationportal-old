@@ -30,6 +30,7 @@ interface ILanguageBar {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-card-v2',
   templateUrl: './content-card-v2.component.html',
   styleUrls: ['./content-card-v2.component.scss'],

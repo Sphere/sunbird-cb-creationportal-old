@@ -63,6 +63,7 @@ import {
 } from '@ws-widget/collection'
 
 @Component({
+  standalone: false,
   // tslint:disable-next-line:component-selector
   selector: 'ws-author-create-course',
   templateUrl: './create-course.component.html',

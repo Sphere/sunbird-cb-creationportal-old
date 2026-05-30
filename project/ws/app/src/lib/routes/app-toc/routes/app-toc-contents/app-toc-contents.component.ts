@@ -18,6 +18,7 @@ import { NsWidgetResolver } from '@ws-widget/resolver'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-app-toc-contents',
   templateUrl: './app-toc-contents.component.html',
   styleUrls: ['./app-toc-contents.component.scss'],

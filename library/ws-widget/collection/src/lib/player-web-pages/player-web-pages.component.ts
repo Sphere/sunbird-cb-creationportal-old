@@ -4,6 +4,7 @@ import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-player-web-pages',
   templateUrl: './player-web-pages.component.html',
   styleUrls: ['./player-web-pages.component.scss'],

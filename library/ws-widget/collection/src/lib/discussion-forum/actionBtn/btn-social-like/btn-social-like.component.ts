@@ -12,6 +12,7 @@ import { NsDiscussionForum } from '../../ws-discussion-forum.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-social-like',
   templateUrl: './btn-social-like.component.html',
   styleUrls: ['./btn-social-like.component.scss'],

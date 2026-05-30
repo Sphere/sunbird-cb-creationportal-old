@@ -5,6 +5,7 @@ import { TCertificationRequestType } from '../../models/certification.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-request-cancel-dialog',
   templateUrl: './request-cancel-dialog.component.html',
   styleUrls: ['./request-cancel-dialog.component.scss'],

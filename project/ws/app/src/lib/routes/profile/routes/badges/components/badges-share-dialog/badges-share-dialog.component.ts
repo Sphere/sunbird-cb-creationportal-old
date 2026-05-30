@@ -6,6 +6,7 @@ import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
 
 import { MAT_DIALOG_DATA } from '@angular/material/dialog'
 @Component({
+  standalone: false,
   selector: 'ws-app-badges-share-dialog',
   templateUrl: './badges-share-dialog.component.html',
   styleUrls: ['./badges-share-dialog.component.scss'],

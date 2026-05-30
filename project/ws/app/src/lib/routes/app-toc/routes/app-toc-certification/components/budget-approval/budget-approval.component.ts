@@ -35,6 +35,7 @@ import { SnackbarComponent } from '../snackbar/snackbar.component'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-budget-approval',
   templateUrl: './budget-approval.component.html',
   styleUrls: ['./budget-approval.component.scss'],

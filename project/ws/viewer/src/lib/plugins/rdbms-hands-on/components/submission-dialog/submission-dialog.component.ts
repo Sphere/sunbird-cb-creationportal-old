@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-submission-dialog',
   templateUrl: './submission-dialog.component.html',
   styleUrls: ['./submission-dialog.component.scss'],

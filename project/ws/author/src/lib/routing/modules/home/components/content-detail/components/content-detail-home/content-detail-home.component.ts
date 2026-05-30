@@ -16,6 +16,7 @@ import { LocalDataService } from '../../services/local-data.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-detail-home',
   templateUrl: './content-detail-home.component.html',
   styleUrls: ['./content-detail-home.component.scss'],

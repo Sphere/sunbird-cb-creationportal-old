@@ -11,6 +11,7 @@ import { BtnContentShareDialogComponent } from './btn-content-share-dialog/btn-c
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-content-share',
   templateUrl: './btn-content-share.component.html',
   styleUrls: ['./btn-content-share.component.scss'],

@@ -12,6 +12,7 @@ import { IWidgetImageMap, IWidgetMapMeta, IWidgetScale, IWidgetMapCoords } from 
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-image-map-responsive',
   templateUrl: './image-map-responsive.component.html',
   styleUrls: ['./image-map-responsive.component.scss'],

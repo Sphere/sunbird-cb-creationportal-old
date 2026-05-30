@@ -18,6 +18,7 @@ import { MyTocService } from '../../services/my-toc.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-insights',
   templateUrl: './content-Insights.component.html',
   styleUrls: ['./content-Insights.component.scss'],

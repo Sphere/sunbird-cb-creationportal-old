@@ -47,6 +47,7 @@ const vCenter = (rect: ClientRect): number => {
 }
 
 @Directive({
+  standalone: false,
   selector: '[wsAuthSortableList]',
 })
 export class SortableListDirective implements AfterContentInit, OnDestroy, AfterViewInit {

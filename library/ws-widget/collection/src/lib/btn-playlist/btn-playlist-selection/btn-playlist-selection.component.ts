@@ -12,6 +12,7 @@ import { BtnPlaylistService } from '../btn-playlist.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-playlist-selection',
   templateUrl: './btn-playlist-selection.component.html',
   styleUrls: ['./btn-playlist-selection.component.scss'],

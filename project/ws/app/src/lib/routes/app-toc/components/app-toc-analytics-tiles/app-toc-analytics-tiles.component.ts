@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-app-toc-analytics-tiles',
   templateUrl: './app-toc-analytics-tiles.component.html',
   styleUrls: ['./app-toc-analytics-tiles.component.scss'],

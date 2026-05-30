@@ -16,6 +16,7 @@ import { template1Data, template2Data } from './template.constant'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-template',
   templateUrl: './template.component.html',
   styleUrls: ['./template.component.scss'],

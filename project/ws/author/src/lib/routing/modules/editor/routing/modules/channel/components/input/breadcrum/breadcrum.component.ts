@@ -8,6 +8,7 @@ import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-breadcrum',
   templateUrl: './breadcrum.component.html',
   styleUrls: ['./breadcrum.component.scss'],

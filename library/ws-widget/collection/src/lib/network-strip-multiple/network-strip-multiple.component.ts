@@ -44,6 +44,7 @@ interface IStripUnitContentData {
   } | null
 }
 @Component({
+  standalone: false,
   selector: 'ws-widget-network-strip-multiple',
   templateUrl: './network-strip-multiple.component.html',
   styleUrls: ['./network-strip-multiple.component.scss'],

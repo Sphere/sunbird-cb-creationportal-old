@@ -8,6 +8,7 @@ import { EventService } from '@ws-widget/utils'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-dbms-playground',
   templateUrl: './dbms-playground.component.html',
   styleUrls: ['./dbms-playground.component.scss'],

@@ -8,6 +8,7 @@ import { ConfigurationsService, NsPage } from '../../../../../../../../library/w
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-about-video',
   templateUrl: './about-video.component.html',
   styleUrls: ['./about-video.component.scss'],

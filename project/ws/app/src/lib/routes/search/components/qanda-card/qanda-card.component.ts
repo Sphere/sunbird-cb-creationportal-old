@@ -4,6 +4,7 @@ import { IWsSocialSearchResultData } from '../../models/search.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-qanda-card',
   templateUrl: './qanda-card.component.html',
   styleUrls: ['./qanda-card.component.scss'],

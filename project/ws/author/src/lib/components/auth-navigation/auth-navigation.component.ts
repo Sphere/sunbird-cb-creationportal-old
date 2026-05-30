@@ -8,6 +8,7 @@ import { SafeUrl, DomSanitizer } from '@angular/platform-browser'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-navigation',
   templateUrl: './auth-navigation.component.html',
   styleUrls: ['./auth-navigation.component.scss'],

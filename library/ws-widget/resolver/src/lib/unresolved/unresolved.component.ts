@@ -5,6 +5,7 @@ import { NsWidgetResolver } from '@ws-widget/resolver'
 import { WidgetBaseComponent } from '../widget-base.component'
 
 @Component({
+  standalone: false,
   selector: 'ws-resolver-unresolved',
   templateUrl: './unresolved.component.html',
   styleUrls: ['./unresolved.component.scss'],

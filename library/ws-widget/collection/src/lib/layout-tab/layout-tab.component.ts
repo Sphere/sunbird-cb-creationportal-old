@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs'
 import { ActivatedRoute, Router, ParamMap } from '@angular/router'
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-layout-tab',
   templateUrl: './layout-tab.component.html',
   styleUrls: ['./layout-tab.component.scss'],

@@ -34,6 +34,7 @@ import { MobileAppsService } from 'src/app/services/mobile-apps.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-toc-banner',
   templateUrl: './app-toc-banner.component.html',
   styleUrls: ['./app-toc-banner.component.scss'],

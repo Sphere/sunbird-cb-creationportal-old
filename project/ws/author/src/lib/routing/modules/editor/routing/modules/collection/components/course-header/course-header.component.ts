@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs'
 
 
 @Component({
+  standalone: false,
   // tslint:disable-next-line:component-selector
   selector: 'ws-author-course-header',
   templateUrl: './course-header.component.html',

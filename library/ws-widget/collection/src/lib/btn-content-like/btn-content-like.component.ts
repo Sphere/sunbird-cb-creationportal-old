@@ -10,6 +10,7 @@ import { BtnContentLikeService } from './btn-content-like.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-content-like',
   templateUrl: './btn-content-like.component.html',
   styleUrls: ['./btn-content-like.component.scss'],

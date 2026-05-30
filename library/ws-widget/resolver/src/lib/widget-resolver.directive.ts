@@ -8,6 +8,7 @@ import { WidgetResolverService } from './widget-resolver.service'
 
 
 @Directive({
+  standalone: false,
   selector: '[wsResolverWidget]',
 })
 export class WidgetResolverDirective implements OnChanges {

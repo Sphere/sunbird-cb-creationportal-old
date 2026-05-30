@@ -8,6 +8,7 @@ import { NsAppToc } from '../../models/app-toc.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-toc-content-card',
   templateUrl: './app-toc-content-card.component.html',
   styleUrls: ['./app-toc-content-card.component.scss'],

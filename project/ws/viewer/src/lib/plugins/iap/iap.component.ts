@@ -8,6 +8,7 @@ import { NsContent } from '../../../../../../../library/ws-widget/collection/src
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-plugin-iap',
   templateUrl: './iap.component.html',
   styleUrls: ['./iap.component.scss'],

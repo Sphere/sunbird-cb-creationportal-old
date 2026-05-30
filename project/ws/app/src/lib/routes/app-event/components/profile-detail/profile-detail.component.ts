@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-profile-detail',
   templateUrl: './profile-detail.component.html',
   styleUrls: ['./profile-detail.component.scss'],

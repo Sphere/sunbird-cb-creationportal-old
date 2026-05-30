@@ -84,6 +84,7 @@ import {
 } from '@ws-widget/collection'
 
 @Component({
+  standalone: false,
   // tslint:disable-next-line:component-selector
   selector: 'ws-author-course-collection',
   templateUrl: './course-collection.component.html',

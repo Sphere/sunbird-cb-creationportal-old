@@ -14,6 +14,7 @@ import { BtnSettingsService } from './btn-settings.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-settings',
   templateUrl: './btn-settings.component.html',
   styleUrls: ['./btn-settings.component.scss'],

@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-assessment-detail',
   templateUrl: './assessment-detail.component.html',
   styleUrls: ['./assessment-detail.component.scss'],

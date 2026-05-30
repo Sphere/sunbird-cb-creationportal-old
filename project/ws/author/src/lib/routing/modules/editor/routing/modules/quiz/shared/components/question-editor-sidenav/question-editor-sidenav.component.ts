@@ -25,6 +25,7 @@ import { IQuizQuestionType } from '../../../interface/quiz-interface'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-question-editor-sidebar',
   templateUrl: './question-editor-sidenav.component.html',
   styleUrls: ['./question-editor-sidenav.component.scss'],

@@ -1,54 +1,28 @@
 @use '@angular/material' as mat;
 @import 'ws-vars';
 
-// Material 17: Include core styles (includes default typography)
+// Material 21: core() includes base styles (elevation, ripple, etc.)
 @include mat.core();
 
-// Default typography configuration using Material 17 API
-$typography: mat.define-typography-config(
-  $font-family: 'Lato, sans-serif',
-);
+// Apply Material 3 typography globally using the default theme
+$typography-theme: mat.define-theme((
+  typography: (
+    brand-family: 'Lato, sans-serif',
+    plain-family: 'Lato, sans-serif',
+  ),
+));
 
-@include mat.all-component-typographies($typography);
-
-// Custom typography size classes (simplified for Material 17 migration)
-// These classes now just override font-size for major elements
-.x-small-typography {
-  font-size: 12px;
+html {
+  @include mat.typography-hierarchy($typography-theme);
 }
 
-.small-typography {
-  font-size: 13px;
-}
-
-.large-typography {
-  font-size: 16px;
-}
-
-.x-large-typography {
-  font-size: 18px;
-}
-
-.custom-typography {
-  font-family: $font-family-lato, sans-serif;
-}
-
-.x-small-custom-typography {
-  font-size: 12px;
-  font-family: $font-family-lato, sans-serif;
-}
-
-.small-custom-typography {
-  font-size: 13px;
-  font-family: $font-family-lato, sans-serif;
-}
-
-.large-custom-typography {
-  font-size: 16px;
-  font-family: $font-family-lato, sans-serif;
-}
-
-.x-large-custom-typography {
-  font-size: 18px;
-  font-family: $font-family-lato, sans-serif;
-}
+// Custom typography size classes (kept for backward compat)
+.x-small-typography { font-size: 12px; }
+.small-typography { font-size: 13px; }
+.large-typography { font-size: 16px; }
+.x-large-typography { font-size: 18px; }
+.custom-typography { font-family: $font-family-lato, sans-serif; }
+.x-small-custom-typography { font-size: 12px; font-family: $font-family-lato, sans-serif; }
+.small-custom-typography { font-size: 13px; font-family: $font-family-lato, sans-serif; }
+.large-custom-typography { font-size: 16px; font-family: $font-family-lato, sans-serif; }
+.x-large-custom-typography { font-size: 18px; font-family: $font-family-lato, sans-serif; }

@@ -13,6 +13,7 @@ import {
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-fullscreen',
   templateUrl: './btn-fullscreen.component.html',
   styleUrls: ['./btn-fullscreen.component.scss'],

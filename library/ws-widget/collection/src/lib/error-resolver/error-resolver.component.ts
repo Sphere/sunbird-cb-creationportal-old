@@ -11,6 +11,7 @@ import { ErrorResolverService } from './error-resolver.service'
 import { ActivatedRoute } from '@angular/router'
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-error-resolver',
   templateUrl: './error-resolver.component.html',
   styleUrls: ['./error-resolver.component.scss'],

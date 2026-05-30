@@ -4,6 +4,7 @@ import { NSRdbmsHandsOn } from '../../rdbms-hands-on.model'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-execution-result',
   templateUrl: './execution-result.component.html',
   styleUrls: ['./execution-result.component.scss'],

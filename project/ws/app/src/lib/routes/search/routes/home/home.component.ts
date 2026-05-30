@@ -13,6 +13,7 @@ import { ISearchAutoComplete, ISearchQuery, ISuggestedFilters } from '../../mode
 import { SearchServService } from '../../services/search-serv.service'
 
 @Component({
+  standalone: false,
   selector: 'ws-app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],

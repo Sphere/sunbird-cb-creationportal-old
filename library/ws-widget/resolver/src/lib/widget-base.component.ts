@@ -7,6 +7,7 @@ import { NsWidgetResolver } from './widget-resolver.model'
 type TWidgetBase = Omit<NsWidgetResolver.IWidgetData<any>, 'widgetData'>
 
 @Component({
+  standalone: false,
   selector: 'ws-resolver-base',
   template: 'Base Component',
 })

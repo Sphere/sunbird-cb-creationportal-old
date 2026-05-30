@@ -10,6 +10,7 @@ import { ConfigurationsService } from '../../../../../../../library/ws-widget/ut
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-iap-container',
   templateUrl: './iap.component.html',
   styleUrls: ['./iap.component.scss'],

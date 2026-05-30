@@ -6,6 +6,7 @@ import { MobileAppsService } from '../../../../../../src/app/services/mobile-app
 
 
 @Directive({
+  standalone: false,
   selector: '[wsWidgetUrlResolver]',
 })
 export class WidgetUrlResolverDirective {

@@ -23,6 +23,7 @@ import { NsWidgetResolver } from '@ws-widget/resolver'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-audio',
   templateUrl: './audio.component.html',
   styleUrls: ['./audio.component.scss'],

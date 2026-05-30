@@ -9,6 +9,7 @@ import { NsContentStripMultiple, IPickerContentData, NsContent } from '@ws-widge
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-strip-multiple',
   templateUrl: './content-strip-multiple.component.html',
   styleUrls: ['./content-strip-multiple.component.scss'],

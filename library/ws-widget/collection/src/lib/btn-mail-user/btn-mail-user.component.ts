@@ -18,6 +18,7 @@ export interface IBtnMailUser {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-mail-user',
   templateUrl: './btn-mail-user.component.html',
   styleUrls: ['./btn-mail-user.component.scss'],

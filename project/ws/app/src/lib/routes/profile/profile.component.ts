@@ -11,6 +11,7 @@ import { map } from 'rxjs/operators'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],

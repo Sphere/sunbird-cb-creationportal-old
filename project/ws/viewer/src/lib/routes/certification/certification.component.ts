@@ -14,6 +14,7 @@ import { ActivatedRoute } from '@angular/router'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-certification',
   templateUrl: './certification.component.html',
   styleUrls: ['./certification.component.scss'],

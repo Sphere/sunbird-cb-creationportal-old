@@ -27,6 +27,7 @@ import { SEARCHV6 } from './content-strip-v2.constant'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-strip-v2',
   templateUrl: './content-strip-v2.component.html',
   styleUrls: ['./content-strip-v2.component.scss'],

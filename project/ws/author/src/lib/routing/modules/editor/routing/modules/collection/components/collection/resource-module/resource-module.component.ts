@@ -34,6 +34,7 @@ import { ConfigurationsService } from '@ws-widget/utils'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-author-resource-module',
   templateUrl: './resource-module.component.html',
   styleUrls: ['./resource-module.component.scss']

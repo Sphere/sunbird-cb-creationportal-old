@@ -16,6 +16,7 @@ import { NsAnalytics, NsCourseAnalytics } from '../../models/app-toc-analytics.m
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-app-toc-analytics',
   templateUrl: './app-toc-analytics.component.html',
   styleUrls: ['./app-toc-analytics.component.scss'],

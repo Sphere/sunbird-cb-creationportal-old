@@ -4,6 +4,7 @@ import { NsContent } from '@ws-widget/collection'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-html-picker-container',
   templateUrl: './html-picker.component.html',
   styleUrls: ['./html-picker.component.scss'],

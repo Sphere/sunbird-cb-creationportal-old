@@ -4,6 +4,7 @@ import { Pipe, PipeTransform } from '@angular/core'
 
 
 @Pipe({
+  standalone: false,
   name: 'relativeUrl',
 })
 export class RelativeUrlPipe implements PipeTransform {

@@ -13,6 +13,7 @@ import { ValueService } from '../../services/value.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-utils-image-crop',
   templateUrl: './image-crop.component.html',
   styleUrls: ['./image-crop.component.scss'],

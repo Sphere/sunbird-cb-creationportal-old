@@ -29,6 +29,7 @@ import { StatusTrackComponent } from '../../../../../modules/shared/components/s
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-editor',
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],

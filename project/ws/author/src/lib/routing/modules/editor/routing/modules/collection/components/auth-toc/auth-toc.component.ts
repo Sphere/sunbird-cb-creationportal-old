@@ -43,6 +43,7 @@ import { EMPTY } from 'rxjs'
 
 declare var $: any
 @Component({
+  standalone: false,
   // tslint:disable-next-line:component-selector
   selector: 'ws-author-auth-toc',
   templateUrl: './auth-toc.component.html',

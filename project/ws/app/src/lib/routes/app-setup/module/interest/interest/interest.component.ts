@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-interests',
   templateUrl: './interest.component.html',
   styleUrls: ['./interest.component.scss'],

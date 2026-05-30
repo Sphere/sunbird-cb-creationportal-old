@@ -10,6 +10,7 @@ import { EventService } from '../../services/event.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-iframe-loader',
   templateUrl: './iframe-loader.component.html',
   styleUrls: ['./iframe-loader.component.scss'],

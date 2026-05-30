@@ -8,6 +8,7 @@ import { ValueService } from '@ws-widget/utils'
 
 
 @Component({
+  standalone: false,
   selector: 'player-video-popup-component',
   templateUrl: './player-video-popup-component.html',
   styleUrls: ['./player-video-popup-component.scss'],

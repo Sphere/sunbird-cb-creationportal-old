@@ -66,6 +66,7 @@ import { NSApiRequest } from '../../../../../../../../interface/apiRequest'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-file-upload',
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.scss'],

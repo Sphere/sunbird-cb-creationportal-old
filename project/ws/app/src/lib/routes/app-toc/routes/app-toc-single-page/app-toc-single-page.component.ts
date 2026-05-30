@@ -6,6 +6,7 @@ import { AppTocSinglePageService } from './app-toc-single-page.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-app-toc-single-page-root',
   templateUrl: './app-toc-single-page.component.html',
   styleUrls: ['./app-toc-single-page.component.scss'],

@@ -19,6 +19,7 @@ import { IKhubItemTile, IKhubViewResultDocs } from '../../models/knowledgeHub.mo
 export type IKhubFetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
 
 @Component({
+  standalone: false,
   selector: 'ws-app-knowledge',
   templateUrl: './knowledge.component.html',
   styleUrls: ['./knowledge.component.scss'],

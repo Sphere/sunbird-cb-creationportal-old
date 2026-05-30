@@ -15,6 +15,7 @@ import { LoaderService } from 'project/ws/author/src/lib/services/loader.service
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-app-toc-certificate-modal',
   templateUrl: './app-toc-certificate-modal.component.html',
   styleUrls: ['./app-toc-certificate-modal.component.scss'],

@@ -25,6 +25,7 @@ import { NsWidgetResolver } from '@ws-widget/resolver'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-social',
   templateUrl: './social.component.html',
   styleUrls: ['./social.component.scss'],

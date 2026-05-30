@@ -14,6 +14,7 @@ import _ from 'lodash'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-users-view',
   templateUrl: './users-view.component.html',
   styleUrls: ['./users-view.component.scss'],

@@ -24,6 +24,7 @@ import { EventService } from '../../../../../../../library/ws-widget/utils/src/p
 import { ActivatedRoute } from '@angular/router'
 
 @Component({
+  standalone: false,
   selector: 'viewer-plugin-web-module',
   templateUrl: './web-module.component.html',
   styleUrls: ['./web-module.component.scss'],

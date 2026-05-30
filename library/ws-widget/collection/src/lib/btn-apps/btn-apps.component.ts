@@ -14,6 +14,7 @@ import { Router, NavigationStart, NavigationEnd } from '@angular/router'
 
 import { MatDialog } from '@angular/material/dialog'
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-apps',
   templateUrl: './btn-apps.component.html',
   styleUrls: ['./btn-apps.component.scss'],

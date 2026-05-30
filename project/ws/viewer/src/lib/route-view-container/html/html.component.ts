@@ -15,6 +15,7 @@ import { ValueService, ConfigurationsService } from '@ws-widget/utils'
 import { PlayerStateService } from '../../player-state.service'
 
 @Component({
+  standalone: false,
   selector: 'viewer-html-container',
   templateUrl: './html.component.html',
   styleUrls: ['./html.component.scss'],

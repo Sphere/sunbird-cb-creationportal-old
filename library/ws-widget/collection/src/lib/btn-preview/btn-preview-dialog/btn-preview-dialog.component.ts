@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-preview-dialog',
   templateUrl: './btn-preview-dialog.component.html',
   styleUrls: ['./btn-preview-dialog.component.scss'],

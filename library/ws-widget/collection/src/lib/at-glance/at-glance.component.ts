@@ -5,6 +5,7 @@ import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
 import { IAtGlanceComponentData } from './at-glance.model'
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-at-glance',
   templateUrl: './at-glance.component.html',
   styleUrls: ['./at-glance.component.scss'],

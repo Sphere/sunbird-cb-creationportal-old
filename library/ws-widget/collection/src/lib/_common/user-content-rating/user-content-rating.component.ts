@@ -8,6 +8,7 @@ import { WidgetContentService } from '../../_services/widget-content.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-user-content-rating',
   templateUrl: './user-content-rating.component.html',
   styleUrls: ['./user-content-rating.component.scss'],

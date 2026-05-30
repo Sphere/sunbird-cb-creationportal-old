@@ -27,6 +27,7 @@ import { SnackbarComponent } from '../snackbar/snackbar.component'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-toc-certification-result-verification-card',
   templateUrl: './result-verification-card.component.html',
   styleUrls: ['./result-verification-card.component.scss'],

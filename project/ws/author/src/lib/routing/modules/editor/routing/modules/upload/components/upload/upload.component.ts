@@ -44,6 +44,7 @@ import { NotificationService } from '@ws/author/src/lib/services/notification.se
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-upload',
   templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.scss'],

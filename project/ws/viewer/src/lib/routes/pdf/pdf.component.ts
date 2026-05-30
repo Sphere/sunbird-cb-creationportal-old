@@ -21,6 +21,7 @@ import { ViewerUtilService } from '../../viewer-util.service'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-pdf',
   templateUrl: './pdf.component.html',
   styleUrls: ['./pdf.component.scss'],

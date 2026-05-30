@@ -94,6 +94,7 @@ import { isNumber } from 'lodash'
 import _ from 'lodash'
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-edit-meta',
   templateUrl: './edit-meta.component.html',
   styleUrls: ['./edit-meta.component.scss'],

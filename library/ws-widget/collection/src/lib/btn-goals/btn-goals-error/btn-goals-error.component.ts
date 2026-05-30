@@ -12,6 +12,7 @@ interface IData {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-goals-error',
   templateUrl: './btn-goals-error.component.html',
   styleUrls: ['./btn-goals-error.component.scss'],

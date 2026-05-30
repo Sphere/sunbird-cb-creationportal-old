@@ -34,6 +34,7 @@ import { of } from 'rxjs'
 const NOTIFICATION_TIME = 5
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-shared-feedback',
   templateUrl: './feedback-form.component.html',
   styleUrls: ['./feedback-form.component.scss'],

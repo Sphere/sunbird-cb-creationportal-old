@@ -24,6 +24,7 @@ import { MatSnackBarRef } from '@angular/material/snack-bar'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-confirm-dialog',
   templateUrl: './confirm-dialog.component.html',
   styleUrls: ['./confirm-dialog.component.scss'],

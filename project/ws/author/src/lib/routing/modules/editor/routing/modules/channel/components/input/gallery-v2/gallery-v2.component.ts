@@ -26,6 +26,7 @@ import { FILE_MAX_SIZE } from './../../../../../../../../../constants/upload'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-gallery-v2',
   templateUrl: './gallery-v2.component.html',
   styleUrls: ['./gallery-v2.component.scss'],

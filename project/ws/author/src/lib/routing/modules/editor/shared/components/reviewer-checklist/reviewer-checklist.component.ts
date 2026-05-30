@@ -26,6 +26,7 @@ import { CommentsViewComponent } from '../../../../../../modules/shared/componen
 
 
 @Component({
+  standalone: false,
   selector: 'ws-reviewer-checklist-view',
   templateUrl: './reviewer-checklist.component.html',
   styleUrls: ['./reviewer-checklist.component.scss'],

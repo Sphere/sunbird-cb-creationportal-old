@@ -16,6 +16,7 @@ import { SuccessDialogComponent } from '../success-dialog/success-dialog.compone
 
 import { MatDialog } from '@angular/material/dialog'
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-certificate-upload-dialog',
   templateUrl: './certificate-upload-dialog.component.html',
   styleUrls: ['./certificate-upload-dialog.component.scss'],

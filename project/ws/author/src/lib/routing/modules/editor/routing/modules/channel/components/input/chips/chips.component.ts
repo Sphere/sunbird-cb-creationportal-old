@@ -28,6 +28,7 @@ import { ISortEvent } from '../../../../../../../../../directives/draggable/sort
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-chips',
   templateUrl: './chips.component.html',
   styleUrls: ['./chips.component.scss'],

@@ -14,6 +14,7 @@ import { IWidgetErrorAccessForbidden } from './error-access-forbidden.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-error-access-forbidden',
   templateUrl: './error-access-forbidden.component.html',
   styleUrls: ['./error-access-forbidden.component.scss'],

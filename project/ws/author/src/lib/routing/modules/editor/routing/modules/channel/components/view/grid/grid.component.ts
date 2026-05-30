@@ -16,6 +16,7 @@ interface IAuthorGrid {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-grid',
   templateUrl: './grid.component.html',
   styleUrls: ['./grid.component.scss'],

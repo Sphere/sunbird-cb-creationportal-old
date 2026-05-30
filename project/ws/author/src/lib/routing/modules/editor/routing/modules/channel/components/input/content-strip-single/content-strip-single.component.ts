@@ -35,6 +35,7 @@ import { InterestService } from './../../../../../../../../../../../../app/src/l
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-strip-single',
   templateUrl: './content-strip-single.component.html',
   styleUrls: ['./content-strip-single.component.scss'],

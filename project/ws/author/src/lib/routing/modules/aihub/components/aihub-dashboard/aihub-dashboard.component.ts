@@ -3,6 +3,7 @@ import { AfterViewInit, Component } from '@angular/core'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-author-aihub-dashboard',
   templateUrl: './aihub-dashboard.component.html',
   styleUrls: ['./aihub-dashboard.component.scss']

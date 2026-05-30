@@ -20,6 +20,7 @@ import { BtnGoalsErrorComponent } from '../btn-goals-error/btn-goals-error.compo
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-goals-selection',
   templateUrl: './btn-goals-selection.component.html',
   styleUrls: ['./btn-goals-selection.component.scss'],

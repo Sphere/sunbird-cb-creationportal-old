@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-display-contents[contents]',
   templateUrl: './display-contents.component.html',
   styleUrls: ['./display-contents.component.scss'],

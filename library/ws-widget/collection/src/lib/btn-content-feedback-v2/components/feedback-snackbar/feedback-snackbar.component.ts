@@ -5,6 +5,7 @@ import { IFeedbackSnackbarData } from '../../models/feedback.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-feedback-snackbar',
   templateUrl: './feedback-snackbar.component.html',
   styleUrls: ['./feedback-snackbar.component.scss'],

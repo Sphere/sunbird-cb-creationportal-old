@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-locale-translator',
   templateUrl: './locale-translator.component.html',
   styleUrls: ['./locale-translator.component.scss'],

@@ -8,6 +8,7 @@ import { TFetchStatus } from '@ws-widget/utils'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-learning',
   templateUrl: './learning.component.html',
   styleUrls: ['./learning.component.scss'],

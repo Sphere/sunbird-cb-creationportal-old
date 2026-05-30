@@ -28,6 +28,7 @@ interface ILearningHistoryContent {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-app-learning-history',
   templateUrl: './learning-history.component.html',
   styleUrls: ['./learning-history.component.scss'],

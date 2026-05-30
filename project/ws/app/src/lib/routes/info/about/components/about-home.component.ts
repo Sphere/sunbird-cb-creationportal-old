@@ -20,6 +20,7 @@ import { Subscription } from 'rxjs'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-about-home',
   templateUrl: './about-home.component.html',
   styleUrls: ['./about-home.component.scss'],

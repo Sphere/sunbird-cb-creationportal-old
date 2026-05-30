@@ -48,6 +48,7 @@ import { Router } from '@angular/router'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-quality',
   templateUrl: './content-quality.component.html',
   styleUrls: ['./content-quality.component.scss'],

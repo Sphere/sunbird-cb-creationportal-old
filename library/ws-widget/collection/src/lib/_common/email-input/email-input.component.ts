@@ -10,6 +10,7 @@ interface IUserShareId {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-email-input',
   templateUrl: './email-input.component.html',
   styleUrls: ['./email-input.component.scss'],

@@ -5,6 +5,7 @@ import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-progress-stepper',
   templateUrl: './progress-stepper.component.html',
   styleUrls: ['./progress-stepper.component.scss'],

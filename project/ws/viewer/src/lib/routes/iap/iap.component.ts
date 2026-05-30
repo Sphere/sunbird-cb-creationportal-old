@@ -16,6 +16,7 @@ import { ViewerUtilService } from '../../viewer-util.service'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-iap',
   templateUrl: './iap.component.html',
   styleUrls: ['./iap.component.scss'],

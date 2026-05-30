@@ -10,6 +10,7 @@ import { ICarousel } from '../sliders/sliders.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-sliders-mob',
   templateUrl: './sliders-mob.component.html',
   styleUrls: ['./sliders-mob.component.scss'],

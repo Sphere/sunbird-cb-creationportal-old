@@ -6,6 +6,7 @@ import { CollectionStoreService } from './../../services/store.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-collection-matmenu',
   templateUrl: './auth-collection-matmenu.component.html',
   styleUrls: ['./auth-collection-matmenu.component.scss'],

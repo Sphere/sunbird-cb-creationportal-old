@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-class-diagram-result',
   templateUrl: './class-diagram-result.component.html',
   styleUrls: ['./class-diagram-result.component.scss'],

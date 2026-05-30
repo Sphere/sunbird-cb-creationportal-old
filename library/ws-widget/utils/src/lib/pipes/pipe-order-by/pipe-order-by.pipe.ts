@@ -4,6 +4,7 @@ import { orderBy } from 'lodash'
 
 
 @Pipe({
+  standalone: false,
   name: 'orderBy',
 })
 

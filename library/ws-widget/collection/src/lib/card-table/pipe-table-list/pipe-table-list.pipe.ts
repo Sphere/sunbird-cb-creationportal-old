@@ -4,6 +4,7 @@ import * as _ from 'lodash'
 
 
 @Pipe({
+  standalone: false,
   name: 'listPipe',
 })
 export class PipeListPipe implements PipeTransform {

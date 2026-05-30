@@ -4,6 +4,7 @@ import { IIntranetSelector } from '@ws-widget/collection/src/lib/intranet-select
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-intranet-selector',
   templateUrl: './intranet-selector.component.html',
   styleUrls: ['./intranet-selector.component.scss'],

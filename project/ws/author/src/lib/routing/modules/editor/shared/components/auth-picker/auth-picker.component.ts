@@ -21,6 +21,7 @@ interface IAuthPickerData {
   selectedIds: string[]
 }
 @Component({
+  standalone: false,
   selector: 'ws-auth-picker',
   templateUrl: './auth-picker.component.html',
   styleUrls: ['./auth-picker.component.scss'],

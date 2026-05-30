@@ -39,6 +39,7 @@ import { AppTocCertificateModalComponent } from '../app-toc-certificate-modal/ap
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-learner-banner',
   templateUrl: './app-learner-banner.component.html',
   styleUrls: ['./app-learner-banner.component.scss'],
@@ -129,7 +130,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
     @Inject(DOCUMENT) public document: Document
   ) {
   }
-  @HostListener('window:popstate', ['$event'])
+  @HostListener('window:popstate')
   onPopState() {
     let url = sessionStorage.getItem('cURL') || '/page/home'
     if (url) {

@@ -34,6 +34,7 @@ import { ICatalog, ITodoItemFlatNode, TodoItemNode } from './models/catalog-mode
 // }
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-catalog-select',
   templateUrl: './catalog-select.component.html',
   styleUrls: ['./catalog-select.component.scss'],

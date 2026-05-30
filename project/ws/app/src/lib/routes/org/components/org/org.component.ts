@@ -17,6 +17,7 @@ import get from 'lodash/get'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-org',
   templateUrl: './org.component.html',
   styleUrls: ['./org.component.scss'],

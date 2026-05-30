@@ -11,6 +11,7 @@ import { Router } from '@angular/router'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-app-tour-dialog',
   templateUrl: './app-tour-dialog.component.html',
   styleUrls: ['./app-tour-dialog.component.scss'],

@@ -4,6 +4,7 @@ import { NsContent } from '@ws-widget/collection'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-hands-on-container',
   templateUrl: './hands-on.component.html',
   styleUrls: ['./hands-on.component.scss'],

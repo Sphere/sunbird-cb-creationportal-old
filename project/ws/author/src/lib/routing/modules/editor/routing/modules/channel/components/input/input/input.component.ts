@@ -21,6 +21,7 @@ import { IWidgetAuthor } from './../../../interface/widget'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-input',
   templateUrl: './input.component.html',
   styleUrls: ['./input.component.scss'],

@@ -18,6 +18,7 @@ import { CertificateStatusDialogComponentDialogComponent } from '../../../../../
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-content-card',
   templateUrl: './content-card.component.html',
   styleUrls: ['./content-card.component.scss'],

@@ -31,6 +31,7 @@ import { TitleTagService } from '@ws/app/src/lib/routes/app-toc/services/title-t
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-app-toc-single-page',
   templateUrl: './app-toc-single-page.component.html',
   styleUrls: ['./app-toc-single-page.component.scss'],

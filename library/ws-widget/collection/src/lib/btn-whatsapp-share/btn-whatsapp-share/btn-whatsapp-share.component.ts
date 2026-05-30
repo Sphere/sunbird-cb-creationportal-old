@@ -6,6 +6,7 @@ import { ConfigurationsService } from '../../../../../utils/src/public-api'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-whatsapp-share',
   templateUrl: './btn-whatsapp-share.component.html',
   styleUrls: ['./btn-whatsapp-share.component.scss'],

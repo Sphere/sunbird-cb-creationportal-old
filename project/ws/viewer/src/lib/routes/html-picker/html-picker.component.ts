@@ -14,6 +14,7 @@ import { ViewerUtilService } from '../../viewer-util.service'
 
 
 @Component({
+  standalone: false,
   selector: 'viewer-html-picker',
   templateUrl: './html-picker.component.html',
   styleUrls: ['./html-picker.component.scss'],

@@ -8,6 +8,7 @@ import { NsGalleryView } from '@ws-widget/collection/src/public-api'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-gallery-widget',
   templateUrl: './gallery-widget.component.html',
   styleUrls: ['./gallery-widget.component.scss'],

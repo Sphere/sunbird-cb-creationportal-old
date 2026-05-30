@@ -13,6 +13,7 @@ export interface IWidgetMailMeDialogComponentResponse {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-content-mail-me-dialog',
   templateUrl: './btn-content-mail-me-dialog.component.html',
   styleUrls: ['./btn-content-mail-me-dialog.component.scss'],
