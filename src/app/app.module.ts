@@ -26,7 +26,7 @@ import { StickyHeaderModule } from '@ws-widget/collection/src/lib/_common/sticky
 import { WidgetResolverModule } from '@ws-widget/resolver'
 import { LoggerService, PipeSafeSanitizerModule } from '@ws-widget/utils'
 import { SearchModule } from '@ws/app/src/public-api'
-import { provideKeycloak } from 'keycloak-angular'
+import { KeycloakService } from 'keycloak-angular'
 import { AppRoutingModule } from './app-routing.module'
 import { InitService } from './services/init.service'
 import { GlobalErrorHandlingService } from './services/global-error-handling.service'
@@ -149,10 +149,7 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
       withInterceptorsFromDi(),
       withJsonpSupport(),
     ),
-    provideKeycloak({
-      config: { url: '', realm: '', clientId: '' },
-      initOptions: { onLoad: 'check-sso', checkLoginIframe: false },
-    }),
+    KeycloakService,
     { provide: HTTP_INTERCEPTORS, useClass: AppInterceptorService, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: AppRetryInterceptorService, multi: true },
     TncAppResolverService,
