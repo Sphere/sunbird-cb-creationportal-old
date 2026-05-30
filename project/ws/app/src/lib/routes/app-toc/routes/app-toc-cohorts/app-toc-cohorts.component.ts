@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular/core'
+import { Component, OnInit, ViewChild } from '@angular/core'
 
 import { AppTocCohortsService } from './app-toc-cohorts.service'
 
@@ -15,15 +15,13 @@ export class AppTocCohortsComponent implements OnInit {
 
   @ViewChild(AppTocCohortsDirective, { static: true }) wsAppAppTocCohorts!: AppTocCohortsDirective
   constructor(
-    private componentFactoryResolver: ComponentFactoryResolver,
     private appTocCohortsSvc: AppTocCohortsService,
   ) { }
 
   loadComponent() {
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.appTocCohortsSvc.getComponent())
     const viewContainerRef = this.wsAppAppTocCohorts.viewContainerRef
     viewContainerRef.clear()
-    viewContainerRef.createComponent(componentFactory)
+    viewContainerRef.createComponent(this.appTocCohortsSvc.getComponent())
   }
 
   ngOnInit() {

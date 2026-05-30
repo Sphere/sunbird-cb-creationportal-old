@@ -1,4 +1,4 @@
-import { Component, OnInit, ComponentFactoryResolver, ViewChild } from '@angular/core'
+import { Component, OnInit, ViewChild } from '@angular/core'
 
 import { AppTocOverviewDirective } from './app-toc-overview.directive'
 
@@ -16,15 +16,13 @@ export class AppTocOverviewComponent implements OnInit {
   @ViewChild(AppTocOverviewDirective, { static: true }) wsAppAppTocOverview!: AppTocOverviewDirective
 
   constructor(
-    private componentFactoryResolver: ComponentFactoryResolver,
     private appTocSvc: AppTocOverviewService,
   ) { }
 
   loadComponent() {
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.appTocSvc.getComponent())
     const viewContainerRef = this.wsAppAppTocOverview.viewContainerRef
     viewContainerRef.clear()
-    viewContainerRef.createComponent(componentFactory)
+    viewContainerRef.createComponent(this.appTocSvc.getComponent())
   }
 
   ngOnInit() {

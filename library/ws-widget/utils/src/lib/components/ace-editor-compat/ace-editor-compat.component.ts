@@ -11,7 +11,16 @@ import {
   SimpleChanges,
 } from '@angular/core'
 
-declare const ace: any
+import * as ace from 'ace-builds'
+import 'ace-builds/src-min-noconflict/mode-text'
+import 'ace-builds/src-min-noconflict/mode-javascript'
+import 'ace-builds/src-min-noconflict/mode-python'
+import 'ace-builds/src-min-noconflict/mode-java'
+import 'ace-builds/src-min-noconflict/mode-html'
+import 'ace-builds/src-min-noconflict/mode-css'
+import 'ace-builds/src-min-noconflict/mode-sql'
+import 'ace-builds/src-min-noconflict/theme-monokai'
+import 'ace-builds/src-min-noconflict/theme-eclipse'
 
 @Component({
   standalone: false,
@@ -46,10 +55,6 @@ export class AceEditorCompatComponent implements AfterViewInit, OnDestroy, OnCha
   private _debounceTimer: any = null
 
   ngAfterViewInit() {
-    if (typeof ace === 'undefined') {
-      console.warn('AceEditorCompatComponent: ace global not found. Add ace.js to angular.json scripts.')
-      return
-    }
     this._editor = ace.edit(this.host.nativeElement)
     this._editor.setTheme(`ace/theme/${this.theme}`)
     this._editor.session.setMode(`ace/mode/${this.mode}`)

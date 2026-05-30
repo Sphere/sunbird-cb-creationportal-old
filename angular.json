@@ -59,8 +59,7 @@
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
               "src/cbp-assets/telemetry.min.js",
-              "node_modules/shepherd.js/dist/js/shepherd.min.js",
-              "node_modules/ace-builds/src-min-noconflict/ace.js"
+              "node_modules/shepherd.js/dist/js/shepherd.min.js"
             ]
           },
           "configurations": {

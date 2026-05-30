@@ -1,7 +1,6 @@
 import {
   Injectable,
   Inject,
-  ComponentFactoryResolver,
   ViewContainerRef,
   ComponentRef,
   Type,
@@ -39,7 +38,6 @@ export class WidgetResolverService {
   isInitialized = false
   constructor(
     private domSanitizer: DomSanitizer,
-    private componentFactoryResolver: ComponentFactoryResolver,
     // private loggerSvc: LoggerService,
     @Inject(WIDGET_RESOLVER_GLOBAL_CONFIG)
     private globalConfig: null | NsWidgetResolver.IRegistrationConfig[],
@@ -131,11 +129,8 @@ export class WidgetResolverService {
     compData: NsWidgetResolver.IRenderConfigWithAnyData,
     component: Type<NsWidgetResolver.IWidgetData<any>>,
   ): ComponentRef<NsWidgetResolver.IWidgetData<any>> {
-    const factory = this.componentFactoryResolver.resolveComponentFactory(component)
     containerRef.clear()
-    const compRef: ComponentRef<NsWidgetResolver.IWidgetData<any>> = containerRef.createComponent(
-      factory,
-    )
+    const compRef: ComponentRef<NsWidgetResolver.IWidgetData<any>> = containerRef.createComponent(component)
     compRef.instance.widgetData = compData.widgetData
     if (compRef.instance.updateBaseComponent) {
       const widgetSafeStyle = compData.widgetHostStyle
