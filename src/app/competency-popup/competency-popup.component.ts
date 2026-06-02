@@ -78,10 +78,14 @@ export class CompetencyPopupComponent implements OnInit {
 
     if (!this.disableLevel && this.parentData?.competencies_v1 && event?.id) {
       let existing: any[] = []
-      try { existing = JSON.parse(this.parentData.competencies_v1) } catch { existing = [] }
+      try {
+        const raw = this.parentData.competencies_v1
+        // API returns a JSON string; after an in-memory write it may be an array already
+        existing = typeof raw === 'string' ? JSON.parse(raw) : (Array.isArray(raw) ? raw : [])
+      } catch { existing = [] }
 
       existing.forEach((comp: any) => {
-        if (String(comp.competencyId) === String(event.id) && comp.level) {
+        if (String(comp.competencyId) === String(event.id) && comp.level !== undefined) {
           const found = this.levelList.find(l => String(l.value) === String(comp.level))
           if (found) {
             found.selected = true
@@ -114,9 +118,10 @@ export class CompetencyPopupComponent implements OnInit {
       : []
     let arr2: any[] = []
     try {
-      arr2 = this.parentData?.competencies_v1
-        ? JSON.parse(this.parentData.competencies_v1)
-        : []
+      const raw = this.parentData?.competencies_v1
+      if (raw) {
+        arr2 = typeof raw === 'string' ? JSON.parse(raw) : (Array.isArray(raw) ? raw : [])
+      }
     } catch { arr2 = [] }
 
     // Remove all existing entries for this competency so we can re-add cleanly (no duplicates)

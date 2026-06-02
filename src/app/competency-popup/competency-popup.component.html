@@ -65,11 +65,11 @@
 <!-- ── Footer Actions ────────────────────────────────────────────────────── -->
 <mat-dialog-actions class="cp-actions">
   <button mat-stroked-button class="cp-btn-cancel" [mat-dialog-close]="false"
-    (click)="addCompetency(proficiency, selectLevel, false)">
+    (click)="addCompetency(proficiency, null, false)">
     Cancel
   </button>
   <button mat-flat-button class="cp-btn-confirm"
-    (click)="addCompetency(proficiency, selectLevel, true)"
+    (click)="addCompetency(proficiency, null, true)"
     [disabled]="!(proficiency?.id && (hasOneChecked || disableLevel))">
     Add Competency
   </button>
