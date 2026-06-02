@@ -16,6 +16,7 @@ import { IAboutObject } from './about.model'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-public-about',
   templateUrl: './public-about.component.html',
   styleUrls: ['./public-about.component.scss'],

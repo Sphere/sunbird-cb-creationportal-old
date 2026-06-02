@@ -1,180 +1,210 @@
-<div class="margin-m">
-  <div mat-dialog-content>
-    <h3>
-      <ng-container i18n *ngIf="data === 'skip'">
-        Are you sure you want to skip the review checklist?
-      </ng-container>
-      <ng-container i18n *ngIf="data === 'delete'">
-        Are you sure you want to delete it?
-      </ng-container>
-      <ng-container i18n *ngIf="data === 'restoreDeleted'">
-        Are you sure you want to restore it by moving the content and all its children to Draft state?
-      </ng-container>
-      <ng-container i18n *ngIf="data === 'transcodeMessage'">
-        Video content takes some time to reflect after the upload is complete, depending on the size of the video. You
-        can come back
-        later to this content to take further actions.
-      </ng-container>
-      <ng-container i18n *ngIf="data === 'publishMessage'">
-        Updated content may take between 5 to 30 minutes to take effect. You may also have to reload the web page to
-        view the changes.
-      </ng-container>
-      <ng-container i18n *ngIf="data === 'directPublishMessage'">
-        As you are a publisher content will be published directly. Updated content may take between 5 to 30 minutes to
-        take effect.
-        You may also have to reload the web page to view the changes.
-      </ng-container>
-      <ng-container i18n *ngIf="data === 'deleteTreeNode'">
-        Are you sure you want to remove the mapping?
-      </ng-container>
-      <ng-container i18n *ngIf="data === 'dialog'">
-        Selecting this option will discard pre entered data of other options. Do you wish to continue ?
-      </ng-container>
-      <ng-container i18n *ngIf="data === 'unpublish'">
-        Are you sure you want to unpublish it?
-      </ng-container>
-      <ng-container *ngIf="data === 'retrieveParent'" i18n>Are you sure you want to retrieve this content and its
-        children?
-      </ng-container>
-      <ng-container *ngIf="data === 'retrieveChild'" i18n>Are you sure you want to retrieve this content?
-      </ng-container>
-      <ng-container *ngIf="data.type === 'deleteQues'">
-        <span i18n> Are you sure you want to delete Quiz</span>-{{ data.index }} ?
-      </ng-container>
-      <ng-container *ngIf="data.type === 'deleteModulepg'">
-        <span i18n> Are you sure you want to delete Page</span>-{{ data.index }} ?
-      </ng-container>
-      <ng-container *ngIf="data === 'deleteAudio'">
-        <span i18n> Are you sure you want to delete the audio file attached for this page ?</span>
-      </ng-container>
-      <ng-container *ngIf="data.type === 'deleteVideoQuestion'">
-        <span i18n> Are you sure you want to delete this Question</span>-{{ data.index }} ?
-      </ng-container>
-      <ng-container *ngIf="data === 'uploadFile'">
-        <span i18n> This will override the questions already present. Do you want to upload?</span>
-      </ng-container>
-    </h3>
+<!-- ══ Info / Acknowledgement messages (Ok only) ══════════════════════════ -->
+<ng-container *ngIf="data === 'transcodeMessage' || data === 'publishMessage' || data === 'directPublishMessage'">
+  <div class="cd-header">
+    <span class="cd-header-icon cd-header-icon--info">
+      <mat-icon>info</mat-icon>
+    </span>
+    <div>
+      <p class="cd-title" i18n>Information</p>
+      <p class="cd-subtitle" i18n>Please read before continuing</p>
+    </div>
   </div>
-  <div mat-dialog-content [ngClass]="data.type === 'editAssessment' ? 'scroll' : ''">
-    <ng-container *ngIf="data.type === 'editAssessment'">
-      <div *ngIf="this.data.data.questionType == 'mcq-sca'">
-        <div [formGroup]="questionForm">
-          <span i18n> MCQ: Question </span><br>
-          <mat-form-field appearance="outline">
-            <input matInput formControlName="question" maxlength="100" i18n-placeholder
-              placeholder="Question Statement" />
-          </mat-form-field><br>
+  <mat-dialog-content class="cd-content">
+    <p class="cd-message" *ngIf="data === 'transcodeMessage'" i18n>
+      Video content takes some time to reflect after upload, depending on the size of the video.
+      You can return later to this content to take further actions.
+    </p>
+    <p class="cd-message" *ngIf="data === 'publishMessage'" i18n>
+      Updated content may take between 5 to 30 minutes to take effect.
+      You may also need to reload the page to view the changes.
+    </p>
+    <p class="cd-message" *ngIf="data === 'directPublishMessage'" i18n>
+      As you are a publisher, content will be published directly. Updated content may take
+      between 5 to 30 minutes to take effect. You may also need to reload the page.
+    </p>
+  </mat-dialog-content>
+  <mat-dialog-actions class="cd-actions">
+    <button mat-flat-button class="cd-btn-confirm" [mat-dialog-close]="true" i18n>
+      Got it
+    </button>
+  </mat-dialog-actions>
+</ng-container>
+
+<!-- ══ Destructive / Confirmation messages (No / Yes) ═══════════════════ -->
+<ng-container *ngIf="
+  data === 'delete' || data === 'skip' || data === 'unpublish' ||
+  data === 'restoreDeleted' || data === 'deleteTreeNode' || data === 'dialog' ||
+  data === 'retrieveParent' || data === 'retrieveChild' || data === 'uploadFile' ||
+  data === 'deleteAudio' ||
+  (data?.type === 'deleteQues') || (data?.type === 'deleteModulepg') || (data?.type === 'deleteVideoQuestion')">
+
+  <div class="cd-header">
+    <span class="cd-header-icon cd-header-icon--danger">
+      <mat-icon>error_outline</mat-icon>
+    </span>
+    <div>
+      <p class="cd-title" i18n>Confirm Action</p>
+      <p class="cd-subtitle" i18n>This action cannot be undone</p>
+    </div>
+    <button mat-icon-button class="cd-close" mat-dialog-close aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="cd-content">
+    <p class="cd-message">
+      <ng-container i18n *ngIf="data === 'skip'">Are you sure you want to skip the review checklist?</ng-container>
+      <ng-container i18n *ngIf="data === 'delete'">Are you sure you want to delete this item?</ng-container>
+      <ng-container i18n *ngIf="data === 'restoreDeleted'">Are you sure you want to restore it by moving the content and all its children to Draft state?</ng-container>
+      <ng-container i18n *ngIf="data === 'deleteTreeNode'">Are you sure you want to remove the mapping?</ng-container>
+      <ng-container i18n *ngIf="data === 'dialog'">Selecting this option will discard pre-entered data of other options. Do you wish to continue?</ng-container>
+      <ng-container i18n *ngIf="data === 'unpublish'">Are you sure you want to unpublish this item?</ng-container>
+      <ng-container i18n *ngIf="data === 'retrieveParent'">Are you sure you want to retrieve this content and all its children?</ng-container>
+      <ng-container i18n *ngIf="data === 'retrieveChild'">Are you sure you want to retrieve this content?</ng-container>
+      <ng-container i18n *ngIf="data === 'uploadFile'">This will override the questions already present. Do you want to upload?</ng-container>
+      <ng-container i18n *ngIf="data === 'deleteAudio'">Are you sure you want to delete the audio file attached for this page?</ng-container>
+      <ng-container *ngIf="data?.type === 'deleteQues'">
+        <span i18n>Are you sure you want to delete Quiz</span>&#8209;{{ data.index }}?
+      </ng-container>
+      <ng-container *ngIf="data?.type === 'deleteModulepg'">
+        <span i18n>Are you sure you want to delete Page</span>&#8209;{{ data.index }}?
+      </ng-container>
+      <ng-container *ngIf="data?.type === 'deleteVideoQuestion'">
+        <span i18n>Are you sure you want to delete this Question</span>&#8209;{{ data.index }}?
+      </ng-container>
+    </p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="cd-actions">
+    <button mat-stroked-button class="cd-btn-cancel" mat-dialog-close i18n>
+      No, Cancel
+    </button>
+    <button mat-flat-button class="cd-btn-danger" [mat-dialog-close]="true" i18n>
+      Yes, Confirm
+    </button>
+  </mat-dialog-actions>
+</ng-container>
+
+<!-- ══ Edit Assessment (complex form — preserved exactly) ════════════════ -->
+<ng-container *ngIf="data?.type === 'editAssessment'">
+  <div class="margin-m">
+    <div mat-dialog-content [ngClass]="data.type === 'editAssessment' ? 'scroll' : ''">
+      <ng-container *ngIf="data.type === 'editAssessment'">
+        <div *ngIf="this.data.data.questionType == 'mcq-sca'">
+          <div [formGroup]="questionForm">
+            <span i18n> MCQ: Question </span><br>
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="question" maxlength="100" i18n-placeholder
+                placeholder="Question Statement" />
+            </mat-form-field><br>
+          </div>
+          <span i18n> Options </span><br>
+          <span>Note : Check the box for the correct answer only</span><br>
+          <form [formGroup]="quizForm">
+            <mat-card *ngFor="let option of selectedQuiz.options; let i = index" class="edit-card custom w-full"
+              cdkDrag cdkDragBoundary=".optionlist" formArrayName="options">
+              <div class="flex w-full justify-between" [formGroupName]="i">
+                <div class="flex romanN text-center items-center pl-4">{{ i + 1}}.</div>
+                <div class="flex items-center item1 px-3">
+                  <div class="w-2/5"></div>
+                  <mat-checkbox formControlName="isCorrect" (change)="onSelected($event)" i18n-matTooltip
+                    matTooltipPosition="below" matTooltip="Check for correct answer" i18n-aria-label
+                    aria-label="Check for correct answer"></mat-checkbox>
+                </div>
+                <div class="cursor-auto item2 item-spacing">
+                  <mat-form-field class="w-full myfield" appearance="outline">
+                    <input matInput formControlName="text" i18n-aria-label aria-label="Enter answer" />
+                  </mat-form-field>
+                </div>
+                <div class="cursor-auto item2 item-spacing">
+                  <button class="float-right" mat-button i18n-matTooltip matTooltip="Delete this quiz"
+                    aria-label="delete this quiz" i18n-aria-label>
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </mat-card>
+          </form>
+          <div style="display:flex; flex-direction:row">
+            <mat-icon class="material-icons brand-color">add_circle</mat-icon>
+            <span>Add Option</span>
+          </div>
+          <div>
+            <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+              style="margin:0.4rem;color: #1C5D95 !important;">Save</button>
+            <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+              style="margin:0.4rem;color: #1C5D95 !important;">Discard</button>
+          </div>
         </div>
-        <span i18n> Options </span><br>
-        <span>Note : Check the box for the correct answer only</span><br>
-        <form [formGroup]="quizForm">
-          <mat-card *ngFor="let option of selectedQuiz.options; let i = index" class="edit-card custom w-full" cdkDrag
-            cdkDragBoundary=".optionlist" formArrayName="options">
-            <div class="flex w-full justify-between" [formGroupName]="i">
-              <div class="flex romanN text-center items-center pl-4">{{ i + 1}}.</div>
-              <div class="flex items-center item1 px-3">
-                <div class="w-2/5"></div>
-                <mat-checkbox formControlName="isCorrect" (change)="onSelected($event)" i18n-matTooltip
-                  matTooltipPosition="below" matTooltip="Check for correct answer" i18n-aria-label
-                  aria-label="Check for correct answer"></mat-checkbox>
-              </div>
-              <div class="cursor-auto item2 item-spacing">
-                <mat-form-field class="w-full myfield" appearance="outline">
-                  <input matInput formControlName="text" i18n-aria-label aria-label="Enter answer" />
-                </mat-form-field>
-              </div>
-              <div class="cursor-auto item2 item-spacing">
-                <button class="float-right" mat-button i18n-matTooltip matTooltip="Delete this quiz"
-                  aria-label="delete this quiz" i18n-aria-label>
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
+        <div *ngIf="this.data.data.questionType == 'fitb'">
+          <span i18n> Fill in the blanks:</span><br>
+          <div style="display:flex; flex-direction:row">
+            <mat-form-field appearance="outline">
+              <input matInput maxlength="100" i18n-placeholder placeholder="Question Statement" />
+            </mat-form-field>
+            <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+              style="margin:0.4rem;color: #1C5D95 !important;height: 2rem;">Add blank</button>
+          </div>
+          <span i18n> Answers </span><br>
+          <span>Note : You will be able to add answers once you start adding blanks</span>
+          <mat-card class="edit-card custom w-full" cdkDrag>
+            <div class="cursor-auto item2 item-spacing">
+              <mat-form-field class="w-full myfield" appearance="outline">
+                <input matInput i18n-aria-label aria-label="Type Here" />
+              </mat-form-field>
+            </div>
+            <div class="cursor-auto item2 item-spacing">
+              <button class="float-right" mat-button i18n-matTooltip matTooltip="Delete this quiz"
+                aria-label="delete this quiz" i18n-aria-label>
+                <mat-icon>delete</mat-icon>
+              </button>
             </div>
           </mat-card>
-        </form>
-        <div style="display:flex; flex-direction:row">
-          <mat-icon class="material-icons brand-color">add_circle</mat-icon>
-          <span>Add Option</span>
+          <div>
+            <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+              style="margin:0.4rem;color: #1C5D95 !important;">Save</button>
+            <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+              style="margin:0.4rem;color: #1C5D95 !important;">Discard</button>
+          </div>
         </div>
-        <div>
-          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
-            style="margin:0.4rem;color: #1C5D95 !important;">Save</button>
-          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
-            style="margin:0.4rem;color: #1C5D95 !important;">Discard</button>
-        </div>
-      </div>
-      <div *ngIf="this.data.data.questionType == 'fitb'">
-        <span i18n> Fill in the blanks:</span><br>
-        <div style="display:flex; flex-direction:row">
+        <div *ngIf="this.data.data.questionType == 'mtf'">
+          <span i18n> Match the following: </span><br>
           <mat-form-field appearance="outline">
             <input matInput maxlength="100" i18n-placeholder placeholder="Question Statement" />
-          </mat-form-field>
-          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
-            style="margin:0.4rem;color: #1C5D95 !important;height: 2rem;">Add blank</button>
-        </div>
-
-        <span i18n> Answers </span><br>
-        <span>Note : You will be able to add answers once you start adding blanks</span>
-        <mat-card class="edit-card custom w-full" cdkDrag>
-          <div class="cursor-auto item2 item-spacing">
-            <mat-form-field class="w-full myfield" appearance="outline">
-              <input matInput i18n-aria-label aria-label="Type Here" />
+          </mat-form-field><br>
+          <span i18n>Options</span><br>
+          <div style="display:flex; flex-direction:row">
+            <mat-form-field appearance="outline">
+              <input matInput maxlength="100" i18n-placeholder placeholder="Type Option" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <input matInput maxlength="100" i18n-placeholder placeholder="Type Match" />
             </mat-form-field>
           </div>
-          <div class="cursor-auto item2 item-spacing">
-            <button class="float-right" mat-button i18n-matTooltip matTooltip="Delete this quiz"
-              aria-label="delete this quiz" i18n-aria-label>
-              <mat-icon>delete</mat-icon>
-            </button>
+          <div style="display:flex; flex-direction:row">
+            <mat-form-field appearance="outline">
+              <input matInput maxlength="100" i18n-placeholder placeholder="Type Option" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <input matInput maxlength="100" i18n-placeholder placeholder="Type Match" />
+            </mat-form-field>
           </div>
-        </mat-card>
-        <div>
-          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
-            style="margin:0.4rem;color: #1C5D95 !important;">Save</button>
-          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
-            style="margin:0.4rem;color: #1C5D95 !important;">Discard</button>
+          <div style="display:flex; flex-direction:row">
+            <mat-icon class="material-icons brand-color">add_circle</mat-icon>
+            <span>Add Option</span>
+          </div>
+          <div>
+            <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+              style="margin:0.4rem;color: #1C5D95 !important;">Save</button>
+            <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
+              style="margin:0.4rem;color: #1C5D95 !important;">Discard</button>
+          </div>
         </div>
-      </div>
-      <div *ngIf="this.data.data.questionType == 'mtf'">
-        <span i18n> Match the following: </span><br>
-        <mat-form-field appearance="outline">
-          <input matInput maxlength="100" i18n-placeholder placeholder="Question Statement" />
-        </mat-form-field><br>
-        <span i18n>Options</span><br>
-        <div style="display:flex; flex-direction:row">
-          <mat-form-field appearance="outline">
-            <input matInput maxlength="100" i18n-placeholder placeholder="Type Option" />
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <input matInput maxlength="100" i18n-placeholder placeholder="Type Match" />
-          </mat-form-field>
-        </div>
-        <div style="display:flex; flex-direction:row">
-          <mat-form-field appearance="outline">
-            <input matInput maxlength="100" i18n-placeholder placeholder="Type Option" />
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <input matInput maxlength="100" i18n-placeholder placeholder="Type Match" />
-          </mat-form-field>
-        </div>
-        <div style="display:flex; flex-direction:row">
-          <mat-icon class="material-icons brand-color">add_circle</mat-icon>
-          <span>Add Option</span>
-        </div>
-        <div>
-          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
-            style="margin:0.4rem;color: #1C5D95 !important;">Save</button>
-          <button mat-raised-button class="secondary-button-outline mat-button-base save-btn-bottom"
-            style="margin:0.4rem;color: #1C5D95 !important;">Discard</button>
-        </div>
-      </div>
-    </ng-container>
+      </ng-container>
+    </div>
+    <div mat-dialog-actions class="flex-row-reverse">
+      <button i18n mat-raised-button class="buttonColor yesButtonColor" [mat-dialog-close]="true">Yes</button>
+      <button i18n mat-raised-button mat-dialog-close cdkFocusInitial class="buttonColor noButtonColor">No</button>
+    </div>
   </div>
-  <div mat-dialog-actions class="flex align-middle justify-center" *ngIf="data === 'transcodeMessage'">
-    <button i18n mat-raised-button class="buttonColor yesButtonColor" [mat-dialog-close]="true">Ok</button>
-  </div>
-  <div mat-dialog-actions class="flex-row-reverse" *ngIf="data.type !== 'editAssessment'&& data !== 'transcodeMessage'">
-    <button i18n mat-raised-button class="buttonColor yesButtonColor" [mat-dialog-close]="true">Yes</button>
-    <button i18n mat-raised-button mat-dialog-close cdkFocusInitial class="buttonColor noButtonColor">No</button>
-  </div>
-</div>
+</ng-container>

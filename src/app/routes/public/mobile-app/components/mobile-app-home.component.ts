@@ -30,6 +30,7 @@ interface IMobileAppLink {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-app-mobile-app-home',
   templateUrl: './mobile-app-home.component.html',
   styleUrls: ['./mobile-app-home.component.scss'],

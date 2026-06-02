@@ -1,6 +1,6 @@
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 
-import { Component, OnInit, Input } from '@angular/core'
+import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core'
 
 import { Router } from '@angular/router'
 
@@ -122,6 +122,7 @@ export class CreateCourseComponent implements OnInit {
     private editorStore: EditorContentService,
     private resolverService: CollectionResolverService,
     private progressSvc: ContentProgressService,
+    private cdr: ChangeDetectorRef,
   ) { }
   createCourseForm!: FormGroup
   createSelfAssessmentForm!: FormGroup
@@ -661,11 +662,13 @@ export class CreateCourseComponent implements OnInit {
 
   showIpr() {
     const dialogRef = this.dialog.open(IprDialogComponent, {
-      width: '70%',
+      width: '560px',
+      maxWidth: '90vw',
       data: { iprAccept: this.iprAccepted },
     })
     dialogRef.afterClosed().subscribe(result => {
       this.iprAccepted = result
+      this.cdr.detectChanges()
     })
   }
 

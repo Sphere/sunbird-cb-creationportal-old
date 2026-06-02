@@ -6,6 +6,7 @@ import { ConfigurationsService, ValueService } from '@ws-widget/utils'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-footer',
   templateUrl: './app-footer.component.html',
   styleUrls: ['./app-footer.component.scss'],

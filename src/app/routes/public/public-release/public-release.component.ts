@@ -8,6 +8,7 @@ import { IReleaseNotes } from '@ws-widget/collection'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-public-release',
   templateUrl: './public-release.component.html',
   styleUrls: ['./public-release.component.scss'],

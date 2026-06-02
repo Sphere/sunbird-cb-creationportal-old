@@ -1,5 +1,22 @@
+// Each notification line is a <p> with an icon + span.
+// Use flex so the icon and text sit on the same baseline.
+p {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #ffffff;
+}
+
 .icon {
-  position: relative;
-  top: 6px;
-  padding: 5px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  flex-shrink: 0;
+  color: #ffffff;
 }

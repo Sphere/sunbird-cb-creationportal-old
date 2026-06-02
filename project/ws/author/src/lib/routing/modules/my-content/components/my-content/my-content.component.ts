@@ -2,7 +2,7 @@ import { AuthExpiryDateConfirmComponent } from '@ws/author/src/lib/modules/share
 
 import { FlatTreeControl } from '@angular/cdk/tree'
 
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core'
 
 import { FormGroup } from '@angular/forms'
 
@@ -80,6 +80,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     private configService: ConfigurationsService,
     private editorService: EditorService,
     private filterStateService: FilterStateService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.filterMenuTreeControl = new FlatTreeControl<IMenuFlatNode>(
       node => node.levels,
@@ -1735,21 +1736,23 @@ export class MyContentComponent implements OnInit, OnDestroy {
         console.log("this.cardContent", this.cardContent)
 
         this.totalContent = data && data.result ? data.result.count : 0
-        // const index = _.findIndex(this.count, i => i.n === this.status)
-        // if (index >= 0) {
         this.count[this.status] = this.totalContent
-        // }
         this.showLoadMore =
           this.pagination.offset * this.pagination.limit + this.pagination.limit < this.totalContent
             ? true
             : false
         this.fetchError = false
+        // Root component's loader subscription calls detectChanges() BEFORE this
+        // point (on loadService.changeLoad.next(false)), so cardContent changes
+        // are not picked up automatically. Force a CD pass now that all state is set.
+        this.cdr.detectChanges()
       },
       () => {
         this.fetchError = true
         this.cardContent = []
         this.showLoadMore = false
         this.loadService.changeLoad.next(false)
+        this.cdr.detectChanges()
       },
     )
   }

@@ -30,6 +30,7 @@ export class ContentCardComponent implements OnInit {
   @Input() forExpiry = false
   @Input() forDelete = false
   @Input() changeView = false
+  @Input() hideThumbnail = false  // true for self-assessment (no thumbnail expected)
   addedCompetency: any
   filteredSubTitles: any[] = []
   translationArray: any = []
@@ -48,7 +49,12 @@ export class ContentCardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.data.appIcon = this.data.appIcon || 'cbp-assets/icons/default.png'
+    // Courses without an uploaded thumbnail get a default grey placeholder.
+    // Self-assessment content never has thumbnails — skip the fallback so
+    // the template's *ngIf hides the column entirely.
+    if (!this.hideThumbnail) {
+      this.data.appIcon = this.data.appIcon || 'cbp-assets/icons/default.png'
+    }
     if (this.accessService.hasRole(['content_reviewer']) || this.accessService.hasRole(['external_content_reviewer_live']) || this.accessService.hasRole(['content_publisher'])) {
       this.isReviewerOrPublisher = true
     } else {

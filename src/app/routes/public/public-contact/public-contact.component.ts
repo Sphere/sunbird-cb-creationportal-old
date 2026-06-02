@@ -8,6 +8,7 @@ import { ActivatedRoute } from '@angular/router'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-public-contact',
   templateUrl: './public-contact.component.html',
   styleUrls: ['./public-contact.component.scss'],

@@ -12,6 +12,7 @@ import { ILoginDescriptiveFooterConfig, IWSPublicLoginConfig } from './login.mod
 
 
 @Component({
+  standalone: false,
   selector: 'ws-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],

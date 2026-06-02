@@ -6,6 +6,7 @@ import { ConfigurationsService, NsPage } from '@ws-widget/utils'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-public-nav-bar',
   templateUrl: './app-public-nav-bar.component.html',
   styleUrls: ['./app-public-nav-bar.component.scss'],

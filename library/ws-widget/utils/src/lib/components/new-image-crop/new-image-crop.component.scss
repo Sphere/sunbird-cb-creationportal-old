@@ -1,278 +1,315 @@
-.image-cropper {
-  max-height: 55vh;
+// ═══════════════════════════════════════════════════════════════════════════
+//  New Image Crop Dialog — Unified Enterprise LMS Design System
+//  8px grid · Roboto · WCAG AA
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Reset Material dialog padding ─────────────────────────────────────────
+::ng-deep .mat-mdc-dialog-content.nic-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-height: unset !important;
+}
+::ng-deep .mat-mdc-dialog-actions.nic-actions {
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: unset !important;
 }
 
+// ── Cropper overlay ───────────────────────────────────────────────────────
 ::ng-deep image-cropper .overlay {
   background-color: transparent !important;
 }
-.yesBtn{
-  border: 1px #1C5D95 solid !important;
-  border-radius: 30px !important;
-  background-color: #1C5D95 !important;
-  color: #FFFFFF  !important;
-  font-family: Roboto !important;
-}
-.updateBtn{
-  position: relative;
-    left: 120px;
-    border-radius: 50px;
-    background: #1C5D95;
-    color: #FFF;
-    font-family: Roboto;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    display: flex;
-    width: 128px;
-    padding: 8px 32px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    border: none !important;
-    cursor: pointer;
-}
-.cancelBtn{
-  border-radius: 30px !important;
-  border: 1px #1C5D95 solid !important;
-  background-color: #FFFFFF !important;
-  color: #1C5D95  !important;
-  font-family: Roboto !important;
-  }
-.Slides {
-  display: block;
-  height: auto;
-  width: 50%;
-  position: relative;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0em 1.25em;
 
-  @media only screen and (max-width: 1030px) {
-    // media less than 1030px
-    padding: 0em;
-    width: 100%
-  }
+// ── Dialog Header ─────────────────────────────────────────────────────────
+.nic-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid #E2E8F0;
+  background: #FAFBFC;
+  flex-shrink: 0;
 }
-
-.cursor {
-  cursor: pointer;
+.nic-header-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-
-.edit-feature-window {
-  background: transparent;
-  // text-align: center;
+.nic-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #EBF4FD;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 
-}
-
-mat-toolbar {
-  background-color: white !important;
-  z-index: 1 !important;
-}
-
-mat-dialog-content {
-  padding: 1.25em 1.25em !important;
-
-  @media only screen and (max-width: 1030px) {
-    // media less than 1030px
-    padding: 0.25em 0.5em !important;
-  }
-}
-
-.heightwidth {
-  display: flex;
-
-  @media only screen and (max-width: 1030px) {
-    // media less than 1030px
-    display: block;
-  }
-}
-
-.mat-button {
-  @media only screen and (max-width: 1030px) {
-    // media less than 1030px
-    min-width: auto;
-    padding: 0 14px;
-  }
-}
-
-.largeicon {
-  font-size: 2em;
-  padding: 0.13em 0.5em;
-}
-
-.tooltip {
-  background: #b71c1c;
-}
-
-.dimension-icon {
-  position: relative;
-  top: 0.35em;
-  padding: 0em 0em 0em 0.3em;
-}
-
- .title-margin{
-  position: relative;
-    left: 125px;
-    top: 25px;
-  color: #000;
-
-/* Header 2 */
-font-family: Roboto;
-font-size: 24px;
-font-style: normal;
-font-weight: 400;
-line-height: 28.8px; /* 120% */
-letter-spacing: -0.48px;
-}
-
-.button-text {
-  @media only screen and (max-width: 1030px) {
-    // media less than 1030px
-    display: none;
-  }
-}
-.rotate-button-text{
-  color: #1C5D95;
-font-family: Roboto;
-font-size: 16px;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
-}
-
-//profile cropping css
-
-.image-cropper-profile {
-  max-height: 55vh;
-}
-
-.profile-slides {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
-  display: block;
-  height: auto;
-  width: 50%;
-  position: relative;
-  margin-left: auto;
-  margin-right: auto;
-
-  @media only screen and (max-width: 1030px) {
-    // media less than 1030px
-    padding: 0em;
-    width: 100%
+  mat-icon {
+    color: #1C5D95;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
   }
 
+  &.nic-header-icon--warn {
+    background: #FFF7ED;
+    mat-icon { color: #F97316; }
+  }
 }
-
-.toolbar {
-  left: 50%;
-  margin: 1em 0 0 -10em;
-  position: absolute;
-  width: auto;
-  border-radius: 4px;
-
-}
-
-.cf:before,
-.cf:after {
-  content: "";
-  display: table;
-}
-
-.cf:after {
-  clear: both;
-}
-
-.toolbar li {
-  float: left;
-  list-style: none;
-}
-
-.toolbar a {
-  border-left: 0px solid rgba(79, 123, 170, .4);
-  border-right: 1px solid rgba(255, 255, 255, .3);
-}
-
-.toolbar li:first-child a {
-  border-left: none;
-  border-radius: 4px 0 0 4px
-}
-
-.toolbar li:last-child a {
-  border-right: none;
-  border-radius: 0 4px 4px 0
-}
-.rotate-button{
-  display: flex;
-  background: none;
-  border: none;
-}
-.rotate-block{
-  margin-top: 10px;
-  margin-left: 5px;
-}
-.rotate-icon{
-  width: 24px;
-  height: 24px;
-  color: #1C5D95 !important;
-}
-.preview-txt{
-  color: #000;
-  font-family: Roboto;
+.nic-title {
   font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
+  font-weight: 600;
+  color: #0F172A;
+  margin: 0;
+  font-family: Roboto, sans-serif;
+  line-height: 1.3;
 }
-.preview-block{
-  padding-left: 0px !important;
-    padding-top: 0px !important;
-    margin-top: 0px !important;
-    display: flex  !important;
-    flex-direction: column  ;
-    box-shadow: none !important;
-    align-items: self-start !important;
-    margin-left: 0px;
-        position: relative;
-    left: -50px;
+.nic-subtitle {
+  font-size: 12px;
+  color: #64748B;
+  margin: 2px 0 0;
+  font-family: Roboto, sans-serif;
 }
-::ng-deep .theme-igot.day-mode .mat-slider-min-value:not(.mat-slider-thumb-label-showing) .mat-slider-thumb {
+.nic-close {
+  width: 32px !important;
+  height: 32px !important;
+  color: #64748B !important;
+  border-radius: 6px !important;
+  flex-shrink: 0;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; line-height: 20px; }
+  &:hover { background: #F1F5F9 !important; color: #0F172A !important; }
+}
+
+// ── Content ───────────────────────────────────────────────────────────────
+.nic-content {
+  display: block;
+}
+
+// Thumbnail crop — two-column body
+.nic-body {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  align-items: flex-start;
+}
+
+// ── Left column (cropper + controls + zoom) ───────────────────────────────
+.nic-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.nic-cropper {
+  max-height: 52vh;
+  width: 100%;
+  display: block;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.nic-crop-wrapper {
+  padding: 20px;
+  .nic-cropper { max-height: 50vh; }
+}
+
+// ── Rotate / Flip controls ────────────────────────────────────────────────
+.nic-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.nic-ctrl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  background: #F8FAFC;
+  font-size: 12px;
+  font-family: Roboto, sans-serif;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover {
     border-color: #1C5D95;
-    background-color: #1C5D95;
-}
-::ng-deep .mat-dialog-actions{
-    margin-bottom: -6px !important;
-}
+    background: #EBF4FD;
+    color: #1C5D95;
 
-/* Add red color to the slider thumb and label */
-.mat-slider-thumb,
-.mat-slider-thumb-label {
-  background-color: #1C5D95 !important; /* Use !important to override default styles */
+    .nic-ctrl-icon { color: #1C5D95; }
+  }
 }
-
-/* Add red color to the slider track fill */
-.mat-slider-track-fill {
-  background-color: #1C5D95 !important; /* Use !important to override default styles */
+.nic-ctrl-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  color: #64748B;
+  transition: color 0.15s;
 }
-
-/* Optional: Add red color to the ticks */
-.mat-slider-ticks {
-  background-color: #1C5D95 !important; /* Use !important to override default styles */
+.nic-ctrl-label {
+  font-size: 12px;
+  font-family: Roboto, sans-serif;
 }
 
-:host ::ng-deep .mat-slider-thumb,
-:host ::ng-deep .mat-slider-thumb-label {
-  background-color: #1C5D95 !important; /* Use !important to override default styles */
+// ── Zoom row ─────────────────────────────────────────────────────────────
+.nic-zoom-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+}
+.nic-zoom-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  color: #64748B;
+  flex-shrink: 0;
+}
+.nic-zoom-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  font-family: Roboto, sans-serif;
+  flex-shrink: 0;
+}
+.nic-slider {
+  flex: 1;
+
+  // Slider thumb + track brand colour
+  --mdc-slider-active-track-color: #1C5D95;
+  --mdc-slider-inactive-track-color: #CBD5E1;
+  --mdc-slider-handle-color: #1C5D95;
+  --mdc-slider-focus-handle-color: #154F81;
+  --mdc-slider-hover-handle-color: #154F81;
 }
 
-:host ::ng-deep .mat-slider-track-fill {
-  background-color: #1C5D95 !important; /* Use !important to override default styles */
+// ── Right column (preview) ────────────────────────────────────────────────
+.nic-preview {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.nic-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nic-preview-eye {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  color: #64748B;
+}
+.nic-preview-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  font-family: Roboto, sans-serif;
+}
+.nic-preview-frame {
+  width: 100%;
+  aspect-ratio: 256 / 150;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #F1F5F9;
+}
+.nic-preview-hint {
+  font-size: 11px;
+  color: #94A3B8;
+  font-family: Roboto, sans-serif;
+  margin: 0;
 }
 
-/* Optional: Add red color to the ticks */
-:host ::ng-deep .mat-slider-ticks {
-  background-color: #1C5D95 !important; /* Use !important to override default styles */
+// ── Size warning body ─────────────────────────────────────────────────────
+.nic-warn-body {
+  padding: 20px;
+}
+.nic-warn-text {
+  font-size: 14px;
+  color: #334155;
+  font-family: Roboto, sans-serif;
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+.nic-dim-row {
+  display: flex;
+  gap: 24px;
+}
+.nic-dim-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 10px 16px;
+}
+.nic-dim-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-family: Roboto, sans-serif;
+}
+.nic-dim-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0F172A;
+  font-family: Roboto, sans-serif;
 }
 
+// ── Footer actions ────────────────────────────────────────────────────────
+.nic-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  padding: 12px 20px !important;
+  border-top: 1px solid #E2E8F0;
+  background: #FAFBFC;
+}
+.nic-btn-cancel {
+  font-size: 13px !important;
+  font-family: Roboto, sans-serif !important;
+  font-weight: 500 !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  color: #475569 !important;
+  border-color: #CBD5E1 !important;
+  padding: 0 16px !important;
 
+  &:hover { background: #F1F5F9 !important; }
+}
+.nic-btn-apply {
+  font-size: 13px !important;
+  font-family: Roboto, sans-serif !important;
+  font-weight: 600 !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  background: #1C5D95 !important;
+  color: #FFFFFF !important;
+  padding: 0 20px !important;
+
+  &:hover { background: #154F81 !important; }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .nic-body { flex-direction: column; }
+  .nic-preview { width: 100%; }
+}

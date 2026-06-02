@@ -12,6 +12,7 @@ import { Router, NavigationStart, NavigationEnd, Event } from '@angular/router'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-app-nav-bar',
   templateUrl: './app-nav-bar.component.html',
   styleUrls: ['./app-nav-bar.component.scss'],

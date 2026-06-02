@@ -20,6 +20,7 @@ import { TncPublicResolverService } from '../../services/tnc-public-resolver.ser
 
 import { MatDialog } from '@angular/material/dialog'
 @Component({
+  standalone: false,
   selector: 'ws-tnc',
   templateUrl: './tnc.component.html',
   styleUrls: ['./tnc.component.scss'],

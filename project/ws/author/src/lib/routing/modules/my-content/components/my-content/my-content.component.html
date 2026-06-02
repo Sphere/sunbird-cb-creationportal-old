@@ -535,7 +535,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
       </mat-sidenav>
 
       <mat-sidenav-content class="sidenav-content">
-        <nav mat-tab-nav-bar class="mat-nav-container">
+        <div class="mat-nav-container flex items-center">
           <!-- <a class="tab-links-data nav-tab-links" mat-tab-link *ngFor="let link of links"
             (click)="navigateContents(link)" [ngClass]="{'activeTab':link==activeLink}">
             {{ link }}
@@ -557,16 +557,14 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <ng-container i18n>Create a new self assessment</ng-container>
             </button>
           </div>
-        </nav>
+        </div>
 
         <div class="outer-flex">
           <section *ngIf="isAihub" class="aihubContainer">
             <ws-author-aihub-dashboard></ws-author-aihub-dashboard>
           </section>
           <div class="content-box" *ngIf="!isAihub">
-            <nav class="flex flex-middle flex-wrap p-4 ws-mat-primary-text">
-            </nav>
-            <div class="flex margin-horizontal-s margin-top-xs">
+            <div class="flex margin-horizontal-s search-toolbar">
               <div>
                 <mat-chip-set *ngIf="filters && filters.length" #chipList aria-label="Filter">
                   <mat-chip>
@@ -605,9 +603,9 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   <mat-icon>search</mat-icon>
                 </div>
               </div>
-              <span fxFlex style="flex: 1 1 auto"><span *ngIf="cardContent?.length >0" style="    margin-left: 10px !important;
-    vertical-align: sub;">Showing
-                  {{cardContent?.length}} results</span></span>
+              <span fxFlex style="flex: 1 1 auto">
+                <span class="results-count" *ngIf="cardContent?.length > 0">Showing {{cardContent?.length}} results</span>
+              </span>
               <div class="flex items-center">
                 <div>
 
@@ -639,6 +637,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                     *ngFor="let content of cardContent">
                     <ws-auth-root-content-card [competencyData]="proficiencyList" [data]="content"
                       [forExpiry]="status === 'expiry'" [changeView]="listview" [forDelete]="status === 'deleted'"
+                      [hideThumbnail]="status.toLowerCase().includes('self')"
                       [ordinals]="ordinals" (action)="action($event)">
                     </ws-auth-root-content-card>
                   </div>

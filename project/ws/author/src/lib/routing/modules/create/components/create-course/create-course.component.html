@@ -1,98 +1,126 @@
-<div *ngIf="!isSelfAssessment" class="page-container create-course-container">
-  <form [formGroup]="createCourseForm" style="margin-top: -1rem;">
-    <div>
-      <div class="">
-        <p class="start-txt">
-          Start by Introducing the course
-        </p>
-        <mat-form-field appearance="outline" class="margin-top-xs desc-field name-field ">
-          <textarea matInput #courseName formControlName="courseName" maxlength="100" rows="1"
-            placeholder="Course name"></textarea>
-          <mat-hint class="mt-hint">{{ courseName.value.length }}/100</mat-hint>
-        </mat-form-field>
-      </div>
-      <div>
-        <mat-form-field appearance="outline" class="desc-field">
-          <textarea #courseIntroduction maxlength="2000" matInput rows="4" formControlName="courseDescription"
-            i18n-placeholder placeholder="Description">
-          </textarea>
-          <mat-hint class="mt-hint">In 1-4 Paragraphs, summarise your course</mat-hint>
-        </mat-form-field>
-      </div>
-      <!-- thumbnail -->
-    </div>
-    <section class="width-1-3 fix-bottom">
-      <div class="flex flex-middle margin-top-xs">
-        <mat-checkbox [checked]="iprAccepted" (change)="iprChecked();"></mat-checkbox>
-        <p class="margin-left-xs read-and-agree-top-margin margin-remove-bottom cons-text">
-          I have read and agree to the
-          <span class="ws-mat-primary-text font-weight-500 cursor-pointer" (click)="showIpr()">IPR Declaration</span>
-        </p>
-      </div>
-      <div class="flex flex-between margin-top-l margin-bottom-l margin-right-l">
-        <button mat-raised-button (click)="onSubmit(createCourseForm,'createCourseForm')" class="
-          text-white ws-mat-primary-background  mat-button-base save-btn-mt"
-          [disabled]="createCourseForm?.invalid || !iprAccepted"> Save and Next</button>
-      </div>
-    </section>
-  </form>
+<!-- ══ STEP 1 — Course Introduction ══════════════════════════════════════ -->
+<div *ngIf="!isSelfAssessment" class="cc-page">
+  <form [formGroup]="createCourseForm" autocomplete="off">
 
-  <div class="width-2-5">
-  </div>
-</div>
+    <!-- ── Card 1: Basic Information ──────────────────────────────────── -->
+    <div class="cc-card">
+      <div class="cc-card-header">
+        <span class="cc-card-icon"><mat-icon>edit_note</mat-icon></span>
+        <div>
+          <h3 class="cc-card-title">Basic Information</h3>
+          <p class="cc-card-sub">Core details learners will see when they discover this course</p>
+        </div>
+      </div>
+      <div class="cc-card-body">
+
+        <mat-form-field appearance="outline" class="cc-field" hideRequiredMarker>
+          <mat-label>Course Name <span class="cc-req">*</span></mat-label>
+          <input matInput #courseName formControlName="courseName" maxlength="100"
+            placeholder="e.g. Infection Prevention and Control" />
+          <mat-hint>{{ courseName.value.length }} / 100 · Use a clear title describing what learners will gain</mat-hint>
+          <mat-error *ngIf="createCourseForm.controls.courseName.errors?.required">
+            Course name is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="cc-field" hideRequiredMarker>
+          <mat-label>Description <span class="cc-req">*</span></mat-label>
+          <textarea matInput #courseIntroduction maxlength="2000" rows="3"
+            formControlName="courseDescription"
+            placeholder="Briefly describe what learners will gain. Include objectives, target audience, and key outcomes."></textarea>
+          <mat-hint>Aim for 2–4 sentences. Strong descriptions improve course discoverability.</mat-hint>
+          <mat-error *ngIf="createCourseForm.controls.courseDescription.errors?.required">
+            Description is required
+          </mat-error>
+        </mat-form-field>
+
+      </div>
+    </div>
+
+    <!-- ── Card 2: IPR Declaration ────────────────────────────────────── -->
+    <div class="cc-card cc-ipr-card" [class.cc-ipr-accepted]="iprAccepted">
+      <div class="cc-card-header">
+        <span class="cc-card-icon cc-ipr-icon-wrap">
+          <mat-icon class="cc-ipr-icon-mat">verified_user</mat-icon>
+        </span>
+        <div>
+          <h3 class="cc-card-title">Intellectual Property Rights Declaration</h3>
+          <p class="cc-card-sub">Please read and confirm before continuing</p>
+        </div>
+      </div>
+      <div class="cc-card-body">
+        <p class="cc-ipr-text">
+          By checking the box below, you confirm that this course content is your original work
+          or that you have obtained all necessary permissions. You agree it does not infringe
+          any copyright, trademark, or intellectual property rights.
+        </p>
+        <div class="cc-ipr-check-row">
+          <mat-checkbox [checked]="iprAccepted" (change)="iprChecked()" class="cc-ipr-checkbox">
+            I have read and agree to the
+            <span class="cc-ipr-link" (click)="showIpr(); $event.stopPropagation()">
+              IPR Declaration
+            </span>
+          </mat-checkbox>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Fixed Bottom Action Bar ────────────────────────────────────── -->
+    <div class="cc-action-bar">
+      <div class="cc-action-left">
+        <a [routerLink]="['/author/cbp']" mat-button class="cc-btn-cancel" type="button">
+          Cancel
+        </a>
+      </div>
+      <div class="cc-action-right">
+        <button mat-flat-button class="cc-btn-continue" type="button"
+          [disabled]="createCourseForm?.invalid || !iprAccepted"
+          (click)="onSubmit(createCourseForm, 'createCourseForm')">
+          Continue <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </div>
+
+  </form>
+</div><!-- /cc-page -->
+
+<!-- ══ SELF ASSESSMENT (unchanged) ═══════════════════════════════════════ -->
 <div *ngIf="isSelfAssessment" class="create-self-assessment-container padding-top-l">
   <form [formGroup]="createSelfAssessmentForm" style="margin-top: -1rem;">
     <div>
-      <p class="start-txt">
-        Select competency that you want add self assessment
-      </p>
+      <p class="start-txt">Select competency that you want add self assessment</p>
       <div class="form-block">
         <div class="select-block">
           <mat-form-field appearance="fill" class="margin-top-xs field-edit-width">
-            <mat-label>Language </mat-label>
-            <mat-select (selectionChange)="langSelected($event.value)" class="input-field" formControlName="lang"
+            <mat-label>Language</mat-label>
+            <mat-select (selectionChange)="langSelected($event.value)" formControlName="lang"
               i18n-placeholder placeholder="Course Language">
               <mat-option *ngFor="let lang of languageList" [value]="lang.value">
                 {{ lang.name }}</mat-option>
             </mat-select>
-            <!-- <mat-error i18n>This field is mandatory </mat-error> -->
           </mat-form-field>
         </div>
         <div class="select-block">
           <mat-form-field appearance="fill" class="margin-top-xs field-edit-width competencyBlock">
             <mat-label>Competency <span style="color: #d32f2f">*</span></mat-label>
-            <mat-select (selectionChange)="createSelfAssessment(createSelfAssessmentForm,'createSelfAssessmentForm')"
-              formControlName="proficiency" [(ngModel)]="proficiency" placeholder="Select Competency"
-              (selectionChange)="eventSelection($event.value)">
+            <mat-select
+              (selectionChange)="createSelfAssessment(createSelfAssessmentForm,'createSelfAssessmentForm')"
+              formControlName="proficiency" [(ngModel)]="proficiency"
+              placeholder="Select Competency" (selectionChange)="eventSelection($event.value)">
               <input placeholder="Search Competency" matInput class="module-input" (keyup)="onKey($event.target.value)">
               <ng-container *ngFor="let list of proficiencyList">
-                <mat-option *ngIf="lang === 'hi'&&list.additionalProperties['lang-hi-name']" [value]="list">
-                  <ng-container>
-                    {{ list.additionalProperties.Code }} - {{ list.additionalProperties['lang-hi-name'] }}
-                  </ng-container>
+                <mat-option *ngIf="lang === 'hi' && list.additionalProperties['lang-hi-name']" [value]="list">
+                  {{ list.additionalProperties.Code }} - {{ list.additionalProperties['lang-hi-name'] }}
                 </mat-option>
                 <mat-option *ngIf="lang !== 'hi'" [value]="list">
-                  <ng-container>
-                    {{ list.additionalProperties.Code}} - {{ list.name }}
-                  </ng-container>
+                  {{ list.additionalProperties.Code }} - {{ list.name }}
                 </mat-option>
               </ng-container>
-
             </mat-select>
-            <mat-error i18n>This field is mandatory </mat-error>
+            <mat-error i18n>This field is mandatory</mat-error>
           </mat-form-field>
         </div>
       </div>
-
-      <!-- thumbnail -->
     </div>
-    <!-- <section class="width-1-3 fix-bottom">
-      <div class="flex flex-between margin-top-l margin-bottom-l margin-right-l">
-        <button mat-raised-button (click)="createSelfAssessment(createSelfAssessmentForm,'createSelfAssessmentForm')"
-          class="
-              text-white ws-mat-primary-background  mat-button-base save-btn-mt"
-          [disabled]="createSelfAssessmentForm?.invalid"> Save and Next</button>
-      </div>
-    </section> -->
   </form>
 </div>

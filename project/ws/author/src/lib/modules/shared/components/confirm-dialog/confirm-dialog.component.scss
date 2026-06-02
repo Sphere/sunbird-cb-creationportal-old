@@ -1,36 +1,166 @@
-button {
-  margin-left: 5px;
+// ═══════════════════════════════════════════════════════════════════════════
+//  Confirm Dialog — Unified Enterprise LMS Design System
+//  8px grid · Roboto · WCAG AA
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Reset Material dialog padding ─────────────────────────────────────────
+::ng-deep .mat-mdc-dialog-content.cd-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-height: unset !important;
+}
+::ng-deep .mat-mdc-dialog-actions.cd-actions {
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: unset !important;
 }
 
-::ng-deep .theme-igot.day-mode .mat-form-field-appearance-outline .mat-form-field-infix {
-    padding: 0.3em 0 !important;
-}
-
-.edit-card{
+// ── Dialog Header ─────────────────────────────────────────────────────────
+.cd-header {
   display: flex;
-  margin-left: 0px;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #E2E8F0;
+  background: #FAFBFC;
+}
+.cd-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+
+  &.cd-header-icon--danger {
+    background: #FEF2F2;
+    mat-icon { color: #DC2626; }
+  }
+  &.cd-header-icon--info {
+    background: #EBF4FD;
+    mat-icon { color: #1C5D95; }
+  }
+}
+.cd-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0F172A;
+  margin: 0;
+  font-family: Roboto, sans-serif;
+  line-height: 1.3;
+}
+.cd-subtitle {
+  font-size: 12px;
+  color: #64748B;
+  margin: 2px 0 0;
+  font-family: Roboto, sans-serif;
+}
+.cd-close {
+  margin-left: auto !important;
+  width: 32px !important;
+  height: 32px !important;
+  color: #64748B !important;
+  border-radius: 6px !important;
+  flex-shrink: 0;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; line-height: 20px; }
+  &:hover { background: #F1F5F9 !important; color: #0F172A !important; }
+}
+
+// ── Message body ──────────────────────────────────────────────────────────
+.cd-content { display: block; }
+.cd-message {
+  padding: 20px;
+  font-size: 14px;
+  color: #334155;
+  font-family: Roboto, sans-serif;
+  line-height: 1.65;
+  margin: 0;
+}
+
+// ── Footer actions ────────────────────────────────────────────────────────
+.cd-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  padding: 12px 20px !important;
+  border-top: 1px solid #E2E8F0;
+  background: #FAFBFC;
+}
+.cd-btn-cancel {
+  font-size: 13px !important;
+  font-family: Roboto, sans-serif !important;
+  font-weight: 500 !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  color: #475569 !important;
+  border-color: #CBD5E1 !important;
+  padding: 0 16px !important;
+
+  &:hover { background: #F1F5F9 !important; }
+}
+.cd-btn-danger {
+  font-size: 13px !important;
+  font-family: Roboto, sans-serif !important;
+  font-weight: 600 !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  background: #DC2626 !important;
+  color: #FFFFFF !important;
+  padding: 0 18px !important;
+
+  &:hover { background: #B91C1C !important; }
+}
+.cd-btn-confirm {
+  font-size: 13px !important;
+  font-family: Roboto, sans-serif !important;
+  font-weight: 600 !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  background: #1C5D95 !important;
+  color: #FFFFFF !important;
+  padding: 0 18px !important;
+
+  &:hover { background: #154F81 !important; }
+}
+
+// ── Assessment form (preserved styles) ───────────────────────────────────
+.edit-card {
+  display: flex;
+  margin-left: 0;
   margin-top: 6px;
   margin-bottom: 6px;
   box-sizing: border-box;
   cursor: grab;
-  padding: 0px;
+  padding: 0;
 }
-
-.scroll{
+.scroll {
   max-height: 18rem;
   overflow-x: scroll;
 }
-.buttonColor{
+.buttonColor {
   border: 1px #1C5D95 solid !important;
   border-radius: 30px !important;
   font-family: Roboto !important;
 }
-.yesButtonColor{
+.yesButtonColor {
   background-color: #1C5D95 !important;
   color: white !important;
 }
-
-.noButtonColor{
+.noButtonColor {
   background-color: white !important;
   color: #1C5D95 !important;
+}
+
+::ng-deep .theme-igot.day-mode .mat-form-field-appearance-outline .mat-form-field-infix {
+  padding: 0.3em 0 !important;
 }

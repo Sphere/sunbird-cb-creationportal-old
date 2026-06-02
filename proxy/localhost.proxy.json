@@ -56,13 +56,16 @@
       "/apis": ""
     }
   },
-  "/assets/**": {
+  "/assets/instances/**": {
     "target": "https://cbp-sphere.aastrika.org/",
     "secure": false,
     "logLevel": "debug",
-    "changeOrigin": true,
-    "pathRewrite": {
-      "/apis": ""
-    }
+    "changeOrigin": true
+  },
+  "/theme-igot.js": {
+    "target": "https://cbp-sphere.aastrika.org/",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
   }
 }

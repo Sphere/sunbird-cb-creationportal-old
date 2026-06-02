@@ -1,18 +1,25 @@
 .cursor-disable {
   cursor: not-allowed;
 }
-.bg-btm{
-  display: flex;
-  float: right;
+// example-content must be the positioning context for the decorative flower.
+.example-content {
   position: relative;
-  top: 66px;
+  overflow: hidden;
 }
-.bg-btm1{
-  display: flex;
-    float: right;
-    position: relative;
-    top: 260px;
-    bottom: 0px;
+
+// Decorative flower image — anchored to bottom-right of content area,
+// removed from normal flow so it never pushes the footer down.
+.bg-btm {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+.bg-btm1 {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
 }
 .grid {
   display: grid;
@@ -191,11 +198,28 @@ ul li {
   flex: 3;
 }
 
-.example-container {
-  position: absolute;
-  top: 5em;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin-bottom: 35px;
+// Normal page flow — single browser scrollbar, footer visible at bottom.
+// progress-stepper must be display:block (custom elements default to inline)
+// so its background starts flush against the nav bar.
+:host {
+  display: block;
+}
+
+::ng-deep ws-progress-stepper {
+  display: block;
+}
+
+.cc-page-wrap {
+  background: #F8FAFC;
+  min-height: calc(100vh - 80px);
+}
+
+.cc-content-area {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 32px 80px;
+}
+
+::ng-deep ws-progress-stepper {
+  display: block;
 }

@@ -21,6 +21,7 @@ interface IGroupWithFeatureWidgets extends NsAppsConfig.IGroup {
   featureWidgets: NsWidgetResolver.IRenderConfigWithTypedData<NsPage.INavLink>[]
 }
 @Component({
+  standalone: false,
   selector: 'ws-app-root-features',
   templateUrl: './features.component.html',
   styleUrls: ['./features.component.scss'],

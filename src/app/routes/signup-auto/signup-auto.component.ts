@@ -7,6 +7,7 @@ import { ActivatedRoute } from '@angular/router'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-signup-auto',
   templateUrl: './signup-auto.component.html',
   styleUrls: ['./signup-auto.component.scss'],

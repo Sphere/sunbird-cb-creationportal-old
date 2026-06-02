@@ -41,6 +41,7 @@ import { RootService } from './root.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-root',
   templateUrl: './root.component.html',
   styleUrls: ['./root.component.scss'],

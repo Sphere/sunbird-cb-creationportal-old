@@ -9,6 +9,7 @@ import { SignupService } from './signup.service'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'],

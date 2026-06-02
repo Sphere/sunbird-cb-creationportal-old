@@ -10,6 +10,7 @@ import { ValueService, ConfigurationsService, EFeatures, NsPage } from '@ws-widg
 
 
 @Component({
+  standalone: false,
   selector: 'ws-public-faq',
   templateUrl: './public-faq.component.html',
   styleUrls: ['./public-faq.component.scss'],

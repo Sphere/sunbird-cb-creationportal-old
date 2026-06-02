@@ -1,10 +1,305 @@
-.fixTableHead{
-  margin-top:15px;
+// ═══════════════════════════════════════════════════════════════════════════
+//  Competency Popup — Unified Enterprise LMS Design System
+//  8px grid · Roboto · WCAG AA
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── mat-select dropdown panel (CDK overlay — must be global) ─────────────
+::ng-deep .mat-mdc-select-panel {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10) !important;
+  padding: 4px 0 !important;
 }
-.mb-10 {
-margin-bottom: 5px;
+::ng-deep .mat-mdc-option {
+  font-family: Roboto, sans-serif !important;
+  font-size: 13px !important;
+  color: #0F172A !important;
+  min-height: 40px !important;
+  padding: 0 16px !important;
+  line-height: 40px !important;
 }
-.module-input{
-  padding: 0 16px;
+::ng-deep .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background: #EBF4FD !important;
+}
+::ng-deep .mat-mdc-option.mat-mdc-option-active,
+::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: #EBF4FD !important;
+  color: #1C5D95 !important;
+  font-weight: 600 !important;
+}
+::ng-deep .mat-mdc-option .mdc-list-item__primary-text {
+  font-family: Roboto, sans-serif !important;
+  font-size: 13px !important;
+  color: inherit !important;
+}
+
+// ── Reset Material dialog container padding ───────────────────────────────
+::ng-deep .mat-mdc-dialog-content.cp-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-height: unset !important;
+}
+::ng-deep .mat-mdc-dialog-actions.cp-actions {
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: unset !important;
+}
+
+// ── MDC Form Field Tokens — match edit-meta exactly ───────────────────────
+::ng-deep .cp-field.mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: 8px;
+  --mdc-outlined-text-field-outline-color: #CBD5E1;
+  --mdc-outlined-text-field-hover-outline-color: #1C5D95;
+  --mdc-outlined-text-field-focus-outline-color: #1C5D95;
+  --mdc-outlined-text-field-focus-outline-width: 2px;
+  --mdc-outlined-text-field-input-text-font: Roboto, sans-serif;
+  --mdc-outlined-text-field-input-text-size: 14px;
+  --mdc-outlined-text-field-input-text-color: #0F172A;
+  --mdc-outlined-text-field-label-text-color: #64748B;
+}
+
+// ── Checkbox MDC overrides ────────────────────────────────────────────────
+::ng-deep .cp-checkbox .mdc-checkbox {
+  --mdc-checkbox-state-layer-size: 18px !important;
+  padding: 0 !important;
+  width: 18px !important;
+  height: 18px !important;
+}
+::ng-deep .cp-checkbox .mdc-checkbox__background {
+  top: 0 !important;
+  left: 0 !important;
+}
+::ng-deep .cp-checkbox .mdc-checkbox__ripple,
+::ng-deep .cp-checkbox .mat-mdc-checkbox-touch-target {
+  display: none !important;
+}
+::ng-deep .cp-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+  background-color: #1C5D95 !important;
+  border-color: #1C5D95 !important;
+}
+::ng-deep .cp-checkbox .mdc-label {
+  font-size: 13px !important;
+  font-family: Roboto, sans-serif !important;
+  color: #334155 !important;
+  padding-left: 8px !important;
+}
+
+// ── Dialog Header ─────────────────────────────────────────────────────────
+.cp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid #E2E8F0;
+  background: #FAFBFC;
+  flex-shrink: 0;
+}
+.cp-header-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cp-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #EBF4FD;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    color: #1C5D95;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+}
+.cp-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0F172A;
+  margin: 0;
+  font-family: Roboto, sans-serif;
+  line-height: 1.3;
+}
+.cp-subtitle {
+  font-size: 12px;
+  color: #64748B;
+  margin: 2px 0 0;
+  font-family: Roboto, sans-serif;
+}
+.cp-close {
+  width: 32px !important;
+  height: 32px !important;
+  color: #64748B !important;
+  border-radius: 6px !important;
+  flex-shrink: 0;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+  &:hover { background: #F1F5F9 !important; color: #0F172A !important; }
+}
+
+// ── Sections ──────────────────────────────────────────────────────────────
+.cp-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid #F1F5F9;
+
+  &:last-child { border-bottom: none; }
+}
+.cp-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  margin: 0 0 12px;
+  font-family: Roboto, sans-serif;
+}
+
+// ── Competency search bar + dropdown ─────────────────────────────────────
+.cp-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  padding: 0 12px;
+  background: #F8FAFC;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: #1C5D95;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(28, 93, 149, 0.08);
+  }
+}
+.cp-search-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: #94A3B8;
+  flex-shrink: 0;
+}
+.cp-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
   height: 40px;
+  font-size: 13px;
+  font-family: Roboto, sans-serif;
+  color: #0F172A;
+  background: transparent;
+
+  &::placeholder { color: #94A3B8; }
+}
+.cp-field {
+  width: 100%;
+  display: block;
+}
+::ng-deep .cp-field .mat-mdc-form-field-hint {
+  font-size: 11px !important;
+  color: #94A3B8 !important;
+  font-family: Roboto, sans-serif !important;
+}
+.cp-opt-code {
+  font-size: 10px;
+  font-weight: 700;
+  color: #1C5D95;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 6px;
+  font-family: Roboto, sans-serif;
+}
+
+// ── Level grid ────────────────────────────────────────────────────────────
+.cp-level-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.cp-level-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  background: #F8FAFC;
+  transition: border-color 0.15s, background 0.15s;
+  cursor: pointer;
+
+  &.cp-level-selected {
+    border-color: #93C5FD;
+    background: #EFF8FF;
+  }
+  &.cp-level-existing {
+    border-color: #1C5D95;
+    background: #EBF4FD;
+  }
+  &:hover:not(.cp-level-selected) {
+    border-color: #CBD5E1;
+    background: #F1F5F9;
+  }
+}
+.cp-level-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #1C5D95;
+  background: #DBEAFE;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-family: Roboto, sans-serif;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+// ── Footer ────────────────────────────────────────────────────────────────
+.cp-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  padding: 12px 20px !important;
+  border-top: 1px solid #E2E8F0;
+  background: #FAFBFC;
+}
+.cp-btn-cancel {
+  font-size: 13px !important;
+  font-family: Roboto, sans-serif !important;
+  font-weight: 500 !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  color: #475569 !important;
+  border-color: #CBD5E1 !important;
+  padding: 0 16px !important;
+
+  &:hover { background: #F1F5F9 !important; }
+}
+.cp-btn-confirm {
+  font-size: 13px !important;
+  font-family: Roboto, sans-serif !important;
+  font-weight: 600 !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  background: #1C5D95 !important;
+  color: #FFFFFF !important;
+  padding: 0 18px !important;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+  }
+
+  &:hover:not([disabled]) { background: #154F81 !important; }
+  &[disabled] {
+    background: #E2E8F0 !important;
+    color: #94A3B8 !important;
+  }
 }

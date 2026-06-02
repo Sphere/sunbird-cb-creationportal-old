@@ -12,6 +12,7 @@ import { HttpClient } from '@angular/common/http'
 
 
 @Component({
+  standalone: false,
   selector: 'ws-image-upload-intro-popup',
   templateUrl: './image-upload-intro-popup.component.html',
   styleUrls: ['./image-upload-intro-popup.component.scss']
