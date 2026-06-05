@@ -7,7 +7,7 @@
         showSubtitleOnBanner &&
         content?.description
       " class="unit-meta-item">
-      <h2>{{ tocConfig?.overview?.description?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.description?.displayName }}</h2>
       <mat-card-content>
         <div class="mat-subheading-1" [innerHTML]="content?.description"></div>
       </mat-card-content>
@@ -178,7 +178,7 @@
 
     <!-- Training (LHub) -->
     <div *ngIf="trainingLHubEnabled && trainingLHubCount$ | async as trainingLHubCount" class="unit-meta-item">
-      <h2 i18n>Trainings</h2>
+      <h2 class="high" i18n>Trainings</h2>
       <h4 class="mat-h4">
         <ng-container>{{ trainingLHubCount }}</ng-container>
         <ng-container i18n="x trainings available" *ngIf="trainingLHubCount > 1">
@@ -195,7 +195,7 @@
 
     <!-- Related Topics -->
     <div class="unit-meta-item" *ngIf="tocConfig?.overview?.topics?.enabled && content?.topics?.length">
-      <h2>{{ tocConfig?.overview?.topics?.displayName }}</h2>
+      <h2 class="high">{{ tocConfig?.overview?.topics?.displayName }}</h2>
       <mat-card-content>
         <div class="flex flex-between flex-wrapped">
           <a mat-stroked-button class="topic-button text-truncate"
@@ -233,14 +233,14 @@
 
     <ng-template #creators let-authors="authors" let-title="title">
       <div class="unit-meta-item">
-        <h2 i18n *ngIf="title === 'AUTHOR'">Authors</h2>
-        <h2 i18n *ngIf="title === 'CONTACT'">Curator/Contact</h2>
+        <h2 class="high" i18n *ngIf="title === 'AUTHOR'">Authors</h2>
+        <h2 class="high" i18n *ngIf="title === 'CONTACT'">Curator/Contact</h2>
         <mat-divider></mat-divider>
         <div *ngFor="let author of authors" class="author">
           <ws-widget-user-image class="author-image" [imageType]="'name-initial'" [userName]="author.name || ''"
             [email]="author.email"></ws-widget-user-image>
           <div class="width-expand flex flex-middle flex-between">
-            <h3 class="margin-remove"><a class="margin-remove text-md font-normal" (click)="goToProfile(author.id)"
+            <h3 class="author-name margin-remove"><a class="margin-remove" (click)="goToProfile(author.id)"
                 [ngClass]="{'cursor-pointer': true}">{{ author.name }}</a></h3>
             <!-- <ws-widget-btn-mail-user *ngIf="askAuthorEnabled"
               [widgetData]="{ content: content, emails: [author.email] }">
@@ -255,7 +255,7 @@
 
     <div class="margin-bottom-m" *ngIf="objKeys(contentParents).length">
       <mat-card>
-        <h2 i18n>This content is part of</h2>
+        <h2 class="high" i18n>This content is part of</h2>
       </mat-card>
       <mat-accordion>
         <ng-container *ngFor="let key of objKeys(contentParents)">
@@ -292,16 +292,12 @@
     </ws-widget-player-brief> -->
   </div>
 </div>
-<div style="
-    margin-bottom: 20px;
-">
-  <h2 class="margin-bottom-m">License terms</h2>
-  <p style="font-weight: 500;">CC BY</p>
-  <p style="font-weight: 500;">This license allows reusers to distribute, remix, adapt, and build upon the material in
-    any medium or format, so
-    long as
-    attribution is given to the creator. The license allows for commercial use.</p>
-  <p style="font-weight: 500;">CC BY For details see below:‎</p>
+<div class="license-section">
+  <h2 class="high">License terms</h2>
+  <p class="license-label">CC BY</p>
+  <p class="license-body">This license allows reusers to distribute, remix, adapt, and build upon the material in
+    any medium or format, so long as attribution is given to the creator. The license allows for commercial use.</p>
+  <p class="license-body">CC BY For details see below:‎</p>
   <div class="license-link cursor-pointer">
     <a class="blue-link" href="https://creativecommons.org/licenses/by/4.0/"
       target="_blank">https://creativecommons.org/licenses/by/4.0/</a>

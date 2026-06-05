@@ -61,7 +61,7 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
   fetchStatus: TFetchStatus = 'none'
   prefChangeSubscription: Subscription | null = null
   onsiteOffshoreData: IGraphWidget = {} as IGraphWidget
-  apiLinkAccess = this.route.snapshot.data.pageData.data.analytics
+  apiLinkAccess = this.route.snapshot.data?.pageData?.data?.analytics ?? {}
   errorWidget: NsWidgetResolver.IRenderConfigWithTypedData<NsError.IWidgetErrorResolver> = {
     widgetType: ROOT_WIDGET_CONFIG.errorResolver._type,
     widgetSubType: ROOT_WIDGET_CONFIG.errorResolver.errorResolver,

@@ -253,10 +253,12 @@ export class ContentCardComponent implements OnInit {
         console.log(Object.keys(cert[0]['cert_templates']).length)
         if (Object.keys(cert[0]['cert_templates']).length) {
           this.dialog.open(CertificateStatusDialogComponentDialogComponent, {
-            width: '450px',
-            height: '300x',
+            width: '440px',
             data: {
-              'message': 'There is already a certificate assigned to this course. To modify it please contact Aastrika support at support@aastrika.org from  your registered email id.', 'icon': 'info', 'color': '#f44336', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': '', 'cert_upload': 'Yes'
+              message: 'There is already a certificate assigned to this course. To modify it please contact Aastrika support at support@aastrika.org from your registered email id.',
+              icon: 'info',
+              color: '#f44336',
+              cert_upload: 'Yes',
             },
           })
         }

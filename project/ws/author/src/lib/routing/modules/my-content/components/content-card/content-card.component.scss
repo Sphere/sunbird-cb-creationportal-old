@@ -1,10 +1,15 @@
 @import '_ws-vars';
 $card-padding: $size-m;
 $action-btn-size: 2.5 * $size-m; // 40px
+:host {
+  display: block;
+  width: 100%;
+}
+
 .card-container {
   position: relative;
-  width: 260px;
-  margin: 8px;
+  width: 100%;
+  margin: 0;
 }
 
 mat-card {
@@ -13,19 +18,19 @@ mat-card {
   box-sizing: border-box;
   padding: 0 !important;
   overflow: hidden;
-  border-radius: 10px !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
   transition: box-shadow 0.2s ease, transform 0.15s ease;
   cursor: pointer;
   &:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14) !important;
     transform: translateY(-2px);
   }
 }
 
 .card-title {
   color: #1C5D95;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 500;
   margin: 0 0 4px;
   line-height: 1.4;
@@ -81,27 +86,47 @@ mat-card {
   flex: 1;
   min-width: 0;
   padding: 0 16px 0 0;
+}
 
-  .list-title {
-    font-size: 15px;
-    font-weight: 500;
-    color: #1a2d45;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.4;
-    margin-bottom: 3px;
-    display: block;
-  }
+.list-title-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a2d45;
+  display: block;
+  line-height: 1.4;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  a span.font-weight-500 {
-    font-size: 15px;
-    font-weight: 500;
-    color: #1a2d45;
-    display: block;
-    line-height: 1.4;
-    margin-bottom: 2px;
-  }
+.competency-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 3px;
+}
+
+.competency-chip {
+  font-size: 11px;
+  font-weight: 500;
+  color: #1C5D95;
+  background: #e8f0f8;
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+.list-status {
+  flex-shrink: 0;
+}
+
+.duration-icon {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  line-height: 14px !important;
+  margin-right: 3px;
 }
 .item3 {
   flex-shrink: 0;
@@ -169,11 +194,40 @@ mat-card-actions {
   font-weight: 600 !important;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #6b7a8d;
-  background: #f0f3f7;
   border-radius: 4px;
   padding: 2px 8px;
   line-height: normal !important;
+  // Default (Draft)
+  color: #5a6a7a;
+  background: #eef1f5;
+
+  &.status-draft {
+    color: #5a6a7a;
+    background: #eef1f5;
+  }
+  &.status-live {
+    color: #1a7f4b;
+    background: #e6f4ed;
+  }
+  &.status-review, &.status-inreview {
+    color: #a16207;
+    background: #fef9c3;
+  }
+  &.status-reviewed {
+    color: #0369a1;
+    background: #e0f2fe;
+  }
+  &.status-unpublished, &.status-retired {
+    color: #b91c1c;
+    background: #fef2f2;
+  }
+}
+
+.card-locale-badge {
+  font-size: 11px;
+  font-weight: 500;
+  color: #9aa3af;
+  letter-spacing: 0.4px;
 }
 
 // Override mat-card-image negative margins from Material directive

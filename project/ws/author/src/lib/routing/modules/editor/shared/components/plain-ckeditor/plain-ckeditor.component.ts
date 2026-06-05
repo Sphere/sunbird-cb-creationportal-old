@@ -81,6 +81,9 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
     } else {
       this.html = value
     }
+    if (this.editorInstance && this.editorInstance.status === 'ready') {
+      this.editorInstance.setData(this.html)
+    }
   }
   @Input() id = ''
   @Input() editMeta = ''
@@ -92,7 +95,9 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
   @Output() value = new EventEmitter<string>()
   config: any
   configsecond: any
-  @ViewChild('editor', { static: false }) editor!: any
+  editorInstance: any = null
+  private _editorDestroyed = false
+  @ViewChild('editorHost', { static: false }) editorHost!: ElementRef
   @ViewChild('uploadImage', { static: false }) image!: ElementRef
   imageName = 'Insert Image'
   @ViewChild('uploadFile', { static: false }) file!: ElementRef
@@ -128,13 +133,12 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
       const theme = this.theme
       if (this.config && this.config.uiColor !== theme) {
         this.config.uiColor = theme
-        this.editor.instance.setUiColor(this.theme)
+        this.editorInstance?.setUiColor(theme)
       }
       if (this.configsecond && this.configsecond.uiColor !== theme) {
         this.configsecond.uiColor = theme
-        this.editor.instance.setUiColor(this.theme)
+        this.editorInstance?.setUiColor(theme)
       }
-
     })
   }
 
@@ -148,7 +152,7 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
 
   initiateConfig() {
     this.config = {
-      skin: 'moono',
+      skin: 'moono-lisa',
       uiColor: this.theme,
       language: this.accessControlSvc.locale,
       toolbarGroups: [
@@ -187,18 +191,12 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
 
   toggleAdvancedSettings() {
     this.showAdvancedSettings = !this.showAdvancedSettings
-
-    // if (this.editor && this.editor.instance) {
-    //   this.editor.instance.destroy()
-    // }
-
-    // // Replace the editor with the updated configuration
-    // CKEDITOR.replace('editor', this.showAdvancedSettings ? { toolbarGroups: 'Advanced' } : { toolbarGroups: 'Basic' })
+    setTimeout(() => this.initEditor(), 0)
   }
 
   allConfig() {
     this.configsecond = {
-      skin: 'moono',
+      skin: 'moono-lisa',
       uiColor: this.theme,
       language: this.accessControlSvc.locale,
       toolbarGroups: [
@@ -244,6 +242,11 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
   }
 
   ngOnDestroy() {
+    this._editorDestroyed = true
+    if (this.editorInstance) {
+      this.editorInstance.destroy()
+      this.editorInstance = null
+    }
     if (this.subscription) {
       this.subscription.unsubscribe()
     }
@@ -255,11 +258,26 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
     this.fileName = this.file.nativeElement.innerHTML
     this.blankName = this.blank.nativeElement.innerHTML
     this.cdr.detectChanges()
-    setTimeout(() => {
-      if (this.editor && this.editor.nativeElement) {
-        CKEDITOR.replace(this.editor.nativeElement, this.showAdvancedSettings ? { toolbarGroups: 'Advanced' } : { toolbarGroups: 'Basic' })
+    setTimeout(() => this.initEditor(), 0)
+  }
+
+  private initEditor() {
+    if (this._editorDestroyed || !this.editorHost?.nativeElement) { return }
+    if (this.editorInstance) {
+      this.editorInstance.destroy()
+      this.editorInstance = null
+    }
+    const cfg = this.showAdvancedSettings ? { ...this.configsecond } : { ...this.config }
+    this.editorInstance = CKEDITOR.replace(this.editorHost.nativeElement, cfg)
+    this.editorInstance.on('instanceReady', () => {
+      if (this.html) {
+        this.editorInstance.setData(this.html)
       }
-    }, 0)
+    })
+    this.editorInstance.on('change', () => {
+      this.html = this.editorInstance.getData()
+      this.onContentChanged()
+    })
   }
 
   onContentChanged() {
@@ -380,7 +398,7 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
                           if (!this.doRegex) {
                             url = `/${url.split('/').slice(3).join('/')}`
                           }
-                          this.editor.instance.insertHtml(
+                          this.editorInstance?.insertHtml(
                             `<img alt='' src=${AUTHORING_CONTENT_BASE}${encodeURIComponent(
                               url,
                             )}></img>`,
@@ -422,7 +440,7 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
             //         if (!this.doRegex) {
             //           url = `/${url.split('/').slice(3).join('/')}`
             //         }
-            //         this.editor.instance.insertHtml(
+            //         this.editorInstance?.insertHtml(
             //           `<img alt='' src='${AUTHORING_CONTENT_BASE}${encodeURIComponent(
             //             url,
             //           )}'></img>`,
@@ -501,7 +519,7 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
                     if (this.doRegex) {
                       url = `/${url.split('/').slice(3).join('/')}`
                     }
-                    this.editor.instance.insertHtml(
+                    this.editorInstance?.insertHtml(
                       `<a href='${url}' download>Click here to download</a>`,
                     )
                     this.snackBar.openFromComponent(NotificationComponent, {
@@ -544,7 +562,7 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
   }
 
   addBlankBtn() {
-    this.editor.instance.insertHtml(' <input style="border-style:none none solid none"> ')
+    this.editorInstance?.insertHtml(' <input style="border-style:none none solid none"> ')
   }
 
   get theme(): string {

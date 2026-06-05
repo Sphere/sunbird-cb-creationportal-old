@@ -3,6 +3,29 @@
 //  8px grid · Roboto · WCAG AA contrast
 // ═══════════════════════════════════════════════════════════════════════════
 
+// ── Mat-Select Overlay Panel ──────────────────────────────────────────────
+::ng-deep .mat-mdc-select-panel {
+  background: #FFFFFF !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+}
+::ng-deep .mat-mdc-option {
+  background: #FFFFFF !important;
+  font-family: Roboto, sans-serif !important;
+  font-size: 14px !important;
+  color: #0F172A !important;
+  min-height: 40px !important;
+}
+::ng-deep .mat-mdc-option:hover:not(.mdc-list-item--disabled),
+::ng-deep .mat-mdc-option.mat-mdc-option-active {
+  background: #EBF4FD !important;
+}
+::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+  background: #EBF4FD !important;
+  color: #1C5D95 !important;
+  font-weight: 500 !important;
+}
+
 // ── MDC Form Field Design Tokens ──────────────────────────────────────────
 ::ng-deep .mat-mdc-form-field {
   --mdc-outlined-text-field-container-shape: 8px;
@@ -575,6 +598,8 @@
 ::ng-deep .ck.ck-editor { width: 100% !important; }
 ::ng-deep .ck.ck-editor__main > .ck-editor__editable,
 ::ng-deep .ck.ck-editor__editable { min-height: 160px !important; }
+
+
 
 // ── Preserved sidenav / utility styles ────────────────────────────────────
 .cross-btn { margin-left: auto; order: 2; padding-right: 15px; }

@@ -390,6 +390,25 @@ ws-auth-content-card-v2 {
   display: flex;
   align-items: flex-start;
 }
+
+.card-view-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.list-view-grid {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+}
+
+.content-scroll-container {
+  max-height: calc(100vh - 240px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 .aihubContainer {
  width: 100%;
 }

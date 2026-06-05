@@ -1,207 +1,155 @@
-.checklist-container{
-  overflow-y: scroll;
-  height: 400px;
-}
-::ng-deep .mat-tab-header {
-  margin-bottom: 15px; /* Add the desired margin value at the bottom of the tab header */
-}
-.no-data-message {
-  text-align: center;
-  padding: 0px 20px;
-  color: #000000;
-  font-size: 18px;
-}
-
-
-.mat-tab-label .mat-tab-label-content{
-/* Header 3 */
-font-family: Roboto !important;
-font-size: 20px !important;
-font-style: normal !important;
-font-weight: 400 !important;
-line-height: 24px !important; /* 120% */
-letter-spacing: -0.4px !important;
-}
-::ng-deep .mat-tab-label-active{
-// .mat-tab-label-content{
-  opacity: 1;
-  border-bottom-color: #1C5D95 !important;
-  color: #1C5D95  !important;
-// }
-}
-::ng-deep .mat-tab-label-container{
-  .mat-tab-label{
-    /* Header 3 */
-    font-family: Roboto !important;
-    font-size: 18px !important;
-    font-style: normal !important;
-    font-weight: 400 !important;
-    line-height: 24px !important; /* 120% */
-    letter-spacing: -0.4px !important;
-  }
-}
-
-::ng-deep .mat-tab-header {
-  /* Your custom styles for the tab header */
-  /* Header 3 */
-font-family: Roboto !important;
-font-size: 20px !important;
-font-style: normal !important;
-font-weight: 400 !important;
-line-height: 24px !important; /* 120% */
-letter-spacing: -0.4px !important;
-}
-::ng-deep .mat-tab-label-active, .mat-tab-label-active:focus{
-  opacity: 1;
-  border-bottom-color: #1C5D95 !important;
-  color: #1C5D95  !important;
-}
-.review-text-name{
-  color: #000;
-
-/* Header 1 */
-font-family: Roboto;
-font-size: 32px;
-font-style: normal;
-font-weight: 400;
-line-height: 38.4px; /* 120% */
-letter-spacing: -0.64px;
-}
+// ── Layout ────────────────────────────────────────────────────────────────────
 .header-left {
   flex: 1;
   min-width: 50%;
 }
+
 .header-synopsis {
   height: 100%;
-  padding: 15px 9rem 0px 9rem;
-  //background: #fbf5f2;
+  padding: 16px 2.9rem;
   box-sizing: border-box;
-}
-.question-container{
-  color: #000;
 
-/* Header 3 */
-font-family: Roboto;
-font-size: 18px;
-font-style: normal;
-font-weight: 400;
-line-height: 24px;
-letter-spacing: -0.4px;
-  width: 70%;
-  height: auto;
-  flex-shrink: 0;
-  border-radius: 15px;
-  background: #FFF;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
-  margin: 5px;
-}
-.comment-read-container{
-cursor: pointer;
+  @media (max-width: 768px) {
+    padding: 16px 1rem;
+  }
 }
 
-.answer-container{
-  display: flex;
-  justify-content: center;
-  width: 100px;
-  height: auto;
-  flex-shrink: 0;
-  border-radius: 15px;
-  background: #FFF;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
-    margin: 5px;
-align-items: center;
-}
-.answer-icon{
-  width: 24px;
-height: 24px;
-}
-.mat-tab-header{
-  margin-bottom: 10px;
-}
-.mat-tab-label-content{
-  color: #989898;
-
-/* Header 3 */
-font-family: Roboto;
-font-size: 20px !important;
-font-style: normal !important;
-font-weight: 400 !important;
-line-height: 24px !important;  /* 120% */
-letter-spacing: -0.4px !important;
-}
-/* Styling the scrollbar track */
-::-webkit-scrollbar {
-  width: 6px; /* Set the width of the scrollbar */
+// ── Page heading: section title level = 18px/600 ────────────────────────────
+.review-text-name {
+  font-family: Roboto, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0F172A;
+  line-height: 1.4;
+  letter-spacing: -0.2px;
+  margin-bottom: 16px;
 }
 
-/* Styling the scrollbar thumb (the draggable handle) */
-::-webkit-scrollbar-thumb {
-  background-color: #888; /* Color of the scrollbar thumb */
-  border-radius: 5px; /* Rounded corners for the thumb */
-}
-
-/* Styling the scrollbar track (background) */
-::-webkit-scrollbar-track {
-  background-color: #f1f1f1; /* Color of the scrollbar track */
-}
-.green {
-  color: green;
-}
-
-.orange {
-  color: orange;
-}
-
-.red {
-  color: red;
-}
-.percentage-text{
-font-family: Roboto !important;
-font-size: 16px !important;
-font-style: normal !important;
-font-weight:  500 !important;
-line-height: 57.6px !important;
-letter-spacing: -0.96px !important;
-display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0px 0px 0px 4px !important;
-}
-.left-icon{
-  text-align: left;
-  cursor: pointer;
-}
-.no-data{
-  margin-top: 150px !important;
-}
-.total-percentage{
-  font-size: 16px !important;
-    width: 191px;
-    height: 32px;
-    background: #EBF4FB !important;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    border-radius: 32px;
-    color: #1C5D95 !important;
-}
-.percentage-block{
+// ── Score badge ───────────────────────────────────────────────────────────────
+.percentage-block {
   display: flex;
   justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.total-percentage {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 16px;
+  border-radius: 32px;
+  background: #EBF4FB;
+  color: #1C5D95;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.percentage-text {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+
+// Colour states
+.green  { color: #27AE60; }
+.orange { color: #F88808; }
+.red    { color: #E53935; }
+
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+::ng-deep .mat-tab-label-container .mat-tab-label {
+  font-family: Roboto, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #5a6a7a !important;
+  letter-spacing: 0 !important;
+  line-height: 1.4 !important;
+  min-width: 80px !important;
+  padding: 0 16px !important;
 }
 
 ::ng-deep .mat-tab-label-active {
-  border-bottom: 2px solid #1C5D95; /* Change 'red' to your desired color */
+  opacity: 1;
+  color: #1C5D95 !important;
+  border-bottom: 2px solid #1C5D95;
 }
-::ng-deep .mat-tab-labels{
 
- .mat-ink-bar{
-    border-bottom-color:  #1C5D95 !important; /* Change 'red' to your desired color */
-
-}
+::ng-deep .mat-tab-header {
+  margin-bottom: 16px;
+  font-family: Roboto, sans-serif !important;
 }
 
 ::ng-deep .theme-igot.day-mode .mat-ink-bar {
-    background-color: #1C5D95 !important;
+  background-color: #1C5D95 !important;
 }
+
+// ── Checklist items ───────────────────────────────────────────────────────────
+.checklist-container {
+  overflow-y: auto;
+  max-height: 480px;
+  padding-bottom: 16px;
+}
+
+.question-container {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #0F172A;
+  line-height: 1.5;
+  letter-spacing: 0;
+  width: 70%;
+  height: auto;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  margin: 5px;
+}
+
+.answer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 88px;
+  height: auto;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  margin: 5px;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  color: #5a6a7a;
+}
+
+.answer-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.comment-read-container {
+  cursor: pointer;
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.no-data-message {
+  padding: 0 20px;
+}
+
+.no-data {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  color: #5a6a7a;
+  margin-top: 48px;
+  text-align: center;
+}
+
+.left-icon {
+  cursor: pointer;
+}
+
+// ── Scrollbar ─────────────────────────────────────────────────────────────────
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background-color: #bbb; border-radius: 5px; }
+::-webkit-scrollbar-track { background-color: #f1f1f1; }

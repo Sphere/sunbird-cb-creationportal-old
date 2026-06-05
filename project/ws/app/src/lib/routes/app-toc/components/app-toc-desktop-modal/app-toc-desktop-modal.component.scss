@@ -1,42 +1,127 @@
-.subtitle {
-  font-weight: 400;
-  font-size: 16px;
-  color: #000000;
-  margin-bottom: 10px;
+// Angular Material MDC dialog surface has no built-in padding — set it here
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  padding: 0 !important;
 }
 
-.details {
-  font-weight: 400;
-  font-size: 16px;
-  color: #000000;
-}
-.mt-2{
-  margin-top: 10px !important;
-}
-.details-date {
-  font-weight: 400;
-  font-size: 14px;
-  color: #1C5D95;
-}
-
-.levels {
-  font-weight: 400;
-  font-size: 16px;
-  color: #000000;
+.modal-wrapper {
+  font-family: Roboto, sans-serif;
   display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 24px;
 }
 
-.close-button {
-  border: none;
+// ── Header: title + close button ─────────────────────────────────────────────
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2eaf2;
+  margin-bottom: 16px;
+}
+
+// Modal title: card title level = 18px/600 per design system
+.modal-title {
+  font-family: Roboto, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0F172A;
+  margin: 0;
+  line-height: 1.4;
+}
+
+// Close button: large enough hit area, properly positioned
+.modal-close {
   background: none;
-  height: 10px;
-  width: 5px;
-  font-size: 26px;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: 400;
+  color: #5a6a7a;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #eef2f7;
+    color: #0F172A;
+  }
+}
+
+// ── Body ──────────────────────────────────────────────────────────────────────
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// Course name shown prominently at top of content
+.modal-course-name {
+  font-family: Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0F172A;
+  margin: 0 0 4px;
+  line-height: 1.4;
+}
+
+// Label + value pair row
+.modal-meta-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.modal-meta-label {
+  font-size: 12px;
   font-weight: 500;
+  color: #6b7a8d;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+
+  // add colon separator
+  &::after { content: ':'; }
 }
-.align-self-end {
-    align-self: flex-end !important;
+
+.modal-meta-value {
+  font-size: 14px;
+  font-weight: 400;
+  color: #3a4a5c;
 }
-.d-flex {
-    display: flex !important;
+
+// ── Competency section ────────────────────────────────────────────────────────
+.competency-item {
+  border-bottom: 1px solid #eef2f7;
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+}
+
+.competency-name {
+  font-family: Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0F172A;
+  margin: 0 0 6px;
+  line-height: 1.4;
+}
+
+.competency-level {
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #5a6a7a;
+  line-height: 1.5;
+  padding-left: 8px;
 }

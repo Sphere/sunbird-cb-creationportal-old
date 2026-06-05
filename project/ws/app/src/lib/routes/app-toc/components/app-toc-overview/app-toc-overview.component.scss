@@ -72,12 +72,56 @@
     height: $size;
     width: $size;
   }
+
+  .author-name {
+    font-family: Roboto, sans-serif;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #0F172A;
+
+    a {
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        color: #1C5D95;
+      }
+    }
+  }
 }
 .blue-link {
     color: #5996e6!important;
 }
 .high {
-     font-size: 15px !important;
-    font-weight: normal !important;
-    margin-bottom: 0px !important;
+  font-family: Roboto, sans-serif;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #0F172A !important;
+  margin-bottom: 8px !important;
+  margin-top: 0 !important;
+  letter-spacing: 0;
+}
+
+.license-section {
+  margin-bottom: 24px;
+
+  .license-label {
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #0F172A;
+    margin: 0 0 4px;
+  }
+
+  .license-body {
+    font-family: Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #3a4a5c;
+    line-height: 1.6;
+    margin: 0 0 6px;
+  }
 }

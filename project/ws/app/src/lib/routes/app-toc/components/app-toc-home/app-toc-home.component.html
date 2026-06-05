@@ -1,70 +1,67 @@
-<div id="commentSection" *ngIf="changeText === 'history'">
+<div class="section-panel" *ngIf="changeText === 'history'">
   <button (click)="showTocBanner()" mat-icon-button class="back-icon text-left" aria-label="Back to course details">
     <mat-icon>chevron_left</mat-icon>
   </button>
-  <h1 class="heading">Activity Log : <span style="color: #1C5D95">{{content.name}} </span></h1>
-  <ng-container>
-    <!-- Check if there are comments for the current role -->
-    <ng-container *ngIf="commentsList?.length > 0">
-      <div *ngFor="let comment of commentsList" class="display">
-        <div>
-          <h6 style="font-weight: 500;font-size: 15px"
-            *ngIf="(comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Sent for Review') || (comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Review')">
-            <span><span>{{content?.competency === false ? 'course' : 'self assessment' }}</span> sent to the
-              reviewer</span>
-          </h6>
-          <h6 class="" style="font-weight: 500;font-size: 15px"
-            *ngIf="comment.role === 'creator' && comment.currentStatus === 'course-created'">{{ comment.comments
-            }} by <span style="text-transform: capitalize;color: #1C5D95;">{{ comment.role }} </span>
-          </h6>
-          <h6 class="" style="font-weight: 500;font-size: 15px;" *ngIf="(comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Draft') || (comment.currentStatus === 'Sent for Publish' &&  comment.nextStatus === 'Draft') ||
-            (comment.currentStatus === 'Review' && comment.nextStatus === 'Draft') ||
-            (comment.currentStatus === 'Publish' && comment.nextStatus === 'Draft')">
-            <span style="text-transform: capitalize;">{{ comment.role }}</span>
-            sent the <span>{{content?.competency === false ? 'course' : 'self assessment' }}</span> back to you
-          </h6>
-          <h6 class="" style="font-weight: 500;font-size: 15px;"
-            *ngIf="(comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Sent for Publish') || (comment.currentStatus === 'Review' && comment.nextStatus === 'Review')">
-            <span style="text-transform: capitalize;">{{ comment.role }}</span>
-            sent the <span>{{content?.competency === false ? 'course' : 'self assessment' }}</span> to the Publisher
-          </h6>
-          <h6 class="" style="font-weight: 500;font-size: 15px;"
-            *ngIf="comment.currentStatus === 'Sent for Publish' && comment.nextStatus === 'Course Published'">
-            Your <span>{{content?.competency === false ? 'course' : 'self assessment' }}</span> is live now.
-          </h6>
+  <h2 class="section-heading">Activity Log : <span class="section-heading__course">{{ content.name }}</span></h2>
 
-          <div style="display: inline-flex;">
-            <h5 class="time">{{ comment.createdDate | momentDate }}</h5>
-            <span *ngIf="comment.currentStatus !== 'course-created'" (click)="toggleComments(comment)"
-              style="color: #1C5D95; text-transform: capitalize;text-decoration: underline; margin-left: 15px;font-size: 13px !important; cursor: pointer;">
-              {{comment.readComments ? 'Hide' : 'View' }} comment</span>
-          </div>
-          <div *ngIf="comment.readComments">
-            <p style="font-size: 14px;"> {{ comment.comments }}</p>
-          </div>
-        </div>
+  <ng-container *ngIf="commentsList?.length > 0">
+    <div *ngFor="let comment of commentsList" class="activity-card">
+      <p class="activity-event"
+        *ngIf="(comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Sent for Review') || (comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Review')">
+        <span>{{ content?.competency === false ? 'Course' : 'Self assessment' }}</span> sent to the reviewer
+      </p>
+      <p class="activity-event"
+        *ngIf="comment.role === 'creator' && comment.currentStatus === 'course-created'">
+        {{ comment.comments }} by <span class="role-highlight">{{ comment.role }}</span>
+      </p>
+      <p class="activity-event"
+        *ngIf="(comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Draft') || (comment.currentStatus === 'Sent for Publish' && comment.nextStatus === 'Draft') || (comment.currentStatus === 'Review' && comment.nextStatus === 'Draft') || (comment.currentStatus === 'Publish' && comment.nextStatus === 'Draft')">
+        <span class="role-capitalize">{{ comment.role }}</span>
+        sent the <span>{{ content?.competency === false ? 'course' : 'self assessment' }}</span> back to you
+      </p>
+      <p class="activity-event"
+        *ngIf="(comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Sent for Publish') || (comment.currentStatus === 'Review' && comment.nextStatus === 'Review')">
+        <span class="role-capitalize">{{ comment.role }}</span>
+        sent the <span>{{ content?.competency === false ? 'course' : 'self assessment' }}</span> to the Publisher
+      </p>
+      <p class="activity-event"
+        *ngIf="comment.currentStatus === 'Sent for Publish' && comment.nextStatus === 'Course Published'">
+        Your <span>{{ content?.competency === false ? 'course' : 'self assessment' }}</span> is live now.
+      </p>
+
+      <div class="activity-meta-row">
+        <span class="activity-time">{{ comment.createdDate | momentDate }}</span>
+        <span *ngIf="comment.currentStatus !== 'course-created'"
+          class="view-comment-link"
+          (click)="toggleComments(comment)">
+          {{ comment.readComments ? 'Hide' : 'View' }} comment
+        </span>
       </div>
-    </ng-container>
+      <p class="comment-body" *ngIf="comment.readComments">{{ comment.comments }}</p>
+    </div>
   </ng-container>
 </div>
 
-<div id="commentSection" *ngIf="changeText === 'comments'">
-  <button (click)="showTocBanner()" mat-icon-button
-    class="back-icon text-left"><mat-icon>chevron_left</mat-icon></button>
-  <h1 class="heading">Comments: <span style="color: #1C5D95">{{content.name}} </span></h1>
+<div class="section-panel" *ngIf="changeText === 'comments'">
+  <button (click)="showTocBanner()" mat-icon-button class="back-icon text-left" aria-label="Back to course details">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+  <h2 class="section-heading">Comments: <span class="section-heading__course">{{ content.name }}</span></h2>
+
   <ng-container *ngFor="let role of roles">
-    <!-- Check if there are comments for the current role -->
     <ng-container *ngIf="filteredComments[role].length > 0">
-      <span class="comments-text">Comments by <h3 class="role-txt">{{ role | titlecase }}</h3></span>
+      <div class="comments-by-row">
+        <span>Comments by</span>
+        <span class="role-highlight">{{ role | titlecase }}</span>
+      </div>
       <div *ngFor="let comment of filteredComments[role]">
         <div *ngIf="comment.currentStatus !== 'course-created'" class="display">
-
           <div class="in-line">
             <img alt="" src="/cbp-assets/images/Ellipse130.svg" class="p-r-10">
-            <h5 class="p-r-10 highlight">{{ comment.role }}</h5>
-            <h5 class="time">{{ comment.createdDate | timeDifference : 'short' }}</h5>
+            <span class="p-r-10 highlight">{{ comment.role }}</span>
+            <span class="time">{{ comment.createdDate | timeDifference : 'short' }}</span>
           </div>
-          <h6 class="commentBox">{{ comment.comments }}</h6>
+          <p class="commentBox">{{ comment.comments }}</p>
         </div>
       </div>
     </ng-container>

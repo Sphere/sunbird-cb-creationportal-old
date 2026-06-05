@@ -23,11 +23,12 @@
       </a>
     </mat-card-content>
     <mat-card-actions>
-      <span class="course-status-text">{{ CourseStatusName | uppercase }}</span>
-      <!-- <span class="ws-mat-primary-text uppercase font-weight-500">{{ data.contentType }}</span> -->
-      <p class="mat-h5 margin-remove font-weight-bold">
-        {{ data.locale | uppercase }}
-      </p>
+      <span *ngIf="data.status && data.status !== 'Draft'"
+        class="course-status-text"
+        [ngClass]="'status-' + (data.status?.toLowerCase() || 'draft')">
+        {{ CourseStatusName | uppercase }}
+      </span>
+      <span class="card-locale-badge">{{ data.locale | uppercase }}</span>
       <button *ngIf="
           !forExpiry &&
           !forDelete &&
@@ -81,20 +82,9 @@
           cursor: data.contentType === 'Knowledge Board'
         }" [routerLink]="(data | pipeContentRoute : true).url" [title]="data.name" aria-label="Content"
         i18n-aria-label="Content | Click to view">
-        <div class="flex">
-          <span class="font-weight-500">
-            {{ data.name || 'Untitled Content' }}&nbsp;
-          </span>
-          <div class="flex" *ngIf="addedCompetency?.length > 0">
-            <div *ngFor="let comp of addedCompetency; let isLast = last; let isFirst = first">
-              <p style="display: inline;">
-                <span *ngIf="isFirst">(</span>{{ comp.Code }}<span *ngIf="!data.competency&&comp.level"> - {{ comp.level
-                  }}</span><span *ngIf="!isLast">, </span><span *ngIf="isLast">)</span>
-              </p>
-            </div>
-          </div>
-        </div>
-
+        <span class="font-weight-500 list-title-text">
+          {{ data.name || 'Untitled Content' }}
+        </span>
       </a>
     </div>
     <div *ngIf="pageName">
@@ -106,41 +96,37 @@
           ? ['/author/editor/' + data.identifier + '/collection']
           : (data | pipeContentRoute : true).url
       " [title]="data.name" aria-label="Content" i18n-aria-label="Content | Click to view">
-        <div class="flex">
-          <span class="font-weight-500">{{ data.name || 'Untitled Content' }} </span>
-          <div class="flex" *ngIf="addedCompetency?.length > 0">
-            <div *ngFor="let comp of addedCompetency; let isLast = last; let isFirst = first">
-              <p *ngIf="comp" style="display: inline;">
-                <span *ngIf="isFirst">(</span>{{ comp.Code }}<span *ngIf="!data.competency&&comp.level"> - {{ comp.level
-                  }}</span><span *ngIf="!isLast">, </span><span *ngIf="isLast">)</span>
-              </p>
-            </div>
-          </div>
-        </div>
-
+        <span class="font-weight-500 list-title-text">{{ data.name || 'Untitled Content' }}</span>
       </a>
     </div>
-    <!-- <span class="ws-mat-primary-text uppercase font-weight-500">{{
-        data.description
-      }}</span> -->
-    <p class="fs-13 margin-remove flex items-center">
-      <!-- <span class="mr-1 max-width-name"> by {{ data.creatorContacts[0].name}}</span> -->
+    <div class="competency-row" *ngIf="addedCompetency?.length > 0">
+      <ng-container *ngFor="let comp of addedCompetency">
+        <span *ngIf="comp" class="competency-chip"
+          [matTooltip]="data.lang === 'hi' ? (comp.additionalProperties?.['lang-hi-name'] || comp.name || comp.competencyName) : (comp.name || comp.competencyName)"
+          matTooltipPosition="above">
+          {{ comp.Code }}<ng-container *ngIf="!data.competency && comp.level"> - {{ comp.level }}</ng-container>
+        </span>
+      </ng-container>
+    </div>
+    <p class="fs-13 margin-remove flex items-center flex-wrap">
+      <span *ngIf="data.status && data.status !== 'Draft'"
+        class="course-status-text list-status mr-2"
+        [ngClass]="'status-' + (data.status?.toLowerCase() || 'draft')">
+        {{ CourseStatusName | uppercase }}
+      </span>
       <span class="mr-1 max-width-name"> by {{ data.creator }} </span>
       <span class="mr-1" *ngIf="data?.publishedOn"> on {{ data?.publishedOn | date }},</span>
       <span class="mr-1" *ngIf="!data?.publishedOn && data?.lastUpdatedOn">
         on {{ data?.lastUpdatedOn | date }},</span>
-
-      <span class="mr-1"> {{ data.viewCount }} Views, </span>
-      <span class="mr-1"> {{ data.uniqueUsersCount }} Learners </span>
-      <span class="flex items-center ml-3 mr-2">
+      <span class="mr-1" *ngIf="data.viewCount > 0"> {{ data.viewCount }} Views,</span>
+      <span class="mr-1" *ngIf="data.uniqueUsersCount > 0"> {{ data.uniqueUsersCount }} Learners</span>
+      <span *ngIf="data.totalRating" class="flex items-center ml-2 mr-2">
         <mat-icon class="mr-1" *ngIf="data.totalRating == 5" color="accent">star</mat-icon>
-        <mat-icon class="mr-1" *ngIf="data.totalRating && data.totalRating != 5" color="accent">
-          star_half</mat-icon>
-        <!-- <mat-icon class="mr-1" *ngIf="!data.totalRating">star_border</mat-icon> -->
+        <mat-icon class="mr-1" *ngIf="data.totalRating != 5" color="accent">star_half</mat-icon>
         {{ data.totalRating | number : '1.1-1' }}
       </span>
-      <span *ngIf="data.duration" class="flex items-center ml-3 mr-2">
-        <mat-icon>access_time</mat-icon> {{ data.duration | pipeDurationTransform : 'hms' }}
+      <span *ngIf="data.duration" class="flex items-center ml-2 mr-2">
+        <mat-icon class="duration-icon">access_time</mat-icon>{{ data.duration | pipeDurationTransform : 'hms' }}
       </span>
     </p>
   </div>

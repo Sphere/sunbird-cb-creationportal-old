@@ -629,12 +629,10 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 </div>
               </div>
             </div>
-            <div [ngClass]="{ 'overflowY': cardContent&&cardContent.length > 5 }"
-              style="max-height: 55vh;overflow: auto;">
-              <div *ngIf="cardContent" class="flex flex-wrapped flex-dynamic margin-xs class-here">
+            <div class="content-scroll-container">
+              <div *ngIf="cardContent" [ngClass]="listview ? 'list-view-grid' : 'card-view-grid'">
                 <ng-template #oldDesign>
-                  <div [ngClass]="listview == true ? 'full-width-field' : 'margin-l'"
-                    *ngFor="let content of cardContent">
+                  <div *ngFor="let content of cardContent">
                     <ws-auth-root-content-card [competencyData]="proficiencyList" [data]="content"
                       [forExpiry]="status === 'expiry'" [changeView]="listview" [forDelete]="status === 'deleted'"
                       [hideThumbnail]="status.toLowerCase().includes('self')"

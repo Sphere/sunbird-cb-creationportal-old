@@ -104,7 +104,6 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
-    console.log("content", this.content)
     if (this.authAccessService.hasRole(['content_reviewer'])) {
       this.isReviewer = true
     } else {
@@ -132,10 +131,8 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
 
     if (this.content) {
       this.progressSvc.getComments(this.content.identifier).subscribe(res => {
-        console.log("res", res)
         this.historyList = res
         this.isCreator = this.authAccessService.hasRole(['content_creator'])
-
         this.isReviewer = this.authAccessService.hasRole(['content_reviewer'])
         this.isPublisher = this.authAccessService.hasRole(['content_publisher'])
         if (this.isCreator) {
@@ -145,11 +142,8 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
         } else if (this.isPublisher) {
           this.roles = ['creator', 'reviewer']
         }
-
         const filteredComments = res.filter((comment: { role: string }) => this.roles.includes(comment.role))
-        console.log("filtered comments", filteredComments)
-        this.commentsList = filteredComments.filter((item: any) => item.currentStatus !== "course-created")
-
+        this.commentsList = filteredComments.filter((item: any) => item.currentStatus !== 'course-created')
       })
     }
 

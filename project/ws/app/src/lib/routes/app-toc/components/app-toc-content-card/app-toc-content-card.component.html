@@ -124,12 +124,12 @@
       <!-- <img class="card-thumbnail ws-mat-primary-lite-background" [src]="content?.thumbnail" alt="Thumbnail"
         (click)="viewChildren = !viewChildren" [wsUtilsDefaultThumbnail]="defaultThumbnail" /> -->
       <div class="flex flex-between width-expand">
-        <div class="ml-2 text-truncate cursor-pointer 1" (click)="viewChildren = !viewChildren">
-          <h2 class="margin-remove  text-truncate">{{ content?.name }}</h2>
-          <div>
-            <span class="mat-body-strong">{{ content?.displayContentType }}</span>
-            <span>
-              <ng-container *ngIf="content?.displayContentType">&nbsp;&nbsp;|&nbsp;&nbsp;</ng-container>
+        <div class="ml-2 text-truncate cursor-pointer" (click)="viewChildren = !viewChildren">
+          <h2 class="margin-remove text-truncate">{{ content?.name }}</h2>
+          <div class="collection-meta">
+            <span class="meta-type">{{ content?.displayContentType }}</span>
+            <span class="meta-duration" *ngIf="content?.duration">
+              <ng-container *ngIf="content?.displayContentType">&nbsp;·&nbsp;</ng-container>
               {{ content?.duration | pipeDurationTransform: 'hms' }}
             </span>
           </div>
@@ -225,134 +225,53 @@
       </ws-app-toc-content-card>
     </div>
   </ng-container>
-  <div *ngIf="isResource" class=" resource-container">
-    <!-- <ws-widget-display-content-type-icon class="flex" [displayContentType]="content?.displayContentType">
-    </ws-widget-display-content-type-icon> -->
-
-
-    <!-- <div class="img-container">
-      <img class="card-thumbnail ws-mat-primary-lite-background" [src]="content?.appIcon" alt="Thumbnail"
-        (click)="viewChildren = !viewChildren" [wsUtilsDefaultThumbnail]="defaultThumbnail" />
-      <ws-widget-content-progress *ngIf="content?.identifier && content?.progress?.progress" [forPreview]="forPreview"
-        [contentId]="content?.identifier" class="progress-bar-thin" [progress]="content?.progress?.progress">
-      </ws-widget-content-progress>
-    </div> -->
-
-    <!-- <div class="flex flex-col sm:flex-row flex-between width-expand pr-0 w-100 sm:pr-4 sm:w-auto">
+  <div *ngIf="isResource" class="resource-container">
+    <div class="width-expand">
       <a [routerLink]="resourceLink.url" [queryParams]="resourceLink.queryParams">
-        <div class="text-truncate cursor-pointer" (click)="viewChildren = !viewChildren">
-          <div class="flex flex-col sm:flex-row flex-wrap">
-            <h2 class="margin-remove text-truncate content-heading flex-auto">
-              {{ content?.name }}
-            </h2>
-          </div>
-          <div>
-            <span class="mat-body-strong content-type ws-mat-default-text">{{ content?.displayContentType }}</span>
-            <span class="ml-5">
-              <mat-icon class="time-icon">schedule</mat-icon>
-              <span class="ml-2 time-value">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
-            </span>
-          </div>
-        </div>
-      </a>
-      <div class="flex flex-wrap items-center justify-start sm:justify-end">
-        <div class="type-container resource" *ngIf="content?.category === 'Resource'">
-          <mat-icon class="mr-1 custom-icon rotate-90">call_to_action</mat-icon>
-          <span>Resource</span>
-        </div>
-        <div class="type-container module" *ngIf="content?.category === 'Collection'">
-          <mat-icon class="mr-1 custom-icon rotate-90">call_to_action</mat-icon>
-          <span>Module</span>
-        </div>
-        <div class="type-container course" *ngIf="content?.category === 'Course'">
-          <mat-icon class="mr-1 custom-icon rotate-90">call_to_action</mat-icon>
-          <span>Course</span>
-        </div>
-        <button *ngIf="content?.artifactUrl && !isXSmall" type="button" mat-icon-button class="text-right"
-          [matMenuTriggerFor]="buttonMenu">
-          <mat-icon>more_vertical</mat-icon>
-        </button>
-      </div>
-    </div> -->
-    <!-- <img class="card-thumbnail ws-mat-primary-lite-background" [src]="content?.thumbnail" alt="Thumbnail"
-      (click)="viewChildren = !viewChildren" [wsUtilsDefaultThumbnail]="defaultThumbnail" /> -->
-    <div class="flex flex-between width-expand">
-      <a [routerLink]="resourceLink.url" [queryParams]="resourceLink.queryParams">
-        <div class="ml-2 text-truncate cursor-pointer 2" (click)="viewChildren = !viewChildren">
+        <div class="ml-2 text-truncate cursor-pointer">
           <h2 class="margin-remove text-truncate">{{ content?.name }}</h2>
-          <div class="flex items-center">
-            <ng-container *ngIf="content?.mimeType">
-              <div class="pr-1" [ngSwitch]="content?.mimeType | lowercase">
-
-                <div *ngSwitchCase="'application/pdf'">
-                  <img src="cbp-assets/images/pdf-icon.png"> PDF
-                </div>
-                <div *ngSwitchCase="'audio/mpeg'">
-                  <img style="width: 14px; height: 17px;background-color: black;" src="cbp-assets/images/audio-img.svg">
-                  Audio
-                </div>
-                <div *ngSwitchCase="'application/x-mpegURL'">
-                  <img style="width: 14px; height: 17px;background-color: black;" src="cbp-assets/images/audio-img.svg">
-                  Audio
-                </div>
-                <div *ngSwitchCase="'video/mp4'">
-                  <img src="cbp-assets/images/video-icon.png"> Video
-                </div>
-                <div *ngSwitchCase="'application/html'">
-                  <img src="cbp-assets/images/SCROM-img.svg"> SCORM
-                </div>
-
-                <div *ngSwitchCase="'application/web-module'">
-                  <img src="cbp-assets/images/SCROM-img.svg"> SCORM
-                </div>
-                <div *ngSwitchCase="'application/vnd.ekstep.html-archive' ">
-                  <img style="width: 14px; height: 17px;background-color: black;" src="cbp-assets/images/SCROM-img.svg">
-                  SCORM
-                </div>
-                <div *ngSwitchCase="'video/x-youtube'">
-                  <img src="cbp-assets/images/link-icon.png"> Link
-                </div>
-                <div *ngSwitchCase="'text/x-url' ">
-                  <img src="cbp-assets/images/link-icon.png"> Link
-                </div>
-                <div *ngSwitchCase="'application/quiz'">
-                  Quiz
-                </div>
-                <div *ngSwitchCase="'application/json'">
-                  <ng-container *ngIf="content?.isAssessment; else quizBlock">
-                    Assessment
-                  </ng-container>
-                  <ng-template #quizBlock>
-                    Quiz
-                  </ng-template>
-                </div>
-                <!-- <div *ngSwitchDefault><img src="cbp-assets/images/link-icon.png"> Link</div> -->
-              </div>
-
-            </ng-container>
-            <span>
-              <ng-container *ngIf=" content?.displayContentType">&nbsp;&nbsp;|&nbsp;&nbsp;
-              </ng-container>
-              {{ content?.duration | pipeDurationTransform: 'hms' }}
+          <div class="resource-meta-row" *ngIf="content?.mimeType">
+            <div class="type-block" [ngSwitch]="content?.mimeType | lowercase">
+              <span *ngSwitchCase="'application/pdf'" class="type-label">
+                <img class="content-type-img" src="cbp-assets/images/pdf-icon.png" alt="PDF"> PDF
+              </span>
+              <span *ngSwitchCase="'audio/mpeg'" class="type-label">
+                <img class="content-type-img-dark" src="cbp-assets/images/audio-img.svg" alt="Audio"> Audio
+              </span>
+              <span *ngSwitchCase="'application/x-mpegURL'" class="type-label">
+                <img class="content-type-img-dark" src="cbp-assets/images/audio-img.svg" alt="Audio"> Audio
+              </span>
+              <span *ngSwitchCase="'video/mp4'" class="type-label">
+                <img class="content-type-img" src="cbp-assets/images/video-icon.png" alt="Video"> Video
+              </span>
+              <span *ngSwitchCase="'application/html'" class="type-label">
+                <img class="content-type-img" src="cbp-assets/images/SCROM-img.svg" alt="SCORM"> SCORM
+              </span>
+              <span *ngSwitchCase="'application/web-module'" class="type-label">
+                <img class="content-type-img" src="cbp-assets/images/SCROM-img.svg" alt="SCORM"> SCORM
+              </span>
+              <span *ngSwitchCase="'application/vnd.ekstep.html-archive'" class="type-label">
+                <img class="content-type-img-dark" src="cbp-assets/images/SCROM-img.svg" alt="SCORM"> SCORM
+              </span>
+              <span *ngSwitchCase="'video/x-youtube'" class="type-label">
+                <img class="content-type-img" src="cbp-assets/images/link-icon.png" alt="Link"> Link
+              </span>
+              <span *ngSwitchCase="'text/x-url'" class="type-label">
+                <img class="content-type-img" src="cbp-assets/images/link-icon.png" alt="Link"> Link
+              </span>
+              <span *ngSwitchCase="'application/quiz'" class="type-label">Quiz</span>
+              <span *ngSwitchCase="'application/json'" class="type-label">
+                <ng-container *ngIf="content?.isAssessment; else quizBlock">Assessment</ng-container>
+                <ng-template #quizBlock>Quiz</ng-template>
+              </span>
+            </div>
+            <span class="meta-duration" *ngIf="content?.duration">
+              &nbsp;·&nbsp;{{ content?.duration | pipeDurationTransform: 'hms' }}
             </span>
           </div>
         </div>
       </a>
-
     </div>
-
-    <!-- <div class="resource-meta width-expand">
-      <a [routerLink]="resourceLink.url" [queryParams]="resourceLink.queryParams">
-        <h3 *ngIf="content?.displayContentType !== enumContentTypes.ASSESSMENT" class="margin-remove text-truncate">
-          {{ content?.name }}
-        </h3>
-        <h1 *ngIf="content?.displayContentType === enumContentTypes.ASSESSMENT" class="margin-remove text-truncate">
-          {{ content?.name }}
-        </h1>
-      </a>
-      <span class="mat-body-strong margin-left-xs">{{ content?.duration | pipeDurationTransform: 'time24' }}
-      </span>
-    </div> -->
   </div>
 </ng-container>
 
