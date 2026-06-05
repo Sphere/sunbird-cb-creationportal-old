@@ -23,14 +23,16 @@ pre {
   overflow: auto;
 }
 
-.mat-header-cell {
+.mat-header-cell,
+.mat-mdc-header-cell {
   font-weight: bold;
   background-color: #ddd;
   flex: 0 0 25% !important;
   min-width: 184px !important;
 }
 
-.mat-tab-group {
+.mat-tab-group,
+.mat-mdc-tab-group {
   margin-top: -15px !important;
 }
 
@@ -51,12 +53,14 @@ pre {
   min-width: 100px !important;
 }
 
-.mat-table {
+.mat-table,
+.mat-mdc-table {
   border: 1px solid #0000001f;
   box-shadow: none;
 }
 
 .result-table .mat-header-cell,
+.result-table .mat-mdc-header-cell,
 .telltext-success {
   color: #1e6942;
   background-color: #c7ffb3;
@@ -67,7 +71,8 @@ pre {
   background-color: #ec4c6338 !important;
 }
 
-::ng-deep .mat-tab-label {
+::ng-deep .mat-tab-label,
+::ng-deep .mat-mdc-tab {
   min-width: 130px !important;
   height: 43px !important;
 }
@@ -79,7 +84,9 @@ pre {
 }
 
 .mat-row,
-.mat-header-row {
+.mat-mdc-row,
+.mat-header-row,
+.mat-mdc-header-row {
   height: 34px !important;
 }
 

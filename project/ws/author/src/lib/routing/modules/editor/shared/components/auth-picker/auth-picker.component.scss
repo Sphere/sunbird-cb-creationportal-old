@@ -21,10 +21,12 @@ mat-dialog-content {
   max-height: 60vh;
 }
 
-.mat-dialog-container {
+.mat-dialog-container,
+.mat-mdc-dialog-container {
   overflow: hidden;
 }
 
-.mat-raised-button {
+.mat-raised-button,
+.mat-mdc-raised-button {
   margin-left: 10px;
 }

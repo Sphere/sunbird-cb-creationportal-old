@@ -21,7 +21,8 @@
   margin-right: 0.5em;
 }
 
-.mat-card-image {
+.mat-card-image,
+.mat-mdc-card-image {
   margin-bottom: -20px !important;
   border-bottom-left-radius: inherit !important;
   border-bottom-right-radius: inherit !important;

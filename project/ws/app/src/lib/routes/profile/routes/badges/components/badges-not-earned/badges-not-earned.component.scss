@@ -47,7 +47,8 @@ $badge-padding: 12px;
   margin-left: $size-xs;
 }
 
-.mat-card {
+.mat-card,
+.mat-mdc-card {
   padding: 0;
 }
 
@@ -61,7 +62,8 @@ $badge-padding: 12px;
   // width: $medium-badge-size + 2 * $badge-padding;
 }
 
-.mat-progress-bar {
+.mat-progress-bar,
+.mat-mdc-progress-bar {
   height: $size-xs - ($size-xs * 0.4);
   border-radius: 4%;
   border: none;

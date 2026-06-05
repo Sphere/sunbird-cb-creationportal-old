@@ -238,7 +238,8 @@ mat-sidenav{
   margin: 10px;
 }
 
-::ng-deep .myfield .mat-form-field-wrapper{
+::ng-deep .myfield .mat-form-field-wrapper,
+::ng-deep .myfield .mat-mdc-text-field-wrapper{
   padding: 0px !important;
 }
 

@@ -237,7 +237,8 @@ padding-left: 15px;
   }
 }
 
-mat-card.card-standard-container.mr-8 .mat-card {
+mat-card.card-standard-container.mr-8 .mat-card,
+mat-card.card-standard-container.mr-8 .mat-mdc-card {
   position: relative;
   float: left;
 }

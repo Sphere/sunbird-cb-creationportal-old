@@ -23,7 +23,8 @@
     background: #fff;
     border-bottom: 1px solid #e8ecf0;
 
-    .mat-tab-link {
+    .mat-tab-link,
+    .mat-mdc-tab-link {
       font-family: Roboto, sans-serif !important;
       font-size: 14px !important;
       font-weight: 500 !important;
@@ -79,11 +80,13 @@
   margin: auto;
   display: flex
 }
-::ng-deep .mat-tab-header-pagination-before {
+::ng-deep .mat-tab-header-pagination-before,
+::ng-deep .mat-mdc-tab-header-pagination-before {
   padding-left: 0 !important;
   margin-left: -5px;
 }
-::ng-deep .mat-tab-header-pagination-after {
+::ng-deep .mat-tab-header-pagination-after,
+::ng-deep .mat-mdc-tab-header-pagination-after {
   padding-right: 0 !important;
   margin-right: -5px;
 }
@@ -95,13 +98,15 @@
     margin-bottom: 16px;
 }
 
-::ng-deep .mat-tab-link {
+::ng-deep .mat-tab-link,
+::ng-deep .mat-mdc-tab-link {
     padding: 0px !important; // adjust this to whatever padding you need
     justify-content: left !important;
     min-width: 80px !important;
     margin-right: 40px;
   }
-  ::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
+  ::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active,
+  ::ng-deep .mat-mdc-tab-list .mat-mdc-tab-labels .mat-mdc-tab-label-active {
   opacity: 1;
 }
 .showData {
@@ -322,10 +327,12 @@ animation-delay: -0.5s;
    font-size: 14px;
   color: #1C5D95 !important;
 }
-.check-text .mat-checkbox-layout {
+.check-text .mat-checkbox-layout,
+.check-text .mdc-form-field {
   border-radius: 30px !important;
 }
-::ng-deep .mat-checkbox-inner-container{
+::ng-deep .mat-checkbox-inner-container,
+::ng-deep .mdc-checkbox{
   width: 13px !important;
   height: 13px !important;
 }

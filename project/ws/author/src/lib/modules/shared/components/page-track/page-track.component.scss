@@ -114,7 +114,8 @@ letter-spacing: -0.24px;
   text-align: right;
 }
 
-.mat-dialog-content {
+.mat-dialog-content,
+.mat-mdc-dialog-content {
   overflow: hidden !important;
   max-height: none !important;
 }
@@ -129,7 +130,8 @@ letter-spacing: -0.24px;
   right: -10px;
 }
 
-.mat-dialog-container {
+.mat-dialog-container,
+.mat-mdc-dialog-container {
   padding-bottom: 0px;
 }
 

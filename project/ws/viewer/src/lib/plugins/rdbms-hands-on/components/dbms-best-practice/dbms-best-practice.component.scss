@@ -28,7 +28,8 @@ pre {
   right: 0;
 }
 
-.mat-table {
+.mat-table,
+.mat-mdc-table {
   border: 1px solid #0000001f;
   box-shadow: none;
 }
@@ -38,7 +39,8 @@ pre {
   padding: 10px;
 }
 
-.mat-header-cell {
+.mat-header-cell,
+.mat-mdc-header-cell {
   font-weight: bold;
   background-color: #ddd;
   flex: 0 0 25% !important;
@@ -87,7 +89,9 @@ pre {
 }
 
 .mat-row,
-.mat-header-row {
+.mat-mdc-row,
+.mat-header-row,
+.mat-mdc-header-row {
   height: 34px !important;
 }
 

@@ -29,11 +29,13 @@
   right: 0;
 }
 
-.mat-row:nth-child(even) {
+.mat-row:nth-child(even),
+.mat-mdc-row:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-.mat-header-cell {
+.mat-header-cell,
+.mat-mdc-header-cell {
   font-weight: bold;
   background-color: #ddd;
   flex: 0 0 25% !important;
@@ -41,7 +43,8 @@
   text-align: left;
 }
 
-.mat-cell {
+.mat-cell,
+.mat-mdc-cell {
   text-align: left;
 }
 
@@ -49,7 +52,8 @@
   font-weight: 800;
 }
 
-.result-table .mat-header-cell {
+.result-table .mat-header-cell,
+.result-table .mat-mdc-header-cell {
   color: #1e6942;
   background-color: #c7ffb3;
 }

@@ -91,7 +91,8 @@
   padding-top: 12px;
 }
 
-::ng-deep.overview-modal .mat-dialog-container {
+::ng-deep.overview-modal .mat-dialog-container,
+::ng-deep.overview-modal .mat-mdc-dialog-container {
   border-radius: 40px !important;
 }
 

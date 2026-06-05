@@ -7,17 +7,18 @@
   font-weight: 800;
 }
 
-.executed-result .mat-header-cell {
+.executed-result .mat-header-cell, .executed-result .mat-mdc-header-cell {
   color: #1e6942;
   background-color: #c7ffb3;
 }
 
-.mat-row,
-.mat-header-row {
+.mat-row, .mat-mdc-row,
+.mat-header-row,
+.mat-mdc-header-row {
   height: 34px !important;
 }
 
-.mat-header-cell {
+.mat-header-cell, .mat-mdc-header-cell {
   font-weight: bold;
   flex: 0 0 25% !important;
   min-width: 88px !important;

@@ -7,6 +7,7 @@ $toolbar-height: 44px;
   display: block;
 }
 
-.mat-dialog-container {
+.mat-dialog-container,
+.mat-mdc-dialog-container {
   padding: 0 !important;
 }

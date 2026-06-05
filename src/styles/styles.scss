@@ -197,6 +197,32 @@ iframe {
   }
 }
 
+// Select dropdown panel — clean white surface + on-theme option states
+.mat-mdc-select-panel {
+  background-color: #ffffff !important;
+  --mat-select-panel-background-color: #ffffff;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+  padding: 4px 0 !important;
+
+  .mat-mdc-option {
+    background-color: transparent !important;
+
+    &:hover:not(.mdc-list-item--disabled),
+    &.mat-mdc-option-active {
+      background-color: rgba(28, 93, 149, 0.06) !important;
+    }
+
+    &.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+      background-color: rgba(28, 93, 149, 0.10) !important;
+
+      .mdc-list-item__primary-text {
+        color: #1c5d95 !important;
+      }
+    }
+  }
+}
+
 // Material Over-rides
 .auto-mat-form-field-input-infix {
   .mat-form-field-infix,
@@ -523,7 +549,8 @@ h3.shepherd-title {
   margin: 0 0px !important;
 }
 
-.theme-deep-blue .day-mode .mat-header-cell {
+.theme-deep-blue .day-mode .mat-header-cell,
+.theme-deep-blue .day-mode .mat-mdc-header-cell {
   color: #102b4e !important;
 }
 
@@ -532,6 +559,30 @@ h3.shepherd-title {
 .mdc-button {
   // font-weight: bold;
   border: 1px solid;
+}
+
+// ── Image Upload Intro dialog panel ───────────────────────────────────────
+.iup-dialog-panel .mat-mdc-dialog-container,
+.iup-dialog-panel .mdc-dialog__container,
+.iup-dialog-panel .mdc-dialog__surface {
+  border-radius: 12px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.iup-dialog-panel .mat-mdc-dialog-title {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.iup-dialog-panel .mat-mdc-dialog-content {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.iup-dialog-panel .mat-mdc-dialog-actions {
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 #bannerColors {
@@ -638,6 +689,7 @@ h3.shepherd-title {
    align-items: flex-start !important;
 }
 
+// Legacy (pre-MDC) selectors — inert after Material 15 MDC migration, kept for reference
 ::ng-deep .theme-igot.day-mode .mat-checkbox-checked.mat-accent .mat-checkbox-background,
 .theme-igot.day-mode .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
 .theme-igot.day-mode .mat-fab.mat-accent, .theme-igot.day-mode .mat-flat-button.mat-accent,
@@ -645,11 +697,26 @@ h3.shepherd-title {
   background-color: #1c5d95 !important;
 }
 
+// MDC equivalent (Material 15+): brand-blue checked/indeterminate checkboxes in igot day-mode
+.theme-igot.day-mode .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background,
+.theme-igot.day-mode .mat-mdc-checkbox .mdc-checkbox__native-control:indeterminate ~ .mdc-checkbox__background {
+  background-color: #1c5d95 !important;
+  border-color: #1c5d95 !important;
+}
+
+// Legacy form-field outline color — inert after MDC migration
 ::ng-deep .theme-igot.day-mode .mat-form-field-outline-thick {
   color: #1c5d95 !important;
 }
 
-a.width-auto.mat-button {
+// MDC equivalent: brand-blue hover/focus outline on outlined form fields in igot day-mode
+.theme-igot.day-mode .mat-mdc-form-field {
+  --mdc-outlined-text-field-focus-outline-color: #1c5d95;
+  --mdc-outlined-text-field-hover-outline-color: #1c5d95;
+}
+
+a.width-auto.mat-button,
+a.width-auto.mat-mdc-button {
     width: 30px;
     min-width: 35px;
     background-color: rgba(0, 0, 0, 0.8) !important;
@@ -660,7 +727,8 @@ a.width-auto.mat-button {
     z-index: 9;
 }
 
-a.width-auto.mat-button{
+a.width-auto.mat-button,
+a.width-auto.mat-mdc-button {
     color: #fff;
     font-size: 38px;
 }

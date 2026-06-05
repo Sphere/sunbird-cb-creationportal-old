@@ -58,7 +58,10 @@
 .red    { color: #E53935; }
 
 // ── Tabs ─────────────────────────────────────────────────────────────────────
-::ng-deep .mat-tab-label-container .mat-tab-label {
+::ng-deep .mat-tab-label-container .mat-tab-label,
+::ng-deep .mat-tab-label-container .mat-mdc-tab,
+::ng-deep .mat-mdc-tab-label-container .mat-tab-label,
+::ng-deep .mat-mdc-tab-label-container .mat-mdc-tab {
   font-family: Roboto, sans-serif !important;
   font-size: 14px !important;
   font-weight: 500 !important;
@@ -69,19 +72,23 @@
   padding: 0 16px !important;
 }
 
-::ng-deep .mat-tab-label-active {
+::ng-deep .mat-tab-label-active,
+::ng-deep .mat-mdc-tab-label-active {
   opacity: 1;
   color: #1C5D95 !important;
   border-bottom: 2px solid #1C5D95;
 }
 
-::ng-deep .mat-tab-header {
+::ng-deep .mat-tab-header,
+::ng-deep .mat-mdc-tab-header {
   margin-bottom: 16px;
   font-family: Roboto, sans-serif !important;
 }
 
-::ng-deep .theme-igot.day-mode .mat-ink-bar {
+::ng-deep .theme-igot.day-mode .mat-ink-bar,
+::ng-deep .theme-igot.day-mode .mdc-tab-indicator__content--underline {
   background-color: #1C5D95 !important;
+  border-color: #1C5D95 !important;
 }
 
 // ── Checklist items ───────────────────────────────────────────────────────────

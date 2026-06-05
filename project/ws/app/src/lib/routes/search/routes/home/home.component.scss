@@ -25,10 +25,12 @@ ws-app-home .filter-button {
   text-align: center;
 }
 
-ws-app-home .search .mat-form-field-wrapper {
+ws-app-home .search .mat-form-field-wrapper,
+ws-app-home .search .mat-mdc-text-field-wrapper {
   padding-bottom: 0px !important;
 
-  .mat-form-field-infix {
+  .mat-form-field-infix,
+  .mat-mdc-form-field-infix {
     border-top-width: 11px !important;
     padding: 0;
     padding-bottom: 10px;

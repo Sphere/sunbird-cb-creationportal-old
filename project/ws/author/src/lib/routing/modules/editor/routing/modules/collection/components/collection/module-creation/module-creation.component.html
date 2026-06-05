@@ -199,7 +199,7 @@
               </div>
             </div>
           </div>
-          <div *ngIf="isSelfAssessment" class="model-left-create-content div-1">
+          <div *ngIf="isSelfAssessment" class="model-left-create-content div-1 sa-level-list">
             <div class="module-container" *ngFor="let module of courseData?.children;index as i">
               <div>
                 <div (click)="editContent(module)" class="left-block-container"
@@ -296,11 +296,11 @@
         <!--module right canvas header-->
         <div class="mc-card-header mc-right-header">
           <div class="mc-card-icon">
-            <mat-icon>account_tree</mat-icon>
+            <mat-icon>{{isSelfAssessment ? 'assignment' : 'account_tree'}}</mat-icon>
           </div>
           <div class="mc-card-meta">
-            <span class="mc-card-title">Course Builder</span>
-            <span class="mc-card-sub">Add modules and resources to structure your course</span>
+            <span class="mc-card-title">{{isSelfAssessment ? 'Self Assessment Builder' : 'Course Builder'}}</span>
+            <span class="mc-card-sub" *ngIf="!isSelfAssessment">Add modules and resources to structure your course</span>
           </div>
           <button mat-stroked-button class="preview-btn mc-preview-btn"
             [routerLink]="'/author/toc/' + courseData?.identifier + '/contents'">
@@ -421,8 +421,7 @@
             </div>
           </div>
           <div class="module-txt-block margin-top-l" *ngIf="isSelfAssessment">
-            <span class="self-assessment-name">{{moduleName}}</span><br />
-            <span class="self-assessment-level margin-top-m">Level {{content.index}}</span>
+            <span class="self-assessment-name">{{moduleName}}</span>
           </div>
           <div class="module-txt-block" *ngIf="content?.mimeType === 'application/json'&&!isSelfAssessment">
             <ng-container *ngTemplateOutlet="assessmentWarningTpl"></ng-container>
@@ -486,18 +485,14 @@
             </div>
 
           </div>
-          <div class="module-txt-block margin-top-m">
-            <mat-checkbox *ngIf="isLinkEnabled" [(ngModel)]="isNewTab" [checked]="isNewTab"
-              style="margin-left: 0px;border-radius: 4px;" class="check-text">Open
-              link
-              in new tab</mat-checkbox>
-            <!-- <mat-checkbox *ngIf="isShowDownloadBtnEnabled" [(ngModel)]="isShowBtn" [checked]="isShowBtn"
-              style="margin-left: 0px; margin-top: 5px;" class="check-text">Show Download button</mat-checkbox> -->
-          </div>
-          <div class="module-txt-block margin-top-m" *ngIf="content?.isAssessment&&!isSelfAssessment">
-            <mat-checkbox [(ngModel)]="content.isCorrectAnswerPopUp" style="margin-left: 0px;border-radius: 4px;"
-              class="check-text">Show Correct Answer Popup</mat-checkbox>
-          </div>
+          <label class="rd-checkbox-item" *ngIf="isLinkEnabled">
+            <input type="checkbox" [(ngModel)]="isNewTab" [checked]="isNewTab" />
+            <span>Open link in new tab</span>
+          </label>
+          <label class="rd-checkbox-item" *ngIf="content?.isAssessment&&!isSelfAssessment">
+            <input type="checkbox" [(ngModel)]="content.isCorrectAnswerPopUp" />
+            <span>Show Correct Answer Popup</span>
+          </label>
           <div class="margin-top-s module-txt-block" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
             <button mat-raised-button
               class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
@@ -623,111 +618,103 @@
             <!--link form start-->
             <form [formGroup]="resourceLinkForm" class="resource-details-form"
               *ngIf="isLinkEnabled||isAssessmentOrQuizEnabled">
-              <mat-form-field appearance="outline" class="module-txt-block margin-top-xs field-width"
-                style="margin-bottom: 0vh;">
-                <input class="" matInput #name formControlName="name" maxlength="100" i18n-placeholder
-                  placeholder="Name of the resource" />
-                <mat-hint class="mt-hint">{{ this.resourceLinkForm.value.name.length }}/100</mat-hint>
-              </mat-form-field>
-              <span *ngIf="resourceLinkForm.get('name').hasError('required')" class="module-txt-block invalid-text">This
-                field is
-                Required</span>
-              <div class="module-txt-block" *ngIf="isAssessmentOrQuizEnabled&&!isSelfAssessment">
+
+              <!-- Name of the resource -->
+              <div class="rd-name-row">
+                <input type="text" #name formControlName="name" maxlength="100"
+                  placeholder="Name of the resource" class="module-input" autocomplete="off" />
+                <div class="rd-field-footer">
+                  <span *ngIf="resourceLinkForm.get('name').hasError('required')" class="invalid-text">This field is Required</span>
+                  <span class="mt-hint">{{ resourceLinkForm.value.name.length }}/100</span>
+                </div>
+              </div>
+
+              <!-- Save-before-adding warning (assessment / quiz) -->
+              <div *ngIf="isAssessmentOrQuizEnabled && !isSelfAssessment">
                 <ng-container *ngTemplateOutlet="assessmentWarningTpl"></ng-container>
               </div>
-              <div class="module-txt-block margin-top-m"
-                *ngIf="isAssessmentOrQuizEnabled&&content?.isAssessment&&!isSelfAssessment">
-                <mat-checkbox [(ngModel)]="content.isCorrectAnswerPopUp" [ngModelOptions]="{standalone: true}"
-                  style="margin-left: 0px;border-radius: 4px;" class="check-text">Show Correct Answer
-                  Popup</mat-checkbox>
+
+              <!-- Show Correct Answer Popup (assessment only) -->
+              <label class="rd-checkbox-item"
+                *ngIf="isAssessmentOrQuizEnabled && content?.isAssessment && !isSelfAssessment">
+                <input type="checkbox" [(ngModel)]="content.isCorrectAnswerPopUp"
+                  [ngModelOptions]="{standalone: true}" />
+                <span>Show Correct Answer Popup</span>
+              </label>
+
+              <!-- Link URL (link type only) -->
+              <div class="rd-name-row" *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
+                <input type="text" #artifactUrl [(ngModel)]="editResourceLinks" formControlName="artifactUrl"
+                  maxlength="100" placeholder="Link" class="module-input" autocomplete="off" />
+                <span *ngIf="resourceLinkForm.get('artifactUrl').hasError('required')" class="invalid-text">This field is Required</span>
               </div>
-              <div class="module-txt-block" style="display:flex; flex-direction:row"
-                *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
-                <mat-form-field appearance="outline" class="margin-top-xs field-width">
-                  <input class="" matInput #artifactUrl [(ngModel)]="editResourceLinks" formControlName="artifactUrl"
-                    maxlength="100" i18n-placeholder placeholder="Link" />
-                </mat-form-field>
 
-              </div>
-              <span
-                *ngIf="resourceLinkForm.get('artifactUrl').hasError('required')&&isLinkEnabled && !isAssessmentOrQuizEnabled"
-                class="module-txt-block invalid-text">This field
-                is Required</span>
-              <div class="margin-bottom-s module-txt-block" *ngIf="!isAssessmentOrQuizEnabled">
-                <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
-              </div>
-              <mat-checkbox *ngIf="isLinkEnabled" class="module-txt-block check-texts"
-                formControlName="isIframeSupported">Open link in new
-                tab</mat-checkbox>
-
-
-              <!--validation div for resource link-->
-
-              <div class="margin-top-s module-txt-block" *ngIf="isAssessmentOrQuizEnabled">
-                <button mat-raised-button
-                  class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-                  (click)="addAssessment()">Add Questions</button>
-
-              </div>
-              <span class="margin-top-s module-txt-block quiz-help-txt">Note: You will be taken to
-                {{content?.isAssessment?'Assessment':'Quiz'}} builder
+              <!-- Link hint (link type only) -->
+              <span class="quiz-help-txt" *ngIf="!isAssessmentOrQuizEnabled">
+                Note : A link can be a URL or a Youtube embedded link
               </span>
 
-              <div class="module-txt-block duration-style margin-top-s" *ngIf="!isAssessmentOrQuizEnabled">
+              <!-- Open in new tab (link type only) -->
+              <label class="rd-checkbox-item" *ngIf="isLinkEnabled">
+                <input type="checkbox" formControlName="isIframeSupported" />
+                <span>Open link in new tab</span>
+              </label>
+
+              <!-- Add Questions button (assessment / quiz) -->
+              <div *ngIf="isAssessmentOrQuizEnabled">
+                <button mat-raised-button
+                  class="text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+                  (click)="addAssessment()">Add Questions</button>
+              </div>
+
+              <!-- Builder note (assessment / quiz only) -->
+              <span class="quiz-help-txt" *ngIf="isAssessmentOrQuizEnabled">
+                Note: You will be taken to {{content?.isAssessment ? 'Assessment' : 'Quiz'}} builder
+              </span>
+
+              <!-- Duration (link type only) -->
+              <div class="duration-style" *ngIf="!isAssessmentOrQuizEnabled">
                 <span class="duration-text">Duration:</span>
                 <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
-                  (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())" placeholder="hh"
-                  type="number" min="0" step="1"
+                  (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())"
+                  placeholder="hh" type="number" min="0" step="1"
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 <div class="colon-block">:</div>
-
                 <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
-                  (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())" placeholder="mm"
-                  type="number" min="0" max="59" step="1"
+                  (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())"
+                  placeholder="mm" type="number" min="0" max="59" step="1"
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 <div class="colon-block">:</div>
-
                 <input matInput class="numberInput" [(ngModel)]="seconds" [ngModelOptions]="{ standalone: true }"
-                  (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())" placeholder="ss"
-                  type="number" min="0" max="59" step="1"
+                  (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())"
+                  placeholder="ss" type="number" min="0" max="59" step="1"
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
               </div>
-              <span *ngIf="resourceLinkForm.get('duration').hasError('required')&&!isAssessmentOrQuizEnabled"
-                class="module-txt-block invalid-text">This field
-                is Required</span>
-              <div>
-                <!--
-                <button [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
-                  class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
-                  (click)="resourceLinkSave()">Save</button> -->
-              </div>
+              <span *ngIf="resourceLinkForm.get('duration').hasError('required') && !isAssessmentOrQuizEnabled"
+                class="invalid-text">This field is Required</span>
 
             </form>
             <!--link form end-->
             <!--PDF/audio/vedio form start-->
             <form [formGroup]="resourcePdfForm" class="resource-details-form" *ngIf="isPdfOrAudioOrVedioEnabled">
-              <div class="flex align-item-center gap-50">
-                <mat-form-field appearance="outline" class="module-txt-block margin-top-xs field-width"
-                  style="margin-bottom: 0vh;">
-                  <input class="" matInput #name formControlName="name" maxlength="100" i18n-placeholder
-                    placeholder="Name of the resource" />
-
-                  <mat-hint style="padding: 0px;" class="mt-hint">{{ this.resourcePdfForm.value.name.length
-                    }}/100</mat-hint>
-                </mat-form-field>
-                <ng-container
-                  *ngIf="content?.contentType === 'Resource'&&uploadVideoUrl &&content?.mimeType === 'video/mp4'">
-                  <div class="module-txt-block margin-top-xs">
-                    <button class="re-upload-btn text-white  mat-button-base save-btn-bottom"
-                      (click)="deleteUploadedFile();$event.stopPropagation()"><img alt="" class="image max-width"
-                        src="cbp-assets/icons/mage_reload.svg">Re-upload</button>
+              <!-- Name row + optional re-upload (video only) -->
+              <div class="rd-pdf-name-row">
+                <div class="rd-name-row" style="flex:1;min-width:0;">
+                  <input type="text" #name formControlName="name" maxlength="100"
+                    placeholder="Name of the resource" class="module-input" autocomplete="off" />
+                  <div class="rd-field-footer">
+                    <span *ngIf="resourcePdfForm.get('name').hasError('required')" class="invalid-text">This field is Required</span>
+                    <span class="mt-hint">{{ resourcePdfForm.value.name.length }}/100</span>
                   </div>
+                </div>
+                <ng-container
+                  *ngIf="content?.contentType === 'Resource' && uploadVideoUrl && content?.mimeType === 'video/mp4'">
+                  <button class="re-upload-btn text-white mat-button-base save-btn-bottom"
+                    (click)="deleteUploadedFile();$event.stopPropagation()">
+                    <img alt="" class="image max-width" src="cbp-assets/icons/mage_reload.svg">Re-upload
+                  </button>
                 </ng-container>
               </div>
-              <span *ngIf="resourcePdfForm.get('name').hasError('required')" class="module-txt-block invalid-text">This
-                field
-                is Required</span>
-
               <!-- No file yet — upload card -->
               <div class="module-txt-block margin-top-s">
                 <ng-container *ngIf="uploadFileName == '' && !uploadVideoUrl">
@@ -773,10 +760,10 @@
                   This field is Required
                 </span>
               </div>
-              <div class="margin-top-m" style="display:flex; flex-direction:row" *ngIf="isLinkEnabled">
-                <mat-checkbox class="module-txt-block check-text" formControlName="isIframeSupported">Open link
-                  in new tab</mat-checkbox>
-              </div>
+              <label class="rd-checkbox-item" *ngIf="isLinkEnabled">
+                <input type="checkbox" formControlName="isIframeSupported" />
+                <span>Open link in new tab</span>
+              </label>
               <!-- <div class="margin-top-m" style="display:flex; flex-direction:row" *ngIf="isShowDownloadBtnEnabled">
                 <mat-checkbox class="module-txt-block" formControlName="showDownloadBtn">Show
                   Download Button</mat-checkbox>

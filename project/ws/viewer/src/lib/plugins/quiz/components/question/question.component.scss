@@ -10,12 +10,14 @@
   display: flex;
   gap: 5px;
 }
-.app-class .mat-list-option {
+.app-class .mat-list-option,
+.app-class .mat-mdc-list-option {
   padding-top: $size-m;
   padding-bottom: $size-m;
   height: auto;
 }
-::ng-deep .theme-igot.day-mode .mat-list-item-disabled{
+::ng-deep .theme-igot.day-mode .mat-list-item-disabled,
+::ng-deep .theme-igot.day-mode .mat-mdc-list-item-disabled{
   background-color: white !important;
 }
 .wrap-mat-radio-label {
@@ -93,7 +95,8 @@
 .incorrect-answer {
   background-color: #000000; /* Example: Red background for incorrect answers */
 }
-::ng-deep .app-class .mat-list-option{
+::ng-deep .app-class .mat-list-option,
+::ng-deep .app-class .mat-mdc-list-option{
   color: rgba(0, 0, 0, 0.38) !important;
 }
 .checked-radio {
@@ -101,12 +104,14 @@
 }
 
 /* Override the default style for the inner circle with higher specificity */
-::ng-deep .theme-igot.day-mode .mat-radio-button.checked-radio .mat-radio-inner-circle {
+::ng-deep .theme-igot.day-mode .mat-radio-button.checked-radio .mat-radio-inner-circle,
+::ng-deep .theme-igot.day-mode .mat-mdc-radio-button.checked-radio .mdc-radio__inner-circle {
   background-color: #1C5D95 !important;
 }
 
 /* Override the outer circle as well to ensure proper styling */
-::ng-deep .theme-igot.day-mode .mat-radio-button.checked-radio .mat-radio-outer-circle {
+::ng-deep .theme-igot.day-mode .mat-radio-button.checked-radio .mat-radio-outer-circle,
+::ng-deep .theme-igot.day-mode .mat-mdc-radio-button.checked-radio .mdc-radio__outer-circle {
   border-color: #1C5D95 !important;
 }
 

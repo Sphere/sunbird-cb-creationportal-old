@@ -490,8 +490,10 @@ ws-auth-content-card-v2 {
 }
 
 ::ng-deep .theme-igot.day-mode .mat-ink-bar,
-::ng-deep .theme-igot.day-mode .mat-mdc-tab-indicator {
+::ng-deep .theme-igot.day-mode .mat-mdc-tab-indicator,
+::ng-deep .theme-igot.day-mode .mdc-tab-indicator__content--underline {
   background-color: #1C5D95 !important;
+  border-color: #1C5D95 !important;
 }
 .activeLink {
   color: #1C5D95 !important;

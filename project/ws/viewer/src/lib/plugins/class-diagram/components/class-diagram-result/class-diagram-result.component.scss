@@ -7,11 +7,11 @@
 .alignment {
   vertical-align: sub;
 }
-.mat-cell,
-.mat-header-cell {
+.mat-cell, .mat-mdc-cell,
+.mat-header-cell, .mat-mdc-header-cell {
   border-right: 1px solid rgba(0, 0, 0, 0.12);
   text-align: center;
 }
-.mat-header-cell {
+.mat-header-cell, .mat-mdc-header-cell {
   font-size: 14px;
 }

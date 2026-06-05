@@ -302,19 +302,30 @@
 .sa-field {
   flex: 1;
 }
-.sa-search-input {
+// Search input lives inside the CDK overlay portal (outside component DOM)
+// so component-scoped encapsulation never reaches it — must use ::ng-deep
+::ng-deep .sa-search-input {
   display: block;
-  width: 100%;
-  padding: 8px 16px;
-  height: 40px;
-  border: none;
-  border-bottom: 1px solid #E2E8F0;
+  width: calc(100% - 32px) !important;
+  margin: 8px 16px !important;
+  padding: 6px 12px !important;
+  height: 36px;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 6px !important;
   outline: none;
   font-family: Roboto, sans-serif;
   font-size: 14px;
-  color: #0F172A;
-  background: #FFFFFF;
+  color: #0F172A !important;
+  background: #F8FAFC !important;
   box-sizing: border-box;
+
+  &::placeholder { color: #94A3B8; }
+
+  &:focus {
+    border-color: #1C5D95 !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 0 0 3px rgba(28, 93, 149, 0.08);
+  }
 }
 
 .disable { opacity: 0.3; pointer-events: none; cursor: none; }

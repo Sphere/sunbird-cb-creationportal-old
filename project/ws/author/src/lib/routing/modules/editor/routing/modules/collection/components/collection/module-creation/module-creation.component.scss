@@ -213,6 +213,10 @@
     max-height: calc(100vh - 340px) !important;
     min-height: 180px !important;
   }
+  // SA list has no "Add Module / Add Resource" bar (~70px) so can use that freed space
+  .sa-level-list {
+    max-height: calc(100vh - 260px) !important;
+  }
   .model-text {
     min-height: 160px !important;
   }
@@ -463,8 +467,18 @@
   color: white !important;
   border-radius: 8px;
   font-size: 14px;
+  font-weight: 600;
   font-family: Roboto !important;
+  letter-spacing: 0.2px;
+  height: 38px;
+  line-height: 38px;
+  padding: 0 20px;
   position: relative;
+  transition: background 0.2s, box-shadow 0.2s;
+
+  &:hover:not([disabled]) {
+    box-shadow: 0 4px 12px rgba(28, 93, 149, 0.35);
+  }
 }
 .photo {
   height: 48px;
@@ -542,20 +556,22 @@
   align-items: center;
 }
 
-.module-input{
+.module-input {
   font-family: Roboto, sans-serif;
-  font-size: 14px;
-  color: #1a2d45;
+  font-size: 13px;
+  color: #0F172A;
   line-height: 1.5;
-  width: 100% !important;
+  width: 100%;
   border-radius: 8px;
   background: #FFF;
   border: 1px solid #b8c9d9;
   box-shadow: none;
-  padding: 10px 16px;
+  padding: 8px 12px;
+  height: 36px;
+  box-sizing: border-box;
   transition: border-color 0.15s;
 
-  &:hover { border-color: #8aaac8; }
+  &:hover  { border-color: #8aaac8; }
   &:focus  { outline: none; border-color: #1C5D95; border-width: 2px; }
   &::placeholder { color: #94A3B8; }
 }
@@ -624,47 +640,106 @@
   padding-top: 10px;
 }
 
+// ── Resource Details form: form-level padding + gap drives all spacing ────────
 .resource-details-form {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  padding: 16px 20px;
+}
+
+// ── Name row: input + footer (error + count) ─────────────────────────────────
+.rd-name-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rd-field-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .invalid-text {
+    color: #EF4444;
+    font-family: Roboto, sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .mt-hint {
+    margin-left: auto;
+    font-family: Roboto, sans-serif;
+    font-size: 12px;
+    color: #64748B;
+    line-height: 1.4;
+    flex-shrink: 0;
+  }
+}
+
+// ── PDF form: name row + optional re-upload button side by side ───────────────
+.rd-pdf-name-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+// ── Input error state ────────────────────────────────────────────────────────
+.module-input.ng-invalid.ng-touched,
+.module-input.ng-invalid.ng-dirty {
+  border-color: #EF4444;
+  &:focus { border-color: #EF4444; }
+}
+
+// ── Custom checkbox row — no MDC touch-target bloat ─────────────────────────
+.rd-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #1C5D95;
+    border-radius: 3px;
+  }
+
+  span {
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
+    color: #334155;
+    line-height: 1.4;
+  }
+}
+
+// ── Legacy checkbox class — kept for any remaining mat-checkbox outside form ──
+.check-texts,
+.check-text {
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  color: #334155;
+  line-height: 20px;
+  letter-spacing: 0;
 }
 
 .field-width {
-  width: 47%;
+  width: calc(100% - 40px);
   font-size: 13px !important;
-  margin-bottom: -15px;
-}
-.check-texts{
-    // margin-top: 35px;
-  // margin-left: 22px;
-  font-size: 13px;
-  color: #000000;
-  line-height: 24px;
-  letter-spacing: -0.02em;
-  font-family: Roboto;
-}
-
-.check-text {
-  margin-top: 35px;
-  margin-left: 22px;
-  font-size: 13px;
-  color: #000000;
-  line-height: 24px;
-  letter-spacing: -0.02em;
-  font-family: Roboto;
+  margin-bottom: 0;
 }
 
 .duration-text {
-color: #808080;
-  // margin-top: 14px;
-  // margin-right: 11px;
-/* Body */
-font-family: Roboto;
-font-size: 16px;
-font-style: normal;
-font-weight: 400;
-line-height: 24px; /* 150% */
-letter-spacing: -0.32px;
+  color: #808080;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0;
 }
 
 // ── Form field rows ───────────────────────────────────────────────────────
@@ -1099,8 +1174,14 @@ ul li {
 
 }
 
-.invalid-text{
-  color:red;
+.invalid-text {
+  color: #EF4444;
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  display: block;
+  margin-top: 2px;
 }
 
 .button-style{
@@ -1181,12 +1262,19 @@ animation-delay: -0.5s;
 }
 }
 
-::ng-deep .theme-igot.day-mode .mat-checkbox-checked.mat-accent .mat-checkbox-background {
+::ng-deep .theme-igot.day-mode .mat-checkbox-checked.mat-accent .mat-checkbox-background,
+::ng-deep .theme-igot.day-mode .mat-mdc-checkbox-checked .mdc-checkbox__background {
   background-color: #1c5d95!important;
 }
 
 ::ng-deep .theme-igot.day-mode .mat-form-field-outline-thick {
   color: #1c5d95!important;
+}
+::ng-deep .theme-igot.day-mode .mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: #1c5d95;
+  --mdc-outlined-text-field-hover-outline-color: #1c5d95;
+  --mdc-outlined-text-field-focus-outline-color: #1c5d95;
+  --mdc-outlined-text-field-focus-outline-width: 2px;
 }
 
 .module-name-text-overflow{
@@ -1519,16 +1607,13 @@ letter-spacing: -0.24px;
 .file-upload-info, .pdf-upload-info, .pdf-info {
   display: none;
 }
-.quiz-help-txt{
-  color: #808080;
-
-/* Label 2 */
-font-family: Roboto;
-font-size: 12px;
-font-style: normal;
-font-weight: 400;
-line-height: 14.4px; /* 120% */
-letter-spacing: -0.24px;
+.quiz-help-txt {
+  color: #64748B;
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
 }
 .delete-icon{
   cursor: pointer;
@@ -1542,24 +1627,26 @@ letter-spacing: -0.24px;
     background: #D9D9D9 !important;
 }
 .self-assessment-name{
-  color: #000;
-
-/* Header 2 */
-font-family: Roboto;
-font-size: 24px;
-font-style: normal;
-font-weight: 400;
-line-height: 28.8px; /* 120% */
-letter-spacing: -0.48px;
+  display: block;
+  color: #0F172A;
+  font-family: Roboto, sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0;
+  margin: 0;
 }
 .self-assessment-level{
-color: #000;
-font-family: Roboto;
-font-size: 18px;
-font-style: normal;
-font-weight: 400;
-line-height: 28.8px; /* 160% */
-letter-spacing: -0.36px;
+  display: block;
+  color: #64748B;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0;
+  margin-top: 4px;
 }
 .drag-icon-block{
   margin-top: 8px !important;

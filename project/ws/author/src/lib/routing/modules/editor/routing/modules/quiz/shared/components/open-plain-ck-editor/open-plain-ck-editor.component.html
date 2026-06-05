@@ -1,21 +1,27 @@
-<div>
-  <div mat-dialog-title class="flex flex-between">
-    <h1 class="ws-mat-primary-text" *ngIf="data.type==='HINT_EDITOR'">
-      <span i18n="edit hint! edit hint for selected option">Hint for option-</span>{{data.index}}
-    </h1>
-    <button mat-dialog-close mat-icon-button class="float-right cursor-pointer">
+<div class="hint-dialog-wrap">
+  <div mat-dialog-title class="hint-dialog-title">
+    <div class="hint-title-content">
+      <mat-icon class="hint-title-icon">info_outline</mat-icon>
+      <span *ngIf="data.type==='HINT_EDITOR'" i18n="edit hint! edit hint for selected option">
+        Hint for option-{{data.index}}
+      </span>
+    </div>
+    <button mat-icon-button mat-dialog-close class="hint-close-btn">
       <mat-icon>close</mat-icon>
     </button>
   </div>
-  <div mat-dialog-content>
+  <div mat-dialog-content class="hint-dialog-content">
     <ng-container *ngIf="data.content !== undefined">
       <ws-auth-plain-ckeditor [content]="data.content" (value)="result = $event" [id]="data.identifier">
       </ws-auth-plain-ckeditor>
     </ng-container>
   </div>
-  <div mat-dialog-actions class="flex-row-reverse">
-    <button class="btnpdg updateBtn" i18n mat-raised-button [mat-dialog-close]="result">Update</button>
-    <button class="btnpdg cancelBtn" i18n mat-raised-button [mat-dialog-close]="undefined"
-      cdkFocusInitial>Cancel</button>
+  <div mat-dialog-actions class="hint-dialog-actions">
+    <button mat-stroked-button class="hint-cancel-btn" [mat-dialog-close]="undefined" cdkFocusInitial i18n>
+      Cancel
+    </button>
+    <button mat-raised-button class="hint-update-btn" [mat-dialog-close]="result" i18n>
+      Update
+    </button>
   </div>
 </div>

@@ -7,11 +7,13 @@
       font-weight: bold;
       border-bottom: 2px solid;
     }
-    ::ng-deep .mat-tab-links {
+    ::ng-deep .mat-tab-links,
+    ::ng-deep .mat-mdc-tab-links {
       display: flex;
       justify-content: center !important;
     }
-    ::ng-deep .mat-tab-link {
+    ::ng-deep .mat-tab-link,
+    ::ng-deep .mat-mdc-tab-link {
       opacity:1;
     }
   }

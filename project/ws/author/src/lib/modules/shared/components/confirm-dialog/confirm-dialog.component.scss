@@ -162,6 +162,7 @@
   color: #1C5D95 !important;
 }
 
-::ng-deep .theme-igot.day-mode .mat-form-field-appearance-outline .mat-form-field-infix {
+::ng-deep .theme-igot.day-mode .mat-form-field-appearance-outline .mat-form-field-infix,
+::ng-deep .theme-igot.day-mode .mat-mdc-form-field .mat-mdc-form-field-infix {
   padding: 0.3em 0 !important;
 }

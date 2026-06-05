@@ -123,12 +123,14 @@
   white-space: nowrap;
 }
 
-::ng-deep .theme-igot.day-mode .mat-progress-bar-fill::after {
+::ng-deep .theme-igot.day-mode .mat-progress-bar-fill::after,
+::ng-deep .theme-igot.day-mode .mdc-linear-progress__bar-inner {
   background: #30EA7E 0% 0% no-repeat padding-box;
   border-radius: 40px;
 }
 
-::ng-deep .theme-igot.day-mode .mat-progress-bar-buffer {
+::ng-deep .theme-igot.day-mode .mat-progress-bar-buffer,
+::ng-deep .theme-igot.day-mode .mdc-linear-progress__buffer-bar {
   background-color: #EDEDED;
 }
 

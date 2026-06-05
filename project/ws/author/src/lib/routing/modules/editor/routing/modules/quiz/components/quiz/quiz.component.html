@@ -1,4 +1,4 @@
-<div class="margin-l-l margin-r-l" [hidden]="previewMode">
+<div [hidden]="previewMode">
   <!-- <div class="flex margin-left-xl flex-middle margin-bottom-xl flex-wrap">
     <div class="flex flex-middle">
       <p class="ws-mat-primary-text font-weight-bold title margin-right-xs" i18n>CONTENT CREATION</p>
@@ -77,107 +77,130 @@
       </mat-menu>
     </div>
   </div>
-  <div style="display: flex; flex-direction: row;">
-    <div class="mat-app-background">
-      <div class="margin-right-xl" *ngIf="currentStep === 2">
+  <div class="qb-main-row">
+    <div class="qb-sidenav-col">
+      <div class="qb-step2" *ngIf="currentStep === 2">
         <ng-container *ngIf="contentLoaded">
-          <div class="flex justify-between">
-            <button (click)="sideNavBar.toggle()" mat-icon-button>
-              <mat-icon>menu</mat-icon>
-            </button>
-            <!-- <button type="button" (click)="showErrorLog()" mat-icon-button>
-                        <mat-icon>speaker_notes</mat-icon>
-                    </button> -->
-          </div>
-          <mat-sidenav-container autosize="true" class="nav-container quiz-list">
-            <mat-sidenav #sideNavBar class="h-full custom-scroll" [mode]="mode$ | async" [(opened)]="sideNavBarOpened">
+          <mat-sidenav-container class="qb-sidenav-container nav-container quiz-list">
+            <mat-sidenav #sideNavBar class="qb-sidenav h-full custom-scroll" [mode]="mode$ | async"
+              [(opened)]="sideNavBarOpened" style="width:256px;max-width:256px;min-width:256px;overflow:hidden;">
               <ws-auth-question-editor-sidebar (questionTypeChanged)="questionType($event)" [showContent]="showContent"
                 [type]="'assessment'" [(data)]="questionsArr" [canEdit]="canEditJson"></ws-auth-question-editor-sidebar>
             </mat-sidenav>
-            <mat-sidenav-content>
-              <div *ngIf="resourceName" class="headerpadding resourceName font-weight-bold" i18n>
-                {{resourceName}}</div>
-              <div *ngIf="questionsArr.length">
-                <div class="flex items-center justify-between margin-right-xs">
-                  <div>
-                    <div class="headerpadding font-weight-bold margin-top-s" i18n>{{isQuiz}} Details
+            <mat-sidenav-content class="qb-content-area">
+              <!-- Content card header -->
+              <div class="qb-content-header">
+                <button (click)="sideNavBar.toggle()" mat-icon-button class="qb-toggle-btn">
+                  <mat-icon>menu</mat-icon>
+                </button>
+                <div class="qb-header-icon-wrap">
+                  <mat-icon>assignment</mat-icon>
+                </div>
+                <span class="qb-header-title">{{resourceName}}</span>
+                <span class="qb-header-spacer"></span>
+                <button *ngIf="questionsArr.length && canEditJson" (click)="action('save')" class="qb-save-btn"
+                  mat-raised-button id="assessmentSave"
+                  [ngClass]="{ disable: !isCreatorEnable || !(assessmentDuration && validPercentage)}">
+                  Save
+                </button>
+              </div>
+              <!-- Main scrollable body -->
+              <div class="qb-content-body">
+                <div *ngIf="questionsArr.length">
+                  <!-- ── Assessment Details card ──────────────────────── -->
+                  <div class="qb-section-card">
+                    <div class="qb-section-header">
+                      <mat-icon>tune</mat-icon>
+                      <span>{{isQuiz}} Details</span>
+                    </div>
+                    <div class="qb-section-body qb-form-row">
+                      <mat-form-field *ngIf="isQuiz == 'Assessment'" appearance="outline" class="qb-field">
+                        <mat-label>Pass Percentage <span class="qb-req">*</span></mat-label>
+                        <input matInput placeholder="e.g. 60" max="100" [(ngModel)]="passPercentage"
+                          (change)="addTodo(passPercentage, 'passPercentage')" type="number" />
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" class="qb-field">
+                        <mat-label>Duration (Minutes) <span class="qb-req">*</span></mat-label>
+                        <input matInput type="number" placeholder="e.g. 30" min="2" [(ngModel)]="assessmentDuration"
+                          (change)="addTodo(assessmentDuration, 'assessmentDuration')" />
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" class="qb-field">
+                        <mat-label>Random Count</mat-label>
+                        <input matInput type="number" placeholder="Random question count" [(ngModel)]="randomCount"
+                          (change)="addTodo(randomCount, 'randomCount')" />
+                      </mat-form-field>
                     </div>
                   </div>
 
-                </div>
-                <mat-form-field *ngIf="isQuiz == 'Assessment'" appearance="outline"
-                  style="padding: 5px 15px 0px 0.75rem">
-                  <label [ngClass]="{'starlabel': isQuiz === 'Assessment'}">Pass Percentage</label>
-                  <input matInput placeholder="Enter pass percentage" max="100" [(ngModel)]="passPercentage"
-                    (change)="addTodo(passPercentage, 'passPercentage')" type="number" />
-                </mat-form-field>
-                <mat-form-field appearance="outline" style="padding: 5px 15px 0px 0.75rem;min-width: 250px">
-                  <label class="starlabel">{{isQuiz}} Duration (Minutes)</label>
-                  <input matInput type="number" class="form-control" placeholder="Enter duration" min="2"
-                    [(ngModel)]="assessmentDuration" (change)="addTodo(assessmentDuration, 'assessmentDuration')" />
-                </mat-form-field>
-                <mat-form-field appearance="outline" style="padding: 5px 15px 0px 5px; min-width: 290px">
-                  <label class="">Random Count (Only For Self-Assessment)</label>
-                  <input matInput type="number" class="form-control" placeholder="Enter Random Question Count"
-                    [(ngModel)]="randomCount" (change)="addTodo(randomCount, 'randomCount')" />
-                </mat-form-field>
+                  <!-- ── Bulk Upload card ──────────────────────────────── -->
+                  <div class="qb-section-card qb-bulk-card"
+                    *ngIf="questionTypeText==='mcq-sca' || questionTypeText==='mcq-mca'">
+                    <div class="qb-section-header">
+                      <mat-icon>insert_drive_file</mat-icon>
+                      <span>Bulk Upload Questions</span>
+                    </div>
+                    <div class="qb-section-body qb-bulk-actions">
+                      <button mat-stroked-button class="qb-action-btn" title="Upload question file"
+                        (click)="uploadFileModal()">
+                        <mat-icon>cloud_upload</mat-icon> Upload file
+                      </button>
+                      <button mat-stroked-button class="qb-action-btn" title="Download sample template"
+                        (click)="downloadTemplate()">
+                        <mat-icon>cloud_download</mat-icon> Download template
+                      </button>
+                      <button *ngIf="isAtLeastOneQuestionPresent()" mat-stroked-button class="qb-action-btn"
+                        title="Download created questions" (click)="downloadUploadedQuestion()">
+                        <mat-icon>cloud_download</mat-icon> Download questions
+                      </button>
+                      <input type="file" accept=".xlsx,.xls" #uploadFile
+                        (change)="convertExcelToJson($event.target.files[0]);" style="display: none" />
+                    </div>
+                  </div>
 
-                <mat-icon class="fill-current cursor-pointer w-4 h-4 mr-2" (click)="OpenUploadIntro()">info</mat-icon>
-                <!-- <mat-card-title class="w-full h-6 text-center ws-mat-primary-background text-white h-12 rounded flex items-center justify-center"
-                                *ngIf="selectedQuizIndex !== undefined && canEditJson">
-                                <span i18n>Quiz-</span>{{selectedQuizIndex + 1}}
-                            </mat-card-title> -->
+                  <!-- ── Question editor ──────────────────────────────── -->
+                  <div class="qb-section-card qb-question-card" *ngIf="canEditJson">
+                    <div class="qb-section-header">
+                      <mat-icon>edit</mat-icon>
+                      <span>Question</span>
+                      <button mat-icon-button class="qb-info-btn" (click)="OpenUploadIntro()" i18n-matTooltip
+                        matTooltip="How to upload image in a question">
+                        <mat-icon>info_outline</mat-icon>
+                      </button>
+                    </div>
+                    <ws-auth-question-editor [submitPressed]="canValidate"></ws-auth-question-editor>
+                  </div>
 
-
-                <div *ngIf="questionTypeText==='mcq-sca' || questionTypeText==='mcq-mca'"
-                  class="headerpadding font-weight-bold" i18n>Bulk Upload Question
+                  <!-- ── Prev / Next navigation ───────────────────────── -->
+                  <div class="qb-nav-row" *ngIf="questionsArr && canEditJson">
+                    <button mat-stroked-button class="qb-nav-btn" (click)="changeQuiz(-1)"
+                      [disabled]="selectedQuizIndex === 0"
+                      [ngClass]="{'opacity-25 cursor-disable': selectedQuizIndex === 0}">
+                      <mat-icon>chevron_left</mat-icon> Previous
+                    </button>
+                    <button mat-stroked-button class="qb-nav-btn" (click)="changeQuiz(1)"
+                      [disabled]="selectedQuizIndex === (questionsArr.length - 1)"
+                      [ngClass]="{'opacity-25 cursor-disable': selectedQuizIndex === (questionsArr.length - 1)}">
+                      Next <mat-icon>chevron_right</mat-icon>
+                    </button>
+                  </div>
                 </div>
-                <div style="padding: 5px 15px 0px 0.75rem"
-                  *ngIf="questionTypeText==='mcq-sca' || questionTypeText==='mcq-mca'"
-                  class="flex gap-2 margin-bottom-s">
-                  <button title="Upload the question file similar to the sample template" mat-raised-button
-                    class="blue-button ml-2 text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-                    (click)="uploadFileModal()"><img src="cbp-assets/icons/Upload_.svg" alt="sample" />
-                    Upload file</button>
-                  <button title="Use this sample template to add questions and answers for bulk upload"
-                    mat-raised-button class="white-button ml-2 mat-button-base save-btn-bottom"
-                    (click)="downloadTemplate()"><img src="cbp-assets/icons/Download_quiz.svg" alt="sample" /> Download
-                    Sample template</button>
-                  <button title="Download the created questions" *ngIf="isAtLeastOneQuestionPresent()" mat-raised-button
-                    class=" white-button ml-2   mat-button-base save-btn-bottom"
-                    (click)="downloadUploadedQuestion()"><img src="cbp-assets/icons/Download_quiz.svg" alt="sample" />
-                    Download created questions</button>
-
-                  <input type="file" accept=".xlsx,.xls" #uploadFile
-                    (change)="convertExcelToJson($event.target.files[0]);" style="display: none" />
+                <!-- Empty state -->
+                <div class="qb-empty-state" *ngIf="!questionsArr.length || !canEditJson">
+                  <div class="qb-empty-icon-wrap">
+                    <mat-icon>help_outline</mat-icon>
+                  </div>
+                  <p class="qb-empty-title" *ngIf="!questionsArr.length && canEditJson">
+                    No {{isQuiz}} questions yet
+                  </p>
+                  <p class="qb-empty-sub" *ngIf="!questionsArr.length && canEditJson">
+                    Select a question type from the left panel and click + to add questions
+                  </p>
+                  <p class="qb-empty-title" *ngIf="!canEditJson">View only</p>
+                  <p class="qb-empty-sub" *ngIf="!canEditJson">
+                    Reviewer or Publisher cannot add or edit {{isQuiz}}
+                  </p>
                 </div>
-                <ws-auth-question-editor *ngIf="questionsArr.length && canEditJson" [submitPressed]="canValidate">
-                </ws-auth-question-editor>
-
-                <div class="flex justify-between px-1 pb-3" *ngIf="questionsArr && canEditJson">
-                  <button class=" ws-mat-primary-background mat-elevation-z6 margin-left-s" (click)="changeQuiz(-1)"
-                    [disabled]="selectedQuizIndex === 0"
-                    [ngClass]="{'opacity-25 cursor-disable':selectedQuizIndex === (0)}" mat-button i18n-aria-label
-                    aria-label="navigate to next quiz">
-                    <span class="text-white small-operators" i18n>Previous</span>
-                  </button>
-                  <button class=" ws-mat-primary-background mat-elevation-z6 margin-left-s"
-                    [disabled]="selectedQuizIndex === (questionsArr.length-1)" mat-button
-                    [ngClass]="{'opacity-25 cursor-disable':selectedQuizIndex === (questionsArr.length-1)}"
-                    (click)="changeQuiz(1)" i18n-aria-label aria-label="navigate to previous quiz">
-                    <span class="text-white small-operators" i18n>Next</span>
-                  </button>
-                </div>
-              </div>
-              <div class="flex items-center justify-center no-quiz-align-div"
-                *ngIf="!questionsArr.length || !canEditJson">
-                <div class="p-1">
-                  <span i18n *ngIf="!questionsArr.length && canEditJson">No {{isQuiz}} found, Kindly
-                    add</span>
-                  <span i18n *ngIf="!canEditJson">Reviewer or Publisher cannot add or edit Quiz</span>
-                  <!-- <mat-icon class="align-middle">error</mat-icon> -->
-                </div>
-              </div>
+              </div><!-- /.qb-content-body -->
             </mat-sidenav-content>
           </mat-sidenav-container>
         </ng-container>
@@ -187,13 +210,6 @@
         </ws-auth-edit-meta>
       </div>
     </div>
-
-    <button *ngIf="questionsArr.length && canEditJson" (click)="action('save')"
-      style="float: right;margin-right: 35px;height: 35px;top: 35vh;border-radius: 25px !important; box-shadow: none !important;padding: 0px 25px !important"
-      mat-raised-button color="accent" id="assessmentSave"
-      [ngClass]="{ disable: !isCreatorEnable  || !(assessmentDuration && validPercentage)}">
-      <ng-container i18n>Save</ng-container>
-    </button>
   </div>
 
   <!--

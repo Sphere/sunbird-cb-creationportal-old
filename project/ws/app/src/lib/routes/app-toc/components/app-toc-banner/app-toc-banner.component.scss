@@ -121,7 +121,7 @@
     background: #34d6a4 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 30px #99999933;
 
-    ::ng-deep.mat-button-wrapper {
+    ::ng-deep.mat-button-wrapper, ::ng-deep .mdc-button__label {
       // font: 14px/21px Poppins-SemiBold;
       letter-spacing: 0px;
       text-transform: capitalize;

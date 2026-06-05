@@ -111,11 +111,13 @@
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-::ng-deep .myfield .mat-form-field-wrapper {
+::ng-deep .myfield .mat-form-field-wrapper,
+::ng-deep .myfield .mat-mdc-text-field-wrapper {
   padding: 0px !important;
 }
 
-.mat-button {
+.mat-button,
+.mat-mdc-button {
   padding: 14px !important;
 }
 
