@@ -84,30 +84,35 @@
   </form>
 </div><!-- /cc-page -->
 
-<!-- ══ SELF ASSESSMENT (unchanged) ═══════════════════════════════════════ -->
-<div *ngIf="isSelfAssessment" class="create-self-assessment-container padding-top-l">
-  <form [formGroup]="createSelfAssessmentForm" style="margin-top: -1rem;">
-    <div>
-      <p class="start-txt">Select competency that you want add self assessment</p>
-      <div class="form-block">
-        <div class="select-block">
-          <mat-form-field appearance="fill" class="margin-top-xs field-edit-width">
+<!-- ══ SELF ASSESSMENT ════════════════════════════════════════════════════ -->
+<div *ngIf="isSelfAssessment" class="sa-page">
+  <form [formGroup]="createSelfAssessmentForm">
+    <div class="sa-card">
+      <div class="sa-card-header">
+        <span class="sa-card-icon"><mat-icon>psychology</mat-icon></span>
+        <div>
+          <h3 class="sa-card-title">Select Competency</h3>
+          <p class="sa-card-sub">Choose the competency you want to add a self assessment for</p>
+        </div>
+      </div>
+      <div class="sa-card-body">
+        <div class="sa-fields-row">
+          <mat-form-field appearance="outline" class="sa-field" hideRequiredMarker>
             <mat-label>Language</mat-label>
-            <mat-select (selectionChange)="langSelected($event.value)" formControlName="lang"
-              i18n-placeholder placeholder="Course Language">
+            <mat-select (selectionChange)="langSelected($event.value)" formControlName="lang">
               <mat-option *ngFor="let lang of languageList" [value]="lang.value">
-                {{ lang.name }}</mat-option>
+                {{ lang.name }}
+              </mat-option>
             </mat-select>
           </mat-form-field>
-        </div>
-        <div class="select-block">
-          <mat-form-field appearance="fill" class="margin-top-xs field-edit-width competencyBlock">
-            <mat-label>Competency <span style="color: #d32f2f">*</span></mat-label>
+          <mat-form-field appearance="outline" class="sa-field" hideRequiredMarker>
+            <mat-label>Competency <span class="cc-req">*</span></mat-label>
             <mat-select
               (selectionChange)="createSelfAssessment(createSelfAssessmentForm,'createSelfAssessmentForm')"
               formControlName="proficiency" [(ngModel)]="proficiency"
-              placeholder="Select Competency" (selectionChange)="eventSelection($event.value)">
-              <input placeholder="Search Competency" matInput class="module-input" (keyup)="onKey($event.target.value)">
+              (selectionChange)="eventSelection($event.value)">
+              <input placeholder="Search Competency" matInput class="sa-search-input"
+                (keyup)="onKey($event.target.value)">
               <ng-container *ngFor="let list of proficiencyList">
                 <mat-option *ngIf="lang === 'hi' && list.additionalProperties['lang-hi-name']" [value]="list">
                   {{ list.additionalProperties.Code }} - {{ list.additionalProperties['lang-hi-name'] }}
@@ -117,7 +122,7 @@
                 </mat-option>
               </ng-container>
             </mat-select>
-            <mat-error i18n>This field is mandatory</mat-error>
+            <mat-error>This field is mandatory</mat-error>
           </mat-form-field>
         </div>
       </div>
