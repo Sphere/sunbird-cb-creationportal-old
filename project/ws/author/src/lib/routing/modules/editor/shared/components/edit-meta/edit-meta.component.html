@@ -480,21 +480,6 @@
       </div><!-- /em-col-right -->
     </div><!-- /em-grid -->
 
-    <!-- ── Fixed bottom action bar ── -->
-    <div class="em-action-bar">
-      <div class="em-action-left">
-        <button mat-stroked-button class="em-btn-draft" type="button" (click)="data.emit('save')">
-          <mat-icon>save_alt</mat-icon> <span i18n>Save Draft</span>
-        </button>
-      </div>
-      <div class="em-action-right">
-        <button mat-flat-button class="em-btn-next" type="submit"
-          [disabled]="checkMandatoryFields()"
-          (click)="isSubmitPressed = true; clickedNext()">
-          <span i18n>Next</span> <mat-icon>arrow_forward</mat-icon>
-        </button>
-      </div>
-    </div>
 
   </div><!-- /em-page -->
   </div><!-- /edit-meta -->

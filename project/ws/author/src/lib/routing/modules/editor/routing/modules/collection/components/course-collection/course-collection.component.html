@@ -29,7 +29,7 @@
   </mat-drawer> -->
   <mat-drawer-content>
     <mat-sidenav-container class="nav-container">
-      <ws-progress-stepper *ngIf="allowAuthorContentCreate" (sendSteps)="receiveSteps($event)" [steps]="steps" [header]="header">
+      <ws-progress-stepper *ngIf="allowAuthorContentCreate" (sendSteps)="receiveSteps($event)" [steps]="steps" [header]="header" (onNext)="handleStepperNext()">
       </ws-progress-stepper>
       <!-- <form [formGroup]="createTopicForm" *ngIf="showAddchapter" class="margin-left-l">
         <div class="margin-top-s">
@@ -116,7 +116,7 @@
 
       <ws-auth-web-module-editor *ngIf="!showAddchapter && viewMode === 'webmodule'" (data)="action($event)">
       </ws-auth-web-module-editor>
-      <ws-auth-edit-meta [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" (data)="action($event)"
+      <ws-auth-edit-meta [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" [triggerNext]="triggerEditMetaNext" (data)="action($event)"
         *ngIf="!showAddchapter && viewMode === 'meta'&&!isReviewChecklistEnabled&&!clickedNext">
       </ws-auth-edit-meta>
       <!--  [class.hidden]="viewMode !== 'meta'" -->
@@ -140,7 +140,7 @@
         *ngIf="!showAddchapter && viewMode !== 'meta' && showResource == true"
         (courseEditFormSubmit)="courseEditFormSubmit($event)">
       </ws-auth-edit-meta> -->
-      <ws-author-module-creation (sendSteps)="receiveSteps($event)" [clickedNext]="clickedNext"
+      <ws-author-module-creation (sendSteps)="receiveSteps($event)" [clickedNext]="clickedNext" [triggerNext]="triggerModuleCreationNext"
         *ngIf="clickedNext"></ws-author-module-creation>
     </mat-sidenav-container>
   </mat-drawer-content>

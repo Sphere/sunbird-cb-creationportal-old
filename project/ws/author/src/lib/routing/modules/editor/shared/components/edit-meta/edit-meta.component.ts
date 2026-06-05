@@ -7,7 +7,9 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
+  SimpleChanges,
   OnInit,
   Output,
   ViewChild,
@@ -99,11 +101,12 @@ import _ from 'lodash'
   templateUrl: './edit-meta.component.html',
   styleUrls: ['./edit-meta.component.scss'],
 })
-export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
+export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   contentMeta!: NSContent.IContentMeta
   @Output() data = new EventEmitter<string>()
   @Output() courseEditFormSubmit = new EventEmitter<boolean>()
   @Input() isSubmitPressed = false
+  @Input() triggerNext = false
   @Input() nextAction = 'done'
   @Input() stage = 1
   @Input() type = ''
@@ -254,6 +257,14 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     }, 100)
   }
   contentForm!: FormGroup
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['triggerNext']?.currentValue === true) {
+      this.isSubmitPressed = true
+      this.clickedNext()
+    }
+  }
+
   ngOnInit() {
     this.isSiemens = this.accessService.rootOrg.toLowerCase() === 'siemens'
     this.ordinals = this.authInitService.ordinals

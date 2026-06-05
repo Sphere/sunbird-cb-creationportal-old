@@ -7,9 +7,11 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core'
 
@@ -93,11 +95,12 @@ import { isNumber } from 'lodash'
   templateUrl: './course-settings.component.html',
   styleUrls: ['./course-settings.component.scss'],
 })
-export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit {
+export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   contentMeta!: NSContent.IContentMeta
   @Output() data = new EventEmitter<string>()
   @Output() courseEditFormSubmit = new EventEmitter<boolean>()
   @Input() isSubmitPressed = false
+  @Input() triggerNext = false
   @Input() nextAction = 'done'
   @Input() stage = 1
   @Input() type = ''
@@ -262,6 +265,14 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   searchComp: any = ''
 
   contentForm!: FormGroup
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['triggerNext']?.currentValue === true) {
+      this.isSubmitPressed = true
+      this.data.emit('save')
+    }
+  }
+
   ngOnInit() {
 
     // this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {

@@ -1,12 +1,10 @@
-import { Component, ChangeDetectorRef, OnInit, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter, Input, ElementRef } from '@angular/core'
+import { Component, ChangeDetectorRef, OnInit, OnChanges, SimpleChanges, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter, Input, ElementRef } from '@angular/core'
 
 declare const zip: any
 
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 
 import { MatDialog } from '@angular/material/dialog'
-
-// import { ConfigurationsService,  } from '@ws-widget/utils'
 
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '@ws/author/src/lib/constants/upload'
 
@@ -39,8 +37,6 @@ import { EditorContentService } from 'project/ws/author/src/lib/routing/modules/
 import { of, Subscription } from 'rxjs'
 
 import { HeaderServiceService } from './../../../../../.././.././../.././../../../../.././src/app/services/header-service.service'
-
-// import { ConfigurationsService } from '../../../../../../../../../../../../../library/ws-widget/utils/src/public-api'
 
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
 
@@ -105,10 +101,6 @@ import {
 
 import moment from 'moment'
 
-//import { M } from '@angular/cdk/keycodes'
-
-//import { CdkDragDrop } from '@angular/cdk/drag-drop'
-
 import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
 
 @Component({
@@ -120,7 +112,7 @@ import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
 
 })
 
-export class ModuleCreationComponent implements OnInit, AfterViewInit {
+export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild('guideline', { static: false }) guideline!: TemplateRef<HTMLElement>
   @ViewChild('errorFile', { static: false }) errorFile!: TemplateRef<HTMLElement>
   @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>
@@ -313,7 +305,20 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   resourceDurat: any = []
   sumDuration: any
   @Input() clickedNext: boolean = false;
+  @Input() triggerNext = false
+  triggerCourseSettingsNext = false
   showChildrenMap: { [key: string]: boolean } = {};
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['triggerNext']?.currentValue === true) {
+      if (this.isSettingsPage) {
+        this.triggerCourseSettingsNext = true
+        setTimeout(() => { this.triggerCourseSettingsNext = false }, 50)
+      } else {
+        this.setSettingsPage()
+      }
+    }
+  }
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -330,12 +335,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     private http: HttpClient,
     private initService: AuthInitService,
     private editorService: EditorService,
-    private editorStore: EditorContentService,
     private storeService: CollectionStoreService,
     private _configurationsService: ConfigurationsService,
     private resolverService: CollectionResolverService,
     private headerService: HeaderServiceService,
-    private loaderService: LoaderService,
     private valueSvc: ValueService,
     private formBuilder: FormBuilder,
     private quizStoreSvc: QuizStoreService,
@@ -343,12 +346,6 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     private breakpointObserver: BreakpointObserver,
     private progressSvc: ContentProgressService,
   ) {
-    if (sessionStorage.getItem('isReviewClicked')) {
-      sessionStorage.removeItem('isReviewClicked')
-      sessionStorage.setItem('isSettingsPageFromPreview', '1')
-      sessionStorage.setItem('isSettingsPage', '1')
-      this.isSettingsPage = true
-    }
     this.resourceLinkForm = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.minLength(1)]),
       instructions: new FormControl(''),
@@ -410,6 +407,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       async (data: any) => {
         if (data) {
           await this.ngAfterViewInit()
+          this.cdr.detectChanges()
         }
       })
   }
@@ -468,7 +466,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         } else {
           this.isSelfAssessment = false
         }
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+        this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
           this.courseData = data
           if (this.courseData.children) {
             this.courseData.children.forEach((module: any) => {
@@ -476,6 +474,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             })
           }
           this.getChildrenCount()
+          this.cdr.detectChanges()
         })
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
         data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
@@ -513,6 +512,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.storeService.selectedNodeChange.next(data.contents[0].content.identifier)
         }
 
+        this.cdr.detectChanges()
       })
 
       this.activateRoute.parent.url.subscribe(data => {
@@ -783,27 +783,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               errorMap.set(v, this.contentService.originalContent[v]),
             )
             const dialog = this.dialog.open(ErrorParserComponent, {
-              width: '80vw',
-              height: '90vh',
+              width: '600px',
               data: {
                 errorFromBackendData: error.error,
                 dataMapping: errorMap,
               },
             })
-            dialog.afterClosed().subscribe(v => {
-              if (v) {
-                if (typeof v === 'string') {
-                  this.storeService.selectedNodeChange.next(
-                    (this.storeService.lexIdMap.get(v) as number[])[0],
-                  )
-                  this.contentService.changeActiveCont.next(v)
-                } else {
-                  this.storeService.selectedNodeChange.next(v)
-                  this.contentService.changeActiveCont.next(
-                    this.storeService.uniqueIdMap.get(v) as string,
-                  )
-                }
-              }
+            dialog.afterClosed().subscribe(() => {
               this.isError = false
             })
           }
@@ -1934,13 +1920,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     }
   }
   ngAfterViewInit() {
-    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
-      this.courseData = await data
-      //this.moduleButtonName = 'Save'
-      //this.isSaveModuleFormEnable = true
-      //this.showAddModuleForm = true
+    this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+      this.courseData = data
       this.isSaveModuleFormEnable = true
-      //this.showAddModuleForm = true
       if (this.courseData && this.courseData.children.length >= 2) {
         this.showSettingsPage = true
       }
@@ -2002,19 +1984,20 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       //this.isResourceTypeEnabled = true
       // tslint:disable-next-line:no-console
       console.log(this.isSaveModuleFormEnable)
-      //this.editorStore.resetOriginalMetaWithHierarchy(data)
+      //this.contentService.resetOriginalMetaWithHierarchy(data)
+      this.cdr.detectChanges()
     })
   }
   setSettingsPage() {
 
-    // this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+    // this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
     //   if (data) {
     //     this.courseData = await data
     //     this.isSettingsPage = true
     //   }
     // })
     this.editorService.readcontentV3(this.contentService.parentContent).toPromise()
-    // this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => { })
+    // this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => { })
     // this.ngAfterViewInit()
     setTimeout(() => {
       this.clearForm()
@@ -2057,7 +2040,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.moduleName = name
       this.isSaveModuleFormEnable = true
       this.moduleButtonName = 'Save'
-      this.loaderService.changeLoad.next(true)
+      this.loader.changeLoad.next(true)
       this.setContentType(obj)
       //this.initService.createModuleUnit(obj)
       this.clearForm()
@@ -2155,7 +2138,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             if (this.content && this.content.isAssessment && !this.isSelfAssessment) {
               rBody['isCorrectAnswerPopUp'] = this.content.isCorrectAnswerPopUp !== undefined ? this.content.isCorrectAnswerPopUp : true
             }
-            await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+            await this.contentService.setUpdatedMeta(rBody, this.currentContent)
             await this.saves()
             this.clearForm()
             this.editItem = ''
@@ -2188,7 +2171,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             if (this.content && this.content.isAssessment && !this.isSelfAssessment) {
               rBody['isCorrectAnswerPopUp'] = this.content.isCorrectAnswerPopUp !== undefined ? this.content.isCorrectAnswerPopUp : true
             }
-            await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+            await this.contentService.setUpdatedMeta(rBody, this.currentContent)
             await this.saves()
             this.editItem = ''
           }
@@ -2230,14 +2213,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             content: meta
           }
         }
-        this.editorStore.setUpdatedMeta(meta, this.currentContent)
+        this.contentService.setUpdatedMeta(meta, this.currentContent)
         this.loader.changeLoad.next(true)
         await this.editorService.updateNewContentV3(requestBody, this.currentContent).subscribe(
           async (info: any) => {
             // tslint:disable-next-line:no-console
-            console.log('info', info, this.editorStore.parentContent)
+            console.log('info', info, this.contentService.parentContent)
             if (info) {
-              await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+              await this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
                 this.courseData = data
                 // tslint:disable-next-line:no-console
                 console.log("this.courseData", this.courseData)
@@ -2247,14 +2230,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
                     request: {
                       data: {
-                        nodesModified: this.editorStore.getNodeModifyData(),
+                        nodesModified: this.contentService.getNodeModifyData(),
                         hierarchy: hierarchyData,
                       },
                     },
                   }
-                  this.loaderService.changeLoad.next(true)
+                  this.loader.changeLoad.next(true)
                   await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-                    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                    this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
                       this.courseData = data
 
                       if (this.courseData && this.courseData.children.length >= 2) {
@@ -2271,7 +2254,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                         },
                         duration: NOTIFICATION_TIME * 1000,
                       })
-                      this.editorStore.resetOriginalMetaWithHierarchy(data)
+                      this.contentService.resetOriginalMetaWithHierarchy(data)
                       if (this.content.mimeType === 'video/mp4' || this.content.mimeType === 'audio/mpeg') {
                         this.updateCouseDuration(data)
                         this.setDuration(0)
@@ -2324,7 +2307,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           },
         }
       }
-      this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.editorStore.parentContent).subscribe((response: any) => {
+      this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.contentService.parentContent).subscribe((response: any) => {
         // tslint:disable-next-line:no-console
         console.log('duration', response.duration)
         this.setCourseDuration(isNumber(sumDuration) ?
@@ -2338,7 +2321,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.resourceType = name
     this.independentResourceCount = this.independentResourceCount + 1
     this.independentResourceNames.push({ name: 'Resource ' + this.independentResourceCount })
-    this.loaderService.changeLoad.next(true)
+    this.loader.changeLoad.next(true)
     if (name == 'Link') {
       this.isLinkEnabled = true
       this.isShowDownloadBtnEnabled = false
@@ -2463,15 +2446,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
   async addIndependentResource() {
     const dialogRef = this.dialog.open(UserIndexConfirmComponent, {
-      width: '382px',
-      height: '203px',
+      width: '420px',
       data: { 'message': 'You are adding resource outside the module. Would you like to go ahead?', 'id': this.contentService.parentContent },
     })
     dialogRef.afterClosed().subscribe(async result => {
       console.log(result)
 
       if (result === 'New') {
-        this.loaderService.changeLoad.next(true)
+        this.loader.changeLoad.next(true)
 
         this.clearForm()
         this.addResourceModule["module"] = false
@@ -2484,7 +2466,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           this.updatedVersionKey = resData.versionKey
         })
         this.editItem = ''
-        this.loaderService.changeLoad.next(false)
+        this.loader.changeLoad.next(false)
 
       } else {
         dialogRef.close()
@@ -2504,14 +2486,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     this.currentCourseId = content.identifier
     console.log("content", content)
     console.log("this.currentCourseId", this.currentCourseId)
-    this.loaderService.changeLoad.next(true)
+    this.loader.changeLoad.next(true)
     if (content.contentType !== 'CourseUnit') {
-      this.loaderService.changeLoad.next(true)
+      this.loader.changeLoad.next(true)
       await this.editorService.readContentV2(this.currentCourseId).subscribe(resData => {
         this.updatedVersionKey = resData.versionKey
         content = resData
         this.moduleName = resData.name
-        this.loaderService.changeLoad.next(false)
+        this.loader.changeLoad.next(false)
       })
     }
 
@@ -2650,13 +2632,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
     }
     if (content.contentType === 'CourseUnit') {
-      this.loaderService.changeLoad.next(false)
+      this.loader.changeLoad.next(false)
     }
   }
   editAssessmentRes(content?: any) {
     console.log("content module", content, this.moduleName, this.isSelfAssessment)
     if (content.name !== this.moduleName && this.moduleName && !this.isSelfAssessment) {
-      this.loaderService.changeLoadState(true)
+      this.loader.changeLoadState(true)
       const requestBody: any = {
         name: this.moduleName,
         versionKey: this.updatedVersionKey,
@@ -2674,7 +2656,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           if (info) {
             this.editItem = ''
             this.initService.updateAssessment(content)
-            this.loaderService.changeLoadState(false)
+            this.loader.changeLoadState(false)
           }
         })
     } else {
@@ -2685,7 +2667,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
 
   async addAssessment() {
-    this.loaderService.changeLoadState(true)
+    this.loader.changeLoadState(true)
 
     this.viewMode = 'assessment'
     this.addResourceModule["viewMode"] = 'assessment'
@@ -2712,7 +2694,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           if (info) {
             this.editItem = ''
             this.initService.updateAssessment(obj)
-            this.loaderService.changeLoadState(false)
+            this.loader.changeLoadState(false)
           }
         })
     } else {
@@ -2823,10 +2805,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                         meta["thumbnail"] = data.content_url
                         this.thumbnail = data.content_url
                         meta["versionKey"] = this.courseData.versionKey
-                        this.editorStore.currentContentData = meta
+                        this.contentService.currentContentData = meta
 
-                        this.editorStore.currentContentID = this.content.identifier
-                        this.editorStore.setUpdatedMeta(meta, this.content.identifier || data.identifier)
+                        this.contentService.currentContentID = this.content.identifier
+                        this.contentService.setUpdatedMeta(meta, this.content.identifier || data.identifier)
                         // tslint:disable-next-line:no-console
 
                         console.log(meta)
@@ -2835,7 +2817,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                             content: meta
                           }
                         }
-                        this.editorStore.setUpdatedMeta(meta, this.content.identifier)
+                        this.contentService.setUpdatedMeta(meta, this.content.identifier)
                         //this.initService.uploadData('thumbnail')
                         if (this.content.contentType === 'Resource' || this.content.contentType === 'Course') {
                           this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
@@ -2843,7 +2825,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                               // tslint:disable-next-line:no-console
                               console.log('info', info)
                               if (info) {
-                                this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                                this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
                                   this.courseData = data
                                 })
                                 //this.update()
@@ -3071,8 +3053,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               duration: NOTIFICATION_TIME * 1000,
             })
           } else {
-            this.editorStore.currentContentData = meta
-            this.editorStore.currentContentID = this.content.identifier
+            this.contentService.currentContentData = meta
+            this.contentService.currentContentID = this.content.identifier
             requestBody = {
               request: {
                 content: meta
@@ -3126,10 +3108,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   jsonVerify(s: string) { try { JSON.parse(s); return true } catch (e) { return false } }
 
   routerValuesCall() {
-    this.editorStore.changeActiveCont.subscribe(data => {
+    this.contentService.changeActiveCont.subscribe(data => {
       this.currentContent = data
       this.currentCourseId = data
-      if (this.editorStore.getUpdatedMeta(data).contentType !== 'Resource') {
+      if (this.contentService.getUpdatedMeta(data).contentType !== 'Resource') {
         this.viewMode = 'meta'
       }
     })
@@ -3150,7 +3132,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             this.storeService.lexIdMap,
           )
         })
-        contentDataMap.forEach(content => this.editorStore.setOriginalMeta(content))
+        contentDataMap.forEach(content => this.contentService.setOriginalMeta(content))
         const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
         this.currentParentId = this.currentContent
         this.storeService.treeStructureChange.next(
@@ -3186,21 +3168,21 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     if (this.resourseSelected !== '') {
       this.update()
     }
-    const updatedContent = this.editorStore.upDatedContent || {}
+    const updatedContent = this.contentService.upDatedContent || {}
 
     if (
       (Object.keys(updatedContent).length &&
         (Object.values(updatedContent).length && JSON.stringify(Object.values(updatedContent)[0]) !== '{}')) ||
       Object.keys(this.storeService.changedHierarchy).length
     ) {
-      this.loaderService.changeLoad.next(true)
-      if (this.editorStore.getUpdatedMeta(this.currentCourseId).contentType !== "CourseUnit") {
+      this.loader.changeLoad.next(true)
+      if (this.contentService.getUpdatedMeta(this.currentCourseId).contentType !== "CourseUnit") {
         this.versionID = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
-        this.versionKey = this.editorStore.getUpdatedMeta(this.currentCourseId)
+        this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
       }
       this.triggerSave().subscribe(
         () => {
-          this.loaderService.changeLoad.next(false)
+          this.loader.changeLoad.next(false)
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
               type: Notify.SAVE_SUCCESS,
@@ -3211,8 +3193,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         (error: any) => {
           if (error.status === 409) {
             const errorMap = new Map<string, NSContent.IContentMeta>()
-            Object.keys(this.editorStore.originalContent).forEach(v =>
-              errorMap.set(v, this.editorStore.originalContent[v]),
+            Object.keys(this.contentService.originalContent).forEach(v =>
+              errorMap.set(v, this.contentService.originalContent[v]),
             )
             this.isError = true
             const dialog = this.dialog.open(ErrorParserComponent, {
@@ -3229,10 +3211,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   this.storeService.selectedNodeChange.next(
                     (this.storeService.lexIdMap.get(v) as number[])[0],
                   )
-                  this.editorStore.changeActiveCont.next(v)
+                  this.contentService.changeActiveCont.next(v)
                 } else {
                   this.storeService.selectedNodeChange.next(v)
-                  this.editorStore.changeActiveCont.next(
+                  this.contentService.changeActiveCont.next(
                     this.storeService.uniqueIdMap.get(v) as string,
                   )
                 }
@@ -3240,7 +3222,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               this.isError = false
             })
           }
-          this.loaderService.changeLoad.next(false)
+          this.loader.changeLoad.next(false)
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
               type: Notify.SAVE_FAIL,
@@ -3252,7 +3234,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   }
   async update() {
     this.resourseSelected = ''
-    this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+    this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
       this.courseData = data
     })
     const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
@@ -3260,14 +3242,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
-          nodesModified: this.editorStore.getNodeModifyData(),
+          nodesModified: this.contentService.getNodeModifyData(),
           hierarchy: hierarchyData,
         },
       },
     }
-    this.loaderService.changeLoad.next(true)
+    this.loader.changeLoad.next(true)
     await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-      this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+      this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
         this.courseData = data
         let resourceDurat: any = []
         let sumDuration: any
@@ -3304,7 +3286,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               },
             }
           }
-          this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.editorStore.parentContent).subscribe((response: any) => {
+          this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.contentService.parentContent).subscribe((response: any) => {
             // tslint:disable-next-line:no-console
             console.log('duration', response.duration)
             this.setCourseDuration(isNumber(sumDuration) ?
@@ -3319,7 +3301,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         }
         this.getChildrenCount()
 
-        this.loaderService.changeLoad.next(false)
+        this.loader.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
             type: Notify.SUCCESS
@@ -3327,7 +3309,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           duration: NOTIFICATION_TIME * 500,
 
         })
-        this.editorStore.resetOriginalMetaWithHierarchy(data)
+        this.contentService.resetOriginalMetaWithHierarchy(data)
         // tslint:disable-next-line: align
       })
     })
@@ -3336,14 +3318,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   triggerSave() {
     const nodesModified: any = {}
     let isRootPresent = false
-    Object.keys(this.editorStore.upDatedContent).forEach(v => {
+    Object.keys(this.contentService.upDatedContent).forEach(v => {
       if (!isRootPresent) {
         isRootPresent = this.storeService.parentNode.includes(v)
       }
       nodesModified[v] = {
         isNew: false,
         root: this.storeService.parentNode.includes(v),
-        metadata: this.editorStore.upDatedContent[v],
+        metadata: this.contentService.upDatedContent[v],
       }
     })
     if (!isRootPresent) {
@@ -3353,8 +3335,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         metadata: {},
       }
     }
-    if (Object.keys(this.editorStore.upDatedContent).length > 0 && nodesModified[this.currentCourseId]) {
-      let tempUpdateContent = this.editorStore.upDatedContent[this.currentCourseId]
+    if (Object.keys(this.contentService.upDatedContent).length > 0 && nodesModified[this.currentCourseId]) {
+      let tempUpdateContent = this.contentService.upDatedContent[this.currentCourseId]
       let requestBody: NSApiRequest.IContentUpdateV2
 
       if (tempUpdateContent.category === 'CourseUnit' || tempUpdateContent.category === 'Collection') {
@@ -3370,7 +3352,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           content: tempUpdateContent,
         }
       }
-      requestBody.request.content = this.editorStore.cleanProperties(requestBody.request.content)
+      requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
       if (requestBody.request.content.duration === 0 || requestBody.request.content.duration) {
         // tslint:disable-next-line:max-line-length
         requestBody.request.content.duration =
@@ -3429,14 +3411,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         requestBody.request.content.topics = tempTopicData
       }
 
-      this.editorStore.currentContentData = requestBody.request.content
-      this.editorStore.currentContentID = this.currentCourseId
+      this.contentService.currentContentData = requestBody.request.content
+      this.contentService.currentContentID = this.currentCourseId
 
       if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined) {
         return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
           tap(() => {
             this.storeService.changedHierarchy = {}
-            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+            this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
               this.courseData = data
               let resourceDurat: any = []
               let sumDuration: any
@@ -3455,13 +3437,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               // tslint:disable-next-line:no-console
               console.log(sumDuration)
             })
-            Object.keys(this.editorStore.upDatedContent).forEach(id => {
-              this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
+            Object.keys(this.contentService.upDatedContent).forEach(id => {
+              this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
               // this.editorService.readContentV2(id).subscribe(resData => {
               //   this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
               // })
             })
-            this.editorStore.upDatedContent = {}
+            this.contentService.upDatedContent = {}
           })
         )
       } else {
@@ -3469,16 +3451,16 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
             tap(() => {
               this.storeService.changedHierarchy = {}
-              this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+              this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
                 this.courseData = data
               })
-              Object.keys(this.editorStore.upDatedContent).forEach(id => {
-                this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
+              Object.keys(this.contentService.upDatedContent).forEach(id => {
+                this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
                 // this.editorService.readContentV2(id).subscribe(resData => {
                 //   this.contentService.resetVersionKey(resData.versionKey, resData.identifier)
                 // })
               })
-              this.editorStore.upDatedContent = {}
+              this.contentService.upDatedContent = {}
             })
           )
         }
@@ -3488,7 +3470,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
-          nodesModified: this.editorStore.getNodeModifyData(),
+          nodesModified: this.contentService.getNodeModifyData(),
           hierarchy: this.storeService.getTreeHierarchy(),
         },
       },
@@ -3498,26 +3480,26 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       tap(() => {
 
         this.storeService.changedHierarchy = {}
-        Object.keys(this.editorStore.upDatedContent).forEach(async id => {
-          this.editorStore.resetOriginalMeta(this.editorStore.upDatedContent[id], id)
+        Object.keys(this.contentService.upDatedContent).forEach(async id => {
+          this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
         })
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+        this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
           this.courseData = data
-          this.editorStore.resetOriginalMetaWithHierarchy(data)
+          this.contentService.resetOriginalMetaWithHierarchy(data)
         })
-        this.editorStore.upDatedContent = {}
+        this.contentService.upDatedContent = {}
       }),
     )
 
   }
 
   subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
-    this.editorStore.changeActiveCont.next(event.identifier)
+    this.contentService.changeActiveCont.next(event.identifier)
     switch (event.type) {
       case 'editContent':
         if (event.nodeClicked === false) {
         }
-        const content = this.editorStore.getUpdatedMeta(event.identifier)
+        const content = this.contentService.getUpdatedMeta(event.identifier)
         // tslint:disable-next-line:no-console
         console.log(content)
         if (content.contentType === 'Resource') {
@@ -3605,7 +3587,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     //   duration: NOTIFICATION_TIME * 1000,
 
     // })
-    this.loaderService.changeLoad.next(true)
+    this.loader.changeLoad.next(true)
     if (isDone) {
       const newCreatedLexid = this.editorService.newCreatedLexid
       if (this.addResourceModule["module"] === true) {
@@ -3624,7 +3606,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         console.log(result)
 
 
-        await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+        await this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
           this.courseData = await data
 
           const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
@@ -3644,13 +3626,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
             request: {
               data: {
-                nodesModified: this.editorStore.getNodeModifyData(),
+                nodesModified: this.contentService.getNodeModifyData(),
                 hierarchy: hierarchyData,
               },
             },
           }
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+            this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
               this.courseData = await data
               if (this.courseData.children) {
                 this.courseData.children.forEach((module: any) => {
@@ -3658,7 +3640,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                 })
               }
               this.getChildrenCount()
-              this.loaderService.changeLoad.next(false)
+              this.loader.changeLoad.next(false)
             })
           })
         })
@@ -3666,7 +3648,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       } else {
         //const hierarchyData = this.storeService.getTreeHierarchy()
         //this.courseData = []
-        await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+        await this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
           this.courseData = await data
           console.log("data", data)
           // this.content.parent = data.identifier
@@ -3686,14 +3668,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
             request: {
               data: {
-                nodesModified: this.editorStore.getNodeModifyData(),
+                nodesModified: this.contentService.getNodeModifyData(),
                 hierarchy: hierarchyData,
               },
             },
           }
 
           await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
+            this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
               this.courseData = await data
               if (this.courseData.children) {
                 this.courseData.children.forEach((module: any) => {
@@ -3701,8 +3683,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                 })
               }
               this.getChildrenCount()
-              this.loaderService.changeLoad.next(false)
-              this.editorStore.setOriginalMeta(data)
+              this.loader.changeLoad.next(false)
+              this.contentService.setOriginalMeta(data)
             })
           })
         })
@@ -3715,9 +3697,9 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       }
       this.currentContent = this.editorService.newCreatedLexid
       // update the id
-      this.editorStore.currentContent = newCreatedLexid
+      this.contentService.currentContent = newCreatedLexid
     }
-    this.loaderService.changeLoad.next(false)
+    this.loader.changeLoad.next(false)
     this.subAction({ type: 'editContent', identifier: this.editorService.newCreatedLexid, nodeClicked: false })
     //this.save()
   }
@@ -4269,10 +4251,10 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             versionKey: this.updatedVersionKey,
             videoQuestions: this.videoQuestions ? this.videoQuestions : []
           }
-          await this.editorStore.setUpdatedMeta(rBody, this.currentContent)
+          await this.contentService.setUpdatedMeta(rBody, this.currentContent)
           await this.update()
           await this.save()
-          // this.loaderService.changeLoad.next(false)
+          // this.loader.changeLoad.next(false)
           this.clearForm()
           this.editItem = ''
         }
@@ -4506,16 +4488,15 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
             console.log(identfs[identfs.length - 1] === currData.identifier)
             if (identfs[identfs.length - 1] === currData.identifier) {
               let cCourseData1 = hierarchy[this.courseData.identifier]
-              this.loaderService.changeLoad.next(false)
+              this.loader.changeLoad.next(false)
               const dialogRef = this.dialog.open(UserIndexConfirmComponent, {
-                width: '382px',
-                height: '203px',
+                width: '420px',
                 data: { 'message': 'You are adding resource outside the module. Would you like to go ahead?', 'id': this.contentService.parentContent },
               })
 
               dialogRef.afterClosed().subscribe(async result => {
                 console.log(result)
-                this.loaderService.changeLoad.next(true)
+                this.loader.changeLoad.next(true)
 
                 if (result === 'New') {
                   cCourseData1["children"].push(prevPosition)
@@ -4540,7 +4521,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                 const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
                   request: {
                     data: {
-                      nodesModified: this.editorStore.getNewNodeModifyData(),
+                      nodesModified: this.contentService.getNewNodeModifyData(),
                       hierarchy: hierarchy,
                     },
                   },
@@ -4548,8 +4529,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
                 console.log(requestBodyV2, "data123")
                 await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-                  this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-                    this.loaderService.changeLoad.next(false)
+                  this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+                    this.loader.changeLoad.next(false)
                     this.courseData = data
                   })
                 })
@@ -4608,7 +4589,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
         data: {
-          nodesModified: this.editorStore.getNewNodeModifyData(),
+          nodesModified: this.contentService.getNewNodeModifyData(),
           hierarchy: hierarchy,
         },
       },
@@ -4616,8 +4597,8 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     console.log(requestBodyV2, "data")
     await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-      this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-        this.loaderService.changeLoad.next(false)
+      this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+        this.loader.changeLoad.next(false)
         this.courseData = data
       })
     })
@@ -4674,7 +4655,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       if (contenUpdateRes && contenUpdateRes.params && contenUpdateRes.params.status === 'successful') {
         const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
         if (hierarchyData) {
-          this.loaderService.changeLoad.next(true)
+          this.loader.changeLoad.next(true)
           this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
           this.upload()
         } else {
@@ -4691,7 +4672,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       this.file as Blob,
       (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''),
     )
-    this.loaderService.changeLoad.next(true)
+    this.loader.changeLoad.next(true)
     this.uploadService
       .upload(
         formdata,
@@ -4761,7 +4742,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       )
       .subscribe(
         _ => {
-          // this.loaderService.changeLoad.next(false)
+          // this.loader.changeLoad.next(false)
           this.storeData()
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
@@ -4771,14 +4752,14 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
           })
           this.action('save')
           this.validateFile(this.file as File)
-          this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+          this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
             this.courseData = data
           })
-          this.loaderService.changeLoad.next(false)
+          this.loader.changeLoad.next(false)
           console.log("uploadVideoUrl", this.uploadVideoUrl)
         },
         () => {
-          this.loaderService.changeLoad.next(false)
+          this.loader.changeLoad.next(false)
           this.uploadFileName = ''
           this.file = null
           this.snackBar.openFromComponent(NotificationComponent, {
@@ -4885,8 +4866,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
   delete(node: IContentTreeNode) {
     console.log("node", node)
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '500px',
-      height: '175px',
+      width: '420px',
       data: 'deleteTreeNode',
     })
     //this.preserveExpandedNodes()
@@ -4894,7 +4874,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
       if (confirm) {
         this.loader.changeLoad.next(true)
         this.parentHierarchy = []
-        this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+        this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
           this.courseData = data
         })
         const hierarchyData: any = this.storeService.getNewTreeHierarchy(this.courseData)
@@ -4923,13 +4903,13 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
               const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
                 request: {
                   data: {
-                    nodesModified: this.editorStore.getNodeModifyData(),
+                    nodesModified: this.contentService.getNodeModifyData(),
                     hierarchy: hierarchyData,
                   },
                 },
               }
               await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-                this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+                this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
                   this.courseData = data
                   this.updateCouseDuration(data)
                   this.showAddModuleForm = false
@@ -4949,7 +4929,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
                   })
                   this.loader.changeLoad.next(false)
                   this.clearForm()
-                  this.editorStore.resetOriginalMetaWithHierarchy(data)
+                  this.contentService.resetOriginalMetaWithHierarchy(data)
                   // tslint:disable-next-line: align
                 })
               })
@@ -4994,7 +4974,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
 
     this.activeContentSubscription = this.contentService.changeActiveCont.subscribe(id => {
       this.allLanguages = this.initService.ordinals.subTitles
-      this.loaderService.changeLoadState(true)
+      this.loader.changeLoadState(true)
       this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
       this.mediumSizeBreakpoint$.subscribe(isLtMedium => {
         this.sideNavBarOpened = !isLtMedium
@@ -5177,7 +5157,7 @@ export class ModuleCreationComponent implements OnInit, AfterViewInit {
         duration: NOTIFICATION_TIME * 1000,
       })
     } else {
-      this.loaderService.changeLoad.next(true)
+      this.loader.changeLoad.next(true)
       this.currentCourseId = this.content.identifier
       await this.editorService.readcontentV3(this.currentCourseId).subscribe(async (resData: any) => {
         const updateContentReq: any = {

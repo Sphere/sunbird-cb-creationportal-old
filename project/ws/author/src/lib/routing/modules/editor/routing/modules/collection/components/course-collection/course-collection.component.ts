@@ -1,6 +1,6 @@
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
 
-import { Component, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 
@@ -142,6 +142,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   isModelHeaderView: boolean = false;
   showResource: boolean = false;
   clickedNext: boolean = false;
+  triggerEditMetaNext = false
+  triggerModuleCreationNext = false
   isSelfAssessment: boolean = false
   isMoveCourseToDraft: boolean = false;
   createModule: any
@@ -179,6 +181,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     // private contentSvc: WidgetContentService,
     private _configurationsService: ConfigurationsService,
     private progressSvc: ContentProgressService,
+    private cdr: ChangeDetectorRef,
   ) {
     if (sessionStorage.getItem('isReviewChecklist')) {
       this.dialog.closeAll()
@@ -216,6 +219,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.showAddchapter = false
           this.viewMode = 'meta'
           this.clickedNext = false
+          this.isSubmitPressed = false
         }
       })
     this.backToCourse = this.initService.currentNavigationMessage.subscribe(
@@ -240,6 +244,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.clickedNext = false
           this.showAddchapter = false
           this.isModulePageEnabled = false
+          this.isSubmitPressed = false
         } else if (data === 'CourseBuilder') {
           this.clickedNext = true
           this.showAddchapter = false
@@ -925,6 +930,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
               { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
             ]
+            this.cdr.detectChanges()
           }
 
           // window.location.reload()
@@ -3381,6 +3387,19 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         break
       case 'showAddChapter':
         this.showAddchapter = false
+    }
+  }
+
+  handleStepperNext() {
+    const activeStep = this.steps.find((s: any) => s.activeStep)
+    if (!activeStep) { return }
+    if (activeStep.key === 'CourseDetails') {
+      this.isSubmitPressed = true
+      this.triggerEditMetaNext = true
+      setTimeout(() => { this.triggerEditMetaNext = false }, 50)
+    } else {
+      this.triggerModuleCreationNext = true
+      setTimeout(() => { this.triggerModuleCreationNext = false }, 50)
     }
   }
 

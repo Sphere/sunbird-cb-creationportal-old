@@ -18,7 +18,8 @@ export class ProgressStepperComponent implements OnInit {
     { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
   ];;
   @Input() header: any = ''
-  @Output() sendSteps = new EventEmitter<any>();
+  @Output() sendSteps = new EventEmitter<any>()
+  @Output() onNext = new EventEmitter<void>()
   constructor(private initService: AuthInitService,
   ) {
   }

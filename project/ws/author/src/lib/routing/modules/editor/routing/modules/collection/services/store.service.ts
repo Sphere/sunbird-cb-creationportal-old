@@ -1286,6 +1286,9 @@ export class CollectionStoreService {
     this.hierarchyTree = {}
     //const newParentNode = this.flatNodeMap.get(this.currentParentNode) as IContentNode
     const newParentNode = this.parentData
+    if (!newParentNode || !newParentNode.identifier) {
+      return this.hierarchyTree
+    }
     this.hierarchyTree[newParentNode.identifier] = {
       root: this.parentNode.includes(newParentNode.identifier),
       contentType: newParentNode.category,
