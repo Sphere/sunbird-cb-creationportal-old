@@ -7,8 +7,8 @@
 // Apply Material 3 typography globally using the default theme
 $typography-theme: mat.define-theme((
   typography: (
-    brand-family: 'Lato, sans-serif',
-    plain-family: 'Lato, sans-serif',
+    brand-family: 'Roboto, sans-serif',
+    plain-family: 'Roboto, sans-serif',
   ),
 ));
 
@@ -21,8 +21,8 @@ html {
 .small-typography { font-size: 13px; }
 .large-typography { font-size: 16px; }
 .x-large-typography { font-size: 18px; }
-.custom-typography { font-family: $font-family-lato, sans-serif; }
-.x-small-custom-typography { font-size: 12px; font-family: $font-family-lato, sans-serif; }
-.small-custom-typography { font-size: 13px; font-family: $font-family-lato, sans-serif; }
-.large-custom-typography { font-size: 16px; font-family: $font-family-lato, sans-serif; }
-.x-large-custom-typography { font-size: 18px; font-family: $font-family-lato, sans-serif; }
+.custom-typography { font-family: $font-family-roboto; }
+.x-small-custom-typography { font-size: 12px; font-family: $font-family-roboto; }
+.small-custom-typography { font-size: 13px; font-family: $font-family-roboto; }
+.large-custom-typography { font-size: 16px; font-family: $font-family-roboto; }
+.x-large-custom-typography { font-size: 18px; font-family: $font-family-roboto; }
