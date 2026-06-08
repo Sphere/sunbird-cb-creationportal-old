@@ -44,12 +44,14 @@
 
 .small-icon {
   font-size: 18px;
-  display: flex;
+  line-height: 18px;
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
   padding: 0;
   margin: 0;
-  height: auto;
-  width: auto;
+  height: 18px;
+  width: 18px;
   transition: 0.5s;
 }
 
@@ -58,6 +60,21 @@
   width: 32px;
   transition: 0.5s;
   margin-right: 4px;
+}
+
+// Center the icon inside the compact (32px) Material icon-button — MDC keeps
+// its default 12px padding, which throws the glyph off-centre when resized.
+::ng-deep .small-button.mat-mdc-icon-button {
+  padding: 0 !important;
+  line-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  .mat-mdc-button-touch-target {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .custom {
@@ -127,6 +144,12 @@
 ::ng-deep .myfield .mat-form-field-wrapper,
 ::ng-deep .myfield .mat-mdc-text-field-wrapper {
   padding: 0px !important;
+}
+
+// No hint/error shown under these option inputs — remove the reserved subscript
+// band so the field height equals the input box and the row items align to it.
+::ng-deep .myfield .mat-mdc-form-field-subscript-wrapper {
+  display: none;
 }
 
 .mat-button,
