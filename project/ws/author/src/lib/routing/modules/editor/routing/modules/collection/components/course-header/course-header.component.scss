@@ -10,13 +10,13 @@
     justify-content: center;
 }
 .app-logo {
-  width: 120px;
-  height: 60px;
-  margin-top: 10px;
+  width: auto;
+  height: 48px;
+  max-width: 160px;
+  object-fit: contain;
   filter: brightness(3);
   @include breakpoint-xs {
-    max-width: 80px;
-    max-height: 30px;
+    height: 32px;
   }
 }
 
