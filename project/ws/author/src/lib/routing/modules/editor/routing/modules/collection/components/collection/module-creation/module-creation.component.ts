@@ -698,6 +698,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         if (this.activeTabIndex >= this.videoQuestions.length) {
           this.activeTabIndex = this.videoQuestions.length - 1
         }
+        this.cdr.detectChanges()
       }
     })
   }

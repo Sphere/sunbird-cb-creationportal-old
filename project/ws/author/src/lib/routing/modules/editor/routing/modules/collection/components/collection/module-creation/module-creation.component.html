@@ -712,9 +712,9 @@
                 </div>
                 <ng-container
                   *ngIf="content?.contentType === 'Resource' && uploadVideoUrl && content?.mimeType === 'video/mp4'">
-                  <button class="re-upload-btn text-white mat-button-base save-btn-bottom"
+                  <button class="re-upload-btn mat-button-base"
                     (click)="deleteUploadedFile();$event.stopPropagation()">
-                    <img alt="" class="image max-width" src="cbp-assets/icons/mage_reload.svg">Re-upload
+                    <img alt="" src="cbp-assets/icons/mage_reload.svg" style="width:16px;height:16px;">Re-upload
                   </button>
                 </ng-container>
               </div>

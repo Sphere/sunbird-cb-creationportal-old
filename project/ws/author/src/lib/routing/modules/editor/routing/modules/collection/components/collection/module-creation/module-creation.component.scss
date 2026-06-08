@@ -1718,18 +1718,30 @@ color:  #000000 !important;
 .gap-50{
   gap: 50px;
 }
+// Secondary / outlined button — mirrors .save-btn-bottom tokens (radius, size, height)
 .re-upload-btn {
-    width: 120px;
     border: 1px solid #1C5D95;
-    height: 40px;
-    color: #1C5D95 !important;
     border-color: #1C5D95 !important;
+    border-radius: 8px;
+    height: 38px;
+    line-height: 38px;
+    padding: 0 16px;
+    color: #1C5D95 !important;
     background-color: #fff !important;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 6px;
+    transition: background 0.2s, box-shadow 0.2s;
+
+    &:hover:not([disabled]) {
+        background-color: #f0f5fa !important;
+        box-shadow: 0 4px 12px rgba(28, 93, 149, 0.20);
+    }
 }
 
 .quiz-form {
