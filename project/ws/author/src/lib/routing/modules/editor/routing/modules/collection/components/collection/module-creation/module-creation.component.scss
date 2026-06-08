@@ -1720,11 +1720,13 @@ color:  #000000 !important;
 }
 // Secondary / outlined button — mirrors .save-btn-bottom tokens (radius, size, height)
 .re-upload-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
     border: 1px solid #1C5D95;
     border-color: #1C5D95 !important;
     border-radius: 8px;
     height: 38px;
-    line-height: 38px;
+    line-height: 1;
     padding: 0 16px;
     color: #1C5D95 !important;
     background-color: #fff !important;
