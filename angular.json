@@ -12,7 +12,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": { "base": "dist/www", "browser": "" },
+            "outputPath": { "base": "dist/www/en", "browser": "" },
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js", "@angular/localize/init"],
