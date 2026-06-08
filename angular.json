@@ -12,7 +12,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": { "base": "dist/www/cbp" },
+            "outputPath": { "base": "dist/www", "browser": "" },
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js", "@angular/localize/init"],
@@ -81,7 +81,7 @@
                   "maximumWarning": "4mb",
                   "maximumError": "15mb"
                 }
-              ],
+              ]
             },
             "dev": {
               "fileReplacements": [
@@ -100,7 +100,7 @@
                   "maximumWarning": "4mb",
                   "maximumError": "15mb"
                 }
-              ],
+              ]
             },
             "preprod": {
               "fileReplacements": [
@@ -119,7 +119,7 @@
                   "maximumWarning": "4mb",
                   "maximumError": "15mb"
                 }
-              ],
+              ]
             }
           }
         },
