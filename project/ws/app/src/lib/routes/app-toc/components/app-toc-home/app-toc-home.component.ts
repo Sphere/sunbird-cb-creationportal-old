@@ -139,15 +139,14 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
         this.isLoading = true
         this.changeText = 'comments'
         if (this.content) {
-
           this.progressSvc.getComments(this.content.identifier).subscribe(res => {
             console.log(res)
             this.commentsList = res
-            // Filter comments for each role
             this.roles.forEach(role => {
               this.filteredComments[role] = this.commentsList.filter((comment: { role: string }) => comment.role === role)
             })
             this.isLoading = false
+            this.cdr.detectChanges()
           })
         }
       } else if (data === 'preview') {
@@ -164,6 +163,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
           this.progressSvc.getComments(this.content.identifier).subscribe(res => {
             this.commentsList = res
             this.isLoading = false
+            this.cdr.detectChanges()
           })
         }
       } else if (data === 'backFromPreview') {

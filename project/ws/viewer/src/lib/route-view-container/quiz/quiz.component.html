@@ -1,83 +1,19 @@
-<div class="padding-dynamic" *ngIf="quizData">
-  <div class="flex flex-around flex-wrapped">
-    <div class="w-full">
-      <div>
-        <mat-card>
-          <mat-card-content>
-            <div id="fullScreenContainer" class="video-player">
-              <ng-container *ngIf="isFetchingDataComplete">
-                <viewer-plugin-quiz [identifier]="quizData?.identifier" [artifactUrl]="quizData?.artifactUrl"
-                  [name]="quizData?.name" [learningObjective]="quizData?.learningObjective"
-                  [complexityLevel]="quizData?.complexityLevel" [duration]="quizData?.duration" [quizJson]="quizJson"
-                  [collectionId]="collectionId"></viewer-plugin-quiz>
-              </ng-container>
-              <div class="player-nav-links">
-                <app-player-navigation-widget></app-player-navigation-widget>
-                <!-- <div class="flex justify-between html">
-                  <div class="prev-button">
-                    <a mat-button class="width-auto" [routerLink]="prevResourceUrl" queryParamsHandling="preserve"
-                      accesskey="<" [disabled]="!prevResourceUrl">
-                      <span class="material-icons align-left-arrow">
-                        chevron_left
-                      </span>
-                    </a>
-                    <span class="title" *ngIf="prevTitle"><span class="fs-small">Previous
-                        Chapter</span>{{ (prevTitle.length>22)? (prevTitle | slice:0:22)+'..':(prevTitle)}}
-                    </span>
-                  </div>
-
-                  <div class="next-button" (click)="navigatetoOverview
-                                ()">
-                    <a mat-button class="width-auto mr-10" [routerLink]="nextResourceUrl" queryParamsHandling="preserve"
-                      accesskey=">">
-                      <span class="material-icons align-right-arrow">
-                        chevron_right
-                      </span>
-                    </a>
-                  </div>
-                </div> -->
-              </div>
-            </div>
-            <div class="flex justify-end mt-3">
-              <!-- <div class="prev-button">
-                <a mat-button class="width-auto" [routerLink]="prevResourceUrl" queryParamsHandling="preserve"
-                  accesskey="<">
-                  <span class="material-icons align-arrow icon-tour" id="left-arrow">chevron_left</span>
-                </a>
-              </div>
-              <div class="next-button">
-                <a mat-button class="width-auto mr-10" [routerLink]="nextResourceUrl" queryParamsHandling="preserve"
-                  accesskey=">">
-                  <span class="material-icons icon-tour  align-right-arrow" id="right-arrow">chevron_right</span>
-                </a>
-              </div> -->
-
-              <!-- <ws-widget-btn-content-download [forPreview]="forPreview" [widgetData]="
-                  quizData
-                    | pipePartialContent
-                      : [
-                          'identifier',
-                          'contentType',
-                          'resourceType',
-                          'mimeType',
-                          'downloadUrl',
-                          'isExternal',
-                  'artifactUrl'
-                        ]
-                "></ws-widget-btn-content-download>
-              <ws-widget-btn-content-like [forPreview]="forPreview"
-                [widgetData]="quizData | pipePartialContent: ['identifier']">
-              </ws-widget-btn-content-like>
-              <ws-widget-btn-content-share [forPreview]="forPreview"></ws-widget-btn-content-share>
-              <ws-widget-btn-goals [forPreview]="forPreview"></ws-widget-btn-goals>
-              <ws-widget-btn-playlist [forPreview]="forPreview"></ws-widget-btn-playlist>
-              <ws-widget-btn-content-feedback-v2 [forPreview]="forPreview"
-                [widgetData]="quizData | pipePartialContent: ['identifier', 'name']">
-              </ws-widget-btn-content-feedback-v2> -->
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </div>
+<div class="quiz-layout" *ngIf="quizData">
+  <div id="fullScreenContainer" class="quiz-container">
+    <ng-container *ngIf="isFetchingDataComplete">
+      <viewer-plugin-quiz
+        [identifier]="quizData?.identifier"
+        [artifactUrl]="quizData?.artifactUrl"
+        [name]="quizData?.name"
+        [learningObjective]="quizData?.learningObjective"
+        [complexityLevel]="quizData?.complexityLevel"
+        [duration]="quizData?.duration"
+        [quizJson]="quizJson"
+        [collectionId]="collectionId">
+      </viewer-plugin-quiz>
+    </ng-container>
+  </div>
+  <div class="player-nav-links">
+    <app-player-navigation-widget></app-player-navigation-widget>
   </div>
 </div>

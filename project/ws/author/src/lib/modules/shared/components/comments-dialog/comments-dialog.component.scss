@@ -1,15 +1,22 @@
 // ── Dialog container reset ────────────────────────────────────────────────
 // Remove Angular Material's default dialog padding so we control all spacing
+::ng-deep .mat-mdc-dialog-container {
+  width: 100% !important;
+  max-width: 100% !important;
+}
 ::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
   border-radius: 16px !important;
   overflow: hidden !important;
   padding: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 ::ng-deep .mat-mdc-dialog-content {
   padding: 0 !important;
   margin: 0 !important;
   max-height: 82vh !important;
   overflow-y: auto !important;
+  overflow-x: hidden !important;
 }
 
 // ── MDC Form Field Tokens (scoped to this dialog) ─────────────────────────
@@ -44,8 +51,9 @@
   display: flex;
   flex-direction: column;
   font-family: Roboto, sans-serif;
-  min-width: 480px;
-  max-width: 560px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
   background: #FFFFFF;
 }
 
@@ -114,12 +122,15 @@
 
 // ── Body ──────────────────────────────────────────────────────────────────
 .cd-body {
-  padding: 20px 24px;
+  padding: 16px 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 // ── Form field ────────────────────────────────────────────────────────────
@@ -160,6 +171,11 @@
   height: 18px !important;
   flex-shrink: 0;
   margin-top: 1px;
+}
+
+// ── Action overview (status-track) inline section ─────────────────────────
+::ng-deep .cd-body ws-auth-status-track {
+  display: block;
 }
 
 // ── Note text ─────────────────────────────────────────────────────────────
@@ -240,23 +256,27 @@
 .cd-footer {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 10px;
   padding: 14px 24px;
   border-top: 1px solid #F1F5F9;
   background: #FAFBFC;
   flex-shrink: 0;
+  min-width: 0;
 }
 
 .cd-footer-left {
-  flex: 1;
   display: flex;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .cd-footer-right {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 // ── Buttons ───────────────────────────────────────────────────────────────
@@ -269,6 +289,7 @@
   background: #1C5D95 !important;
   color: #FFFFFF !important;
   padding: 0 18px !important;
+  white-space: nowrap !important;
   letter-spacing: 0.2px;
   transition: background 0.2s, box-shadow 0.2s;
 
@@ -302,6 +323,7 @@
   border-color: #CBD5E1 !important;
   background: #FFFFFF !important;
   padding: 0 16px !important;
+  white-space: nowrap !important;
   transition: background 0.15s;
 
   mat-icon {

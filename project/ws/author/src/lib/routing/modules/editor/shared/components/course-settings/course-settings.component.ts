@@ -73,7 +73,7 @@ import {
   map,
 } from 'rxjs/operators'
 
-import { NavigationEnd, Router } from '@angular/router'
+import { Router } from '@angular/router'
 
 
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
@@ -584,15 +584,14 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
         await this.editorService.updateNewContentV3(requestBody, this.contentMeta.identifier).toPromise().catch((_error: any) => { })
         await this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
           this.courseData = await data
-          this.router.navigate([`/author/editor/${this.contentMeta.identifier}/collection`])
-
-          this.router.events.subscribe(event => {
-            if (event instanceof NavigationEnd) {
-              window.location.reload()
-            }
-          })
           this.loader.changeLoad.next(false)
-
+          // Reflect the newly selected language by reloading the collection view once.
+          // NOTE: do NOT subscribe to router.events to trigger the reload — that handler
+          // fired on every subsequent NavigationEnd (e.g. the back button) and was never
+          // unsubscribed, causing an endless reload loop on the course settings page.
+          this.router
+            .navigate([`/author/editor/${this.contentMeta.identifier}/collection`])
+            .then(() => window.location.reload())
         })
       }
 

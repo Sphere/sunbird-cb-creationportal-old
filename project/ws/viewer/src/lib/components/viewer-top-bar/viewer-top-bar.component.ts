@@ -161,7 +161,6 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     if (value == 'review' && this.isReviewer) {
       const dialogRef = this.dialog.open(ReviewDialogComponent, {
         width: '480px',
-        height: '275px',
         data: "yes",
       })
       dialogRef.afterClosed().subscribe((d) => {

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core'
+import { Component, OnInit, OnChanges, Input, Output, EventEmitter, SimpleChanges } from '@angular/core'
 
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 
@@ -23,7 +23,7 @@ import { CertificateStatusDialogComponentDialogComponent } from '../../../../../
   templateUrl: './content-card.component.html',
   styleUrls: ['./content-card.component.scss'],
 })
-export class ContentCardComponent implements OnInit {
+export class ContentCardComponent implements OnInit, OnChanges {
   @Input() data: any
   @Input() competencyData: any
   @Input() ordinals: any
@@ -80,18 +80,27 @@ export class ContentCardComponent implements OnInit {
   }
 
   getCourseStatusName(): void {
-    if (this.data.status == 'Draft') {
+    const isPublisher = this.accessService.hasRole(['content_publisher'])
+    if (this.data.status === 'Draft') {
       this.CourseStatusName = 'Draft'
-    }
-    else if (this.data.status == 'Review') {
-      this.CourseStatusName = 'Sent for review'
-    }
-    else if (this.data.status == 'Live') {
+    } else if (this.data.status === 'Review') {
+      // Publisher sees 'Review' status courses as already reviewed and ready to publish
+      this.CourseStatusName = isPublisher ? 'Reviewed' : 'Sent for review'
+    } else if (this.data.status === 'Reviewed' || this.data.status === 'InReview') {
+      this.CourseStatusName = 'Reviewed'
+    } else if (this.data.status === 'Live') {
       this.CourseStatusName = 'Published'
-    }
-    else if (this.data.status == 'Retired') {
+    } else if (this.data.status === 'Retired') {
       this.CourseStatusName = 'Retired'
     }
+  }
+
+  getStatusClass(): string {
+    const isPublisher = this.accessService.hasRole(['content_publisher'])
+    if (this.data.status === 'Review' && isPublisher) {
+      return 'status-reviewed'
+    }
+    return 'status-' + (this.data.status?.toLowerCase() || 'draft')
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['competencyData'] && this.competencyData && this.data) {

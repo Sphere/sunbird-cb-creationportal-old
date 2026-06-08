@@ -23,8 +23,26 @@
 .step {
   display: flex;
   align-items: center;
-  position: relative; /* Added for positioning the line */
+  position: relative;
   cursor: pointer;
+  transition: opacity 0.2s;
+
+  &.navigating {
+    opacity: 0.7;
+    cursor: wait;
+  }
+}
+
+// Spinner on the navigating step node
+.step-spinner {
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  border: 2px solid #BFDBFE;
+  border-top-color: #1C5D95;
+  border-radius: 50%;
+  animation: ps-spin 0.7s linear infinite;
+  flex-shrink: 0;
 }
 .step-label{
   color: #1C5D95;
@@ -103,6 +121,38 @@ letter-spacing: -0.4px;
   display: flex;
   align-items: center;
   padding-right: 32px;
+  min-width: 120px;
+  justify-content: flex-end;
+}
+
+// Please-wait pill
+.nav-wait {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #EBF4FD;
+  border: 1px solid #BFDBFE;
+  border-radius: 20px;
+  padding: 6px 14px;
+}
+
+.nav-wait-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #BFDBFE;
+  border-top-color: #1C5D95;
+  border-radius: 50%;
+  animation: ps-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.nav-wait-text {
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1C5D95;
+  white-space: nowrap;
 }
 
 .stepper-next-btn {
@@ -127,4 +177,8 @@ letter-spacing: -0.4px;
   &:active {
     background: #0f3a61;
   }
+}
+
+@keyframes ps-spin {
+  to { transform: rotate(360deg); }
 }

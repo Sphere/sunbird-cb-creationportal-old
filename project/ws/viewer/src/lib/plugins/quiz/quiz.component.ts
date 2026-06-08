@@ -94,9 +94,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   async ngOnInit() {
-    // Use pre-loaded quizJson from @Input()
     if (this.quizJson && this.quizJson.timeLimit) {
-      this.timeLeft = this.quizJson.timeLimit * 1000
+      this.timeLeft = this.quizJson.timeLimit
     }
   }
 
@@ -113,11 +112,26 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // Handle quizJson input changes
     if (changes['quizJson'] && changes['quizJson'].currentValue) {
+      if (this.timerSubscription) {
+        this.timerSubscription.unsubscribe()
+        this.timerSubscription = null
+      }
+      this.viewState = 'initial'
+      this.isSubmitted = false
+      this.isCompleted = false
+      this.isIdeal = false
+      this.markedQuestions = new Set([])
+      this.questionAnswerHash = {}
+      this.currentQuestionIndex = 0
+      this.numCorrectAnswers = 0
+      this.numIncorrectAnswers = 0
+      this.numUnanswered = 0
+      this.fetchingResultsStatus = 'none'
+
       this.quizJson = changes['quizJson'].currentValue
       if (this.quizJson && this.quizJson.timeLimit) {
-        this.timeLeft = this.quizJson.timeLimit * 1000
+        this.timeLeft = this.quizJson.timeLimit
       }
     }
   }

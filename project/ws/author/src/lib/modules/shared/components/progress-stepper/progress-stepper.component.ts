@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
+import { Component, OnInit, OnChanges, SimpleChanges, Input, Output, EventEmitter } from '@angular/core'
 
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 
@@ -10,7 +10,7 @@ import { AuthInitService } from '@ws/author/src/lib/services/init.service'
   templateUrl: './progress-stepper.component.html',
   styleUrls: ['./progress-stepper.component.scss'],
 })
-export class ProgressStepperComponent implements OnInit {
+export class ProgressStepperComponent implements OnInit, OnChanges {
   @Input() steps: any = [
     { label: '1. Introduction', key: 'Introduction', activeStep: true, completed: false },
     { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: false },
@@ -20,31 +20,46 @@ export class ProgressStepperComponent implements OnInit {
   @Input() header: any = ''
   @Output() sendSteps = new EventEmitter<any>()
   @Output() onNext = new EventEmitter<void>()
-  constructor(private initService: AuthInitService,
-  ) {
-  }
 
-  ngOnInit() {
+  isNavigating = false
+  navigatingStep = ''
+  private navResetTimer: any
 
+  constructor(private initService: AuthInitService) {}
+
+  ngOnInit() {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    // When the parent pushes back updated steps after processing navigation, clear the loading state
+    if (changes['steps'] && !changes['steps'].firstChange && this.isNavigating) {
+      this.stopNavigating()
+    }
   }
 
   navigate(step: any) {
-    console.log("AssessmentDetails", step)
+    if (this.isNavigating) { return }
     if (Array.isArray(this.steps) && this.steps.length > 0) {
       if (step !== 'Introduction' && step !== 'AssessmentDetails') {
-        const activeIndex = this.steps.findIndex((step: { activeStep: boolean }) => step.activeStep === true)
+        const activeIndex = this.steps.findIndex((s: { activeStep: boolean }) => s.activeStep === true)
         const targetIndex = this.steps.findIndex((item: any) => item.key === step)
 
         if (activeIndex > 0 && targetIndex < activeIndex) {
-          // const previousStep = this.steps[activeIndex - 1]
-          // console.log("Previous Step:", previousStep)
-          this.sendSteps.emit(step) // Emit the key instead of the label
+          this.isNavigating = true
+          this.navigatingStep = step
+          this.sendSteps.emit(step)
           this.initService.currentNavigations(step)
+
+          // Fallback: auto-clear after 8s so the UI never stays permanently frozen
+          clearTimeout(this.navResetTimer)
+          this.navResetTimer = setTimeout(() => { this.stopNavigating() }, 8000)
         }
       }
     }
   }
 
-
-
+  stopNavigating() {
+    this.isNavigating = false
+    this.navigatingStep = ''
+    clearTimeout(this.navResetTimer)
+  }
 }

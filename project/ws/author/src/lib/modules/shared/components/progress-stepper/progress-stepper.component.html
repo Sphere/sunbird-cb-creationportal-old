@@ -2,20 +2,30 @@
   <div class="left-block">
     <span class="stepper-header">{{ header }}</span>
   </div>
+
   <div class="center-block">
     <ng-container *ngFor="let step of steps; let i = index">
-      <!-- add this click function to below line for navigation -->
-      <!-- (click)="navigate(step.key)" -->
-      <div (click)="navigate(step.key)" class="step" [class.completed]="step.completed"
-        [class.active]="i === activeStep">
-        <ng-container *ngIf="step.completed &&!step.activeStep">
-          <svg xmlns=" http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none"
+      <div (click)="navigate(step.key)" class="step"
+        [class.completed]="step.completed"
+        [class.active]="step.activeStep"
+        [class.navigating]="isNavigating && navigatingStep === step.key">
+
+        <!-- Navigating spinner on the clicked step -->
+        <ng-container *ngIf="isNavigating && navigatingStep === step.key">
+          <span class="step-spinner" style="margin-right: 6px;"></span>
+        </ng-container>
+
+        <!-- Completed -->
+        <ng-container *ngIf="step.completed && !step.activeStep && !(isNavigating && navigatingStep === step.key)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none"
             style="margin-right: 4px;">
             <circle cx="8.5" cy="8" r="7.5" stroke="#1C5D95" />
             <path d="M5.5 8.25L7.32609 10L11.5 6" stroke="#1C5D95" />
           </svg>
         </ng-container>
-        <ng-container *ngIf="step.activeStep">
+
+        <!-- Active -->
+        <ng-container *ngIf="step.activeStep && !(isNavigating && navigatingStep === step.key)">
           <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none"
             style="margin-right: 4px;">
             <circle cx="8.5" cy="8" r="7.5" stroke="#1D5D95" />
@@ -24,26 +34,38 @@
               fill="#1C5D95" />
           </svg>
         </ng-container>
-        <ng-container *ngIf="!step.completed && !step.activeStep">
+
+        <!-- Pending -->
+        <ng-container *ngIf="!step.completed && !step.activeStep && !(isNavigating && navigatingStep === step.key)">
           <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none"
             style="margin-right: 4px;">
             <circle cx="8.5" cy="8" r="7.5" stroke="#1D5D95" />
           </svg>
         </ng-container>
+
         <label class="step-label">{{ step.label }}</label>
       </div>
 
-      <div class="step-line" *ngIf="i !== steps.length - 1"><svg xmlns="http://www.w3.org/2000/svg" width="60"
-          height="2" viewBox="0 0 60 2" fill="none">
+      <div class="step-line" *ngIf="i !== steps.length - 1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="2" viewBox="0 0 60 2" fill="none">
           <path d="M0.5 1L59.5 0.999995" stroke="#1C5D95" />
-        </svg></div>
+        </svg>
+      </div>
     </ng-container>
   </div>
+
   <div class="right-block">
-    <button class="stepper-next-btn" (click)="onNext.emit()">
+    <!-- Please wait pill shown while navigating -->
+    <div class="nav-wait" *ngIf="isNavigating">
+      <span class="nav-wait-spinner"></span>
+      <span class="nav-wait-text">Please wait...</span>
+    </div>
+
+    <button class="stepper-next-btn" *ngIf="!isNavigating" (click)="onNext.emit()">
       <span>Next</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
       </svg>
     </button>
   </div>

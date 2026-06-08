@@ -1,7 +1,7 @@
 @import 'ws-vars';
 @import 'ws-common';
 
-$nav-height: 40px;
+$nav-height: 48px;
 
 .quiz-container {
   height: 100%;
@@ -10,72 +10,225 @@ $nav-height: 40px;
   flex-direction: column;
 }
 
-// Contents of SideNav Menu
-.sidenav {
-  width: 206px;
-  background: inherit;
-}
-
+// Nav bar
 .quiz-nav-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: $nav-height;
-  overflow: hidden;
-  font: inherit;
-  flex-wrap: wrap;
-  padding: 0 $size-s;
+  height: $nav-height;
+  padding: 0 16px;
+  background: #fff;
+  border-bottom: 1px solid #DDE8F0;
+  flex-shrink: 0;
+}
 
-  .spacer {
-    flex: 1 1 auto;
+.quiz-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.quiz-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #5A7184;
+
+  &:hover {
+    background: #F7FBFE;
+    color: #1C5D95;
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
   }
 }
 
+.quiz-nav-timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timer-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  color: #5A7184;
+}
+
+.timer-value {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1D2B36;
+
+  &.submitted {
+    color: #5A7184;
+  }
+}
+
+.submitted-tag {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  color: #1C5D95;
+  font-weight: 500;
+}
+
+// Sidenav
 .sidenav-container {
   flex: 1 1 auto;
   height: calc(100% - #{$nav-height});
+  background: #F7FBFE;
 }
 
-.circle {
-  position: relative;
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
+.sidenav {
+  width: 200px;
+  background: #fff;
+  border-right: 1px solid #DDE8F0;
+}
+
+.sidenav-heading {
+  font-family: Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #5A7184;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 16px 16px 12px;
+  padding: 0;
+}
+
+.question-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+
+.q-cell {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  text-align: center;
-  line-height: 40px;
-}
-
-.attempted-question {
-  border: solid #00e676 2px;
-  color: #00e676;
-}
-
-.marked-question {
-  border: solid orange 2px;
-  color: orange;
-}
-
-.add-goal-info {
   display: flex;
   align-items: center;
+  justify-content: center;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &--default {
+    border: 1.5px solid #DDE8F0;
+    color: #5A7184;
+    background: #fff;
+
+    &:hover {
+      border-color: #1C5D95;
+      color: #1C5D95;
+    }
+  }
+
+  &--attempted {
+    border: 2px solid #1C5D95;
+    color: #1C5D95;
+    background: #E7F2FA;
+  }
+
+  &--marked {
+    border: 2px solid #F4A72A;
+    color: #F4A72A;
+    background: #FFF8EC;
+  }
+}
+
+// Quiz content area
+.quiz-content {
+  background: #F7FBFE;
+}
+
+.questions-wrap {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Results card
+.results-card {
+  background: #fff;
+  border: 1px solid #DDE8F0;
+  border-radius: 8px;
+  padding: 24px;
+  margin-top: 8px;
+}
+
+.results-thanks {
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #1D2B36;
+  margin: 0 0 20px;
+  text-align: center;
+}
+
+.results-error {
+  font-family: Roboto, sans-serif;
+  font-size: 15px;
+  color: #d32f2f;
+  text-align: center;
   margin: 0;
 }
 
-.white-border {
-  border: solid white 2px;
+.results-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
 }
 
-.dark-border {
-  border: solid #666666 2px;
+.results-stat {
+  flex: 1;
+  min-width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: #F7FBFE;
+  border: 1px solid #DDE8F0;
+  border-radius: 8px;
+  padding: 16px 12px;
 }
 
-.card-section {
-  width: 40%;
-  margin: $size-s;
+.results-value {
+  font-family: Roboto, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #154976;
+  line-height: 1;
+}
 
-  @include breakpoint-gt-xs {
-    width: 20%;
-    margin: $size-s;
-  }
+.results-pct {
+  font-size: 14px;
+  font-weight: 500;
+  margin-left: 1px;
+}
+
+.results-label {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #5A7184;
+  text-align: center;
 }

@@ -311,19 +311,24 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     (async () => {
       this.showSettingButtons = true
-      this.isLoading = true
+      this.isLoading = false
       // console.log('kk', JSON.parse(sessionStorage.assessment))
       const code = sessionStorage.getItem('assessment') || null
       console.log("sessionStorage.getItem('quiz')", sessionStorage.getItem('quiz'))
 
+      // Safety net: dismiss global loader if async chain doesn't complete within 3s
+      setTimeout(() => { this.isLoading = false; this.loaderService.changeLoad.next(false) }, 3000)
+
       this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
         console.log("code", code)
+        // Keep the global "Please wait..." loader visible until the quiz content
+        // is actually loaded (contentLoaded below) — clearing it here left a blank
+        // page while the assessment JSON was still being fetched.
         if (code) {
-          this.loaderService.changeLoad.next(false)
           this.isEdited = true
-          this.metaContentService.currentContent = JSON.parse(code)
+          id = JSON.parse(code)  // use real assessment ID for all subsequent lookups
+          this.metaContentService.currentContent = id
         } else {
-          this.loaderService.changeLoad.next(false)
           this.metaContentService.currentContent = id
         }
         this.allLanguages = this.initService.ordinals.subTitles
@@ -343,6 +348,13 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
           this.activateRoute.parent.parent.data.subscribe(v => {
             // tslint:disable-next-line:no-console
             console.log(v)
+
+            if (!v || !v.contents || !v.contents[0]) {
+              this.isLoading = false
+              this.loaderService.changeLoad.next(false)
+              this.contentLoaded = true
+              return
+            }
 
             this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(async newData => {
               // const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
@@ -415,6 +427,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                             this.questionsArr =
                               this.quizStoreSvc.collectiveQuiz[id] || []
                             this.contentLoaded = true
+                            this.loaderService.changeLoad.next(false)
                             this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
                             this.currentId = id
                             this.quizStoreSvc.currentId = id
@@ -436,6 +449,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                       this.questionsArr =
                         this.quizStoreSvc.collectiveQuiz[id] || []
                       this.contentLoaded = true
+                      this.loaderService.changeLoad.next(false)
                     }
                     if (!this.quizStoreSvc.collectiveQuiz[id]) {
                       this.quizStoreSvc.collectiveQuiz[id] = []
@@ -451,6 +465,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                     this.questionsArr =
                       this.quizStoreSvc.collectiveQuiz[id] || []
                     this.contentLoaded = true
+                    this.loaderService.changeLoad.next(false)
                     if (!this.quizStoreSvc.collectiveQuiz[id]) {
                       this.quizStoreSvc.collectiveQuiz[id] = []
                     }
@@ -737,8 +752,10 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   OpenUploadIntro() {
     const dialogRef = this.dialog.open(ImageUploadIntroPopupComponent, {
-      width: '85%',
-      height: '600px',
+      width: '560px',
+      maxWidth: '92vw',
+      maxHeight: '85vh',
+      panelClass: 'iup-dialog-panel',
     })
     dialogRef.afterClosed().subscribe((response: boolean) => {
       // this.loader.changeLoad.next(true)

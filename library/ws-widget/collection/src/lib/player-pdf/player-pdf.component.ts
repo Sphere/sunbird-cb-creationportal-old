@@ -81,7 +81,7 @@ export class PlayerPdfComponent extends WidgetBaseComponent
   private routerSubs: Subscription | null = null
   public isInFullScreen = false
   zoomType: string | null = null;
-  pdfHeight = 'calc(100vh - 355px)'
+  pdfHeight = 'calc(100vh - 224px)'
   pdfMobileHeight = '300px'
   pdfZoom = '28%'
   sidebarOpen = false
@@ -118,7 +118,7 @@ export class PlayerPdfComponent extends WidgetBaseComponent
       this.pdfMobileHeight = 'calc(100vh - 50px)'
       this.pdfZoom = '40%'
     } else {
-      this.pdfHeight = 'calc(100vh - 355px)'
+      this.pdfHeight = 'calc(100vh - 224px)'
       this.pdfMobileHeight = '200px'
       this.pdfZoom = '28%'
       // const diplayedPagesCount = fsState.mode.includes('portrait') ? 2 : 1

@@ -1,32 +1,82 @@
-.mat-dialog-content,
-.mat-mdc-dialog-content {
+::ng-deep .mat-mdc-dialog-container {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 16px !important;
   overflow: hidden !important;
-  max-height: none !important;
-  text-align: center !important;
+  padding: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-.course-live{
-  color: #000000 !important;
+.sd-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-family: Roboto, sans-serif;
+  background: #FFFFFF;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 36px 32px 24px;
 }
-.check-circle{
-  text-align: center !important;
-    color: white;
-    border-radius: 59px;
-    font-size: 60px;
-    width: 55px;
-    height: 55px;}
-.mat-dialog-container,
-.mat-mdc-dialog-container {
-  padding-bottom: 0px;
+
+.sd-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  width: 100%;
 }
-.ok-button{
-  background-color: #1C5D95 !important;
-  border-radius: 30px !important;
-  color: white !important;
+
+.sd-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
-.padding-check-circle{
-padding: 6px 11px 10px 6px !important;
+
+.sd-icon {
+  font-size: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+  color: #FFFFFF;
 }
-.padding-cached{
-padding: 5px 9px 8px 6px !important;
+
+.sd-title {
+  font-family: Roboto, sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: #1E293B !important;
+  margin: 0 !important;
+  line-height: 1.6 !important;
+  max-width: 380px;
+}
+
+.sd-footer {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.sd-btn-ok {
+  font-family: Roboto, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  height: 38px !important;
+  border-radius: 8px !important;
+  background: #1C5D95 !important;
+  color: #FFFFFF !important;
+  padding: 0 28px !important;
+  letter-spacing: 0.2px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #154F81 !important;
+  }
 }

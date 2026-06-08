@@ -89,7 +89,6 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewChecked {
   showReviewChecklist() {
     const dialogRef = this.dialog.open(ReviewDialogComponent, {
       width: '480px',
-      height: '275px',
       data: "yes",
     })
     dialogRef.afterClosed().subscribe((d) => {

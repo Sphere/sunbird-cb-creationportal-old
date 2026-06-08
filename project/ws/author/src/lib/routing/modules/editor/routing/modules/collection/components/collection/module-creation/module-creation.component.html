@@ -385,16 +385,16 @@
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
               class="module-input" placeholder="Name of the Course" autocomplete="off" maxlength="250" />
             <div class="mc-field-footer">
-              <mat-hint class="mt-hint">{{ moduleName.length }}/250</mat-hint>
               <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
+              <mat-hint class="mt-hint">{{ moduleName.length }}/250</mat-hint>
             </div>
           </div>
           <div class="module-txt-block mc-form-field-row" *ngIf="content?.contentType === 'CourseUnit' &&!isSelfAssessment">
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
               class="module-input" placeholder="Name of the Module" autocomplete="off" maxlength="100" />
             <div class="mc-field-footer">
-              <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint>
               <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
+              <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint>
             </div>
           </div>
           <div class="module-txt-block mc-form-field-row" *ngIf="content?.contentType === 'Resource'&&!isSelfAssessment">
@@ -408,16 +408,16 @@
               </button>
             </div>
             <div class="mc-field-footer">
-              <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint>
               <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
+              <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint>
             </div>
           </div>
           <div class="module-txt-block mc-form-field-row" *ngIf="content?.contentType === 'Collection'">
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
               class="module-input" placeholder="Name of the Resource" autocomplete="off" maxlength="100" />
             <div class="mc-field-footer">
-              <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint>
               <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
+              <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint>
             </div>
           </div>
           <div class="module-txt-block margin-top-l" *ngIf="isSelfAssessment">
@@ -485,33 +485,36 @@
             </div>
 
           </div>
-          <label class="rd-checkbox-item" *ngIf="isLinkEnabled">
-            <input type="checkbox" [(ngModel)]="isNewTab" [checked]="isNewTab" />
-            <span>Open link in new tab</span>
-          </label>
-          <label class="rd-checkbox-item" *ngIf="content?.isAssessment&&!isSelfAssessment">
-            <input type="checkbox" [(ngModel)]="content.isCorrectAnswerPopUp" />
-            <span>Show Correct Answer Popup</span>
-          </label>
-          <div class="margin-top-s module-txt-block" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
+          <div class="module-txt-block" *ngIf="isLinkEnabled">
+            <label class="rd-checkbox-item">
+              <input type="checkbox" [(ngModel)]="isNewTab" [checked]="isNewTab" />
+              <span>Open link in new tab</span>
+            </label>
+          </div>
+          <div class="module-txt-block" *ngIf="content?.isAssessment&&!isSelfAssessment">
+            <label class="rd-checkbox-item">
+              <input type="checkbox" [(ngModel)]="content.isCorrectAnswerPopUp" />
+              <span>Show Correct Answer Popup</span>
+            </label>
+          </div>
+          <div class="module-txt-block" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
             <button mat-raised-button
-              class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+              class="text-white ws-mat-primary-background mat-button-base save-btn-bottom"
               (click)="editAssessmentRes(content)">Edit {{content?.isAssessment?'Assessment':'Quiz'}}</button>
           </div>
-          <div class="margin-top-s module-txt-block" *ngIf="content?.mimeType === 'application/json'&&!isAddOrEdit">
+          <div class="module-txt-block" *ngIf="content?.mimeType === 'application/json'&&!isAddOrEdit">
             <button *ngIf="!isSelfAssessment" mat-raised-button
-              class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-              (click)="editAssessmentRes(content)">Add
-              {{content?.isAssessment?'Assessment':'Quiz'}}</button>
+              class="text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+              (click)="editAssessmentRes(content)">Add {{content?.isAssessment?'Assessment':'Quiz'}}</button>
             <button *ngIf="isSelfAssessment" mat-raised-button
-              class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+              class="text-white ws-mat-primary-background mat-button-base save-btn-bottom"
               (click)="editAssessmentRes(content)">Add Assessment</button>
           </div>
-          <span *ngIf="content?.mimeType === 'application/json&&!isSelfAssessment'"
+          <span *ngIf="content?.mimeType === 'application/json' && !isSelfAssessment"
             class="margin-top-s module-txt-block quiz-help-txt">Note: You will be taken to
             {{content?.isAssessment?'Assessment':'Quiz'}} builder
           </span>
-          <span *ngIf="content?.mimeType === 'application/json'&&isSelfAssessment"
+          <span *ngIf="content?.mimeType === 'application/json' && isSelfAssessment"
             class="margin-top-s module-txt-block quiz-help-txt">Note: You
             will be taken to Assessment builder
           </span>

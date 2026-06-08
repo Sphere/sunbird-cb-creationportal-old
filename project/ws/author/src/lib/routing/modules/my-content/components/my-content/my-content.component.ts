@@ -1723,8 +1723,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
             : data && data.result.content
               ? data.result.content
               : []
-        this.editorService.getAllEntities().subscribe(async (res: any) => {
-          this.proficiencyList = await res.result.response
+        this.editorService.getAllEntities().subscribe((res: any) => {
+          this.proficiencyList = res.result.response
+          this.cdr.detectChanges()
         })
         if (this.status === 'draft' || this.status === 'selfAssessmentDraft') {
           console.log("this.status = ", this.status)

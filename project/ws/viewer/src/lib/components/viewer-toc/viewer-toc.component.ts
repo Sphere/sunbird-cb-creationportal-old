@@ -1,6 +1,6 @@
 import { NestedTreeControl } from '@angular/cdk/tree'
 
-import { Component, EventEmitter, OnDestroy, OnInit, Output, Input } from '@angular/core'
+import { ChangeDetectorRef, Component, EventEmitter, NgZone, OnDestroy, OnInit, Output, Input } from '@angular/core'
 
 import { MatTreeNestedDataSource } from '@angular/material/tree'
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
@@ -87,6 +87,8 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
     private playerStateService: PlayerStateService,
     private editorService: EditorService,
     private scormAdapterService: SCORMAdapterService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
   ) {
     this.nestedTreeControl = new NestedTreeControl<IViewerTocCard>(this._getChildren)
     this.nestedDataSource = new MatTreeNestedDataSource()
@@ -148,10 +150,10 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
         }
 
         this.editorService.readcontentV3(collectionId).subscribe((res: any) => {
-          if (res.gatingEnabled)
-            this.isGetingEnabled = true
-          else
-            this.isGetingEnabled = false
+          this.ngZone.run(() => {
+            this.isGetingEnabled = Boolean(res.gatingEnabled)
+            this.cdr.detectChanges()
+          })
         })
       }
       if (this.resourceId) {
@@ -213,7 +215,10 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
       content = content.result.content
       this.collectionCard = this.createCollectionCard(content)
       const viewerTocCardContent = this.convertContentToIViewerTocCard(content)
-      this.isFetching = false
+      this.ngZone.run(() => {
+        this.isFetching = false
+        this.cdr.detectChanges()
+      })
       return viewerTocCardContent
     } catch (err: any) {
       switch (err.status) {
@@ -238,7 +243,10 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
           break
         }
       }
-      this.isFetching = false
+      this.ngZone.run(() => {
+        this.isFetching = false
+        this.cdr.detectChanges()
+      })
       return null
     }
   }
@@ -255,7 +263,10 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
       const content: NsContent.IContent = playlistFetchResponse.data
       this.collectionCard = this.createCollectionCard(content)
       const viewerTocCardContent = this.convertContentToIViewerTocCard(content)
-      this.isFetching = false
+      this.ngZone.run(() => {
+        this.isFetching = false
+        this.cdr.detectChanges()
+      })
       return viewerTocCardContent
     } catch (err: any) {
       switch (err.status) {
@@ -280,7 +291,10 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
           break
         }
       }
-      this.isFetching = false
+      this.ngZone.run(() => {
+        this.isFetching = false
+        this.cdr.detectChanges()
+      })
       return null
     }
   }

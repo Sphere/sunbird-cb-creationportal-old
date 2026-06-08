@@ -395,11 +395,18 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
 
     this.backToModule = this.initService.backToHomeMessage.subscribe((data: any) => {
       if (data === 'fromSettings') {
-        this.isLoading = true
-        this.isSettingsPage = false
+        // Show the global "Please wait..." card loader during the settings ->
+        // builder transition. The isSettingsPage flip is deferred so the (still
+        // mounted) course-settings component's ngOnDestroy — which clears the
+        // loader — doesn't hide the card immediately. After the short delay we
+        // reveal the builder and clear the loader (guaranteed, so it can never
+        // get stuck).
+        this.isLoading = false
+        this.loader.changeLoad.next(true)
         setTimeout(() => {
-          this.isLoading = false
-        }, 500)
+          this.isSettingsPage = false
+          this.loader.changeLoad.next(false)
+        }, 600)
       }
     })
 
@@ -1088,8 +1095,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       if (contentAction !== 'publishResources' && !this.isVisibleReviewDialog) {
         this.isVisibleReviewDialog = true
         const dialogRef = this.dialog.open(CommentsDialogComponent, {
-          width: '750px',
-          height: '450px',
+          minWidth: '840px',
+          width: 'auto',
+          maxWidth: '95vw',
+          height: 'auto',
           data: this.contentService.getOriginalMeta(this.currentParentId),
         })
 
@@ -1923,7 +1932,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
       this.courseData = data
       this.isSaveModuleFormEnable = true
-      if (this.courseData && this.courseData.children.length >= 2) {
+      if (this.courseData && this.courseData.children && this.courseData.children.length >= 2) {
         this.showSettingsPage = true
       }
 
@@ -1939,53 +1948,63 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       //   const seconds = second || 0
       //   this.mainCourseDuration = hour + ':' + minute + ':' + seconds
       // }
-      if (data.children.length > 0) {
+      if (data.children && data.children.length > 0) {
         this.loader.changeLoad.next(true)
-        data.children.forEach((element: any) => {
-          if (element.contentType !== 'CourseUnit' && element.duration) {
-            this.resourceDurat.push(parseInt(element.duration))
-          }
-          if (element.children && element.children.length > 0) {
-            element.children.forEach((ele: any) => {
-              if (ele.duration) {
-                this.resourceDurat.push(parseInt(ele.duration))
-              }
-            })
-          }
-        })
-        // tslint:disable-next-line:no-console
-        console.log(this.resourceDurat)
-        if (this.resourceDurat.length > 0) {
-          this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
-          // tslint:disable-next-line:no-console
-          console.log(this.sumDuration.toString(), this.courseData.duration)
-          if (this.sumDuration.toString() !== this.courseData.duration) {
-            let requestBody: any
-            requestBody = {
-              request: {
-                content: {
-                  duration: isNumber(this.sumDuration) ?
-                    this.sumDuration.toString() : this.sumDuration,
-                  versionKey: data.versionKey
-                },
-              }
+        // Wrap in try/finally so an exception in the duration math (reduce /
+        // setCourseDuration) can never leave the global loader stuck on `true`,
+        // which previously showed an endless full-screen spinner (e.g. when
+        // navigating back from the course settings page).
+        try {
+          data.children.forEach((element: any) => {
+            if (element.contentType !== 'CourseUnit' && element.duration) {
+              this.resourceDurat.push(parseInt(element.duration))
             }
-            this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.courseData.identifier).subscribe((response: any) => {
-              // tslint:disable-next-line:no-console
-              console.log(response)
-            })
+            if (element.children && element.children.length > 0) {
+              element.children.forEach((ele: any) => {
+                if (ele.duration) {
+                  this.resourceDurat.push(parseInt(ele.duration))
+                }
+              })
+            }
+          })
+          // tslint:disable-next-line:no-console
+          console.log(this.resourceDurat)
+          if (this.resourceDurat.length > 0) {
+            this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
+            // tslint:disable-next-line:no-console
+            console.log(this.sumDuration.toString(), this.courseData.duration)
+            if (this.sumDuration.toString() !== this.courseData.duration) {
+              let requestBody: any
+              requestBody = {
+                request: {
+                  content: {
+                    duration: isNumber(this.sumDuration) ?
+                      this.sumDuration.toString() : this.sumDuration,
+                    versionKey: data.versionKey
+                  },
+                }
+              }
+              this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.courseData.identifier).subscribe((response: any) => {
+                // tslint:disable-next-line:no-console
+                console.log(response)
+              })
+            }
+            this.setCourseDuration(this.sumDuration)
           }
+        } finally {
           this.loader.changeLoad.next(false)
-          this.setCourseDuration(this.sumDuration)
         }
-        this.loader.changeLoad.next(false)
-
       }
       //this.isResourceTypeEnabled = true
       // tslint:disable-next-line:no-console
       console.log(this.isSaveModuleFormEnable)
       //this.contentService.resetOriginalMetaWithHierarchy(data)
       this.cdr.detectChanges()
+    }, (error: any) => {
+      // Never leave the global loader spinning if the content read fails.
+      // tslint:disable-next-line:no-console
+      console.log('module-creation ngAfterViewInit read failed', error)
+      this.loader.changeLoad.next(false)
     })
   }
   setSettingsPage() {
@@ -2637,8 +2656,18 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   }
   editAssessmentRes(content?: any) {
     console.log("content module", content, this.moduleName, this.isSelfAssessment)
+    // Show the global "Please wait..." loader while the assessment/quiz builder
+    // mounts and loads — otherwise there's a blank page during the transition.
+    // The quiz component clears this loader once its UI is ready (and has a 3s
+    // safety net), so it can never get stuck.
+    this.loader.changeLoad.next(true)
+    if (this.isSelfAssessment) {
+      // Defer quiz mount by one task so Angular gets a render cycle to paint the
+      // overlay before the quiz component mounts.
+      setTimeout(() => { this.initService.updateAssessment(content) }, 50)
+      return
+    }
     if (content.name !== this.moduleName && this.moduleName && !this.isSelfAssessment) {
-      this.loader.changeLoadState(true)
       const requestBody: any = {
         name: this.moduleName,
         versionKey: this.updatedVersionKey,
@@ -2656,11 +2685,17 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           if (info) {
             this.editItem = ''
             this.initService.updateAssessment(content)
-            this.loader.changeLoadState(false)
+          } else {
+            // Nothing to mount — don't leave the loader spinning.
+            this.loader.changeLoad.next(false)
           }
+        },
+        () => {
+          this.loader.changeLoad.next(false)
         })
     } else {
-      this.initService.updateAssessment(content)
+      // Defer quiz mount by one task so the overlay paints first.
+      setTimeout(() => { this.initService.updateAssessment(content) }, 50)
     }
 
 
@@ -3572,6 +3607,11 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     const parentNode = node
+    // Show the global "Please wait..." loader for the whole resource-creation
+    // operation (create + read/update hierarchy). It is cleared only when the
+    // async chain below completes; a safety timeout guarantees it can't get stuck.
+    this.loader.changeLoad.next(true)
+    setTimeout(() => this.loader.changeLoad.next(false), 20000)
     const isDone = await this.storeService.createChildOrSibling(
       couseCreated,
       parentNode,
@@ -3587,7 +3627,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     //   duration: NOTIFICATION_TIME * 1000,
 
     // })
-    this.loader.changeLoad.next(true)
     if (isDone) {
       const newCreatedLexid = this.editorService.newCreatedLexid
       if (this.addResourceModule["module"] === true) {
@@ -3698,9 +3737,14 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.currentContent = this.editorService.newCreatedLexid
       // update the id
       this.contentService.currentContent = newCreatedLexid
+      // Prepare the resource-details view. The "Please wait..." loader set above
+      // stays visible until the read/update chain clears it, so the form is only
+      // revealed once the resource is actually created — no premature blank UI.
+      this.subAction({ type: 'editContent', identifier: this.editorService.newCreatedLexid, nodeClicked: false })
+    } else {
+      // Creation failed — don't leave the loader spinning.
+      this.loader.changeLoad.next(false)
     }
-    this.loader.changeLoad.next(false)
-    this.subAction({ type: 'editContent', identifier: this.editorService.newCreatedLexid, nodeClicked: false })
     //this.save()
   }
   copyToClipboard(module: any) {

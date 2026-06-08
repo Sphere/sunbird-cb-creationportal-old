@@ -749,6 +749,11 @@
   flex-direction: column;
   gap: 4px;
 }
+
+// Vertical rhythm between module-txt-block sections in the edit form
+.module-right-content > .module-txt-block + .module-txt-block {
+  margin-top: 12px;
+}
 .mc-input-row {
   display: flex;
   align-items: center;
@@ -757,7 +762,7 @@
 .mc-field-footer {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
   min-height: 20px;
 }
 

@@ -302,8 +302,10 @@ export class CollectionComponent implements OnInit, OnDestroy {
     }
     if (this.validationCheck) {
       const dialogRef = this.dialog.open(CommentsDialogComponent, {
-        width: '750px',
-        height: '450px',
+        minWidth: '840px',
+        width: 'auto',
+        maxWidth: '95vw',
+        height: 'auto',
         data: this.contentService.getOriginalMeta(this.currentParentId),
       })
 

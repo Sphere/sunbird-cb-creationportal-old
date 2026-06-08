@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core'
 
 import { MatDialog } from '@angular/material/dialog'
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser'
@@ -101,6 +101,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     private utilitySvc: UtilityService,
     private mobileAppsSvc: MobileAppsService,
     private authAccessService: AccessControlService,
+    private cdr: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
@@ -144,6 +145,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
         }
         const filteredComments = res.filter((comment: { role: string }) => this.roles.includes(comment.role))
         this.commentsList = filteredComments.filter((item: any) => item.currentStatus !== 'course-created')
+        this.cdr.detectChanges()
       })
     }
 

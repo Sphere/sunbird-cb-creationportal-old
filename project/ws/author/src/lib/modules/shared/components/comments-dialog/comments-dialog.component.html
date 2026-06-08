@@ -99,7 +99,7 @@
       <mat-form-field appearance="outline" class="cd-field"
         [ngClass]="{ 'mat-form-field-invalid': showError(commentsForm.controls.comments) }">
         <mat-label i18n>Comments <span class="cd-req" aria-hidden="true">*</span></mat-label>
-        <textarea matInput formControlName="comments" rows="4"
+        <textarea matInput formControlName="comments" rows="3"
           i18n-placeholder placeholder="Describe the outcome of your review..."></textarea>
         <mat-hint i18n>e.g. This content is accepted / rejected because...</mat-hint>
         <mat-error *ngIf="showError(commentsForm.controls.comments)" i18n>Comment is mandatory</mat-error>
@@ -142,7 +142,7 @@
       <mat-form-field appearance="outline" class="cd-field"
         [ngClass]="{ 'mat-form-field-invalid': showError(commentsForm.controls.comments) }">
         <mat-label i18n>Comments <span class="cd-req" aria-hidden="true">*</span></mat-label>
-        <textarea matInput formControlName="comments" rows="4"
+        <textarea matInput formControlName="comments" rows="3"
           i18n-placeholder placeholder="Provide your comments for the reviewer..."></textarea>
         <mat-hint i18n>For example: Please provide a comment about the course...</mat-hint>
         <mat-error *ngIf="showError(commentsForm.controls.comments)" i18n>Comment is mandatory</mat-error>

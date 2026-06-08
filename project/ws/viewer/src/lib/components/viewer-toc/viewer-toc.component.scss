@@ -1,8 +1,117 @@
 @import 'ws-vars';
 
-.treemode-slider {
-  text-align: right;
-  padding-right: $size-m;
+// ── Tree structure reset ─────────────────────────────────────────────────────
+.toc-tree {
+  padding-inline-start: 0;
+  min-height: 100%;
+  overflow-y: auto;
+
+  ul,
+  li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+}
+
+// ── Module header (parent / nested node) ────────────────────────────────────
+.module-border {
+  background: #F7FBFE;
+  border-top: 1px solid #DDE8F0;
+  border-bottom: 1px solid #DDE8F0;
+  border-radius: 0;
+  box-shadow: none;
+  margin: 4px 0;
+  padding: 8px 16px;
+}
+
+.moduleName {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.content-duration {
+  margin: 0 $size-xs;
+}
+
+// ── Leaf resource row ────────────────────────────────────────────────────────
+.resource-container {
+  display: flex;
+  align-items: flex-start;
+  padding: 10px 16px;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid #DDE8F0;
+  transition: background 0.15s ease;
+
+  &.content-active-bg {
+    background-color: #E7F2FA;
+    border-left: 3px solid #1C5D95;
+    padding-left: 13px; // compensate for the 3px border
+  }
+
+  .resource-meta {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+// ── Resource title (all types, replaces h1/h3) ───────────────────────────────
+.toc-item-title {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #1D2B36;
+  margin: 0 0 4px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+// Active link overrides
+a.content-active .toc-item-title {
+  color: #154976;
+  font-weight: 500;
+}
+
+// Module h3 title
+.module-border h3 {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1D2B36;
+  margin: 0;
+  white-space: normal;
+  word-break: break-word;
+}
+
+// Duration / icon row below title
+.resource-meta .flex {
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+
+  img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  span {
+    font-family: Roboto, sans-serif;
+    font-size: 12px;
+    color: #5A7184;
+  }
+}
+
+// ── Flat list ────────────────────────────────────────────────────────────────
+.flat-list-content {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
 }
 
 .flat-list-content-title {
@@ -10,197 +119,25 @@
   align-items: center;
 }
 
-// .leaf-node {
-//   // padding-left: $size-m;
-// }
-
-.toc-tree-invisible {
-  display: none;
-}
-
-.toc-tree {
-  padding-inline-start: 0px;
-
-  ul,
-  li {
-    margin-top: 0;
-    margin-bottom: 0;
-    list-style-type: none;
-    margin-left: 1rem;
-    margin-right: 0.5rem;
-  }
-}
-
-.content-active {
-  color:#154976;
-  font-size: 1.02rem;
-}
- .content-active-bg {
-  border-bottom: 1px solid #e7f2fa;
-  background-color: #e7f2fa;
- }
-
-
-.content-duration {
-  margin: 0 $size-xs;
-}
-
-app-content-icon {
-  vertical-align: middle;
-  margin-right: $size-xs;
-}
-
-.completed-icon {
-  color: green;
-}
-
 .height-auto {
   height: auto !important;
   margin: auto;
 }
 
-.flat-list-content {
-  display: flex;
-  align-items: center;
-}
-
 .viewer-toc-thumbnail {
   height: 40px !important;
   width: 70px !important;
+  object-fit: cover;
 }
 
-.viewer-toc-header-thumbnail {
-  height: 73px !important;
-  width: 130px !important;
-}
-
+// ── Utility ──────────────────────────────────────────────────────────────────
 .width-expand {
   flex: 1;
-  min-width: 1px;
-}
-.moduleName{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.align-self-start {
-  align-self: start;
-}
-
-.align-self-center {
-  align-self: center;
-}
-
-.resource-container {
-  //margin-left: 2rem;
-  display: flex !important;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 0;
-  width: 100%;
-  border-bottom: 1px solid #ddd;
-  ws-display-content-type-icon {
-    display: flex;
-    align-items: center;
-  }
-  .resource-meta {
-    margin-left: $size-s;
-    justify-content: space-between;
-    align-items: center;
-  }
+  min-width: 0;
 }
 
 .width-max-content {
   width: max-content;
-}
-
-.margin-left-xxs {
-  margin-left: 4px;
-}
-
-.bold{
-  font-weight: bolder !important;
-}
-
-.module-border{
-    box-shadow: 0 0 4px rgba(0,0,0,.15);
-    border-radius: 12px;
-    margin: 10px 0px 15px 0px !important;
-    padding: 10px;
-}
-
-.lock-style{
-  height: 2vh;
-  margin-top: 1.5vh;
-  margin-left: 1vh;
-}
-
-.toc-tree {
-  padding-inline-start: 0px;
-  min-height: 100%;
-  overflow-y: auto;
-
-  ul,
-  li {
-    margin-top: 0;
-    margin-bottom: 0;
-    list-style-type: none;
-  }
-}
-
-li.li-active>div.mat-tree-node {
-  // background-color: #e5e5e5;
-  background-color: #F7F7F7;
-  margin: 10px;
-}
-.li-active ul {
-  padding: 0 10px;
-  // background: #e5e5e5;
-  // padding-left: 2em;
-  // margin-left: 0;
-}
-
-span.content-active {
-  // font-size: 1.02rem;
-  font-weight: 500;
-}
-
-.content-active>span,
-.content-active h3 {
-  font-weight: normal;
-  font-size: 1rem;
-}
-
-.content-duration {
-  margin: 0 $size-xs;
-}
-
-app-content-icon {
-  vertical-align: middle;
-  margin-right: $size-xs;
-}
-
-
-.height-auto {
-  height: auto !important;
-  margin: auto;
-}
-
-.flat-list-content {
-  display: flex;
-  align-items: center;
-}
-
-.viewer-toc-thumbnail {
-  height: 40px !important;
-  width: 70px !important;
-}
-
-
-.width-expand {
-  flex: 1;
-  min-width: 1px;
 }
 
 .align-self-start {
@@ -211,57 +148,36 @@ app-content-icon {
   align-self: center;
 }
 
-.resource-container {
-  display: flex !important;
-  justify-content: space-between;
-  // margin: $size-s 0;
-  // padding: 0 $size-s 0 0;
-  padding: $size-s 0 $size-s 0;
-  width: 100%;
-  border-bottom: 1px solid #dddddd;
-
-  ws-display-content-type-icon {
-    display: flex;
-    align-items: center;
-  }
-
-  .resource-meta {
-    margin: 0 $size-s;
-    // display: flex;
-    // justify-content: space-between;
-    // align-items: center;
-
-    // span {
-    //   opacity: 0.85;
-    // }
-  }
-}
-
-.width-max-content {
-  width: max-content;
-}
-
 .margin-left-xxs {
-  margin-left: 10px;
+  margin-left: 6px;
 }
 
-a.disabled {
-  pointer-events: none;
-  cursor: default;
+.bold {
+  font-weight: 600 !important;
 }
 
+// ── Progress / lock ──────────────────────────────────────────────────────────
+.progrss-box {
+  margin-left: auto;
+  padding-right: 8px;
+  flex-shrink: 0;
+}
 
+// ── Debug button ─────────────────────────────────────────────────────────────
+.debug-btn {
+  border-radius: 25px;
+  font-size: 12px;
+  padding: 0 12px;
+  height: 28px;
+  line-height: 28px;
+}
 
+// ── Active li highlight (deep tree) ─────────────────────────────────────────
 ::ng-deep mat-tree-node .li-active {
-  // background-color: #ede5d6;
   background-color: #E7F2FA;
 
   .resource-container {
     border-bottom: 1px solid #E7F2FA;
-
-    .sub-heading {
-      color: #154976;
-    }
   }
 }
 
@@ -270,71 +186,8 @@ a.disabled {
   cursor: default;
 }
 
-.tree-node {
-  box-shadow: 0px 0px 4px rgb(0 0 0 / 15%);
-  border-radius: 10px;
-  margin: 10px;
-}
-
-
-
-
-.progrss-box {
-  margin-left: auto;
-  padding-right: 12px;
-}
-
-.node-title {
-  line-height: 19px !important;
-}
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000 !important;
-  background-color: #fff;
-  opacity: 0.7;
-}
-
-.relative-content {
-  position: relative;
-  top: 7px;
-  left: 10px;
-  font-weight: 800;
-  color: white;
-}
-
-.loader-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.loader-ripple {
-  display: inline-block;
-  position: relative;
-  width: 84px;
-  height: 84px;
-}
-
-.loader-ripple div {
-  position: absolute;
-  border: 4px solid #000;
-  opacity: 1;
-  border-radius: 50%;
-  animation: loader-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-}
-
-.loader-ripple div:nth-child(2) {
-  animation-delay: -0.5s;
-}
-
-.debug-btn{
-  border-radius: 25px;
+// ── Tree children container (removes Angular CDK indentation offset) ─────────
+.toc-children {
+  margin: 0;
+  padding: 0;
 }

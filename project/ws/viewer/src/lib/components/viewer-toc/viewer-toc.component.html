@@ -39,7 +39,7 @@
   <ul [hidden]="tocMode !== 'TREE'" class="toc-tree">
     <mat-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
-        <li class="mat-tree-node leaf-node ml-3">
+        <li class="mat-tree-node leaf-node">
           <ng-container *ngTemplateOutlet="TocContentList; context: { $implicit: node }"></ng-container>
           <!-- <ng-container
             *ngTemplateOutlet="TocContentCard; context: { $implicit: node }"
@@ -81,7 +81,7 @@
             </div>
           </div>
 
-          <ul style="margin-left: -3rem;" [hidden]="!nestedTreeControl.isExpanded(node)">
+          <ul class="toc-children" [hidden]="!nestedTreeControl.isExpanded(node)">
             <ng-container matTreeNodeOutlet></ng-container>
           </ul>
         </li>
@@ -155,12 +155,7 @@
     <div class="resource-meta width-expand">
       <a [ngClass]="{ 'content-active': pathSet.has(content.identifier) }" [routerLink]="content.viewerUrl"
         queryParamsHandling="preserve">
-        <h3 *ngIf="content?.type !== enumContentTypes.ASSESSMENT" class="margin-remove text-truncate flex">
-          {{ content?.title }}
-        </h3>
-        <h1 *ngIf="content?.type === enumContentTypes.ASSESSMENT" class="margin-remove text-truncate flex">
-          {{ content?.title }}
-        </h1>
+        <p class="toc-item-title margin-remove">{{ content?.title }}</p>
       </a>
       <div *ngIf="content?.mimeType !== 'Assessment' " class="flex">
         <div [ngSwitch]="content.mimeType">

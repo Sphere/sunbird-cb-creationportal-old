@@ -296,33 +296,6 @@
   <div id="edit-meta" [ngClass]="{ disable: !isEditEnabled }">
   <div class="em-page">
 
-    <!-- ── Validation banner (shown after first Next attempt) ── -->
-    <div class="em-validation-banner" *ngIf="isSubmitPressed">
-      <mat-icon class="em-vb-icon">assignment_late</mat-icon>
-      <span class="em-vb-label" i18n>Required to proceed:</span>
-      <div class="em-vb-items">
-        <span class="em-vb-item" [class.em-vb-done]="!showError('name')">
-          <mat-icon>{{ showError('name') ? 'close' : 'check_circle' }}</mat-icon>
-          <span i18n>Course Name</span>
-        </span>
-        <span class="em-vb-item" [class.em-vb-done]="!showError('subTitle')">
-          <mat-icon>{{ showError('subTitle') ? 'close' : 'check_circle' }}</mat-icon>
-          <span i18n>Subtitle</span>
-        </span>
-        <span class="em-vb-item" [class.em-vb-done]="!showError('lang')">
-          <mat-icon>{{ showError('lang') ? 'close' : 'check_circle' }}</mat-icon>
-          <span i18n>Language</span>
-        </span>
-        <span class="em-vb-item" [class.em-vb-done]="contentForm.controls.appIcon?.value">
-          <mat-icon>{{ contentForm.controls.appIcon?.value ? 'check_circle' : 'close' }}</mat-icon>
-          <span i18n>Thumbnail</span>
-        </span>
-        <span class="em-vb-item" [class.em-vb-done]="addedCompetency?.length > 0">
-          <mat-icon>{{ addedCompetency?.length > 0 ? 'check_circle' : 'close' }}</mat-icon>
-          <span i18n>Competency</span>
-        </span>
-      </div>
-    </div>
 
     <!-- ── 2-column page grid ── -->
     <div class="em-grid">

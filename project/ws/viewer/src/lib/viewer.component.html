@@ -5,18 +5,14 @@
   <viewer-viewer-top-bar *ngIf="!fullScreenContainer" [forPreview]="forPreview" [frameReference]="fullScreenContainer"
     (toggle)="toggleSideBar()" [screenContent]="content">
   </viewer-viewer-top-bar>
-  <div class="flex review-block" *ngIf="isReviewer">
-    <h3 class="info-msg" i18n>
-      <img style="margin-right: 10px;" loading="lazy" src="\cbp-assets\icons\simple-icons_codereview.svg"
-        alt="clock"><span class="mode-block" style="vertical-align: super;">You
-        are in review mode</span>
-    </h3>
-    <!-- <mat-checkbox class="review-checkBox" style="margin-left: 10px" (change)="showReviewChecklist()">Mark
-      as
-      Reviewed</mat-checkbox> -->
+  <div class="review-block" *ngIf="isReviewer">
+    <div class="info-msg">
+      <img loading="lazy" src="\cbp-assets\icons\simple-icons_codereview.svg" alt="review icon" class="review-icon">
+      <span class="mode-block" i18n>You are in review mode</span>
+    </div>
   </div>
 
-  <mat-sidenav-container autosize class="viewer-sidenav-container hello" style="margin: 0 50px;">
+  <mat-sidenav-container autosize [class.with-review-bar]="isReviewer" class="viewer-sidenav-container">
     <mat-sidenav-content class="sidenavContent" #scrollableContent>
       <section *ngIf="status === 'error'">
         <div *ngIf="errorWidgetData?.widgetData?.errorType" [wsResolverWidget]="errorWidgetData"></div>

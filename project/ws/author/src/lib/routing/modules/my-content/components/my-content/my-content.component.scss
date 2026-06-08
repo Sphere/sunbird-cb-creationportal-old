@@ -60,15 +60,26 @@ opacity: 1;
 }
 
 .width-240 {
-  width: 240px;
+  width: 300px;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.07) !important;
   z-index: 1;
+
+  // Kill expansion panel body's default 0 24px side padding
+  ::ng-deep .mat-expansion-panel-body,
+  ::ng-deep .mat-expansion-panel .mat-expansion-panel-body {
+    padding: 0 !important;
+  }
+
+  ::ng-deep .mat-mdc-list,
+  ::ng-deep .mdc-list {
+    padding: 4px 0 !important;
+  }
 
   ::ng-deep .mat-mdc-list-item {
     height: 40px !important;
     min-height: 40px !important;
     border-radius: 6px;
-    margin: 2px 6px;
+    margin: 1px 8px;
     transition: background 0.15s ease;
     &:hover {
       background: rgba(28, 93, 149, 0.06) !important;
@@ -76,26 +87,27 @@ opacity: 1;
   }
 
   ::ng-deep .mat-mdc-list-item .mdc-list-item__content {
-    padding: 0 10px !important;
+    padding: 0 12px !important;
     display: flex;
     align-items: center;
+    overflow: hidden;
   }
 
-  // Hide the Frame_81.svg image — it projects into a different internal
-  // Material 3 slot and cannot be reliably vertically centred via CSS.
-  // Active state is shown via the ::before indicator on .activeLink instead.
+  // Hide the Frame_81.svg image — active state is shown via .activeLink::before
   ::ng-deep .mat-mdc-list-item img {
     display: none !important;
   }
 
   ::ng-deep .mat-mdc-list-item a {
     flex: 1;
-    display: flex;
-    align-items: center;
-    height: 100%;
-    font-size: 14px;
+    display: block;
+    line-height: 40px;
+    font-size: 13px;
     min-width: 0;
     color: #5a6a7a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     transition: color 0.15s ease;
   }
 
@@ -499,17 +511,15 @@ ws-auth-content-card-v2 {
   color: #1C5D95 !important;
   font-weight: 600 !important;
 
-  // CSS-only active indicator — a small vertical bar before the label
   &::before {
     content: '';
     display: inline-block;
-    flex-shrink: 0;
     width: 3px;
     height: 14px;
     background: #1C5D95;
     border-radius: 2px;
     margin-right: 8px;
-    align-self: center;
+    vertical-align: middle;
   }
 }
 .iconActive path {

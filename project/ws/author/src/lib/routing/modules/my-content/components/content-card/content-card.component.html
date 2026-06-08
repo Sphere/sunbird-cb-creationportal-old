@@ -25,7 +25,7 @@
     <mat-card-actions>
       <span *ngIf="data.status && data.status !== 'Draft'"
         class="course-status-text"
-        [ngClass]="'status-' + (data.status?.toLowerCase() || 'draft')">
+        [ngClass]="getStatusClass()">
         {{ CourseStatusName | uppercase }}
       </span>
       <span class="card-locale-badge">{{ data.locale | uppercase }}</span>
@@ -111,7 +111,7 @@
     <p class="fs-13 margin-remove flex items-center flex-wrap">
       <span *ngIf="data.status && data.status !== 'Draft'"
         class="course-status-text list-status mr-2"
-        [ngClass]="'status-' + (data.status?.toLowerCase() || 'draft')">
+        [ngClass]="getStatusClass()">
         {{ CourseStatusName | uppercase }}
       </span>
       <span class="mr-1 max-width-name"> by {{ data.creator }} </span>

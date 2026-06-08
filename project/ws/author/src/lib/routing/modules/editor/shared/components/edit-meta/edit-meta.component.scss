@@ -59,60 +59,6 @@
   font-family: Roboto, sans-serif;
 }
 
-// ── Validation Banner ─────────────────────────────────────────────────────
-.em-validation-banner {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px 16px;
-  background: #FFF7ED;
-  border: 1px solid #FED7AA;
-  border-radius: 8px;
-  padding: 10px 16px;
-  margin-bottom: 20px;
-}
-.em-vb-icon {
-  color: #F97316;
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-}
-.em-vb-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: #9A3412;
-  white-space: nowrap;
-}
-.em-vb-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.em-vb-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #DC2626;
-  background: #FEE2E2;
-  padding: 3px 10px;
-  border-radius: 999px;
-
-  mat-icon {
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
-    line-height: 14px;
-  }
-
-  &.em-vb-done {
-    color: #16A34A;
-    background: #DCFCE7;
-  }
-}
-
 // ── Two-column grid ───────────────────────────────────────────────────────
 .em-grid {
   display: grid;
@@ -590,7 +536,6 @@
 @media (max-width: 600px) {
   .em-page { padding: 16px 16px 88px; }
   .em-action-bar { padding: 8px 16px; }
-  .em-validation-banner { flex-direction: column; align-items: flex-start; }
   ::ng-deep .em-sidenav { width: 100vw !important; }
 }
 

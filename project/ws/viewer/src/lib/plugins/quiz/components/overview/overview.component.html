@@ -1,41 +1,34 @@
-<div class="overview-container">
-  <mat-card>
-    <div class="flex flex-wrapped flex-center padding-s">
-      <div class="card-section">
-        <h3 class="mat-h3 text-justify">
-          {{ learningObjective | pipeLimitTo: 300 }}
-        </h3>
+<div class="quiz-overview">
+  <div class="quiz-overview-card">
+    <p *ngIf="learningObjective" class="quiz-objective">{{ learningObjective | pipeLimitTo: 300 }}</p>
+    <div class="quiz-stats-row">
+      <div class="quiz-stat-chip">
+        <span class="material-icons quiz-stat-icon">bar_chart</span>
+        <div class="quiz-stat-info">
+          <span class="quiz-stat-label" i18n>Difficulty</span>
+          <span class="quiz-stat-value">{{ complexityLevel || '—' }}</span>
+        </div>
       </div>
-      <div class="card-section">
-        <h3 class="mat-h3">
-          <ng-container i18n="quiz difficulty label">Difficulty : </ng-container>
-          {{ complexityLevel }}
-        </h3>
-        <h3 class="mat-h3">
-          <ng-container i18n="quiz duration label">Duration : </ng-container>
-          <ng-container *ngIf="duration">{{
-            duration | pipeDurationTransform: 'hms'
-          }}</ng-container>
-          <ng-container *ngIf="!duration">{{
-            timeLimit | pipeDurationTransform: 'hms'
-          }}</ng-container>
-        </h3>
-        <h3 class="mat-h3">
-          <ng-container i18n="quiz number of questions label">Questions : </ng-container>
-          {{ noOfQuestions }}
-        </h3>
+      <div class="quiz-stat-chip">
+        <span class="material-icons quiz-stat-icon">schedule</span>
+        <div class="quiz-stat-info">
+          <span class="quiz-stat-label" i18n>Duration</span>
+          <span class="quiz-stat-value">
+            <ng-container *ngIf="duration">{{ duration | pipeDurationTransform: 'hms' }}</ng-container>
+            <ng-container *ngIf="!duration">{{ timeLimit | pipeDurationTransform: 'hms' }}</ng-container>
+          </span>
+        </div>
+      </div>
+      <div class="quiz-stat-chip">
+        <span class="material-icons quiz-stat-icon">help_outline</span>
+        <div class="quiz-stat-info">
+          <span class="quiz-stat-label" i18n>Questions</span>
+          <span class="quiz-stat-value">{{ noOfQuestions }}</span>
+        </div>
       </div>
     </div>
-    <div class="text-center">
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="userSelection.emit('start')"
-        class="margin-right-m"
-        i18n="button start quiz"
-      >
-        Start
-      </button>
-    </div>
-  </mat-card>
+    <button class="quiz-start-btn" (click)="userSelection.emit('start')" i18n>
+      Start Quiz
+    </button>
+  </div>
 </div>

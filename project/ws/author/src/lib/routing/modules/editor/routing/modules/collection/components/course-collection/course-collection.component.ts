@@ -238,6 +238,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.viewMode = 'meta'
         }
         if (data === 'CourseDetails') {
+          this.loaderService.changeLoad.next(false)
           this.viewMode = 'meta'
           this.initService.publishData('backToCourseDetailsPage')
           this.initService.isEditMetaPageAction('backFromModulePage')
@@ -246,11 +247,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.isModulePageEnabled = false
           this.isSubmitPressed = false
         } else if (data === 'CourseBuilder') {
+          this.loaderService.changeLoad.next(false)
           this.clickedNext = true
           this.showAddchapter = false
           this.isModulePageEnabled = false
         }
         else if (data === 'AssessmentBuilder') {
+          this.loaderService.changeLoad.next(false)
           this.clickedNext = true
         }
       })
@@ -433,6 +436,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.showAddchapter = true
           this.viewMode = 'assessment'
           this.clickedNext = false
+          this.cdr.detectChanges()
           sessionStorage.removeItem('assessment')
           // if (data['type'] === "assessment" || data.artifactUrl) {
           //   this.clickedNext = false
@@ -494,7 +498,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
         ]
       } else if (steps === 'CourseBuilder') {
-
+        this.loaderService.changeLoad.next(false)
         this.steps = [
           { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
           { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
@@ -1079,8 +1083,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
       if (contentAction !== 'publishResources') {
         const dialogRef = this.dialog.open(CommentsDialogComponent, {
-          width: '750px',
-          height: '485px',
+          minWidth: '840px',
+          width: 'auto',
+          maxWidth: '95vw',
+          height: 'auto',
           data: this.contentService.getOriginalMeta(this.currentParentId),
         })
 

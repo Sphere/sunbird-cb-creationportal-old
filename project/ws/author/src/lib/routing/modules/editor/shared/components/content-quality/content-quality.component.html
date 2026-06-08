@@ -1,324 +1,185 @@
-<div *ngIf="mediumScreen">
-  <div class="ui" [ngClass]="{ toHide: !leftArrow }">
-    <button class="p-1" mat-icon-button (click)="sidenav.toggle(); leftArrow = !leftArrow" i18n-aria-label
-      aria-label="Open side panel" i18n-matTooltip matTooltipPosition="right" matTooltip="Open side panel">
-      <mat-icon>keyboard_arrow_right</mat-icon>
-    </button>
-  </div>
+<!-- Sidenav toggle (mobile only) -->
+<div *ngIf="mediumScreen" class="cq-toggle-wrap" [class.cq-toggle-wrap--hidden]="!leftArrow">
+  <button class="cq-toggle-btn"
+    (click)="sidenav.toggle(); leftArrow = !leftArrow"
+    i18n-aria-label aria-label="Open side panel">
+    <span class="material-icons">keyboard_arrow_right</span>
+  </button>
 </div>
-<div class="margin-top-m">
-  <span class="review-text">Review Checklist</span>
+
+<div class="cq-header">
+  <span class="cq-title">Review Checklist</span>
 </div>
-<mat-sidenav-container autosize="true" id="content-quality-side-nav" class="margin-top-m reviewer-container">
-  <mat-sidenav #sidenav [mode]="mode$ | async" [(opened)]="sideBarOpened" class="no-border-sidenev"
-    style="margin-top: 5px;" (closedStart)="sidenavClose()">
-    <div class>
-      <!-- sticky -->
-      <div class="contain">
-        <div class="pad-l-4r">
-          <mat-nav-list *ngIf="questionData && questionData.length>0" class="flex-1 criteriaBlock">
-            <ng-container *ngFor="let _menu of questionData; let i = index">
-              <a mat-list-item disableRipple class="flex outline-1" [attr.data-index]="i" [routerLink]="'.'"
-                (click)="selectMenu($event,_menu.type,i)" [class.ws-active-route-menu]="isLinkActive(_menu.type, i)">
-                <!-- <mat-icon *ngIf="isTouched('menu',i)">done</mat-icon> -->
-                <img class="green-tick" *ngIf="isTouched('menu',i)" src="cbp-assets/icons/green-tick.png" alt="" />
-                <span class="padding-left-xs">{{_menu?.name}}</span>
-              </a>
-            </ng-container>
-          </mat-nav-list>
-        </div>
-      </div>
-    </div>
+
+<mat-sidenav-container autosize="true" id="content-quality-side-nav" class="cq-container">
+  <mat-sidenav #sidenav [mode]="mode$ | async" [(opened)]="sideBarOpened" class="cq-sidenav" (closedStart)="sidenavClose()">
+    <nav class="cq-nav" *ngIf="questionData && questionData.length > 0">
+      <a *ngFor="let _menu of questionData; let i = index"
+        class="cq-nav-item"
+        [class.cq-nav-item--active]="isLinkActive(_menu.type, i)"
+        [attr.data-index]="i"
+        (click)="selectMenu($event, _menu.type, i)">
+        <img class="cq-nav-tick" *ngIf="isTouched('menu', i)" src="cbp-assets/icons/green-tick.png" alt="">
+        <span class="cq-nav-label">{{ _menu?.name }}</span>
+      </a>
+    </nav>
   </mat-sidenav>
 
-  <mat-sidenav-content class="pl-6 pr-6 ml-6 form-container">
-    <form class="qualityForm-block" [formGroup]="qualityForm" (ngSubmit)="submitResult(qualityForm.value)">
+  <mat-sidenav-content class="cq-content">
+    <form class="cq-form" [formGroup]="qualityForm" (ngSubmit)="submitResult(qualityForm.value)">
       <ng-container *ngIf="!displayResult" formArrayName="questionsArray">
         <ng-container *ngFor="let quesParent of qualityForm.get('questionsArray').controls; index as idx">
-          <ng-container *ngIf="idx === 0 && selectedIndex === 0" [ngTemplateOutlet]="instruction"
+          <ng-container *ngIf="idx === 0 && selectedIndex === 0"
+            [ngTemplateOutlet]="instruction"
             [ngTemplateOutletContext]="quesParent">
           </ng-container>
           <ng-container *ngIf="idx !== 0 && selectedIndex === idx">
-            <mat-progress-bar mode="indeterminate" *ngIf="showQuestionProgressBar"></mat-progress-bar>
-            <mat-card style="background: #F7FBFE;border: none;" class="ws-mat-accent-border form-block"
-              [formGroupName]="idx">
-              <mat-card-title style="background: #F3F8FD !important;padding: 14px;" class="m-auto">
-                <!-- <input name="sectionName" type="text" readonly class="mat-title no-border" formControlName="name"> -->
-                <span *ngIf="questionData[idx].desc" tabindex="0" class="mat-title">{{questionData[idx].name}}</span>
-              </mat-card-title>
-              <!-- <input name="sectionDescription" type="text" readonly class="mat-body-1 no-border" formControlName="desc"> -->
-              <!-- <span *ngIf="questionData[idx].desc" tabindex="0" class="mat-body-1">{{questionData[idx].desc}}</span> -->
-              <mat-card-content class="margin-top-m mobile-break mat-app-background question-block">
-                <ng-container *ngIf="qualityForm.get('questionsArray').controls
-                  && qualityForm.get('questionsArray').controls[idx]
-                  && qualityForm.get('questionsArray').controls[idx].get('ques')" formArrayName="ques">
+            <div class="cq-progress-bar" *ngIf="showQuestionProgressBar">
+              <div class="cq-progress-fill"></div>
+            </div>
+            <div class="cq-question-card" [formGroupName]="idx">
+              <div class="cq-section-header" *ngIf="questionData[idx].desc">
+                <span class="cq-section-title">{{ questionData[idx].name }}</span>
+              </div>
+              <div class="cq-question-body">
+                <ng-container
+                  *ngIf="qualityForm.get('questionsArray').controls
+                    && qualityForm.get('questionsArray').controls[idx]
+                    && qualityForm.get('questionsArray').controls[idx].get('ques')"
+                  formArrayName="ques">
                   <ng-container
                     *ngFor="let question of qualityForm.get('questionsArray').controls[idx].get('ques').controls; let qIdx = index"
                     [formGroupName]="qIdx">
-                    <div class="flex flex-1 flex-column" *ngIf="selectedQIndex === qIdx">
-                      <div class="flex flex-1">
-                        <span class="mat-subheading-1 width-100 padding-left-14" tabindex="0">
-                          {{questionData[idx].questions[qIdx].question}}
-                        </span>
+                    <div class="cq-question-item" *ngIf="selectedQIndex === qIdx">
+                      <p class="cq-question-text">{{ questionData[idx].questions[qIdx].question }}</p>
+                      <div class="cq-radio-group">
+                        <label *ngFor="let _option of questionData[idx].questions[qIdx].options"
+                          class="cq-radio-label">
+                          <input type="radio"
+                            class="cq-radio-input"
+                            formControlName="options"
+                            [value]="_option.weight">
+                          <span class="cq-radio-text">{{ _option.name }}</span>
+                        </label>
                       </div>
-                      <div class="flex flex-column">
-                        <mat-radio-group form [name]="'group-' + question.position" class="flex tgl-group margin-top-s"
-                          aria-label="Select an option" formControlName="options">
-                          <mat-radio-button [name]="'radio-' + _option.name"
-                            class="flex flex-row itm-center ws-mat-accent-border margin-right-s radio-btn-bg"
-                            *ngFor="let _option of questionData[idx].questions[qIdx].options" [value]="_option.weight">
-                            <span class="mat-body-2">{{_option.name}}</span>
-                          </mat-radio-button>
-                        </mat-radio-group>
+                      <div class="cq-comment-wrap">
+                        <textarea
+                          formControlName="comment"
+                          class="cq-comment"
+                          i18n-placeholder
+                          placeholder="Provide Comment..."
+                          rows="4"></textarea>
+                        <span class="cq-help-text" i18n>Explain the creator why your response was no to this checklist</span>
                       </div>
-                      <div class="flex flex-column">
-                        <textarea formControlName="comment" [name]="'comment-' + question.comment"
-                          class="flex flex-row itm-center ws-mat-accent-border comment-text" matInput i18n-placeholder
-                          placeholder="Provide Comment..." [value]="questionData[idx].questions[qIdx].comment"
-                          rows="5"></textarea>
-                        <span class="help-text">Explain the creator why your response was no to this checklist</span>
-                      </div>
-                      <!-- <div class="flex flex-column">
-                        <mat-input formControlName="comment" [name]="'comment-' + question.comment"
-                          class="flex flex-row itm-center ws-mat-accent-border margin-right-s radio-btn-bg"
-                          [value]="questionData[idx].questions[qIdx].comment">
-                      </div> -->
                     </div>
                   </ng-container>
                 </ng-container>
-              </mat-card-content>
-              <mat-card-actions>
-                <div *ngIf="!showParentLoader" class="flex flex-start margin-top-l margin-bottom-s margin-left-s">
-                  <button mat-raised-button type="button"
-                    class="btn-n ws-mat-accent-text ws-mat-accent-border-active margin-left-s previousQ-btn"
-                    (click)="previousQ()">
-                    <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Previous
-                    </span>
-                  </button>
-                  <button *ngIf="!lastQ" mat-raised-button type="button"
-                    class="btn-n text-white margin-left-s nextQ-btn" (click)="nextQ()">
-                    <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Next
-                    </span>
-                  </button>
-
-
-                  <button *ngIf="lastQ" mat-raised-button type="submit"
-                    class="btn-n text-white margin-left-s submit-btn">
-                    <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Get Score
-                    </span>
-                  </button>
+              </div>
+              <div class="cq-actions">
+                <div *ngIf="!showParentLoader" class="cq-btn-row">
+                  <button type="button" class="cq-btn cq-btn--outline" (click)="previousQ()" i18n>Previous</button>
+                  <button *ngIf="!lastQ" type="button" class="cq-btn cq-btn--primary" (click)="nextQ()" i18n>Next</button>
+                  <button *ngIf="lastQ" type="submit" class="cq-btn cq-btn--primary" i18n>Get Score</button>
                 </div>
-                <div *ngIf="!showParentLoader" class="flex flex-start margin-top-l margin-bottom-s margin-left-s">
-                  <ng-container [ngTemplateOutlet]="count">
-                  </ng-container>
+                <div *ngIf="!showParentLoader">
+                  <ng-container [ngTemplateOutlet]="count"></ng-container>
                 </div>
-                <div *ngIf="showParentLoader" class="text-center my-2">
-                  <mat-spinner class="inline-block"></mat-spinner>
+                <div *ngIf="showParentLoader" class="cq-loader">
+                  <div class="cq-spinner"></div>
                 </div>
-              </mat-card-actions>
-            </mat-card>
+              </div>
+            </div>
           </ng-container>
         </ng-container>
       </ng-container>
-      <ng-container *ngIf="displayResult" [ngTemplateOutlet]="result">
-      </ng-container>
+      <ng-container *ngIf="displayResult" [ngTemplateOutlet]="result"></ng-container>
     </form>
   </mat-sidenav-content>
 </mat-sidenav-container>
 
 <ng-template #instruction let-name="name">
-  <mat-card class="ws-mat-accent-border form-block">
-    <mat-card-title class="m-auto" style="background: #F3F8FD !important;
-    padding: 14px;">
-      <span class="mat-title">{{name || 'Instructions'}}</span>
-    </mat-card-title>
-    <mat-card-content style="padding: 14px;" class="margin-top-m mobile-break">
-      <span class="mat-body-1">All courses on the Aastrika platform will be scored on six categories:
-        {{fieldsToDisplay}}.
+  <div class="cq-instruction-card">
+    <div class="cq-section-header">
+      <span class="cq-section-title">{{ name || 'Instructions' }}</span>
+    </div>
+    <div class="cq-instruction-body">
+      <p class="cq-body-text" i18n>All courses on the Aastrika platform will be scored on six categories:
+        {{ fieldsToDisplay }}.
         Please mark your answers from the drop-down menu across the provided range: Yes, No
         (and Not Applicable for certain questions). Once you have completed the questionnaire, please
-        click on submit button.</span>
-      <div class="flex flex-column new-color padding-s" style="margin-top: 5px;">
-        <span class="mat-body-1">
+        click on submit button.</p>
+      <div class="cq-note-box">
+        <p class="cq-body-text" i18n>
           Note: We trust you to complete the content quality assessment honestly. The content you submit for review will
-          go
-          through another round of quality assessment by experts. Any disparity found might lead to reduction in your
+          go through another round of quality assessment by experts. Any disparity found might lead to reduction in your
           trust score.
-        </span>
-        <!-- <a class="ws-mat-default-text" href="#">Read more about trust score</a> -->
+        </p>
       </div>
-    </mat-card-content>
-    <mat-card-actions style="padding: 14px;">
-      <div class="flex flex-start margin-top-l margin-bottom-s margin-left-s">
-        <button mat-raised-button type="button" (click)="start()" class="text-white start-review-btn">
-          <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Start Review Cheklist
-          </span>
-        </button>
-        <button mat-raised-button type="button" (click)="data.emit('push')" class="skip-btn">
-          <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Skip
-          </span>
-        </button>
+    </div>
+    <div class="cq-actions">
+      <div class="cq-btn-row">
+        <button type="button" class="cq-btn cq-btn--primary" (click)="start()" i18n>Start Review Checklist</button>
+        <button type="button" class="cq-btn cq-btn--outline" (click)="data.emit('push')" i18n>Skip</button>
       </div>
-    </mat-card-actions>
-  </mat-card>
+    </div>
+  </div>
 </ng-template>
 
-<ng-template #count let-data="data">
-  <div class="flex flex-1 flex-center flex-wrap">
-    <ng-container *ngFor="let d of getCurrentQuestions; let indx=index">
-      <ng-container *ngIf="!isAnswered(indx)">
-        <div class="flex  pag showCursor number-bg" [ngClass]="{
-        'ws-mat-black040-background' : indx!=selectedQIndex,
-        'active-page' : indx==selectedQIndex
-       }" (click)="questionNumberClick(indx)">
-          <span class="mat-subheading-2 mar-b-0">
-            {{indx+1}}
-          </span>
-        </div>
-      </ng-container>
-      <ng-container *ngIf="isAnswered(indx)">
-        <div class="flex  pag showCursor"
-          [ngClass]="{'ws-mat-black040-background' : indx!=selectedQIndex,'active-page' : indx==selectedQIndex}"
-          (click)="questionNumberClick(indx)">
-          <span class="completed-page">
-            <mat-icon class="ws-mat-accent-text check_circle-bg">check_circle</mat-icon>
-          </span>
-        </div>
-      </ng-container>
-
+<ng-template #count>
+  <div class="cq-pagination">
+    <ng-container *ngFor="let d of getCurrentQuestions; let indx = index">
+      <button type="button"
+        class="cq-page-dot"
+        [class.cq-page-dot--active]="indx === selectedQIndex"
+        [class.cq-page-dot--answered]="isAnswered(indx)"
+        (click)="questionNumberClick(indx)">
+        <span *ngIf="!isAnswered(indx)">{{ indx + 1 }}</span>
+        <span *ngIf="isAnswered(indx)" class="material-icons cq-check-icon">check_circle</span>
+      </button>
     </ng-container>
-
   </div>
 </ng-template>
 
 <ng-template #result>
-  <mat-card class="result-container">
-    <!-- {{qualityResponse | json}} -->
-    <!-- <mat-card-title class="margin-left-s">
-      <span class="mat-title text-dark result-txt" id="content-result">Result:</span>
-      <span *ngIf="minPassPercentage<=getQualityPercent && qualityResponse.qualifiedMinCriteria"
-        class="mat-title green-txt result-txt" id="content-result"> Qualified</span>
-      <span *ngIf="minPassPercentage>=getQualityPercent && !qualityResponse.qualifiedMinCriteria"
-        class="mat-title text-danger result-txt" id="content-result"> Failed</span>
-
-    </mat-card-title> -->
-    <mat-card-content class="margin-top-xs mobile-break">
-      <!-- {{qualityResponse | json}} -->
-      <!-- <span class="mat-subtitle" id="content-result" *ngIf="!qualityResponse.qualifiedMinCriteria">
-        {{qualityResponse.statusOnMinCriteria}}
-      </span> -->
-      <span class="mat-subtitle margin-top-s margin-left-s score-txt" id="content-result ">
-        The score is: </span>
-
-      <!-- <span class="mat-subtitle" id="content-result" *ngIf="qualityResponse.scoreGrade">
-        {{qualityResponse.scoreGrade}}
-      </span> -->
-      <div class="flex flex-1 flex-column">
-        <div class="flex flex-1">
-          <span class="mat-title margin-top-s percentage-text margin-left-s" [ngClass]="{
-  'green': getQualityPercent > 70,
-  'orange': getQualityPercent > 30 && getQualityPercent <= 70,
-  'red': getQualityPercent <= 30
-}">{{getQualityPercent}}%</span>
-        </div>
-        <!-- <div class=" flex flex-075">
-          <mat-progress-bar class="margin-bottom-m quality-progress" aria-labelledby="content-result" mode="determinate"
-            [value]="getQualityPercent">
-          </mat-progress-bar>
-        </div> -->
-        <!-- <div class="flex flex-1">
-          <button mat-button type="button" class="download-btn margin-top-s margin-bottom-s margin-left-s"
-            (click)="download()">
-            <img class="download-icon" src=".\cbp-assets\icons\material-symbols_download.svg" />
-            <span class="mat-subheading-2 padding-xs download-txt" style="vertical-align: unset;" i18n>
-              Download Report
-            </span>
-          </button>
-        </div> -->
-        <!-- <div class="flex flex-1 margin-top-m flex-column">
-          <ng-container *ngIf="isResultExpend">
-            <ng-container *ngFor="let modell of qualityResponse.criteriaModels; let idx = index">
-              <ng-container [ngTemplateOutlet]="resultReport" [ngTemplateOutletContext]="{idx:idx}">
-              </ng-container>
-            </ng-container>
-          </ng-container>
-          <div class="flex flex-1 flex-center ws-mat-background-04 ws-mat-accent-text cursor-pointer"
-            (click)="showHideResult()">
-            <span class="flex mat-subheading-2 see-repo"> {{!isResultExpend?'See full report':'Collapse'}}
-              <mat-icon *ngIf="!isResultExpend" class="ws-mat-accent-text">expand_more</mat-icon>
-              <mat-icon *ngIf="isResultExpend" class="ws-mat-accent-text">expand_less</mat-icon>
-            </span>
-          </div>
-        </div> -->
-      </div>
-    </mat-card-content>
-    <div class="flex flex-start margin-top-l margin-bottom-s">
-      <button type="button" (click)="takeAgain()"
-        class="ws-mat-accent-text ws-mat-accent-border-active margin-left-s retake-btn">
-        <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Review Again
-        </span>
-      </button>
-      <!-- <button type="button"
-        (click)="minPassPercentage<=getQualityPercent && qualityResponse.qualifiedMinCriteria ? data.emit('push'): showMinDialogue()"
-        class="text-white margin-left-s finish-review-btn">
-        <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Finish Review
-        </span>
-      </button> -->
-      <button type="button" (click)="data.emit('push')" class="text-white margin-left-s finish-review-btn">
-        <span class="mat-subheading-2 padding-xs" style="vertical-align: unset;" i18n>Finish Review
-        </span>
-      </button>
+  <div class="cq-result-card">
+    <p class="cq-score-label" i18n>The score is:</p>
+    <p class="cq-score-value" [ngClass]="{
+      'cq-score--high': getQualityPercent > 70,
+      'cq-score--mid':  getQualityPercent > 30 && getQualityPercent <= 70,
+      'cq-score--low':  getQualityPercent <= 30
+    }">{{ getQualityPercent }}%</p>
+    <div class="cq-result-actions">
+      <button type="button" class="cq-btn cq-btn--outline" (click)="takeAgain()" i18n>Review Again</button>
+      <button type="button" class="cq-btn cq-btn--primary" (click)="data.emit('push')" i18n>Finish Review</button>
     </div>
-  </mat-card>
-
+  </div>
 </ng-template>
 
 <ng-template #resultReport let-idx="idx">
-  <mat-table [dataSource]="getTableData(idx)" class="table margin-bottom-l">
-    <!-- Position Column -->
-    <ng-container matColumnDef="name">
-      <mat-header-cell *matHeaderCellDef class="desc-text"> <span
-          class="mat-subheading-2 mar-b-0">{{getFirstHeadingName(idx)}}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element" class="desc-text padding-m"> <span
-          class="mat-body-2">{{element.description}}</span>
-      </mat-cell>
-    </ng-container>
-
-    <!-- Name Column -->
-    <ng-container matColumnDef="response">
-      <mat-header-cell *matHeaderCellDef class="width-200"> <span class="mat-subheading-2 mar-b-0">Response</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element" class="width-200"> <span class="mat-body-2">{{element.evaluated}}</span>
-      </mat-cell>
-    </ng-container>
-
-    <!-- Weight Column -->
-    <ng-container matColumnDef="score">
-      <mat-header-cell *matHeaderCellDef class="width-200"> <span class="mat-subheading-2 mar-b-0">Score</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element" class="width-200"> <span class="mat-body-2">{{element.scoreValue}}</span>
-      </mat-cell>
-    </ng-container>
-
-    <!-- Symbol Column -->
-    <ng-container matColumnDef="help">
-      <mat-header-cell *matHeaderCellDef class="width-200"> <span class="mat-subheading-2 mar-b-0">Help</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let element" class="width-200"> <span class="mat-body-2">{{element.help}}</span>
-      </mat-cell>
-    </ng-container>
-
-    <mat-header-row *matHeaderRowDef="displayedColumns" class="ws-mat-background-04"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-  </mat-table>
-  <div class="flex flex-1 flex-end margin-bottom-l">
-    <span class="mat-subheading-1">Result : </span>
-    <span *ngIf="checkUnQualidied(idx)" class="mat-subheading-1 green">
-      {{checkUnQualidied(idx)? ' Qualified': ' Not Qualified'}}
-    </span>
-    <span *ngIf="!checkUnQualidied(idx)" class="mat-subheading-1 warn">
-      {{checkUnQualidied(idx)? ' Qualified': ' Not Qualified'}}
-    </span>
+  <div class="cq-report-wrap">
+    <table class="cq-report-table">
+      <thead>
+        <tr>
+          <th class="cq-th cq-th--wide">{{ getFirstHeadingName(idx) }}</th>
+          <th class="cq-th" i18n>Response</th>
+          <th class="cq-th" i18n>Score</th>
+          <th class="cq-th" i18n>Help</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let element of getTableData(idx)" class="cq-tr">
+          <td class="cq-td cq-td--wide">{{ element.description }}</td>
+          <td class="cq-td">{{ element.evaluated }}</td>
+          <td class="cq-td">{{ element.scoreValue }}</td>
+          <td class="cq-td">{{ element.help }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="cq-report-footer">
+      <span i18n>Result:</span>
+      <span [class.cq-score--high]="checkUnQualidied(idx)" [class.cq-score--low]="!checkUnQualidied(idx)">
+        {{ checkUnQualidied(idx) ? ' Qualified' : ' Not Qualified' }}
+      </span>
+    </div>
   </div>
 </ng-template>
