@@ -49,7 +49,7 @@
   </button>
 </div> -->
 <div class="cc-page-wrap" *ngIf="!error">
-  <ws-progress-stepper [steps]="steps" [header]="header"></ws-progress-stepper>
+  <ws-progress-stepper [steps]="steps" [header]="header" (onNext)="onNext()"></ws-progress-stepper>
   <div class="cc-content-area">
     <ws-author-create-course [content]="content"></ws-author-create-course>
   </div>

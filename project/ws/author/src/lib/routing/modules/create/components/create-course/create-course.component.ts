@@ -684,6 +684,27 @@ export class CreateCourseComponent implements OnInit {
     this.courseData = form.value
     this.contentClicked()
   }
+
+  /**
+   * Invoked by the parent stepper's "Next" button (via @ViewChild).
+   * Validates the course form + IPR acceptance before submitting.
+   * Self-assessment is submitted from its competency dropdown, so it is a no-op here.
+   */
+  triggerNext() {
+    if (this.isSelfAssessment) {
+      return
+    }
+    if (this.createCourseForm.invalid || !this.iprAccepted) {
+      this.createCourseForm.markAllAsTouched()
+      this.snackBar.open(
+        'Please enter the course name and description, and accept the IPR Declaration to continue.',
+        'OK',
+        { duration: NOTIFICATION_TIME * 1000 },
+      )
+      return
+    }
+    this.onSubmit(this.createCourseForm)
+  }
   createSelfAssessment(form: any) {
     this.courseData = form.value
     this.createSelfAssessmentCourse()

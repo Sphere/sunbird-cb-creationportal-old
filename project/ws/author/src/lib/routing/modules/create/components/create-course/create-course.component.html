@@ -65,22 +65,6 @@
       </div>
     </div>
 
-    <!-- ── Fixed Bottom Action Bar ────────────────────────────────────── -->
-    <div class="cc-action-bar">
-      <div class="cc-action-left">
-        <a [routerLink]="['/author/cbp']" mat-button class="cc-btn-cancel" type="button">
-          Cancel
-        </a>
-      </div>
-      <div class="cc-action-right">
-        <button mat-flat-button class="cc-btn-continue" type="button"
-          [disabled]="createCourseForm?.invalid || !iprAccepted"
-          (click)="onSubmit(createCourseForm, 'createCourseForm')">
-          Continue <mat-icon>arrow_forward</mat-icon>
-        </button>
-      </div>
-    </div>
-
   </form>
 </div><!-- /cc-page -->
 

@@ -52,7 +52,7 @@
 // ── Page Container ────────────────────────────────────────────────────────
 // Matches em-page from edit-meta exactly
 .cc-page {
-  padding: 20px 32px 80px;
+  padding: 20px 32px 24px;
   background: #F8FAFC;
   min-height: calc(100vh - 160px);
   font-family: Roboto, sans-serif;
@@ -175,74 +175,9 @@
   &:hover { color: #154F81; }
 }
 
-// ── Fixed Bottom Action Bar ───────────────────────────────────────────────
-// Exact match to em-action-bar from edit-meta
-.cc-action-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 200;
-  background: #FFFFFF;
-  border-top: 1px solid #E2E8F0;
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
-  padding: 10px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.cc-action-left,
-.cc-action-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.cc-btn-cancel {
-  font-size: 13px !important;
-  font-family: Roboto, sans-serif !important;
-  font-weight: 500 !important;
-  color: #64748B !important;
-  height: 38px !important;
-  border-radius: 8px !important;
-  padding: 0 14px !important;
-
-  &:hover { background: #F1F5F9 !important; color: #334155 !important; }
-}
-.cc-btn-continue {
-  font-size: 14px !important;
-  font-family: Roboto, sans-serif !important;
-  font-weight: 600 !important;
-  height: 38px !important;
-  border-radius: 8px !important;
-  background: #1C5D95 !important;
-  color: #FFFFFF !important;
-  padding: 0 20px !important;
-  letter-spacing: 0.2px;
-  transition: background 0.2s, box-shadow 0.2s !important;
-
-  mat-icon {
-    font-size: 17px;
-    width: 17px;
-    height: 17px;
-    margin-left: 6px;
-  }
-
-  &:hover:not([disabled]) {
-    background: #154F81 !important;
-    box-shadow: 0 4px 12px rgba(28, 93, 149, 0.35) !important;
-  }
-  &[disabled] {
-    background: #E2E8F0 !important;
-    color: #94A3B8 !important;
-    box-shadow: none !important;
-  }
-}
-
 // ── Responsive ────────────────────────────────────────────────────────────
 @media (max-width: 600px) {
-  .cc-page { padding: 16px 16px 88px; }
-  .cc-action-bar { padding: 8px 16px; }
-  .cc-action-right { gap: 8px; }
+  .cc-page { padding: 16px 16px 24px; }
 }
 
 // ── Self Assessment ───────────────────────────────────────────────────────

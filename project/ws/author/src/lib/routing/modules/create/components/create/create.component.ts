@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core'
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
 
 import { MatDialog } from '@angular/material/dialog'
 
@@ -31,6 +31,8 @@ import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/const
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms'
 
 import { ActivatedRoute } from '@angular/router'
+
+import { CreateCourseComponent } from '../create-course/create-course.component'
 
 
 @Component({
@@ -67,6 +69,7 @@ export class CreateComponent implements OnInit, OnDestroy {
     { label: '4. Course Settings', activeStep: false, completed: false }
   ];
   header: any = 'Course Details'
+  @ViewChild(CreateCourseComponent) createCourseCmp?: CreateCourseComponent
   constructor(
     private snackBar: MatSnackBar,
     private svc: CreateService,
@@ -137,6 +140,13 @@ export class CreateComponent implements OnInit, OnDestroy {
   createBtn() {
     // this.router.navigateByUrl('/author/create')
     location.href = '/author/create'
+  }
+
+  /** Triggered by the progress-stepper "Next" button. Delegates to the course form. */
+  onNext() {
+    if (this.createCourseCmp) {
+      this.createCourseCmp.triggerNext()
+    }
   }
   ngOnDestroy() {
     this.loaderService.changeLoad.next(false)
