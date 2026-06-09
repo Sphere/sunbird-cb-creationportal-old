@@ -34,7 +34,9 @@ Build scripts use kebab-case `--base-href=/` only.
 
 ## Trap 3 — output path must be `dist/www/en` (the `/en` is required)
 
-The deploy is an **Express** server (`dist/server.js`, via `npm run serve:prod`), **not nginx**. It serves only from `dist/www/en/index.html`. The Angular 21 builder nests output under a `browser/` subfolder by default → root `404`.
+The deploy is an **Express** server, **not nginx**. It serves only from `dist/www/en/index.html`. The Angular 21 builder nests output under a `browser/` subfolder by default → root `404`.
+
+> The `serve:prod` script lives in the **committed `dist/package.json`** (not the root one) — `serve:prod` runs `node index.js`, which clusters `dist/server.js` (the Express app). The Dockerfile does `WORKDIR /app/dist` then `npm run serve:prod`, so `dist/` is the active package at runtime. Don't look for `serve:prod` in the root `package.json` — it isn't there.
 
 Correct `angular.json` setting:
 

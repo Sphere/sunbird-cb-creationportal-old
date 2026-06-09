@@ -10,7 +10,7 @@ HTTP calls live in `@Injectable` services that return typed `Observable<T>`. End
 ## Conventions at a glance
 
 - **`@Injectable({ providedIn: 'root' })`** on every service.
-- **Constructor injection** is the prevailing pattern in this codebase (not `inject()`). Match the surrounding files.
+- **Use `inject()` for new code** — it's the Angular 21 best practice (CLAUDE.md §3) and the `@angular-eslint/prefer-inject` lint rule nudges toward it. Most *existing* services still use constructor injection; when editing one of those, match its style, but write **new** services with `inject()`.
 - Methods return **`Observable<T>`** with the generic passed to the HTTP method (`this.http.get<T>(...)`).
 - Endpoint URLs go in a **constants file**, composed from base prefixes.
 - New Sunbird API calls go through the **`/apis/proxies/v8/`** prefix unless hitting a microservice directly.
@@ -52,7 +52,7 @@ export interface IMyResource {
 ### 3. Add the service method
 
 ```typescript
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -61,7 +61,7 @@ import { MY_NEW_ENDPOINT } from '../constants/apiEndpoints'
 
 @Injectable({ providedIn: 'root' })
 export class MyResourceService {
-  constructor(private http: HttpClient) { }
+  private http = inject(HttpClient)
 
   getResource(id: string): Observable<IMyResource> {
     return this.http.get<IMyResource>(`${MY_NEW_ENDPOINT}/${id}`)
@@ -81,7 +81,7 @@ export class MyResourceService {
 
 ### 4. Consume it
 
-Inject the service via the constructor in the component/resolver and subscribe (or use the `async` pipe). For route-prefetched data, wrap the call in a resolver service (`@Injectable()` with a `resolve()` returning the `Observable`) and reference it in the route's `resolve: {}`.
+Inject the service (`inject()` in new code) in the component/resolver and subscribe (or use the `async` pipe). For route-prefetched data, wrap the call in a resolver service (`@Injectable()` with a `resolve()` returning the `Observable`) and reference it in the route's `resolve: {}`.
 
 ## Auth / headers — already handled
 
@@ -97,7 +97,7 @@ Inject the service via the constructor in the component/resolver and subscribe (
 
 ## Checklist before done
 
-- [ ] `@Injectable({ providedIn: 'root' })`, constructor injection of `HttpClient`
+- [ ] `@Injectable({ providedIn: 'root' })`; `inject(HttpClient)` for new services (match constructor style only when editing existing constructor-based files)
 - [ ] Endpoint is a named constant composed from a base prefix (`/apis/proxies/v8/` for Sunbird APIs)
 - [ ] Method returns `Observable<T>` with the generic on the HTTP call
 - [ ] Response typed via a model/interface
