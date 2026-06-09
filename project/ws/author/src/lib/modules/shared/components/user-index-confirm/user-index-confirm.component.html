@@ -1,9 +1,7 @@
 <mat-dialog-content class="txt-block">
-  <span class="course-live">
-    {{data.message}}
-  </span>
+  <span class="course-live">{{data.message}}</span>
 </mat-dialog-content>
 <div mat-dialog-actions class="button-block">
-  <button class="buttonColor yesButtonColor" mat-raised-button (click)="onCancel('New')" cdkFocusInitial>Yes</button>
-  <button class="buttonColor noButtonColor" mat-raised-button (click)="onCancel('current')">No</button>
+  <button class="noButtonColor" mat-stroked-button (click)="onCancel('current')">No</button>
+  <button class="yesButtonColor" mat-raised-button (click)="onCancel('New')" cdkFocusInitial>Yes</button>
 </div>

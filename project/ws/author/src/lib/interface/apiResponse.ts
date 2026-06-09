@@ -1,5 +1,6 @@
 import { NSContent } from './content'
 
+
 export namespace NSApiResponse {
 
   export interface IFileApiResponse {

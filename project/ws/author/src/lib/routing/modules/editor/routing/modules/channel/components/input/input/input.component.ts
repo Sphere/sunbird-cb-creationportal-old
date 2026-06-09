@@ -1,16 +1,27 @@
 import { Component, Inject, OnInit } from '@angular/core'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+
 import { AUTHORING_CONTENT_BASE, CONTENT_BASE_WEBHOST_ASSETS } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { UploadService } from '@ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { FILE_MAX_SIZE } from './../../../../../../../../../constants/upload'
+
 import { IWidgetAuthor } from './../../../interface/widget'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-input',
   templateUrl: './input.component.html',
   styleUrls: ['./input.component.scss'],

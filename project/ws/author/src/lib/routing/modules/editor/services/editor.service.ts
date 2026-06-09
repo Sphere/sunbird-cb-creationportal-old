@@ -1,8 +1,12 @@
 
 import { HttpClient } from '@angular/common/http'
+
 import { Injectable } from '@angular/core'
+
 import { NsAutoComplete, UserAutocompleteService } from '@ws-widget/collection'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import {
   AUTHORING_CONTENT_BASE,
   CONTENT_BASE_COPY,
@@ -22,17 +26,29 @@ import {
   REJECT_CONTENT,
   EMAIL_NOTIFICATION,
 } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { NSApiResponse } from '@ws/author/src/lib/interface//apiResponse'
+
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
+
 import { EMPTY, Observable, of } from 'rxjs'
+
 import { map, mergeMap, catchError, share, retry } from 'rxjs/operators'
+
 import { CONTENT_READ_MULTIPLE_HIERARCHY } from './../../../../constants/apiEndpoints'
+
 import { ISearchContent, ISearchResult } from '../../../../interface/search'
+
 import { environment } from '../../../../../../../../../src/environments/environment'
+
 // import { HttpHeaders } from '@angular/common/http'
+
 
 @Injectable({ providedIn: 'root' })
 export class EditorService {
@@ -621,6 +637,28 @@ export class EditorService {
     ).pipe(
       map((data: any) => {
         return data.roles
+      })
+    )
+  }
+  sourceNames(): Observable<any> {
+    const cacheBuster = new Date().getTime()
+    return this.apiService.get<any>(
+      `https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json?v=${cacheBuster}`
+    ).pipe(
+      map((data: any) => {
+        console.log("response sourceNames", data)
+        return data.sourceName
+      })
+    )
+  }
+  languageList(): Observable<any> {
+    const cacheBuster = new Date().getTime()
+    return this.apiService.get<any>(
+      `https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json?v=${cacheBuster}`
+    ).pipe(
+      map((data: any) => {
+        console.log("response languageList", data)
+        return data.languageList
       })
     )
   }

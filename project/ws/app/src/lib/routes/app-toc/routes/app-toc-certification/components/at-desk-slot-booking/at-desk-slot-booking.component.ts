@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core'
+
 import {
   FormGroup,
   FormControl,
@@ -6,12 +7,17 @@ import {
   AbstractControl,
   ValidationErrors,
 } from '@angular/forms'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable, of, timer, throwError, noop, Subscription } from 'rxjs'
+
 import { finalize, startWith, map, switchMap, catchError } from 'rxjs/operators'
 
+
 import { NsContent } from '@ws-widget/collection'
+
 import { TFetchStatus, TSendStatus } from '@ws-widget/utils'
+
 
 import {
   ICertificationMeta,
@@ -22,12 +28,18 @@ import {
   ICertificationDate,
   ICertificationUserPrivileges,
 } from '../../models/certification.model'
+
 import { CertificationApiService } from '../../apis/certification-api.service'
+
 import { CertificationService } from '../../services/certification.service'
+
 import { Router, ActivatedRoute } from '@angular/router'
+
 import { SnackbarComponent } from '../snackbar/snackbar.component'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-at-desk-slot-booking',
   templateUrl: './at-desk-slot-booking.component.html',
   styleUrls: ['./at-desk-slot-booking.component.scss'],
@@ -220,7 +232,7 @@ export class AtDeskSlotBookingComponent implements OnInit, OnDestroy {
       map(() => control.value),
       switchMap((value: string) => {
         if (!value) {
-          return throwError({ invalidEmail: true })
+          return throwError(() => { invalidEmail: true })
         }
 
         const trimmedEmail = value.split('@')[0]

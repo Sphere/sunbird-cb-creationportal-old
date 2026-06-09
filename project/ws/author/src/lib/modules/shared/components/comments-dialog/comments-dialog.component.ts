@@ -1,19 +1,33 @@
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core'
+
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms'
+
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { Router } from '@angular/router'
+
 import { ContentQualityService } from '../../../../../../../author/src/lib/routing/modules/editor/shared/services/content-quality.service'
+
 import { NSIQuality } from '../../../../../../../author/src/lib/routing/modules/editor/interface/content-quality'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import {
   ContentProgressService,
 } from '@ws-widget/collection'
+
 import moment from 'moment'
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-comments-dialog',
   templateUrl: './comments-dialog.component.html',
   styleUrls: ['./comments-dialog.component.scss'],

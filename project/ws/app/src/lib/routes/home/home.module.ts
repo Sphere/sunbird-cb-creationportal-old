@@ -1,32 +1,46 @@
-import { NgModule } from '@angular/core'
+﻿import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { PipeFilterModule, PipeHtmlTagRemovalModule, PipeOrderByModule, PipeRelativeTimeModule } from '@ws-widget/utils'
+
 import { MatGridListModule } from '@angular/material/grid-list'
+
 import { MatExpansionModule } from '@angular/material/expansion'
+
 import { MatDividerModule } from '@angular/material/divider'
+
 import { WidgetResolverModule } from '@ws-widget/resolver'
-import {
-  MatIconModule,
-  MatListModule,
-  MatFormFieldModule,
-  MatDialogModule,
-  MatSelectModule,
-  MatInputModule,
-  MatButtonModule,
-  MatSidenavModule,
-  MatChipsModule,
-  MatProgressSpinnerModule,
-  MatProgressBarModule,
-} from '@angular/material'
+
+import { MatIconModule } from '@angular/material/icon'
+import { MatListModule } from '@angular/material/list'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatDialogModule } from '@angular/material/dialog'
+import { MatSelectModule } from '@angular/material/select'
+import { MatInputModule } from '@angular/material/input'
+import { MatButtonModule } from '@angular/material/button'
+import { MatSidenavModule } from '@angular/material/sidenav'
+import { MatChipsModule } from '@angular/material/chips'
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatCardModule } from '@angular/material/card'
+
 import { ReactiveFormsModule, FormsModule } from '@angular/forms'
+
 import { InitResolver } from './resolvers/init-resolve.service'
+
 import { RouterModule } from '@angular/router'
+
 import { HomeRoutingModule } from './home.rounting.module'
+
 import { HomeComponent } from './routes/home/home.component'
+
 import { UsersViewComponent } from './routes/users-view/users-view.component'
+
 import { AvatarPhotoModule, BtnPageBackModule, LeftMenuModule, UITableModule } from '@ws-widget/collection'
+
 import { AboutComponent } from './routes/about/about.component'
+
 
 @NgModule({
   declarations: [
@@ -69,8 +83,6 @@ import { AboutComponent } from './routes/about/about.component'
     PipeOrderByModule,
     BtnPageBackModule,
     WidgetResolverModule,
-  ],
-  entryComponents: [
   ],
   providers: [
     // CKEditorService,

@@ -1,21 +1,38 @@
 import { NotificationService } from '@ws/author/src/lib/services/notification.service'
+
 import { ErrorParserComponent } from './../error-parser/error-parser.component'
+
 import { Component, OnInit, Inject } from '@angular/core'
+
 import { FormGroup, FormBuilder, Validators } from '@angular/forms'
+
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+
 import { ISearchContent } from '@ws/author/src/lib/interface/search'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
+
 import { CONTENT_DELETE } from '../../../../constants/apiEndpoints'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { ValueService } from '@ws-widget/utils/src/public-api'
+
 import { mergeMap, catchError } from 'rxjs/operators'
+
 import { of } from 'rxjs'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-delete-dialog',
   templateUrl: './delete-dialog.component.html',
   styleUrls: ['./delete-dialog.component.scss'],

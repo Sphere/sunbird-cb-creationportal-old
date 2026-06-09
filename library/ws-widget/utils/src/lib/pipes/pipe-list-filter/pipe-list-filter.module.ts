@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { PipeListFilterPipe } from './pipe-list-filter.pipe'
+
 
 @NgModule({
   declarations: [PipeListFilterPipe],

@@ -1,17 +1,25 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { Subscription } from 'rxjs'
+
 import {
   NsContent,
   IWidgetsPlayerMediaData,
   NsDiscussionForum,
   WidgetContentService,
 } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ValueService } from '@ws-widget/utils'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { Platform } from '@angular/cdk/platform'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-youtube',
   templateUrl: './youtube.component.html',
   styleUrls: ['./youtube.component.scss'],

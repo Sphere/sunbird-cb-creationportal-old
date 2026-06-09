@@ -1,12 +1,16 @@
 import { Component, Input, OnDestroy, OnChanges, OnInit, ChangeDetectorRef } from '@angular/core'
+
 import { Subscription, timer } from 'rxjs'
+
 import { Router, ActivatedRoute } from '@angular/router'
+
 
 interface ITimer {
   hours: number
   mins: number
 }
 @Component({
+  standalone: false,
   selector: 'ws-app-event-banner',
   templateUrl: './event-banner.component.html',
   styleUrls: ['./event-banner.component.scss'],

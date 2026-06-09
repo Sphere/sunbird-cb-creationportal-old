@@ -1,6 +1,8 @@
 // tslint:disable:no-console
 import { Injectable } from '@angular/core'
+
 import { ConfigurationsService } from './configurations.service'
+
 
 type consoleFun = (...args: any) => void
 @Injectable({

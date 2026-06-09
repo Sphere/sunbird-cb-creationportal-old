@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core'
+
 import { Router, ActivatedRoute, UrlTree, UrlSegmentGroup, UrlSegment } from '@angular/router'
+
 import { IFeatureSearchConfig } from '../../models/search.model'
+
 import { ConfigurationsService, NsPage } from '@ws-widget/utils'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-search-root',
   templateUrl: './search-root.component.html',
   styleUrls: ['./search-root.component.scss'],

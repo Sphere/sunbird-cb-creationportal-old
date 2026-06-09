@@ -1,11 +1,18 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core'
+
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
+
 import { IBtnAppsConfig, CustomTourService } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ConfigurationsService, NsInstanceConfig, NsPage } from '@ws-widget/utils'
+
 import { Router, NavigationStart, NavigationEnd, Event } from '@angular/router'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-nav-bar',
   templateUrl: './app-nav-bar.component.html',
   styleUrls: ['./app-nav-bar.component.scss'],

@@ -17,17 +17,18 @@
           cursor: data.contentType === 'Knowledge Board'
         }" [routerLink]="(data | pipeContentRoute : true).url" [title]="data.name" aria-label="Content"
         i18n-aria-label="Content | Click to view">
-        <h3 class="ws-mat-primary-text mat-title text-truncate font-weight-bold">
+        <h3 class="card-title text-truncate">
           {{ data.name || 'Untitled Content' }}
         </h3>
       </a>
     </mat-card-content>
     <mat-card-actions>
-      <span class="course-status-text">{{ CourseStatusName | uppercase }}</span>
-      <!-- <span class="ws-mat-primary-text uppercase font-weight-500">{{ data.contentType }}</span> -->
-      <p class="mat-h5 margin-remove font-weight-bold">
-        {{ data.locale | uppercase }}
-      </p>
+      <span *ngIf="data.status && data.status !== 'Draft'"
+        class="course-status-text"
+        [ngClass]="getStatusClass()">
+        {{ CourseStatusName | uppercase }}
+      </span>
+      <span class="card-locale-badge">{{ data.locale | uppercase }}</span>
       <button *ngIf="
           !forExpiry &&
           !forDelete &&
@@ -54,7 +55,7 @@
 </div>
 
 <div class="d-flex" *ngIf="changeView">
-  <div class="item1">
+  <div class="item1" *ngIf="data.appIcon">
     <a [ngClass]="{
         pointer: data.contentType !== 'Knowledge Board',
         cursor: data.contentType === 'Knowledge Board'
@@ -64,7 +65,6 @@
           : (data | pipeContentRoute : true).url
       " [queryParamsHandling]="data.contentType === 'Knowledge Board' ? 'preserve' : ''">
       <img class="" role="link" [src]="data.appIcon" (error)="changeToDefaultImg($event)" [alt]="data.name" />
-      <!--<img class="" role="link" [src]="data.appIcon" (error)="changeToDefaultImg($event)" [alt]="data.name" /> -->
     </a>
   </div>
   <!--<div class="item1" *ngIf="pageName">
@@ -82,7 +82,9 @@
           cursor: data.contentType === 'Knowledge Board'
         }" [routerLink]="(data | pipeContentRoute : true).url" [title]="data.name" aria-label="Content"
         i18n-aria-label="Content | Click to view">
-        <span class="font-weight-500">{{ data.name || 'Untitled Content' }} </span>
+        <span class="font-weight-500 list-title-text">
+          {{ data.name || 'Untitled Content' }}
+        </span>
       </a>
     </div>
     <div *ngIf="pageName">
@@ -94,30 +96,37 @@
           ? ['/author/editor/' + data.identifier + '/collection']
           : (data | pipeContentRoute : true).url
       " [title]="data.name" aria-label="Content" i18n-aria-label="Content | Click to view">
-        <span class="font-weight-500">{{ data.name || 'Untitled Content' }} </span>
+        <span class="font-weight-500 list-title-text">{{ data.name || 'Untitled Content' }}</span>
       </a>
     </div>
-    <!-- <span class="ws-mat-primary-text uppercase font-weight-500">{{
-        data.description
-      }}</span> -->
-    <p class="fs-13 margin-remove flex items-center">
-      <!-- <span class="mr-1 max-width-name"> by {{ data.creatorContacts[0].name}}</span> -->
+    <div class="competency-row" *ngIf="addedCompetency?.length > 0">
+      <ng-container *ngFor="let comp of addedCompetency">
+        <span *ngIf="comp" class="competency-chip"
+          [matTooltip]="data.lang === 'hi' ? (comp.additionalProperties?.['lang-hi-name'] || comp.name || comp.competencyName) : (comp.name || comp.competencyName)"
+          matTooltipPosition="above">
+          {{ comp.Code }}<ng-container *ngIf="!data.competency && comp.level"> - {{ comp.level }}</ng-container>
+        </span>
+      </ng-container>
+    </div>
+    <p class="fs-13 margin-remove flex items-center flex-wrap">
+      <span *ngIf="data.status && data.status !== 'Draft'"
+        class="course-status-text list-status mr-2"
+        [ngClass]="getStatusClass()">
+        {{ CourseStatusName | uppercase }}
+      </span>
       <span class="mr-1 max-width-name"> by {{ data.creator }} </span>
       <span class="mr-1" *ngIf="data?.publishedOn"> on {{ data?.publishedOn | date }},</span>
       <span class="mr-1" *ngIf="!data?.publishedOn && data?.lastUpdatedOn">
         on {{ data?.lastUpdatedOn | date }},</span>
-
-      <span class="mr-1"> {{ data.viewCount }} Views, </span>
-      <span class="mr-1"> {{ data.uniqueUsersCount }} Learners </span>
-      <span class="flex items-center ml-3 mr-2">
+      <span class="mr-1" *ngIf="data.viewCount > 0"> {{ data.viewCount }} Views,</span>
+      <span class="mr-1" *ngIf="data.uniqueUsersCount > 0"> {{ data.uniqueUsersCount }} Learners</span>
+      <span *ngIf="data.totalRating" class="flex items-center ml-2 mr-2">
         <mat-icon class="mr-1" *ngIf="data.totalRating == 5" color="accent">star</mat-icon>
-        <mat-icon class="mr-1" *ngIf="data.totalRating && data.totalRating != 5" color="accent">
-          star_half</mat-icon>
-        <!-- <mat-icon class="mr-1" *ngIf="!data.totalRating">star_border</mat-icon> -->
+        <mat-icon class="mr-1" *ngIf="data.totalRating != 5" color="accent">star_half</mat-icon>
         {{ data.totalRating | number : '1.1-1' }}
       </span>
-      <span *ngIf="data.duration" class="flex items-center ml-3 mr-2">
-        <mat-icon>access_time</mat-icon> {{ data.duration | pipeDurationTransform : 'hms' }}
+      <span *ngIf="data.duration" class="flex items-center ml-2 mr-2">
+        <mat-icon class="duration-icon">access_time</mat-icon>{{ data.duration | pipeDurationTransform : 'hms' }}
       </span>
     </p>
   </div>
@@ -158,10 +167,10 @@
     <mat-icon>cloud_upload</mat-icon>
     <span i18n>Upload Certificate</span>
   </a>
-  <a *ngIf="showMenuItem('delete')" mat-menu-item (click)="takeAction('delete')">
+  <!-- <a *ngIf="showMenuItem('delete')" mat-menu-item (click)="takeAction('delete')">
     <mat-icon>delete</mat-icon>
     <span i18n>Delete </span>
-  </a>
+  </a> -->
   <a *ngIf="showMenuItem('publish')" mat-menu-item [routerLink]="(data | pipeContentRoute : true).url">
     <mat-icon>publish</mat-icon>
     <span i18n>Publish</span>
@@ -170,11 +179,11 @@
     <mat-icon>check_circle</mat-icon>
     <span i18n>Reviewer Checklist</span>
   </a>
-  <a *ngIf="showMenuItem('unpublish')" mat-menu-item (click)="takeAction('unpublish')">
-    <mat-icon>reply</mat-icon>
-    <!-- <span i18n>Unpublish content</span> -->
-    <span i18n>Retire content</span>
-  </a>
+  <!-- <a *ngIf="showMenuItem('unpublish')" mat-menu-item (click)="takeAction('unpublish')">
+    <mat-icon>reply</mat-icon> -->
+  <!-- <span i18n>Unpublish content</span> -->
+  <!-- <span i18n>Retire content</span>
+  </a> -->
   <a *ngIf="showMenuItem('review')" mat-menu-item [routerLink]="(data | pipeContentRoute : true).url">
     <mat-icon>rate_review</mat-icon>
     <span i18n>Review</span>

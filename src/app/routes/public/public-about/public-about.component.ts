@@ -1,13 +1,22 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout'
+
 import { DomSanitizer, SafeResourceUrl, SafeStyle } from '@angular/platform-browser'
+
 import { map } from 'rxjs/operators'
+
 import { ConfigurationsService, NsPage } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { IAboutObject } from './about.model'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-public-about',
   templateUrl: './public-about.component.html',
   styleUrls: ['./public-about.component.scss'],
@@ -44,12 +53,12 @@ export class PublicAboutComponent implements OnInit, OnDestroy {
     })
 
     if (this.configSvc.instanceConfig) {
-      (this.headerBanner = this.domSanitizer.bypassSecurityTrustStyle(
+      this.headerBanner = this.domSanitizer.bypassSecurityTrustStyle(
         `url('${this.configSvc.instanceConfig.logos.aboutHeader}')`,
-      )),
-        (this.footerBanner = this.domSanitizer.bypassSecurityTrustStyle(
-          `url('${this.configSvc.instanceConfig.logos.aboutFooter}')`,
-        ))
+      )
+      this.footerBanner = this.domSanitizer.bypassSecurityTrustStyle(
+        `url('${this.configSvc.instanceConfig.logos.aboutFooter}')`,
+      )
     }
   }
 

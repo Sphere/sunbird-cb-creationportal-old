@@ -1,10 +1,14 @@
 import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core'
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
-import { NSContent } from '@ws/author/src/lib/interface/content'
-import { ActivatedRoute, Router } from '@angular/router'
-import { MatDialog } from '@angular/material'
 
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+
+import { NSContent } from '@ws/author/src/lib/interface/content'
+
+import { ActivatedRoute, Router } from '@angular/router'
+
+import { MatDialog } from '@angular/material/dialog'
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-review-dialog',
   templateUrl: './review-dialog.component.html',
   styleUrls: ['./review-dialog.component.scss'],

@@ -1,9 +1,14 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core'
+
 import { WidgetBaseComponent, NsWidgetResolver } from '@ws-widget/resolver'
+
 import { IProfileCareer } from './profile-career.model'
+
 import moment from 'moment'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-profile-v2-career',
   templateUrl: './profile-career.component.html',
   styleUrls: ['./profile-career.component.scss'],

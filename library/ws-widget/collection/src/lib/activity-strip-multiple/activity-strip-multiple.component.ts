@@ -1,10 +1,17 @@
 import { Component, OnInit, Input, OnDestroy, HostBinding, ViewChild, TemplateRef } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { NsNetworkStripNewMultiple } from './activity-strip-multiple.model'
+
 import { ActivityStripNewMultipleService } from './activity-strip-multiple.service'
+
 import { WidgetContentService } from '../_services/widget-content.service'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import { saveAs } from 'file-saver'
+
 import {
   TFetchStatus,
   LoggerService,
@@ -12,10 +19,14 @@ import {
   // ConfigurationsService,
   UtilityService,
 } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 // import { filter } from 'rxjs/operators'
+
 // import { SearchServService } from '@ws/app/src/lib/routes/search/services/search-serv.service'
+
 
 interface IStripUnitContentData {
   key: string
@@ -38,6 +49,7 @@ interface IStripUnitContentData {
   } | null
 }
 @Component({
+  standalone: false,
   selector: 'ws-widget-activity-strip-multiple',
   templateUrl: './activity-strip-multiple.component.html',
   styleUrls: ['./activity-strip-multiple.component.scss'],

@@ -1,7 +1,10 @@
 import { Component, Input } from '@angular/core'
+
 import { NsContent } from '@ws-widget/collection'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-class-diagram-container',
   templateUrl: './class-diagram.component.html',
   styleUrls: ['./class-diagram.component.scss'],

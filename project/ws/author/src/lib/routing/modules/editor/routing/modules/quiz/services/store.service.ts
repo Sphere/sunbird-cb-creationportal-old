@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core'
+
 import { BehaviorSubject } from 'rxjs'
+
 import { Option, FillUps, MatchQuiz, MatchOption, McqQuiz } from '../components/quiz-class'
+
 import { QUESTION_CONFIG, QUIZCONFIG } from '../constants/quiz-constants'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 
 @Injectable()
 export class QuizStoreService {

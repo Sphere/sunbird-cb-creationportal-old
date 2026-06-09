@@ -1,12 +1,20 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { Subscription } from 'rxjs'
+
 import { ValueService, ConfigurationsService } from '@ws-widget/utils'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { NsContent, NsDiscussionForum, WidgetContentService } from '@ws-widget/collection'
+
 import { ViewerUtilService } from '../../viewer-util.service'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-audio-native',
   templateUrl: './audio-native.component.html',
   styleUrls: ['./audio-native.component.scss'],

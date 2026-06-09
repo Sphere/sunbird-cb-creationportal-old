@@ -8,22 +8,37 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core'
+
 import { FormControl } from '@angular/forms'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { EventService, WsEvents, UtilityService } from '@ws-widget/utils'
+
 // import * as PDFJS from 'pdfjs-dist/webpack'
+
 import { interval, merge, Subject, Subscription } from 'rxjs'
+
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+
 // import { ViewerUtilService } from '../../../../../../project/ws/viewer/src/lib/viewer-util.service'
+
 import { ROOT_WIDGET_CONFIG } from '../collection.config'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import { WidgetContentService } from '../_services/widget-content.service'
+
 import { IWidgetsPlayerPdfData } from './player-pdf.model'
+
 import { pdfDefaultOptions } from 'ngx-extended-pdf-viewer'
+
 
 // const pdfjsViewer = require('pdfjs-dist/web/pdf_viewer')
 @Component({
+  standalone: false,
   selector: 'ws-widget-player-pdf',
   templateUrl: './player-pdf.component.html',
   styleUrls: ['./player-pdf.component.scss'],
@@ -57,7 +72,7 @@ export class PlayerPdfComponent extends WidgetBaseComponent
   enableTelemetry = false
   // private pdfInstance: PDFJS.PDFDocumentProxy | null = null
   private activityStartedAt: Date | null = null
-  private renderSubject = new Subject()
+  private renderSubject = new Subject<void>()
   private lastRenderTask: any | null = null
   // Subscriptions
   private contextMenuSubs: Subscription | null = null
@@ -66,7 +81,7 @@ export class PlayerPdfComponent extends WidgetBaseComponent
   private routerSubs: Subscription | null = null
   public isInFullScreen = false
   zoomType: string | null = null;
-  pdfHeight = 'calc(100vh - 355px)'
+  pdfHeight = 'calc(100vh - 224px)'
   pdfMobileHeight = '300px'
   pdfZoom = '28%'
   sidebarOpen = false
@@ -103,7 +118,7 @@ export class PlayerPdfComponent extends WidgetBaseComponent
       this.pdfMobileHeight = 'calc(100vh - 50px)'
       this.pdfZoom = '40%'
     } else {
-      this.pdfHeight = 'calc(100vh - 355px)'
+      this.pdfHeight = 'calc(100vh - 224px)'
       this.pdfMobileHeight = '200px'
       this.pdfZoom = '28%'
       // const diplayedPagesCount = fsState.mode.includes('portrait') ? 2 : 1

@@ -1,12 +1,16 @@
 import { Component, Input } from '@angular/core'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 
 interface IButtonChannelAnalytics {
   identifier: string
   contentType: NsContent.EContentTypes
 }
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-channel-analytics',
   templateUrl: './btn-channel-analytics.component.html',
   styleUrls: ['./btn-channel-analytics.component.scss'],

@@ -17,7 +17,8 @@
   resize: none;
 }
 
-::ng-deep .mat-checkbox-inner-container {
+::ng-deep .mat-checkbox-inner-container,
+::ng-deep .mdc-checkbox {
   margin-top: 0 !important;
 }
 

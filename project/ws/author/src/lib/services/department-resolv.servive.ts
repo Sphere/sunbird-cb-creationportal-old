@@ -1,11 +1,19 @@
 import { Injectable } from '@angular/core'
+
 import { Resolve, Router } from '@angular/router'
+
 import { EMPTY, Observable } from 'rxjs'
+
 import { ApiService } from '../modules/shared/services/api.service'
+
 import { GET_MY_DEPARTMENT } from '../constants/apiEndpoints'
+
 import { catchError, map } from 'rxjs/operators'
+
 import { IDepartment } from '../interface/department'
+
 import { AuthKeycloakService, IResolveResponse } from '@ws-widget/utils'
+
 
 @Injectable()
 export class DepartmentResolver

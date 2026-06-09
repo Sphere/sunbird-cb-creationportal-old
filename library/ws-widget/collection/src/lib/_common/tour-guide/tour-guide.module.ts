@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common'
+
 import { NgModule } from '@angular/core'
-import { MatCardModule, MatIconModule } from '@angular/material'
+
+import { MatCardModule } from '@angular/material/card'
+import { MatIconModule } from '@angular/material/icon'
 import { TourComponent } from './tour-guide.component'
+
 
 @NgModule({
   declarations: [TourComponent],

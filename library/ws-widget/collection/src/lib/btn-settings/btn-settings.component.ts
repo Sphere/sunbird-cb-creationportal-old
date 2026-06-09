@@ -1,12 +1,20 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+
 import { FormControl } from '@angular/forms'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { ConfigurationsService, NsInstanceConfig } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+
 import { BtnSettingsService } from './btn-settings.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-settings',
   templateUrl: './btn-settings.component.html',
   styleUrls: ['./btn-settings.component.scss'],

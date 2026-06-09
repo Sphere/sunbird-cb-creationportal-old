@@ -1,6 +1,8 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-editor-quill',
   templateUrl: './editor-quill.component.html',
   styleUrls: ['./editor-quill.component.scss'],

@@ -1,14 +1,24 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { Subscription } from 'rxjs'
+
 import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
+
 import { ActivatedRoute, Data } from '@angular/router'
+
 // import { AppTocService } from '../../services/app-toc.service'
+
 import { NsContent, ROOT_WIDGET_CONFIG, IGraphWidget, NsError } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { NsAnalytics, NsCourseAnalytics } from '../../interface/app-toc-analytics.model'
+
 import { MyTocService } from '../../services/my-toc.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-insights',
   templateUrl: './content-Insights.component.html',
   styleUrls: ['./content-Insights.component.scss'],
@@ -51,7 +61,7 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
   fetchStatus: TFetchStatus = 'none'
   prefChangeSubscription: Subscription | null = null
   onsiteOffshoreData: IGraphWidget = {} as IGraphWidget
-  apiLinkAccess = this.route.snapshot.data.pageData.data.analytics
+  apiLinkAccess = this.route.snapshot.data?.pageData?.data?.analytics ?? {}
   errorWidget: NsWidgetResolver.IRenderConfigWithTypedData<NsError.IWidgetErrorResolver> = {
     widgetType: ROOT_WIDGET_CONFIG.errorResolver._type,
     widgetSubType: ROOT_WIDGET_CONFIG.errorResolver.errorResolver,

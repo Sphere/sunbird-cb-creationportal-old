@@ -1,11 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { Subscription } from 'rxjs'
+
 import { NsContent } from '@ws-widget/collection'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { HttpClient } from '@angular/common/http'
+
 import { ViewerUtilService } from '../../viewer-util.service'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-channel',
   templateUrl: './channel.component.html',
   styleUrls: ['./channel.component.scss'],

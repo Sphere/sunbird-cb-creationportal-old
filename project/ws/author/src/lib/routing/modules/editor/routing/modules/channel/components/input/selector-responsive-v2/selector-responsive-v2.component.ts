@@ -1,11 +1,18 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { ISelectorResponsive, ISelectorResponsiveUnit } from '@ws-widget/collection/src/public-api'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { WIDGET_LIBRARY } from '../../../constants/widet'
+
 import { ImageMapComponent } from './../image-map/image-map.component'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-selector-responsive-v2',
   templateUrl: './selector-responsive-v2.component.html',
   styleUrls: ['./selector-responsive-v2.component.scss'],

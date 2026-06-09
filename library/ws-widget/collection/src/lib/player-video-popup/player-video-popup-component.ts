@@ -1,9 +1,14 @@
 import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core'
+
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { ValueService } from '@ws-widget/utils'
 
+
 @Component({
+  standalone: false,
   selector: 'player-video-popup-component',
   templateUrl: './player-video-popup-component.html',
   styleUrls: ['./player-video-popup-component.scss'],

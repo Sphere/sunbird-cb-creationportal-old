@@ -1,11 +1,19 @@
 import { Injectable } from '@angular/core'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { WidgetContentService } from '../../../../collection/src/lib/_services/widget-content.service'
+
 import { AuthKeycloakService } from './auth-keycloak.service'
+
 import { ConfigurationsService } from './configurations.service'
+
 import { WsEvents } from './event.model'
+
 import { EventService } from './event.service'
+
 import { TelemetryService } from './telemetry.service'
+
 @Injectable({
   providedIn: 'root',
 })

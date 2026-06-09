@@ -1,5 +1,7 @@
 // import { AuthKeycloakService } from './../../../library/ws-widget/utils/src/lib/services/auth-keycloak.service'
+
 import { Injectable } from '@angular/core'
+
 import {
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
@@ -7,8 +9,11 @@ import {
   CanActivate,
   Router,
 } from '@angular/router'
+
 import { Observable } from 'rxjs'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 
 @Injectable({
   providedIn: 'root',

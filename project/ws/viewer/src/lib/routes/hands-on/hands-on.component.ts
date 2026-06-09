@@ -1,12 +1,20 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Subscription } from 'rxjs'
+
 import { EventService, WsEvents } from '@ws-widget/utils'
+
 import { NsContent, WidgetContentService } from '@ws-widget/collection'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { ViewerUtilService } from '../../viewer-util.service'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-hands-on',
   templateUrl: './hands-on.component.html',
   styleUrls: ['./hands-on.component.scss'],

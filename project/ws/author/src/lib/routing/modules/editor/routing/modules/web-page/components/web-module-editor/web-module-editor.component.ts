@@ -1,32 +1,57 @@
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
+
 import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { UploadAudioComponent } from '../upload-audio/upload-audio.component'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'
 
+
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
+
 import { map, mergeMap, tap, catchError } from 'rxjs/operators'
+
 import { of, Observable, Subscription, forkJoin } from 'rxjs'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { FormGroup } from '@angular/forms'
 
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/components/comments-dialog/comments-dialog.component'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
 
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { UploadService } from '@ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 
+
 import { Page, ModuleObj, WebModuleData } from '../web-module.class'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
+
 
 import {
   CONTENT_BASE_WEBHOST_ASSETS,
@@ -34,13 +59,20 @@ import {
   STREAM_FILES,
   // AUTHORING_CONTENT_BASE,
 } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
+
 import { NOTIFICATION_TIME, WEB_MODULE_JSON_FILE_NAME } from '../../constant/web-module.constants'
+
 import { IAudioObj } from '../../interface/page-interface'
+
 import { PlainCKEditorComponent } from '../../../../../shared/components/plain-ckeditor/plain-ckeditor.component'
+
 import { NotificationService } from '@ws/author/src/lib/services/notification.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-web-module-editor',
   templateUrl: './web-module-editor.component.html',
   styleUrls: ['./web-module-editor.component.scss'],
@@ -217,7 +249,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
     // active lex id
     this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
       if (!this.userData[id]) {
-        this.userData[id] = new WebModuleData({})
+        this.userData[id] = new WebModuleData({} as any)
       }
       this.currentId = id
       this.changePage(0)
@@ -402,7 +434,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
           a.URL = STREAM_FILES + a.title
         })
       } else {
-        delete e.audio
+        delete (e as any).audio
       }
     })
     const changedPages = this.userData[this.currentId].pages.filter(e => e.isBdchanged)
@@ -557,7 +589,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
             : 0,
       }
 
-      const updatedContent = this.metaContentService.upDatedContent[this.currentId] || {}
+      const updatedContent: any = this.metaContentService.upDatedContent[this.currentId] || {}
       const updatedMeta = this.metaContentService.getUpdatedMeta(this.currentId)
       const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || {})
         .length

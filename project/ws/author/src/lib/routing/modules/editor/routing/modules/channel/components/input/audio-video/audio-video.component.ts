@@ -1,17 +1,27 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { IWidgetsPlayerMediaData, NsContent } from '@ws-widget/collection'
+
 import {
   AUTHORING_CONTENT_BASE,
   CONTENT_BASE_WEBHOST_ASSETS,
 } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { IMAGE_MAX_SIZE, VIDEO_MAX_SIZE } from '@ws/author/src/lib/constants/upload'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { UploadService } from '@ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 
 interface ISubtitle {
   srclang: string
@@ -19,6 +29,7 @@ interface ISubtitle {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-audio-video',
   templateUrl: './audio-video.component.html',
   styleUrls: ['./audio-video.component.scss'],

@@ -1,13 +1,22 @@
 import { Component, OnInit } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { ROOT_WIDGET_CONFIG } from '@ws-widget/collection'
+
 import { TFetchStatus } from '@ws-widget/utils'
+
 import { Chart } from 'chart.js'
+
 import { NSProfileData } from '../../../../models/profile.model'
+
 import { NSCompetency } from '../../models/competency.model'
+
 import { AssessmentService } from '../../services/competency.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-card-detail',
   templateUrl: './card-detail.component.html',
   styleUrls: ['./card-detail.component.scss'],

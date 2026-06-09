@@ -1,5 +1,5 @@
 <mat-card class="ws-mat-primary-lite-background-on-day margin-top-s ml-5"
-  *ngIf="(showIframeSupportWarning || isIntranetUrl || htmlContent?.isInIntranet)&&htmlContent?.isIframeSupported === 'Yes'">
+  *ngIf="showIframeSupportWarning || isIntranetUrl || htmlContent?.isInIntranet">
   <mat-card-content>
     <h2 class="mat-h2" *ngIf="
         isIntranetUrl || htmlContent?.isInIntranet || htmlContent?.isIframeSupported === 'Maybe'
@@ -48,8 +48,7 @@
       *ngIf="progress > 0 && htmlContent?.isIframeSupported?.toLowerCase() === 'yes'&&htmlContent?.mimeType !== 'application/vnd.ekstep.html-archive'"
       [value]="progress"></mat-progress-bar>
 
-    <div class="flex flex-between padding-top-s"
-      *ngIf="htmlContent?.isIframeSupported === 'Yes'&&htmlContent?.mimeType !== 'application/vnd.ekstep.html-archive'">
+    <div class="flex flex-between padding-top-s" *ngIf="htmlContent?.isIframeSupported !== 'Yes'">
       <a type="button" [ngClass]="mobAppSvc?.isMobile ? 'block' : 'hidden'" mat-button
         [href]="this.htmlContent?.artifactUrl" target="_blank" #mobileOpenInNewTab>Open in New Tab</a>
 
@@ -68,8 +67,7 @@
   </mat-card-content>
 </mat-card>
 
-<h2 class="text-center mat-primary-text margin-top-m load" *ngIf="showIsLoadingMessage || (htmlContent && htmlContent?.isIframeSupported === 'Yes'
-  && htmlContent?.mimeType !== 'application/vnd.ekstep.html-archive')">
+<h2 class="text-center mat-primary-text margin-top-m load" *ngIf="showIsLoadingMessage" i18n>
   Please wait! Content requested is loading
 </h2>
 
@@ -84,8 +82,7 @@
   </h2>
 </div>
 
-<div class="container-v2"
-  *ngIf="htmlContent && htmlContent?.isIframeSupported === 'No' || iframeSupport === 'No'||htmlContent?.mimeType === 'application/vnd.ekstep.html-archive'">
+<div class="container-v2" *ngIf="htmlContent && htmlContent.isIframeSupported === 'Yes'">
   <iframe #iframeElem title="HTML Content Viewer" i18n-title [src]="iframeUrl"
     (load)="onIframeLoadOrError('load',iframeElem,$event)" (error)="onIframeLoadOrError('error')"
     allow="fullscreen; accelerometer; autoplay; encrypted-media; gyroscope; microphone; camera;"

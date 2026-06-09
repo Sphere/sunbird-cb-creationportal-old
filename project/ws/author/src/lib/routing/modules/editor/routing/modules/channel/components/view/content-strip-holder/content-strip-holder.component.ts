@@ -1,9 +1,14 @@
 import { Component, Input, OnInit, OnChanges } from '@angular/core'
+
 import { ContentStripMultipleService, NsContent, WidgetContentService } from '@ws-widget/collection'
+
 import { IWidgetAuthor } from './../../../interface/widget'
+
 import { ChannelStoreService } from './../../../services/store.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-strip-holder',
   templateUrl: './content-strip-holder.component.html',
   styleUrls: ['./content-strip-holder.component.scss'],

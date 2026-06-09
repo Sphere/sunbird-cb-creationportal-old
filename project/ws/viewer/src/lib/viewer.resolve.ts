@@ -1,13 +1,23 @@
 import { Injectable } from '@angular/core'
+
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router'
+
 import { catchError, map, tap } from 'rxjs/operators'
+
 import { Observable, of } from 'rxjs'
+
 // import { AccessControlService } from '@ws/author'
+
 import { WidgetContentService, NsContent, VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
+
 import { IResolveResponse, AuthMicrosoftService, ConfigurationsService } from '@ws-widget/utils'
+
 import { ViewerDataService } from './viewer-data.service'
+
 import { MobileAppsService } from '../../../../../src/app/services/mobile-apps.service'
+
 import { Platform } from '@angular/cdk/platform'
+
 
 const ADDITIONAL_FIELDS_IN_CONTENT = ['creatorContacts', 'source', 'exclusiveContent']
 @Injectable()

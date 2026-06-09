@@ -1,296 +1,186 @@
 @import 'ws-mixins';
 @import 'ws-vars';
-.blue-link {
-  color: #5996e6 !important;
-}
-%container-padding {
-  padding: $size-xl 2 * $size-xl;
+
+// ── Banner wrapper ────────────────────────────────────────────────────────────
+.banner-box {
+  background: #f7f7f7;
+  padding: 16px 2.9rem 24px;
 
   @include breakpoint-xs {
-    padding: $size-xl $size-l;
+    padding: 16px 1rem 24px;
   }
 }
-.align-items-center {
-    align-items: center !important;
-}
-.cne-duration-block {
+
+// ── Top row: back button + duration ─────────────────────────────────────────
+.banner-header-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.cne-block {
-  padding: 10px 15px;
-  width: 133px;
-  // height: 27px;
-  flex-shrink: 0;
-  border-radius: 100px;
-  background: #DCFAFF;
-  color: #035F7C;
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 16.8px;
-  /* 120% */
-  letter-spacing: -0.28px;
-}
-
-.visibility-0 {
-  // visibility: hidden;
-  display: none !important;
-}
-
-.box {
-  background: #f7f7f7;
-}
-
-.toc-body {
-  @extend %container-padding;
-  padding-top: 0px !important;
-
-  @include breakpoint-s {
-    padding-right: 1rem;
-    padding-left: 1rem;
-  }
+  margin-bottom: 8px;
 }
 
 .back-icon {
-  padding-right: 20px;
+  color: #0F172A;
+}
+
+.duration-block {
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #5a6a7a;
 }
 
-.title {
-  font-family: 'Roboto';
-  font-style: normal;
+// ── CNE badge ────────────────────────────────────────────────────────────────
+.cne-block {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 100px;
+  background: #DCFAFF;
+  color: #035F7C;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
   font-weight: 400;
-  font-size: 32px;
-  line-height: 38px;
+  margin-bottom: 12px;
 }
 
-.subtitle {
-  font-family: 'Roboto';
-  font-style: normal;
+// ── Course title: page title level = 32px/600 ────────────────────────────────
+.banner-title {
+  font-family: Roboto, sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #0F172A;
+  word-wrap: break-word;
+  margin-bottom: 6px;
+
+  @include breakpoint-xs {
+    font-size: 22px;
+  }
+}
+
+// ── Source / "By" line: helper text level ───────────────────────────────────
+.banner-source {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
   font-weight: 400;
-  font-size: 20px;
-  line-height: 24px;
+  color: #5a6a7a;
   margin-bottom: 10px;
 }
 
-.details {
-  font-family: 'Roboto';
-  font-style: normal;
+.blue-link {
+  color: #1C5D95;
+  cursor: pointer;
+}
+
+// ── Rating row ───────────────────────────────────────────────────────────────
+.rating-block {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.average-rating {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
   font-weight: 400;
-  font-size: 16px;
-  color: #000000;
-  letter-spacing: -0.02em;
-}
-
-.lable1 {
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 19px;
-  color: #1c5d95;
-  flex: none;
-  flex-grow: 0;
-  padding-top: 20px;
-  cursor: pointer !important;
-}
-
-.header-actions {
-  display: flex;
-  margin-top: 3px;
-
-  &.top {
-    margin-top: 0;
-    margin-bottom: 40px;
-  }
-
-  .action-btns {
-    // margin-left: auto;
-    order: 2;
-    // color: white;
-  }
-}
-
-.header-act-btn {
-  margin-top: 5px;
-}
-
-// .btn {
-//  display: flex;
-// flex-direction: row;
-// justify-content: center;
-// align-items: center;
-// padding: 8px 32px;
-// gap: 8px;
-// position: absolute;
-// width: 122px;
-// height: 35px;
-// left: 112px;
-// top: 369px;
-// background: #1C5D95;
-// border-radius: 50px;
-// }
-
-.banner-btn {
-  display: flex;
-  width: 25%;
-  height: 35px;
-  flex-direction: row !important;
-  justify-content: center !important;
-  align-items: center !important;
-  padding: 0px 32px !important;
-  background: #1c5d95 !important;
-  border-radius: 50px !important;
-  color: #f7f7f7 !important;
-  border: none;
-
-  @include breakpoint-xs {
-    width: 100% !important;
-  }
-
-  @include breakpoint-s {
-    width: 50% !important;
-  }
-
-  @include breakpoint-m {
-    width: 50% !important;
-  }
-
-
-}
-.pencil{
-      display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 17px !important;
-    cursor: pointer;
-}
-.banner-btn-active {
-  display: flex;
-  color: #1c5d95 !important;
-  border-radius: 50px;
-  border: 1px solid #1c5d95 !important;
-  margin-left: 10px;
-  width: 25%;
-  height: 35px;
-  justify-content: center !important;
-  align-items: center !important;
-
-
-  @include breakpoint-xs {
-    width: 100% !important;
-  }
-}
-
-.share-img {
-  width: 42px;
-  height: 42px;
-  border: 1px solid #1c5d95;
-  box-sizing: border-box;
-  border-radius: 49%;
-  padding: 9px 12px 0px;
-  margin-left: 10px;
-}
-
-.mat-progress-bar {
-  width: 25%;
-  border-radius: 40px;
-  height: 20px;
-
-  @include breakpoint-xs {
-    width: 100% !important;
-  }
-
-  @include breakpoint-s {
-    width: 50% !important;
-  }
-
-  @include breakpoint-m {
-    width: 50% !important;
-  }
-
-}
-
-.value {
-  position: relative;
-  bottom: 19px;
   color: #898989;
-  width: 275px;
-  display: flex;
-  justify-content: center;
 }
 
-::ng-deep.theme-igot.day-mode .mat-progress-bar-fill::after {
+.total-rating {
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #898989;
+}
+
+// ── Progress row ─────────────────────────────────────────────────────────────
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.banner-progress {
+  flex: 1;
+  max-width: 320px;
+  border-radius: 40px;
+  height: 8px;
+
+  @include breakpoint-xs {
+    max-width: 100%;
+  }
+}
+
+.progress-value {
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  color: #898989;
+  white-space: nowrap;
+}
+
+::ng-deep .theme-igot.day-mode .mat-progress-bar-fill::after,
+::ng-deep .theme-igot.day-mode .mdc-linear-progress__bar-inner {
   background: #30EA7E 0% 0% no-repeat padding-box;
-
   border-radius: 40px;
 }
 
-::ng-deep.theme-igot.day-mode .mat-progress-bar-buffer {
+::ng-deep .theme-igot.day-mode .mat-progress-bar-buffer,
+::ng-deep .theme-igot.day-mode .mdc-linear-progress__buffer-bar {
   background-color: #EDEDED;
-  // background-color: #E7E6E6 !important;
 }
 
-.banner-btn:hover {
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.35);
+// ── Action icon buttons row ──────────────────────────────────────────────────
+.action-icons-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 4px;
 }
-.button-border-gray{
-    border: 1px solid #898989;
+
+.action-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.action-icon-item--share {
+  cursor: default;
+}
+
+// Active (Details) — blue border
+.action-icon-btn {
+  border: 1px solid #898989;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.button-border {
-  border: 1px solid #1c5d95;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 44px;
+  height: 44px;
 
-
+  &--active {
+    border-color: #1C5D95;
+  }
 }
 
-.btn-tittle {
-  color: #1c5d95;
-}
-.btn-title-gray{
+.action-icon-label {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
   color: #898989;
-}
-.modal {
-  overflow: inherit !important;
-}
-.rating-block{
-  display: flex;
-  align-items: center;
-    gap: 6px;
-}
-.average-rating{
-font-family: Roboto;
-font-size: 12px;
-font-weight: 400;
-line-height: 13.53px;
-letter-spacing: -0.02em;
-text-align: left;
-color: #898989;
-padding-top: 3px !important;
 
+  &--active {
+    color: #1C5D95;
+  }
 }
-.total-rating{
-  //styleName: Label 1;
-font-family: Roboto;
-font-size: 14px;
-font-weight: 400;
-line-height: 16.8px;
-letter-spacing: -0.02em;
-text-align: left;
-color: #898989;
 
+// Certificate icon constrained size
+.cert-icon {
+  width: 22px;
+  height: auto;
 }

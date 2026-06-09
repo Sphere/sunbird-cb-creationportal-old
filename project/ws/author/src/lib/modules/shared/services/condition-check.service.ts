@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core'
+
 import { NSContent } from '../../../interface/content'
+
 import { IConditionsV2 } from '../../../interface/conditions-v2'
+
 
 @Injectable()
 export class ConditionCheckService {

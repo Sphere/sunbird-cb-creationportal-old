@@ -1,13 +1,20 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core'
-import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
-import { ConfigurationsService, NsPage, LogoutComponent } from '@ws-widget/utils'
-import { Subscription } from 'rxjs'
-import { ROOT_WIDGET_CONFIG } from '../collection.config'
-import { IBtnAppsConfig } from './btn-apps.model'
-import { Router, NavigationStart, NavigationEnd } from '@angular/router'
-import { MatDialog } from '@angular/material'
 
+import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
+import { ConfigurationsService, NsPage, LogoutComponent } from '@ws-widget/utils'
+
+import { Subscription } from 'rxjs'
+
+import { ROOT_WIDGET_CONFIG } from '../collection.config'
+
+import { IBtnAppsConfig } from './btn-apps.model'
+
+import { Router, NavigationStart, NavigationEnd } from '@angular/router'
+
+import { MatDialog } from '@angular/material/dialog'
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-apps',
   templateUrl: './btn-apps.component.html',
   styleUrls: ['./btn-apps.component.scss'],

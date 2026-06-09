@@ -1,9 +1,14 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { IWidgetCardBreadcrumb, IBreadcrumbPath } from './card-breadcrumb.model'
+
 import { EventService } from '@ws-widget/utils'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-card-breadcrumb',
   templateUrl: './card-breadcrumb.component.html',
   styleUrls: ['./card-breadcrumb.component.scss'],

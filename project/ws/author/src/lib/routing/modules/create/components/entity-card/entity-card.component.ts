@@ -1,9 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
+
 import { Router } from '@angular/router'
+
 import { ICreateEntity } from '@ws/author/src/lib/interface/create-entity'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-entity-card',
   templateUrl: './entity-card.component.html',
   styleUrls: ['./entity-card.component.scss'],

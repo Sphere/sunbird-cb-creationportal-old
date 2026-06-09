@@ -1,10 +1,16 @@
 import { Component, HostBinding, Input, OnDestroy, OnInit } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { Subscription } from 'rxjs'
+
 import { ConfigurationsService, EventService, WsEvents } from '../../../../utils'
+
 import { BtnContentLikeService } from './btn-content-like.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-content-like',
   templateUrl: './btn-content-like.component.html',
   styleUrls: ['./btn-content-like.component.scss'],

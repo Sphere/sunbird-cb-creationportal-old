@@ -1,27 +1,176 @@
 @import 'ws-vars';
 
-.correct-answer{
-  background-color: #357a38 !important;
-  color: #ffff;
-  padding: 8px;
-    border-radius: 20px;
+.question-card {
+  background: #fff;
+  border: 1px solid #DDE8F0;
+  border-radius: 8px;
+  padding: 16px 20px 20px;
 }
-.fitb-answer{
+
+.question-header {
   display: flex;
-  gap: 5px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
-.app-class .mat-list-option {
+
+.question-counter {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #5A7184;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.flag-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #5A7184;
+  padding: 0;
+
+  &:hover {
+    background: #F7FBFE;
+    color: #1C5D95;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+  }
+}
+
+.question-text {
+  font-family: Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1D2B36;
+  line-height: 1.6;
+  margin: 0 0 16px;
+  overflow-x: auto;
+}
+
+.hint-label {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #5A7184;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin: 8px 0 4px;
+}
+
+.correct-answer {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #a5d6a7;
+}
+
+.incorrect-answer {
+  background-color: #fce4e4;
+  color: #c62828;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ef9a9a;
+}
+
+.fitb-answer {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.app-class .mat-list-option,
+.app-class .mat-mdc-list-option {
   padding-top: $size-m;
   padding-bottom: $size-m;
   height: auto;
+}
+
+::ng-deep .theme-igot.day-mode .mat-list-item-disabled,
+::ng-deep .theme-igot.day-mode .mat-mdc-list-item-disabled {
+  background-color: white !important;
 }
 
 .wrap-mat-radio-label {
   white-space: normal;
 }
 
-.quiz-question {
-  overflow-x: auto;
+.quiz-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.15s;
+  user-select: none;
+
+  &:hover {
+    background: #F7FBFE;
+  }
+
+  &--correct {
+    background: #e8f5e9;
+
+    .option-text {
+      color: #2e7d32;
+    }
+  }
+
+  &--incorrect {
+    background: #fce4e4;
+
+    .option-text {
+      color: #c62828;
+    }
+  }
+}
+
+.option-check {
+  width: 16px;
+  height: 16px;
+  accent-color: #1C5D95;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.option-text {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  color: #1D2B36;
+  line-height: 1.4;
+}
+
+.error-text {
+  color: #c62828;
+}
+
+.hint-well {
+  background: #F7FBFE;
+  border: 1px solid #DDE8F0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 0 0 6px 40px;
 }
 
 .quiz-radio-group {
@@ -31,81 +180,79 @@
 }
 
 .quiz-radio-button {
-  margin: 5px;
+  margin: 4px 0;
   padding: 8px;
 }
 
-.quiz-selected-value {
-  margin: 15px 0;
-}
-
-.margin-bottom-m {
-  margin-bottom: $size-m;
-}
-
 .correct-option {
-  color: #357a38 !important;
+  color: #2e7d32;
 }
 
 .incorrect-option {
-  color: #f0506e;
+  color: #c62828;
 }
 
 .question {
   width: 40%;
   max-width: 200px;
   height: auto;
-  border: 2px solid;
-  border-radius: 5px;
-  padding: 4px 0px 4px 0px;
+  border: 1.5px solid #DDE8F0;
+  border-radius: 6px;
+  padding: 6px 8px;
   word-wrap: break-word;
   text-align: center;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  color: #1D2B36;
 }
+
 .answer {
   width: 40%;
   max-width: 200px;
   height: auto;
-  border: 2px solid;
-  border-radius: 5px;
-  padding: 2px 0px 2px 0px;
+  border: 1.5px solid #DDE8F0;
+  border-radius: 6px;
+  padding: 6px 8px;
   word-wrap: break-word;
   text-align: center;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  color: #1D2B36;
 }
 
 .background-well {
-  background: #eee;
+  background: #F7FBFE;
+  border-radius: 6px;
+  border: 1px solid #DDE8F0;
+  padding: 8px 12px;
+  margin-top: 6px;
 }
 
-/* Change the text color to #1C5D95 when the option is correct */
 .blue-text {
-  color: #1C5D95 !important;
+  color: #1C5D95;
 }
 
-
-
-
-.correct-answer {
-  background-color: #e0ffe0; /* Example: Green background for correct answers */
+.checked-radio {
+  color: #1C5D95;
 }
 
-.incorrect-answer {
-  background-color: #000000; /* Example: Red background for incorrect answers */
-}
-
-
-/* Override the default style for the inner circle with higher specificity */
-::ng-deep .theme-igot.day-mode .mat-radio-button.checked-radio .mat-radio-inner-circle {
+::ng-deep .theme-igot.day-mode .mat-radio-button.checked-radio .mat-radio-inner-circle,
+::ng-deep .theme-igot.day-mode .mat-mdc-radio-button.checked-radio .mdc-radio__inner-circle {
   background-color: #1C5D95 !important;
 }
 
-/* Override the outer circle as well to ensure proper styling */
-::ng-deep .theme-igot.day-mode .mat-radio-button.checked-radio .mat-radio-outer-circle {
+::ng-deep .theme-igot.day-mode .mat-radio-button.checked-radio .mat-radio-outer-circle,
+::ng-deep .theme-igot.day-mode .mat-mdc-radio-button.checked-radio .mdc-radio__outer-circle {
   border-color: #1C5D95 !important;
 }
 
-/* Adjust the ripple color */
-::ng-deep .theme-igot.day-mode .mat-radio-button.checked-radio .mat-radio-ripple .mat-ripple-element {
-  background-color: rgba(28, 93, 149, 0.1) !important;
+::ng-deep .app-class .mat-list-option,
+::ng-deep .app-class .mat-mdc-list-option {
+  color: rgba(0, 0, 0, 0.38) !important;
 }
 
-
+::ng-deep .theme-igot.day-mode .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-disabled,
+.theme-igot.day-mode .mat-pseudo-checkbox-indeterminate.mat-pseudo-checkbox-disabled {
+  background-color: #1C5D95 !important;
+  border-color: #1C5D95 !important;
+}

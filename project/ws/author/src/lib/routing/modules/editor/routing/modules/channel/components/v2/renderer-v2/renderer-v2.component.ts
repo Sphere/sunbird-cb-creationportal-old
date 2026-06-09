@@ -1,14 +1,25 @@
 import { Component, Input, OnInit, OnChanges } from '@angular/core'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { responsiveSuffix, sizeSuffix } from '@ws-widget/collection/src/public-api'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { WIDGET_LIBRARY } from '../../../constants/widet'
+
 import { IWidgetAuthor, tDimensions, tSize } from './../../../interface/widget'
+
 import { ChannelResolverService } from './../../../services/resolver.service'
+
 import { ChannelStoreService } from './../../../services/store.service'
+
 
 interface IAuthorGrid {
   id: string
@@ -18,6 +29,7 @@ interface IAuthorGrid {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-renderer-v2',
   templateUrl: './renderer-v2.component.html',
   styleUrls: ['./renderer-v2.component.scss'],

@@ -1,11 +1,19 @@
 import { AUTHORING_CONTENT_BASE } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { ICON_TYPE } from '@ws/author/src/lib/constants/icons'
+
 import { MIME_TYPE } from '@ws/author/src/lib/constants/mimeType'
+
 import { ISearchContent } from '@ws/author/src/lib/interface/search'
+
 import { APP_BASE_HREF } from '@angular/common'
+
 import { Inject, Injectable } from '@angular/core'
+
 import { ConfigurationsService, NsInstanceConfig } from '@ws-widget/utils'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 
 @Injectable({ providedIn: 'root' })
 export class AccessControlService {

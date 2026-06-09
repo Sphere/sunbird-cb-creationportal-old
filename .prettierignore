@@ -1,0 +1,8 @@
+dist
+node_modules
+coverage
+.angular
+src/styles.scss
+*.min.js
+package-lock.json
+yarn.lock

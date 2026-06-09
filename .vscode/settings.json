@@ -7,7 +7,7 @@
     "editor.codeActionsOnSave": {
       "source.fixAll": "explicit"
     },
-    "editor.defaultFormatter": "vscode.typescript-language-features"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "editor.autoIndent": "advanced",
   "editor.codeLens": true,
@@ -148,7 +148,7 @@
   "update.showReleaseNotes": false,
   "peacock.color": "#68217a",
   "prettier.semi": false,
-  "prettier.printWidth": 100,
+  "prettier.printWidth": 140,
   "prettier.singleQuote": true,
   "prettier.jsxSingleQuote": true,
   "prettier.useEditorConfig": false,
@@ -162,11 +162,11 @@
   "tslint.alwaysShowRuleFailuresAsWarnings": false,
   "prettier.trailingComma": "all",
   "[html]": {
-    "editor.defaultFormatter": "vscode.html-language-features"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "prettier.arrowParens": "avoid",
   "[scss]": {
-    "editor.defaultFormatter": "HookyQR.beautify"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[properties]": {
     "editor.defaultFormatter": "foxundermoon.shell-format"

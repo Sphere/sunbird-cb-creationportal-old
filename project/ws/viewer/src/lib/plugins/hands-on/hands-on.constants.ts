@@ -1,5 +1,6 @@
 // import { SafeHtml } from '@angular/platform-browser'
 
+
 export namespace NSHandsOnConstants {
   export const LANGUAGES = {
     'C#': 'csharp',

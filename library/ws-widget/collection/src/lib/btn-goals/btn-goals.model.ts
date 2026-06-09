@@ -1,5 +1,6 @@
 import { NsContent } from '../_services/widget-content.model'
 
+
 export namespace NsGoal {
   export enum EGoalTypes {
     USER_COMMON = 'common',

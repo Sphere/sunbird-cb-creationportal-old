@@ -1,8 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core'
+
 //import { time } from 'console'
+
 //import moment from 'moment'
+
 import moment from 'moment-timezone'
+
 @Pipe({
+  standalone: false,
   name: 'timeDifference'
 })
 export class TimeDifferencePipe implements PipeTransform {

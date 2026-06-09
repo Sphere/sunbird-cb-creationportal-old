@@ -7,41 +7,33 @@
       </div>
     </div>
   </div>
-  <mat-grid-list *ngIf="!isSettingsPage" cols="4" rowHeight="100vh">
-    <section class="edit-course-save-btn">
-      <div class="flex flex-between margin-bottom-l margin-right-l">
-        <button [ngClass]="showSettingsPage ? 'ws-mat-primary-background' : 'secondary-button'" mat-raised-button
-          type="submit" (click)="setSettingsPage()"
-          class="text-white save-next mat-button-base save-btn-bottom saveAndNextBtn">
-          Next
-        </button>
-      </div>
-    </section>
-    <mat-grid-tile [colspan]="1">
-      <mat-drawer-container [class.drawer-opened]="drawer.opened">
+  <div class="mc-builder-wrap" *ngIf="!isSettingsPage">
+    <div class="mc-builder">
+      <div class="mc-left-col">
+        <mat-drawer-container [class.drawer-opened]="drawer.opened">
         <mat-drawer #drawer class="drawer" mode="side" opened="false"></mat-drawer>
 
         <!--module & resources left canvas header-->
-        <mat-toolbar class="model header course-main-title-block">
-          <span matTooltip="{{courseData?.name}}" class="course-main-title" style="white-space: normal;">{{
-            courseData?.name
-            | slice:0:24 }}</span>
-          <!-- <mat-icon class=" material-icons margin-left-m text-medium brand-color" (click)=" editContent(courseData)">
-            edit</mat-icon> -->
-          <span class="course-duration" matTooltip="Course Duration">Duration :
-            {{mainCourseDuration!=='' ?mainCourseDuration: '0h 0m 0s' }}</span>
-        </mat-toolbar>
+        <div class="mc-card-header">
+          <div class="mc-card-icon">
+            <mat-icon>menu_book</mat-icon>
+          </div>
+          <div class="mc-card-meta">
+            <span class="mc-card-title" matTooltip="{{courseData?.name}}">
+              {{courseData?.name | slice:0:28}}
+            </span>
+            <span class="mc-card-sub">Duration: {{mainCourseDuration !== '' ? mainCourseDuration : '0h 0m 0s'}}</span>
+          </div>
+        </div>
         <div class="left-navbar-block">
           <!--module & resource left footer-->
           <div class="left-nav-bar">
             <div class="model-button" *ngIf="!isSelfAssessment">
               <button [disabled]="hideModule" mat-raised-button
-                class="ws-mat-primary-background mat-button-base save-btn-bottom" (click)="addModule()"> Add
-                Module</button>
+                class="ws-mat-primary-background mat-button-base save-btn-bottom mc-add-btn" (click)="addModule()">Add Module</button>
               <span class="or-txt">Or</span>
-              <button [disabled]="hideResource" mat-raised-button
-                class="ws-mat-primary-background mat-button-base save-btn-bottom" (click)="addIndependentResource()">Add
-                Resource</button>
+              <button [disabled]="hideResource" mat-stroked-button
+                class="add-resource-btn mat-button-base" (click)="addIndependentResource()">Add Resource</button>
             </div>
 
           </div>
@@ -174,11 +166,7 @@
             </div>
             <!--module & resources left canvas-->
             <div class="model-text" cdkDropList (cdkDropListDropped)="drop($event)">
-              <span *ngIf="courseData?.children.length===0">{{courseData?.children}}Your Modules and Resources will be
-                visible
-                here
-                once you start adding
-                them.</span>
+              <span *ngIf="courseData?.children.length===0">Your Modules and Resources will be visible here once you start adding them.</span>
             </div>
             <!-- <ws-author-auth-toc></ws-author-auth-toc> -->
             <!--module left canvas creation-->
@@ -211,7 +199,7 @@
               </div>
             </div>
           </div>
-          <div *ngIf="isSelfAssessment" class="model-left-create-content div-1">
+          <div *ngIf="isSelfAssessment" class="model-left-create-content div-1 sa-level-list">
             <div class="module-container" *ngFor="let module of courseData?.children;index as i">
               <div>
                 <div (click)="editContent(module)" class="left-block-container"
@@ -302,38 +290,38 @@
 
 
       </mat-drawer-container>
-    </mat-grid-tile>
-    <mat-grid-tile [colspan]="3">
-      <mat-drawer-container [class.drawer-opened]="drawer.opened" class="margin-left-m example-container">
+      </div><!-- /mc-left-col -->
+      <div class="mc-right-col">
+        <mat-drawer-container [class.drawer-opened]="drawer.opened" class="example-container">
         <!--module right canvas header-->
-        <mat-toolbar class="model header">
-          <div style="text-align:end;width: 100%;" class="preview-icon">
-            <mat-icon [ngClass]="showAddModuleForm ? 'brand-color' : ''" class="margin-right-s material-icons" style="font-size: small;margin-right: 3px !important;
-    vertical-align: bottom;cursor: pointer;color: #1C5D95;">remove_red_eye</mat-icon>
-            <span style="font-size: small;cursor: pointer;color:#1C5D95"
-              [ngClass]="showAddModuleForm ? 'brand-color' : ''"
-              [routerLink]="'/author/toc/' + courseData?.identifier + '/contents'">Preview</span>
-            <!-- <button mat-raised-button [ngClass]="showSettingsPage ? 'ws-mat-primary-background' : 'secondary-button'"
-              class="width-20 margin-left-s mat-button-base save-btn-bottom" (click)="setSettingsPage()">
-              Go to Course Settings ></button> -->
+        <div class="mc-card-header mc-right-header">
+          <div class="mc-card-icon">
+            <mat-icon>{{isSelfAssessment ? 'assignment' : 'account_tree'}}</mat-icon>
           </div>
-        </mat-toolbar>
+          <div class="mc-card-meta">
+            <span class="mc-card-title">{{isSelfAssessment ? 'Self Assessment Builder' : 'Course Builder'}}</span>
+            <span class="mc-card-sub" *ngIf="!isSelfAssessment">Add modules and resources to structure your course</span>
+          </div>
+          <button mat-stroked-button class="preview-btn mc-preview-btn"
+            [routerLink]="'/author/toc/' + courseData?.identifier + '/contents'">
+            <mat-icon>remove_red_eye</mat-icon>
+            Preview
+          </button>
+        </div>
         <!--module & resource right canvas create page-->
-        <div class="landing-right-content" *ngIf="!showAddModuleForm&&!isSelfAssessment"
-          style="height: 300px; overflow-y: auto;">
+        <div class="landing-right-content" *ngIf="!showAddModuleForm&&!isSelfAssessment">
           <div class="course-title-block">
-            <span class="course-title">
-              Start by adding Modules and Resources to build the Course</span>
+            <span class="course-title">Start by adding Modules and Resources to build the Course</span>
+            <p class="empty-state-helper-text">Use <strong>Add Module</strong> to group related content, or <strong>Add Resource</strong> to add a PDF, video, link, or other content directly to the course.</p>
           </div>
           <div class="image-container">
             <img loading="lazy" class="course-builder-bg" src="cbp-assets/images/course-builder-bg.svg" alt="Image">
           </div>
         </div>
-        <div class="self-landing-right-content" *ngIf="!showAddModuleForm&&isSelfAssessment"
-          style="height: 300px; overflow-y: auto;">
+        <div class="self-landing-right-content" *ngIf="!showAddModuleForm&&isSelfAssessment">
           <div class="course-title-block">
-            <span class="course-title">
-              Start by adding questions to each assessment level</span>
+            <span class="course-title">Start by adding questions to each assessment level</span>
+            <p class="empty-state-helper-text">Select an assessment level from the left panel to begin adding questions.</p>
           </div>
           <div class="image-container">
             <img loading="lazy" class="course-builder-bg" src="cbp-assets/images/selfAssessmentBackground.svg"
@@ -359,8 +347,10 @@
                 {{content.index}}</span>
             </div>
             <div class="save-btn-block" *ngIf="!isSelfAssessment">
-              <img class="delete-icon" loading="lazy" (click)="takeActions('delete', content, $event.type)"
-                src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-icon" />
+              <button mat-icon-button class="mc-delete-icon-btn" (click)="takeActions('delete', content, $event.type)"
+                matTooltip="Delete">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
               <button mat-raised-button *ngIf="moduleButtonName === 'Create' && content?.contentType !== 'Course'"
                 class="width-15 text-white   mat-button-base save-btn-bottom"
                 (click)="moduleCreate(moduleName, topicDescription, thumbnail)">
@@ -391,82 +381,50 @@
                 Save</button>
             </div>
           </div>
-          <div *ngIf="content?.contentType === 'Course'">
+          <div class="module-txt-block mc-form-field-row" *ngIf="content?.contentType === 'Course'">
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
-              class=" module-input margin-top-s" placeholder="Name of the Course" autocomplete="off"
-              maxlength="250" /><br>
-            <mat-hint class="mt-hint">{{ moduleName.length }}/250</mat-hint><br>
-            <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
-          </div>
-          <div class="module-txt-block" *ngIf="content?.contentType === 'CourseUnit' &&!isSelfAssessment">
-            <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
-              class=" module-input margin-top-s" placeholder="Name of the Module" autocomplete="off"
-              maxlength="100" /><br>
-            <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint><br>
-            <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
-          </div>
-          <div class="module-txt-block" *ngIf="content?.contentType === 'Resource'&&!isSelfAssessment">
-            <div class="flex align-item-center gap-50">
-              <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
-                class=" module-input margin-top-s" placeholder="Name of the Resource" autocomplete="off"
-                maxlength="100" /><br>
-              <ng-container
-                *ngIf="content?.contentType === 'Resource'&&uploadVideoUrl &&content?.mimeType === 'video/mp4'">
-                <div class="module-txt-block margin-top-xs">
-                  <button class="re-upload-btn text-white  mat-button-base save-btn-bottom"
-                    (click)="deleteUploadedFile();$event.stopPropagation()"><img alt="" class="image max-width"
-                      src="cbp-assets/icons/mage_reload.svg">Re-upload</button>
-                </div>
-              </ng-container>
+              class="module-input" placeholder="Name of the Course" autocomplete="off" maxlength="250" />
+            <div class="mc-field-footer">
+              <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
+              <mat-hint class="mt-hint">{{ moduleName.length }}/250</mat-hint>
             </div>
-
-            <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint><br>
-
-            <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
           </div>
-
-          <div class="module-txt-block" *ngIf="content?.contentType === 'Collection'">
+          <div class="module-txt-block mc-form-field-row" *ngIf="content?.contentType === 'CourseUnit' &&!isSelfAssessment">
             <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
-              class=" module-input margin-top-s" placeholder="Name of the Resource" autocomplete="off"
-              maxlength="100" /><br>
-            <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint><br>
-            <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
+              class="module-input" placeholder="Name of the Module" autocomplete="off" maxlength="100" />
+            <div class="mc-field-footer">
+              <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
+              <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint>
+            </div>
+          </div>
+          <div class="module-txt-block mc-form-field-row" *ngIf="content?.contentType === 'Resource'&&!isSelfAssessment">
+            <div class="mc-input-row">
+              <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
+                class="module-input" placeholder="Name of the Resource" autocomplete="off" maxlength="100" />
+              <button *ngIf="uploadVideoUrl && content?.mimeType === 'video/mp4'"
+                class="re-upload-btn mat-button-base"
+                (click)="deleteUploadedFile(); $event.stopPropagation()">
+                <img alt="" src="cbp-assets/icons/mage_reload.svg" style="width:16px;height:16px;"> Re-upload
+              </button>
+            </div>
+            <div class="mc-field-footer">
+              <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
+              <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint>
+            </div>
+          </div>
+          <div class="module-txt-block mc-form-field-row" *ngIf="content?.contentType === 'Collection'">
+            <input name="moduleName" type="text" matInput [(ngModel)]="moduleName" #module
+              class="module-input" placeholder="Name of the Resource" autocomplete="off" maxlength="100" />
+            <div class="mc-field-footer">
+              <span *ngIf="moduleName == ''" class="invalid-text">This field is Required</span>
+              <mat-hint class="mt-hint">{{ moduleName.length }}/100</mat-hint>
+            </div>
           </div>
           <div class="module-txt-block margin-top-l" *ngIf="isSelfAssessment">
-            <span class="self-assessment-name">{{moduleName}}</span><br />
-            <span class="self-assessment-level margin-top-m">Level {{content.index}}</span>
+            <span class="self-assessment-name">{{moduleName}}</span>
           </div>
           <div class="module-txt-block" *ngIf="content?.mimeType === 'application/json'&&!isSelfAssessment">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none">
-              <g clip-path="url(#clip0_1391_3564)">
-                <path
-                  d="M7.9936 14.9957C5.80575 14.9957 3.61362 14.9957 1.42577 14.9957C0.637968 14.9957 0.0685271 14.5064 0.00430449 13.7808C-0.0213846 13.4686 0.0770902 13.1943 0.235506 12.9286C1.39579 10.95 2.55608 8.97138 3.71637 6.98858C4.75678 5.21249 5.79719 3.4364 6.84187 1.66031C7.15442 1.13296 7.69818 0.888275 8.28903 1.01484C8.69577 1.09921 8.98263 1.33968 9.18814 1.69405C10.5497 4.02702 11.9155 6.35576 13.2813 8.68451C14.1162 10.1062 14.9468 11.5279 15.7817 12.9497C16.3597 13.9368 15.7389 14.9957 14.5786 14.9957C12.3821 14.9957 10.1857 14.9957 7.98932 14.9957H7.9936ZM7.9936 13.9537C10.1686 13.9537 12.3436 13.9537 14.5186 13.9537C14.9468 13.9537 15.0538 13.7808 14.844 13.4264C12.6604 9.70123 10.4769 5.97186 8.29331 2.24671C8.12205 1.9514 7.90797 1.9514 7.72815 2.24249C7.70674 2.27624 7.68961 2.30999 7.66821 2.34374C5.93848 5.29686 4.20875 8.2542 2.47474 11.2073C2.02518 11.9751 1.57562 12.7387 1.12606 13.5065C0.98477 13.7512 1.10037 13.9453 1.38723 13.9537C1.43861 13.9537 1.49427 13.9537 1.54565 13.9537C3.69497 13.9537 5.84428 13.9537 7.9936 13.9537Z"
-                  fill="black" />
-                <path
-                  d="M7.98926 13.9538C5.83994 13.9538 3.69063 13.9538 1.54131 13.9538C1.48993 13.9538 1.43427 13.9538 1.38289 13.9538C1.09603 13.9453 0.980432 13.7513 1.12172 13.5066C1.567 12.7388 2.02084 11.971 2.4704 11.2074C4.20013 8.25426 5.92986 5.29692 7.66387 2.3438C7.68527 2.31005 7.7024 2.2763 7.72381 2.24255C7.89935 1.95568 8.11771 1.95568 8.28897 2.24677C10.4725 5.97192 12.6561 9.70129 14.8397 13.4264C15.0495 13.785 14.9424 13.9538 14.5143 13.9538C12.3393 13.9538 10.1643 13.9538 7.98926 13.9538ZM7.23143 5.97192C7.33419 7.01395 7.43695 8.07286 7.54399 9.13598C7.57824 9.4777 7.60821 9.82363 7.65102 10.1654C7.67671 10.3636 7.82656 10.4986 8.00211 10.5029C8.18193 10.5029 8.3275 10.3763 8.36175 10.178C8.3746 10.1063 8.38316 10.0346 8.38744 9.96285C8.51589 8.6677 8.64433 7.37254 8.7685 6.07739C8.78134 5.94239 8.78134 5.80317 8.76421 5.66817C8.69999 5.19989 8.43454 4.98474 7.95501 5.00161C7.53542 5.01427 7.28281 5.26739 7.24856 5.71458C7.24428 5.79052 7.24 5.87067 7.23572 5.97192H7.23143ZM8.7685 11.9668C8.7685 11.5407 8.41741 11.1947 7.98498 11.1947C7.55683 11.1947 7.20146 11.5491 7.20575 11.9668C7.20575 12.3928 7.55683 12.7346 7.98926 12.7346C8.42169 12.7346 8.77278 12.3886 8.7685 11.9625V11.9668Z"
-                  fill="#F9F487" />
-                <path
-                  d="M7.23145 5.9719C7.23574 5.87065 7.23574 5.79471 7.2443 5.71456C7.28283 5.26737 7.53116 5.01425 7.95075 5.00159C8.43028 4.98472 8.69573 5.19987 8.75995 5.66815C8.77708 5.80315 8.77708 5.94237 8.76423 6.07737C8.64007 7.37252 8.51163 8.66768 8.38318 9.96283C8.37462 10.0345 8.37034 10.1063 8.35749 10.178C8.32324 10.3763 8.17767 10.507 7.99784 10.5028C7.8223 10.5028 7.67245 10.3678 7.64676 10.1653C7.60395 9.82361 7.57398 9.47768 7.53972 9.13596C7.43269 8.07283 7.32993 7.01393 7.22717 5.9719H7.23145Z"
-                  fill="black" />
-                <path
-                  d="M8.76856 11.9667C8.76856 12.3886 8.42176 12.7388 7.98933 12.7388C7.55689 12.7388 7.21009 12.397 7.20581 11.9709C7.20581 11.5491 7.55689 11.1989 7.98505 11.1989C8.4132 11.1989 8.76428 11.5449 8.76856 11.9709V11.9667Z"
-                  fill="black" />
-              </g>
-              <defs>
-                <clipPath id="clip0_1391_3564">
-                  <rect width="16" height="14.0147" fill="white" transform="translate(0 0.985352)" />
-                </clipPath>
-              </defs>
-            </svg>
-            <span style="color: #000;
-              font-family: Roboto;
-              font-size: 16px;
-              font-style: normal;
-              font-weight: 400;
-              line-height: 14.4px; /* 90% */
-              letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Assessment':'Quiz'}} details
-              before clicking on add
-              Questions</span>
+            <ng-container *ngTemplateOutlet="assessmentWarningTpl"></ng-container>
           </div>
           <!-- is link enabled -->
           <div class="module-txt-block" *ngIf="isLinkEnabled">
@@ -482,89 +440,81 @@
             <span *ngIf="editResourceLinks == ''" class="invalid-text">This field is Required</span>
           </div>
           <!-- is pdf/video/audio/zip -->
-          <div class="module-txt-block thumnail-row margin-top-xs"
+          <div class="module-txt-block margin-top-s"
             *ngIf="isPdfOrAudioOrVedioEnabled&&content?.mimeType !== 'application/json'">
-            <div>
-              <img *ngIf="content?.mimeType !== 'video/mp4'" alt="" class="image max-width" height="144" width="256"
-                src="cbp-assets/images/default-white-background.png">
-              <img *ngIf="content?.mimeType === 'video/mp4'&&uploadVideoUrl==''" alt="" class="image max-width"
-                height="144" width="256" src="cbp-assets/images/default-white-background.png">
-              <div class="empty-file" *ngIf="uploadFileName != ''&&content?.mimeType !== 'video/mp4'">
-                <mat-icon title="Remove"
-                  class="material-icons margin-left-m text-medium edit-close-uploadIcon cursor-pointer"
-                  (click)="deleteUploadedFile();$event.stopPropagation()">close</mat-icon>
-                <div class="upload-file-name">
-                  <div style="flex: 0 0 auto;">
-                    <img alt="" class="uploaded-img" src="{{uploadIcon}}">
-                  </div>
-                  <div style="flex: 1 1 auto;padding:0.1rem 0 0 1em;">
-                    <p class="text-wrap">{{uploadFileName}}</p>
-                  </div>
-                </div>
-              </div>
-              <div *ngIf="uploadVideoUrl && content?.mimeType === 'video/mp4'">
-                <video #videoPlayer width="640px" height="360px" crossorigin="anonymous" [poster]="uploadVideoUrl"
-                  class="video-js" controls>
-                  <source [src]="uploadVideoUrl" type="video/mp4">
-                  <source [src]="uploadVideoUrl" type="application/x-mpegURL">
-                  <track kind="captions" [src]="uploadVideoUrl" srclang="en" label="English" default>
-                </video>
-              </div>
-              <div class="pdf" *ngIf="uploadFileName == ''">
-                <img alt="" class="pdf-img" src="{{resourceImg}}" (error)="changeToDefaultImg($event)">
+
+            <!-- No file yet — upload card -->
+            <ng-container *ngIf="uploadFileName == '' && !uploadVideoUrl">
+              <div class="mc-upload-card" (click)="pdfFile.click()">
                 <input #pdfFile (change)="uploadPdf($event.target.files[0]); pdfFile.value = null"
                   style="display: none;" accept="{{acceptType}}" type="file" />
-                <button (click)="pdfFile.click()" mat-raised-button
-                  class="pdf-button margin-top-m width-15 text-white ws-mat-primary-background mat-button-base save-btn-bottom">Upload
-                  File</button>
+                <!-- show resource-type icon only when set, otherwise use generic upload icon -->
+                <img *ngIf="resourceImg" class="mc-upload-type-icon" [src]="resourceImg" alt="" />
+                <mat-icon *ngIf="!resourceImg" class="mc-upload-icon-fallback">upload_file</mat-icon>
+                <button mat-stroked-button class="mc-upload-btn"
+                  (click)="pdfFile.click(); $event.stopPropagation()">
+                  <mat-icon>upload</mat-icon>
+                  Upload File
+                </button>
+                <span class="mc-upload-info">Files allowed: {{uploadText || 'PDF, MP3, MP4, ZIP'}} &nbsp;·&nbsp; Max. file size: 200 MB</span>
               </div>
-              <div class="margin-bottom-s" *ngIf="acceptType == '.pdf'">
-                <span style="color: #808080 !important;">Note : The PDF should have high resolution</span>
-                <span *ngIf="resourceImg == ''" class="invalid-text">This field is Required</span>
+              <span *ngIf="acceptType == '.pdf'" class="mc-upload-note">Note: The PDF should have high resolution</span>
+            </ng-container>
+
+            <!-- File uploaded (non-video) -->
+            <div class="mc-uploaded-row" *ngIf="uploadFileName != '' && content?.mimeType !== 'video/mp4'">
+              <div class="mc-uploaded-file-card">
+                <img alt="" class="uploaded-img" src="{{uploadIcon}}" />
+                <span class="text-wrap mc-uploaded-name">{{uploadFileName}}</span>
+                <button mat-icon-button class="mc-remove-file-btn"
+                  (click)="deleteUploadedFile(); $event.stopPropagation()" matTooltip="Remove file">
+                  <mat-icon>close</mat-icon>
+                </button>
               </div>
+              <span class="mc-upload-info">Files allowed: {{uploadText}} &nbsp;·&nbsp; Max. file size: 200 MB</span>
             </div>
-            <div *ngIf="uploadFileName == ''">
-              <div [ngClass]="acceptType == '.pdf' ? 'pdf-info':'file-info'">
-                Files allowed : {{uploadText}}<br> Max.file size : 200MB
-              </div>
+
+            <!-- Video uploaded -->
+            <div *ngIf="uploadVideoUrl && content?.mimeType === 'video/mp4'" class="mc-video-preview">
+              <video #videoPlayer width="100%" height="auto" crossorigin="anonymous"
+                [poster]="uploadVideoUrl" class="video-js" controls>
+                <source [src]="uploadVideoUrl" type="video/mp4">
+                <source [src]="uploadVideoUrl" type="application/x-mpegURL">
+                <track kind="captions" [src]="uploadVideoUrl" srclang="en" label="English" default>
+              </video>
             </div>
-            <div *ngIf="uploadFileName != ''">
-              <div [ngClass]="acceptType == '.pdf' ? 'pdf-upload-info':'file-upload-info'">
-                Files allowed : {{uploadText}}<br> Max.file size : 200MB
-              </div>
-            </div>
+
           </div>
-          <div class="module-txt-block" *ngIf="isPdfOrAudioOrVedioEnabled&&content?.mimeType !== 'application/json'">
-            <!-- <span style="color:#808080">Resource file</span><br> -->
-            <span *ngIf="!uploadFileName&&uploadFileName == ''" class="invalid-text">This field is Required</span>
+          <div class="module-txt-block" *ngIf="isLinkEnabled">
+            <label class="rd-checkbox-item">
+              <input type="checkbox" [(ngModel)]="isNewTab" [checked]="isNewTab" />
+              <span>Open link in new tab</span>
+            </label>
           </div>
-          <div class="module-txt-block margin-top-m">
-            <mat-checkbox *ngIf="isLinkEnabled" [(ngModel)]="isNewTab" [checked]="isNewTab"
-              style="margin-left: 0px;border-radius: 4px;" class="check-text">Open
-              link
-              in new tab</mat-checkbox>
-            <!-- <mat-checkbox *ngIf="isShowDownloadBtnEnabled" [(ngModel)]="isShowBtn" [checked]="isShowBtn"
-              style="margin-left: 0px; margin-top: 5px;" class="check-text">Show Download button</mat-checkbox> -->
+          <div class="module-txt-block" *ngIf="content?.isAssessment&&!isSelfAssessment">
+            <label class="rd-checkbox-item">
+              <input type="checkbox" [(ngModel)]="content.isCorrectAnswerPopUp" />
+              <span>Show Correct Answer Popup</span>
+            </label>
           </div>
-          <div class="margin-top-s module-txt-block" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
+          <div class="module-txt-block" *ngIf="content?.mimeType === 'application/json'&&isAddOrEdit">
             <button mat-raised-button
-              class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+              class="text-white ws-mat-primary-background mat-button-base save-btn-bottom"
               (click)="editAssessmentRes(content)">Edit {{content?.isAssessment?'Assessment':'Quiz'}}</button>
           </div>
-          <div class="margin-top-s module-txt-block" *ngIf="content?.mimeType === 'application/json'&&!isAddOrEdit">
+          <div class="module-txt-block" *ngIf="content?.mimeType === 'application/json'&&!isAddOrEdit">
             <button *ngIf="!isSelfAssessment" mat-raised-button
-              class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-              (click)="editAssessmentRes(content)">Add
-              {{content?.isAssessment?'Assessment':'Quiz'}}</button>
+              class="text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+              (click)="editAssessmentRes(content)">Add {{content?.isAssessment?'Assessment':'Quiz'}}</button>
             <button *ngIf="isSelfAssessment" mat-raised-button
-              class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+              class="text-white ws-mat-primary-background mat-button-base save-btn-bottom"
               (click)="editAssessmentRes(content)">Add Assessment</button>
           </div>
-          <span *ngIf="content?.mimeType === 'application/json&&!isSelfAssessment'"
+          <span *ngIf="content?.mimeType === 'application/json' && !isSelfAssessment"
             class="margin-top-s module-txt-block quiz-help-txt">Note: You will be taken to
             {{content?.isAssessment?'Assessment':'Quiz'}} builder
           </span>
-          <span *ngIf="content?.mimeType === 'application/json'&&isSelfAssessment"
+          <span *ngIf="content?.mimeType === 'application/json' && isSelfAssessment"
             class="margin-top-s module-txt-block quiz-help-txt">Note: You
             will be taken to Assessment builder
           </span>
@@ -573,27 +523,32 @@
           <div class="margin-top-s" *ngIf="isSaveModuleFormEnable">
             <span style="color:#808080" *ngIf="content?.contentType === 'Course'">Course Thumbnail</span>
           </div>
-          <div class="thumnail-row margin-top-xs" *ngIf="content?.contentType === 'CourseUnit'">
-            <div class="thumbnail-opt">
-              <div class="mat-app-background" (click)="uploadThumbnail.click()">
-                <img alt="" *ngIf="thumbnail" class="image max-width" height="150" width="256" [src]="thumbnail"
+          <div class="mc-thumbnail-row module-txt-block margin-top-s" *ngIf="content?.contentType === 'CourseUnit'">
+            <input type="file" #uploadThumbnail
+              (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null" style="display: none"
+              [accept]="imageTypes.toString()" />
+            <div class="mc-thumbnail-upload" (click)="uploadThumbnail.click()">
+              <ng-container *ngIf="thumbnail">
+                <img alt="Module thumbnail" class="mc-thumbnail-preview" [src]="thumbnail"
                   (error)="changeToDefaultImg($event)" />
-                <button *ngIf="!thumbnail" mat-raised-button class="mat-button-base thumbnail-btn-mt"
-                  style="height: fit-content;">
-                  + Add Thumbnail
+                <button mat-icon-button class="mc-thumbnail-replace-btn"
+                  (click)="$event.stopPropagation(); uploadThumbnail.click()"
+                  matTooltip="Replace thumbnail">
+                  <mat-icon>edit</mat-icon>
                 </button>
-                <input type="file" #uploadThumbnail
-                  (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null" style="display: none"
-                  [accept]="imageTypes.toString()" />
-              </div>
+              </ng-container>
+              <ng-container *ngIf="!thumbnail">
+                <mat-icon class="mc-thumbnail-icon">add_photo_alternate</mat-icon>
+                <span class="mc-thumbnail-label" i18n>+ Add Thumbnail</span>
+              </ng-container>
             </div>
-            <div class="thumbnail-help-block" i18n>
-              <ul class="margin-remove-bottom">
-                <li class="thumbnail-info">Thumbnail specifications:</li>
-                <li class="thumbnail-info">Maximum file size: 1 MB</li>
-                <li class="thumbnail-info">Resolution: 760 px * 400 px</li>
-                <li class="thumbnail-info">Thumbnail Ratio: 256(w)X 150(h)</li>
-                <li class="thumbnail-info" style="margin-bottom: 5px !important;">Files allowed: JPG, PNG</li>
+            <div class="mc-thumbnail-specs">
+              <p class="mc-thumbnail-specs-title" i18n>Thumbnail specifications</p>
+              <ul class="mc-thumbnail-specs-list">
+                <li i18n>Max file size: 1 MB</li>
+                <li i18n>Resolution: 760 × 400 px</li>
+                <li i18n>Ratio: 256(w) × 150(h)</li>
+                <li i18n>Formats: JPG, PNG</li>
               </ul>
             </div>
           </div>
@@ -638,79 +593,7 @@
               Quiz</button>
           </div>
 
-          <div *ngIf="showQuizForm" class="module-txt-block quiz-form">
-            <div class="tabs">
-              <div *ngFor="let question of videoQuestions; let i = index" class="tab"
-                [ngClass]="{'active-tab': i === activeTabIndex}" (click)="setActiveTab(i)"
-                (keydown)="handleKeyDown($event, i)">
-                Question {{i + 1}}
-                <img *ngIf="videoQuestions.length > 0 &&i === activeTabIndex" class="ml-2" loading="lazy"
-                  (click)="deleteQuestion(i)" (keydown)="deleteQuestion(activeTabIndex)" src="cbp-assets/icons/bin.svg"
-                  alt="delete-icon">
-              </div>
-            </div>
-            <div *ngFor="let question of videoQuestions; let i = index" class="question-form"
-              [ngClass]="{'active-form': i === activeTabIndex}">
-              <div class="duration-style margin-bottom-s timestamp">
-                <span class="timestamp-text">Timestamp:</span>
-                <input matInput class="numberInput" id="timestamp" type="number" [(ngModel)]="question.timestamp.hours"
-                  placeholder="hh" min="0" max="12" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
-                <div class="colon-block">:</div>
-                <input matInput class="numberInput" type="number" [(ngModel)]="question.timestamp.minutes"
-                  placeholder="mm" min="0" max="59" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
-                <div class="colon-block">:</div>
-                <input matInput class="numberInput" type="number" [(ngModel)]="question.timestamp.seconds"
-                  placeholder="ss" min="1" max="59" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
-              </div>
-              <div class="mb-2" *ngFor="let subQuestion of question.question; let j = index">
-                <div class="question">
-                  <textarea maxlength="100" rows="2" matInput [(ngModel)]="subQuestion.text"
-                    class="module-input question-text margin-top-s" placeholder="Question" autocomplete="off"
-                    maxlength="100"></textarea><br>
-                  <mat-hint class="mt-hint">{{ subQuestion.text.length }}/100</mat-hint><br>
-                </div>
-                <div class="flex flex-direction-column mb-2">
-                  <div class="options-header">
-                    <span class="video-quiz-text">Options</span>
-                  </div>
-                  <div class="options-note-container">
-                    <span class="options-note">Note: Check the correct answer circle only. Add notes to explain in the
-                      text field next to it.</span>
-                  </div>
-                </div>
-                <div class="mt-1 option-block" *ngFor="let option of subQuestion.options; let k = index">
-                  <div class="input-container">
-                    <div class="option-container">
-                      <input type="radio" name="isCorrect-{{i}}-{{j}}" [checked]="option.isCorrect"
-                        (click)="setCorrectOption(i, j, k)" class="radio-button">
-                      <input class="option-input" matInput type="text" [(ngModel)]="option.text"
-                        placeholder="Add Option" autocomplete="off" maxlength="30">
-                      <img loading="lazy" (click)="deleteOption(i, j, k)"
-                        src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-icon"
-                        class="option-delete-icon">
-                    </div>
-                    <mat-hint class="mt-hint">{{ option.text.length }}/30</mat-hint>
-                  </div>
-                  <div class="answer-info-container">
-                    <input class="option-input option-answerinfo-input pl-0" matInput type="text"
-                      [(ngModel)]="option.answerInfo" placeholder="Add Note" autocomplete="off" maxlength="80">
-                    <mat-hint class="mt-hint">{{ option.answerInfo.length }}/80</mat-hint>
-                  </div>
-                </div>
-                <button *ngIf="subQuestion.options.length < 4" class="add-option-btn" (click)="addOption(i, j)"
-                  [disabled]="subQuestion.options.length >= 4">
-                  <img class="delete-icon" loading="lazy" src="cbp-assets/icons/ant-design_plus-circle-outlined.svg"
-                    alt="delete-icons" />
-                  Add Option
-                </button>
-                <button [disabled]="(uploadFileName?uploadFileName == '':true)" mat-raised-button
-                  *ngIf="moduleButtonName === 'Save'&&content?.contentType !== 'Collection' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course'&& !isLinkEnabled && content?.mimeType !== 'application/json'"
-                  class="width-15 text-white   mat-button-base save-btn-bottom resourcePdfSave qweqwe"
-                  (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab,isShowBtn,content?.mimeType)">
-                  {{moduleButtonName}}</button>
-              </div>
-            </div>
-          </div>
+          <ng-container *ngTemplateOutlet="videoQuizFormTpl; context: { useResourceSave: false }"></ng-container>
         </div>
 
         <!--Onclick of reosurce type page-->
@@ -721,200 +604,169 @@
               <span class="course-sub-title">Resource Details</span>
             </div>
             <div class="save-btn-block">
-              <img class="delete-icon" loading="lazy" (click)="takeActions('delete', content, $event.type)"
-                src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-iconsss" />
+              <button mat-icon-button class="mc-delete-icon-btn" (click)="takeActions('delete', content, $event.type)"
+                matTooltip="Delete">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
               <button *ngIf="isLinkEnabled||isAssessmentOrQuizEnabled"
                 [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
                 class="width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
                 (click)="resourceLinkSave()">Save</button>
-              <div *ngIf="isPdfOrAudioOrVedioEnabled"><button [disabled]=" uploadFileName==''" mat-raised-button
-                  class="width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
-                  (click)="resourcePdfSave()">Save</button>
-              </div>
+              <button *ngIf="isPdfOrAudioOrVedioEnabled" [disabled]="uploadFileName==''" mat-raised-button
+                class="width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
+                (click)="resourcePdfSave()">Save</button>
             </div>
           </div>
           <div>
             <!--link form start-->
             <form [formGroup]="resourceLinkForm" class="resource-details-form"
               *ngIf="isLinkEnabled||isAssessmentOrQuizEnabled">
-              <mat-form-field appearance="outline" class="module-txt-block margin-top-xs field-width"
-                style="margin-bottom: 0vh;">
-                <input class="" matInput #name formControlName="name" maxlength="100" i18n-placeholder
-                  placeholder="Name of the resource" />
-                <mat-hint class="mt-hint">{{ this.resourceLinkForm.value.name.length }}/100</mat-hint>
-              </mat-form-field>
-              <span *ngIf="resourceLinkForm.get('name').hasError('required')" class="module-txt-block invalid-text">This
-                field is
-                Required</span>
-              <div class="module-txt-block" *ngIf="isAssessmentOrQuizEnabled&&!isSelfAssessment">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none">
-                  <g clip-path="url(#clip0_1391_3564)">
-                    <path
-                      d="M7.9936 14.9957C5.80575 14.9957 3.61362 14.9957 1.42577 14.9957C0.637968 14.9957 0.0685271 14.5064 0.00430449 13.7808C-0.0213846 13.4686 0.0770902 13.1943 0.235506 12.9286C1.39579 10.95 2.55608 8.97138 3.71637 6.98858C4.75678 5.21249 5.79719 3.4364 6.84187 1.66031C7.15442 1.13296 7.69818 0.888275 8.28903 1.01484C8.69577 1.09921 8.98263 1.33968 9.18814 1.69405C10.5497 4.02702 11.9155 6.35576 13.2813 8.68451C14.1162 10.1062 14.9468 11.5279 15.7817 12.9497C16.3597 13.9368 15.7389 14.9957 14.5786 14.9957C12.3821 14.9957 10.1857 14.9957 7.98932 14.9957H7.9936ZM7.9936 13.9537C10.1686 13.9537 12.3436 13.9537 14.5186 13.9537C14.9468 13.9537 15.0538 13.7808 14.844 13.4264C12.6604 9.70123 10.4769 5.97186 8.29331 2.24671C8.12205 1.9514 7.90797 1.9514 7.72815 2.24249C7.70674 2.27624 7.68961 2.30999 7.66821 2.34374C5.93848 5.29686 4.20875 8.2542 2.47474 11.2073C2.02518 11.9751 1.57562 12.7387 1.12606 13.5065C0.98477 13.7512 1.10037 13.9453 1.38723 13.9537C1.43861 13.9537 1.49427 13.9537 1.54565 13.9537C3.69497 13.9537 5.84428 13.9537 7.9936 13.9537Z"
-                      fill="black" />
-                    <path
-                      d="M7.98926 13.9538C5.83994 13.9538 3.69063 13.9538 1.54131 13.9538C1.48993 13.9538 1.43427 13.9538 1.38289 13.9538C1.09603 13.9453 0.980432 13.7513 1.12172 13.5066C1.567 12.7388 2.02084 11.971 2.4704 11.2074C4.20013 8.25426 5.92986 5.29692 7.66387 2.3438C7.68527 2.31005 7.7024 2.2763 7.72381 2.24255C7.89935 1.95568 8.11771 1.95568 8.28897 2.24677C10.4725 5.97192 12.6561 9.70129 14.8397 13.4264C15.0495 13.785 14.9424 13.9538 14.5143 13.9538C12.3393 13.9538 10.1643 13.9538 7.98926 13.9538ZM7.23143 5.97192C7.33419 7.01395 7.43695 8.07286 7.54399 9.13598C7.57824 9.4777 7.60821 9.82363 7.65102 10.1654C7.67671 10.3636 7.82656 10.4986 8.00211 10.5029C8.18193 10.5029 8.3275 10.3763 8.36175 10.178C8.3746 10.1063 8.38316 10.0346 8.38744 9.96285C8.51589 8.6677 8.64433 7.37254 8.7685 6.07739C8.78134 5.94239 8.78134 5.80317 8.76421 5.66817C8.69999 5.19989 8.43454 4.98474 7.95501 5.00161C7.53542 5.01427 7.28281 5.26739 7.24856 5.71458C7.24428 5.79052 7.24 5.87067 7.23572 5.97192H7.23143ZM8.7685 11.9668C8.7685 11.5407 8.41741 11.1947 7.98498 11.1947C7.55683 11.1947 7.20146 11.5491 7.20575 11.9668C7.20575 12.3928 7.55683 12.7346 7.98926 12.7346C8.42169 12.7346 8.77278 12.3886 8.7685 11.9625V11.9668Z"
-                      fill="#F9F487" />
-                    <path
-                      d="M7.23145 5.9719C7.23574 5.87065 7.23574 5.79471 7.2443 5.71456C7.28283 5.26737 7.53116 5.01425 7.95075 5.00159C8.43028 4.98472 8.69573 5.19987 8.75995 5.66815C8.77708 5.80315 8.77708 5.94237 8.76423 6.07737C8.64007 7.37252 8.51163 8.66768 8.38318 9.96283C8.37462 10.0345 8.37034 10.1063 8.35749 10.178C8.32324 10.3763 8.17767 10.507 7.99784 10.5028C7.8223 10.5028 7.67245 10.3678 7.64676 10.1653C7.60395 9.82361 7.57398 9.47768 7.53972 9.13596C7.43269 8.07283 7.32993 7.01393 7.22717 5.9719H7.23145Z"
-                      fill="black" />
-                    <path
-                      d="M8.76856 11.9667C8.76856 12.3886 8.42176 12.7388 7.98933 12.7388C7.55689 12.7388 7.21009 12.397 7.20581 11.9709C7.20581 11.5491 7.55689 11.1989 7.98505 11.1989C8.4132 11.1989 8.76428 11.5449 8.76856 11.9709V11.9667Z"
-                      fill="black" />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_1391_3564">
-                      <rect width="16" height="14.0147" fill="white" transform="translate(0 0.985352)" />
-                    </clipPath>
-                  </defs>
-                </svg>
-                <span style="color: #000;
-font-family: Roboto;
-font-size: 16px;
-font-style: normal;
-font-weight: 400;
-line-height: 14.4px; /* 90% */
-letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Assessment':'Quiz'}} details before
-                  clicking on add Questions</span>
+
+              <!-- Name of the resource -->
+              <div class="rd-name-row">
+                <input type="text" #name formControlName="name" maxlength="100"
+                  placeholder="Name of the resource" class="module-input" autocomplete="off" />
+                <div class="rd-field-footer">
+                  <span *ngIf="resourceLinkForm.get('name').hasError('required')" class="invalid-text">This field is Required</span>
+                  <span class="mt-hint">{{ resourceLinkForm.value.name.length }}/100</span>
+                </div>
               </div>
 
-              <div class="module-txt-block" style="display:flex; flex-direction:row"
-                *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
-                <mat-form-field appearance="outline" class="margin-top-xs field-width">
-                  <input class="" matInput #artifactUrl [(ngModel)]="editResourceLinks" formControlName="artifactUrl"
-                    maxlength="100" i18n-placeholder placeholder="Link" />
-                </mat-form-field>
-
+              <!-- Save-before-adding warning (assessment / quiz) -->
+              <div *ngIf="isAssessmentOrQuizEnabled && !isSelfAssessment">
+                <ng-container *ngTemplateOutlet="assessmentWarningTpl"></ng-container>
               </div>
-              <span
-                *ngIf="resourceLinkForm.get('artifactUrl').hasError('required')&&isLinkEnabled && !isAssessmentOrQuizEnabled"
-                class="module-txt-block invalid-text">This field
-                is Required</span>
-              <div class="margin-bottom-s module-txt-block" *ngIf="!isAssessmentOrQuizEnabled">
-                <span style="color: #808080 !important;">Note : A link can be a URL or an Youtube embeded link</span>
+
+              <!-- Show Correct Answer Popup (assessment only) -->
+              <label class="rd-checkbox-item"
+                *ngIf="isAssessmentOrQuizEnabled && content?.isAssessment && !isSelfAssessment">
+                <input type="checkbox" [(ngModel)]="content.isCorrectAnswerPopUp"
+                  [ngModelOptions]="{standalone: true}" />
+                <span>Show Correct Answer Popup</span>
+              </label>
+
+              <!-- Link URL (link type only) -->
+              <div class="rd-name-row" *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
+                <input type="text" #artifactUrl [(ngModel)]="editResourceLinks" formControlName="artifactUrl"
+                  maxlength="100" placeholder="Link" class="module-input" autocomplete="off" />
+                <span *ngIf="resourceLinkForm.get('artifactUrl').hasError('required')" class="invalid-text">This field is Required</span>
               </div>
-              <mat-checkbox *ngIf="isLinkEnabled" class="module-txt-block check-texts"
-                formControlName="isIframeSupported">Open link in new
-                tab</mat-checkbox>
 
-
-              <!--validation div for resource link-->
-
-              <div class="margin-top-s module-txt-block" *ngIf="isAssessmentOrQuizEnabled">
-                <button mat-raised-button
-                  class="margin-top-m text-white ws-mat-primary-background mat-button-base save-btn-bottom"
-                  (click)="addAssessment()">Add Questions</button>
-
-              </div>
-              <span class="margin-top-s module-txt-block quiz-help-txt">Note: You will be taken to
-                {{content?.isAssessment?'Assessment':'Quiz'}} builder
+              <!-- Link hint (link type only) -->
+              <span class="quiz-help-txt" *ngIf="!isAssessmentOrQuizEnabled">
+                Note : A link can be a URL or a Youtube embedded link
               </span>
 
-              <div class="module-txt-block duration-style margin-top-s" *ngIf="!isAssessmentOrQuizEnabled">
+              <!-- Open in new tab (link type only) -->
+              <label class="rd-checkbox-item" *ngIf="isLinkEnabled">
+                <input type="checkbox" formControlName="isIframeSupported" />
+                <span>Open link in new tab</span>
+              </label>
+
+              <!-- Add Questions button (assessment / quiz) -->
+              <div *ngIf="isAssessmentOrQuizEnabled">
+                <button mat-raised-button
+                  class="text-white ws-mat-primary-background mat-button-base save-btn-bottom"
+                  (click)="addAssessment()">Add Questions</button>
+              </div>
+
+              <!-- Builder note (assessment / quiz only) -->
+              <span class="quiz-help-txt" *ngIf="isAssessmentOrQuizEnabled">
+                Note: You will be taken to {{content?.isAssessment ? 'Assessment' : 'Quiz'}} builder
+              </span>
+
+              <!-- Duration (link type only) -->
+              <div class="duration-style" *ngIf="!isAssessmentOrQuizEnabled">
                 <span class="duration-text">Duration:</span>
                 <input matInput class="numberInput" [(ngModel)]="hours" [ngModelOptions]="{ standalone: true }"
-                  (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())" placeholder="hh"
-                  type="number" min="0" step="1"
+                  (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())"
+                  placeholder="hh" type="number" min="0" step="1"
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 <div class="colon-block">:</div>
-
                 <input matInput class="numberInput" [(ngModel)]="minutes" [ngModelOptions]="{ standalone: true }"
-                  (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())" placeholder="mm"
-                  type="number" min="0" max="59" step="1"
+                  (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())"
+                  placeholder="mm" type="number" min="0" max="59" step="1"
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
                 <div class="colon-block">:</div>
-
                 <input matInput class="numberInput" [(ngModel)]="seconds" [ngModelOptions]="{ standalone: true }"
-                  (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())" placeholder="ss"
-                  type="number" min="0" max="59" step="1"
+                  (keyup)="this.resourceLinkForm.controls.duration.setValue(this.timeToSeconds())"
+                  placeholder="ss" type="number" min="0" max="59" step="1"
                   onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" />
               </div>
-              <span *ngIf="resourceLinkForm.get('duration').hasError('required')&&!isAssessmentOrQuizEnabled"
-                class="module-txt-block invalid-text">This field
-                is Required</span>
-              <div>
-                <!--
-                <button [disabled]="editResourceLinks.length==0&&!isAssessmentOrQuizEnabled" mat-raised-button
-                  class="margin-top-m width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
-                  (click)="resourceLinkSave()">Save</button> -->
-              </div>
+              <span *ngIf="resourceLinkForm.get('duration').hasError('required') && !isAssessmentOrQuizEnabled"
+                class="invalid-text">This field is Required</span>
 
             </form>
             <!--link form end-->
             <!--PDF/audio/vedio form start-->
             <form [formGroup]="resourcePdfForm" class="resource-details-form" *ngIf="isPdfOrAudioOrVedioEnabled">
-              <div class="flex align-item-center gap-50">
-                <mat-form-field appearance="outline" class="module-txt-block margin-top-xs field-width"
-                  style="margin-bottom: 0vh;">
-                  <input class="" matInput #name formControlName="name" maxlength="100" i18n-placeholder
-                    placeholder="Name of the resource" />
-
-                  <mat-hint style="padding: 0px;" class="mt-hint">{{ this.resourcePdfForm.value.name.length
-                    }}/100</mat-hint>
-                </mat-form-field>
-                <ng-container
-                  *ngIf="content?.contentType === 'Resource'&&uploadVideoUrl &&content?.mimeType === 'video/mp4'">
-                  <div class="module-txt-block margin-top-xs">
-                    <button class="re-upload-btn text-white  mat-button-base save-btn-bottom"
-                      (click)="deleteUploadedFile();$event.stopPropagation()"><img alt="" class="image max-width"
-                        src="cbp-assets/icons/mage_reload.svg">Re-upload</button>
-                  </div>
-                </ng-container>
-              </div>
-              <span *ngIf="resourcePdfForm.get('name').hasError('required')" class="module-txt-block invalid-text">This
-                field
-                is Required</span>
-
-              <div class="module-txt-block thumnail-row margin-top-xs">
-                <div>
-                  <img *ngIf="content?.mimeType !== 'video/mp4'" alt="" class="image max-width" height="144" width="256"
-                    src="cbp-assets/images/default-white-background.png">
-                  <img *ngIf="content?.mimeType === 'video/mp4'&&uploadVideoUrl==''" alt="" class="image max-width"
-                    height="144" width="256" src="cbp-assets/images/default-white-background.png">
-                  <ng-container *ngIf="uploadFileName != ''&&content?.mimeType !== 'video/mp4'">
-                    <mat-icon class="material-icons margin-left-m text-medium close-uploadIcon"
-                      (click)="deleteUploadedFile();$event.stopPropagation()">close</mat-icon>
-                    <div class="upload-file-name">
-                      <div style="flex: 0 0 auto;">
-                        <img alt="" class="uploaded-img" src="{{uploadIcon}}">
-                      </div>
-                      <div style="flex: 1 1 auto;padding:0.1rem 0 0 1em;">
-                        <p class="text-wrap">{{uploadFileName}}</p>
-                      </div>
-                    </div>
-                  </ng-container>
-                  <div class="pdf" *ngIf="uploadFileName == ''">
-                    <img alt="" class="pdf-img" src="{{resourceImg}}" (error)="changeToDefaultImg($event)">
-                    <input class="" #pdfFile (change)="uploadPdf($event.target.files[0]); pdfFile.value = null"
-                      style="display: none;" accept="{{acceptType}}" type="file" />
-                    <button (click)="pdfFile.click()" mat-raised-button
-                      class="pdf-button margin-top-m width-15 text-white  mat-button-base save-btn-bottom uploadPdfButton">Upload
-                      File</button>
-                  </div>
-                  <div class="margin-bottom-s" *ngIf="acceptType == 'pdf'">
-                    <span style="color: #808080 !important;">Note : The PDF should have high resolution</span>
+              <!-- Name row + optional re-upload (video only) -->
+              <div class="rd-pdf-name-row">
+                <div class="rd-name-row" style="flex:1;min-width:0;">
+                  <input type="text" #name formControlName="name" maxlength="100"
+                    placeholder="Name of the resource" class="module-input" autocomplete="off" />
+                  <div class="rd-field-footer">
+                    <span *ngIf="resourcePdfForm.get('name').hasError('required')" class="invalid-text">This field is Required</span>
+                    <span class="mt-hint">{{ resourcePdfForm.value.name.length }}/100</span>
                   </div>
                 </div>
-                <div *ngIf="uploadVideoUrl && content?.mimeType === 'video/mp4'">
-                  <video #videoPlayer width="640px" height="360px" crossorigin="anonymous" [poster]="uploadVideoUrl"
-                    class="video-js" controls>
+                <ng-container
+                  *ngIf="content?.contentType === 'Resource' && uploadVideoUrl && content?.mimeType === 'video/mp4'">
+                  <button class="re-upload-btn mat-button-base"
+                    (click)="deleteUploadedFile();$event.stopPropagation()">
+                    <img alt="" src="cbp-assets/icons/mage_reload.svg" style="width:16px;height:16px;">Re-upload
+                  </button>
+                </ng-container>
+              </div>
+              <!-- No file yet — upload card -->
+              <div class="module-txt-block margin-top-s">
+                <ng-container *ngIf="uploadFileName == '' && !uploadVideoUrl">
+                  <div class="mc-upload-card" (click)="pdfFile2.click()">
+                    <input #pdfFile2 (change)="uploadPdf($event.target.files[0]); pdfFile2.value = null"
+                      style="display: none;" accept="{{acceptType}}" type="file" />
+                    <img *ngIf="resourceImg" class="mc-upload-type-icon" [src]="resourceImg" alt="" />
+                    <mat-icon *ngIf="!resourceImg" class="mc-upload-icon-fallback">upload_file</mat-icon>
+                    <button mat-stroked-button class="mc-upload-btn"
+                      (click)="pdfFile2.click(); $event.stopPropagation()">
+                      <mat-icon>upload</mat-icon>
+                      Upload File
+                    </button>
+                    <span class="mc-upload-info">Files allowed: {{uploadText || 'PDF, MP3, MP4, ZIP'}} &nbsp;·&nbsp; Max. file size: 200 MB</span>
+                  </div>
+                  <span *ngIf="acceptType == '.pdf'" class="mc-upload-note">Note: The PDF should have high resolution</span>
+                </ng-container>
+
+                <!-- File uploaded (non-video) -->
+                <div class="mc-uploaded-row" *ngIf="uploadFileName != '' && content?.mimeType !== 'video/mp4'">
+                  <div class="mc-uploaded-file-card">
+                    <img alt="" class="uploaded-img" src="{{uploadIcon}}" />
+                    <span class="text-wrap mc-uploaded-name">{{uploadFileName}}</span>
+                    <button mat-icon-button class="mc-remove-file-btn"
+                      (click)="deleteUploadedFile(); $event.stopPropagation()" matTooltip="Remove file">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                  <span class="mc-upload-info">Files allowed: {{uploadText}} &nbsp;·&nbsp; Max. file size: 200 MB</span>
+                </div>
+
+                <!-- Video uploaded -->
+                <div *ngIf="uploadVideoUrl && content?.mimeType === 'video/mp4'" class="mc-video-preview">
+                  <video #videoPlayer2 width="100%" height="auto" crossorigin="anonymous"
+                    [poster]="uploadVideoUrl" class="video-js" controls>
                     <source [src]="uploadVideoUrl" type="video/mp4">
                     <source [src]="uploadVideoUrl" type="application/x-mpegURL">
                     <track kind="captions" [src]="uploadVideoUrl" srclang="en" label="English" default>
                   </video>
                 </div>
-                <div [ngClass]="acceptType == '.pdf'&&uploadFileName !== ''?'pdf-new-info':'file-new-info'">
-                  Files allowed : {{uploadText}}<br> Max.file size : 200MB
-                </div>
+
+                <span *ngIf="isSaveModuleFormEnable && uploadFileName == ''" class="invalid-text mc-upload-error">
+                  This field is Required
+                </span>
               </div>
-              <div class="margin-top-s module-txt-block" *ngIf="isSaveModuleFormEnable">
-                <!-- <span style="color:#808080">Resource file</span><br> -->
-                <span *ngIf="uploadFileName == ''" class="invalid-text">This field is Required</span>
-              </div>
-              <div class="margin-top-m" style="display:flex; flex-direction:row" *ngIf="isLinkEnabled">
-                <mat-checkbox class="module-txt-block check-text" formControlName="isIframeSupported">Open link
-                  in new tab</mat-checkbox>
-              </div>
+              <label class="rd-checkbox-item" *ngIf="isLinkEnabled">
+                <input type="checkbox" formControlName="isIframeSupported" />
+                <span>Open link in new tab</span>
+              </label>
               <!-- <div class="margin-top-m" style="display:flex; flex-direction:row" *ngIf="isShowDownloadBtnEnabled">
                 <mat-checkbox class="module-txt-block" formControlName="showDownloadBtn">Show
                   Download Button</mat-checkbox>
@@ -954,130 +806,171 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Ass
                   Quiz</button>
               </div>
 
-              <div *ngIf="showQuizForm&&content?.mimeType === 'video/mp4'" class="module-txt-block quiz-form">
-                <div class="tabs">
-                  <div *ngFor="let question of videoQuestions; let i = index" class="tab"
-                    [ngClass]="{'active-tab': i === activeTabIndex}" (click)="setActiveTab(i)"
-                    (keydown)="handleKeyDown($event, i)">
-                    Question {{i + 1}}
-                    <img *ngIf="videoQuestions.length > 0 && i === activeTabIndex" class="ml-2" loading="lazy"
-                      (click)="deleteQuestion(i)" (keydown)="deleteQuestion(activeTabIndex)"
-                      src="cbp-assets/icons/bin.svg" alt="delete-icon">
-                  </div>
-                </div>
-                <div *ngFor="let question of videoQuestions; let i = index" class="question-form"
-                  [ngClass]="{'active-form': i === activeTabIndex}">
-                  <div class="duration-style margin-bottom-s timestamp">
-                    <span class="timestamp-text">Timestamp:</span>
-                    <input matInput class="numberInput" id="timestamp" type="number"
-                      [(ngModel)]="question.timestamp.hours" [ngModelOptions]="{standalone: true}" placeholder="hh"
-                      min="0" max="12" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
-                    <div class="colon-block">:</div>
-                    <input matInput class="numberInput" type="number" [(ngModel)]="question.timestamp.minutes"
-                      [ngModelOptions]="{standalone: true}" placeholder="mm" min="0" max="59" step="1"
-                      (ngModelChange)="updateTimestampInSeconds(i)">
-                    <div class="colon-block">:</div>
-                    <input matInput class="numberInput" type="number" [(ngModel)]="question.timestamp.seconds"
-                      [ngModelOptions]="{standalone: true}" placeholder="ss" min="1" max="59" step="1"
-                      (ngModelChange)="updateTimestampInSeconds(i)">
-                  </div>
-                  <div class="mb-2" *ngFor="let subQuestion of question.question; let j = index">
-                    <div class="question">
-                      <textarea maxlength="100" rows="2" matInput [(ngModel)]="subQuestion.text"
-                        [ngModelOptions]="{standalone: true}" class="module-input question-text margin-top-s"
-                        placeholder="Question" autocomplete="off" maxlength="100"></textarea><br>
-                      <mat-hint class="mt-hint">{{ subQuestion.text.length }}/100</mat-hint><br>
-                    </div>
-                    <div class="flex flex-direction-column mb-2">
-                      <div class="options-header">
-                        <span class="video-quiz-text">Options</span>
-                      </div>
-                      <div class="options-note-container">
-                        <span class="options-note">Note: Check the correct answer circle only. Add notes to explain in
-                          the text field next to it.</span>
-                      </div>
-                    </div>
-                    <div class="mt-1 option-block" *ngFor="let option of subQuestion.options; let k = index">
-                      <div class="input-container">
-                        <div class="option-container">
-                          <input type="radio" name="isCorrect-{{i}}-{{j}}" [checked]="option.isCorrect"
-                            (click)="setCorrectOption(i, j, k)" class="radio-button">
-                          <input class="option-input" matInput type="text" [(ngModel)]="option.text"
-                            [ngModelOptions]="{standalone: true}" placeholder="Add Option" autocomplete="off"
-                            maxlength="30">
-                          <img loading="lazy" (click)="deleteOption(i, j, k)"
-                            src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-icon"
-                            class="option-delete-icon">
-                        </div>
-                        <mat-hint class="mt-hint">{{ option.text.length }}/30</mat-hint>
-                      </div>
-                      <div class="answer-info-container">
-                        <input class="option-input option-answerinfo-input pl-0" matInput type="text"
-                          [(ngModel)]="option.answerInfo" [ngModelOptions]="{standalone: true}" placeholder="Add Note"
-                          autocomplete="off" maxlength="80">
-                        <mat-hint class="mt-hint">{{ option.answerInfo.length }}/80</mat-hint>
-                      </div>
-                    </div>
-                    <button *ngIf="subQuestion.options.length < 4" class="add-option-btn" (click)="addOption(i, j)"
-                      [disabled]="subQuestion.options.length >= 4"><img class="delete-icon" loading="lazy"
-                        src="cbp-assets/icons/ant-design_plus-circle-outlined.svg" alt="delete-iconsss" />Add
-                      Option</button>
-                    <div *ngIf="isPdfOrAudioOrVedioEnabled"><button [disabled]=" uploadFileName==''" mat-raised-button
-                        class="width-15 mb-2 text-white mat-button-base save-btn-bottom resourcePdfSave"
-                        (click)="resourcePdfSave()">Save</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ng-container *ngTemplateOutlet="videoQuizFormTpl; context: { useResourceSave: true }"></ng-container>
 
             </form>
           </div>
         </div>
         <!--Resource types page -->
-        <div class="resource-right-content" *ngIf="isResourceTypeEnabled && showAddModuleForm">
-          <div class="module-resource-title-block">
-            <div>
-              <span class="course-title">Select Resourse Type</span>
+        <div class="mc-resource-type-panel" *ngIf="isResourceTypeEnabled && showAddModuleForm">
+          <!-- Header: mc-card-header pattern -->
+          <div class="mc-card-header mc-resource-type-header">
+            <div class="mc-card-icon">
+              <mat-icon>perm_media</mat-icon>
             </div>
-            <div class="save-btn-block">
-              <button mat-raised-button class="text-white   mat-button-base save-btn-bottom cancelResouceSelection"
-                (click)="cancelResouceSelection()">
-                Cancel</button>
+            <div class="mc-card-meta">
+              <span class="mc-card-title">Select Resource Type</span>
+              <span class="mc-card-sub">Choose the format for your resource content</span>
             </div>
-          </div>
-          <div class="resource-selection-type">
-            <div *ngIf="!isSelfAssessment" class="margin-top-m margin-bottom-s">
-              <span class="learnering-format-txt">Learning Format:</span>
-            </div>
-            <div *ngIf="!isSelfAssessment" style="display:flex;">
-              <div *ngFor="let list of contentList">
-                <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
-                  <div class="list-boxes">
-                    <img loading="lazy" [src]="list.icon" alt="icon" />
-                  </div>
-                  <div class="icon-text cursor-pointer" matListItemTitle>{{list.name}}</div>
-                </div>
-              </div>
-            </div>
-            <div class="margin-top-l margin-bottom-s">
-              <span class="learnering-format-txt">Access your learner:</span>
-            </div>
-            <div style="display:flex;">
-              <div class="accessList-block" *ngFor="let list of accessList">
-                <div class="icon-contents margin-right-s" (click)="createResourseContent(list.name,list.type)">
-                  <div class="list-boxes">
-                    <img loading="lazy" [src]="list.icon" alt="icon" />
-                  </div>
-                  <div class="icon-text cursor-pointer" matListItemTitle>{{list.name}}</div>
-                </div>
-                <div class="accessList-help">
-                  <span class="accessList-help-txt">{{list.text}}</span>
-                </div>
-              </div>
-            </div>
+            <button mat-stroked-button class="mc-cancel-resource-btn" (click)="cancelResouceSelection()">
+              Cancel
+            </button>
           </div>
 
+          <!-- Content type grid -->
+          <div class="mc-resource-type-body">
+            <ng-container *ngIf="!isSelfAssessment">
+              <p class="mc-section-label">Learning Format</p>
+              <div class="mc-format-grid">
+                <div class="mc-format-item" *ngFor="let list of contentList"
+                  (click)="createResourseContent(list.name, list.type)" role="button" tabindex="0">
+                  <div class="mc-format-icon-box">
+                    <img loading="lazy" [src]="list.icon" [alt]="list.name" />
+                  </div>
+                  <span class="mc-format-label">{{list.name}}</span>
+                </div>
+              </div>
+            </ng-container>
+
+            <p class="mc-section-label">Assess your Learners</p>
+            <div class="mc-assess-grid">
+              <div class="mc-assess-item" *ngFor="let list of accessList"
+                (click)="createResourseContent(list.name, list.type)" role="button" tabindex="0">
+                <div class="mc-assess-item-inner">
+                  <div class="mc-format-icon-box">
+                    <img loading="lazy" [src]="list.icon" [alt]="list.name" />
+                  </div>
+                  <span class="mc-format-label">{{list.name}}</span>
+                </div>
+                <p class="mc-assess-help">{{list.text}}</p>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- ── Shared template: assessment/quiz "save before adding questions" warning ── -->
+        <ng-template #assessmentWarningTpl>
+          <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none">
+              <g clip-path="url(#clip0_warn)">
+                <path d="M7.9936 14.9957C5.80575 14.9957 3.61362 14.9957 1.42577 14.9957C0.637968 14.9957 0.0685271 14.5064 0.00430449 13.7808C-0.0213846 13.4686 0.0770902 13.1943 0.235506 12.9286C1.39579 10.95 2.55608 8.97138 3.71637 6.98858C4.75678 5.21249 5.79719 3.4364 6.84187 1.66031C7.15442 1.13296 7.69818 0.888275 8.28903 1.01484C8.69577 1.09921 8.98263 1.33968 9.18814 1.69405C10.5497 4.02702 11.9155 6.35576 13.2813 8.68451C14.1162 10.1062 14.9468 11.5279 15.7817 12.9497C16.3597 13.9368 15.7389 14.9957 14.5786 14.9957C12.3821 14.9957 10.1857 14.9957 7.98932 14.9957H7.9936ZM7.9936 13.9537C10.1686 13.9537 12.3436 13.9537 14.5186 13.9537C14.9468 13.9537 15.0538 13.7808 14.844 13.4264C12.6604 9.70123 10.4769 5.97186 8.29331 2.24671C8.12205 1.9514 7.90797 1.9514 7.72815 2.24249C7.70674 2.27624 7.68961 2.30999 7.66821 2.34374C5.93848 5.29686 4.20875 8.2542 2.47474 11.2073C2.02518 11.9751 1.57562 12.7387 1.12606 13.5065C0.98477 13.7512 1.10037 13.9453 1.38723 13.9537C1.43861 13.9537 1.49427 13.9537 1.54565 13.9537C3.69497 13.9537 5.84428 13.9537 7.9936 13.9537Z" fill="black"/>
+                <path d="M7.98926 13.9538C5.83994 13.9538 3.69063 13.9538 1.54131 13.9538C1.48993 13.9538 1.43427 13.9538 1.38289 13.9538C1.09603 13.9453 0.980432 13.7513 1.12172 13.5066C1.567 12.7388 2.02084 11.971 2.4704 11.2074C4.20013 8.25426 5.92986 5.29692 7.66387 2.3438C7.68527 2.31005 7.7024 2.2763 7.72381 2.24255C7.89935 1.95568 8.11771 1.95568 8.28897 2.24677C10.4725 5.97192 12.6561 9.70129 14.8397 13.4264C15.0495 13.785 14.9424 13.9538 14.5143 13.9538C12.3393 13.9538 10.1643 13.9538 7.98926 13.9538ZM7.23143 5.97192C7.33419 7.01395 7.43695 8.07286 7.54399 9.13598C7.57824 9.4777 7.60821 9.82363 7.65102 10.1654C7.67671 10.3636 7.82656 10.4986 8.00211 10.5029C8.18193 10.5029 8.3275 10.3763 8.36175 10.178C8.3746 10.1063 8.38316 10.0346 8.38744 9.96285C8.51589 8.6677 8.64433 7.37254 8.7685 6.07739C8.78134 5.94239 8.78134 5.80317 8.76421 5.66817C8.69999 5.19989 8.43454 4.98474 7.95501 5.00161C7.53542 5.01427 7.28281 5.26739 7.24856 5.71458C7.24428 5.79052 7.24 5.87067 7.23572 5.97192H7.23143ZM8.7685 11.9668C8.7685 11.5407 8.41741 11.1947 7.98498 11.1947C7.55683 11.1947 7.20146 11.5491 7.20575 11.9668C7.20575 12.3928 7.55683 12.7346 7.98926 12.7346C8.42169 12.7346 8.77278 12.3886 8.7685 11.9625V11.9668Z" fill="#F9F487"/>
+                <path d="M7.23145 5.9719C7.23574 5.87065 7.23574 5.79471 7.2443 5.71456C7.28283 5.26737 7.53116 5.01425 7.95075 5.00159C8.43028 4.98472 8.69573 5.19987 8.75995 5.66815C8.77708 5.80315 8.77708 5.94237 8.76423 6.07737C8.64007 7.37252 8.51163 8.66768 8.38318 9.96283C8.37462 10.0345 8.37034 10.1063 8.35749 10.178C8.32324 10.3763 8.17767 10.507 7.99784 10.5028C7.8223 10.5028 7.67245 10.3678 7.64676 10.1653C7.60395 9.82361 7.57398 9.47768 7.53972 9.13596C7.43269 8.07283 7.32993 7.01393 7.22717 5.9719H7.23145Z" fill="black"/>
+                <path d="M8.76856 11.9667C8.76856 12.3886 8.42176 12.7388 7.98933 12.7388C7.55689 12.7388 7.21009 12.397 7.20581 11.9709C7.20581 11.5491 7.55689 11.1989 7.98505 11.1989C8.4132 11.1989 8.76428 11.5449 8.76856 11.9709V11.9667Z" fill="black"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_warn">
+                  <rect width="16" height="14.0147" fill="white" transform="translate(0 0.985352)" />
+                </clipPath>
+              </defs>
+            </svg>
+            <span class="quiz-help-txt" style="margin-left: 5px;">Save the {{content?.isAssessment?'Assessment':'Quiz'}} details before clicking on add Questions</span>
+          </div>
+        </ng-template>
+
+        <!-- ── Shared template: in-video quiz form ── -->
+        <!-- Context: { useResourceSave: boolean } -->
+        <!-- useResourceSave=true  → Save calls resourcePdfSave() (PDF/resource form context) -->
+        <!-- useResourceSave=false → Save calls saveDetails()     (module form context)       -->
+        <ng-template #videoQuizFormTpl let-useResourceSave="useResourceSave">
+          <div *ngIf="showQuizForm" class="module-txt-block quiz-form">
+            <div class="tabs">
+              <div *ngFor="let question of videoQuestions; let i = index" class="tab"
+                [ngClass]="{'active-tab': i === activeTabIndex}" (click)="setActiveTab(i)"
+                (keydown)="handleKeyDown($event, i)">
+                Question {{i + 1}}
+                <img *ngIf="videoQuestions.length > 0 && i === activeTabIndex" class="ml-2" loading="lazy"
+                  (click)="deleteQuestion(i)" (keydown)="deleteQuestion(activeTabIndex)"
+                  src="cbp-assets/icons/bin.svg" alt="delete-icon">
+              </div>
+            </div>
+            <div *ngFor="let question of videoQuestions; let i = index" class="question-form"
+              [ngClass]="{'active-form': i === activeTabIndex}">
+              <div class="duration-style margin-bottom-s timestamp">
+                <span class="timestamp-text">Timestamp:</span>
+                <input matInput class="numberInput" id="timestamp" type="number"
+                  [(ngModel)]="question.timestamp.hours" [ngModelOptions]="{standalone: true}"
+                  placeholder="hh" min="0" max="12" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
+                <div class="colon-block">:</div>
+                <input matInput class="numberInput" type="number"
+                  [(ngModel)]="question.timestamp.minutes" [ngModelOptions]="{standalone: true}"
+                  placeholder="mm" min="0" max="59" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
+                <div class="colon-block">:</div>
+                <input matInput class="numberInput" type="number"
+                  [(ngModel)]="question.timestamp.seconds" [ngModelOptions]="{standalone: true}"
+                  placeholder="ss" min="1" max="59" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
+              </div>
+              <div class="mb-2" *ngFor="let subQuestion of question.question; let j = index">
+                <div class="question">
+                  <textarea rows="2" matInput [(ngModel)]="subQuestion.text"
+                    [ngModelOptions]="{standalone: true}" class="module-input question-text margin-top-s"
+                    placeholder="Question" autocomplete="off" maxlength="100"></textarea><br>
+                  <mat-hint class="mt-hint">{{ subQuestion.text.length }}/100</mat-hint><br>
+                </div>
+                <div class="flex flex-direction-column mb-2">
+                  <div class="options-header">
+                    <span class="video-quiz-text">Options</span>
+                  </div>
+                  <div class="options-note-container">
+                    <span class="options-note">Note: Check the correct answer circle only. Add notes to explain in
+                      the text field next to it.</span>
+                  </div>
+                </div>
+                <div class="mt-1 option-block" *ngFor="let option of subQuestion.options; let k = index">
+                  <div class="input-container">
+                    <div class="option-container">
+                      <input type="radio" name="isCorrect-{{i}}-{{j}}" [checked]="option.isCorrect"
+                        (click)="setCorrectOption(i, j, k)" class="radio-button">
+                      <input class="option-input" matInput type="text" [(ngModel)]="option.text"
+                        [ngModelOptions]="{standalone: true}" placeholder="Add Option"
+                        autocomplete="off" maxlength="30">
+                      <img loading="lazy" (click)="deleteOption(i, j, k)"
+                        src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-icon"
+                        class="option-delete-icon">
+                    </div>
+                    <mat-hint class="mt-hint">{{ option.text.length }}/30</mat-hint>
+                  </div>
+                  <div class="answer-info-container">
+                    <input class="option-input option-answerinfo-input pl-0" matInput type="text"
+                      [(ngModel)]="option.answerInfo" [ngModelOptions]="{standalone: true}"
+                      placeholder="Add Note" autocomplete="off" maxlength="80">
+                    <mat-hint class="mt-hint">{{ option.answerInfo.length }}/80</mat-hint>
+                  </div>
+                </div>
+                <button *ngIf="subQuestion.options.length < 4" class="add-option-btn"
+                  (click)="addOption(i, j)" [disabled]="subQuestion.options.length >= 4">
+                  <img class="delete-icon" loading="lazy"
+                    src="cbp-assets/icons/ant-design_plus-circle-outlined.svg" alt="add option" />
+                  Add Option
+                </button>
+                <ng-container *ngIf="useResourceSave; else mainQuizSaveBtn">
+                  <div *ngIf="isPdfOrAudioOrVedioEnabled">
+                    <button [disabled]="uploadFileName === ''" mat-raised-button
+                      class="width-15 mb-2 text-white mat-button-base save-btn-bottom resourcePdfSave"
+                      (click)="resourcePdfSave()">Save</button>
+                  </div>
+                </ng-container>
+                <ng-template #mainQuizSaveBtn>
+                  <button [disabled]="(uploadFileName ? uploadFileName === '' : true)" mat-raised-button
+                    *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Collection' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course' && !isLinkEnabled && content?.mimeType !== 'application/json'"
+                    class="width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
+                    (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab, isShowBtn, content?.mimeType)">
+                    {{moduleButtonName}}</button>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </ng-template>
 
         <ng-template #guideline>
           <div class="margin-top-m margin-bottom-m">
@@ -1235,7 +1128,9 @@ letter-spacing: -0.32px;margin-left: 5px;">Save the {{content?.isAssessment?'Ass
           </div>
         </ng-template>
       </mat-drawer-container>
-    </mat-grid-tile>
-  </mat-grid-list>
-  <ws-auth-course-settings (data)="action($event)" *ngIf="isSettingsPage"></ws-auth-course-settings>
+      </div><!-- /mc-right-col -->
+    </div><!-- /mc-builder -->
+
+  </div><!-- /mc-builder-wrap -->
+  <ws-auth-course-settings (data)="action($event)" *ngIf="isSettingsPage" [triggerNext]="triggerCourseSettingsNext"></ws-auth-course-settings>
 </div>

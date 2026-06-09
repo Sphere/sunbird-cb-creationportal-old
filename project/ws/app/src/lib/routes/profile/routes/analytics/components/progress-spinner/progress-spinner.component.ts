@@ -1,6 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 // import { ContentProgressService } from '@ws-widget/collection'
+
 @Component({
+  standalone: false,
   selector: 'ws-app-progress-spinner',
   templateUrl: './progress-spinner.component.html',
   styleUrls: ['./progress-spinner.component.scss'],

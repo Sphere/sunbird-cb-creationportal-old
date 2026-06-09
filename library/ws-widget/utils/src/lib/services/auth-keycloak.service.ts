@@ -1,10 +1,18 @@
 // import { HttpClient } from '@angular/common/http'
+
 import { Injectable } from '@angular/core'
-import { KeycloakEvent, KeycloakEventType, KeycloakInitOptions, KeycloakService } from 'keycloak-angular'
+
+import { KeycloakEventLegacy, KeycloakEventTypeLegacy, KeycloakService } from 'keycloak-angular'
+import type { KeycloakInitOptions } from 'keycloak-js'
+
 import { fromEvent, ReplaySubject } from 'rxjs'
+
 import { filter } from 'rxjs/operators'
+
 import { AuthMicrosoftService } from './auth-microsoft.service'
+
 import { ConfigurationsService } from './configurations.service'
+
 
 interface IParsedToken {
   email?: string
@@ -47,7 +55,7 @@ export class AuthKeycloakService {
   get isLoggedIn$() {
     return this.loginChangeSubject.asObservable()
   }
-  get isLoggedIn(): Promise<boolean> {
+  get isLoggedIn(): boolean {
     return this.keycloakSvc.isLoggedIn()
   }
   get isAuthenticated(): boolean | undefined {
@@ -112,7 +120,6 @@ export class AuthKeycloakService {
           onLoad: instanceConfig.keycloak.onLoad || 'check-sso',
           checkLoginIframe: false,
         },
-        enableBearerInterceptor: true,
         loadUserProfileAtStartUp: false,
         bearerExcludedUrls: instanceConfig.keycloak.bearerExcludedUrls,
       })
@@ -157,28 +164,28 @@ export class AuthKeycloakService {
   }
 
   private addKeycloakEventListener() {
-    this.keycloakSvc.keycloakEvents$.subscribe((event: KeycloakEvent) => {
+    this.keycloakSvc.keycloakEvents$.subscribe((event: KeycloakEventLegacy) => {
       switch (event.type) {
-        case KeycloakEventType.OnAuthError:
+        case KeycloakEventTypeLegacy.OnAuthError:
           this.loginChangeSubject.next(false)
           break
-        case KeycloakEventType.OnAuthLogout:
+        case KeycloakEventTypeLegacy.OnAuthLogout:
           this.loginChangeSubject.next(false)
           storage.removeItem(storageKey)
           break
-        case KeycloakEventType.OnAuthRefreshError:
+        case KeycloakEventTypeLegacy.OnAuthRefreshError:
           break
-        case KeycloakEventType.OnAuthRefreshSuccess:
+        case KeycloakEventTypeLegacy.OnAuthRefreshSuccess:
           break
-        case KeycloakEventType.OnAuthSuccess:
+        case KeycloakEventTypeLegacy.OnAuthSuccess:
           break
-        case KeycloakEventType.OnReady:
-          this.loginChangeSubject.next(event.args)
+        case KeycloakEventTypeLegacy.OnReady:
+          this.loginChangeSubject.next(event.args as boolean)
           if (event.args) {
             this.saveKeycloakConfig()
           }
           break
-        case KeycloakEventType.OnTokenExpired:
+        case KeycloakEventTypeLegacy.OnTokenExpired:
           this.keycloakSvc.updateToken(60)
           break
       }

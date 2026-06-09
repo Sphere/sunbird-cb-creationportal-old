@@ -1,9 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { IContentRating } from '../../_models/contentRating.model'
+
 import { WidgetContentService } from '../../_services/widget-content.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-user-content-detailed-rating',
   templateUrl: './user-content-detailed-rating.component.html',
   styleUrls: ['./user-content-detailed-rating.component.scss'],

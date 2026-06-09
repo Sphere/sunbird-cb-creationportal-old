@@ -1,4 +1,5 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes'
+
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -6,36 +7,63 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core'
+
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-import { MatAutocompleteSelectedEvent } from '@angular/material'
+
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete'
 import { MatChipInputEvent } from '@angular/material/chips'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { ImageCropComponent } from '@ws-widget/utils/src/public-api'
+
 import { AUTHORING_BASE, CONTENT_BASE_STATIC } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '@ws/author/src/lib/constants/upload'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { Observable, of, Subscription } from 'rxjs'
+
 // import { InterestService } from '../../../../../../../../../app/src/lib/routes/profile/routes/interest/services/interest.service'
+
 import { UploadService } from '../../services/upload.service'
+
 import { CatalogSelectComponent } from '../catalog-select/catalog-select.component'
+
 import { IFormMeta } from '../../../../../../interface/form'
+
 import { AccessControlService } from '../../../../../../modules/shared/services/access-control.service'
+
 import { AuthInitService } from '../../../../../../services/init.service'
+
 import { LoaderService } from '../../../../../../services/loader.service'
+
 import { CollectionStoreService } from './../../../routing/modules/collection/services/store.service'
+
 import {
   debounceTime,
   distinctUntilChanged,
@@ -44,25 +72,35 @@ import {
   switchMap,
   map,
 } from 'rxjs/operators'
-import { NavigationEnd, Router } from '@angular/router'
+
+import { Router } from '@angular/router'
+
 
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
 
+
 // import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
+
 // import { NSApiResponse } from '../../../../../../interface/apiResponse'
+
 //import { environment } from '../../../../../../../../../../../src/environments/environment'
+
 import { HttpClient } from '@angular/common/http'
+
 import { isNumber } from 'lodash'
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-course-settings',
   templateUrl: './course-settings.component.html',
   styleUrls: ['./course-settings.component.scss'],
 })
-export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit {
+export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   contentMeta!: NSContent.IContentMeta
   @Output() data = new EventEmitter<string>()
   @Output() courseEditFormSubmit = new EventEmitter<boolean>()
   @Input() isSubmitPressed = false
+  @Input() triggerNext = false
   @Input() nextAction = 'done'
   @Input() stage = 1
   @Input() type = ''
@@ -92,6 +130,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   canUpdate = true
   ordinals!: any
   resourceTypes: string[] = []
+  sourceName: string[] = []
   employeeList: any[] = []
   audienceList: any[] = []
   rolesMappedListData!: any
@@ -159,6 +198,7 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
   isSaveModuleFormEnable: boolean = false;
   moduleButtonName: string = 'Create';
   roles$!: Observable<any[]>
+  sourceNames$!: Observable<any[]>
   userId!: any
   givenName!: any
   getAllEntities: any
@@ -221,9 +261,18 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     }, 100)
   }
   rolesSubscription!: Subscription
+  sourceNameSubscription!: Subscription
   searchComp: any = ''
 
   contentForm!: FormGroup
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['triggerNext']?.currentValue === true) {
+      this.isSubmitPressed = true
+      this.data.emit('save')
+    }
+  }
+
   ngOnInit() {
 
     // this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {
@@ -255,6 +304,12 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     // })
 
     this.roles$ = this.editorService.rolesMapped() // Assign the observable
+    this.sourceNames$ = this.editorService.sourceNames() // Assign the observable
+    this.sourceNameSubscription = this.sourceNames$.subscribe(async (data: any) => {
+      if (data.length > 0) {
+        this.sourceName = data
+      }
+    })
     this.rolesSubscription = this.roles$.subscribe(async (data: any) => {
       console.log(data)
       if (data) {
@@ -529,15 +584,14 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
         await this.editorService.updateNewContentV3(requestBody, this.contentMeta.identifier).toPromise().catch((_error: any) => { })
         await this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
           this.courseData = await data
-          this.router.navigate([`/author/editor/${this.contentMeta.identifier}/collection`])
-
-          this.router.events.subscribe(event => {
-            if (event instanceof NavigationEnd) {
-              window.location.reload()
-            }
-          })
           this.loader.changeLoad.next(false)
-
+          // Reflect the newly selected language by reloading the collection view once.
+          // NOTE: do NOT subscribe to router.events to trigger the reload — that handler
+          // fired on every subsequent NavigationEnd (e.g. the back button) and was never
+          // unsubscribed, causing an endless reload loop on the course settings page.
+          this.router
+            .navigate([`/author/editor/${this.contentMeta.identifier}/collection`])
+            .then(() => window.location.reload())
         })
       }
 
@@ -643,14 +697,14 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
     if (typeof this.contentMeta.creatorDetails === 'string') {
       const parsedDetails: NSContent.IAuthorDetails = JSON.parse(this.contentMeta.creatorDetails)
       this.contentMeta.creatorDetails = [parsedDetails]
+    } else if (!this.contentMeta.creatorDetails || this.contentMeta.creatorDetails.length === 0) {
+      // Only set default author if no authors exist
+      const authorDetails: NSContent.IAuthorDetails = {
+        id: this.userId,
+        name: this.givenName,
+      }
+      this.contentMeta.creatorDetails = [authorDetails]
     }
-
-    const authorDetails: NSContent.IAuthorDetails = {
-      id: this.userId,
-      name: this.givenName,
-    }
-
-    this.contentMeta.creatorDetails = [authorDetails]
 
     if (this.contentMeta.publisherDetails && typeof this.contentMeta.publisherDetails === 'string') {
       this.contentMeta.publisherDetails = JSON.parse(this.contentMeta.publisherDetails)
@@ -1795,15 +1849,6 @@ export class CourseSettingsComponent implements OnInit, OnDestroy, AfterViewInit
               name: event.option.value.displayName,
             })
             this.contentForm.controls[field].setValue(this.contentForm.controls[field].value)
-            if (field === 'creatorDetails') {
-              this.contentForm.controls[field].value.push({
-                id: this.userId,
-                name: this.givenName,
-              })
-
-              this.contentForm.controls[field].setValue(this.contentForm.controls[field].value)
-            }
-
           } else {
             this.snackBar.openFromComponent(NotificationComponent, {
               data: {

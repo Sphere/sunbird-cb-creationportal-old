@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core'
+
 import { EventService } from './event.service'
+
 import { catchError, map } from 'rxjs/operators'
+
 import { of, Observable } from 'rxjs'
+
 import { ActivatedRouteSnapshot } from '@angular/router'
+
 
 @Injectable()
 export class EventResolverService {

@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { NSQuiz } from './quiz.model'
+
 import { Observable } from 'rxjs'
+
 
 const API_END_POINTS = {
   ASSESSMENT_SUBMIT_V2: `/apis/protected/v8/user/evaluate/assessment/submit/v2`,

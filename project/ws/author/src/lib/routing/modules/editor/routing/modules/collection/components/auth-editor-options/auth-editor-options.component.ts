@@ -1,13 +1,22 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
+
 import { DEPTH_RUE } from '@ws/author/src/lib/constants/depth-rule'
+
 import { ICreateEntity } from '@ws/author/src/lib/interface/create-entity'
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { ICustomCreateEntity } from './../../interface/create-menu'
+
 import { IContentNode, IContentTreeNode } from './../../interface/icontent-tree'
+
 import { CollectionStoreService } from './../../services/store.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-editor-options',
   templateUrl: './auth-editor-options.component.html',
   styleUrls: ['./auth-editor-options.component.scss'],

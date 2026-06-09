@@ -1,18 +1,27 @@
 import { Component, Inject, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core'
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material'
+
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { ConfigurationsService, TFetchStatus } from '@ws-widget/utils'
+
 import { SEARCH_V6_AUTH } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
+
 import { BehaviorSubject, EMPTY, Subscription, timer } from 'rxjs'
+
 import { debounce, mergeMap } from 'rxjs/operators'
+
 
 interface IAuthPickerData {
   filter: any
   selectedIds: string[]
 }
 @Component({
+  standalone: false,
   selector: 'ws-auth-picker',
   templateUrl: './auth-picker.component.html',
   styleUrls: ['./auth-picker.component.scss'],

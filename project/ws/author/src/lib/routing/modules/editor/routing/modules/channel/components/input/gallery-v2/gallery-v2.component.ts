@@ -1,20 +1,32 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { NsGalleryView } from '@ws-widget/collection/src/public-api'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import {
   AUTHORING_CONTENT_BASE,
   CONTENT_BASE_WEBHOST_ASSETS,
 } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { UploadService } from '@ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { WIDGET_LIBRARY } from '../../../constants/widet'
+
 import { FILE_MAX_SIZE } from './../../../../../../../../../constants/upload'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-gallery-v2',
   templateUrl: './gallery-v2.component.html',
   styleUrls: ['./gallery-v2.component.scss'],

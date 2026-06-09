@@ -1,7 +1,10 @@
 
 import { Component, Inject } from '@angular/core'
+
 import { GoalsError } from '../../_constants/goals-error.constants'
+
 import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar'
+
 
 interface IData {
   type: keyof typeof GoalsError,
@@ -9,6 +12,7 @@ interface IData {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-goals-error',
   templateUrl: './btn-goals-error.component.html',
   styleUrls: ['./btn-goals-error.component.scss'],

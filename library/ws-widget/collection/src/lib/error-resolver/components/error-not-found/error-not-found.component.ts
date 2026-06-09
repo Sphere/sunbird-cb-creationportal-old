@@ -1,13 +1,20 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
 
+
 import { Subscription } from 'rxjs'
+
 import { debounceTime } from 'rxjs/operators'
+
 
 import { ConfigurationsService } from '@ws-widget/utils'
 
+
 import { IWidgetErrorNotFound } from './error-not-found.model'
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-error-not-found',
   templateUrl: './error-not-found.component.html',
   styleUrls: ['./error-not-found.component.scss'],

@@ -1,6 +1,9 @@
 import { Component, Input, OnInit, OnDestroy, Output, EventEmitter, HostBinding } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { Subscription, fromEvent } from 'rxjs'
+
 import {
   getFullScreenElement,
   requestExitFullScreen,
@@ -8,7 +11,9 @@ import {
   hasFullScreenSupport,
 } from './fullscreen.util'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-fullscreen',
   templateUrl: './btn-fullscreen.component.html',
   styleUrls: ['./btn-fullscreen.component.scss'],

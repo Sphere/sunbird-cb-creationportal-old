@@ -1,8 +1,13 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core'
+
 import { NsContent } from '@ws-widget/collection'
+
 import { ConfigurationsService, EventService } from '@ws-widget/utils'
+
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
+
 @Component({
+  standalone: false,
   selector: 'ws-app-learning-card',
   templateUrl: './learning-card.component.html',
   styleUrls: ['./learning-card.component.scss'],

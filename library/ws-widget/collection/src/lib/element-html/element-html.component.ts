@@ -1,10 +1,17 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { IWidgetElementHtml } from './element-html.model'
+
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
+
 import mustache from 'mustache'
+
 import { HttpClient, HttpHeaders } from '@angular/common/http'
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-element-html',
   templateUrl: './element-html.component.html',
   styleUrls: ['./element-html.component.scss'],

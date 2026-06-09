@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-profile-image',
   templateUrl: './profile-image.component.html',
   styleUrls: ['./profile-image.component.scss'],

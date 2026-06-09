@@ -1,4 +1,5 @@
 import { NSSearch } from '../../_services/widget-search.model'
+
 export interface IAppliedFilters {
   [key: string]: Set<string>
 }

@@ -1,18 +1,28 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { AccessControlService } from '@ws/author'
+
 import { NsContent, NsDiscussionForum, WidgetContentService } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import {
   ConfigurationsService,
   EventService,
   SubapplicationRespondService,
   WsEvents,
 } from '@ws-widget/utils'
+
 import { fromEvent, Subscription } from 'rxjs'
+
 import { filter } from 'rxjs/operators'
+
 import { ViewerUtilService } from '../../viewer-util.service'
+
 @Component({
+  standalone: false,
   selector: 'viewer-html',
   templateUrl: './html.component.html',
   styleUrls: ['./html.component.scss'],

@@ -376,16 +376,14 @@
       class="keywords-chip-list margin-top-xs flex-grow80 w-full"
       appearance="outline"
     >
-      <mat-chip-list #keywordsV aria-label="Keyword selection">
-        <mat-chip
+      <mat-chip-grid #keywordsV aria-label="Keyword selection">
+        <mat-chip-row 
           *ngFor="let key of keywords"
-          [selectable]="'true'"
-          [removable]="'true'"
           (removed)="removeKeyword(key)"
         >
           {{ key }}
           <mat-icon matChipRemove>cancel</mat-icon>
-        </mat-chip>
+        </mat-chip-row>
         <input
           i18n-placeholder
           [formControl]="keywordsCtrl"
@@ -397,7 +395,7 @@
           [matChipInputAddOnBlur]="false"
           (matChipInputTokenEnd)="addKeyword($event)"
         />
-      </mat-chip-list>
+      </mat-chip-grid>
     </mat-form-field>
     <mat-autocomplete
       #auto="matAutocomplete"

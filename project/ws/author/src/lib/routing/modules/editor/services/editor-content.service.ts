@@ -1,15 +1,27 @@
 import { Injectable } from '@angular/core'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { BehaviorSubject, Observable, of } from 'rxjs'
+
 import { tap } from 'rxjs/operators'
+
 import { IConditionsV2 } from './../../../../interface/conditions-v2'
+
 import { IFormMeta } from './../../../../interface/form'
+
 import { AuthInitService } from './../../../../services/init.service'
+
 import { EditorService } from './editor.service'
+
 import { IAssessmentDetails } from '../routing/modules/iap-assessment/interface/iap-assessment.interface'
+
 // import { isArray } from 'lodash'
+
 import * as _ from 'lodash'
+
 
 @Injectable()
 export class EditorContentService {
@@ -50,8 +62,8 @@ export class EditorContentService {
   }
 
   removeListOfFilesAndUpdatedIPR(id: string) {
-    delete this.listOfFiles[id]
-    delete this.listOfUpdatedIPR[id]
+    delete (this.listOfFiles as any)[id]
+    delete (this.listOfUpdatedIPR as any)[id]
   }
 
   getOriginalMeta(id: string): NSContent.IContentMeta {
@@ -104,7 +116,7 @@ export class EditorContentService {
 
   resetOriginalMeta(meta: NSContent.IContentMeta, id: string) {
     this.originalContent[id] = { ...this.originalContent[id], ...JSON.parse(JSON.stringify(meta)) }
-    delete this.upDatedContent[id]
+    delete (this.upDatedContent as any)[id]
   }
 
   resetVersionKey(versionKey: number, id: string) {
@@ -120,7 +132,7 @@ export class EditorContentService {
       const propName = prop
       // tslint:disable-next-line: max-line-length
       if (obj[propName] === null || obj[propName] === undefined || obj[propName] === '' || (_.isArray(obj[propName]) && obj[propName].length === 0)) {
-        delete obj[propName]
+        delete (obj as any)[propName]
       }
     }
     return obj
@@ -359,10 +371,10 @@ export class EditorContentService {
       isTranslationOf: this.parentContent,
       ...meta,
     }
-    delete requestBody.identifier
-    delete requestBody.status
-    delete requestBody.categoryType
-    delete requestBody.accessPaths
+    delete (requestBody as any).identifier
+    delete (requestBody as any).status
+    delete (requestBody as any).categoryType
+    delete (requestBody as any).accessPaths
     return this.editorService
       .createAndReadContent(requestBody)
       .pipe(tap(v => this.setOriginalMeta(v)))

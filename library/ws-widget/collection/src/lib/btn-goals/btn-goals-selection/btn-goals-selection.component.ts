@@ -7,13 +7,20 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core'
+
 import { TFetchStatus, EventService } from '../../../../../utils/src/public-api'
+
 import { NsGoal } from '../btn-goals.model'
+
 import { BtnGoalsService } from '../btn-goals.service'
-import { MatSnackBar, MatListOption } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { MatListOption } from '@angular/material/list'
 import { BtnGoalsErrorComponent } from '../btn-goals-error/btn-goals-error.component'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-goals-selection',
   templateUrl: './btn-goals-selection.component.html',
   styleUrls: ['./btn-goals-selection.component.scss'],

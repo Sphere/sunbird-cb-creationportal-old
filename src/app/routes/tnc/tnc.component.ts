@@ -1,16 +1,26 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
-import { ActivatedRoute, Data, Router } from '@angular/router'
-import { Subscription } from 'rxjs'
-import { NsTnc } from '../../models/tnc.model'
-import { LoggerService, ConfigurationsService } from '@ws-widget/utils'
-import { HttpClient } from '@angular/common/http'
-import { NsWidgetResolver } from '@ws-widget/resolver'
-import { ROOT_WIDGET_CONFIG, NsError } from '@ws-widget/collection'
-import { TncAppResolverService } from '../../services/tnc-app-resolver.service'
-import { TncPublicResolverService } from '../../services/tnc-public-resolver.service'
-import { MatDialog } from '@angular/material'
 
+import { ActivatedRoute, Data, Router } from '@angular/router'
+
+import { Subscription } from 'rxjs'
+
+import { NsTnc } from '../../models/tnc.model'
+
+import { LoggerService, ConfigurationsService } from '@ws-widget/utils'
+
+import { HttpClient } from '@angular/common/http'
+
+import { NsWidgetResolver } from '@ws-widget/resolver'
+
+import { ROOT_WIDGET_CONFIG, NsError } from '@ws-widget/collection'
+
+import { TncAppResolverService } from '../../services/tnc-app-resolver.service'
+
+import { TncPublicResolverService } from '../../services/tnc-public-resolver.service'
+
+import { MatDialog } from '@angular/material/dialog'
 @Component({
+  standalone: false,
   selector: 'ws-tnc',
   templateUrl: './tnc.component.html',
   styleUrls: ['./tnc.component.scss'],

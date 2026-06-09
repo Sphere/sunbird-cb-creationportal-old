@@ -1,17 +1,29 @@
 import { Router } from '@angular/router'
+
 import { DashBoardService } from './dashboard.service'
+
 import { Component, OnInit,
   ViewEncapsulation,
 } from '@angular/core'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { Observable } from 'rxjs'
+
 import { FormControl } from '@angular/forms'
+
 import { map, startWith } from 'rxjs/operators'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import {
   REVIEW_ROLE,
   PUBLISH_ROLE,
@@ -21,7 +33,9 @@ import {
   CHANNEL,
 } from '@ws/author/src/lib/constants/content-role'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],

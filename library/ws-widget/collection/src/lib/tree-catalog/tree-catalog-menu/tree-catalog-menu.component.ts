@@ -1,9 +1,13 @@
 import { Component, ViewChild, ElementRef, Input } from '@angular/core'
+
 import { TFetchStatus } from '@ws-widget/utils'
-import { MatMenuTrigger } from '@angular/material'
+
+import { MatMenuTrigger } from '@angular/material/menu'
 import { NSSearch } from '../../_services/widget-search.model'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-tree-catalog-menu',
   templateUrl: './tree-catalog-menu.component.html',
   styleUrls: ['./tree-catalog-menu.component.scss'],

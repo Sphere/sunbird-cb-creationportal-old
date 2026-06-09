@@ -1,12 +1,19 @@
 import { Component, Input, OnInit, OnDestroy, HostBinding } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { ConfigurationsService, LogoutComponent, NsPage } from '@ws-widget/utils/src/public-api'
+
 import { IBtnAppsConfig } from '../btn-apps/btn-apps.model'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { Subscription } from 'rxjs'
+
 import { ROOT_WIDGET_CONFIG } from '../collection.config'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-profile',
   templateUrl: './btn-profile.component.html',
   styleUrls: ['./btn-profile.component.scss'],

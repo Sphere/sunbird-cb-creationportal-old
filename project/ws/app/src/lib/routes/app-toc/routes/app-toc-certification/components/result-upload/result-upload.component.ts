@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, OnDestroy } from '@angular/core'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import {
   FormGroup,
   Validators,
@@ -7,25 +9,35 @@ import {
   AbstractControl,
   ValidationErrors,
 } from '@angular/forms'
-import { MatSnackBar } from '@angular/material'
 
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable, timer, throwError, of, Subscription } from 'rxjs'
+
 import { map, switchMap, catchError } from 'rxjs/operators'
 
+
 import { NsContent } from '@ws-widget/collection'
+
 import { TFetchStatus, TSendStatus } from '@ws-widget/utils'
 
+
 import { ICertificationMeta, ICertificationUserPrivileges } from '../../models/certification.model'
+
 import {
   CERT_FILE_TYPES,
   MAX_FILE_SIZE_BYTES,
   CERT_GRADE_TYPES,
 } from '../../constants/certification-constants'
+
 import { CertificationApiService } from '../../apis/certification-api.service'
+
 import { CertificationService } from '../../services/certification.service'
+
 import { SnackbarComponent } from '../snackbar/snackbar.component'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-result-upload',
   templateUrl: './result-upload.component.html',
   styleUrls: ['./result-upload.component.scss'],
@@ -231,7 +243,7 @@ export class ResultUploadComponent implements OnInit, OnDestroy {
       map(() => control.value),
       switchMap((value: string) => {
         if (!value) {
-          return throwError({ invalidEmail: true })
+          return throwError(() => { invalidEmail: true })
         }
 
         const trimmedEmail = value.split('@')[0]

@@ -1,15 +1,22 @@
 import { Component, OnInit } from '@angular/core'
+
 import { SafeUrl, DomSanitizer } from '@angular/platform-browser'
+
 import {
   ConfigurationsService,
   NsPage,
 } from '../../../../../../../../../library/ws-widget/utils/src/public-api'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { AppTourDialogComponent } from '../../../../../../../../../library/ws-widget/collection/src/public-api'
+
 import { Router, ActivatedRoute } from '@angular/router'
+
 import { Globals } from '../../globals'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-setup-done',
   templateUrl: './setup-done.component.html',
   styleUrls: ['./setup-done.component.scss'],

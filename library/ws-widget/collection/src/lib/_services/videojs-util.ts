@@ -1,10 +1,16 @@
 import videoJs from 'video.js'
 
+
 import { Subscription, interval, fromEvent } from 'rxjs'
+
 import { WsEvents } from '@ws-widget/utils'
+
 import { ROOT_WIDGET_CONFIG } from '../collection.config'
+
 import { IWidgetsPlayerMediaData } from '../_models/player-media.model'
+
 import { NsContent } from './widget-content.model'
+
 
 export const videojsEventNames = {
   disposing: 'disposing',

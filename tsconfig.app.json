@@ -2,10 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": ["node", "@types/zip.js"]
-  },
-  "angularCompilerOptions": {
-    "enableIvy": false
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/test.ts", "src/**/*.spec.ts", "setup-jest.ts"]

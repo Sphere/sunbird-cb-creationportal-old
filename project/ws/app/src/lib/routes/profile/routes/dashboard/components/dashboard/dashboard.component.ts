@@ -1,13 +1,23 @@
 import { Component, OnInit } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { NsContent, NsContentStripMultiple, ROOT_WIDGET_CONFIG } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ConfigurationsService, TFetchStatus } from '@ws-widget/utils'
+
 import { NSProfileData } from '../../../../models/profile.model'
+
 import { ProfileService } from '../../../../services/profile.service'
+
 import { InterestService } from '../../../interest/services/interest.service'
+
 import { NSLearningHistory } from '../../../learning/models/learning.models'
+
 import { LearningHistoryService } from '../../../learning/services/learning-history.service'
+
 
 interface ILearningHistoryContent {
   content: NSLearningHistory.ILearningHistory
@@ -18,6 +28,7 @@ interface ILearningHistoryContent {
   fetchStatus: 'fetching' | 'done' | 'error'
 }
 @Component({
+  standalone: false,
   selector: 'ws-app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],

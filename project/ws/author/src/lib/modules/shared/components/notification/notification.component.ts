@@ -1,6 +1,9 @@
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { Component, Inject } from '@angular/core'
+
 import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar'
+
 
 interface IData {
   type: keyof typeof Notify,
@@ -8,6 +11,7 @@ interface IData {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-notification',
   templateUrl: './notification.component.html',
   styleUrls: ['./notification.component.scss'],

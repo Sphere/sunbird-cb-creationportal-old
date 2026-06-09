@@ -1,17 +1,26 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout'
+
 import {
   DomSanitizer,
   SafeResourceUrl,
   SafeStyle,
 } from '@angular/platform-browser'
+
 import { map } from 'rxjs/operators'
+
 import { ConfigurationsService, NsPage } from '@ws-widget/utils'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { IAboutObject } from '../../../../../../../../../src/app/routes/public/public-about/about.model'
+
 import { Subscription } from 'rxjs'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-about-home',
   templateUrl: './about-home.component.html',
   styleUrls: ['./about-home.component.scss'],

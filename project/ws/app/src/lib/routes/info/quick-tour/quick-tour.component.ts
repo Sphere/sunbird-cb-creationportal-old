@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core'
+
 import { IWidgetsPlayerMediaData } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ConfigurationsService } from '@ws-widget/utils'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-quick-tour',
   templateUrl: './quick-tour.component.html',
   styleUrls: ['./quick-tour.component.scss'],

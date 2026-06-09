@@ -1,7 +1,11 @@
 import { HttpClient } from '@angular/common/http'
+
 import { Injectable } from '@angular/core'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { IFrac } from '../interfaces/frac.model'
+
 
 @Injectable({
   providedIn: 'root',

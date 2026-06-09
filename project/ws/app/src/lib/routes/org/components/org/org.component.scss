@@ -52,54 +52,52 @@
     .org-body{
       display: flex;
       flex-direction: column;
-      padding: 0px 150px 0px 150px;
+      padding: 0 48px;
       margin-top: -60px;
+
       @include breakpoint-s {
-        padding: 0px 50px 0px 50px;
+        padding: 0 32px;
         margin-top: -45px;
       }
+
+      @include breakpoint-xs {
+        padding: 10px 16px;
+        margin-top: 0;
+      }
     }
-.org-name{
-color: #000;
-/* Display 2 */
-font-size: 40px;
-font-family: Roboto;
-line-height: 48px;
-letter-spacing: -0.8px;
-color: #000;
-/* Display 2 */
-font-family: Roboto;
-font-size: 40px;
-font-style: normal;
-font-weight: 400;
-line-height: 48px;
-letter-spacing: -0.8px;
- @include breakpoint-xs {
-        color: #000;
-/* Header 2 */
-font-family: Roboto;
-font-size: 24px;
-font-style: normal;
-font-weight: 400;
-line-height: 28.8px;
-letter-spacing: -0.48px;
+
+// ── Page title: 32px/600 per design system ───────────────────────────────────
+.org-name {
+  font-family: Roboto, sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #0F172A;
+  margin: 0 0 8px;
+
+  @include breakpoint-xs {
+    font-size: 22px;
   }
 }
-.org-desc{
-  color: #000;
-/* Header 3 */
-font-size: 20px;
-font-family: Roboto;
-line-height: 24px;
-letter-spacing: -0.4px;
+
+// ── Org description: body text level ────────────────────────────────────────
+.org-desc {
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #5a6a7a;
+  margin: 0 0 8px;
 }
-.org-details{
-color: #1C5D95;
-font-size: 16px;
-font-family: Roboto;
-line-height: 18.93px;
-letter-spacing: -0.32px;
-margin: 0px 0px 0px 10px;
+
+// ── "3 Courses offered" metadata ────────────────────────────────────────────
+.org-details {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1C5D95;
+  line-height: 1.5;
+  margin: 0 0 0 8px;
 }
 .org-details-block{
   display: flex;
@@ -121,24 +119,24 @@ padding-left: 15px;
 
 .card-standard-container {
   display: flex;
+  flex-direction: column;
   $card-padding: $size-m;
-  padding-bottom: 0px !important;
-  $action-btn-size: 2.5 * $size-m;
-  $card-width: 293px;
-  position: relative;
+  $card-width: 280px;
   width: $card-width;
-  // height: 100%;
   box-sizing: border-box;
-  box-shadow: transparent 0 0 !important;
-  float: left;
-  //margin-top: 15px;
-  border-radius: 9.398px !important;
-  background: #FFF !important;
-
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #e2eaf2;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   min-height: 100px;
-  // max-height: 200px;
   height: auto;
-  box-shadow: 0px 0px 3.7592592239379883px 0px rgba(0, 0, 0, 0.15)!important;
+  margin-right: 16px;
+  margin-bottom: 16px;
+  transition: box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
   .mde-popover-content {
     background-color: #fff;
   }
@@ -173,13 +171,13 @@ padding-left: 15px;
   }
 
   .card-img {
-    width: 115.597px;
-    height: 68.606px;
-    /* max-height: 148px; */
+    width: 96px;
+    height: 72px;
+    flex-shrink: 0;
     display: block;
     object-fit: contain;
-    border-radius: 9.398px;
-    margin: 10px;
+    border-radius: 8px;
+    margin: 8px;
   }
 
   .complexity {
@@ -239,7 +237,8 @@ padding-left: 15px;
   }
 }
 
-mat-card.card-standard-container.mr-8 .mat-card {
+mat-card.card-standard-container.mr-8 .mat-card,
+mat-card.card-standard-container.mr-8 .mat-mdc-card {
   position: relative;
   float: left;
 }
@@ -365,103 +364,107 @@ mat-card.card-standard-container.mr-8 .mat-card {
     margin-left: 0;
   }
 }
-.course-container{
-    padding: 0px 150px 0px 150px;
-     @include breakpoint-s {
-        padding: 0px 50px 0px 50px;
-      }
+.course-container {
+  padding: 0 48px;
+
+  @include breakpoint-s {
+    padding: 0 32px;
+  }
+
+  @include breakpoint-xs {
+    padding: 0 16px;
+  }
 }
-.course-header{
-  margin-top: 25px;
-  color: #000;
-/* Header 1 */
-font-size: 32px;
-font-family: Roboto;
-line-height: 38.4px;
-letter-spacing: -0.64px;
+
+// ── Section heading: 20px/600 per design system ──────────────────────────────
+.course-header {
+  font-family: Roboto, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #0F172A;
+  line-height: 1.4;
+  letter-spacing: 0;
+  margin: 20px 0 0;
+
+  @include breakpoint-xs {
+    font-size: 18px;
+    padding-left: 0;
+  }
 }
-.load-more{
+
+// ── Load more button ─────────────────────────────────────────────────────────
+.load-more {
   cursor: pointer;
   border-radius: 50px;
-border: 1px solid #2E6491;
-color: #2E6491;
-font-size: 16px;
-font-family: Roboto;
-padding: 8px 32px;
-justify-content: center;
-align-items: center;
-background-color: #fff;
+  border: 1px solid #1C5D95;
+  color: #1C5D95;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 32px;
+  background: #fff;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #EBF4FB;
+  }
 }
 .course-body{
   display: flex;
   // flex-direction: column;
   flex-wrap: wrap;
 }
-@media (min-width:320px) and (max-width:600px)  {
-.course-body{
-  padding: 0px 15px;
-  padding-bottom: 30px;
-}
-    .image-outer{
-      top: 87%;
-      left: 23%;
-      width: 100px;
-      height: 100px;
-    }
+@media (min-width: 320px) and (max-width: 600px) {
+  .course-body {
+    padding-bottom: 24px;
+  }
+
+  .image-outer {
+    top: 87%;
+    left: 23%;
+    width: 100px;
+    height: 100px;
+  }
+
   .org-logo {
     max-width: 88px;
   }
-  .banner{
-      height: 225px;
+
+  .banner {
+    height: 225px;
   }
-  .org-body {
-    padding: 10px;
+
+  .card-standard-container {
+    width: 100%;
+    margin-right: 0;
   }
-  .org-name {
-    font-size: 18px;
-    line-height: 22px;
-    padding-top: 26px;
-    padding-left: 15px;
-}
-.org-desc{
-   font-size: 14px;
-    line-height: 20px;
-    color: #000;
-font-family: Roboto;
-font-size: 14px;
-font-style: normal;
-font-weight: 400;
-line-height: 16.8px;
-letter-spacing: -0.28px;
-    padding-left: 15px;
-}
-.org-details{
-   font-size: 14px;
-}
-.course-container{
-  padding:10px ;
-}
-.card-standard-container {
-  display: flex;
-  $card-width: 100%;
-  width: $card-width;
-}
 }
 
-.course-name{
+// ── Course card title: card title level per design system ────────────────────
+.course-name {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
   color: #1C5D95;
-  font-size: 16px;
-  font-family: Roboto;
-  letter-spacing: -0.32px;
-  margin: 10px;
+  line-height: 1.5;
+  letter-spacing: 0;
+  margin: 8px 10px 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
-.by-org-name{
-  color: #747474;
+
+// ── "by Org Name" meta label ─────────────────────────────────────────────────
+.by-org-name {
+  font-family: Roboto, sans-serif;
   font-size: 12px;
-  font-family: Roboto;
-  line-height: 13.533px;
-  letter-spacing: -0.24px;
-  padding-left: 15px;
+  font-weight: 400;
+  color: #5a6a7a;
+  line-height: 1.4;
+  letter-spacing: 0;
+  padding: 0 10px 10px;
+  margin: 0;
 }
 .rating{
   color: #747474;
@@ -523,29 +526,7 @@ font-family: Roboto;
 line-height: 13.533px;
 letter-spacing: -0.226px;
 }
- @include breakpoint-s {
-  .course-header{
-    /* Header 2 */
-font-family: Roboto;
-font-size: 24px;
-font-style: normal;
-font-weight: 400;
-line-height: 28.8px;
-letter-spacing: -0.48px;
-  }
-}
- @include breakpoint-xs {
-  .course-header{
-    /* Header 2 */
-font-family: Roboto;
-font-size: 24px;
-font-style: normal;
-font-weight: 400;
-line-height: 28.8px;
-letter-spacing: -0.48px;
-padding-left: 15px;
-  }
-}
+// Responsive overrides already handled inside .course-header rule above
 #navy-blue-bg {
 /*  margin-top: 0px;
   height: 150px;*/

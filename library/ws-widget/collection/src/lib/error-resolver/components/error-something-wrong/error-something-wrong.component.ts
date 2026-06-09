@@ -1,12 +1,19 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { Subscription } from 'rxjs'
+
 import { debounceTime } from 'rxjs/operators'
+
 
 import { ConfigurationsService } from '@ws-widget/utils'
 
+
 import { IWidgetErrorSomethingsWrong } from './error-something-wrong.model'
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-error-something-wrong',
   templateUrl: './error-something-wrong.component.html',
   styleUrls: ['./error-something-wrong.component.scss'],

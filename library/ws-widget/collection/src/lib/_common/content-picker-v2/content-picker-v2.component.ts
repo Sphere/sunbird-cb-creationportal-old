@@ -1,16 +1,28 @@
 import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core'
+
 import { ValueService, ConfigurationsService } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 import { NSSearch } from '../../_services/widget-search.model'
+
 import { SearchApiService } from '@ws/app/src/lib/routes/search/apis/search-api.service'
+
 import { SearchServService } from '@ws/app/src/lib/routes/search/services/search-serv.service'
+
 import { IWidgetData, IAppliedFilters } from './content-picker-v2.model'
+
 import { NsContent } from '../../_services/widget-content.model'
+
 import { ContentPickerV2Service } from './content-picker-v2.service'
+
 import { FormControl } from '@angular/forms'
+
 import { distinctUntilChanged } from 'rxjs/operators'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-content-picker-v2',
   templateUrl: './content-picker-v2.component.html',
   styleUrls: ['./content-picker-v2.component.scss'],
@@ -125,14 +137,14 @@ export class ContentPickerV2Component implements OnInit, OnDestroy {
     this.sortByControl.valueChanges.pipe(
       distinctUntilChanged()
     ).subscribe(sortKey => {
-      this.searchReq.sort = [{ [sortKey]: this.sortOrderControl.value }]
+      this.searchReq.sort = [{ [sortKey]: this.sortOrderControl.value } as any]
       this.triggerSearch()
     })
     this.sortOrderControl.valueChanges.pipe(
       distinctUntilChanged()
     ).subscribe(sortOrder => {
       if (this.sortByControl.value) {
-        this.searchReq.sort = [{ [this.sortByControl.value]: sortOrder }]
+        this.searchReq.sort = [{ [this.sortByControl.value]: sortOrder } as any]
         this.triggerSearch()
       }
     })

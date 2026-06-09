@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { PipeDurationTransformPipe } from './pipe-duration-transform.pipe'
+
 
 @NgModule({
   declarations: [PipeDurationTransformPipe],

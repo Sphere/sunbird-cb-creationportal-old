@@ -1,9 +1,12 @@
 import { Component, Input, OnInit, Output, EventEmitter, ViewChild } from '@angular/core'
-import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
-import { ChannelStoreService } from './../../../services/store.service'
-import { MatDrawer } from '@angular/material'
 
+import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
+import { ChannelStoreService } from './../../../services/store.service'
+
+import { MatDrawer } from '@angular/material/sidenav'
 @Component({
+  standalone: false,
   selector: 'ws-auth-page-editor-v2',
   templateUrl: './page-editor-v2.component.html',
   styleUrls: ['./page-editor-v2.component.scss'],

@@ -1,13 +1,18 @@
 import { Component, OnInit, OnChanges, OnDestroy, Input, Output, ViewChild, EventEmitter, ElementRef } from '@angular/core'
+
 import {
   fromEvent,
   Subscription,
   timer,
 } from 'rxjs'
+
 import { debounceTime, throttleTime } from 'rxjs/operators'
+
 import { TFetchStatus } from '../../constants/misc.constants'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-utils-horizontal-scroller',
   templateUrl: './horizontal-scroller.component.html',
   styleUrls: ['./horizontal-scroller.component.scss'],

@@ -1,27 +1,41 @@
 import { NestedTreeControl } from '@angular/cdk/tree'
-import { Component, EventEmitter, OnDestroy, OnInit, Output, Input } from '@angular/core'
-import { MatTreeNestedDataSource } from '@angular/material'
+
+import { ChangeDetectorRef, Component, EventEmitter, NgZone, OnDestroy, OnInit, Output, Input } from '@angular/core'
+
+import { MatTreeNestedDataSource } from '@angular/material/tree'
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
+
 import { ActivatedRoute } from '@angular/router'
+
 import {
   ContentProgressService,
   NsContent,
   VIEWER_ROUTE_FROM_MIME,
   WidgetContentService,
 } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import {
   // LoggerService,
   ConfigurationsService,
   UtilityService,
 } from '@ws-widget/utils'
+
 import { of, Subscription } from 'rxjs'
+
 import { delay } from 'rxjs/operators'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { PlayerStateService } from '../../player-state.service'
+
 import { ViewerDataService } from '../../viewer-data.service'
+
 import { ViewerUtilService } from '../../viewer-util.service'
+
 import { SCORMAdapterService } from 'project/ws/viewer/src/lib/plugins/html/SCORMAdapter/scormAdapter'
+
 interface IViewerTocCard {
   artifactUrl: string
   identifier: string
@@ -49,6 +63,7 @@ interface ICollectionCard {
 }
 
 @Component({
+  standalone: false,
   selector: 'viewer-viewer-toc',
   templateUrl: './viewer-toc.component.html',
   styleUrls: ['./viewer-toc.component.scss'],
@@ -72,6 +87,8 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
     private playerStateService: PlayerStateService,
     private editorService: EditorService,
     private scormAdapterService: SCORMAdapterService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
   ) {
     this.nestedTreeControl = new NestedTreeControl<IViewerTocCard>(this._getChildren)
     this.nestedDataSource = new MatTreeNestedDataSource()
@@ -133,10 +150,10 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
         }
 
         this.editorService.readcontentV3(collectionId).subscribe((res: any) => {
-          if (res.gatingEnabled)
-            this.isGetingEnabled = true
-          else
-            this.isGetingEnabled = false
+          this.ngZone.run(() => {
+            this.isGetingEnabled = Boolean(res.gatingEnabled)
+            this.cdr.detectChanges()
+          })
         })
       }
       if (this.resourceId) {
@@ -198,9 +215,12 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
       content = content.result.content
       this.collectionCard = this.createCollectionCard(content)
       const viewerTocCardContent = this.convertContentToIViewerTocCard(content)
-      this.isFetching = false
+      this.ngZone.run(() => {
+        this.isFetching = false
+        this.cdr.detectChanges()
+      })
       return viewerTocCardContent
-    } catch (err) {
+    } catch (err: any) {
       switch (err.status) {
         case 403: {
           this.errorWidgetData.widgetData.errorType = 'accessForbidden'
@@ -223,7 +243,10 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
           break
         }
       }
-      this.isFetching = false
+      this.ngZone.run(() => {
+        this.isFetching = false
+        this.cdr.detectChanges()
+      })
       return null
     }
   }
@@ -240,9 +263,12 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
       const content: NsContent.IContent = playlistFetchResponse.data
       this.collectionCard = this.createCollectionCard(content)
       const viewerTocCardContent = this.convertContentToIViewerTocCard(content)
-      this.isFetching = false
+      this.ngZone.run(() => {
+        this.isFetching = false
+        this.cdr.detectChanges()
+      })
       return viewerTocCardContent
-    } catch (err) {
+    } catch (err: any) {
       switch (err.status) {
         case 403: {
           this.errorWidgetData.widgetData.errorType = 'accessForbidden'
@@ -265,7 +291,10 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
           break
         }
       }
-      this.isFetching = false
+      this.ngZone.run(() => {
+        this.isFetching = false
+        this.cdr.detectChanges()
+      })
       return null
     }
   }

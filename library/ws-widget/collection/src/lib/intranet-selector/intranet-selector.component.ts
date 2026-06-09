@@ -1,9 +1,14 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { IIntranetSelector } from './intranet-selector.model'
+
 import { IntranetSelectorService } from './intranet-selector.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-intranet-selector',
   templateUrl: './intranet-selector.component.html',
   styleUrls: ['./intranet-selector.component.scss'],

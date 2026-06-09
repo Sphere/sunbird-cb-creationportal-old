@@ -24,11 +24,11 @@
           {{ item.releaseNote }}
         </div>
 
-        <mat-chip-list>
+        <mat-chip-set>
           <mat-chip color="primary" selected *ngIf="item.releaseCategory === 'ADDED'">ADDED</mat-chip>
           <mat-chip color="accent" selected *ngIf="item.releaseCategory === 'CHANGED'">CHANGED</mat-chip>
           <mat-chip *ngIf="item.releaseCategory === 'BUG_FIX'">BUG FIX</mat-chip>
-        </mat-chip-list>
+        </mat-chip-set>
 
 
       </div>

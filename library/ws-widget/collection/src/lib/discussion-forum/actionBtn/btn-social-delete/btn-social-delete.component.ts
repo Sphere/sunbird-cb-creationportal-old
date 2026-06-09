@@ -1,8 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { DialogSocialDeletePostComponent } from '../../dialog/dialog-social-delete-post/dialog-social-delete-post.component'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-social-delete',
   templateUrl: './btn-social-delete.component.html',
   styleUrls: ['./btn-social-delete.component.scss'],

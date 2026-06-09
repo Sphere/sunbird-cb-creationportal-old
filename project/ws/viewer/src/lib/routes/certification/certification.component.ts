@@ -1,14 +1,20 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { Subscription } from 'rxjs'
+
 import {
   NsContent,
   // NsDiscussionForum,
   WidgetContentService,
 } from '@ws-widget/collection'
+
 // import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ActivatedRoute } from '@angular/router'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-certification',
   templateUrl: './certification.component.html',
   styleUrls: ['./certification.component.scss'],

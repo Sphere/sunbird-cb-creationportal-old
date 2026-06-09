@@ -1,5 +1,6 @@
 import { NsContent } from '@ws-widget/collection'
 
+
 export interface ICertificationResponse {
   resultList: ICertification
 }

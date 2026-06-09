@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Observable } from 'rxjs'
+
 import { NSProfileDataV2 } from '../models/profile-v2.model'
+
 import { map } from 'rxjs/operators'
+
 
 const PROTECTED_SLAG_V8 = '/apis/protected/v8'
 

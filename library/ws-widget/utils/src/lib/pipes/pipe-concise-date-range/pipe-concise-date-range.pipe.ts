@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core'
 
+
 interface IDateRange {
   fromDate: Date
   toDate: Date
@@ -7,6 +8,7 @@ interface IDateRange {
 }
 
 @Pipe({
+  standalone: false,
   name: 'pipeConciseDateRange',
 })
 export class PipeConciseDateRangePipe implements PipeTransform {

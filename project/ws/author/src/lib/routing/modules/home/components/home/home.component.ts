@@ -1,11 +1,18 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core'
+
 import { map } from 'rxjs/operators'
+
 import { ValueService } from '@ws-widget/utils/src/public-api'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
-import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
+
+import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE, EXTERNAL_CONTENT_REVIEWER_LIVE } from '@ws/author/src/lib/constants/content-role'
+
 import { Router } from '@angular/router'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
@@ -20,6 +27,7 @@ export class AuthHomeComponent implements OnInit, OnDestroy {
   allowAuthorContentCreate = false
   allowRedo = false
   allowPublish = false
+  allowExternalContentReviewer = false
   allowExpiry = false
   allowRestore = false
   isNewDesign = false
@@ -38,6 +46,8 @@ export class AuthHomeComponent implements OnInit, OnDestroy {
     this.allowExpiry = this.accessService.authoringConfig.allowExpiry
     this.allowReview = this.canShow('review') && this.accessService.authoringConfig.allowReview
     this.allowPublish = this.canShow('publish') && this.accessService.authoringConfig.allowPublish
+    this.allowExternalContentReviewer = this.canShow('external_content_reviewer')
+
     this.defaultSideNavBarOpenedSubscription = this.isLtMedium$.subscribe(isLtMedium => {
       this.sideNavBarOpened = !isLtMedium
       this.screenSizeIsLtMedium = isLtMedium
@@ -48,6 +58,8 @@ export class AuthHomeComponent implements OnInit, OnDestroy {
       this.router.navigate(['/author/my-content'], { queryParams: { status: 'reviewed' } })
     } else if (this.allowAuthorContentCreate) {
       this.router.navigate(['/author/my-content'], { queryParams: { status: 'draft' } })
+    } else if (this.allowExternalContentReviewer) {
+      this.router.navigate(['/author/my-content'], { queryParams: { status: 'externalCourseReview' } })
     } else {
       this.router.navigate(['/author/my-content'], { queryParams: { status: 'inreview' } })
     }
@@ -69,6 +81,9 @@ export class AuthHomeComponent implements OnInit, OnDestroy {
           || this.accessService.hasRole(PUBLISH_ROLE)
       case 'author_create':
         return this.accessService.hasRole(CREATE_ROLE)
+      case 'external_content_reviewer':
+        //return this.accessService.hasRole(CREATE_ROLE)
+        return this.accessService.hasRole(EXTERNAL_CONTENT_REVIEWER_LIVE)
       default:
         return false
     }

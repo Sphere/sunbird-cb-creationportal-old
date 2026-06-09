@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core'
+
 import { Resolve, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router'
+
 import { Observable, of } from 'rxjs'
+
 import { catchError, map } from 'rxjs/operators'
+
 import { ProfileService } from '../../../services/profile.service'
+
 import { ITimeSpent } from '../models/learning.models'
+
 
 export interface ITimeResolveData {
   start: Date

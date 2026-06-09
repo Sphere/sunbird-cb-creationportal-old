@@ -1,42 +1,16 @@
-import {
-  Component, OnInit, Inject
-} from '@angular/core'
-import {
-  MAT_DIALOG_DATA
-} from '@angular/material/dialog'
-import { ConfigurationsService } from '@ws-widget/utils'
-import { HttpClient } from '@angular/common/http'
+import { Component, OnInit } from '@angular/core'
+import hostConfig from '../../assets/configurations/host.config.json'
 
 @Component({
+  standalone: false,
   selector: 'ws-image-upload-intro-popup',
   templateUrl: './image-upload-intro-popup.component.html',
-  styleUrls: ['./image-upload-intro-popup.component.scss']
+  styleUrls: ['./image-upload-intro-popup.component.scss'],
 })
 export class ImageUploadIntroPopupComponent implements OnInit {
-  uploadImageInto: any
-  private baseUrl = 'assets/configurations'
-  constructor(
-    public configSvc: ConfigurationsService,
-    @Inject(MAT_DIALOG_DATA) data: any,
-    private http: HttpClient,
+  uploadImageInto: { first: string; second: string; third: string } | null = null
 
-  ) {
-    console.log("data", data)
+  ngOnInit(): void {
+    this.uploadImageInto = (hostConfig as any).uploadImageInto ?? null
   }
-
-  async ngOnInit() {
-    const publicConfig: any = await this.http
-      .get<any>(`${this.baseUrl}/host.config.json`)
-      .toPromise()
-    publicConfig.rootOrg = 'aastrika'
-    publicConfig.org = ['aastrika']
-    console.log("yes here", publicConfig, this.configSvc.instanceConfig)
-
-    this.configSvc.instanceConfig = publicConfig
-    if (publicConfig) {
-      console.log(publicConfig.uploadImageInto)
-      this.uploadImageInto = publicConfig.uploadImageInto
-    }
-  }
-
 }

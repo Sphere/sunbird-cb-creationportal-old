@@ -1,8 +1,13 @@
-import { NgModule } from '@angular/core'
+﻿import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { LanguageSelectorComponent } from './language-selector.component'
-import { MatFormFieldModule, MatSelectModule } from '@angular/material'
+
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatSelectModule } from '@angular/material/select'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+
 
 @NgModule({
   declarations: [LanguageSelectorComponent],
@@ -14,6 +19,5 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
     ReactiveFormsModule,
   ],
   exports: [LanguageSelectorComponent],
-  entryComponents: [LanguageSelectorComponent],
 })
 export class LanguageSelectorModule { }

@@ -1,14 +1,22 @@
 import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core'
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
-import { NSContent } from '@ws/author/src/lib/interface/content'
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
-import { UploadService } from 'project/ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
-import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
-import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
-import { SuccessDialogComponent } from '../success-dialog/success-dialog.component'
-import { MatDialog } from '@angular/material'
 
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+
+import { NSContent } from '@ws/author/src/lib/interface/content'
+
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
+
+import { UploadService } from 'project/ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
+
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
+import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
+
+import { SuccessDialogComponent } from '../success-dialog/success-dialog.component'
+
+import { MatDialog } from '@angular/material/dialog'
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-certificate-upload-dialog',
   templateUrl: './certificate-upload-dialog.component.html',
   styleUrls: ['./certificate-upload-dialog.component.scss'],
@@ -58,6 +66,8 @@ export class CertificateDialogComponent implements OnInit {
       const month = (date.getMonth() + 1).toString().padStart(2, '0')
       const year = date.getFullYear()
       const rmNumber = '#09123'
+      const maxScore = '100%'
+      const courseName = 'Normal Labour Course'
 
       const newIssuedDate = `${day}-${month}-${year}`
       // let qrCode = "https://ibb.co/wNbdr4m"
@@ -159,6 +169,46 @@ export class CertificateDialogComponent implements OnInit {
 
         newTextElement.appendChild(tspanElement)
         svgDoc.documentElement.appendChild(newTextElement)
+      }
+
+      let maxScoreText = svgDoc.querySelector('text[id="${maxScore}"] tspan')
+      if (maxScoreText) {
+        maxScoreText.textContent = maxScore
+      } else {
+        const maxScoreTextElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "text")
+        maxScoreTextElement.setAttribute("id", "maxScore")
+        maxScoreTextElement.setAttribute("fill", "black")
+        maxScoreTextElement.setAttribute("xml:space", "preserve")
+        maxScoreTextElement.setAttribute("style", "white-space: pre")
+        maxScoreTextElement.setAttribute("font-family", "Roboto")
+        maxScoreTextElement.setAttribute("font-size", "20")
+        maxScoreTextElement.setAttribute("letter-spacing", "0em")
+        const tspanElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "tspan")
+        tspanElement.setAttribute("x", "640")
+        tspanElement.setAttribute("y", "780")
+        tspanElement.textContent = maxScore
+        maxScoreTextElement.appendChild(tspanElement)
+        svgDoc.documentElement.appendChild(maxScoreTextElement)
+      }
+
+      let courseNameText = svgDoc.querySelector('text[id="${courseName}"] tspan')
+      if (courseNameText) {
+        courseNameText.textContent = courseName
+      } else {
+        const courseNameTextElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "text")
+        courseNameTextElement.setAttribute("id", "courseName")
+        courseNameTextElement.setAttribute("fill", "black")
+        courseNameTextElement.setAttribute("xml:space", "preserve")
+        courseNameTextElement.setAttribute("style", "white-space: pre")
+        courseNameTextElement.setAttribute("font-family", "Roboto")
+        courseNameTextElement.setAttribute("font-size", "24")
+        courseNameTextElement.setAttribute("letter-spacing", "0em")
+        const tspanElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "tspan")
+        tspanElement.setAttribute("x", "600")
+        tspanElement.setAttribute("y", "500")
+        tspanElement.textContent = courseName
+        courseNameTextElement.appendChild(tspanElement)
+        svgDoc.documentElement.appendChild(courseNameTextElement)
       }
 
       // Serialize the modified SVG back to a string

@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import {
   INewGridLayoutData,
   INewGridLayoutProcessedData,
@@ -7,7 +9,9 @@ import {
   sizeSuffix,
   INewGridLayoutDataMain,
 } from './new-grid-layout.model'
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-new-grid-layout',
   templateUrl: './new-grid-layout.component.html',
   styleUrls: ['./new-grid-layout.component.scss'],

@@ -1,10 +1,15 @@
 import { Component, OnInit, OnDestroy, OnChanges, Input } from '@angular/core'
+
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser'
 
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { NsEmbeddedPage } from './embedded-page.model'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-embedded-page',
   templateUrl: './embedded-page.component.html',
   styleUrls: ['./embedded-page.component.scss'],

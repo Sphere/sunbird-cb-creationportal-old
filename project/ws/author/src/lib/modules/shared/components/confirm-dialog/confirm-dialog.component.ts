@@ -1,17 +1,30 @@
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout'
+
 import { Component, OnInit, Inject, EventEmitter, Output } from '@angular/core'
+
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms'
-import { MatSnackBar, MAT_DIALOG_DATA } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { Observable, Subscription } from 'rxjs'
+
 import { debounceTime, map } from 'rxjs/operators'
+
 import { McqQuiz, Option } from '../../../../routing/modules/editor/routing/modules/quiz/components/quiz-class'
+
 import { QuizStoreService } from '../../../../routing/modules/editor/routing/modules/quiz/services/store.service'
+
 import { NotificationComponent } from '../notification/notification.component'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NOTIFICATION_TIME } from '../../../../constants/constant'
+
 import { MatSnackBarRef } from '@angular/material/snack-bar'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-confirm-dialog',
   templateUrl: './confirm-dialog.component.html',
   styleUrls: ['./confirm-dialog.component.scss'],

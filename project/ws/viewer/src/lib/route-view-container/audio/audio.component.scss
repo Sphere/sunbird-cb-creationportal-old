@@ -93,7 +93,7 @@
 
 @import 'ws-vars';
 @import 'ws-mixins';
-.mat-card{
+.mat-card, .mat-mdc-card{
   box-shadow: none !important;
 }
 .video-player-summary-container {

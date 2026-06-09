@@ -1,8 +1,11 @@
 import { Component, OnInit, Inject } from '@angular/core'
-import { MAT_SNACK_BAR_DATA } from '@angular/material'
+
+import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar'
 import { IFeedbackSnackbarData } from '../../models/feedback.model'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-feedback-snackbar',
   templateUrl: './feedback-snackbar.component.html',
   styleUrls: ['./feedback-snackbar.component.scss'],

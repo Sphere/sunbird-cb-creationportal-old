@@ -1,11 +1,20 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core'
+
 import { FormControl } from '@angular/forms'
-import { MatDialog, MatPaginator, MatSnackBar, MatTableDataSource } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatPaginator } from '@angular/material/paginator'
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { MatTableDataSource } from '@angular/material/table'
 import { NsContent } from '@ws-widget/collection'
+
 import { ViewSubmissionComponent } from './components/view-submission/view-submission.component'
+
 import { ResourceCollectionService } from './resource-collection.service'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-plugin-resource-collection',
   templateUrl: './resource-collection.component.html',
   styleUrls: ['./resource-collection.component.scss'],

@@ -1,9 +1,15 @@
 import { Component, OnInit } from '@angular/core'
+
 import { AnalyticsService } from '../../services/analytics.service'
+
 import { NSAnalyticsData } from '../../models/analytics.model'
+
 import { TFetchStatus } from '@ws-widget/utils'
+
 import { NSCompetency } from '../../../competency/models/competency.model'
+
 @Component({
+  standalone: false,
   selector: 'ws-app-feature-usage',
   templateUrl: './feature-usage.component.html',
   styleUrls: ['./feature-usage.component.scss'],

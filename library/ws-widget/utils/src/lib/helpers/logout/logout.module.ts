@@ -1,8 +1,11 @@
-import { NgModule } from '@angular/core'
-import { CommonModule } from '@angular/common'
-import { MatButtonModule, MatDialogModule } from '@angular/material'
+﻿import { NgModule } from '@angular/core'
 
+import { CommonModule } from '@angular/common'
+
+import { MatButtonModule } from '@angular/material/button'
+import { MatDialogModule } from '@angular/material/dialog'
 import { LogoutComponent } from './logout.component'
+
 
 @NgModule({
   declarations: [LogoutComponent],
@@ -11,6 +14,5 @@ import { LogoutComponent } from './logout.component'
     MatButtonModule,
     MatDialogModule,
   ],
-  entryComponents: [LogoutComponent],
 })
 export class LogoutModule { }

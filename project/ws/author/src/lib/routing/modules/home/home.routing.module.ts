@@ -1,10 +1,17 @@
 import { NgModule } from '@angular/core'
+
 import { RouterModule, Routes } from '@angular/router'
+
 // import { DepartmentResolver } from '../../../services/department-resolv.servive'
+
 import { InitResolver } from '../../../services/init-resolve.service'
+
 // import { DashboardComponent } from './components/dashboard/dashboard.component'
+
 // import { MyContentComponent } from '../my-content/components/my-content/my-content.component'
+
 import { AuthHomeComponent } from './components/home/home.component'
+
 
 const routes: Routes = [
   {

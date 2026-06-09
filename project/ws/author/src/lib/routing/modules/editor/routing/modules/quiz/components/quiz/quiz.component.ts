@@ -1,31 +1,52 @@
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
-import { Component, OnInit, ChangeDetectorRef, OnDestroy, Input, Output, EventEmitter, OnChanges } from '@angular/core'
+
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, Input, Output, EventEmitter, OnChanges, ElementRef, ViewChild } from '@angular/core'
+
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar'
+
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
+
 // import { map, mergeMap, tap, catchError } from 'rxjs/operators'
+
 import { map, mergeMap, catchError } from 'rxjs/operators'
+
 import { forkJoin, of, Observable, Subscription, EMPTY } from 'rxjs'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
 
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/components/comments-dialog/comments-dialog.component'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
 
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { QuizStoreService } from '../../services/store.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { UploadService } from '@ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { QuizResolverService } from '../../services/resolver.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { NotificationService } from '@ws/author/src/lib/services/notification.service'
+
 // import {
 //   FillUps,
 //   MatchQuiz,
 //   McqQuiz,
 // } from '@ws/author/src/lib/routing/modules/editor/routing/modules/quiz/components/quiz-class'
+
 import {
   NOTIFICATION_TIME,
   ASSESSMENT_JSON_WITH_KEY,
@@ -33,24 +54,51 @@ import {
   ASSESSMENT,
   QUIZ_JSON,
 } from '@ws/author/src/lib/routing/modules/editor/routing/modules/quiz/constants/quiz-constants'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
 
+
 import { CONTENT_BASE_WEBHOST } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
+
 import { FormGroup } from '@angular/forms'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { isNumber } from 'lodash'
+
 // import { environment } from '../../../../../../../../../../../../../src/environments/environment'
+
 import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image-upload-intro-popup.component'
 
+import * as XLSX from 'xlsx'
+
+interface QuizOption {
+  text: string
+  optionId: string
+  isCorrect: boolean
+}
+
+interface QuizQuestion {
+  questionId: string
+  question: string
+  questionType: string
+  options: QuizOption[]
+  multiSelection: boolean
+}
 @Component({
+  standalone: false,
   selector: 'ws-auth-quiz',
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.scss'],
   providers: [QuizResolverService, QuizStoreService],
 })
+
 export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   selectedQuizIndex!: number
@@ -105,6 +153,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   courseCompetency: any
   courseDetails: any
   resourceDetails: any
+  questionTypeText: any = 'mcq-sca'
+  @ViewChild('uploadFile', { static: false }) uploadFile!: ElementRef
 
   constructor(
     private router: Router,
@@ -147,8 +197,16 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         }
       })
     console.log("Quiz12", this.isQuiz)
+    // this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
+    //   const val = this.quizStoreSvc.getQuiz(index)
+    //   console.log("val of type", val)
+    //   // }
+    // })
   }
-
+  questionType(type: any) {
+    this.isAtLeastOneQuestionPresent()
+    this.questionTypeText = type
+  }
   ngOnDestroy() {
     this.cdr.detach()
     if (this.activeIndexSubscription) {
@@ -253,19 +311,24 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     (async () => {
       this.showSettingButtons = true
-      this.isLoading = true
+      this.isLoading = false
       // console.log('kk', JSON.parse(sessionStorage.assessment))
       const code = sessionStorage.getItem('assessment') || null
       console.log("sessionStorage.getItem('quiz')", sessionStorage.getItem('quiz'))
 
+      // Safety net: dismiss global loader if async chain doesn't complete within 3s
+      setTimeout(() => { this.isLoading = false; this.loaderService.changeLoad.next(false) }, 3000)
+
       this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
         console.log("code", code)
+        // Keep the global "Please wait..." loader visible until the quiz content
+        // is actually loaded (contentLoaded below) — clearing it here left a blank
+        // page while the assessment JSON was still being fetched.
         if (code) {
-          this.loaderService.changeLoad.next(false)
           this.isEdited = true
-          this.metaContentService.currentContent = JSON.parse(code)
+          id = JSON.parse(code)  // use real assessment ID for all subsequent lookups
+          this.metaContentService.currentContent = id
         } else {
-          this.loaderService.changeLoad.next(false)
           this.metaContentService.currentContent = id
         }
         this.allLanguages = this.initService.ordinals.subTitles
@@ -285,6 +348,13 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
           this.activateRoute.parent.parent.data.subscribe(v => {
             // tslint:disable-next-line:no-console
             console.log(v)
+
+            if (!v || !v.contents || !v.contents[0]) {
+              this.isLoading = false
+              this.loaderService.changeLoad.next(false)
+              this.contentLoaded = true
+              return
+            }
 
             this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(async newData => {
               // const quizContent = this.metaContentService.getOriginalMeta(this.metaContentService.currentContent)
@@ -357,6 +427,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                             this.questionsArr =
                               this.quizStoreSvc.collectiveQuiz[id] || []
                             this.contentLoaded = true
+                            this.loaderService.changeLoad.next(false)
                             this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
                             this.currentId = id
                             this.quizStoreSvc.currentId = id
@@ -378,6 +449,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                       this.questionsArr =
                         this.quizStoreSvc.collectiveQuiz[id] || []
                       this.contentLoaded = true
+                      this.loaderService.changeLoad.next(false)
                     }
                     if (!this.quizStoreSvc.collectiveQuiz[id]) {
                       this.quizStoreSvc.collectiveQuiz[id] = []
@@ -393,6 +465,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                     this.questionsArr =
                       this.quizStoreSvc.collectiveQuiz[id] || []
                     this.contentLoaded = true
+                    this.loaderService.changeLoad.next(false)
                     if (!this.quizStoreSvc.collectiveQuiz[id]) {
                       this.quizStoreSvc.collectiveQuiz[id] = []
                     }
@@ -414,7 +487,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
                 })
               }
               if (v.contents[0].content.competency) {
-                console.log("ye sasdfsdaf")
                 this.isQuiz = 'Assessment'
               }
             })
@@ -444,6 +516,201 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         console.log("Quiz", this.isQuiz)
       })
     })()
+  }
+  isAtLeastOneQuestionPresent(): boolean {
+    return this.questionsArr.some((question: any) => {
+      // Check if the question text is non-empty or if at least one option has text
+      return (
+        question.question.trim() !== '' &&
+        question.options.some((option: any) => option.text.trim() !== '')
+      )
+    })
+  }
+  uploadFileModal(): void {
+    if (this.isAtLeastOneQuestionPresent()) {
+      const confirmDelete = this.dialog.open(ConfirmDialogComponent, {
+        width: '400px',
+        data: 'uploadFile',
+      })
+
+      confirmDelete.afterClosed().subscribe((confirm) => {
+        if (confirm && this.uploadFile && this.uploadFile.nativeElement) {
+          this.uploadFile.nativeElement.click()
+        }
+      })
+    } else {
+      this.uploadFile.nativeElement.click()
+    }
+
+  }
+  convertExcelToJson(file: File): void {
+    const validExtensions = ['xlsx', 'xls'] // Allowed extensions
+    const fileExtension = file.name.split('.').pop() // Extract file extension
+
+    if (!fileExtension || validExtensions.indexOf(fileExtension.toLowerCase()) === -1) {
+      console.error('Invalid file type. Please upload an Excel file.')
+      this.showNotification(Notify.UPLOAD_EXCEL_FILE)
+      return // Stop further processing
+    }
+    const reader = new FileReader()
+    reader.onload = (e: any) => {
+      const data = new Uint8Array(e.target.result)
+      const workbook = XLSX.read(data, { type: 'array' })
+      const sheetName = workbook.SheetNames[0]
+      const worksheet = workbook.Sheets[sheetName]
+      const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
+
+      // Process the Excel data
+      const quizJson = this.generateQuizJson(jsonData)
+      console.log('Generated Quiz JSON:', this.questionsArr, quizJson)
+
+      // Assign to questionsArr or any other variable as needed
+      this.questionsArr = quizJson.questions
+      this.quizStoreSvc.collectiveQuiz[this.currentId] = this.questionsArr
+      this.checkValidity()
+      this.quizStoreSvc.changeQuiz(0)
+      console.log('Generated Quiz JSON 2:', this.questionsArr)
+      this.cdr.detectChanges()
+      this.cdr.markForCheck() // Explicitly mark the component for change detection
+
+    }
+    reader.readAsArrayBuffer(file)
+  }
+  generateQuizJson(data: any[]): any {
+    const quizJson = {
+      timeLimit: 0, // Default time limit
+      passPercentage: 0, // Default pass percentage
+      isAssessment: this.resourceDetails.isAssessment,
+      randomCount: 0, // Default random count
+      questions: [] as QuizQuestion[], // Explicitly type the questions array
+    }
+
+    this.assessmentDuration = ''
+    this.passPercentage = ''
+    this.randomCount = ''
+
+    // Extract column names from the first row
+    const headers = data[0].map((header: string) => header.trim())
+
+    // Limit the rows to 500 questions (excluding the header row)
+    const limitedData = data.slice(1, 501) // Start from row 1 (skip header) and include up to row 500
+
+    for (let i = 0; i < limitedData.length; i++) {
+      const row = limitedData[i]
+      if (!row || row.length === 0) {
+        console.warn(`Skipping empty row ${i + 1}`)
+        continue
+      }
+
+      // Map column names to their respective values
+      const rowData: { [key: string]: any } = {}
+      headers.forEach((header: string, index: number) => {
+        rowData[header] = row[index] !== undefined && row[index] !== null ? row[index] : '' // Explicitly handle undefined or null
+      })
+
+      // Skip rows with insufficient data
+      if (!rowData['Question'] || !rowData['Correct Answer']) {
+        console.warn(`Skipping row ${i + 1} due to missing required fields.`)
+        continue
+      }
+
+      const questionId = `Q${100 + i}`
+      const options: QuizOption[] = []
+
+      // Parse the "Correct Answer" column to handle numeric values
+      const correctAnswers = rowData['Correct Answer']
+        .toString()
+        .split(',')
+        .map((answer: string) => parseInt(answer.trim(), 10)) // Convert numeric values to integers
+
+      // Track last non-empty option
+      let lastNonEmptyIndex = 0
+
+      // First pass: Determine the last non-empty option index
+      for (let optionIndex = 1; optionIndex <= 6; optionIndex++) {
+        const key = `Option ${optionIndex}`
+        if (rowData[key] !== undefined && rowData[key] !== null && String(rowData[key]).trim() !== '') {
+          lastNonEmptyIndex = optionIndex
+        }
+      }
+
+      // Second pass: Add options correctly
+      for (let optionIndex = 1; optionIndex <= lastNonEmptyIndex; optionIndex++) {
+        const key = `Option ${optionIndex}`
+        const optionText = rowData[key] !== undefined && rowData[key] !== null ? String(rowData[key]).trim() : ''
+
+        options.push({
+          text: optionText, // Keep the text (even if empty, but only up to lastNonEmptyIndex)
+          optionId: `${questionId}-${String.fromCharCode(96 + optionIndex)}`, // Sequential IDs (a, b, c...)
+          isCorrect: correctAnswers.includes(optionIndex), // Match option number
+        })
+      }
+
+      const correctOptions = options.filter((option: any) => option.isCorrect) // Get correct options
+      const multiSelection = correctOptions.length > 1 // Set to true if multiple correct options exist, otherwise false
+
+      quizJson.questions.push({
+        questionId,
+        question: rowData['Question'].trim(), // Trim unnecessary spaces
+        questionType: multiSelection ? 'mcq-mca' : 'mcq-sca', // Set question type based on multiSelection
+        options,
+        multiSelection, // Assign the boolean value
+      })
+    }
+    console.log("quizJson", quizJson)
+    return quizJson
+  }
+  downloadTemplate(): void {
+    const s3Url = 'https://aastar-app-assets.s3.ap-south-1.amazonaws.com/final_single_row_questions.xlsx' // Replace with your S3 file URL
+    const anchor = document.createElement('a')
+    anchor.href = s3Url
+    anchor.download = 'Sample_Bulk_Upload_Template.xlsx' // Set the desired file name
+    // anchor.target = '_blank'
+    anchor.click()
+  }
+
+  downloadUploadedQuestion(): void {
+    // Prepare the data for Excel
+    const excelData = this.questionsArr.map((question: any) => {
+      // const correctOptions = question.options.filter((option: any) => option.isCorrect) // Get correct options
+
+      const row: any = {
+        Question: question.question.replace(/<[^>]*>/g, ''), // Remove HTML tags like <p>
+        // 'Multi Selection': correctOptions.length > 1 ? 'true' : 'FALSE', // Set multiSelection based on correct options
+        'Option 1': question.options[0] ? question.options[0].text : '',
+        'Option 2': question.options[1] ? question.options[1].text : '',
+        'Option 3': question.options[2] ? question.options[2].text : '',
+        'Option 4': question.options[3] ? question.options[3].text : '',
+        'Option 5': question.options[4] ? question.options[4].text : '',
+        'Option 6': question.options[5] ? question.options[5].text : '',
+        'Correct Answer': question.options
+          .map((option: any, index: number) => (option.isCorrect ? index + 1 : null))
+          .filter((option: string | null) => option !== null)
+          .join(', '), // Combine correct answers into a single string
+      }
+      return row
+    })
+
+    // Convert the data to a worksheet
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excelData)
+
+    // Create a new workbook and append the worksheet
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Questions')
+
+    // Generate the Excel file and trigger the download
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+    const blob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
+
+    // Create a temporary anchor element to trigger the download
+    const anchor = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    anchor.href = url
+    anchor.download = 'Uploaded_Questions.xlsx' // Set the desired file name
+    anchor.click()
+
+    // Clean up the URL object
+    URL.revokeObjectURL(url)
   }
   addTodo(event: any, field: string) {
     const meta: any = {}
@@ -485,8 +752,10 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   OpenUploadIntro() {
     const dialogRef = this.dialog.open(ImageUploadIntroPopupComponent, {
-      width: '85%',
-      height: '600px',
+      width: '560px',
+      maxWidth: '92vw',
+      maxHeight: '85vh',
+      panelClass: 'iup-dialog-panel',
     })
     dialogRef.afterClosed().subscribe((response: boolean) => {
       // this.loader.changeLoad.next(true)
@@ -626,7 +895,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
           console.log(data)
         })
     }
-    return of({})
+    return of({} as any)
   }
 
   generateUrl(oldUrl: any) {
@@ -718,7 +987,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       // tslint:disable-next-line: no-parameter-reassignment
       v = v[0].result || v[0]
       this.showNotification(Notify.SAVE_SUCCESS)
-      const updatedMeta = this.metaContentService.upDatedContent[this.currentId] || {}
+      const updatedMeta: any = this.metaContentService.upDatedContent[this.currentId] || {}
       // const check = this.resourceType === ASSESSMENT ? v.length && v[1] && v[1].code : true
       // if (v && v[0] && v[0].code && check) {
       if (v && (v.artifactUrl || v.content_url)) {
@@ -1134,8 +1403,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
             : 0,
       }
 
-      const updatedContent = this.metaContentService.upDatedContent[this.currentId] || {}
-      const updatedMeta = this.metaContentService.getUpdatedMeta(this.currentId)
+      const updatedContent: any = this.metaContentService.upDatedContent[this.currentId] || {}
+      const updatedMeta: any = this.metaContentService.getUpdatedMeta(this.currentId)
       const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || {})
         .length
       const saveCall = (needSave

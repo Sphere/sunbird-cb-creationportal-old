@@ -1,13 +1,22 @@
 import { forkJoin } from 'rxjs'
+
 import { DomSanitizer } from '@angular/platform-browser'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core'
+
 import { template1Data, template2Data } from './template.constant'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-template',
   templateUrl: './template.component.html',
   styleUrls: ['./template.component.scss'],

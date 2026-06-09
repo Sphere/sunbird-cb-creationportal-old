@@ -17,15 +17,22 @@
   }
   .toc-links {
     position: sticky;
-    top: 0px;
+    top: 0;
     width: 100%;
     z-index: 1;
-    .mat-tab-link {
-      font-size: 18px !important;
+    background: #fff;
+    border-bottom: 1px solid #e8ecf0;
+
+    .mat-tab-link,
+    .mat-mdc-tab-link {
+      font-family: Roboto, sans-serif !important;
+      font-size: 14px !important;
+      font-weight: 500 !important;
+      color: #5a6a7a !important;
     }
     .link-active {
-      color: #424242 !important;
-      border-bottom: 2px solid;
+      color: #1C5D95 !important;
+      border-bottom: 2px solid #1C5D95;
       opacity: 1;
     }
   }
@@ -73,11 +80,13 @@
   margin: auto;
   display: flex
 }
-::ng-deep .mat-tab-header-pagination-before {
+::ng-deep .mat-tab-header-pagination-before,
+::ng-deep .mat-mdc-tab-header-pagination-before {
   padding-left: 0 !important;
   margin-left: -5px;
 }
-::ng-deep .mat-tab-header-pagination-after {
+::ng-deep .mat-tab-header-pagination-after,
+::ng-deep .mat-mdc-tab-header-pagination-after {
   padding-right: 0 !important;
   margin-right: -5px;
 }
@@ -89,57 +98,153 @@
     margin-bottom: 16px;
 }
 
-::ng-deep .mat-tab-link {
+::ng-deep .mat-tab-link,
+::ng-deep .mat-mdc-tab-link {
     padding: 0px !important; // adjust this to whatever padding you need
     justify-content: left !important;
     min-width: 80px !important;
     margin-right: 40px;
   }
-  ::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
+  ::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active,
+  ::ng-deep .mat-mdc-tab-list .mat-mdc-tab-labels .mat-mdc-tab-label-active {
   opacity: 1;
 }
 .showData {
   display: none;
 }
 
-#commentSection {
-  padding: 10px 60px;
+// ── Activity Log / Comments shared panel ─────────────────────────────────────
+.section-panel {
+  padding: 16px 2.9rem 24px;
+
+  @media (max-width: 768px) {
+    padding: 16px 1rem 24px;
+  }
 }
-.heading {
-    line-height: 38px !important;
-    letter-spacing: -0.02em;
-    text-align: left;
+
+.section-heading {
+  font-family: Roboto, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0F172A;
+  margin: 8px 0 20px;
+  line-height: 1.4;
+
+  &__course {
+    color: #1C5D95;
+  }
+}
+
+.activity-card {
+  padding: 14px 16px;
+  border: 1px solid #e2eaf2;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.activity-event {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0F172A;
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+.activity-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 6px;
+}
+
+.activity-time {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  color: #898989;
+}
+
+.view-comment-link {
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  color: #1C5D95;
+  text-transform: capitalize;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover { opacity: 0.8; }
+}
+
+.comment-body {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  color: #3a4a5c;
+  margin: 8px 0 0;
+  line-height: 1.6;
+}
+
+.role-highlight {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1C5D95;
+  text-transform: capitalize;
+}
+
+.role-capitalize { text-transform: capitalize; }
+
+.comments-by-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0F172A;
+  margin: 16px 0 10px;
 }
 
 .display {
-  padding: 10px 20px;
-  border: 2px solid #eee;
+  padding: 12px 16px;
+  border: 1px solid #e2eaf2;
   border-radius: 12px;
   margin-bottom: 10px;
+  background: #fff;
 }
+
 .in-line {
-  font-family: 'Roboto';
-line-height: 17px;
-letter-spacing: -0.02em;
-text-align: left;
-display: flex;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
 }
-.p-r-10{
+
+.p-r-10 {
   padding-right: 10px;
 }
+
 .highlight {
-  font-size: 17px !important;
-  font-weight: 400 !important;
-  text-transform: capitalize
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0F172A;
+  text-transform: capitalize;
 }
+
 .time {
-  color:#989898;
-  font-size: 11px !important;
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  color: #898989;
 }
+
 .commentBox {
-      margin-left: 50px !important;
-    font-size: 13px !important;
-    margin-top: -18px !important;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  color: #3a4a5c;
+  margin: 8px 0 0;
+  line-height: 1.5;
 }
 .overlay {
 position: fixed;
@@ -205,16 +310,7 @@ animation-delay: -0.5s;
   opacity: 0;
 }
 }
-.comments-text{
-  display: flex;
-  align-items: center;
-}
-.role-txt{
-  color: #1C5D95;
-      // margin: 0px 0px 0px 4px;
-          margin: 0px 0px 0px 4px !important;
-
-}
+// .comments-text and .role-txt replaced by .comments-by-row and .role-highlight above
 .new-text{
     padding: 2px 7px !important;
     font-size: 11px;
@@ -231,10 +327,12 @@ animation-delay: -0.5s;
    font-size: 14px;
   color: #1C5D95 !important;
 }
-.check-text .mat-checkbox-layout {
+.check-text .mat-checkbox-layout,
+.check-text .mdc-form-field {
   border-radius: 30px !important;
 }
-::ng-deep .mat-checkbox-inner-container{
+::ng-deep .mat-checkbox-inner-container,
+::ng-deep .mdc-checkbox{
   width: 13px !important;
   height: 13px !important;
 }

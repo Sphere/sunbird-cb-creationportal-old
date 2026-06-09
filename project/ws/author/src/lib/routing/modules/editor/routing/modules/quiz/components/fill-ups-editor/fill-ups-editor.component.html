@@ -34,7 +34,7 @@
     <mat-card *ngFor="let option of selectedQuiz.options; let i = index" class="w-full custom" cdkDrag formArrayName="options"
       cdkDragBoundary=" .optionlist">
       <div class="custom-placeholder" *cdkDragPlaceholder></div>
-      <div class="flex justify-between w-full" [formGroupName]="i">
+      <div class="flex justify-between w-full items-center" [formGroupName]="i">
         <div class="flex romanN text-center items-center pl-4">{{ i + 1 | romanconvert }}.</div>
         <div class="cursor-auto item1 item-spacing">
           <mat-form-field class="myfield w-full" appearance="outline" appearance="outline">

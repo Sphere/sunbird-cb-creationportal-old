@@ -1,32 +1,50 @@
-<h1 mat-dialog-title i18n class="font-medium">
-  Unable to complete actions because of following reasons:
-</h1>
-<div mat-dialog-content>
-  <ng-container *ngIf="errorMsg">
-    {{ errorMsg }}
-  </ng-container>
-  <mat-list *ngIf="processErrorData">
-    <ng-container *ngFor="let error of processErrorData; let i = index">
-      <mat-list-item *ngIf="error.name">
-        <h3 class="heading m-0 font-normal" (click)="close(error.id)">{{ error.name }} :</h3>
-      </mat-list-item>
-      <mat-list-item *ngIf="!error.name">
-        <h3 class="heading m-0 font-normal" (click)="close(error.id)" i18n>Untitled Content :</h3>
-      </mat-list-item>
-      <mat-list style="margin-left:30px">
-        <div *ngFor="let message of error.message; let i = index">
-          <mat-list-item style="margin-bottom: 3px;">{{ i + 1 }}. {{ message }}</mat-list-item>
-        </div>
-      </mat-list>
-      <mat-divider *ngIf="i < processErrorData?.length - 1"></mat-divider>
+<div class="ep-dialog">
+
+  <!-- Header -->
+  <div class="ep-header">
+    <div class="ep-header-icon">
+      <mat-icon>error_outline</mat-icon>
+    </div>
+    <div class="ep-header-text">
+      <h2 class="ep-title" i18n>Unable to complete action</h2>
+      <p class="ep-subtitle" i18n>Please resolve the following issues before proceeding</p>
+    </div>
+    <button mat-icon-button class="ep-close-btn" [mat-dialog-close] aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="ep-content" mat-dialog-content>
+
+    <ng-container *ngIf="errorMsg">
+      <p class="ep-error-msg">{{ errorMsg }}</p>
     </ng-container>
-  </mat-list>
-  <ng-container *ngIf="!errorMsg && !processErrorData">
-    {{ data.errorFromBackendData | json }}
-  </ng-container>
-</div>
-<div mat-dialog-actions class="float-right">
-  <button mat-raised-button [mat-dialog-close] class="updateBtn" cdkFocusInitial i18n>
-    I Understand
-  </button>
+
+    <ng-container *ngIf="processErrorData">
+      <div class="ep-error-item" *ngFor="let error of processErrorData; let last = last">
+        <div class="ep-item-name">
+          <mat-icon class="ep-item-icon">article</mat-icon>
+          <span>{{ error.name || 'Untitled Content' }}</span>
+        </div>
+        <ul class="ep-item-messages">
+          <li *ngFor="let message of error.message">{{ message }}</li>
+        </ul>
+        <div class="ep-item-divider" *ngIf="!last"></div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="!errorMsg && !processErrorData">
+      <pre class="ep-raw">{{ data.errorFromBackendData | json }}</pre>
+    </ng-container>
+
+  </div>
+
+  <!-- Actions -->
+  <div class="ep-actions" mat-dialog-actions>
+    <button mat-flat-button class="ep-understand-btn" [mat-dialog-close] cdkFocusInitial i18n>
+      I Understand
+    </button>
+  </div>
+
 </div>

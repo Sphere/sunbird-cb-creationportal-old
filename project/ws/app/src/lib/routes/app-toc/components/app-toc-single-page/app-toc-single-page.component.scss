@@ -42,11 +42,13 @@ mat-divider {
     border: none;
     background: transparent;
 
-    ::ng-deep.mat-tab-links {
+    ::ng-deep.mat-tab-links,
+    ::ng-deep.mat-mdc-tab-links {
       margin: 24px 0 0 0;
     }
 
-    .mat-tab-link {
+    .mat-tab-link,
+    .mat-mdc-tab-link {
       // font: 18px/34px Poppins-Medium;
       color: #5F5F5F;
       text-align: left;

@@ -1,21 +1,32 @@
 import { Component, OnDestroy, Input, EventEmitter, Output } from '@angular/core'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { throwError, Subject } from 'rxjs'
+
 import { takeWhile, switchMap, tap, takeUntil } from 'rxjs/operators'
 
+
 import { NsContent } from '@ws-widget/collection'
+
 import { TSendStatus, TFetchStatus } from '@ws-widget/utils'
 
+
 import { SnackbarComponent } from '../snackbar/snackbar.component'
+
 import { CertificationApiService } from '../../apis/certification-api.service'
+
 import {
   ICertificationMeta,
   TCertificationRequestType,
   ICertificationSendResponse,
 } from '../../models/certification.model'
+
 import { RequestCancelDialogComponent } from '../request-cancel-dialog/request-cancel-dialog.component'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-toc-certification-booking-card',
   templateUrl: './booking-card.component.html',
   styleUrls: ['./booking-card.component.scss'],
@@ -43,7 +54,7 @@ export class BookingCardComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptionSubject$.next()
+    this.subscriptionSubject$.next(undefined as any)
     this.subscriptionSubject$.complete()
   }
 
@@ -67,7 +78,7 @@ export class BookingCardComponent implements OnDestroy {
               this.certification.booking.icfdId,
             )
           }
-          return throwError('No data.')
+          return throwError(() => 'No data.')
         }),
       )
       .subscribe(

@@ -1,14 +1,21 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
 
+
 import { Subscription } from 'rxjs'
+
 import { debounceTime } from 'rxjs/operators'
+
 
 import { ConfigurationsService } from '@ws-widget/utils'
 
+
 import { IWidgetErrorServiceUnavailable } from './error-service-unavailable.model'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-error-service-unavailable',
   templateUrl: './error-service-unavailable.component.html',
   styleUrls: ['./error-service-unavailable.component.scss'],

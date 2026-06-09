@@ -1,51 +1,76 @@
-<mat-dialog-content>
-  <div style="float: right;">
-    <mat-icon style="cursor: pointer;" mat-dialog-close mat-raised-button i18n>close</mat-icon>
-  </div>
-  <h2 class="text-bold">Add Competency</h2>
-  <div class="fixTableHead">
-    <mat-form-field appearance="fill" style="width:100%">
-      <mat-select [(ngModel)]="proficiency" placeholder="Select Competency"
-        (selectionChange)="eventSelection($event.value)">
-        <input placeholder="Search Competency" matInput class="module-input" (keyup)="onKey($event.target.value)">
-        <mat-option *ngFor="let list of proficiencyList" [value]="list">
-          {{ list.additionalProperties?list.additionalProperties.Code:''}} - {{list.name }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-  <div *ngIf="!disableLevel" class="fixTableHead">
-    <h4>Select Proficiencies</h4>
-    <!-- <mat-form-field appearance="fill"> -->
-    <section *ngFor="let list of levelList;let i=index">
-      <mat-checkbox [checked]="list.selected" (change)="listSelection(levelList,i,$event)"
-        class="leading-none mb-10">{{list.name}}
-      </mat-checkbox>
-    </section>
-    <!-- <mat-select [(ngModel)]="selectLevel" placeholder="Select Level" (selectionChange)="listSelection($event.value)">
-        <mat-option *ngFor="let list of levelList" [value]="list">
-          {{ list.name }}</mat-option>
-      </mat-select> -->
-    <!-- </mat-form-field> -->
-  </div>
-
-  <div class="">
-    <!-- <div style="float: left;">
-      <button mat-raised-button i18n class="margin-top-s save-btn-mt send-to-creator-link" (click)="moveCourseToDraft()"
-        color="#1C5D95" i18n>
-        Send to Creator’s draft
-      </button>
-    </div> -->
-    <div style="margin: 10px 0px;">
-      <!-- <button i18n class="refresh-button" id="refresh" (click)="refreshCourse()">
-        <mat-icon style="margin-top: 4px;">refresh</mat-icon>
-      </button> -->
-      <button [mat-dialog-close]="true" mat-raised-button (click)="addCompetency(proficiency, selectLevel, false)">
-        Cancel
-      </button>
-      <button class="" style="margin-left: 10px;" (click)="addCompetency(proficiency, selectLevel, true)"
-        mat-raised-button [disabled]="!(proficiency?.id && (hasOneChecked||disableLevel))">
-        Ok
-      </button>
+<!-- ── Dialog Header ────────────────────────────────────────────────────── -->
+<div class="cp-header">
+  <div class="cp-header-inner">
+    <span class="cp-card-icon">
+      <mat-icon>school</mat-icon>
+    </span>
+    <div>
+      <p class="cp-title">Add Competency</p>
+      <p class="cp-subtitle">Search, select a competency, then assign proficiency levels</p>
     </div>
   </div>
+  <button mat-icon-button class="cp-close" [mat-dialog-close]="false"
+    (click)="addCompetency(proficiency, null, false)" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<!-- ── Scrollable Content ────────────────────────────────────────────────── -->
+<mat-dialog-content class="cp-content">
+
+  <!-- Competency selector -->
+  <div class="cp-section">
+    <p class="cp-section-label">Competency</p>
+
+    <!-- Always-visible search bar -->
+    <div class="cp-search-bar">
+      <mat-icon class="cp-search-icon">search</mat-icon>
+      <input class="cp-search-input" placeholder="Search by name or code..."
+        autocomplete="off" (input)="onKey($event.target.value)" />
+    </div>
+
+    <!-- Filtered select -->
+    <mat-form-field appearance="outline" class="cp-field">
+      <mat-select [(ngModel)]="proficiency" placeholder="Select from results..."
+        (selectionChange)="eventSelection($event.value)">
+        <mat-option *ngFor="let list of proficiencyList" [value]="list">
+          <span class="cp-opt-code">{{ list.additionalProperties?.Code }}</span>
+          {{ list.name }}
+        </mat-option>
+      </mat-select>
+      <mat-hint>{{ proficiencyList?.length || 0 }} competencies · search above to filter</mat-hint>
+    </mat-form-field>
+  </div>
+
+  <!-- Proficiency levels -->
+  <div *ngIf="!disableLevel" class="cp-section">
+    <p class="cp-section-label">Proficiency Level</p>
+    <div class="cp-level-grid">
+      <div *ngFor="let list of levelList; let i = index"
+        class="cp-level-item"
+        [class.cp-level-selected]="list.selected"
+        [class.cp-level-existing]="list.alreadyAdded && list.selected">
+        <mat-checkbox [checked]="list.selected"
+          (change)="listSelection(levelList, i, $event)"
+          class="cp-checkbox">
+          {{ list.name }}
+        </mat-checkbox>
+        <span *ngIf="list.alreadyAdded" class="cp-level-badge">Added</span>
+      </div>
+    </div>
+  </div>
+
 </mat-dialog-content>
+
+<!-- ── Footer Actions ────────────────────────────────────────────────────── -->
+<mat-dialog-actions class="cp-actions">
+  <button mat-stroked-button class="cp-btn-cancel" [mat-dialog-close]="false"
+    (click)="addCompetency(proficiency, null, false)">
+    Cancel
+  </button>
+  <button mat-flat-button class="cp-btn-confirm"
+    (click)="addCompetency(proficiency, null, true)"
+    [disabled]="!(proficiency?.id && (hasOneChecked || disableLevel))">
+    Add Competency
+  </button>
+</mat-dialog-actions>

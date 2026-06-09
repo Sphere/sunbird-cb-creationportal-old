@@ -1,6 +1,9 @@
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { NSSearch } from '../_services/widget-search.model'
+
 import { NsContent } from '../_services/widget-content.model'
+
 
 export namespace NsContentStripSingle {
   export interface IContentStripSingle {

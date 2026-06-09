@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
+
 import { IActionButtonConfig } from '@ws/author/src/lib/interface/action-button'
+
 
 /**
  * @description
@@ -10,6 +12,7 @@ import { IActionButtonConfig } from '@ws/author/src/lib/interface/action-button'
  * @implements {OnInit}
  */
 @Component({
+  standalone: false,
   selector: 'ws-auth-editor-action-buttons',
   templateUrl: './auth-editor-action-buttons.component.html',
   styleUrls: ['./auth-editor-action-buttons.component.scss'],

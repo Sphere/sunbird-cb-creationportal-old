@@ -1,12 +1,20 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { TFetchStatus } from '@ws-widget/utils'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import { WidgetContentService } from '../_services/widget-content.service'
+
 import { NsContentStripSingle } from './content-strip-single.model'
+
 import { ContentStripSingleService } from './content-strip-single.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-content-strip-single',
   templateUrl: './content-strip-single.component.html',
   styleUrls: ['./content-strip-single.component.scss'],

@@ -1,14 +1,23 @@
 
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
+
 import { ConfigurationsService, NsPage } from '@ws-widget/utils/src/public-api'
+
 import { SafeUrl, DomSanitizer } from '@angular/platform-browser'
+
 import { HeaderServiceService } from './../../../../../../../../../../../../../src/app/services/header-service.service'
+
 import { IActionButtonConfig, IActionButton } from '@ws/author/src/lib/interface/action-button'
+
 import { CollectionStoreService } from '../../services/store.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { Subscription } from 'rxjs'
 
+
 @Component({
+  standalone: false,
   // tslint:disable-next-line:component-selector
   selector: 'ws-author-course-header',
   templateUrl: './course-header.component.html',
@@ -24,6 +33,7 @@ export class CourseHeaderComponent implements OnInit {
   @Input() isModelHeaderView: boolean = false;
   @Input() backToDashboard: boolean = false;
   @Input() clickedNext: boolean = false;
+  @Input() isSelfAssessment: boolean = false;
 
 
   activeSubscription?: Subscription
@@ -106,6 +116,20 @@ export class CourseHeaderComponent implements OnInit {
       })
     }
   }
+  // The back button is shown on both the Builder and Settings pages, and "back"
+  // lands on a different step in each. Derive the label from the page we're
+  // actually on (sessionStorage 'isSettingsPage' is '1' while on Settings) so it
+  // always names the real destination. Self-assessment uses its own step names.
+  get backNavLabel(): string {
+    const onSettings = sessionStorage.getItem('isSettingsPage') === '1'
+    if (this.isSelfAssessment) {
+      // Self-assessment Builder (step 2) back goes to the dashboard; Settings
+      // (step 3) back goes to the Builder.
+      return onSettings ? 'Back to Self Assessment Builder' : 'Back to dashboard'
+    }
+    return onSettings ? 'Back to Course Builder' : 'Back to Course Details'
+  }
+
   backNavigation(): void {
     this.initService.isBackButtonClickedAction('backButtonClicked')
   }

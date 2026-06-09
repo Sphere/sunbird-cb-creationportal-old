@@ -1,15 +1,27 @@
 @import 'ws-vars';
 @import 'ws-mixins';
 
+$border-color: #e2eaf2;
+
+// ── Collection card (Chapter / Module) ───────────────────────────────────────
 .card-collection {
   display: flex;
   align-items: center;
-  margin: $size-xs 0;
-  padding: 12px 0;
-  border: 1px solid #d8d8d8;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border: 1px solid $border-color;
   margin-bottom: 10px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 4px rgb(0 0 0 / 15%);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+
+  h2 {
+    font-family: Roboto, sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #0F172A;
+    line-height: 1.4;
+    margin: 0 0 4px;
+  }
 
   .card-thumbnail {
     $image-height: 65px;
@@ -17,57 +29,15 @@
     width: (16 / 9) * $image-height;
     margin: 0 $size-s;
     cursor: pointer;
-    // background: url(image.png);
     filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.15));
     border-radius: 10px;
   }
 
-  .card-title {
-    font-size: 20px !important;
-  }
-
-  @media only screen and (max-width:469px) {
+  @media only screen and (max-width: 469px) {
     flex-direction: row;
-    margin: $size-xs $size-xs $size-xs $size-xs !important;
+    margin: $size-xs !important;
     align-items: flex-start !important;
     padding-right: 5px;
-
-    .card-thumbnail {
-      height: 60px;
-      width: 80px;
-    }
-
-    .text-truncate {
-      white-space: set !important;
-    }
-
-    .card-title {
-      font-size: 16px !important;
-    }
-  }
-}
-
-.resource-container {
-  display: flex;
-  align-items: center;
-  margin: $size-xs 0;
-  justify-content: space-between;
-  .card-thumbnail {
-    $image-height: 65px;
-    height: $image-height;
-    width: (16 / 9) * $image-height;
-    margin-right: $size-s;
-    cursor: pointer;
-  }
-
-  .card-title {
-    font-size: 20px !important;
-  }
-
-  @media only screen and (max-width:469px) {
-    flex-direction: row;
-    margin: $size-xs $size-xs $size-xs $size-xs !important;
-    align-items: flex-start !important;
 
     .card-thumbnail {
       height: 60px;
@@ -78,12 +48,90 @@
       white-space: unset !important;
     }
 
-    .card-title {
-      font-size: 16px !important;
+    h2 {
+      font-size: 16px;
     }
   }
 }
 
+// ── Resource item (leaf node: PDF / Video / Audio etc.) ──────────────────────
+.resource-container {
+  display: flex;
+  align-items: flex-start;
+  margin: $size-xs 0;
+  padding: 10px 8px;
+  border-bottom: 1px solid #eef2f7;
+
+  h2 {
+    font-family: Roboto, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #0F172A;
+    line-height: 1.4;
+    margin: 0 0 4px;
+  }
+
+  // type icon + label + duration — all on one horizontal line
+  .resource-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 2px;
+  }
+
+  .type-block {
+    display: flex;
+    align-items: center;
+  }
+
+  .type-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #5a6a7a;
+  }
+
+  .meta-duration {
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
+    color: #5a6a7a;
+  }
+
+  @media only screen and (max-width: 469px) {
+    flex-direction: row;
+    margin: $size-xs !important;
+    align-items: flex-start !important;
+
+    h2 {
+      font-size: 14px;
+    }
+  }
+}
+
+// ── Collection card meta (type + duration row under chapter title) ────────────
+.collection-meta {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 2px;
+
+  .meta-type {
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
+    color: #5a6a7a;
+  }
+
+  .meta-duration {
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
+    color: #5a6a7a;
+  }
+}
+
+// ── Child structure info ("1 Video", "2 PDFs" etc.) ──────────────────────────
 .child-meta-container {
   margin-top: $size-xs;
   display: flex;
@@ -91,6 +139,9 @@
   .child-structure {
     display: flex;
     align-items: center;
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
+    color: #5a6a7a;
 
     span {
       margin-right: $size-s;
@@ -98,76 +149,63 @@
     }
 
     .structure-icon {
-      margin-right: $size-s;
+      margin-right: 4px;
+      font-size: 16px;
+      height: 16px;
+      width: 16px;
+      color: #1C5D95;
     }
   }
 
-  @media only screen and (max-width:469px) {
+  @media only screen and (max-width: 469px) {
     margin-left: 1.5rem;
     justify-content: space-between;
-
-  }
-
-}
-
-// .children-container {
-//   border-left: 2px solid rgb(151, 151, 151);
-//   padding-left: $size-s;
-//   margin: $size-s 0 $size-m $size-s;
-// }
-
-.resource-container {
-  display: flex;
-  align-items: center;
-  margin: $size-s 0;
-  // border-bottom: 1px solid #DDDDDD;
-
-  ws-display-content-type-icon {
-    display: flex;
-    align-items: center;
-  }
-
-  .resource-meta {
-    margin-left: $size-s;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
 }
 
+// ── Content-type icons ───────────────────────────────────────────────────────
+// Standard colored icons (PDF / video / link / SCORM PNG)
+.content-type-img {
+  width: 14px;
+  height: 16px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+// SVG icons that need a dark background to be visible (audio / SCORM SVG)
+.content-type-img-dark {
+  width: 14px;
+  height: 16px;
+  object-fit: contain;
+  vertical-align: middle;
+  background-color: #000;
+}
+
+// ── Misc ─────────────────────────────────────────────────────────────────────
 .image {
   position: absolute !important;
   margin-top: 2px;
   right: 1%;
   height: 20px !important;
-
 }
 
+// content + expand button share the card row; content takes remaining space
 .width-expand {
   position: relative;
-  width: 256px;
+  flex: 1;
+  min-width: 0;
 }
 
-// @media (max-width: 500px) {
-//   .image {
-//     right: -3em !important;
-//     margin-top: 8px;
-//     margin-left: 20px;
-//   }
-// }
 .greentickimg {
   padding-left: 1px;
 }
 
 .duration {
   color: #898989;
-
 }
 
 .resource-contents {
-
   width: 100%;
-
 }
 
 .progrss-box {
@@ -181,13 +219,12 @@
   .content-check {
     color: #27AE60;
   }
-
-
 }
 
 .text-truncate {
   white-space: normal !important;
 }
-.ml-2{
-  margin-left: 20px;
+
+.ml-2 {
+  margin-left: 16px;
 }

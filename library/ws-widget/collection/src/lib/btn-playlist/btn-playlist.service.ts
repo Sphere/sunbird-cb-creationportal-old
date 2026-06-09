@@ -1,9 +1,15 @@
 import { HttpClient, HttpParams } from '@angular/common/http'
+
 import { Injectable } from '@angular/core'
+
 import { Observable, ReplaySubject, throwError } from 'rxjs'
+
 import { first, map, mergeMap, tap } from 'rxjs/operators'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import { NsPlaylist } from './btn-playlist.model'
+
 
 const API_END_POINTS = {
   featureConfig: `/assets/configurations/feature/playlist.json`,
@@ -144,7 +150,7 @@ export class BtnPlaylistService {
         },
       )
     }
-    return throwError({ error: 'ERROR_PLAYLIST_UNDEFINED' })
+    return throwError(() => { error: 'ERROR_PLAYLIST_UNDEFINED' })
   }
 
   acceptPlaylist(playlistId: string) {

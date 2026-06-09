@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core'
+
 import {
   CanActivate,
   ActivatedRouteSnapshot,
@@ -7,9 +8,13 @@ import {
   Router,
   // ActivatedRoute,
 } from '@angular/router'
+
 import { Observable } from 'rxjs'
+
 // import { ConfigurationsService, AuthKeycloakService } from '@ws-widget/utils'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 
 @Injectable({
   providedIn: 'root',

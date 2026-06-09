@@ -13,9 +13,11 @@ ws-app-search-input input {
   padding-left: .5rem !important;
 }
 
-ws-app-search-input .search .mat-form-field-wrapper {
+ws-app-search-input .search .mat-form-field-wrapper,
+ws-app-search-input .search .mat-mdc-text-field-wrapper {
    padding-bottom: 0px;
-   .mat-form-field-infix{
+   .mat-form-field-infix,
+   .mat-mdc-form-field-infix{
       border-top-width: 5px !important;
       padding: 0px;
       padding-bottom: 5px;

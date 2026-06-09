@@ -1,89 +1,86 @@
 @import 'ws-mixins';
 
-::ng-deep .cke_button__uploadimage_icon {
-  background-position: 0 -672px !important;
+// ── CKEditor icon sprite positions ────────────────────────────────────────
+::ng-deep .cke_button__uploadimage_icon { background-position: 0 -672px !important; }
+::ng-deep .cke_button__uploadfile_icon  { background-position: 0 -1176px !important; }
+::ng-deep .cke_button__blank_icon       { background-position: 0 -782px !important; }
+
+// ── Hide CKEditor bottom status bar ──────────────────────────────────────
+::ng-deep .cke_bottom { display: none !important; }
+::ng-deep .cke_dialog_container { z-index: 10010 !important; }
+
+// ── Editor wrapper border + radius ────────────────────────────────────────
+// The host renders inside em-card-body; wrap header + editor in a unified border.
+:host {
+  display: block;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: #1C5D95;
+  }
 }
 
-::ng-deep .cke_button__uploadfile_icon {
-  background-position: 0 -1176px !important;
-}
-
-::ng-deep .cke_button__blank_icon {
-  background-position: 0 -782px !important;
-}
-
-::ng-deep #cke_1_contents {
-  min-height: 100px !important;
-}
-
-::ng-deep .cke_dialog_container {
-  z-index: 10010 !important;
-}
-::ng-deep .header-block{
-      border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
+// ── Header (Description label + toggle link) ──────────────────────────────
+.header-block {
   display: flex;
-    justify-content: space-between;
-height: 46px;    background-color: #F7F7F7 !important;
-    align-items: center;
-background: #FFF;
-box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
-}
-::ng-deep .cke_inner .cke_reset{
-    height: 224px;
-    border-radius: 12px;
-}
-::ng-deep .cke_bottom .cke_reset_all {
-  display: none !important;
-  border-top: none !important;
-}
-::ng-deep .cke_inner .cke_reset{
- .cke_bottom .cke_reset_all {
-  display: none !important;
-  border-top: none !important;
-}
-}
-/* Add this CSS to your stylesheet */
-.ck.ck-editor__editable.ck-rounded-corners {
-    /* Adjust the padding as needed */
-    padding-bottom: 0 !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  height: 42px;
+  background: #FAFBFC;
+  border-bottom: 1px solid #E2E8F0;
+  box-shadow: none;
 }
 
-.ck.ck-editor__editable.ck-rounded-corners .ck-editor__bottom-bar {
-    display: none !important;
-}
-/* Add this CSS to your stylesheet */
-.ck.ck-editor__editable.ck-rounded-corners .ck-editor__bottom-bar {
-    display: none !important;
-}
-.cke_bottom{
-  display: none !important;
+.description-txt {
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
 }
 
-
-
-
-
-::ng-deep .cke_contents {
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
-.advanced-format{
+.advanced-format {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1C5D95;
   cursor: pointer;
-}
-::ng-deep #cke_editor1{
-  border-bottom-left-radius: 12px ;
-  border-bottom-right-radius: 12px ;
-  padding-bottom: 6px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover { color: #154F81; }
 }
 
- ::ng-deep .ws-active{
-.cke_wysiwyg_div {
-  height: 100px !important;
+// ── CKEditor container ────────────────────────────────────────────────────
+::ng-deep .cke_chrome {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
+::ng-deep .cke_inner.cke_reset {
+  border-radius: 0 !important;
 }
-::ng-deep .cke_wysiwyg_div {
-  height: 196px !important;
+::ng-deep .cke_top {
+  background: #F8FAFC !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  padding: 4px 6px !important;
+}
+::ng-deep .cke_wysiwyg_div,
+::ng-deep .cke_editable {
+  min-height: 160px !important;
+  font-family: Roboto, sans-serif !important;
+  font-size: 14px !important;
+  color: #0F172A !important;
+  line-height: 1.6 !important;
+  padding: 12px 14px !important;
+}
+::ng-deep #cke_1_contents { min-height: 160px !important; }
+::ng-deep .cke_contents {
+  border-radius: 0 !important;
 }
 
-
+// quiz / edit-course-page height overrides
+::ng-deep .ws-active .cke_wysiwyg_div { height: 100px !important; }

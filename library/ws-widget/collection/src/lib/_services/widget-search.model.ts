@@ -1,5 +1,6 @@
 import { NsContent } from './widget-content.model'
 
+
 export namespace NSSearch {
   export interface IFeatureSearchConfig {
     tabs: IConfigContentStrip[]

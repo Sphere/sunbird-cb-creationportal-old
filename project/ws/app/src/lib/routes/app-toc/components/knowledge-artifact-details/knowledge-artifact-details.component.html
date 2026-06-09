@@ -54,7 +54,7 @@
 
       <!--Share & Download-->
       <div class="flex mt-8 mr-4"
-        [ngClass]="{ greyOut: content?.status === 'Deleted' || 'Expired' && !isLiveOrMarkForDeletion }">
+        [ngClass]="{ greyOut: (content?.status === 'Deleted' || content?.status === 'Expired') && !isLiveOrMarkForDeletion }">
         <!-- *ngIf="content && isDownloadable" -->
         <div class="mr-4" *ngIf="content && isDownloadable">
           <button style="height: 40px;" mat-raised-button mat-warn class="ws-mat-accent-background text-white"

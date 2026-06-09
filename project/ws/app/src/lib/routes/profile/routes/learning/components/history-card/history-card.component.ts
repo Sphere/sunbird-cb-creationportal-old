@@ -1,7 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { ROOT_WIDGET_CONFIG } from '@ws-widget/collection'
+
 import { NSProfileData } from '../../../../models/profile.model'
+
 @Component({
+  standalone: false,
   selector: 'ws-app-history-card',
   templateUrl: './history-card.component.html',
   styleUrls: ['./history-card.component.scss'],

@@ -1,5 +1,9 @@
 // import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
+declare const zip: any
+
 import { ValueService } from '@ws-widget/utils/src/public-api'
+
 import {
   Component,
   EventEmitter,
@@ -10,35 +14,59 @@ import {
   TemplateRef,
   OnChanges,
 } from '@angular/core'
+
 import { FormBuilder, FormGroup } from '@angular/forms'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatDialog } from '@angular/material/dialog'
+
 import {
   CONTENT_BASE_STATIC,
   CONTENT_BASE_STREAM,
   CONTENT_BASE_WEBHOST,
 } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { VIDEO_MAX_SIZE } from '@ws/author/src/lib/constants/upload'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { IprDialogComponent } from '@ws/author/src/lib/modules/shared/components/ipr-dialog/ipr-dialog.component'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { UploadService } from '@ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { of } from 'rxjs'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { mergeMap, tap } from 'rxjs/operators'
+
 import { IFormMeta } from './../../../../../../../../interface/form'
+
 import { AuthInitService } from './../../../../../../../../services/init.service'
+
 import { environment } from '../../../../../../../../../../../../../src/environments/environment'
+
 import { ProfanityService } from '../../services/profanity.service'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { CollectionStoreService } from '../../../collection/services/store.service'
+
 import { NSApiRequest } from '../../../../../../../../interface/apiRequest'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-file-upload',
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.scss'],
@@ -478,7 +506,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
 
       if (requestBody.request.content.category) {
-        delete requestBody.request.content.category
+        delete (requestBody as any).request.content.category
       }
 
       const contenUpdateRes: any =
@@ -840,8 +868,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.errorFileList = []
     this.fileList = []
     zip.useWebWorkers = false
-    zip.createReader(new zip.BlobReader(this.file as File), (reader: zip.ZipReader) => {
-      reader.getEntries((entry: zip.Entry[]) => {
+    ;(zip as any).createReader(new (zip as any).BlobReader(this.file as File), (reader: any) => {
+      reader.getEntries((entry: any[]) => {
         entry.forEach(element => {
           // if (element.filename.match(/[^A-Za-z0-9_.\-\/]/g)) {
           //   this.errorFileList.push(element.filename)

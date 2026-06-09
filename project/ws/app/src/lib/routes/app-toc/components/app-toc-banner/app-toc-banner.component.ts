@@ -1,7 +1,10 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core'
-import { MatDialog } from '@angular/material'
+import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core'
+
+import { MatDialog } from '@angular/material/dialog'
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser'
+
 import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router'
+
 import {
   ContentProgressService,
   NsContent,
@@ -10,17 +13,28 @@ import {
   viewerRouteGenerator,
   WidgetContentService,
 } from '@ws-widget/collection'
+
 import { ConfigurationsService, TFetchStatus } from '@ws-widget/utils'
+
 import { UtilityService } from '@ws-widget/utils/src/lib/services/utility.service'
+
 import { AccessControlService } from '@ws/author'
+
 import { Subscription } from 'rxjs'
+
 import { NsAnalytics } from '../../models/app-toc-analytics.model'
+
 import { NsAppToc, NsCohorts } from '../../models/app-toc.model'
+
 import { AppTocService } from '../../services/app-toc.service'
+
 import { AppTocDialogIntroVideoComponent } from '../app-toc-dialog-intro-video/app-toc-dialog-intro-video.component'
+
 import { MobileAppsService } from 'src/app/services/mobile-apps.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-toc-banner',
   templateUrl: './app-toc-banner.component.html',
   styleUrls: ['./app-toc-banner.component.scss'],
@@ -72,6 +86,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   isReviewer: boolean = false
   isCreator: boolean = false
   isPublisher: boolean = false
+  allowExternalContentReviewer: boolean = false
   commentsList: any
   historyList: any
   constructor(
@@ -86,10 +101,10 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     private utilitySvc: UtilityService,
     private mobileAppsSvc: MobileAppsService,
     private authAccessService: AccessControlService,
+    private cdr: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
-    console.log("content", this.content)
     if (this.authAccessService.hasRole(['content_reviewer'])) {
       this.isReviewer = true
     } else {
@@ -98,6 +113,8 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     if (this.authAccessService.hasRole(['content_creator'])) {
       this.isCreator = true
     }
+    this.allowExternalContentReviewer = this.authAccessService.hasRole(['external_content_reviewer_live'])
+
     this.route.data.subscribe(data => {
       this.tocConfig = data.pageData.data
       if (this.content && this.isPostAssessment) {
@@ -115,10 +132,8 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
 
     if (this.content) {
       this.progressSvc.getComments(this.content.identifier).subscribe(res => {
-        console.log("res", res)
         this.historyList = res
         this.isCreator = this.authAccessService.hasRole(['content_creator'])
-
         this.isReviewer = this.authAccessService.hasRole(['content_reviewer'])
         this.isPublisher = this.authAccessService.hasRole(['content_publisher'])
         if (this.isCreator) {
@@ -128,11 +143,9 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
         } else if (this.isPublisher) {
           this.roles = ['creator', 'reviewer']
         }
-
         const filteredComments = res.filter((comment: { role: string }) => this.roles.includes(comment.role))
-        console.log("filtered comments", filteredComments)
-        this.commentsList = filteredComments.filter((item: any) => item.currentStatus !== "course-created")
-
+        this.commentsList = filteredComments.filter((item: any) => item.currentStatus !== 'course-created')
+        this.cdr.detectChanges()
       })
     }
 

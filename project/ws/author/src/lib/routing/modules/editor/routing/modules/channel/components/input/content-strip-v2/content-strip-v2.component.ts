@@ -1,21 +1,33 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes'
+
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
+
 import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms'
-import { MatChipInputEvent, MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatChipInputEvent } from '@angular/material/chips'
 import {
   IPickerContentData,
   IWidgetElementHtml,
   NsContent,
   NsContentStripMultiple,
 } from '@ws-widget/collection/src/public-api'
+
 import { NsWidgetResolver } from '@ws-widget/resolver/src/public-api'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { Observable, of } from 'rxjs'
+
 import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs/operators'
+
 import { InterestService } from './../../../../../../../../../../../../app/src/lib/routes/profile/routes/interest/services/interest.service'
+
 import { SEARCHV6 } from './content-strip-v2.constant'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-strip-v2',
   templateUrl: './content-strip-v2.component.html',
   styleUrls: ['./content-strip-v2.component.scss'],

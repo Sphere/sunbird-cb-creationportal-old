@@ -1,7 +1,11 @@
 import { Platform } from '@angular/cdk/platform'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Injectable } from '@angular/core'
+
 import { Observable } from 'rxjs'
+
 interface IWindowMobileAppModified extends Window {
   appRef?: any
   webkit?: any

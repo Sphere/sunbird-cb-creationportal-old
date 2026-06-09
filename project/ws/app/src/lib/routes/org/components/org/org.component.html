@@ -24,11 +24,8 @@
 
 
   <div [ngClass]="{'mt-5': currentOrgData?.sourceName === 'Indian Nursing Council','org-body': true}">
-    <p class="org-name mb-0">
-      {{currentOrgData.sourceName}}
-    </p>
-    <p class="org-desc mb-1" [innerHTML]="currentOrgData?.about">
-    </p>
+    <h1 class="org-name">{{ currentOrgData.sourceName }}</h1>
+    <p class="org-desc" [innerHTML]="currentOrgData?.about"></p>
     <!-- <div class="org-details-block">
       <img src="/cbp-assets/icons/ion_people-sharp.svg" />
       <div class="org-details">Nationwide Quality Of Care Network</div>
@@ -49,14 +46,14 @@
   <div class="course-container">
     <div class="w-100">
       <div class="flex flex-middle border-top">
-        <span class="course-header" i18n>Courses</span>
+        <h2 class="course-header" i18n>Courses</h2>
       </div>
     </div>
 
     <div class="mt-4 course-body" *ngIf="courseData">
       <!-- <div> -->
       <ng-container *ngFor="let widget of courseData.slice(0,cardLimit)">
-        <div class="card-standard-container mr-8 mb-6 1 cursor-pointer">
+        <div class="card-standard-container cursor-pointer">
           <a (click)="gotoOverview(widget.identifier)" class="rounded-t" role="link" aria-label="Content"
             i18n-aria-label="Content | Click to view">
             <div class="flex">

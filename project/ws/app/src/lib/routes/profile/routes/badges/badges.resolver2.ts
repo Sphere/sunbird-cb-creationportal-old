@@ -1,10 +1,17 @@
 import { Injectable } from '@angular/core'
+
 import { Resolve } from '@angular/router'
+
 import { Observable, of } from 'rxjs'
+
 import { catchError, map } from 'rxjs/operators'
+
 import { IResolveResponse } from '@ws-widget/utils'
+
 import { IBadgeResponse } from './badges.model'
+
 import { BadgesService } from './badges.service'
+
 
 @Injectable()
 export class BadgesResolver2

@@ -1,10 +1,15 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
+
 import { FormBuilder, FormGroup, AbstractControl } from '@angular/forms'
+
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+
 
 import { NsContentStripMultiple, IPickerContentData, NsContent } from '@ws-widget/collection/src/public-api'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-strip-multiple',
   templateUrl: './content-strip-multiple.component.html',
   styleUrls: ['./content-strip-multiple.component.scss'],

@@ -1,4 +1,5 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes'
+
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -6,38 +7,67 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
+  SimpleChanges,
   OnInit,
   Output,
   ViewChild,
 } from '@angular/core'
+
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-import { MatAutocompleteSelectedEvent } from '@angular/material'
+
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete'
 import { MatChipInputEvent } from '@angular/material/chips'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
+
 import { AUTHORING_BASE, CONTENT_BASE_STATIC } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '@ws/author/src/lib/constants/upload'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { Observable, of, Subscription } from 'rxjs'
+
 // import { InterestService } from '../../../../../../../../../app/src/lib/routes/profile/routes/interest/services/interest.service'
+
 import { UploadService } from '../../services/upload.service'
+
 import { CatalogSelectComponent } from '../catalog-select/catalog-select.component'
+
 import { IFormMeta } from './../../../../../../interface/form'
+
 import { AccessControlService } from './../../../../../../modules/shared/services/access-control.service'
+
 import { AuthInitService } from './../../../../../../services/init.service'
+
 import { LoaderService } from './../../../../../../services/loader.service'
+
 // import { CollectionStoreService } from './../../../routing/modules/collection/services/store.service'
+
 import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-popup.component'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 
 import {
   debounceTime,
@@ -47,25 +77,36 @@ import {
   switchMap,
   map,
 } from 'rxjs/operators'
+
 import { Router } from '@angular/router'
+
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
 
+
 // import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
+
 // import { NSApiResponse } from '../../../../../../interface/apiResponse'
+
 //import { environment } from '../../../../../../../../../../../src/environments/environment'
+
 import { HttpClient } from '@angular/common/http'
+
 import { isNumber } from 'lodash'
+
 import _ from 'lodash'
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-edit-meta',
   templateUrl: './edit-meta.component.html',
   styleUrls: ['./edit-meta.component.scss'],
 })
-export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
+export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   contentMeta!: NSContent.IContentMeta
   @Output() data = new EventEmitter<string>()
   @Output() courseEditFormSubmit = new EventEmitter<boolean>()
   @Input() isSubmitPressed = false
+  @Input() triggerNext = false
   @Input() nextAction = 'done'
   @Input() stage = 1
   @Input() type = ''
@@ -135,7 +176,15 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     {
       "name": 'Kannada',
       "value": 'kn'
-    }
+    },
+    {
+      "name": 'Assamese',
+      "value": 'as'
+    },
+    {
+      "name": 'Odia',
+      "value": 'or'
+    },
   ]
   isAddCerticate: boolean = false;
   resourceDurat: any = []
@@ -153,12 +202,13 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('regionView', { static: false }) regionView!: ElementRef
   @ViewChild('accessPathsView', { static: false }) accessPathsView!: ElementRef
   @ViewChild('keywordsSearch', { static: true }) keywordsSearch!: ElementRef<any>
+  languageListSubscription!: Subscription
 
   timer: any
 
   filteredOptions$: Observable<string[]> = of([])
   saveParent: any
-
+  languageList$!: Observable<any[]>
   //UI variables
   moduleName: string = 'undefined title';
   isSaveModuleFormEnable: boolean = false;
@@ -207,6 +257,14 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     }, 100)
   }
   contentForm!: FormGroup
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['triggerNext']?.currentValue === true) {
+      this.isSubmitPressed = true
+      this.clickedNext()
+    }
+  }
+
   ngOnInit() {
     this.isSiemens = this.accessService.rootOrg.toLowerCase() === 'siemens'
     this.ordinals = this.authInitService.ordinals
@@ -226,6 +284,12 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.regionCtrl = new FormControl()
     this.accessPathsCtrl = new FormControl()
     this.accessPathsCtrl.disable()
+    this.languageList$ = this.editorService.languageList() // Assign the observable
+    this.languageListSubscription = this.languageList$.subscribe(async (data: any) => {
+      if (data.length > 0) {
+        this.languageList = data
+      }
+    })
     this.creatorContactsCtrl.valueChanges
       .pipe(
         debounceTime(500),
@@ -1407,12 +1471,32 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
       return
     }
 
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => {
+      const img = new Image()
+      img.src = reader.result as string
+      img.onload = () => {
+        if (img.width < 760 || img.height < 400) {
+          this.snackBar.open(
+            `Image resolution must be at least 760 x 400 px. Current: ${img.width} x ${img.height} px`,
+            undefined,
+            { duration: 4000 },
+          )
+          return
+        }
+        this.openThumbnailCropDialog(file, fileName, formdata)
+      }
+    }
+  }
+
+  private openThumbnailCropDialog(file: File, fileName: string, formdata: FormData) {
     const dialogRef = this.dialog.open(NewImageCropComponent, {
       width: '70%',
       data: {
         isRoundCrop: false,
         imageFile: file,
-        width: 265,
+        width: 256,
         height: 150,
         isThumbnail: true,
         imageFileName: fileName,
@@ -1673,6 +1757,7 @@ export class EditMetaComponent implements OnInit, OnDestroy, AfterViewInit {
     // const newUrl = newLink.join('/')
     // console.log(newUrl)
     // return newUrl
+    return oldUrl
   }
 
   showError(meta: string) {

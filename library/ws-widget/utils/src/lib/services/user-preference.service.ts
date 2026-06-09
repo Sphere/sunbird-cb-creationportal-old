@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { IUserPreference } from './user-preference.model'
+
 import { ConfigurationsService } from './configurations.service'
+
 import { debounceTime, retry, catchError } from 'rxjs/operators'
+
 import { of } from 'rxjs'
+
 const endpoints = {
   userPref: '/apis/protected/v8/user/preference',
 }

@@ -1,65 +1,58 @@
 import { Component, Input, OnInit, OnChanges, OnDestroy } from '@angular/core'
+
 import { Subscription, interval, Observable } from 'rxjs'
+
 import { DomSanitizer } from '@angular/platform-browser'
+
 import { map } from 'rxjs/operators'
+
 import { NSHandsOnModels } from './hands-on.model'
+
 import { NSHandsOnConstants } from './hands-on.constants'
+
 import { LoggerService, EventService } from '@ws-widget/utils'
+
 import { HandsOnService } from './hands-on.service'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { HandsOnDialogComponent } from './components/hands-on-dialog/hands-on-dialog.component'
 
-import 'brace'
-import 'brace/snippets/text'
-import 'brace/ext/language_tools'
-import 'brace/mode/javascript'
-import 'brace/snippets/javascript'
 
-import 'brace/mode/python'
-import 'brace/snippets/python'
-
-import 'brace/mode/scala'
-import 'brace/snippets/scala'
-
-import 'brace/mode/golang'
-import 'brace/snippets/golang'
-
-import 'brace/mode/perl'
-import 'brace/snippets/perl'
-
-import 'brace/mode/ruby'
-import 'brace/snippets/ruby'
-
-import 'brace/mode/c_cpp'
-import 'brace/snippets/c_cpp'
-
-import 'brace/mode/clojure'
-import 'brace/snippets/clojure'
-
-import 'brace/mode/coffee'
-import 'brace/snippets/coffee'
-
-import 'brace/mode/java'
-import 'brace/snippets/java'
-
-import 'brace/mode/csharp'
-import 'brace/snippets/csharp'
-
-import 'brace/mode/r'
-import 'brace/snippets/r'
-
-import 'brace/mode/sh'
-import 'brace/snippets/sh'
-
-import 'brace/mode/typescript'
-import 'brace/snippets/typescript'
-
-import 'brace/mode/php'
-import 'brace/snippets/php'
-
-import 'brace/theme/eclipse'
+import 'ace-builds/src-noconflict/ext-language_tools'
+import 'ace-builds/src-noconflict/mode-javascript'
+import 'ace-builds/src-noconflict/snippets/javascript'
+import 'ace-builds/src-noconflict/mode-python'
+import 'ace-builds/src-noconflict/snippets/python'
+import 'ace-builds/src-noconflict/mode-scala'
+import 'ace-builds/src-noconflict/snippets/scala'
+import 'ace-builds/src-noconflict/mode-golang'
+import 'ace-builds/src-noconflict/snippets/golang'
+import 'ace-builds/src-noconflict/mode-perl'
+import 'ace-builds/src-noconflict/snippets/perl'
+import 'ace-builds/src-noconflict/mode-ruby'
+import 'ace-builds/src-noconflict/snippets/ruby'
+import 'ace-builds/src-noconflict/mode-c_cpp'
+import 'ace-builds/src-noconflict/snippets/c_cpp'
+import 'ace-builds/src-noconflict/mode-clojure'
+import 'ace-builds/src-noconflict/snippets/clojure'
+import 'ace-builds/src-noconflict/mode-coffee'
+import 'ace-builds/src-noconflict/snippets/coffee'
+import 'ace-builds/src-noconflict/mode-java'
+import 'ace-builds/src-noconflict/snippets/java'
+import 'ace-builds/src-noconflict/mode-csharp'
+import 'ace-builds/src-noconflict/snippets/csharp'
+import 'ace-builds/src-noconflict/mode-r'
+import 'ace-builds/src-noconflict/snippets/r'
+import 'ace-builds/src-noconflict/mode-sh'
+import 'ace-builds/src-noconflict/snippets/sh'
+import 'ace-builds/src-noconflict/mode-typescript'
+import 'ace-builds/src-noconflict/snippets/typescript'
+import 'ace-builds/src-noconflict/mode-php'
+import 'ace-builds/src-noconflict/snippets/php'
+import 'ace-builds/src-noconflict/theme-eclipse'
 
 @Component({
+  standalone: false,
   selector: 'viewer-plugin-hands-on',
   templateUrl: './hands-on.component.html',
   styleUrls: ['./hands-on.component.scss'],

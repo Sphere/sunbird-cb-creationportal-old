@@ -10,9 +10,13 @@ import {
   AfterViewInit,
   ElementRef,
 } from '@angular/core'
+
 import { SortableDirective } from './sortable.directive'
+
 import { ScrollHelperService } from './scroll-helper.service'
+
 import { Subscription } from 'rxjs'
+
 
 export interface ISortEvent {
   currentIndex: number
@@ -43,6 +47,7 @@ const vCenter = (rect: ClientRect): number => {
 }
 
 @Directive({
+  standalone: false,
   selector: '[wsAuthSortableList]',
 })
 export class SortableListDirective implements AfterContentInit, OnDestroy, AfterViewInit {

@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core'
+
 import { IWidgetsPlayerMediaData } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ConfigurationsService, NsPage } from '../../../../../../../../library/ws-widget/utils/src/public-api'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-about-video',
   templateUrl: './about-video.component.html',
   styleUrls: ['./about-video.component.scss'],

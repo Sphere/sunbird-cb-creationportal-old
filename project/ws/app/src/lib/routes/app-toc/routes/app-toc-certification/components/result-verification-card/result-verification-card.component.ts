@@ -1,20 +1,33 @@
 import { Component, Input, OnDestroy } from '@angular/core'
+
 import { throwError, Subscription, Subject } from 'rxjs'
+
 import { switchMap, takeWhile, tap } from 'rxjs/operators'
 
+
 import { NsContent } from '@ws-widget/collection'
+
 import { TFetchStatus, TSendStatus } from '@ws-widget/utils'
 
+
 import { CertificationApiService } from '../../apis/certification-api.service'
+
 import { CertificationService } from '../../services/certification.service'
 
+
 import { ICertificationMeta, TCertificationRequestType } from '../../models/certification.model'
+
 import { FileDownloadService } from '../../services/file-download.service'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { RequestCancelDialogComponent } from '../request-cancel-dialog/request-cancel-dialog.component'
+
 import { SnackbarComponent } from '../snackbar/snackbar.component'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-toc-certification-result-verification-card',
   templateUrl: './result-verification-card.component.html',
   styleUrls: ['./result-verification-card.component.scss'],
@@ -103,7 +116,7 @@ export class ResultVerificationCardComponent implements OnDestroy {
             )
           }
 
-          return throwError('Missing parameters')
+          return throwError(() => 'Missing parameters')
         }),
         tap(
           res => {
@@ -123,14 +136,14 @@ export class ResultVerificationCardComponent implements OnDestroy {
             return this.certificationApi.getCertificationInfo(this.content.identifier)
           }
 
-          return throwError('No content.')
+          return throwError(() => 'No content.')
         }),
       )
       .subscribe(
         certification => {
           this.certification = certification
           this.resultWithdrawStatus = 'done'
-          this.certificationFetchSubject.next()
+          this.certificationFetchSubject.next(undefined as any)
         },
         () => {
           this.resultWithdrawStatus = 'error'

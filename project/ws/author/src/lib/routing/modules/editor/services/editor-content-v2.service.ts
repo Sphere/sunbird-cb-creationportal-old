@@ -1,6 +1,9 @@
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { Injectable } from '@angular/core'
+
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject'
+
 // const sizeof = require('object-sizeof')
 
 interface IHierarchyData {

@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { PermissionDirective } from './permission.directive'
+
 
 @NgModule({
   declarations: [PermissionDirective],

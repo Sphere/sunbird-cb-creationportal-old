@@ -1,48 +1,90 @@
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
-import { Component, OnDestroy, OnInit } from '@angular/core'
+
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
+
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { IActionButton, IActionButtonConfig } from '@ws/author/src/lib/interface/action-button'
+
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
+
 import { IAuthSteps } from '@ws/author/src/lib/interface/auth-stepper'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/components/comments-dialog/comments-dialog.component'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
-import { of, Subscription } from 'rxjs'
+
+import { Observable, of, Subscription } from 'rxjs'
+
 // import { map, mergeMap, tap, catchError } from 'rxjs/operators'
+
 import { map, mergeMap, tap } from 'rxjs/operators'
+
 import { IContentNode, IContentTreeNode } from '../../interface/icontent-tree'
+
 import { CollectionResolverService } from './../../services/resolver.service'
+
 import { CollectionStoreService } from './../../services/store.service'
+
 // import { VIEWER_ROUTE_FROM_MIME, WidgetContentService } from '@ws-widget/collection'
+
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
+
 // import { NotificationService } from '@ws/author/src/lib/services/notification.service'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
+
 import { HeaderServiceService } from './../../../../../../../../../../../../../src/app/services/header-service.service'
+
 import { RootService } from 'src/app/component/root/root.service'
+
 import { FlatTreeControl } from '@angular/cdk/tree'
+
 import { isNumber } from 'lodash'
+
 import { environment } from '../../../../../../../../../../../../../src/environments/environment'
+
 import { ConfigurationsService } from '../../../../../../../../../../../../../library/ws-widget/utils/src/public-api'
+
 /* tslint:disable */
 import _ from 'lodash'
+
 import moment from 'moment'
+
 import { SuccessDialogComponent } from '../../../../../../../../modules/shared/components/success-dialog/success-dialog.component'
+
 // import { VariableAst } from '@angular/compiler'
+
 import {
   ContentProgressService,
 } from '@ws-widget/collection'
+
 @Component({
+  standalone: false,
   // tslint:disable-next-line:component-selector
   selector: 'ws-author-course-collection',
   templateUrl: './course-collection.component.html',
@@ -73,6 +115,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   viewMode = 'meta'
   mimeTypeRoute = ''
   courseData: any
+  courseID: any
   mediumScreen = false
   sideBarOpened = false
   mediumSizeBreakpoint$ = this.breakpointObserver
@@ -99,6 +142,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   isModelHeaderView: boolean = false;
   showResource: boolean = false;
   clickedNext: boolean = false;
+  triggerEditMetaNext = false
+  triggerModuleCreationNext = false
   isSelfAssessment: boolean = false
   isMoveCourseToDraft: boolean = false;
   createModule: any
@@ -136,6 +181,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     // private contentSvc: WidgetContentService,
     private _configurationsService: ConfigurationsService,
     private progressSvc: ContentProgressService,
+    private cdr: ChangeDetectorRef,
   ) {
     if (sessionStorage.getItem('isReviewChecklist')) {
       this.dialog.closeAll()
@@ -173,6 +219,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.showAddchapter = false
           this.viewMode = 'meta'
           this.clickedNext = false
+          this.isSubmitPressed = false
         }
       })
     this.backToCourse = this.initService.currentNavigationMessage.subscribe(
@@ -191,18 +238,22 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.viewMode = 'meta'
         }
         if (data === 'CourseDetails') {
+          this.loaderService.changeLoad.next(false)
           this.viewMode = 'meta'
           this.initService.publishData('backToCourseDetailsPage')
           this.initService.isEditMetaPageAction('backFromModulePage')
           this.clickedNext = false
           this.showAddchapter = false
           this.isModulePageEnabled = false
+          this.isSubmitPressed = false
         } else if (data === 'CourseBuilder') {
+          this.loaderService.changeLoad.next(false)
           this.clickedNext = true
           this.showAddchapter = false
           this.isModulePageEnabled = false
         }
         else if (data === 'AssessmentBuilder') {
+          this.loaderService.changeLoad.next(false)
           this.clickedNext = true
         }
       })
@@ -385,6 +436,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.showAddchapter = true
           this.viewMode = 'assessment'
           this.clickedNext = false
+          this.cdr.detectChanges()
           sessionStorage.removeItem('assessment')
           // if (data['type'] === "assessment" || data.artifactUrl) {
           //   this.clickedNext = false
@@ -446,7 +498,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
         ]
       } else if (steps === 'CourseBuilder') {
-
+        this.loaderService.changeLoad.next(false)
         this.steps = [
           { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
           { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
@@ -774,17 +826,16 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
 
     this.loaderService.changeLoad.next(true)
-    this.triggerSave().subscribe(
-      () => {
-        this.loaderService.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.SAVE_SUCCESS,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-        // window.location.reload()
-      },
+    this.triggerSave().subscribe(() => {
+      this.loaderService.changeLoad.next(false)
+      this.snackBar.openFromComponent(NotificationComponent, {
+        data: {
+          type: Notify.SAVE_SUCCESS,
+        },
+        duration: NOTIFICATION_TIME * 1000,
+      })
+      // window.location.reload()
+    },
       (error: any) => {
         if (error.status === 409) {
           const errorMap = new Map<string, NSContent.IContentMeta>()
@@ -833,6 +884,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     if (this.resourseSelected !== '') {
       this.update()
     }
+    const url = this.router.url
+    const id = url.split('/')
+
+    this.courseID = id[3]
+    console.log("this.currentCourseId", this.currentCourseId)
     const updatedContent = this.contentService.upDatedContent || {}
     // console.log(updatedContent)
     if (this.viewMode === 'assessment') {
@@ -878,6 +934,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
               { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
             ]
+            this.cdr.detectChanges()
           }
 
           // window.location.reload()
@@ -1026,8 +1083,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
       if (contentAction !== 'publishResources') {
         const dialogRef = this.dialog.open(CommentsDialogComponent, {
-          width: '750px',
-          height: '485px',
+          minWidth: '840px',
+          width: 'auto',
+          maxWidth: '95vw',
+          height: 'auto',
           data: this.contentService.getOriginalMeta(this.currentParentId),
         })
 
@@ -1845,7 +1904,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         updateContentReq.request.content.versionKey = element.versionKey
         const updateContentRes =
           await this.editorService.updateNewContentV3(_.omit(updateContentReq, 'status'), element.identifier).toPromise().catch(_error => { })
-        if (updateContentRes) {
+        if ((updateContentRes as any) !== undefined) {
           flag += 1
         } else {
           flag -= 1
@@ -2504,11 +2563,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //     //       requestBody.request.content.reviewer = requestBody.request.content.reviewer + ', ' + element.id
   //     //     }
   //     //   })
-  //     //   delete requestBody.request.content.trackContacts
+  //     //   delete (requestBody as any).request.content.trackContacts
   //     // }
 
   //     if (requestBody.request.content.category) {
-  //       delete requestBody.request.content.category
+  //       delete (requestBody as any).request.content.category
   //     }
   //     console.log('requestBody updateContentV3', requestBody)
   //     return this.editorService.updateContentV3(requestBody, this.contentService.currentContent).pipe(
@@ -2590,7 +2649,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //       }
 
   //       if (requestBody.request.content.category) {
-  //         delete requestBody.request.content.category
+  //         delete (requestBody as any).request.content.category
   //       }
   //       // console.log('requestBody updateContentV3', requestBody)
   //       return this.editorService.updateContentV3(requestBody, this.contentService.currentContent).pipe(
@@ -2794,7 +2853,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //             requestBody.request.content.duration)
   //       }
   //       if (requestBody.request.content.category) {
-  //         delete requestBody.request.content.category
+  //         delete (requestBody as any).request.content.category
   //       }
 
   //       // console.log('UPDATE AUTH TABLE Parent ', requestBody)
@@ -2826,7 +2885,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   // }
 
-  triggerSave() {
+  triggerSave(): Observable<true | null> {
     if (this.showAddchapter) {
       if (!this.clickedNext) {
         this.backToDashboard = false
@@ -2895,7 +2954,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       }
 
       if (requestBody.request.content.category) {
-        delete requestBody.request.content.category
+        delete (requestBody as any).request.content.category
       }
 
       if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
@@ -2906,7 +2965,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           tempTrackRecords.push(element.id)
         })
         requestBody.request.content.reviewerIDs = tempTrackRecords
-        delete requestBody.request.content.trackContacts
+        delete (requestBody as any).request.content.trackContacts
       }
 
       if (requestBody.request.content.trackContacts && requestBody.request.content.trackContacts.length > 0) {
@@ -2917,7 +2976,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           tempTrackRecords.push(element.id)
         })
         requestBody.request.content.reviewerIDs = tempTrackRecords
-        delete requestBody.request.content.trackContacts
+        delete (requestBody as any).request.content.trackContacts
       }
       if (requestBody.request.content.publisherDetails && requestBody.request.content.publisherDetails.length > 0) {
         requestBody.request.content.publisherIDs = []
@@ -3038,6 +3097,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             requestBody.request.content.competency = false
             console.log(requestBody, this.versionKey, this.versionKey.competency)
 
+          }
+          if (this.courseID !== this.currentCourseId) {
+            return of(true) // <- wrap boolean in Observable
           }
           return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
             tap(() => {
@@ -3334,6 +3396,19 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
   }
 
+  handleStepperNext() {
+    const activeStep = this.steps.find((s: any) => s.activeStep)
+    if (!activeStep) { return }
+    if (activeStep.key === 'CourseDetails') {
+      this.isSubmitPressed = true
+      this.triggerEditMetaNext = true
+      setTimeout(() => { this.triggerEditMetaNext = false }, 50)
+    } else {
+      this.triggerModuleCreationNext = true
+      setTimeout(() => { this.triggerModuleCreationNext = false }, 50)
+    }
+  }
+
   action(type: string) {      // recheck
     switch (type) {
       case 'next':
@@ -3374,7 +3449,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             data: 'publishMessage',
           })
           dialogRefForPublish.afterClosed().subscribe(result => {
-            if (result) {
+            if (true) {
               this.takeAction()
             }
           })

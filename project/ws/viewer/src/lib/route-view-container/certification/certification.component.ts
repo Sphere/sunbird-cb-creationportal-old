@@ -1,7 +1,10 @@
 import { Component, Input } from '@angular/core'
+
 import { NsContent } from '@ws-widget/collection'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-certification-container',
   templateUrl: './certification.component.html',
   styleUrls: ['./certification.component.scss'],

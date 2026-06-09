@@ -1,14 +1,15 @@
 import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
 
-import {
-  MatExpansionModule,
-  MatButtonModule,
-} from '@angular/material'
 
-import { AceEditorModule } from 'ng2-ace-editor'
+import { MatExpansionModule } from '@angular/material/expansion'
+import { MatButtonModule } from '@angular/material/button'
+import { AceEditorCompatModule } from '@ws-widget/utils'
+
 
 import { HtmlPickerComponent } from './html-picker.component'
+
 
 @NgModule({
   declarations: [HtmlPickerComponent],
@@ -16,7 +17,7 @@ import { HtmlPickerComponent } from './html-picker.component'
     CommonModule,
     MatExpansionModule,
     MatButtonModule,
-    AceEditorModule,
+    AceEditorCompatModule,
   ],
   exports: [
     HtmlPickerComponent,

@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-interactive-exercise',
   templateUrl: './interactive-exercise.component.html',
   styleUrls: ['./interactive-exercise.component.scss'],

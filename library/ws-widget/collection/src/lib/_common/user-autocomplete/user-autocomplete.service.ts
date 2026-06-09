@@ -1,9 +1,15 @@
 import { HttpClient } from '@angular/common/http'
+
 import { Injectable } from '@angular/core'
+
 import { Observable } from 'rxjs'
+
 import { map } from 'rxjs/operators'
+
 import { ConfigurationsService, getStringifiedQueryParams } from '../../../../../utils/src/public-api'
+
 import { NsAutoComplete } from './user-autocomplete.model'
+
 
 // TODO: move this in some common place
 const PROTECTED_SLAG_V8 = '/apis/protected/v8'

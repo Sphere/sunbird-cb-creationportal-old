@@ -1,20 +1,32 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, ViewChild, AfterViewInit, HostListener } from '@angular/core'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import {
   NsContent,
   //WidgetContentService
 } from '@ws-widget/collection'
+
 import { ConfigurationsService, EventService, TelemetryService } from '@ws-widget/utils'
+
 import { TFetchStatus } from '@ws-widget/utils/src/public-api'
+
 import { MobileAppsService } from '../../../../../../../src/app/services/mobile-apps.service'
+
 import { SCORMAdapterService } from 'project/ws/viewer/src/lib/plugins/html/SCORMAdapter/scormAdapter'
 
+
 // import { Interval, Observable, Subscription } from 'rxjs'
+
 //import { ViewerUtilService } from '../../../../../../../project/ws/viewer/src/lib/viewer-util.service'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-plugin-html',
   templateUrl: './html.component.html',
   styleUrls: ['./html.component.scss'],
@@ -40,7 +52,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
   mimeType = ''
   iframeSupport: any
 
-  @HostListener('window:blur', ['$event'])
+  @HostListener('window:blur')
   onBlur(): void {
     if (this.urlContains.includes('youtube') && this.htmlContent !== null) {
       // const collectionId = this.activatedRoute.snapshot.queryParams.collectionId ?
@@ -83,7 +95,6 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     private domSanitizer: DomSanitizer,
     public mobAppSvc: MobileAppsService,
     private scormAdapterService: SCORMAdapterService,
-    // private http: HttpClient,
     private router: Router,
     private configSvc: ConfigurationsService,
     private snackBar: MatSnackBar,
@@ -315,41 +326,16 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
         //   }
         // } else {
         if (this.htmlContent && this.htmlContent.artifactUrl) {
+          // Use backend API to serve SCORM content
+          const entryPoint = this.htmlContent.entryPoint || 'index_lms.html'
 
-          // const streamingUrl = this.htmlContent.streamingUrl.substring(51)
-          let streamingUrl = this.htmlContent.streamingUrl || ''
-          streamingUrl = streamingUrl.includes(
-            'https://sunbirdcontent-stage.s3-ap-south-1.amazonaws.com'
-          )
-            ? streamingUrl.substring(56)
-            : streamingUrl.substring(50)
-          //const entryPoint = this.htmlContent.entryPoint || ''
-          const newUrl = `/apis/proxies/v8/getContents${streamingUrl}`
-          this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(`${newUrl}`)
-
-          // let artifactUrl = this.htmlContent.streamingUrl.substring(51)
-          // this.viewerSvc.scormUpdate(this.htmlContent.artifactUrl).toPromise()
-          //   .then((res: string) => {
-          //     /* tslint:disable-next-line */
-          //     console.log(res)
-          //     console.log(res['result']['content']['streamingUrl'].substring(51))
-          //     this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(`${this.htmlContent.artifactUrl}`)
-          //   })
-          //   .catch((err: any) => {
-          //     /* tslint:disable-next-line */
-          //     console.log(err)
-          //   })
-          // this.contentSvc
-          //   .fetchHierarchyContent(this.htmlContent.identifier)
-          //   .toPromise()
-          //   .then((res: any) => {
-          //     this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(`${res['result']['content']['streamingUrl']}`)
-          //   })
-          //   .catch((err: any) => {
-          //     /* tslint:disable-next-line */
-          //     console.log(err)
-          //   })
-          //}
+          if (this.htmlContent.artifactUrl && this.htmlContent.artifactUrl.endsWith('.zip')) {
+            console.log('[SCORM] Loading from backend proxy:', this.htmlContent.artifactUrl)
+            this.loadScormFromBackend(entryPoint)
+          } else {
+            console.error('SCORM artifactUrl must be a ZIP file')
+            this.pageFetchStatus = 'error'
+          }
         }
 
         // if (this.htmlContent.entryPoint && this.htmlContent.entryPoint.includes('lms') === false) {
@@ -422,7 +408,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
   raiseTelemetry(data: any) {
     if (this.htmlContent) {
       /* tslint:disable-next-line */
-      console.log(this.htmlContent.identifier)
+      // console.log(this.htmlContent.identifier)
       this.events.raiseInteractTelemetry(data.event, 'scrom', {
         contentId: this.htmlContent.identifier,
         ...data,
@@ -430,8 +416,14 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     }
   }
   receiveMessage(msg: any) {
-    // /* tslint:disable-next-line */
-    // console.log("msg=>", msg)
+    // Handle SCORM API calls via postMessage
+    if (msg.data && msg.data.type === 'SCORM_API_CALL') {
+      console.log('[SCORM Component] Received SCORM API call via postMessage:', msg.data)
+      this.handleSCORMApiCallViaMessage(msg.data)
+      return
+    }
+
+    // Handle messages for telemetry
     if (msg.data) {
       this.raiseTelemetry(msg.data)
     } else {
@@ -482,13 +474,31 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
   }
 
   onIframeLoadOrError(evt: 'load' | 'error', iframe?: HTMLIFrameElement, event?: any) {
+    console.log('[SCORM] Iframe event:', evt, 'URL:', iframe && iframe.src)
+    console.log('[SCORM] pageFetchStatus:', this.pageFetchStatus)
+    console.log('[SCORM] showIsLoadingMessage:', this.showIsLoadingMessage)
+
     if (evt === 'error') {
+      console.error('[SCORM] Iframe load error')
       this.pageFetchStatus = evt
     }
     if (evt === 'load' && iframe && iframe.contentWindow) {
+      console.log('[SCORM] Iframe loaded successfully')
+
+      // Monitor for JavaScript errors in the iframe
+      iframe.contentWindow.addEventListener('error', (error) => {
+        console.error('[SCORM] JavaScript error in iframe:', error)
+      })
+
+      // Monitor for unhandled promise rejections
+      iframe.contentWindow.addEventListener('unhandledrejection', (event) => {
+        console.error('[SCORM] Unhandled promise rejection in iframe:', event.reason)
+      })
+
       if (event && iframe.onload) {
         iframe.onload(event)
       }
+
       iframe.onload = (data => {
         console.log("data: " + data)
         if (data.target) {
@@ -496,6 +506,86 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
         }
       })
       this.showIsLoadingMessage = false
+      console.log('[SCORM] After iframe load - showIsLoadingMessage:', this.showIsLoadingMessage)
+    }
+  }
+
+  /**
+   * Loads SCORM package from ZIP file, extracts it, and creates blob URLs
+   * Supports both local and S3-hosted SCORM packages
+   */
+  /**
+   * Load SCORM content using production proxy pattern
+   * Uses /apis/proxies/v8/getContents/content/html/{contentId}/{entryPoint}
+   * SCORM packages must be pre-extracted to /content/html/{contentId}/ on backend
+   */
+  private loadScormFromBackend(entryPoint: string) {
+    console.log('[SCORM] Loading SCORM using production streaming URL pattern')
+    this.pageFetchStatus = 'fetching'
+
+    if (this.htmlContent && this.htmlContent.streamingUrl) {
+      let streamingUrl = this.htmlContent.streamingUrl
+
+      // Log the original URL for debugging
+      console.log('[SCORM] Original streamingUrl:', streamingUrl)
+
+      // Extract the path part after the domain for all URLs and use proxy
+      if (streamingUrl.includes('https://static.sphere.aastrika.org')) {
+        // CDN domain: extract path after 'https://static.sphere.aastrika.org' (35 chars)
+        streamingUrl = streamingUrl.substring(35)
+      } else if (streamingUrl.includes('https://sunbirdcontent-stage.s3-ap-south-1.amazonaws.com')) {
+        // S3 stage domain: extract path after domain (56 chars)
+        streamingUrl = streamingUrl.substring(56)
+      } else {
+        // Fallback for other S3 or cloud domains
+        streamingUrl = streamingUrl.substring(50)
+      }
+
+      // Ensure path starts with /
+      if (!streamingUrl.startsWith('/')) {
+        streamingUrl = '/' + streamingUrl
+      }
+
+      const entryPoint_processed = entryPoint || this.htmlContent.entryPoint || ''
+      const newUrl = `/apis/proxies/v8/getContents${streamingUrl}${entryPoint_processed}`
+      console.log('[SCORM] Using proxy URL:', newUrl, { streamingUrl, entryPoint: entryPoint_processed })
+      this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(newUrl)
+      this.showIsLoadingMessage = true
+    } else {
+      console.error('[SCORM] streamingUrl not available')
+      this.pageFetchStatus = 'error'
+    }
+  }
+
+  /**
+   * Handles SCORM API calls coming from the iframe via postMessage
+   */
+  private handleSCORMApiCallViaMessage(request: any): void {
+    try {
+      const methodName = request.method
+      const args = request.args || []
+
+      if ((this.scormAdapterService as any)[methodName] &&
+        typeof (this.scormAdapterService as any)[methodName] === 'function') {
+
+        const result = (this.scormAdapterService as any)[methodName](...args)
+
+        // Send response back to iframe
+        if (this.iframeElem && this.iframeElem.nativeElement && this.iframeElem.nativeElement.contentWindow) {
+          const response = {
+            type: 'SCORM_API_RESPONSE',
+            id: request.id,
+            result: result
+          }
+          this.iframeElem.nativeElement.contentWindow.postMessage(response, '*')
+          console.log('[SCORM Component] Sent response:', response)
+        }
+      } else {
+        console.warn(`[SCORM Component] SCORM method not found: ${methodName}`)
+      }
+    } catch (err) {
+      console.error('[SCORM Component] Error handling SCORM API call:', err)
     }
   }
 }
+

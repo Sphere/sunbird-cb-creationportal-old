@@ -1,43 +1,51 @@
-.yesButtonColor{
+.txt-block {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 32px;
+  padding: 0 8px;
+}
+
+.course-live {
+  color: #0F172A;
+  text-align: center;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.2px;
+}
+
+.button-block {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 24px 24px;
+}
+
+.yesButtonColor {
   background-color: #1C5D95 !important;
-  color: white !important;
-  border-radius: 50px;
-  border: 1px solid #1C5D95;
-}
-.buttonColor{
-  width: 50px;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  border: 1px solid #1C5D95 !important;
+  min-width: 88px !important;
+  padding: 0 24px !important;
+  font-family: Roboto, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  height: 40px !important;
 }
 
-.noButtonColor{
-  background-color: white !important;
+.noButtonColor {
+  background-color: #ffffff !important;
   color: #1C5D95 !important;
-  border-radius: 50px;
-  border: 1px solid #1C5D95;
-}
-.button-block{
-  display: flex;
-  justify-content: center;
-}
-.course-live{
-  color: #000;
-text-align: center;
-
-/* Body */
-font-family: Roboto;
-font-size: 16px;
-font-style: normal;
-font-weight: 400;
-line-height: 24px; /* 150% */
-letter-spacing: -0.32px;
-}
-.txt-block{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 30px;
-}
-.mat-dialog-container {
-    display: flex;
-  justify-content: center;
-  align-items: center;
+  border-radius: 8px !important;
+  border: 1.5px solid #1C5D95 !important;
+  min-width: 88px !important;
+  padding: 0 24px !important;
+  font-family: Roboto, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  height: 40px !important;
 }

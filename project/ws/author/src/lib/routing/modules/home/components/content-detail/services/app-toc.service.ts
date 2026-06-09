@@ -1,11 +1,19 @@
 import { Injectable } from '@angular/core'
+
 // import { Data } from '@angular/router'
+
 // import { Subject, Observable } from 'rxjs'
+
 // import { HttpClient } from '@angular/common/http'
+
 // import { NsContent } from '@ws-widget/collection/src/lib/_services/widget-content.model'
+
 // import { NsContentConstants } from '@ws-widget/collection/src/lib/_constants/widget-content.constants'
+
 // import { NsAppToc, NsCohorts } from '../interface/app-toc.model'
+
 // import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
+
 
 // TODO: move this in some common place
 // const PROTECTED_SLAG_V8 = '/apis/protected/v8'
@@ -32,7 +40,7 @@ import { Injectable } from '@angular/core'
   providedIn: 'root',
 })
 export class AppTocService {
-  // analyticsReplaySubject: Subject<any> = new Subject()
+  // analyticsReplaySubject: Subject<any> = new Subject<void>()
   // analyticsFetchStatus: TFetchStatus = 'none'
   // private showSubtitleOnBanners = false
   // private canShowDescription = false

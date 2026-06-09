@@ -1,12 +1,21 @@
 import { Injectable } from '@angular/core'
+
 import { NsContent } from '@ws-widget/collection'
+
 import { filter } from 'rxjs/operators'
+
 // import { AuthKeycloakService } from './auth-keycloak.service'
+
 import { NsInstanceConfig } from './configurations.model'
+
 import { ConfigurationsService } from './configurations.service'
+
 import { WsEvents } from './event.model'
+
 import { EventService } from './event.service'
+
 import { LoggerService } from './logger.service'
+
 
 declare var $t: any
 

@@ -1,22 +1,41 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormControl } from '@angular/forms'
-import { MatSnackBar, MatDialog, MatChipInputEvent } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { MatDialog } from '@angular/material/dialog'
+import { MatChipInputEvent } from '@angular/material/chips'
 import { IPickerContentData, NsContent, NsContentStripSingle } from '@ws-widget/collection/src/public-api'
+
 import { UploadService } from '@ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs/operators'
+
 import { AUTHORING_CONTENT_BASE, CONTENT_BASE_WEBHOST_ASSETS } from '../../../../../../../../../constants/apiEndpoints'
+
 import { NOTIFICATION_TIME } from '../../../../../../../../../constants/constant'
+
 import { Notify } from '../../../../../../../../../constants/notificationMessage'
+
 import { FILE_MAX_SIZE } from '../../../../../../../../../constants/upload'
+
 import { NotificationComponent } from '../../../../../../../../../modules/shared/components/notification/notification.component'
+
 import { SEARCHV6 } from './content-strip-single.constant'
+
 import { COMMA, ENTER } from '@angular/cdk/keycodes'
+
 import { Observable, of } from 'rxjs'
+
 import { InterestService } from './../../../../../../../../../../../../app/src/lib/routes/profile/routes/interest/services/interest.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-strip-single',
   templateUrl: './content-strip-single.component.html',
   styleUrls: ['./content-strip-single.component.scss'],

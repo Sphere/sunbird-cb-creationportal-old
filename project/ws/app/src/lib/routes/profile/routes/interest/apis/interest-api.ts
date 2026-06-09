@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core'
+
 import { Observable } from 'rxjs'
+
 import { HttpClient } from '@angular/common/http'
+
 import { map } from 'rxjs/operators'
+
 import { ITopic, ITopicRecommended } from '../models/interest.model'
+
 const PROTECTED_SLAG_V8 = `/apis/protected/v8`
 const API_END_POINTS = {
   userTopics: `${PROTECTED_SLAG_V8}/user/topics`,

@@ -1,15 +1,24 @@
 import { Component, OnInit, Inject } from '@angular/core'
+
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+
 import { ISearchContent } from '@ws/author/src/lib/interface/search'
+
 import { Router } from '@angular/router'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { ConfigurationsService } from 'library/ws-widget/utils/src/lib/services/configurations.service'
+
 import moment from 'moment'
+
 import {
   ContentProgressService,
 } from '@ws-widget/collection'
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-success-dialog',
   templateUrl: './success-dialog.component.html',
   styleUrls: ['./success-dialog.component.scss'],

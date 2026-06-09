@@ -1,6 +1,6 @@
 {
-  "/apis/*": {
-    "target": "https://cbp-aastrika-stage.tarento.com/",
+  "/apis/**": {
+    "target": "https://cbp-sphere.aastrika.org/",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true,
@@ -8,10 +8,10 @@
       "/apis": "/apis"
     },
     "headers": {
-      "Cookie": "connect.sid=s%3Ae4zPYvviBarC7Hg5Cwwth8HqNjHQHEpY.eruzG2zCnfsgqftU%2B7Skm1cC4386UpObpDumVy5GCi8"
+      "Cookie": "connect.sid=s%3AVeYS7UCynpSCVnPYbtLYDtNXrD-TrTfF.wTYK%2FIhkkUX6xgxI%2FpBJO%2BXW4GcfoRZbBv%2F0VgQ6Bhw"
     }
   },
-  "/content-api/*": {
+  "/content-api/**": {
     "target": "http://localhost:3004",
     "secure": false,
     "logLevel": "debug",
@@ -20,7 +20,7 @@
       "/apis": ""
     }
   },
-  "/content-store/*": {
+  "/content-store/**": {
     "target": "http://localhost:3005",
     "secure": false,
     "logLevel": "debug",
@@ -29,7 +29,7 @@
       "/apis": ""
     }
   },
-  "/chat-bot/*": {
+  "/chat-bot/**": {
     "target": "http://localhost:3006",
     "secure": false,
     "logLevel": "debug",
@@ -38,7 +38,7 @@
       "/apis": ""
     }
   },
-  "/mobile-apps/*": {
+  "/mobile-apps/**": {
     "target": "http://localhost:3007",
     "secure": false,
     "logLevel": "debug",
@@ -47,7 +47,7 @@
       "/apis": ""
     }
   },
-  "/LA/*": {
+  "/LA/**": {
     "target": "http://localhost:3008",
     "secure": false,
     "logLevel": "debug",
@@ -56,13 +56,16 @@
       "/apis": ""
     }
   },
-  "/assets/*": {
-    "target": "https://cbp-aastrika-stage.tarento.com/",
+  "/assets/instances/**": {
+    "target": "https://cbp-sphere.aastrika.org/",
     "secure": false,
     "logLevel": "debug",
-    "changeOrigin": true,
-    "pathRewrite": {
-      "/apis": ""
-    }
+    "changeOrigin": true
+  },
+  "/theme-igot.js": {
+    "target": "https://cbp-sphere.aastrika.org/",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
   }
 }

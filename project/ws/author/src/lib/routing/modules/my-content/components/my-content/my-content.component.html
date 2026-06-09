@@ -373,7 +373,103 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
 
 
       </mat-accordion>
+      <mat-accordion expanded *ngIf="allowExternalContentReviewer&& !isAihub">
+        <mat-expansion-panel #panel1 [expanded]="isContentExpanded" [disabled]="isDisabled" style="cursor: pointer"
+          class="no-shadow" hideToggle>
+          <mat-expansion-panel-header class="left-panel-header">
+            <mat-panel-title class="main-block">
+              <svg
+                [ngClass]="{ 'iconActive': isSelectedColor||isSelectedReviewCourse||isSelectedRevisionCourse||isSelectedToPublishCourse||isSelectedPublishCourse||isSelectedRetiredCourse || panel1.expanded}"
+                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 14" fill="none">
+                <g clip-path="url(#clip0_1391_8909)">
+                  <path fill="#808080"
+                    d="M15.0329 4.68675H0.965057C0.965057 4.75323 0.965057 4.81347 0.965057 4.87372C0.965057 7.16308 0.965057 9.45452 0.965057 11.7439C0.965057 12.5375 1.43371 13.0132 2.2148 13.0132C3.40082 13.0132 4.58684 13.0132 5.77287 13.0132C5.8407 13.0132 5.90853 13.0132 5.97431 13.0236C6.24358 13.061 6.41418 13.2729 6.39774 13.543C6.3813 13.7943 6.18191 13.9813 5.91675 13.9917C5.88386 13.9917 5.84892 13.9917 5.81603 13.9917C4.60123 13.9917 3.38849 13.9917 2.17369 13.9917C0.926002 13.9917 0.00513875 13.0714 0.00308325 11.8166C-0.00102775 8.60484 -0.00102775 5.39309 0.00308325 2.18133C0.00513875 0.922392 0.923947 0 2.17163 0C6.05858 0 9.94759 0 13.8345 0C15.0802 0 15.9949 0.922392 15.9969 2.18133C15.999 3.63555 15.9969 5.0877 15.9969 6.54192C15.9969 6.81822 15.8448 7.01558 15.6084 7.06129C15.3844 7.10283 15.1562 6.9865 15.0781 6.77044C15.0452 6.67696 15.0349 6.571 15.0349 6.47129C15.0308 5.94569 15.0349 5.42009 15.0349 4.89449C15.0349 4.83217 15.0349 4.76985 15.0349 4.68675H15.0329ZM0.965057 3.68957H15.0185C15.0247 3.64594 15.0308 3.61478 15.0308 3.58154C15.0308 3.09541 15.0349 2.60929 15.0267 2.12316C15.0267 1.99644 15.0021 1.86348 14.9609 1.74299C14.7944 1.25063 14.3731 0.976406 13.7996 0.976406C9.93525 0.976406 6.06886 0.976406 2.20452 0.976406C2.14286 0.976406 2.08119 0.976406 2.01953 0.982638C1.47893 1.02627 1.037 1.44176 0.981501 1.98605C0.956835 2.23327 0.965057 2.48256 0.963001 2.73186C0.960946 3.04763 0.963001 3.36341 0.963001 3.69165L0.965057 3.68957Z" />
+                  <path fill="#808080"
+                    d="M11.7291 8.47401C12.7465 7.83208 13.8092 7.71574 14.913 8.15408C15.1926 8.26627 15.4475 8.45532 15.6962 8.63398C15.8976 8.77732 15.9942 9.00169 15.9942 9.25306C15.9963 10.4289 16.0045 11.6047 15.9922 12.7806C15.986 13.4163 15.3447 13.8027 14.763 13.5222C14.2943 13.2979 13.8113 13.2044 13.2974 13.2709C12.8431 13.3311 12.4341 13.4911 12.1011 13.8235C11.8832 14.0416 11.5996 14.0603 11.4002 13.8484C10.8061 13.2148 9.62628 13.0694 8.80408 13.4807C8.59853 13.5846 8.38681 13.6469 8.15865 13.597C7.75783 13.5119 7.47623 13.1898 7.47417 12.7681C7.46595 11.6027 7.46801 10.4393 7.47417 9.27383C7.47417 8.97053 7.62422 8.73785 7.86061 8.55503C8.46081 8.08968 9.14529 7.89025 9.89555 7.89856C10.5677 7.90687 11.1843 8.09591 11.7332 8.47193L11.7291 8.47401ZM11.244 12.5541C11.2481 12.5334 11.2542 12.5105 11.2542 12.4897C11.2542 11.478 11.2563 10.4663 11.2501 9.45457C11.2501 9.39225 11.1926 9.31123 11.1391 9.27176C10.4444 8.75239 9.27273 8.74616 8.55948 9.24683C8.46492 9.31331 8.43615 9.38602 8.43615 9.50028C8.44026 10.2357 8.4382 10.9711 8.4382 11.7045C8.4382 11.987 8.4382 12.2675 8.4382 12.5521C9.63861 12.1927 9.91611 12.1553 11.244 12.5541ZM15.0199 12.5604C15.0261 12.5084 15.0322 12.469 15.0322 12.4316C15.0322 11.4427 15.0322 10.4538 15.0364 9.46496C15.0364 9.33824 14.9685 9.28422 14.8842 9.22813C14.171 8.74824 13.0672 8.75862 12.358 9.24475C12.2614 9.31123 12.2162 9.38186 12.2183 9.50651C12.2244 10.4725 12.2203 11.4385 12.2224 12.4046C12.2224 12.4544 12.2265 12.5043 12.2306 12.577C13.1638 12.2051 14.0888 12.1823 15.0199 12.5604Z" />
+                  <path fill="#808080"
+                    d="M2.78445 1.86769C3.04138 1.86561 3.24488 2.06505 3.25104 2.32266C3.25721 2.58649 3.04755 2.79839 2.7865 2.79632C2.53162 2.79632 2.32812 2.59065 2.32812 2.33304C2.32812 2.07544 2.52956 1.86977 2.78445 1.86769Z" />
+                  <path fill="#808080"
+                    d="M6.07891 1.86975C6.33174 1.87806 6.53112 2.09412 6.52084 2.34965C6.51057 2.61348 6.29679 2.81084 6.02958 2.7963C5.78498 2.78383 5.5897 2.57193 5.59381 2.32679C5.59792 2.06503 5.81581 1.86144 6.07686 1.86975H6.07891Z" />
+                  <path fill="#808080"
+                    d="M4.43541 1.86769C4.69235 1.87185 4.88968 2.07544 4.88762 2.33512C4.88762 2.60311 4.68002 2.80255 4.4128 2.79632C4.15792 2.79008 3.9647 2.58234 3.96881 2.32058C3.97293 2.0609 4.17642 1.86561 4.43541 1.86769Z" />
+                </g>
+                <defs>
+                  <clipPath id="clip0_1391_8909">
+                    <rect width="16" height="14" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+              <span (click)="onClickReviewCourse('External Courses to Review')"
+                class="font-weight-500 head-content-block"
+                [ngClass]="{ 'coursesActive': isSelectedToExternalCouseReview || panel1.expanded}" i18n>Courses</span>
+              <mat-icon style="color:#808080" *ngIf="!panel1.expanded">keyboard_arrow_down</mat-icon>
+              <!-- Add up arrow icon when panel is expanded -->
+              <mat-icon style="color: #14446C" *ngIf="panel1.expanded">keyboard_arrow_up</mat-icon>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <!-- Shown when logged in as admin-->
+          <mat-list role="list">
+            <mat-list-item *ngIf="allowExternalContentReviewer" mat-button role="listitem"
+              [routerLinkActive]="['active']">
+              <img *ngIf="isSelectedToExternalCouseReview" src="cbp-assets/icons/Frame_81.svg" />
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedToExternalCouseReview }"
+                style="cursor: pointer ;color: #808080;" (click)="onClickReviewCourse('External Courses to Review')"
+                i18n>Courses To Review</a>
+            </mat-list-item>
+          </mat-list>
+        </mat-expansion-panel>
+        <mat-expansion-panel #panel2 [expanded]="isSelfAssessmentExpanded" [disabled]="isDisabled"
+          style="cursor: pointer" class="no-shadow" hideToggle>
+          <mat-expansion-panel-header class="left-panel-header">
+            <mat-panel-title class="main-block">
+              <svg
+                [ngClass]="{ 'iconActive': isSelfAssessmentSelectedColor||isSelectedSelfReviewCourse||isSelectedToSelfPublishCourse||isSelectedSelfPublishCourse||isSelectedSelfRetiredCourse || panel2.expanded}"
+                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 19" fill="none">
+                <g clip-path="url(#clip0_1391_8923)">
+                  <path
+                    d="M15.9969 10.1638C15.9969 12.2762 15.9969 14.3886 15.9969 16.5041C15.9969 17.6906 15.241 18.6495 14.0887 18.9251C13.8687 18.9791 13.6364 18.9971 13.4103 18.9971C9.80445 19.0001 6.20174 19.0031 2.59593 18.9971C1.09042 18.9971 0 17.9483 0 16.4921C0 12.2732 0 8.05431 0 3.83541C0 2.37918 1.08732 1.33344 2.59593 1.32745C2.93979 1.32745 3.28054 1.31546 3.62439 1.33044C3.80097 1.33943 3.87531 1.27951 3.92488 1.1237C4.10765 0.542399 4.51346 0.173845 5.12681 0.0360119C5.25692 0.00604813 5.39632 0.00305176 5.52953 0.00305176C7.17135 0.00305176 8.81317 0.00305176 10.455 0.00305176C11.2697 0.00305176 11.8118 0.380595 12.0751 1.13568C12.1278 1.2825 12.1959 1.33644 12.3601 1.33344C12.8527 1.32745 13.3514 1.29449 13.8347 1.36041C15.1171 1.52821 15.9907 2.54697 15.9938 3.82642C15.9969 5.93887 15.9938 8.05131 15.9938 10.1667L15.9969 10.1638ZM3.57793 2.65185C3.29293 2.65185 2.94288 2.65185 2.59593 2.65185C1.84008 2.65484 1.37231 3.11029 1.37231 3.8474C1.37231 8.0573 1.37231 12.2702 1.37231 16.4801C1.37231 17.2142 1.84318 17.6697 2.59903 17.6697C6.19555 17.6697 9.79206 17.6697 13.3886 17.6697C13.5156 17.6697 13.6488 17.6637 13.7696 17.6337C14.3179 17.4959 14.6277 17.0644 14.6277 16.4471C14.6277 12.2552 14.6277 8.06629 14.6277 3.87437C14.6277 3.75751 14.6184 3.64065 14.5967 3.52379C14.51 3.07733 14.1073 2.69379 13.6488 2.66383C13.2151 2.63686 12.7814 2.65784 12.3384 2.65784C12.3229 2.69979 12.3075 2.73574 12.2951 2.7747C12.0782 3.52379 11.502 3.96725 10.7028 3.97025C8.9061 3.97624 7.10629 3.97325 5.30958 3.97025C4.85421 3.97025 4.43601 3.84141 4.13863 3.50581C3.92798 3.2661 3.78548 2.96646 3.58103 2.64585L3.57793 2.65185ZM8.00465 2.65185C8.88132 2.65185 9.75799 2.65185 10.6347 2.65185C10.898 2.65185 10.9847 2.57694 10.9537 2.33423C10.9227 2.09152 10.8484 1.85181 10.7988 1.60911C10.7524 1.38438 10.613 1.31846 10.3837 1.32146C9.55044 1.33044 8.71713 1.32445 7.88074 1.32445C7.10319 1.32445 6.32565 1.32445 5.55121 1.32445C5.41491 1.32445 5.2817 1.33644 5.24143 1.48326C5.16709 1.74694 5.08035 2.01062 5.04318 2.28329C4.99981 2.58593 5.08035 2.65185 5.39632 2.65185C6.2668 2.65185 7.13417 2.65185 8.00465 2.65185Z"
+                    fill="#808080" />
+                  <path
+                    d="M4.47366 7.82955C4.85159 7.44602 5.2574 7.02653 5.6725 6.61902C6.05352 6.24447 6.67618 6.3853 6.82487 6.87371C6.89922 7.11642 6.84965 7.34115 6.66998 7.52692C6.0907 8.11721 5.51141 8.71049 4.92284 9.29178C4.63165 9.57944 4.22274 9.57045 3.93155 9.28579C3.59699 8.95619 3.26553 8.6206 2.94336 8.28201C2.67695 8.00035 2.68934 7.60483 2.95885 7.35013C3.22526 7.09844 3.63726 7.10443 3.92535 7.35912C4.09883 7.51194 4.2785 7.66176 4.47676 7.82656L4.47366 7.82955Z"
+                    fill="#808080" />
+                  <path
+                    d="M4.42638 13.1781C4.84768 12.7496 5.25349 12.3331 5.66859 11.9256C6.04962 11.551 6.67227 11.6889 6.82096 12.1773C6.89531 12.42 6.84884 12.6447 6.66607 12.8305C6.08679 13.4208 5.50751 14.014 4.91893 14.5953C4.62774 14.883 4.21883 14.877 3.92764 14.5893C3.59308 14.2597 3.26162 13.9241 2.93945 13.5856C2.67304 13.3039 2.68544 12.9084 2.95494 12.6537C3.22755 12.396 3.64884 12.405 3.93384 12.6777C4.09492 12.8335 4.24981 12.9953 4.42948 13.1751L4.42638 13.1781Z"
+                    fill="#808080" />
+                  <path
+                    d="M10.7308 8.62054C10.1391 8.62054 9.54742 8.62653 8.95574 8.62054C8.44771 8.61455 8.11935 8.20105 8.25875 7.75758C8.34858 7.46993 8.6057 7.29614 8.96504 7.29614C10.1484 7.29614 11.3317 7.29614 12.5151 7.29614C12.543 7.29614 12.5708 7.29614 12.6018 7.29614C12.9581 7.31712 13.2307 7.57481 13.2555 7.91639C13.2802 8.237 13.0386 8.54263 12.6979 8.59657C12.5306 8.62354 12.3571 8.61754 12.1867 8.61754C11.7035 8.61754 11.2171 8.61754 10.7339 8.61754L10.7308 8.62054Z"
+                    fill="#808080" />
+                  <path
+                    d="M10.7505 12.5968C11.336 12.5968 11.9184 12.5968 12.5039 12.5968C12.9438 12.5968 13.2504 12.8725 13.2535 13.253C13.2535 13.6306 12.9438 13.9212 12.5101 13.9212C11.3267 13.9242 10.1434 13.9242 8.96002 13.9212C8.53252 13.9212 8.21655 13.6246 8.22275 13.25C8.22894 12.8665 8.53252 12.5998 8.9755 12.5998C9.56718 12.5998 10.1589 12.5998 10.7505 12.5998V12.5968Z"
+                    fill="#808080" />
+                </g>
+                <defs>
+                  <clipPath id="clip0_1391_8923">
+                    <rect width="16" height="19" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+              <span class="font-weight-500 head-content-block"
+                (click)="onClickReviewCourse('External Self Assessment to Review')"
+                [ngClass]="{ 'selfAssessmentActive': isSelectedToExternalSelfAssessmentReview || panel2.expanded}"
+                i18n>Self Assessment</span>
+              <mat-icon style="color:#808080" *ngIf="!panel2.expanded">keyboard_arrow_down</mat-icon>
+              <!-- Add up arrow icon when panel is expanded -->
+              <mat-icon style="color: #14446C" *ngIf="panel2.expanded">keyboard_arrow_up</mat-icon>
 
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-list role="list">
+            <mat-list-item *ngIf="allowExternalContentReviewer" mat-button role="listitem"
+              [routerLinkActive]="['active']">
+              <img *ngIf="isSelectedToExternalSelfAssessmentReview" src="cbp-assets/icons/Frame_81.svg" />
+              <a [ngClass]="{ 'head-content-title activeLink': isSelectedToExternalSelfAssessmentReview }"
+                style="cursor: pointer ;color: #808080;"
+                (click)="onClickReviewCourse('External Self Assessment to Review')" i18n>Self Assessment
+                To Review</a>
+            </mat-list-item>
+          </mat-list>
+        </mat-expansion-panel>
+      </mat-accordion>
       <!-- allowAuthor -->
       <!-- <mat-accordion *ngIf="allowReview || allowPublish">
         <mat-expansion-panel [expanded]="false" class="no-shadow">
@@ -439,7 +535,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
       </mat-sidenav>
 
       <mat-sidenav-content class="sidenav-content">
-        <nav mat-tab-nav-bar class="mat-nav-container">
+        <div class="mat-nav-container flex items-center">
           <!-- <a class="tab-links-data nav-tab-links" mat-tab-link *ngFor="let link of links"
             (click)="navigateContents(link)" [ngClass]="{'activeTab':link==activeLink}">
             {{ link }}
@@ -461,65 +557,39 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <ng-container i18n>Create a new self assessment</ng-container>
             </button>
           </div>
-        </nav>
+        </div>
 
         <div class="outer-flex">
           <section *ngIf="isAihub" class="aihubContainer">
             <ws-author-aihub-dashboard></ws-author-aihub-dashboard>
           </section>
           <div class="content-box" *ngIf="!isAihub">
-            <nav class="flex flex-middle flex-wrap p-4 ws-mat-primary-text">
-              <!-- <div class="mat-subheading-2 margin-remove-bottom">
-                <a i18n>
-                  My Contents
-                </a>
-              </div>
-              <mat-icon class="px-1">chevron_right</mat-icon> -->
-
-              <!-- <div class="mat-subheading-2 margin-remove-bottom">
-                <a routerLink="/author/my-content" [queryParams]="{ status: 'all' }" i18n>
-                  All
-                </a>
-              </div>
-              <mat-icon class="px-1" *ngIf="status !== 'all'">chevron_right</mat-icon> -->
-              <!-- <div class="mat-subheading-2 margin-remove-bottom">
-                <a routerLink="/author/my-content" *ngIf="status === 'draft'" [queryParams]="{ status: 'draft' }"
-                  i18n>Draft</a>
-                <a routerLink="/author/my-content" *ngIf="status === 'inreview'" [queryParams]="{ status: 'inreview' }"
-                  i18n>Sent for review</a>
-                <a routerLink="/author/my-content" *ngIf="status === 'review'" [queryParams]="{ status: 'review' }"
-                  i18n>Review</a>
-                <a routerLink="/author/my-content" *ngIf="status === 'publish'" [queryParams]="{ status: 'publish' }"
-                  i18n>Publish</a>
-                <a routerLink="/author/my-content" *ngIf="status === 'published'"
-                  [queryParams]="{ status: 'published' }" i18n>Published</a>
-                <a routerLink="/author/my-content" *ngIf="status === 'unpublished'"
-                  [queryParams]="{ status: 'unpublished' }" i18n>Unpublished</a>
-                <a routerLink="/author/my-content" *ngIf="status === 'expiry'" [queryParams]="{ status: 'expiry' }"
-                  i18n>Expiring</a>
-                <a routerLink="/author/my-content" *ngIf="status === 'deleted'" [queryParams]="{ status: 'deleted' }"
-                  i18n>Deleted</a>
-              </div> -->
-            </nav>
-            <div class="flex margin-horizontal-s margin-top-xs">
+            <div class="flex margin-horizontal-s search-toolbar">
               <div>
-                <mat-chip-list *ngIf="filters && filters.length" #chipList aria-label="Filter">
-                  <mat-chip [selectable]="true" [removable]="false">
+                <mat-chip-set *ngIf="filters && filters.length" #chipList aria-label="Filter">
+                  <mat-chip>
                     <span class="ws-mat-primary-text" i18n>Clear All</span>
                     <mat-icon [color]="'primary'" (click)="clearAllFilters()" matChipRemove>cancel</mat-icon>
                   </mat-chip>
-                  <mat-chip *ngFor="let item of filters; let i = index" [selectable]="true" [removable]="true"
+                  <mat-chip *ngFor="let item of filters; let i = index"
                     (removed)="filterApplyEvent(item)">
                     <span class="ws-mat-primary-text">{{ item.displayName }}</span>
                     <mat-icon [color]="'primary'" matChipRemove>cancel</mat-icon>
                   </mat-chip>
-                </mat-chip-list>
+                </mat-chip-set>
               </div>
               <div class="flex items-center search border border-solid search-border">
                 <div class="border-right flex items-center" *ngIf="allLanguages?.length">
                   <button mat-button [matMenuTriggerFor]="sortLang">
                     <span *ngIf="searchLanguage">{{ searchLanguage | uppercase }}</span>
                     <span *ngIf="!searchLanguage" i18n>ALL</span>
+                    <mat-icon>arrow_drop_down</mat-icon>
+                  </button>
+                </div>
+                <div class="border-right flex items-center" *ngIf="sourceName?.length && allowExternalContentReviewer">
+                  <button mat-button [matMenuTriggerFor]="sortSource">
+                    <span *ngIf="selectedSourceName">{{ selectedSourceName }}</span>
+                    <span *ngIf="!selectedSourceName" i18n>All Sources</span>
                     <mat-icon>arrow_drop_down</mat-icon>
                   </button>
                 </div>
@@ -533,9 +603,9 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   <mat-icon>search</mat-icon>
                 </div>
               </div>
-              <span fxFlex style="flex: 1 1 auto"><span *ngIf="cardContent?.length >0" style="    margin-left: 10px !important;
-    vertical-align: sub;">Showing
-                  {{cardContent?.length}} results</span></span>
+              <span fxFlex style="flex: 1 1 auto">
+                <span class="results-count" *ngIf="cardContent?.length > 0">Showing {{cardContent?.length}} results</span>
+              </span>
               <div class="flex items-center">
                 <div>
 
@@ -559,15 +629,14 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 </div>
               </div>
             </div>
-            <div [ngClass]="{ 'overflowY': cardContent&&cardContent.length > 5 }"
-              style="max-height: 55vh;overflow: auto;">
-              <div *ngIf="cardContent" class="flex flex-wrapped flex-dynamic margin-xs class-here">
+            <div class="content-scroll-container">
+              <div *ngIf="cardContent" [ngClass]="listview ? 'list-view-grid' : 'card-view-grid'">
                 <ng-template #oldDesign>
-                  <div [ngClass]="listview == true ? 'full-width-field' : 'margin-l'"
-                    *ngFor="let content of cardContent">
-                    <ws-auth-root-content-card [data]="content" [forExpiry]="status === 'expiry'"
-                      [changeView]="listview" [forDelete]="status === 'deleted'" [ordinals]="ordinals"
-                      (action)="action($event)">
+                  <div *ngFor="let content of cardContent">
+                    <ws-auth-root-content-card [competencyData]="proficiencyList" [data]="content"
+                      [forExpiry]="status === 'expiry'" [changeView]="listview" [forDelete]="status === 'deleted'"
+                      [hideThumbnail]="status.toLowerCase().includes('self')"
+                      [ordinals]="ordinals" (action)="action($event)">
                     </ws-auth-root-content-card>
                   </div>
                 </ng-template>
@@ -601,33 +670,9 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <span class="font-weight-bold margin-left-s mat-h3 margin-remove-bottom" i18n>Unable to fetch data</span>
             </div>
           </div>
-          <!--<div class="sidebar mt-10">
-            <div class="info-section mb-6">
-              <h3 class="mb-3">In case it helps</h3>
-              <div>Test test Test testTest testTest testTest testTest testTest testTest testTest testTest testTest
-                testTest testTest testTest testTest testTest testTest testTest test </div>
-              <a mat-button href="https://www.google.com/" target="_blank">Try it now</a>
-            </div>
-            <div class="info-section mb-6">
-              <h3 class="mb-3">In case it helps</h3>
-              <div>Test test Test testTest testTest testTest testTest testTest testTest testTest testTest testTest
-                testTest testTest testTest testTest testTest testTest testTest test </div>
-              <a mat-button href="https://www.google.com/" target="_blank">Try it now</a>
-            </div>
-            <div class="info-section mb-6">
-              <h3 class="mb-3">In case it helps</h3>
-              <div>Test test Test testTest testTest testTest testTest testTest testTest testTest testTest testTest
-                testTest testTest testTest testTest testTest testTest testTest test </div>
-              <a mat-button href="https://www.google.com/" target="_blank">Try it now</a>
-            </div>
-          </div> -->
         </div>
-
       </mat-sidenav-content>
-
-
     </mat-sidenav-container>
-
     <mat-menu #sortLang="matMenu">
       <ng-template matMenuContent>
         <button mat-menu-item class="flex flex-between" (click)="setCurrentLanguage('')">
@@ -636,10 +681,26 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
           </span>
         </button>
         <button mat-menu-item class="flex flex-between" *ngFor="let lang of allLanguages"
-          (click)="setCurrentLanguage(lang.srclang)">
+          (click)="setCurrentLanguage(lang.value)">
           <span class="flex items-center w-full">
-            <span>{{ lang.label | uppercase }}</span>
-            <mat-icon class="ml-2" *ngIf="lang.srclang === searchLanguage">check</mat-icon>
+            <span>{{ lang.name | uppercase }}</span>
+            <mat-icon class="ml-2" *ngIf="lang.value === searchLanguage">check</mat-icon>
+          </span>
+        </button>
+      </ng-template>
+    </mat-menu>
+    <mat-menu #sortSource="matMenu">
+      <ng-template matMenuContent>
+        <button mat-menu-item class="flex flex-between" (click)="setCurrentSourceName('')">
+          <span i18n class="flex items-center w-full">All Sources
+            <mat-icon class="ml-2" *ngIf="selectedSourceName === ''">check</mat-icon>
+          </span>
+        </button>
+        <button mat-menu-item class="flex flex-between" *ngFor="let source of sourceName"
+          (click)="setCurrentSourceName(source)">
+          <span class="flex items-center w-full">
+            <span>{{ source }}</span>
+            <mat-icon class="ml-2" *ngIf="source === selectedSourceName">check</mat-icon>
           </span>
         </button>
       </ng-template>

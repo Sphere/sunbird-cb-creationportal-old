@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-edit-meta-v2',
   templateUrl: './edit-meta-v2.component.html',
   styleUrls: ['./edit-meta-v2.component.scss'],

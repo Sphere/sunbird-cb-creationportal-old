@@ -71,7 +71,8 @@ $badge-padding: 12px;
   height:auto !important;
   padding-bottom: 8px;
 }
-.mat-radio-button ~ .mat-radio-button {
+.mat-radio-button ~ .mat-radio-button,
+.mat-mdc-radio-button ~ .mat-mdc-radio-button {
   margin-left: 16px;
 }
 .radio-buttons{
@@ -125,7 +126,8 @@ $badge-padding: 12px;
   word-break: break-word;
   white-space: unset !important;
 }
-.mat-card{
+.mat-card,
+.mat-mdc-card{
  //width: 40%;
  margin: 16px;
  height: 190px;
@@ -162,10 +164,12 @@ animation: 0.5s ease-out 0s 1 slideInFromLeft;
   margin-left: 115px;
 }
 :host ::ng-deep .search {
-    .mat-form-field-wrapper{
+    .mat-form-field-wrapper,
+    .mat-mdc-text-field-wrapper{
         padding-bottom: 0px !important;
     }
-    .mat-form-field-infix {
+    .mat-form-field-infix,
+    .mat-mdc-form-field-infix {
         border-top-width: 2px !important;
     }
 }
@@ -231,7 +235,7 @@ animation: 0.5s ease-out 0s 1 slideInFromLeft;
 
 .margin-left {
   margin-left: 120px;
-  @media only screen and(max-width: 930px) {
+  @media only screen and (max-width: 930px) {
     // margin-top: 24px;
     margin-left: 80px;
     .icon-container{
@@ -239,15 +243,15 @@ animation: 0.5s ease-out 0s 1 slideInFromLeft;
     }
   }
 
-  @media only screen and(max-width: 824px) {
+  @media only screen and (max-width: 824px) {
     margin-left: 40px;
   }
 
-  @media only screen and(max-width: 699px) {
+  @media only screen and (max-width: 699px) {
     padding-top: 24px;
   }
 
-  @media only screen and(max-width: 585px) {
+  @media only screen and (max-width: 585px) {
     margin-left: 0px;
   }
 }
@@ -396,10 +400,12 @@ td {
 td:first-child{
   text-align: left;
 }
-th.mat-header-cell {
+th.mat-header-cell,
+th.mat-mdc-header-cell {
   text-align: center !important;
 }
-th.mat-header-cell:first-child {
+th.mat-header-cell:first-child,
+th.mat-mdc-header-cell:first-child {
   text-align: left !important;
 }
 .arrow-icon{

@@ -1,8 +1,13 @@
 import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { EditorQuillComponent } from './editor-quill.component'
+
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+
 import { QuillModule } from 'ngx-quill'
+
 
 const SUPPORTED_FORMATS = [
   'background',

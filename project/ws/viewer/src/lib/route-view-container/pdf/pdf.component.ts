@@ -1,11 +1,18 @@
 import { Component, Input, OnInit, ElementRef, ViewChild } from '@angular/core'
+
 import { NsContent, NsDiscussionForum } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { ConfigurationsService } from '../../../../../../../library/ws-widget/utils/src/public-api'
+
 import { PlayerStateService } from '../../player-state.service'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-pdf-container',
   templateUrl: './pdf.component.html',
   styleUrls: ['./pdf.component.scss'],

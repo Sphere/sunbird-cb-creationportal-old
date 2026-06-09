@@ -1,19 +1,31 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core'
+import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core'
+
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'
+
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
+
 import { Subscription } from 'rxjs'
+
 import { map } from 'rxjs/operators'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBarRef } from '@angular/material/snack-bar'
+
 import { QuizStoreService } from '../../../services/store.service'
 
+
 import { QUIZ_QUESTION_TYPE } from '../../../constants/quiz-constants'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 
 import { IQuizQuestionType } from '../../../interface/quiz-interface'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-question-editor-sidebar',
   templateUrl: './question-editor-sidenav.component.html',
   styleUrls: ['./question-editor-sidenav.component.scss'],
@@ -23,6 +35,7 @@ export class QuestionEditorSidenavComponent implements OnInit, OnDestroy {
   @Input() type = ''
   @Input() data: any[] = []
   @Input() showContent?: boolean
+  @Output() questionTypeChanged = new EventEmitter<string>(); // Emit the question type change
   /**
    * reviwer and publisher cannot add or delete or edit quizs but can rearrange them
    */
@@ -70,6 +83,7 @@ export class QuestionEditorSidenavComponent implements OnInit, OnDestroy {
  * Adds an entity to the selected entity array
  */
   addEntity() {
+    this.questionTypeChanged.emit(this.questionType) // Emit the selected question type
     this.quizStoreSvc.addQuestion(this.questionType)
   }
 

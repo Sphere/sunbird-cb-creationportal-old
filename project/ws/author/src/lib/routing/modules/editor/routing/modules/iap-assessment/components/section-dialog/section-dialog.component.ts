@@ -1,12 +1,19 @@
 import { Component, Inject, OnInit } from '@angular/core'
+
 import { FormControl, FormGroup } from '@angular/forms'
+
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { IapAssessmentService } from '../../services/iap-assessment.service'
+
 import { IQuestionDetailsContent } from '../iap-assessment/iap-assessment.component'
+
 // IQuestionDetailsContent
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-section-dialog',
   templateUrl: './section-dialog.component.html',
   styleUrls: ['./section-dialog.component.scss'],

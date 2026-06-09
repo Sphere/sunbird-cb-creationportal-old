@@ -1,10 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { ActivatedRoute, ParamMap } from '@angular/router'
+
 import { map } from 'rxjs/operators'
+
 import { Subscription } from 'rxjs'
+
 import { ValueService, ConfigurationsService, EFeatures, NsPage } from '@ws-widget/utils'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-public-faq',
   templateUrl: './public-faq.component.html',
   styleUrls: ['./public-faq.component.scss'],

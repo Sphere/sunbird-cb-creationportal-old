@@ -10,16 +10,17 @@
       "prefix": "ws",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/www/cbp",
+            "outputPath": { "base": "dist/www/en", "browser": "" },
             "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "browser": "src/main.ts",
+            "polyfills": ["zone.js", "@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
               "src/favicon.png",
+              "src/assets",
               "src/cbp-assets",
               {
                 "glob": "**/*",
@@ -37,6 +38,7 @@
                 "input": "src/styles/libraries.scss",
                 "bundleName": "libraries"
               },
+              "node_modules/typeface-roboto/index.css",
               "node_modules/material-icons/iconfont/material-icons.scss",
               "src/styles/mat-typography.scss",
               "src/styles/styles.scss",
@@ -44,12 +46,12 @@
               {
                 "input": "src/themes/theme-orange.scss",
                 "bundleName": "theme-orange",
-                "lazy": true
+                "inject": false
               },
               {
                 "input": "src/themes/theme-igot.scss",
                 "bundleName": "theme-igot",
-                "lazy": true
+                "inject": false
               },
               "node_modules/pdfjs-dist/web/pdf_viewer.css",
               "src/cbp-assets/fonts/lato/stylesheet.css",
@@ -72,21 +74,14 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "4mb",
                   "maximumError": "15mb"
                 }
-              ],
-              "serviceWorker": false,
-              "ngswConfigPath": "ngsw-config.json"
+              ]
             },
             "dev": {
               "fileReplacements": [
@@ -98,21 +93,14 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "4mb",
                   "maximumError": "15mb"
                 }
-              ],
-              "serviceWorker": false,
-              "ngswConfigPath": "ngsw-config.json"
+              ]
             },
             "preprod": {
               "fileReplacements": [
@@ -124,68 +112,45 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "4mb",
                   "maximumError": "15mb"
                 }
-              ],
-              "serviceWorker": false,
-              "ngswConfigPath": "ngsw-config.json"
+              ]
             }
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "port": 3000,
-            "browserTarget": "cbp:build"
+            "buildTarget": "cbp:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "cbp:build:production"
+              "buildTarget": "cbp:build:production"
             },
             "de": {
-              "browserTarget": "cbp:build:de"
+              "buildTarget": "cbp:build:de"
             }
           }
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
-            "browserTarget": "cbp:build"
+            "buildTarget": "cbp:build"
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "tsconfig.app.json",
-              "tsconfig.spec.json",
-              "e2e/tsconfig.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
             ]
-          }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "cbp:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "cbp:serve:production"
-            }
           }
         }
       }
@@ -197,7 +162,7 @@
       "prefix": "ws-resolver",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "library/ws-widget/resolver/tsconfig.lib.json",
             "project": "library/ws-widget/resolver/ng-package.json"
@@ -205,15 +170,9 @@
         },
 
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "library/ws-widget/resolver/tsconfig.lib.json",
-              "library/ws-widget/resolver/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }
@@ -225,7 +184,7 @@
       "prefix": "ws-widget",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "library/ws-widget/collection/tsconfig.lib.json",
             "project": "library/ws-widget/collection/ng-package.json"
@@ -233,15 +192,9 @@
         },
 
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "library/ws-widget/collection/tsconfig.lib.json",
-              "library/ws-widget/collection/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }
@@ -253,7 +206,7 @@
       "prefix": "ws-utils",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "library/ws-widget/utils/tsconfig.lib.json",
             "project": "library/ws-widget/utils/ng-package.json"
@@ -261,15 +214,9 @@
         },
 
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "library/ws-widget/utils/tsconfig.lib.json",
-              "library/ws-widget/utils/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }
@@ -281,7 +228,7 @@
       "prefix": "ws-app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "project/ws/app/tsconfig.lib.json",
             "project": "project/ws/app/ng-package.json"
@@ -289,15 +236,9 @@
         },
 
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "project/ws/app/tsconfig.lib.json",
-              "project/ws/app/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }
@@ -309,7 +250,7 @@
       "prefix": "ws-author",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "project/ws/author/tsconfig.lib.json",
             "project": "project/ws/author/ng-package.json"
@@ -317,15 +258,9 @@
         },
 
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "project/ws/author/tsconfig.lib.json",
-              "project/ws/author/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }
@@ -337,7 +272,7 @@
       "prefix": "viewer",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "project/ws/viewer/tsconfig.lib.json",
             "project": "project/ws/viewer/ng-package.json"
@@ -345,15 +280,9 @@
         },
        
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "project/ws/viewer/tsconfig.lib.json",
-              "project/ws/viewer/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }

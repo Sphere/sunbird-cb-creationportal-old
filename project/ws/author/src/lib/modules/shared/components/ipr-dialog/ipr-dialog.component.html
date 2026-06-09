@@ -1,11 +1,12 @@
-<div class="margin-top-m margin-bottom-m">
-  <div class="flex space-between ">
-    <h3 class="mat-h3 font-weight-bold margin-remove-bottom " i18n>IPR Declaration</h3>
+<div class="ipr-wrapper">
+  <div class="ipr-header">
+    <h3 class="ipr-title" i18n>IPR Declaration</h3>
     <button class="close-button ws-mat-primary-background" (click)="onClose()">
-      <mat-icon aria-label="Next" role="button">close</mat-icon>
+      <mat-icon>close</mat-icon>
     </button>
   </div>
-  <p class="mat-body margin-top-l" i18n>
+
+  <p class="ipr-body" i18n>
     I hereby declare that my contribution (i.e the complete material in case of new material or any
     additions / modifications in case of a new version release) does not violate any copyright laws
     or infringe upon copyrights, trademark or intellectual property rights of clients, vendors or
@@ -18,17 +19,16 @@
     third party/ies; and that disciplinary actions may be initiated against me by the Company if my
     work leads to the violation of any copyright or intellectual property rights.
   </p>
-  <div class="flex justify-center">
+
+  <div class="ipr-actions">
     <button
       type="button"
       mat-raised-button
-      class="ws-mat-primary-background margin-top-m "
+      class="ws-mat-primary-background agree-btn"
       [mat-dialog-close]="true"
     >
-      <div class="flex flex-middle justify-center">
-        <mat-icon class="text-white">check</mat-icon>
-        <p class="text-white margin-remove-bottom agree-text" i18n>I Agree</p>
-      </div>
+      <mat-icon class="text-white">check</mat-icon>
+      <span class="text-white agree-text" i18n>I Agree</span>
     </button>
   </div>
 </div>

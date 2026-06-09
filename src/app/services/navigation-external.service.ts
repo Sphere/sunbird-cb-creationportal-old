@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core'
+
 import { Router } from '@angular/router'
+
 import { fromEvent } from 'rxjs'
+
 import { NAVIGATION_DATA_INCOMING } from '../models/mobile-events.model'
+
 
 @Injectable({
   providedIn: 'root',

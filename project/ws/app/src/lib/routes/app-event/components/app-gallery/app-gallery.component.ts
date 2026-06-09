@@ -1,9 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { ValueService } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-app-gallery',
   templateUrl: './app-gallery.component.html',
   styleUrls: ['./app-gallery.component.scss'],

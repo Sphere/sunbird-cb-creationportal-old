@@ -1,32 +1,54 @@
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
+
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core'
+
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { debounceTime, map } from 'rxjs/operators'
+
 // import { LoaderService } from '../../../../../../services/loader.service'
+
 import { LoaderService } from '../../../../../../services/loader.service'
 
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { NsContent } from '@ws-widget/collection'
+
 
 /* tslint:disable */
 import _ from 'lodash'
+
 // import { AuthInitService } from '../../../../../../services/init.service'
+
 // import { NSIQuality } from '../../../../../../../../../viewer/src/lib/interface/content-quality'
 
+
 import { NSIQuality } from '../../../interface/content-quality'
+
 // import { SelfCurationService } from '../../services/self-curation.service'
+
 import { ContentQualityService } from '../../services/content-quality.service'
+
 import { ConfigurationsService } from '../../../../../../../../../../../library/ws-widget/utils/src/public-api'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { AuthInitService } from '../../../../../../services/init.service'
 
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { Router } from '@angular/router'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-quality',
   templateUrl: './content-quality.component.html',
   styleUrls: ['./content-quality.component.scss'],

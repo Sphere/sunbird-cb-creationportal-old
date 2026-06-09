@@ -1,9 +1,14 @@
 import { AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core'
+
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
+
 import { LoggerService } from '@ws-widget/utils'
+
 import { NsContent } from '../../../../../../../library/ws-widget/collection/src/public-api'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-plugin-iap',
   templateUrl: './iap.component.html',
   styleUrls: ['./iap.component.scss'],

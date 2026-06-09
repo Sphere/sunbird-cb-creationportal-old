@@ -1,14 +1,23 @@
 import { AfterViewInit, Component, HostBinding, Input, OnDestroy, OnInit } from '@angular/core'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { ConfigurationsService, EventService, UtilityService, NsInstanceConfig } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 // import { NsGoal } from '../btn-goals/btn-goals.model'
+
 import { NsPlaylist } from '../btn-playlist/btn-playlist.model'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import { NsCardContent } from './card-content.model'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-card-content',
   templateUrl: './card-content.component.html',
   styleUrls: ['./card-content.component.scss'],

@@ -1,7 +1,11 @@
 import { Component, OnInit, Input, HostBinding } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { IAuthorData } from './author-card.model'
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-author-card',
   templateUrl: './author-card.component.html',
   styleUrls: ['./author-card.component.scss'],

@@ -1,8 +1,12 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core'
+
 import { WidgetBaseComponent, NsWidgetResolver } from '@ws-widget/resolver'
+
 import { IProCert } from './profile-cretifications.model'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-profile-v2-cretifications',
   templateUrl: './profile-cretifications.component.html',
   styleUrls: ['./profile-cretifications.component.scss'],

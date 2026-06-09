@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-search-template',
   templateUrl: './search-template.component.html',
   styleUrls: ['./search-template.component.scss'],

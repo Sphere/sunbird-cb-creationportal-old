@@ -1,53 +1,39 @@
-<div style="color: #1C5D95 !important;padding: 16px 2.9rem; height:50px; background: #F3F8FD;">
-  <h3 *ngIf=" content?.status==='Deleted' || content?.status==='Expired'" class=" margin-remove-bottom pt-4 info-msg"
-    i18n>
+<div *ngIf="!allowExternalContentReviewer" class="toc-action-bar">
+  <h3 *ngIf="content?.status === 'Deleted' || content?.status === 'Expired'" class="info-msg" i18n>
     The content is expired or deleted.
   </h3>
-  <h3 class="margin-remove-bottom pt-4 info-msg" i18n *ngIf="content?.status === 'Unpublished'">
+  <h3 class="info-msg" i18n *ngIf="content?.status === 'Unpublished'">
     The content has been unpublished.
   </h3>
-  <h3 class="margin-remove-bottom pt-4 info-msg" style="float: left;" i18n *ngIf="content?.status === 'Draft'">
-    <img loading="lazy" src=".\cbp-assets\images\preview-icon.svg" alt="clock"> <span style="vertical-align: super;">You
-      are in draft mode</span>
+  <h3 class="info-msg" *ngIf="content?.status === 'Draft'">
+    <img loading="lazy" src=".\cbp-assets\images\preview-icon.svg" alt="draft mode">
+    <span i18n>You are in draft mode</span>
   </h3>
-  <h3 class="margin-remove-bottom pt-4 info-msg" i18n style="float: left;"
-    *ngIf="content?.status === 'Review'&&content?.reviewStatus==='InReview'">
-    <img loading="lazy" src=".\cbp-assets\images\preview-icon.svg" alt="clock"><span style="vertical-align: super;">You
-      are in review mode</span>
+  <h3 class="info-msg" *ngIf="content?.status === 'Review' && content?.reviewStatus === 'InReview'">
+    <img loading="lazy" src=".\cbp-assets\images\preview-icon.svg" alt="review mode">
+    <span i18n>You are in review mode</span>
   </h3>
   <div class="creator-action-btn">
-    <div>
-      <button class="comment accept-btn cursor-pointer" (click)="goToPreview()" style="position: relative;">
-        <ng-container i18n>Preview</ng-container>
-      </button>
-    </div>
-    <div>
-      <button id="comment" class="accept-btn cursor-pointer" (click)="gotoReviewerChecklist()">
-        <ng-container i18n>Review Checklist</ng-container>
-      </button>
-    </div>
-    <div>
-      <button class="comment accept-btn cursor-pointer" [disabled]="historyList?.length === 0" (click)="gotoHistory()"
-        style="position: relative;">
-        <ng-container i18n>Activity Log</ng-container>
-        <span class="activity-length">{{historyList?.length}}</span>
-      </button>
-    </div>
-    <div>
-      <button id="comment" class="comment accept-btn cursor-pointer" [disabled]="commentsList?.length < 1"
-        (click)="gotoComments()">
-        <ng-container i18n>Comments</ng-container>
-        <span
-          [ngClass]="content?.status==='Draft'?'creator-comments-length':'comments-length'">{{commentsList?.length}}</span>
-      </button>
-    </div>
-    <div>
-      <button *ngIf="content?.status==='Draft'"
-        [routerLink]="['/author/editor/' + content?.identifier  + '/collection']" class="edit-course">Edit the
-        course</button>
-    </div>
+    <button class="accept-btn" (click)="goToPreview()">
+      <ng-container i18n>Preview</ng-container>
+    </button>
+    <button class="accept-btn" (click)="gotoReviewerChecklist()">
+      <ng-container i18n>Review Checklist</ng-container>
+    </button>
+    <button class="accept-btn" [disabled]="!historyList?.length" (click)="gotoHistory()">
+      <ng-container i18n>Activity Log</ng-container>
+      <span class="action-badge" *ngIf="historyList?.length">{{ historyList.length }}</span>
+    </button>
+    <button class="accept-btn" [disabled]="!commentsList?.length" (click)="gotoComments()">
+      <ng-container i18n>Comments</ng-container>
+      <span class="action-badge" *ngIf="commentsList?.length">{{ commentsList.length }}</span>
+    </button>
+    <button *ngIf="content?.status === 'Draft'"
+      [routerLink]="['/author/editor/' + content?.identifier + '/collection']"
+      class="edit-course">
+      <ng-container i18n>Edit the course</ng-container>
+    </button>
   </div>
-
 </div>
 <div style="width: 100%; overflow: hidden;background-color: #f7f7f7;font-family: Roboto !important;">
   <div [ngClass]="{ 'header-synopsis-gradient': bannerUrl }" *ngIf="content">
@@ -60,11 +46,10 @@
             class="back-icon"><mat-icon>chevron_left</mat-icon></button>
           <div class="header-title flex-col sm:flex-row">
             <div class="sm:ml-5 flex flex-auto" [id]="'m-c-'+ content.identifier">
-              <h1 class="mat-display-2 margin-remove-bottom padding-bottom-xs hidden sm:block" [title]="content?.name"
-                style="word-wrap: break-word;width: 49%;">
+              <h1 class="toc-course-title hidden sm:block" [title]="content?.name">
                 {{ content?.name }}
               </h1>
-              <h1 class="mat-display-1 margin-remove-bottom padding-bottom-xs block sm:hidden" [title]="content?.name">
+              <h1 class="toc-course-title-sm block sm:hidden" [title]="content?.name">
                 {{ content?.name }}
               </h1>
               <span *ngIf="contentProgress === 1" class="margin-left-s">
@@ -75,9 +60,7 @@
           <div class="flex flex-col sm:flex-row">
             <div class="sm:ml-5 flex flex-col flex-auto">
               <div [ngSwitch]="routePath" class="header-meta" [ngClass]="{ 'header-meta-banner': bannerUrl }">
-                <h3 title="Subtitle" style="margin-top: 0px; margin-bottom: 5px;">
-                  {{ content?.subTitle }}
-                </h3>
+                <p class="toc-subtitle" *ngIf="content?.subTitle">{{ content?.subTitle }}</p>
                 <div class="banner-overview-container" [hidden]="!content?.purpose && showSubtitleOnBanner"
                   *ngSwitchCase="'overview'">
                   <h3 class="overview-description" *ngIf="!showSubtitleOnBanner" i18n-title title="Description">
@@ -100,7 +83,7 @@
                     <mat-icon role="button" class="overview-intro-overlay">play_arrow</mat-icon>
                   </div>
                 </div>
-                <div>
+                <div class="metadata-row">
                   <div class="separate">
                     <div class="toc-banner-item" *ngIf="tocConfig?.atAGlance?.duration?.enabled && content?.duration">
                       <span class="text">Duration :</span>
@@ -170,7 +153,7 @@
                   </div>
                   <div class="vertical-line" *ngIf="content?.gatingEnabled || content?.courseVisibility"></div>
                   <div class="separate">
-                    <div *ngIf="content?.rolesMapped">
+                    <div class="toc-banner-item" *ngIf="content?.rolesMapped">
                       <span class="text">Audience : </span>
                       <span *ngFor="let curator of content?.rolesMapped; let i = index" class="mr-1">
                         {{curator}} <ng-container
@@ -178,7 +161,7 @@
                         </ng-container>
                       </span>
                     </div>
-                    <div *ngIf="content?.keywords">
+                    <div class="toc-banner-item" *ngIf="content?.keywords">
                       <span class="text">Keywords : </span>
                       <span *ngFor="let curator of content?.keywords; let i = index" class="mr-1">
                         {{curator}} <ng-container

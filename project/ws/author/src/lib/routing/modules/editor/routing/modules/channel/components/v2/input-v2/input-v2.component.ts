@@ -1,13 +1,22 @@
 // import { ISelectorResponsive, NsGalleryView } from '@ws-widget/collection'
+
 import { Component, Inject, OnInit } from '@angular/core'
-import { MatDialogRef, MatSnackBar, MAT_DIALOG_DATA } from '@angular/material'
+
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { NsWidgetResolver } from '@ws-widget/resolver/src/public-api'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { COLUMN_WIDTH } from '../../input/image-v2/image-v2.constant'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-input-v2',
   templateUrl: './input-v2.component.html',
   styleUrls: ['./input-v2.component.scss'],

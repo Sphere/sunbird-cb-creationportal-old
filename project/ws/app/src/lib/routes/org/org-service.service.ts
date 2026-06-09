@@ -1,9 +1,15 @@
 import { map, catchError } from 'rxjs/operators'
+
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Observable, of, BehaviorSubject } from 'rxjs'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 // import { environment } from './../../../../../../../src/environments/environment'
+
 
 // let instanceConfigPath: string | null = window.location.host
 
@@ -33,7 +39,11 @@ export class OrgServiceService {
   }
 
   getOrgMetadata() {
-    const orgMeta = this.http.get(`${this.sitePath}/orgmeta.config.json`)
+    const cacheBuster = new Date().getTime()
+    const orgMeta = this.http.get<any>(
+      `https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json?v=${cacheBuster}`
+    )
+
     return orgMeta
   }
 

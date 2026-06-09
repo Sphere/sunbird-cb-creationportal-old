@@ -1,7 +1,11 @@
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { IWidgetAuthor } from './../../../interface/widget'
+
 import { ChannelStoreService } from './../../../services/store.service'
+
 import { ChannelResolverService } from './../../../services/resolver.service'
+
 import {
   Component,
   OnInit,
@@ -10,12 +14,18 @@ import {
   ViewChild,
   ElementRef,
 } from '@angular/core'
-import { MatSnackBar, MatDialog } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { MatDialog } from '@angular/material/dialog'
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-renderer',
   templateUrl: './renderer.component.html',
   styleUrls: ['./renderer.component.scss'],

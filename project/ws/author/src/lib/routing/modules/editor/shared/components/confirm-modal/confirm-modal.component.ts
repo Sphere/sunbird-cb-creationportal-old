@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core'
-import { MatDialogRef } from '@angular/material'
 
+import { MatDialogRef } from '@angular/material/dialog'
 @Component({
+  standalone: false,
   selector: 'ws-auth-confirm-modal',
   templateUrl: './confirm-modal.component.html',
   styleUrls: ['./confirm-modal.component.scss'],

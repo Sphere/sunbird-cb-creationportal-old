@@ -1,23 +1,11 @@
-<mat-dialog-content>
-  <div class="margin-m">
-    <div mat-dialog-content>
-      <div>
-        <mat-icon class="check-circle" [ngClass]="data.icon === 'cached' ? 'padding-cached' : 'padding-check-circle'"
-          [ngStyle]="{'background-color':data.backgroundColor,'color':data.color,'padding':data.paddings}">{{data.icon}}</mat-icon>
-        <h2 class="course-live">
-          {{data.message}}
-        </h2>
-      </div>
-
+<div class="sd-wrap">
+  <div class="sd-body">
+    <div class="sd-icon-wrap" [ngStyle]="{'background-color': data.backgroundColor}">
+      <mat-icon class="sd-icon" [ngStyle]="{'color': data.color}">{{data.icon}}</mat-icon>
     </div>
+    <p class="sd-title">{{data.message}}</p>
   </div>
-  <div class="margin-top-s margin-bottom-s">
-    <div class="margin-bottom-s" style="float: right;">
-      <button (click)="routeToDashboard()" class="margin-left-s
-            text-white ws-mat-primary-background  mat-button-base save-btn-mt ok-button" style="margin-right: 10px;"
-        mat-raised-button i18n>
-        Ok
-      </button>
-    </div>
+  <div class="sd-footer">
+    <button mat-flat-button class="sd-btn-ok" (click)="routeToDashboard()" i18n>Ok</button>
   </div>
-</mat-dialog-content>
+</div>

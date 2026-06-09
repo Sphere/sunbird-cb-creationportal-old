@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
 
+
 interface IEmbedWidget {
   title: string
   iframeSrc: string
@@ -9,6 +10,7 @@ interface IEmbedWidget {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-embed',
   templateUrl: './embed.component.html',
   styleUrls: ['./embed.component.scss'],

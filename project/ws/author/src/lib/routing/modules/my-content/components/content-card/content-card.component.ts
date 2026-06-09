@@ -1,24 +1,37 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
+import { Component, OnInit, OnChanges, Input, Output, EventEmitter, SimpleChanges } from '@angular/core'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { Router } from '@angular/router'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { CertificateDialogComponent } from '@ws/author/src/lib/modules/shared/components/certificate-upload-dialog/certificate-upload-dialog.component'
+
 import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
+
 import { CertificateStatusDialogComponentDialogComponent } from '../../../../../modules/shared/components/cert-upload-status-dialog/cert-upload-status-dialogcomponent'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-content-card',
   templateUrl: './content-card.component.html',
   styleUrls: ['./content-card.component.scss'],
 })
-export class ContentCardComponent implements OnInit {
+export class ContentCardComponent implements OnInit, OnChanges {
   @Input() data: any
+  @Input() competencyData: any
   @Input() ordinals: any
   @Input() forExpiry = false
   @Input() forDelete = false
   @Input() changeView = false
+  @Input() hideThumbnail = false  // true for self-assessment (no thumbnail expected)
+  addedCompetency: any
   filteredSubTitles: any[] = []
   translationArray: any = []
   userId!: string
@@ -36,8 +49,13 @@ export class ContentCardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.data.appIcon = this.data.appIcon || 'cbp-assets/icons/default.png'
-    if (this.accessService.hasRole(['content_reviewer']) || this.accessService.hasRole(['content_publisher'])) {
+    // Courses without an uploaded thumbnail get a default grey placeholder.
+    // Self-assessment content never has thumbnails — skip the fallback so
+    // the template's *ngIf hides the column entirely.
+    if (!this.hideThumbnail) {
+      this.data.appIcon = this.data.appIcon || 'cbp-assets/icons/default.png'
+    }
+    if (this.accessService.hasRole(['content_reviewer']) || this.accessService.hasRole(['external_content_reviewer_live']) || this.accessService.hasRole(['content_publisher'])) {
       this.isReviewerOrPublisher = true
     } else {
       this.isReviewerOrPublisher = false
@@ -62,18 +80,58 @@ export class ContentCardComponent implements OnInit {
   }
 
   getCourseStatusName(): void {
-    if (this.data.status == 'Draft') {
+    const isPublisher = this.accessService.hasRole(['content_publisher'])
+    if (this.data.status === 'Draft') {
       this.CourseStatusName = 'Draft'
-    }
-    else if (this.data.status == 'Review') {
-      this.CourseStatusName = 'Sent for review'
-    }
-    else if (this.data.status == 'Live') {
+    } else if (this.data.status === 'Review') {
+      // Publisher sees 'Review' status courses as already reviewed and ready to publish
+      this.CourseStatusName = isPublisher ? 'Reviewed' : 'Sent for review'
+    } else if (this.data.status === 'Reviewed' || this.data.status === 'InReview') {
+      this.CourseStatusName = 'Reviewed'
+    } else if (this.data.status === 'Live') {
       this.CourseStatusName = 'Published'
-    }
-    else if (this.data.status == 'Retired') {
+    } else if (this.data.status === 'Retired') {
       this.CourseStatusName = 'Retired'
     }
+  }
+
+  getStatusClass(): string {
+    const isPublisher = this.accessService.hasRole(['content_publisher'])
+    if (this.data.status === 'Review' && isPublisher) {
+      return 'status-reviewed'
+    }
+    return 'status-' + (this.data.status?.toLowerCase() || 'draft')
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['competencyData'] && this.competencyData && this.data) {
+      this.getCourseCompetency()
+    }
+  }
+  getCourseCompetency() {
+    let combinedArray = ''
+    if (this.data.competencies_v1 && this.data.competencies_v1.length > 0) {
+      let competencies = JSON.parse(this.data.competencies_v1)
+      let finalComp = ""
+      if (!Array.isArray(competencies)) {
+        competencies = [competencies]
+      }
+
+      combinedArray = competencies.map((element: any) => {
+        if (element.competencyId) {
+          const matchingValue = this.competencyData.find((value: any) => value.id == element.competencyId)
+          finalComp = {
+            ...element,
+            ...(matchingValue && matchingValue.additionalProperties ? matchingValue.additionalProperties : {})
+          }
+          return finalComp
+        }
+        return finalComp
+
+
+      })
+    }
+
+    this.addedCompetency = combinedArray
   }
 
   getName(lang: string): string {
@@ -204,10 +262,12 @@ export class ContentCardComponent implements OnInit {
         console.log(Object.keys(cert[0]['cert_templates']).length)
         if (Object.keys(cert[0]['cert_templates']).length) {
           this.dialog.open(CertificateStatusDialogComponentDialogComponent, {
-            width: '450px',
-            height: '300x',
+            width: '440px',
             data: {
-              'message': 'There is already a certificate assigned to this course. To modify it please contact Aastrika support at support@aastrika.org from  your registered email id.', 'icon': 'info', 'color': '#f44336', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': '', 'cert_upload': 'Yes'
+              message: 'There is already a certificate assigned to this course. To modify it please contact Aastrika support at support@aastrika.org from your registered email id.',
+              icon: 'info',
+              color: '#f44336',
+              cert_upload: 'Yes',
             },
           })
         }

@@ -1,9 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { Subscription } from 'rxjs'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { IReleaseNotes } from '@ws-widget/collection'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-public-release',
   templateUrl: './public-release.component.html',
   styleUrls: ['./public-release.component.scss'],

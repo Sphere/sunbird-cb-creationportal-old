@@ -1,5 +1,6 @@
 import { SafeHtml } from '@angular/platform-browser'
 
+
 export namespace NSHandsOnModels {
 
   export interface IProgLanguage {

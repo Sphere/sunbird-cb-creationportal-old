@@ -1,10 +1,17 @@
 import { Injectable, LOCALE_ID, Inject } from '@angular/core'
+
 // import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http'
+
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http'
+
 // import { Observable } from 'rxjs'
+
 import { Observable, throwError } from 'rxjs'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { catchError } from 'rxjs/operators'
+
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +22,16 @@ export class AppInterceptorService implements HttpInterceptor {
     @Inject(LOCALE_ID) private locale: string,
   ) { }
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // Skip interceptor for external CORS URLs (CloudFront, S3, etc)
+    // These URLs should not have custom headers to avoid CORS preflight failures
+    const isExternalUrl = req.url.startsWith('https://static.') ||
+      req.url.startsWith('https://sunbirdcontent.s3') ||
+      req.url.startsWith('https://') && !req.url.includes(window.location.hostname)
+
+    if (isExternalUrl) {
+      return next.handle(req)
+    }
+
     const lang = [this.locale.replace('en-US', 'en')]
     if (this.configSvc.userPreference) {
       (this.configSvc.userPreference.selectedLangGroup || '')
@@ -73,7 +90,7 @@ export class AppInterceptorService implements HttpInterceptor {
                 break
             }
           }
-          return throwError(error)
+          return throwError(() => error)
         })
       )
     }

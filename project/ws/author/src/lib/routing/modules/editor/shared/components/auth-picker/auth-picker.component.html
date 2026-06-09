@@ -1,12 +1,12 @@
 <h1 mat-dialog-title>Add Content</h1>
 <mat-dialog-content>
-  <mat-chip-list class="mb-4 block">
-    <mat-chip *ngFor="let content of selectedContents" [removable]="true"
+  <mat-chip-set class="mb-4 block">
+    <mat-chip *ngFor="let content of selectedContents"
       (removed)="selectedContentChanged(content, false)">
       <ng-container *ngIf="content.name; else noName">{{ content.name || '' }}</ng-container>
       <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
-  </mat-chip-list>
+  </mat-chip-set>
   <div class="flex">
     <mat-form-field class="width-expand margin-right-m" appearance="fill" floatLabel="never">
       <mat-icon matPrefix>search</mat-icon>

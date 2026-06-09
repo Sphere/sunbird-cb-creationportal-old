@@ -1,9 +1,15 @@
 import { Component, OnInit, Input, OnDestroy, HostBinding } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { NsContentStripNewMultiple } from './content-strip-new-multiple.model'
+
 import { ContentStripNewMultipleService } from './content-strip-new-multiple.service'
+
 import { WidgetContentService } from '../_services/widget-content.service'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import {
   TFetchStatus,
   LoggerService,
@@ -11,9 +17,13 @@ import {
   ConfigurationsService,
   UtilityService,
 } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 import { filter } from 'rxjs/operators'
+
 import { SearchServService } from '@ws/app/src/lib/routes/search/services/search-serv.service'
+
 
 interface IStripUnitContentData {
   key: string
@@ -36,6 +46,7 @@ interface IStripUnitContentData {
   } | null
 }
 @Component({
+  standalone: false,
   selector: 'ws-widget-content-strip-new-multiple',
   templateUrl: './content-strip-new-multiple.component.html',
   styleUrls: ['./content-strip-new-multiple.component.scss'],

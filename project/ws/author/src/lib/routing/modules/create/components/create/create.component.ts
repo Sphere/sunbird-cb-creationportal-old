@@ -1,22 +1,42 @@
-import { Component, OnDestroy, OnInit } from '@angular/core'
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { Router } from '@angular/router'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { ICreateEntity } from '@ws/author/src/lib/interface/create-entity'
+
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { Subscription } from 'rxjs'
+
 import { CreateService } from './create.service'
+
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
+
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms'
+
 import { ActivatedRoute } from '@angular/router'
 
+import { CreateCourseComponent } from '../create-course/create-course.component'
+
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-generic',
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.scss'],
@@ -49,6 +69,7 @@ export class CreateComponent implements OnInit, OnDestroy {
     { label: '4. Course Settings', activeStep: false, completed: false }
   ];
   header: any = 'Course Details'
+  @ViewChild(CreateCourseComponent) createCourseCmp?: CreateCourseComponent
   constructor(
     private snackBar: MatSnackBar,
     private svc: CreateService,
@@ -119,6 +140,13 @@ export class CreateComponent implements OnInit, OnDestroy {
   createBtn() {
     // this.router.navigateByUrl('/author/create')
     location.href = '/author/create'
+  }
+
+  /** Triggered by the progress-stepper "Next" button. Delegates to the course form. */
+  onNext() {
+    if (this.createCourseCmp) {
+      this.createCourseCmp.triggerNext()
+    }
   }
   ngOnDestroy() {
     this.loaderService.changeLoad.next(false)

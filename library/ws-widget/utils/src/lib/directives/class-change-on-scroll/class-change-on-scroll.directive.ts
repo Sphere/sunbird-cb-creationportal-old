@@ -1,6 +1,9 @@
 import { Directive, Input, OnInit, HostBinding, OnDestroy, AfterViewInit } from '@angular/core'
+
 import { Subscription, fromEvent } from 'rxjs'
+
 import { debounceTime } from 'rxjs/operators'
+
 
 enum ScrollingStateEnum {
   ScrollingUp,
@@ -9,6 +12,7 @@ enum ScrollingStateEnum {
 }
 
 @Directive({
+  standalone: false,
   selector: '[wsUtilsClassChangeOnScroll]',
 })
 export class ClassChangeOnScrollDirective implements OnInit, OnDestroy, AfterViewInit {

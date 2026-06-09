@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core'
+
 import { Subject } from 'rxjs'
+
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +23,7 @@ export class HeaderServiceService {
 
   saveCourseContent() {
       this.headerSaveData.next(this.isSavePressed)
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.log('this.headerSaveData', this.headerSaveData)
   }
 

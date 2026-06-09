@@ -1,15 +1,26 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core'
+
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { ConfigurationsService, NsPage, ValueService } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 import { ViewerDataService } from '../../viewer-data.service'
+
 import { NsContent } from '@ws-widget/collection/src/lib/_services/widget-content.model'
+
 import { AccessControlService } from '../../../../../author/src/lib/modules/shared/services/access-control.service'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { ReviewDialogComponent } from '@ws/viewer/src/lib/components/review-checklist/review-dialog.component'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-viewer-top-bar',
   templateUrl: './viewer-top-bar.component.html',
   styleUrls: ['./viewer-top-bar.component.scss'],
@@ -150,7 +161,6 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     if (value == 'review' && this.isReviewer) {
       const dialogRef = this.dialog.open(ReviewDialogComponent, {
         width: '480px',
-        height: '275px',
         data: "yes",
       })
       dialogRef.afterClosed().subscribe((d) => {

@@ -1,6 +1,8 @@
 import { Directive, OnChanges, Input, HostBinding, HostListener } from '@angular/core'
 
+
 @Directive({
+  standalone: false,
   selector: '[wsUtilsNavigation]',
 })
 export class NavigationDirective implements OnChanges {

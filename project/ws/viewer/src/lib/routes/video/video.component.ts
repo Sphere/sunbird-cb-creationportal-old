@@ -1,20 +1,31 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { Subscription } from 'rxjs'
+
 import { AccessControlService } from '@ws/author'
+
 import {
   NsContent,
   IWidgetsPlayerMediaData,
   NsDiscussionForum,
   // WidgetContentService,
 } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ValueService } from '@ws-widget/utils'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { ViewerUtilService } from '../../viewer-util.service'
+
 import { Platform } from '@angular/cdk/platform'
+
 //import { environment } from '../../../../../../../src/environments/environment'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-video',
   templateUrl: './video.component.html',
   styleUrls: ['./video.component.scss'],

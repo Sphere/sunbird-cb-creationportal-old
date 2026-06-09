@@ -1,14 +1,24 @@
 import { Component, OnInit, Inject } from '@angular/core'
+
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { CONTENT_BASE_WEBHOST_ASSETS } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { UploadService } from '@ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 // import { AuthInitService } from '../../../../../../../../services/init.service'
+
 import { IAudioObj } from '../../interface/page-interface'
+
 
 export interface IUsersData {
   name?: string
@@ -17,6 +27,7 @@ export interface IUsersData {
   languages: any[]
 }
 @Component({
+  standalone: false,
   selector: 'ws-auth-upload-audio',
   templateUrl: './upload-audio.component.html',
   styleUrls: ['./upload-audio.component.scss'],

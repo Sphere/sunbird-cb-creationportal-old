@@ -1,18 +1,39 @@
-@import '~src/styles/_ws-vars';
+@import '_ws-vars';
 $card-padding: $size-m;
 $action-btn-size: 2.5 * $size-m; // 40px
+:host {
+  display: block;
+  width: 100%;
+}
+
 .card-container {
   position: relative;
-  width: 265px;
-  height: 100%;
+  width: 100%;
+  margin: 0;
 }
 
 mat-card {
-  width: 96%;
-  height: 90%;
-  width: 96%;
-  height: 90%;
+  width: 100%;
+  height: auto !important;
   box-sizing: border-box;
+  padding: 0 !important;
+  overflow: hidden;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+  cursor: pointer;
+  &:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14) !important;
+    transform: translateY(-2px);
+  }
+}
+
+.card-title {
+  color: #1C5D95;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0 0 4px;
+  line-height: 1.4;
 }
 
 .pointer {
@@ -24,68 +45,124 @@ mat-card {
 }
 
 .card-img {
+  width: 100%;
   height: 150px;
+  object-fit: cover;
+  display: block;
+  margin: 0 !important;
 }
 
 .action-buttons {
-  float: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 .d-flex {
   display: flex;
+  align-items: center;
+  padding: 14px 20px 14px 16px;
+  border-bottom: 1px solid #f0f3f7;
+  transition: background 0.15s ease;
+  &:hover {
+    background: #f5f8fc;
+  }
 }
 .item1 {
-  padding: 5px 15px;
-    width: 10%;
-
+  flex-shrink: 0;
+  width: 96px;
+  padding: 0 16px 0 0;
+  display: flex;
+  align-items: center;
 
   img {
-    width: 85px;
-    margin-top: 0.6rem;
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
   }
 }
 
 .item2 {
-  padding: 10px;
-  width: 80%;
-  font-size: 16px;
+  flex: 1;
+  min-width: 0;
+  padding: 0 16px 0 0;
+}
+
+.list-title-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a2d45;
+  display: block;
+  line-height: 1.4;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.competency-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 3px;
+}
+
+.competency-chip {
+  font-size: 11px;
+  font-weight: 500;
+  color: #1C5D95;
+  background: #e8f0f8;
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+.list-status {
+  flex-shrink: 0;
+}
+
+.duration-icon {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  line-height: 14px !important;
+  margin-right: 3px;
 }
 .item3 {
-  padding: 10px;
-  width: 10%;
+  flex-shrink: 0;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 .max-width-name {
-  width: 122px;
-  max-width: 140px;
+  max-width: 240px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
 
 .fs-13 {
-  font-size: 13px;
-}
-mat-card-actions {
-  position: absolute;
-  bottom: $card-padding;
-  width: calc(100% - #{$card-padding});
-  z-index: 1;
+  font-size: 12px;
+  color: #9aa3af;
+  line-height: 1.6;
+  margin-top: 1px;
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 0;
 }
-
 mat-card-content {
-  margin-top: 0px;
-  margin-bottom: ($card-padding / 2) + $action-btn-size;
-  margin-left: -0.5 * $card-padding;
-  margin-right: -0.5 * $card-padding;
+  margin: 0 !important;
+  padding: 10px 12px 2px !important;
 }
 
 mat-card-actions {
-  position: absolute;
-  bottom: $card-padding;
-  width: calc(100% - #{$card-padding});
-  z-index: 1;
+  position: static !important;
+  bottom: auto !important;
+  width: auto !important;
+  padding: 2px 8px 10px !important;
+  margin: 0 !important;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -112,11 +189,50 @@ mat-card-actions {
   border-bottom: 1px solid lightgrey;
 }
 .course-status-text {
-     font-family: Roboto !important;
-    font-style: normal !important;
-    font-weight: 400 !important;
-    font-size: 12px !important;
-    line-height: 17px !important;
-    letter-spacing: -0.02em;
-    color: #969696;
+  font-family: Roboto !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  padding: 2px 8px;
+  line-height: normal !important;
+  // Default (Draft)
+  color: #5a6a7a;
+  background: #eef1f5;
+
+  &.status-draft {
+    color: #5a6a7a;
+    background: #eef1f5;
+  }
+  &.status-live {
+    color: #1a7f4b;
+    background: #e6f4ed;
+  }
+  &.status-review, &.status-inreview {
+    color: #a16207;
+    background: #fef9c3;
+  }
+  &.status-reviewed {
+    color: #0369a1;
+    background: #e0f2fe;
+  }
+  &.status-unpublished, &.status-retired {
+    color: #b91c1c;
+    background: #fef2f2;
+  }
+}
+
+.card-locale-badge {
+  font-size: 11px;
+  font-weight: 500;
+  color: #9aa3af;
+  letter-spacing: 0.4px;
+}
+
+// Override mat-card-image negative margins from Material directive
+::ng-deep .mat-mdc-card-image {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: 100% !important;
 }

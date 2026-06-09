@@ -1,16 +1,26 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { noop, Subject, throwError, of } from 'rxjs'
 
+
 import { NsContent } from '@ws-widget/collection'
+
 import { TFetchStatus } from '@ws-widget/utils'
 
+
 import { ICertificationMeta } from '../../models/certification.model'
+
 import { CertificationService } from '../../services/certification.service'
+
 import { switchMap, catchError, takeUntil } from 'rxjs/operators'
+
 import { CertificationApiService } from '../../apis/certification-api.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-toc-certification',
   templateUrl: './app-toc-certification.component.html',
   styleUrls: ['./app-toc-certification.component.scss'],
@@ -39,7 +49,7 @@ export class AppTocCertificationComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptionSubject$.next()
+    this.subscriptionSubject$.next(undefined as any)
     this.subscriptionSubject$.complete()
   }
 
@@ -86,7 +96,7 @@ export class AppTocCertificationComponent implements OnInit, OnDestroy {
             return this.certificationApi.getCertificationInfo(this.content.identifier)
           }
 
-          return throwError('no content')
+          return throwError(() => 'no content')
         }),
         catchError(() => of(this.certification)),
       )

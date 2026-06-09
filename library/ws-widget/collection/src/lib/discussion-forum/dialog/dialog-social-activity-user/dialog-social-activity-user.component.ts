@@ -1,11 +1,18 @@
 import { Component, OnInit, Inject } from '@angular/core'
-import { MatDialogRef, MAT_DIALOG_DATA, MatTabChangeEvent } from '@angular/material'
+
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+import { MatTabChangeEvent } from '@angular/material/tabs'
 import { HttpErrorResponse } from '@angular/common/http'
 
+
 import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
+
 import { WsDiscussionForumService } from '../../ws-discussion-forum.services'
+
 import { WsDiscussionForumUserService } from '../../ws-discussion-forum-user.service'
+
 import { NsDiscussionForum } from '../../ws-discussion-forum.model'
+
 
 const TAB_INDEX_ACTIVITY_TYPE_MAPPING: { [key: number]: string } = {
   0: 'like',
@@ -14,6 +21,7 @@ const TAB_INDEX_ACTIVITY_TYPE_MAPPING: { [key: number]: string } = {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-dialog-social-activity-user',
   templateUrl: './dialog-social-activity-user.component.html',
   styleUrls: ['./dialog-social-activity-user.component.scss'],

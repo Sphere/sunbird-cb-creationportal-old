@@ -1,14 +1,24 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
+
 import { ActivatedRoute, Data } from '@angular/router'
+
 import { Subscription } from 'rxjs'
+
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser'
+
 import { NsContent, viewerRouteGenerator, ROOT_WIDGET_CONFIG } from '@ws-widget/collection'
+
 import { NsAppToc } from '../../models/app-toc.model'
+
 import { AppTocService } from '../../services/app-toc.service'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-app-toc-contents',
   templateUrl: './app-toc-contents.component.html',
   styleUrls: ['./app-toc-contents.component.scss'],

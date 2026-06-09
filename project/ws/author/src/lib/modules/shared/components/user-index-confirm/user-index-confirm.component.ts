@@ -1,7 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core'
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material'
 
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 @Component({
+  standalone: false,
   selector: 'ws-author-user-index-confirm',
   templateUrl: './user-index-confirm.component.html',
   styleUrls: ['./user-index-confirm.component.scss']

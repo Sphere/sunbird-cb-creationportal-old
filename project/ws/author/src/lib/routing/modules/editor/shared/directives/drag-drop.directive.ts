@@ -6,7 +6,9 @@ import {
   HostBinding,
 } from '@angular/core'
 
+
 @Directive({
+  standalone: false,
   selector: '[wsAuthDragDrop]',
 })
 export class DragDropDirective {

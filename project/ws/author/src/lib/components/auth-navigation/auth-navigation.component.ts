@@ -1,9 +1,14 @@
 import { AuthNavBarToggleService } from '@ws/author/src/lib/services/auth-nav-bar-toggle.service'
+
 import { NsPage, ConfigurationsService } from '@ws-widget/utils'
+
 import { Component, OnInit } from '@angular/core'
+
 import { SafeUrl, DomSanitizer } from '@angular/platform-browser'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-navigation',
   templateUrl: './auth-navigation.component.html',
   styleUrls: ['./auth-navigation.component.scss'],

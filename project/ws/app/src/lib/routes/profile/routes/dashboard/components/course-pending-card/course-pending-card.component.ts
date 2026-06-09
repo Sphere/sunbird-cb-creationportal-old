@@ -1,8 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { Router } from '@angular/router'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-course-pending-card',
   templateUrl: './course-pending-card.component.html',
   styleUrls: ['./course-pending-card.component.scss'],

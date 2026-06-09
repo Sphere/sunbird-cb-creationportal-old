@@ -1,9 +1,14 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core'
+
 import { NSQuiz } from '../../quiz.model'
+
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
+
 import { jsPlumb, OnConnectionBindInfo } from 'jsplumb'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-question',
   templateUrl: './question.component.html',
   styleUrls: ['./question.component.scss'],
@@ -217,7 +222,7 @@ export class QuestionComponent implements OnInit, AfterViewInit {
   }
 
   @HostListener('window:resize')
-  onResize(_event: any) {
+  onResize() {
     if (this.question.questionType === 'mtf') {
       this.jsPlumbInstance.repaintEverything()
     }

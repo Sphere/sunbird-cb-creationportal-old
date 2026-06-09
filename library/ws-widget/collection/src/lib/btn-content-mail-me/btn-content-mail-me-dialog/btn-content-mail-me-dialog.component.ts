@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core'
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material'
 
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 export interface IWidgetBtnContentMailMeDialogData {
   title: string
   description: string
@@ -13,6 +13,7 @@ export interface IWidgetMailMeDialogComponentResponse {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-content-mail-me-dialog',
   templateUrl: './btn-content-mail-me-dialog.component.html',
   styleUrls: ['./btn-content-mail-me-dialog.component.scss'],

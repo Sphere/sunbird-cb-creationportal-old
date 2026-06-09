@@ -1,5 +1,6 @@
 import { NsContent } from './widget-content.model'
 
+
 export const VIEWER_ROUTE_FROM_MIME = (mimeType: NsContent.EMimeTypes) => {
   switch (mimeType) {
     case NsContent.EMimeTypes.MP3:

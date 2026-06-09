@@ -1,7 +1,11 @@
 import { BreakpointObserver } from '@angular/cdk/layout'
+
 import { Directive, HostBinding, Input, OnChanges, OnDestroy } from '@angular/core'
+
 import { Subscription } from 'rxjs'
+
 import { distinctUntilChanged } from 'rxjs/operators'
+
 
 export interface IImageResponsiveUnit {
   [key: string]: string
@@ -17,12 +21,13 @@ const customBreakPoints = {
 }
 
 @Directive({
+  standalone: false,
   selector: '[wsUtilsImageResponsive]',
 })
 export class ImageResponsiveDirective implements OnChanges, OnDestroy {
 
   @Input() src: IImageResponsiveUnit | null = null
-  @HostBinding('src') srcBindUrl = ''
+  @HostBinding('attr.src') srcBindUrl = ''
 
   currentSize = ''
   breakpointSubscription: Subscription | null = null

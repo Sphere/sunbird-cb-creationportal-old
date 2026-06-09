@@ -1,11 +1,18 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core'
+
 import { ConfigurationsService } from '@ws-widget/utils'
-import { MatSnackBar, MatDialog } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { MatDialog } from '@angular/material/dialog'
 import { DialogSocialActivityUserComponent } from '../../dialog/dialog-social-activity-user/dialog-social-activity-user.component'
+
 import { WsDiscussionForumService } from '../../ws-discussion-forum.services'
+
 import { NsDiscussionForum } from '../../ws-discussion-forum.model'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-social-vote',
   templateUrl: './btn-social-vote.component.html',
   styleUrls: ['./btn-social-vote.component.scss'],

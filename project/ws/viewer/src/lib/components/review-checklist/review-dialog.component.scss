@@ -1,62 +1,69 @@
-.review-container{
-  margin :10px 0px;
+.review-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 8px 8px 4px;
 }
-.review-text{
-  margin: 15px 0px;
-  color: #000;
 
-/* Header 2 */
-font-family: Roboto;
-font-size: 24px;
-font-style: normal;
-font-weight: 400;
-line-height: 28.8px;
-letter-spacing: -0.48px;
+.review-title {
+  font-family: Roboto, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.4px;
+  color: #1D2B36;
+  margin: 0 0 12px;
+  text-align: center;
 }
-.review-text-desc{
-  color: #000;
-  font-family: Roboto;
-  font-size: 16px;
-  font-style: normal;
+
+.review-desc {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 24px;
-  letter-spacing: -0.32px;
+  line-height: 1.5;
+  letter-spacing: -0.28px;
+  color: #5A7184;
+  text-align: center;
+  margin: 0 0 24px;
 }
-.review-button{
-  cursor: pointer;
-  margin: 15px 0px;
+
+// Shared button base
+.review-btn {
   display: inline-flex;
-  padding: 8px 32px;
-  justify-content: center;
   align-items: center;
-  gap: 8px;
-  border-radius: 50px !important;
-  background: #2E6491 !important;
-  color: #FFF !important;
-   box-shadow: none;
-   border: none;
-}
-.skip-button{
-    cursor: pointer;
-  display: inline-flex;
-  padding: 8px 32px;
   justify-content: center;
-  align-items: center;
-  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+  padding: 10px 32px;
   border-radius: 50px;
-  border: 1px solid #2E6491;
-  color: #2E6491 !important;
-  background-color: #FFF;
-  box-shadow: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
 
+  &:hover {
+    opacity: 0.88;
+  }
+
+  & + .review-btn {
+    margin-top: 12px;
+  }
 }
-.btn-font{
-    font-family: Roboto;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
+
+.review-btn--primary {
+  background: #1C5D95;
+  color: #fff;
+  border: none;
+}
+
+.review-btn--outline {
+  background: transparent;
+  color: #1C5D95;
+  border: 1.5px solid #1C5D95;
+}
+
+.btn-font {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
   line-height: normal;
+  letter-spacing: 0.02em;
 }

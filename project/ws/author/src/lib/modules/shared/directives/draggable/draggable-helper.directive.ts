@@ -1,10 +1,16 @@
 import { Directive, OnDestroy, OnInit, TemplateRef, ViewContainerRef } from '@angular/core'
+
 import { GlobalPositionStrategy, Overlay, OverlayRef } from '@angular/cdk/overlay'
+
 import { TemplatePortal } from '@angular/cdk/portal'
+
 import { DraggableDirective } from './draggable.directive'
+
 import { Subscription } from 'rxjs'
 
+
 @Directive({
+  standalone: false,
   selector: '[wsAuthDraggableHelper]',
   exportAs: 'wsAuthDraggableHelper',
 })

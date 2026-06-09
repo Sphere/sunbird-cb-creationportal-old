@@ -1,15 +1,24 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { switchMap, map, catchError } from 'rxjs/operators'
+
 import { of, Observable } from 'rxjs'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { ConfigurationsService, EventService } from '@ws-widget/utils'
+
 import { NsContent } from '../_services/widget-content.model'
+
 import {
   BtnContentMailMeDialogComponent,
   IWidgetMailMeDialogComponentResponse,
 } from './btn-content-mail-me-dialog/btn-content-mail-me-dialog.component'
+
 import { WidgetContentShareService } from '../_services/widget-content-share.service'
+
 
 enum TMailMeResponse {
   NONE,
@@ -22,6 +31,7 @@ interface IMailMeResponseObj extends IWidgetMailMeDialogComponentResponse {
 const VALID_CATEGORIES = new Set(['leave behind'])
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-content-mail-me',
   templateUrl: './btn-content-mail-me.component.html',
   styleUrls: ['./btn-content-mail-me.component.scss'],

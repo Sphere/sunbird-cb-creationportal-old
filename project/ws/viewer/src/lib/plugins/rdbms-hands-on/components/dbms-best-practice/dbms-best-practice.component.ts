@@ -1,10 +1,15 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core'
+
 import { NSRdbmsHandsOn } from '../../rdbms-hands-on.model'
+
 import { RdbmsHandsOnService } from '../../rdbms-hands-on.service'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { FormGroup, FormBuilder } from '@angular/forms'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-dbms-best-practice',
   templateUrl: './dbms-best-practice.component.html',
   styleUrls: ['./dbms-best-practice.component.scss'],

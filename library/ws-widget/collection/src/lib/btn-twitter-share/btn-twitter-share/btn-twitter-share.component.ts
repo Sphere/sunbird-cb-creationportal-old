@@ -1,8 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser'
+
 import { ConfigurationsService } from '../../../../../utils/src/public-api'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-twitter-share',
   templateUrl: './btn-twitter-share.component.html',
   styleUrls: ['./btn-twitter-share.component.scss'],

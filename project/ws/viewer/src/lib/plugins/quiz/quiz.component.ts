@@ -7,20 +7,29 @@ import {
   SimpleChanges,
   ViewChild, ViewChildren,
 } from '@angular/core'
-import { MatDialog, MatSidenav } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSidenav } from '@angular/material/sidenav'
 import { interval, Subscription } from 'rxjs'
+
 import { map } from 'rxjs/operators'
+
 import { NSQuiz } from './quiz.model'
+
 import { QuestionComponent } from './components/question/question.component'
+
 import { SubmitQuizDialogComponent } from './components/submit-quiz-dialog/submit-quiz-dialog.component'
+
 import { OnConnectionBindInfo } from 'jsplumb'
+
 import { QuizService } from './quiz.service'
+
 import { EventService } from '../../../../../../../library/ws-widget/utils/src/public-api'
-import { HttpClient } from '@angular/common/http'
-import { ActivatedRoute } from '@angular/router'
+
 export type FetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
 
 @Component({
+  standalone: false,
   selector: 'viewer-plugin-quiz',
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.scss'],
@@ -82,24 +91,14 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     private events: EventService,
     public dialog: MatDialog,
     private quizSvc: QuizService,
-    private http: HttpClient,
-    private activatedRoute: ActivatedRoute
   ) { }
 
   async ngOnInit() {
-  }
-  private async transformQuiz(artifactUrl: any): Promise<any> {
-    if (artifactUrl) {
-      let quizJSON: NSQuiz.IQuiz = await this.http
-        .get<any>(this.artifactUrl || '')
-        .toPromise()
-        .catch((_err: any) => {
-          // throw new DataResponseError('MANIFEST_FETCH_FAILED');
-        })
-      console.log("yes here", artifactUrl, quizJSON)
-      return quizJSON
+    if (this.quizJson && this.quizJson.timeLimit) {
+      this.timeLeft = this.quizJson.timeLimit
     }
   }
+
   scroll(qIndex: number) {
     if (!this.sidenavOpenDefault) {
       if (this.sideNav) {
@@ -111,21 +110,28 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       questionElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }
+
   ngOnChanges(changes: SimpleChanges) {
-    this.getAssessment = this.activatedRoute.data.subscribe(
-      async data => {
-        console.log("quiz subscribe", data)
-        this.quizJson = await this.transformQuiz(data.content.data.artifactUrl)
+    if (changes['quizJson'] && changes['quizJson'].currentValue) {
+      if (this.timerSubscription) {
+        this.timerSubscription.unsubscribe()
+        this.timerSubscription = null
+      }
+      this.viewState = 'initial'
+      this.isSubmitted = false
+      this.isCompleted = false
+      this.isIdeal = false
+      this.markedQuestions = new Set([])
+      this.questionAnswerHash = {}
+      this.currentQuestionIndex = 0
+      this.numCorrectAnswers = 0
+      this.numIncorrectAnswers = 0
+      this.numUnanswered = 0
+      this.fetchingResultsStatus = 'none'
+
+      this.quizJson = changes['quizJson'].currentValue
+      if (this.quizJson && this.quizJson.timeLimit) {
         this.timeLeft = this.quizJson.timeLimit
-      })
-    for (const change in changes) {
-      if (change === 'quiz') {
-        if (
-          this.quizJson &&
-          this.quizJson.timeLimit
-        ) {
-          this.quizJson.timeLimit *= 1000
-        }
       }
     }
   }

@@ -1,8 +1,12 @@
 import { Component, Input, Output, EventEmitter, OnChanges, OnInit } from '@angular/core'
+
 import { NsTnc } from '../../models/tnc.model'
+
 import { ConfigurationsService } from '../../../../library/ws-widget/utils/src/lib/services/configurations.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-tnc-renderer',
   templateUrl: './tnc-renderer.component.html',
   styleUrls: ['./tnc-renderer.component.scss'],

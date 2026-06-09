@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core'
+
 import { AnalyticsService } from '../../services/analytics.service'
+
 import { NSAnalyticsData } from '../../models/analytics.model'
+
 import { TFetchStatus } from '@ws-widget/utils'
+
 @Component({
+  standalone: false,
   selector: 'ws-app-plans',
   templateUrl: './plans.component.html',
   styleUrls: ['./plans.component.scss'],

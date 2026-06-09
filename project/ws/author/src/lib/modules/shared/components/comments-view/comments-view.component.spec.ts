@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
+
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+
 import { CommentsViewComponent } from './comments-view.component'
+
 
 describe('CommentsViewComponent', () => {
   let component: CommentsViewComponent

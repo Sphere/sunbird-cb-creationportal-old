@@ -1,12 +1,20 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Subscription } from 'rxjs'
+
 import { NsContent, WidgetContentService } from '@ws-widget/collection'
+
 import { ValueService, EventService, WsEvents } from '@ws-widget/utils'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { ViewerUtilService } from '../../viewer-util.service'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-dnd-quiz',
   templateUrl: './dnd-quiz.component.html',
   styleUrls: ['./dnd-quiz.component.scss'],

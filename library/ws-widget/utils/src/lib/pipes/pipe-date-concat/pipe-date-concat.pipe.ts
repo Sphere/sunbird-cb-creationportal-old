@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core'
 
+
 interface ICertificationDate {
   day: number
   month: number
@@ -8,6 +9,7 @@ interface ICertificationDate {
 }
 
 @Pipe({
+  standalone: false,
   name: 'pipeDateConcat',
 })
 export class PipeDateConcatPipe implements PipeTransform {

@@ -1,5 +1,6 @@
 import { IConditionsV2 } from './conditions-v2'
 
+
 export interface IAllowedType {
   conditions: IConditionsV2
   position: '*' | 'n' | 'n-1'

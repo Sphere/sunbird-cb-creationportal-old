@@ -1,9 +1,15 @@
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { ConditionCheckService } from '@ws/author/src/lib/modules/shared/services/condition-check.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { Injectable } from '@angular/core'
+
 import { ISearchContent } from '../interface/search'
+
 
 @Injectable()
 export class WorkFlowService {

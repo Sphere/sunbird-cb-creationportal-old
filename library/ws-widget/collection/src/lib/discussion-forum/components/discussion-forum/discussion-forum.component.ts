@@ -1,12 +1,19 @@
 import { Component, ElementRef, HostBinding, Input, OnInit, ViewChild } from '@angular/core'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { ConfigurationsService, TFetchStatus } from '@ws-widget/utils'
+
 import { EditorQuillComponent } from '../../editor-quill/editor-quill.component'
+
 import { NsDiscussionForum } from '../../ws-discussion-forum.model'
+
 import { WsDiscussionForumService } from '../../ws-discussion-forum.services'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-discussion-forum',
   templateUrl: './discussion-forum.component.html',
   styleUrls: ['./discussion-forum.component.scss'],

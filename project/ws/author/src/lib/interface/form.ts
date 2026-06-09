@@ -1,5 +1,6 @@
 import { NSContent } from './content'
 
+
 export type IValueType = 'boolean' | 'array' | 'string' | 'number' | 'object'
 export type ICondition = {
   [key in keyof NSContent.IContentMeta]: any[]

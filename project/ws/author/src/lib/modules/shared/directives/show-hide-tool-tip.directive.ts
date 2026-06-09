@@ -1,7 +1,10 @@
 import { Directive, ElementRef, AfterViewInit } from '@angular/core'
+
 import { MatTooltip } from '@angular/material/tooltip'
 
+
 @Directive({
+  standalone: false,
   selector: '[matTooltip][wsAuthShowHideToolTip]',
 })
 export class ShowHideToolTipDirective implements AfterViewInit {

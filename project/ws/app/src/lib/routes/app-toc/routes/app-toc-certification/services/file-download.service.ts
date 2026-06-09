@@ -1,7 +1,11 @@
 import { Injectable, Inject } from '@angular/core'
+
 import { Observable, of, throwError } from 'rxjs'
+
 import { WINDOW } from './window.service'
+
 import { DOCUMENT } from '@angular/common'
+
 
 @Injectable()
 export class FileDownloadService {
@@ -20,7 +24,7 @@ export class FileDownloadService {
         int8Array[i] = byteString.charCodeAt(i)
       }
 
-      const blob = new Blob([int8Array])
+      const blob = new Blob([int8Array.buffer as ArrayBuffer])
 
       return blob
     } catch (e) {
@@ -31,8 +35,8 @@ export class FileDownloadService {
   saveBlobToDevice(blob: Blob, documentName: string): boolean {
     try {
       // IE Download
-      if (this.window.navigator && this.window.navigator.msSaveOrOpenBlob) {
-        this.window.navigator.msSaveOrOpenBlob(blob, documentName)
+      if (this.window.navigator && (this.window.navigator as any).msSaveOrOpenBlob) {
+        (this.window.navigator as any).msSaveOrOpenBlob(blob, documentName)
         return true
       }
 
@@ -42,7 +46,7 @@ export class FileDownloadService {
       const downloadLink = this.document.createElement('a')
       downloadLink.style.display = 'none'
       this.document.body.appendChild(downloadLink)
-      downloadLink.setAttribute('href', this.window.URL.createObjectURL(file))
+      downloadLink.setAttribute('href', (this.window as any).URL.createObjectURL(file))
       downloadLink.setAttribute('download', documentName)
       downloadLink.click()
       this.document.body.removeChild(downloadLink)
@@ -57,9 +61,9 @@ export class FileDownloadService {
     const blob = this.base64ToBlob(base64String)
 
     if (!blob) {
-      return throwError({})
+      return throwError(() => {})
     }
 
-    return this.saveBlobToDevice(blob, documentName) ? of({}) : throwError({})
+    return this.saveBlobToDevice(blob, documentName) ? of({}) : throwError(() => {})
   }
 }

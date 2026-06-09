@@ -40,11 +40,11 @@
       </button>
     </div>
     <div class="margin-bottom-m">
-      <mat-chip-list aria-label="Filter selection" role="none" *ngIf="filtersResponse">
+      <mat-chip-set aria-label="Filter selection" role="none" *ngIf="filtersResponse">
         <span *ngFor="let filter of filtersResponse">
           <span *ngFor="let content of filter?.content">
             <span *ngIf="content?.checked">
-              <mat-chip [removable]="removable">
+              <mat-chip>
                 {{translatedFilters[filter?.displayName]?.value[content?.displayName] || content?.displayName}}
                 <mat-icon matChipRemove
                   (click)="appFilterDisplay.removeFilter({ key : filter?.type, value :content?.type})"
@@ -54,7 +54,7 @@
             <span *ngIf="content?.children?.length>0">
               <span *ngFor="let children of content?.children">
                 <span *ngIf="children?.checked">
-                  <mat-chip [removable]="removable">{{children?.displayName}}
+                  <mat-chip>{{children?.displayName}}
                     <mat-icon matChipRemove
                       (click)="appFilterDisplay.removeFilter({ key : filter?.type, value :children?.type})"
                       *ngIf="removable">cancel</mat-icon>
@@ -64,7 +64,7 @@
             </span>
           </span>
         </span>
-      </mat-chip-list>
+      </mat-chip-set>
     </div>
     <div *ngIf="searchResults?.result?.length">
       <ws-app-learning-card class="search-card" *ngFor="let result of searchResults.result; trackBy: contentTrackBy"

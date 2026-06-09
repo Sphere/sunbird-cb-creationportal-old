@@ -1,7 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
-import { ENTER, COMMA, SEMICOLON } from '@angular/cdk/keycodes'
-import { MatChipInputEvent } from '@angular/material'
 
+import { ENTER, COMMA, SEMICOLON } from '@angular/cdk/keycodes'
+
+import { MatChipInputEvent } from '@angular/material/chips'
 interface IUserShareId {
   email: string
   color: string
@@ -9,6 +10,7 @@ interface IUserShareId {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-email-input',
   templateUrl: './email-input.component.html',
   styleUrls: ['./email-input.component.scss'],

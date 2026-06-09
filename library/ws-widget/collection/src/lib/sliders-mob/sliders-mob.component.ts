@@ -1,10 +1,16 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { interval, Subscription } from 'rxjs'
+
 import { EventService } from '../../../../utils/src/public-api'
+
 import { ICarousel } from '../sliders/sliders.model'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-sliders-mob',
   templateUrl: './sliders-mob.component.html',
   styleUrls: ['./sliders-mob.component.scss'],

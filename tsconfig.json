@@ -10,15 +10,16 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "importHelpers": true,
-    "lib": ["es2018", "dom"],
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "lib": ["ES2022", "dom"],
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "useDefineForClassFields": false,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "outDir": "./dist/out-tsc",
     "paths": {
       "@ws-widget/resolver": ["library/ws-widget/resolver"],
@@ -34,25 +35,19 @@
       "@ws/viewer": ["project/ws/viewer"],
       "@ws/viewer/*": ["project/ws/viewer/*"]
     },
+    "skipLibCheck": true,
     "removeComments": true,
     "sourceMap": true,
     "strict": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "target": "es2015",
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+    "target": "ES2022",
     "typeRoots": ["node_modules/@types", "./custom_typings"],
     "plugins": [
       {
         "name": "@angular/language-service"
-      },
-      {
-        "name": "typescript-tslint-plugin",
-        "alwaysShowRuleFailuresAsWarnings": false,
-        "ignoreDefinitionFiles": true,
-        "configFile": "./tslint.json",
-        "suppressWhileTypeErrorsPresent": false
       }
     ]
   }

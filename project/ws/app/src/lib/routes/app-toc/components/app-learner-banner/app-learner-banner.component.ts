@@ -1,27 +1,45 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, HostListener, Inject } from '@angular/core'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser'
+
 import { Router } from '@angular/router'
+
 import {
   NsContent,
   WidgetContentService,
   viewerRouteGenerator
 } from '@ws-widget/collection'
+
 import { TFetchStatus } from '@ws-widget/utils'
+
 import { UtilityService } from '@ws-widget/utils/src/lib/services/utility.service'
+
 import { Subscription } from 'rxjs'
+
 import { NsAppToc, NsCohorts } from '../../models/app-toc.model'
+
 import { AppTocService } from '../../services/app-toc.service'
+
 import { MobileAppsService } from 'src/app/services/mobile-apps.service'
+
 import { FormControl, Validators } from '@angular/forms'
+
 import { DOCUMENT } from '@angular/common'
+
 import { AppTocDesktopModalComponent } from '../app-toc-desktop-modal/app-toc-desktop-modal.component'
+
 import { AppTocCertificateModalComponent } from '../app-toc-certificate-modal/app-toc-certificate-modal.component'
+
 // import { AppTocDesktopModalComponent } from '../app-toc-desktop-modal/app-toc-desktop-modal.component'
+
 // import { AppTocCertificateModalComponent } from '../app-toc-certificate-modal/app-toc-certificate-modal.component'
+
 // import { ConfirmmodalComponent } from '../../../../../../../viewer/src/lib/plugins/quiz/confirm-modal-component'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-learner-banner',
   templateUrl: './app-learner-banner.component.html',
   styleUrls: ['./app-learner-banner.component.scss'],
@@ -33,6 +51,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() banners: NsAppToc.ITocBanner | null = null
   @Input() content: NsContent.IContent | null = null
   @Input() resumeData: NsContent.IContinueLearningData | null = null
+  @Input() proficiencyList: any
   // @Input() analytics: NsAnalytics.IAnalytics | null = null
   @Input() forPreview = false
   @Input() batchData!: any
@@ -111,7 +130,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
     @Inject(DOCUMENT) public document: Document
   ) {
   }
-  @HostListener('window:popstate', ['$event'])
+  @HostListener('window:popstate')
   onPopState() {
     let url = sessionStorage.getItem('cURL') || '/page/home'
     if (url) {
@@ -454,7 +473,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
   openCompetency(content: any) {
     this.dialog.open(AppTocDesktopModalComponent, {
       width: '600px',
-      data: { competency: content.competencies_v1, type: 'COMPETENCY', lang: content.lang },
+      data: { competency: content, type: 'COMPETENCY', lang: content.lang, proficiencyList: this.proficiencyList },
     })
   }
 }

@@ -1,6 +1,9 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core'
+
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
+
 import { ActivatedRoute, Router } from '@angular/router'
+
 // tslint:disable-next-line: max-line-length
 import {
   colorPalettes,
@@ -12,15 +15,24 @@ import {
   TChartJsColorPalette,
   TChartJsGraphType,
 } from '@ws-widget/collection'
+
 import { ConfigurationsService, TFetchStatus, ValueService } from '@ws-widget/utils'
+
 import { Chart } from 'chart.js'
+
 import { Subscription } from 'rxjs'
+
 import { NSProfileData } from '../../../../models/profile.model'
+
 import { ProfileService } from '../../../../services/profile.service'
+
 import { ITimeSpent, NSLearningGraph } from '../../models/learning.models'
+
 // import { NSAnalyticsData } from '../../../analytics/models/analytics.model'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-learning-time',
   templateUrl: './learning-time.component.html',
   styleUrls: ['./learning-time.component.scss'],

@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core'
+
 import { IUserNotification } from '../../models/notifications.model'
+
 import { NsPlaylist, BtnPlaylistService } from '@ws-widget/collection'
+
 import { TFetchStatus, NsPage, ConfigurationsService } from '@ws-widget/utils'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-notification',
   templateUrl: './notification.component.html',
   styleUrls: ['./notification.component.scss'],

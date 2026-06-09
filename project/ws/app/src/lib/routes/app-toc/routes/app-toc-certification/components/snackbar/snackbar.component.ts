@@ -1,7 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core'
-import { MAT_SNACK_BAR_DATA } from '@angular/material'
 
+import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar'
 @Component({
+  standalone: false,
   selector: 'ws-app-certification-snackbar',
   templateUrl: './snackbar.component.html',
   styleUrls: ['./snackbar.component.scss'],

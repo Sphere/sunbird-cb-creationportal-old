@@ -1,7 +1,10 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core'
+
 import { WidgetBaseComponent, NsWidgetResolver } from '@ws-widget/resolver'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-profile-v2-departments',
   templateUrl: './profile-departments.component.html',
   styleUrls: ['./profile-departments.component.scss'],

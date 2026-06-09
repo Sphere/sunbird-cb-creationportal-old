@@ -1,4 +1,5 @@
 import { IConditionsV2 } from './conditions-v2'
+
 /**
  * @description Interface for the Authoring tool Action Button Input Configuration
  *

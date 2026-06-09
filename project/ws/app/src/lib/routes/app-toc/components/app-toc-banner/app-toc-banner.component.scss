@@ -1,21 +1,6 @@
 @import 'ws-vars';
 @import 'ws-mixins';
 
-.activity-length{
-  background: #F88808;
-    position: absolute;
-    color: white !important;
-    right: -4px;
-    top: -5px !important;
-    width: 25px;
-    height: 24px;
-    border-radius: 28px;
-    font-size: 12px;
-    text-align: center;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-}
 %container-padding {
   padding: $size-xl 2 * $size-xl;
 
@@ -136,7 +121,7 @@
     background: #34d6a4 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 30px #99999933;
 
-    ::ng-deep.mat-button-wrapper {
+    ::ng-deep.mat-button-wrapper, ::ng-deep .mdc-button__label {
       // font: 14px/21px Poppins-SemiBold;
       letter-spacing: 0px;
       text-transform: capitalize;
@@ -300,7 +285,12 @@
 }
 
 .text {
-  color: #1C5D95 !important;
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7a8d;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 .separate {
   float: left;
@@ -314,68 +304,167 @@ margin-left: 10px;
 margin-right: 7px;
 }
 
+// ── Top action bar ──────────────────────────────────────────────────────────
+.toc-action-bar {
+  display: flex;
+  align-items: center;
+  padding: 16px 2.9rem 10px;
+  min-height: 56px;
+  background: #F3F8FD;
+  border-bottom: 1px solid #dce8f3;
+  gap: 12px;
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+// ── Course title typography ──────────────────────────────────────────────────
+.toc-course-title {
+  font-family: Roboto, sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+  color: #0F172A;
+  word-wrap: break-word;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 0 4px;
+}
+
+.toc-course-title-sm {
+  font-family: Roboto, sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #0F172A;
+  margin: 0 0 4px;
+}
+
+// ── Subtitle ─────────────────────────────────────────────────────────────────
+.toc-subtitle {
+  font-family: Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: #5a6a7a;
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+// ── Info messages (draft/review/published/etc.) ──────────────────────────────
+.info-msg {
+  font-family: Roboto, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #1C5D95 !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+// ── Metadata row: flex instead of float ─────────────────────────────────────
+.metadata-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0;
+  margin: 8px 0 12px;
+}
+
+.separate {
+  float: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.vertical-line {
+  float: none !important;
+  width: 1px !important;
+  height: 36px;
+  border-left: 1.5px solid #dde8f2;
+  margin: 2px 12px 0 !important;
+}
+
+.toc-banner-item, .info-item {
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  color: #3a4a5c;
+  line-height: 1.5;
+}
+
+// ── Action buttons ────────────────────────────────────────────────────────────
 .accept-btn {
-  background: #F3F8FD;;
+  font-family: Roboto, sans-serif;
   font-weight: 500;
   border-radius: 50px;
   color: #1C5D95;
-  padding: 8px 32px;
-  font-size: 14px;
-  line-height: 19px;
+  padding: 6px 20px;
+  font-size: 13px;
+  line-height: 1.4;
   border: 1px solid #1C5D95;
-}
-.comment:disabled {
-  opacity: 0.6;
-}
-.creator-comments-length,
-.historyList-comments-length {
-   background: #F88808;
-    position: absolute;
-    color: white !important;
-    right: 0px;
-    top: 92px;
-    right: 217px;
-    width: 25px;
-    height: 24px;
-    border-radius: 28px;
-    font-size: 12px;
-    text-align: center;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-}
-.comments-length{
-   background: #F88808;
-    position: absolute;
-    color: white !important;
-    right: 0px;
-    top: 90px;
-    right: 55px;
-    width: 25px;
-    height: 24px;
-    border-radius: 28px;
-    font-size: 12px;
-    text-align: center;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-}
-.edit-course{
-    font-size: 14px;
-  line-height: 19px;
-   font-weight: 500;
-  border-radius: 50px;
-  float: right;
+  background: #F3F8FD;
+  cursor: pointer;
   position: relative;
-  background: #1c5d95;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: #e0edf8;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.creator-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.edit-course {
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 500;
+  border-radius: 50px;
+  background: #1C5D95;
   color: #ffffff;
-  padding: 8px 32px;
+  padding: 7px 20px;
   border: 1px solid #1C5D95;
   cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #14446C;
   }
-  .creator-action-btn{
-    display: flex;
-    margin-top: 10px;
-    float: right;
-    gap: 15px;
-  }
+}
+
+// ── Badge (activity count / comment count) ─────────────────────────────────
+.action-badge {
+  position: absolute;
+  background: #F88808;
+  color: #fff;
+  top: -7px;
+  right: -7px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  font-family: Roboto, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+}

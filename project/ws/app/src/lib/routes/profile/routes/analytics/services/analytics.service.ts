@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient, HttpHeaders } from '@angular/common/http'
+
 import { Observable } from 'rxjs'
+
 import { NSAnalyticsData } from '../models/analytics.model'
+
 import { ConfigurationsService } from '@ws-widget/utils'
+
 import { NSCompetency } from '../../competency/models/competency.model'
+
 
 const LA_API = `/api`
 // const LA_API = `/LA1/api`

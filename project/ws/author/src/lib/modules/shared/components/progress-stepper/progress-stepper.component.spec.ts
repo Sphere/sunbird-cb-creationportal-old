@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { ProgressStepperComponent } from './progress-stepper.component'
+
 
 describe('ProgressStepperComponent', () => {
   let component: ProgressStepperComponent

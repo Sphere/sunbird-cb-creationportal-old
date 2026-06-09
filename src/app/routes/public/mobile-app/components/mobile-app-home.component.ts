@@ -1,10 +1,17 @@
 import { Platform } from '@angular/cdk/platform'
+
 import { Component, OnDestroy, OnInit } from '@angular/core'
+
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
+
 import { ActivatedRoute, Data } from '@angular/router'
+
 import { ConfigurationsService, NsPage } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 import { MobileAppsService } from 'src/app/services/mobile-apps.service'
+
 
 interface IMobileAppLink {
   appsAndroid: string
@@ -23,6 +30,7 @@ interface IMobileAppLink {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-app-mobile-app-home',
   templateUrl: './mobile-app-home.component.html',
   styleUrls: ['./mobile-app-home.component.scss'],

@@ -1,13 +1,22 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
+
 import { map } from 'rxjs/operators'
+
 import { ValueService } from '@ws-widget/utils/src/public-api'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE } from '@ws/author/src/lib/constants/content-role'
+
 import { ILeftMenu } from '@ws-widget/collection'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { LocalDataService } from '../../services/local-data.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-detail-home',
   templateUrl: './content-detail-home.component.html',
   styleUrls: ['./content-detail-home.component.scss'],

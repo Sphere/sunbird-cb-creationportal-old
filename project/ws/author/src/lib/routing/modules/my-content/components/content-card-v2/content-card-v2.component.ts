@@ -1,16 +1,28 @@
 import { StatusTrackComponent } from './../../../../../modules/shared/components/status-track/status-track.component'
+
 import { AuthExpiryDateConfirmComponent } from '@ws/author/src/lib/modules/shared/components/auth-expiry-date-confirm/auth-expiry-date-confirm.component'
+
 import { DraftDialogComponent } from '@ws/author/src/lib/modules/shared/components/draft-dialog/draft-dialog.component'
+
 import { UnpublishDialogComponent } from '@ws/author/src/lib/modules/shared/components/unpublish-dialog/unpublish-dialog.component'
+
 import { RestoreDialogComponent } from '@ws/author/src/lib/modules/shared/components/restore-dialog/restore-dialog.component'
+
 import { ValueService } from '@ws-widget/utils'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { IAction } from './../../interface/content-card'
+
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
+
 import { ISearchContent, ITranslation } from '@ws/author/src/lib/interface/search'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
+
 
 interface ILanguageBar {
   label: string
@@ -18,6 +30,7 @@ interface ILanguageBar {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-card-v2',
   templateUrl: './content-card-v2.component.html',
   styleUrls: ['./content-card-v2.component.scss'],

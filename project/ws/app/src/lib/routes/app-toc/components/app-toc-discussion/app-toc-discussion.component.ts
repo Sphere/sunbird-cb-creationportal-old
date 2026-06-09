@@ -1,10 +1,16 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core'
+
 import { NsDiscussionForum, NsContent } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ActivatedRoute } from '../../../../../../../../../node_modules/@angular/router'
+
 import { ConfigurationsService } from '../../../../../../../../../library/ws-widget/utils/src/public-api'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-toc-discussion',
   templateUrl: './app-toc-discussion.component.html',
   styleUrls: ['./app-toc-discussion.component.scss'],

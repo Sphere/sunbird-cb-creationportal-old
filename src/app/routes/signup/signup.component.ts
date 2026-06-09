@@ -1,10 +1,15 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core'
+
 import { FormGroup, FormControl, Validators } from '@angular/forms'
+
 import { Subscription } from 'rxjs'
-import { MatSnackBar } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { SignupService } from './signup.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'],
@@ -30,6 +35,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     })
   }
 
+  // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method -- stub kept for valueChanges wiring
   ngOnInit() {
     // this.unseenCtrlSub = this.signupForm.valueChanges.subscribe(value => {
     //   console.log('ngOnInit - value', value);

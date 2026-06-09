@@ -1,24 +1,61 @@
-<mat-dialog-content>
-  <div style="float: right;">
-    <mat-icon style="cursor: pointer;" mat-dialog-close mat-raised-button i18n>close</mat-icon>
+<!-- ── Dialog header ──────────────────────────────────────────────────── -->
+<div class="iup-header" mat-dialog-title>
+  <div class="iup-title-wrap">
+    <div class="iup-header-icon">
+      <mat-icon>help_outline</mat-icon>
+    </div>
+    <span class="iup-title">How to upload image in assessment question</span>
   </div>
-  <h2 class="text-bold">How to upload image in assessment question</h2>
-  <ng-container *ngIf="uploadImageInto">
-    <div class="image-block">
-      <h4 class="text-bold">Step 1</h4>
-      <img class="help-image" alt="" [src]="uploadImageInto.first" />
-      <h4 class="text-bold">Step 2</h4>
-      <img class="help-image" alt="" [src]="uploadImageInto.second" />
-      <h4 class="text-bold">Step 3</h4>
-      <img class="help-image" alt="" [src]="uploadImageInto.third" />
+  <button mat-icon-button class="iup-close-btn" mat-dialog-close aria-label="Close dialog" i18n-aria-label>
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<!-- ── Dialog body ────────────────────────────────────────────────────── -->
+<mat-dialog-content class="iup-content">
+  <ng-container *ngIf="uploadImageInto; else emptyState">
+    <div class="iup-steps">
+
+      <div class="iup-step">
+        <div class="iup-step-header">
+          <span class="iup-step-badge">1</span>
+          <span class="iup-step-label" i18n>Step 1</span>
+        </div>
+        <img class="iup-step-image" alt="Step 1 screenshot" [src]="uploadImageInto.first" />
+      </div>
+
+      <div class="iup-step">
+        <div class="iup-step-header">
+          <span class="iup-step-badge">2</span>
+          <span class="iup-step-label" i18n>Step 2</span>
+        </div>
+        <img class="iup-step-image" alt="Step 2 screenshot" [src]="uploadImageInto.second" />
+      </div>
+
+      <div class="iup-step">
+        <div class="iup-step-header">
+          <span class="iup-step-badge">3</span>
+          <span class="iup-step-label" i18n>Step 3</span>
+        </div>
+        <img class="iup-step-image" alt="Step 3 screenshot" [src]="uploadImageInto.third" />
+      </div>
+
     </div>
   </ng-container>
 
-  <div class="">
-    <div style="margin: 10px 0px;">
-      <button i18n mat-dialog-close class="ok-btn" mat-raised-button>
-        Ok
-      </button>
+  <ng-template #emptyState>
+    <div class="iup-empty">
+      <div class="iup-empty-icon">
+        <mat-icon>image_not_supported</mat-icon>
+      </div>
+      <p class="iup-empty-text" i18n>No guide available.</p>
     </div>
-  </div>
+  </ng-template>
 </mat-dialog-content>
+
+<!-- ── Dialog footer ─────────────────────────────────────────────────── -->
+<mat-dialog-actions class="iup-actions">
+  <button mat-flat-button class="iup-ok-btn" mat-dialog-close i18n>
+    Ok
+  </button>
+</mat-dialog-actions>

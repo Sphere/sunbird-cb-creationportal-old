@@ -3,14 +3,17 @@
   display: none;
 }
 
-::ng-deep.mat-progress-bar.thick {
+::ng-deep.mat-progress-bar.thick,
+::ng-deep.mat-mdc-progress-bar.thick {
   height: 10px;
 }
 
-::ng-deep.theme-igot.day-mode .mat-progress-bar-fill::after {
+::ng-deep.theme-igot.day-mode .mat-progress-bar-fill::after,
+::ng-deep.theme-igot.day-mode .mdc-linear-progress__bar-inner {
   background: #34D6A4 0% 0% no-repeat padding-box;
 }
 
-::ng-deep.theme-igot.day-mode .mat-progress-bar-buffer {
+::ng-deep.theme-igot.day-mode .mat-progress-bar-buffer,
+::ng-deep.theme-igot.day-mode .mdc-linear-progress__buffer-bar {
   background-color: #EDEDED;
 }

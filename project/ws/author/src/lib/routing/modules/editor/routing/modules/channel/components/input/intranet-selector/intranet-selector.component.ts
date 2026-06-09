@@ -1,7 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core'
+
 import { IIntranetSelector } from '@ws-widget/collection/src/lib/intranet-selector/intranet-selector.model'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-intranet-selector',
   templateUrl: './intranet-selector.component.html',
   styleUrls: ['./intranet-selector.component.scss'],

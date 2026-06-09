@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core'
+
 import { Observable } from 'rxjs'
+
 import { HttpClient } from '@angular/common/http'
+
 import { NsDiscussionForum } from './ws-discussion-forum.model'
+
 
 const PROTECTED_SLAG_V8 = '/apis/protected/v8'
 const API_END_POINTS = {

@@ -1,32 +1,57 @@
 import { APP_BASE_HREF } from '@angular/common'
+
 import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core'
+
 import { FormGroup } from '@angular/forms'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { ActivatedRoute, Router } from '@angular/router'
+
 import {
   AUTHORING_CONTENT_BASE,
   CONTENT_BASE_WEBHOST,
 } from '@ws/author/src/lib/constants/apiEndpoints'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/components/comments-dialog/comments-dialog.component'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { of } from 'rxjs'
+
 import { mergeMap, tap } from 'rxjs/operators'
+
 import { UploadService } from './../../../../../shared/services/upload.service'
+
 import { ChannelResolverService } from './../../services/resolver.service'
+
 import { ChannelStoreService } from './../../services/store.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-channel',
   templateUrl: './channel.component.html',
   styleUrls: ['./channel.component.scss'],

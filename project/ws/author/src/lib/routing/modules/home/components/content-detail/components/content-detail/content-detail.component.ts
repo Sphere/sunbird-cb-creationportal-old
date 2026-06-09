@@ -1,39 +1,67 @@
 import { AuthExpiryDateConfirmComponent } from '@ws/author/src/lib/modules/shared/components/auth-expiry-date-confirm/auth-expiry-date-confirm.component'
+
 // import { FlatTreeControl } from '@angular/cdk/tree'
+
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core'
+
 import { FormGroup } from '@angular/forms'
-import { MatDialog, MatSnackBar } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { ActivatedRoute, Router } from '@angular/router'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
+
 import {
   IAuthoringPagination,
   // IFilterMenuNode,
   // IMenuFlatNode,
 } from '@ws/author/src/lib/interface/authored'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/components/comments-dialog/comments-dialog.component'
+
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
+
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { Subscription } from 'rxjs'
+
 import { MyContentService } from '../../services/content-detail.service'
+
 import { map } from 'rxjs/operators'
+
 import { PipeDurationTransformPipe, ValueService } from '@ws-widget/utils'
+
 
 /* tslint:disable */
 import _ from 'lodash'
+
 import { IAtGlanceComponentData, IAuthorData, ITable } from '@ws-widget/collection'
+
 import { LocalDataService } from '../../services/local-data.service'
+
 // import { NsAppToc } from '../../interface/app-toc.model'
+
 import { MyTocService } from '../../services/my-toc.service'
+
 /* tslint:enable */
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-detail',
   templateUrl: './content-detail.component.html',
   styleUrls: ['./content-detail.component.scss'],

@@ -1,8 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { NSQuiz } from '../../../../../../../viewer/src/lib/plugins/quiz/quiz.model'
+
 import { HttpClient } from '@angular/common/http'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-assessment-detail',
   templateUrl: './assessment-detail.component.html',
   styleUrls: ['./assessment-detail.component.scss'],

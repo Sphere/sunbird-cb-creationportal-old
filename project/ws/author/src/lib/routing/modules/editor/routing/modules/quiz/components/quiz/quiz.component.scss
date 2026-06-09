@@ -8,6 +8,7 @@
   width: 65%;
 }
 
+
 label.starlabel::after {
   content: "*";
   color: red;
@@ -17,20 +18,20 @@ label.starlabel {
 }
 .margin-left {
   margin-left: 120px;
-  @media only screen and(max-width: 930px) {
+  @media only screen and (max-width: 930px) {
     // margin-top: 24px;
     margin-left: 80px;
   }
 
-  @media only screen and(max-width: 824px) {
+  @media only screen and (max-width: 824px) {
     margin-left: 40px;
   }
 
-  @media only screen and(max-width: 699px) {
+  @media only screen and (max-width: 699px) {
     padding-top: 24px;
   }
 
-  @media only screen and(max-width: 585px) {
+  @media only screen and (max-width: 585px) {
     margin-left: 0px;
   }
 }
@@ -49,9 +50,38 @@ label.starlabel {
   align-items: center;
   grid-template-columns: 0.2fr auto 1fr;
 }
-
+.blue-button{
+  color: #1C5D95 !important;
+  box-shadow: none !important;
+  border-radius: 25px !important;
+  font-family: Roboto !important;
+font-weight: 400 !important;
+font-size: 14px !important;
+padding: 0px 25px !important;
+::ng-deep .mat-button-wrapper{
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+}
+.white-button{
+  background-color: #fff !important;
+  color: #1C5D95 !important;
+  border: 1px solid #1C5D95 !important;
+  box-shadow: none !important;
+  border-radius: 25px !important;
+  font-family: Roboto !important;
+font-weight: 400 !important;
+font-size: 14px !important;
+padding: 0px 25px !important;
+::ng-deep .mat-button-wrapper{
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+}
 .text-white {
-  color: #fff;
+  color: #fff !important;
 }
 
 .fullView {
@@ -119,12 +149,6 @@ label.starlabel {
 mat-sidenav-container{
   overflow: inherit !important;
   min-height: 500px;
-}
-
-mat-sidenav{
-  overflow: auto;
-  width: auto;
-  max-width: 240px;
 }
 
 .border-bottom{
@@ -245,6 +269,12 @@ animation-delay: -0.5s;
 ::ng-deep .theme-igot.day-mode .mat-form-field-outline-thick {
   color: #1c5d95!important;
 }
+::ng-deep .theme-igot.day-mode .mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: #1c5d95;
+  --mdc-outlined-text-field-hover-outline-color: #1c5d95;
+  --mdc-outlined-text-field-focus-outline-color: #1c5d95;
+  --mdc-outlined-text-field-focus-outline-width: 2px;
+}
 
 .no-quiz-align-div{
   margin-top: 34vh;
@@ -254,6 +284,509 @@ animation-delay: -0.5s;
   padding-left: 0.75rem;
 }
 .resourceName{
-    font-size: 20px;
-    line-height: 24px;
+  font-size: 20px;
+  line-height: 24px;
+}
+
+
+// ── Quiz Builder Design System ────────────────────────────────────────────
+.qb-main-row {
+  display: flex;
+  flex-direction: row;
+  background: #F8FAFC;
+  min-height: calc(100vh - 140px);
+  overflow-x: hidden;
+}
+
+.qb-sidenav-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.qb-step2 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Sidenav container ──────────────────────────────────────────────────────
+::ng-deep .qb-sidenav-container {
+  flex: 1;
+  background: #F8FAFC !important;
+  overflow: inherit !important;
+  min-height: calc(100vh - 140px);
+}
+
+::ng-deep .qb-sidenav {
+  background: #FFFFFF !important;
+  border-right: 1px solid #E2E8F0 !important;
+  box-shadow: none !important;
+  width: 256px !important;
+  min-width: 256px !important;
+  max-width: 256px !important;
+  overflow: hidden !important;
+}
+
+// Sidenav inner drawer — flex column so header is pinned and list scrolls
+// Target both legacy and MDC class names (Angular Material 15+ uses mat-mdc-drawer-inner-container)
+::ng-deep .qb-sidenav .mat-drawer-inner-container,
+::ng-deep .qb-sidenav .mat-mdc-drawer-inner-container {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  height: 100% !important;
+  width: 256px !important;
+  max-width: 256px !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+// The sidebar component root — fill height and constrain width
+::ng-deep .qb-sidenav ws-auth-question-editor-sidebar {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  width: 256px !important;
+  max-width: 256px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+// quiz-cards root — flex column, full height, constrained width
+::ng-deep .qb-sidenav .quiz-cards {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+
+// ── Right content area ──────────────────────────────────────────────────────
+.qb-content-area {
+  display: flex;
+  flex-direction: column;
+  background: #F8FAFC;
+}
+
+// Card header bar (resource name + toggle + save)
+.qb-content-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 10px 8px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  min-height: 56px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+
+  .qb-toggle-btn {
+    color: #64748B;
+    flex-shrink: 0;
+    ::ng-deep .mat-icon { font-size: 20px; }
+  }
+
+  .qb-header-icon-wrap {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #EBF4FD;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      color: #1C5D95;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .qb-header-title {
+    font-family: Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0F172A;
+    line-height: 1.4;
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .qb-header-spacer { flex: 1; }
+
+  .qb-save-btn {
+    font-family: Roboto, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    height: 34px !important;
+    border-radius: 8px !important;
+    background: #1C5D95 !important;
+    color: #FFFFFF !important;
+    padding: 0 16px !important;
+    box-shadow: none !important;
+    flex-shrink: 0;
+
+    &:hover:not([disabled]) { background: #154F81 !important; }
+    &.disable, &[disabled] {
+      background: #E2E8F0 !important;
+      color: #94A3B8 !important;
+    }
+  }
+}
+
+// Scrollable body below header
+.qb-content-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+// ── MDC form field tokens for content area ─────────────────────────────────
+::ng-deep .qb-content-body .mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: 8px;
+  --mdc-outlined-text-field-outline-color: #b8c9d9;
+  --mdc-outlined-text-field-hover-outline-color: #1C5D95;
+  --mdc-outlined-text-field-focus-outline-color: #1C5D95;
+  --mdc-outlined-text-field-focus-outline-width: 2px;
+  --mdc-outlined-text-field-label-text-font: Roboto, sans-serif;
+  --mdc-outlined-text-field-input-text-font: Roboto, sans-serif;
+  --mdc-outlined-text-field-input-text-size: 13px;
+  --mdc-outlined-text-field-label-text-size: 13px;
+  --mdc-outlined-text-field-label-text-color: #64748B;
+  --mdc-outlined-text-field-input-text-color: #0F172A;
+
+  // Compact field — 36px total height
+  .mat-mdc-form-field-infix {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    min-height: 36px !important;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    padding: 0 12px !important;
+  }
+}
+
+// ── Section cards (Details, Bulk Upload) ────────────────────────────────────
+.qb-section-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  margin: 16px 16px 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.qb-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #FAFBFC;
+  border-bottom: 1px solid #F1F5F9;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #1C5D95;
+  }
+
+  span { flex: 1; }
+
+  .qb-info-btn {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    color: #94A3B8;
+    ::ng-deep mat-icon { font-size: 16px; }
+    &:hover { color: #1C5D95; }
+  }
+}
+
+.qb-section-body {
+  padding: 16px;
+}
+
+// Form row inside details card
+.qb-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.qb-field {
+  flex: 1;
+  min-width: 160px;
+  max-width: 240px;
+}
+
+.qb-req {
+  color: #EF4444;
+}
+
+// Bulk upload action buttons
+.qb-bulk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.qb-action-btn {
+  font-family: Roboto, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  height: 34px !important;
+  border-radius: 8px !important;
+  border-color: #CBD5E1 !important;
+  color: #1C5D95 !important;
+  padding: 0 14px !important;
+  box-shadow: none !important;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+
+  &:hover:not([disabled]) {
+    border-color: #1C5D95 !important;
+    background: #EBF4FD !important;
+  }
+}
+
+// Previous / Next nav row
+.qb-nav-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px 20px;
+}
+
+.qb-nav-btn {
+  font-family: Roboto, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  height: 34px !important;
+  border-radius: 8px !important;
+  border-color: #CBD5E1 !important;
+  color: #1C5D95 !important;
+  padding: 0 14px !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+
+  &:hover:not([disabled]) { border-color: #1C5D95 !important; background: #EBF4FD !important; }
+  &[disabled] { opacity: 0.35 !important; }
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+// ── Sidebar quiz list item — override red to design-system blue ─────────────
+::ng-deep .qb-sidenav .questionlist .custom.ws-mat-primary-background {
+  background-color: #1C5D95 !important;
+  color: #FFFFFF !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+::ng-deep .qb-sidenav .questionlist .custom.ws-mat-primary-background mat-icon,
+::ng-deep .qb-sidenav .questionlist .custom.ws-mat-primary-background span {
+  color: #FFFFFF !important;
+}
+::ng-deep .qb-sidenav .questionlist .custom:not(.ws-mat-primary-background) {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+// ── Empty state ────────────────────────────────────────────────────────────
+.qb-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px 48px;
+  text-align: center;
+
+  .qb-empty-icon-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #F1F5F9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      color: #94A3B8;
+    }
+  }
+
+  .qb-empty-title {
+    font-family: Roboto, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #334155;
+    margin: 0 0 6px;
+  }
+
+  .qb-empty-sub {
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
+    color: #94A3B8;
+    margin: 0;
+    max-width: 360px;
+    line-height: 1.6;
+  }
+}
+
+// ── Question editor card ───────────────────────────────────────────────────
+.qb-question-card {
+  margin-bottom: 4px;
+}
+
+// "Please state question" heading inside question-editor
+::ng-deep .qb-question-card ws-auth-question-editor .headerpadding {
+  font-family: Roboto, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+  padding: 12px 16px 4px !important;
+  margin: 0 !important;
+}
+
+// CKEditor wrapper padding
+::ng-deep .qb-question-card ws-auth-question-editor .editorpadding {
+  padding: 4px 16px 12px !important;
+}
+
+// ── MCQ / FITB options section ─────────────────────────────────────────────
+
+// "Add Options" row layout and text
+::ng-deep ws-auth-multiple-choice-question .addpadding,
+::ng-deep ws-auth-fill-ups-editor .addpadding {
+  padding: 4px 16px 8px !important;
+  margin-top: 0 !important;
+}
+
+::ng-deep ws-auth-multiple-choice-question .addpadding .mat-h3,
+::ng-deep ws-auth-fill-ups-editor .addpadding .mat-h3 {
+  font-family: Roboto, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+  margin: 0 !important;
+}
+
+// "Add Option" (+) button — design-system pill
+::ng-deep ws-auth-multiple-choice-question .ws-mat-primary-background.mat-mdc-icon-button,
+::ng-deep ws-auth-multiple-choice-question .ws-mat-primary-background.mat-icon-button,
+::ng-deep ws-auth-fill-ups-editor .ws-mat-primary-background.mat-mdc-icon-button,
+::ng-deep ws-auth-fill-ups-editor .ws-mat-primary-background.mat-icon-button {
+  background: #1C5D95 !important;
+  border-radius: 8px !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  line-height: 32px !important;
+  box-shadow: none !important;
+
+  &.mat-elevation-z5,
+  &.mat-elevation-z6 { box-shadow: none !important; }
+
+  mat-icon, .mat-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    color: #FFFFFF !important;
+    line-height: 18px !important;
+  }
+}
+
+// Option list container padding
+::ng-deep ws-auth-multiple-choice-question .optionlist,
+::ng-deep ws-auth-fill-ups-editor .optionlist {
+  padding: 4px 8px 8px !important;
+}
+
+// Each draggable option card
+::ng-deep ws-auth-multiple-choice-question .optionlist .custom,
+::ng-deep ws-auth-fill-ups-editor .optionlist .custom {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  margin: 4px !important;
+  padding: 4px 8px !important;
+  height: auto !important;
+  min-height: 44px !important;
+}
+
+// Option form fields (myfield)
+::ng-deep ws-auth-multiple-choice-question .myfield,
+::ng-deep ws-auth-fill-ups-editor .myfield {
+  --mdc-outlined-text-field-container-shape: 8px;
+  --mdc-outlined-text-field-outline-color: #CBD5E1;
+  --mdc-outlined-text-field-hover-outline-color: #1C5D95;
+  --mdc-outlined-text-field-focus-outline-color: #1C5D95;
+  --mdc-outlined-text-field-input-text-font: Roboto, sans-serif;
+  --mdc-outlined-text-field-input-text-size: 13px;
+  --mdc-outlined-text-field-input-text-color: #0F172A;
+}
+
+::ng-deep ws-auth-multiple-choice-question .myfield .mat-mdc-form-field-infix,
+::ng-deep ws-auth-fill-ups-editor .myfield .mat-mdc-form-field-infix {
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
+  min-height: 34px !important;
+}
+
+// Option delete button — compact, muted
+::ng-deep ws-auth-multiple-choice-question .optionlist .custom .mat-mdc-icon-button,
+::ng-deep ws-auth-fill-ups-editor .optionlist .custom .mat-mdc-icon-button {
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  color: #94A3B8;
+
+  &:hover { color: #EF4444; }
+
+  mat-icon, .mat-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+  }
+}
+
+// Sidebar question list item card — mat-card reset (design styles live in component SCSS)
+::ng-deep .qb-sidenav .questionlist .qb-item-card {
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
 }

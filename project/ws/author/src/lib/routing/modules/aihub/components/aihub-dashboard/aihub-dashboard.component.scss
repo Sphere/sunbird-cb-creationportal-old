@@ -1,4 +1,5 @@
-::ng-deep.mat-tab-labels {
+::ng-deep.mat-tab-labels,
+::ng-deep.mat-mdc-tab-labels {
     display: flex;
     flex:1
 }
@@ -8,7 +9,8 @@
   flex:1
 }
 
-::ng-deep.theme-igot.day-mode .mat-tab-label, .theme-igot.day-mode .mat-tab-link{
+::ng-deep.theme-igot.day-mode .mat-tab-label, .theme-igot.day-mode .mat-tab-link,
+::ng-deep.theme-igot.day-mode .mat-mdc-tab, .theme-igot.day-mode .mat-mdc-tab-link{
   text-align: center;
   flex:1
 }

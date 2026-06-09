@@ -1,6 +1,8 @@
 import { Directive, Input, HostListener, HostBinding, OnChanges } from '@angular/core'
 
+
 @Directive({
+  standalone: false,
   selector: '[wsUtilsDefaultThumbnail]',
 })
 export class DefaultThumbnailDirective implements OnChanges {
@@ -9,7 +11,7 @@ export class DefaultThumbnailDirective implements OnChanges {
   @Input() src = ''
   isSrcUpdateAttemptedForDefault = false
 
-  @HostBinding('src') srcUrl = ''
+  @HostBinding('attr.src') srcUrl = ''
   @HostListener('error') updateSrc() {
     if (!this.isSrcUpdateAttemptedForDefault) {
       this.srcUrl = this.wsUtilsDefaultThumbnail

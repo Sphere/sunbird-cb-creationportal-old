@@ -1,10 +1,14 @@
 import { Component, Input, OnChanges } from '@angular/core'
-import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
-import { IWsTree } from './tree.model'
-import { NestedTreeControl } from '@angular/cdk/tree'
-import { MatTreeNestedDataSource } from '@angular/material'
 
+import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
+import { IWsTree } from './tree.model'
+
+import { NestedTreeControl } from '@angular/cdk/tree'
+
+import { MatTreeNestedDataSource } from '@angular/material/tree'
 @Component({
+  standalone: false,
   selector: 'ws-widget-tree',
   templateUrl: './tree.component.html',
   styleUrls: ['./tree.component.scss'],

@@ -3,99 +3,71 @@
 .overview-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: flex-start;
 }
 
+// Assessment name link (hidden in viewer-toc context where content.name is undefined)
 .header1 {
-  font-family: 'Roboto';
-  font-style: normal;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
   font-weight: 400;
-  font-size: 24px;
-  line-height: 29px;
-  letter-spacing: -0.02em;
-  color: #000000;
-  text-align: center;
+  line-height: 1.4;
+  color: #1D2B36;
+  margin-bottom: 8px;
+
+  a {
+    color: #1C5D95;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
-.label1 {
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 17px;
-  letter-spacing: -0.02em;
-  color: #000000;
-  text-align: center;
+// Row of three stat circles
+.stats-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-top: 4px;
 }
 
-.ellips {
-  width: 67px;
-  height: 67px;
+// Each circle — number + label both inside
+.stat-circle {
+  width: 72px;
+  height: 72px;
   background: #E7F2FA;
+  border-radius: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  text-align: center;
-  padding: auto 0;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
-.label2 {
-  font-family: "Roboto";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 12px !important;
-  line-height: 69px;
-  text-align: center;
-  letter-spacing: -0.02em;
+.stat-value {
+  font-family: Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.1;
   color: #154976;
-  padding: 0px 25px 0px;
-  margin-bottom: -16px !important;
+  text-align: center;
 
-  span {
-    font-size: 15px;
+  .stat-percent {
+    font-size: 10px;
+    font-weight: 500;
+    margin-left: 1px;
   }
 }
 
-.label3 {
-  font-family: 'Roboto';
-  font-style: normal;
+.stat-label {
+  font-family: Roboto, sans-serif;
+  font-size: 10px;
   font-weight: 400;
-  font-size: 12px !important;
-  // line-height: 58px;
-  text-align: center;
-  letter-spacing: -0.02em;
+  line-height: 1.2;
   color: #154976;
-  padding: 0px 24px 0px;
-  margin-top: 10px !important;
-  margin-bottom: 0 !important;
-
-}
-
-.btn {
-  // margin-right: 20px;
-  border-radius: 50px;
-  width: 140px;
-  border: 1px solid #1C5D95 !important;
-}
-
-.btn-active {
-  background-color: #1C5D95 !important;
-  color: #FFFFFF !important;
-}
-
-.row {
-  display: flex;
-  padding-top: 12px;
-}
-
-::ng-deep.overview-modal .mat-dialog-container {
-  border-radius: 40px !important;
-}
-
-::ng-deep .btn btn-active mat-raised-button mat-button-base {
-  background: #1C5D95;
-  border-radius: 50px;
+  text-align: center;
+  margin: 0;
 }

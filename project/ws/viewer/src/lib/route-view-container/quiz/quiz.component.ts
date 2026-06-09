@@ -1,10 +1,16 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { NsContent } from '@ws-widget/collection'
+
 import { NSQuiz } from '../../plugins/quiz/quiz.model'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { PlayerStateService } from '../../player-state.service'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-quiz-container',
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.scss'],

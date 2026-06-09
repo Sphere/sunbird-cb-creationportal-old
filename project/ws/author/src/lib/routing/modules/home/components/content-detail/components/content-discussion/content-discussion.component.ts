@@ -1,10 +1,16 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core'
+
 import { NsDiscussionForum, NsContent } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { ConfigurationsService } from '@ws-widget/utils'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-content-discussion',
   templateUrl: './content-discussion.component.html',
   styleUrls: ['./content-discussion.component.scss'],

@@ -1,10 +1,17 @@
 import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { EventService } from '@ws-widget/utils'
+
 import videoJs from 'video.js'
+
 import { ROOT_WIDGET_CONFIG } from '../collection.config'
+
 import { IWidgetsPlayerMediaData } from '../_models/player-media.model'
+
 import {
   fireRealTimeProgressFunction,
   saveContinueLearningFunction,
@@ -12,11 +19,17 @@ import {
   videoInitializer,
   videoJsInitializer,
 } from '../_services/videojs-util'
+
 import { WidgetContentService } from '../_services/widget-content.service'
+
 import { ViewerDataService } from 'project/ws/viewer/src/lib/viewer-data.service'
+
 import { PlayerVideoPopupComponent } from '../player-video-popup/player-video-popup-component'
+
 import { MatDialog } from '@angular/material/dialog'
+
 import { interval, Subscription } from 'rxjs'
+
 import 'videojs-markers'
 
 const videoJsOptions: videoJs.PlayerOptions = {
@@ -39,6 +52,7 @@ const videoJsOptions: videoJs.PlayerOptions = {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-player-video',
   templateUrl: './player-video.component.html',
   styleUrls: ['./player-video.component.scss'],

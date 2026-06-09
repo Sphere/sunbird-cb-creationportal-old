@@ -1,9 +1,14 @@
 import { Directive, Input, ViewContainerRef, OnChanges } from '@angular/core'
+
 import { LoggerService } from '@ws-widget/utils'
+
 import { NsWidgetResolver } from './widget-resolver.model'
+
 import { WidgetResolverService } from './widget-resolver.service'
 
+
 @Directive({
+  standalone: false,
   selector: '[wsResolverWidget]',
 })
 export class WidgetResolverDirective implements OnChanges {

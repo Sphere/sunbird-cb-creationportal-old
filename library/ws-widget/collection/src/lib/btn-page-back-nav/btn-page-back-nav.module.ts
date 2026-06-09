@@ -1,8 +1,13 @@
-import { NgModule } from '@angular/core'
+﻿import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { RouterModule } from '@angular/router'
-import { MatButtonModule, MatIconModule } from '@angular/material'
+
+import { MatButtonModule } from '@angular/material/button'
+import { MatIconModule } from '@angular/material/icon'
 import { BtnPageBackNavComponent } from './btn-page-back-nav.component'
+
 
 @NgModule({
   declarations: [BtnPageBackNavComponent],
@@ -13,6 +18,5 @@ import { BtnPageBackNavComponent } from './btn-page-back-nav.component'
     MatIconModule,
   ],
   exports: [BtnPageBackNavComponent],
-  entryComponents: [BtnPageBackNavComponent],
 })
 export class BtnPageBackNavModule { }

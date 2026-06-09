@@ -1,23 +1,32 @@
 import {
   Injectable,
   Inject,
-  ComponentFactoryResolver,
   ViewContainerRef,
   ComponentRef,
   Type,
 } from '@angular/core'
+
 import {
   WIDGET_RESOLVER_GLOBAL_CONFIG,
   WIDGET_RESOLVER_SCOPED_CONFIG,
 } from './widget-resolver.constant'
+
 // import { LoggerService } from '@ws-widget/utils'
+
 import { NsWidgetResolver } from './widget-resolver.model'
+
 import { hasPermissions } from './widget-resolver.permissions'
+
 import { RestrictedComponent } from './restricted/restricted.component'
+
 import { InvalidRegistrationComponent } from './invalid-registration/invalid-registration.component'
+
 import { InvalidPermissionComponent } from './invalid-permission/invalid-permission.component'
+
 import { UnresolvedComponent } from './unresolved/unresolved.component'
+
 import { DomSanitizer } from '@angular/platform-browser'
+
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +38,6 @@ export class WidgetResolverService {
   isInitialized = false
   constructor(
     private domSanitizer: DomSanitizer,
-    private componentFactoryResolver: ComponentFactoryResolver,
     // private loggerSvc: LoggerService,
     @Inject(WIDGET_RESOLVER_GLOBAL_CONFIG)
     private globalConfig: null | NsWidgetResolver.IRegistrationConfig[],
@@ -121,11 +129,8 @@ export class WidgetResolverService {
     compData: NsWidgetResolver.IRenderConfigWithAnyData,
     component: Type<NsWidgetResolver.IWidgetData<any>>,
   ): ComponentRef<NsWidgetResolver.IWidgetData<any>> {
-    const factory = this.componentFactoryResolver.resolveComponentFactory(component)
     containerRef.clear()
-    const compRef: ComponentRef<NsWidgetResolver.IWidgetData<any>> = containerRef.createComponent(
-      factory,
-    )
+    const compRef: ComponentRef<NsWidgetResolver.IWidgetData<any>> = containerRef.createComponent(component)
     compRef.instance.widgetData = compData.widgetData
     if (compRef.instance.updateBaseComponent) {
       const widgetSafeStyle = compData.widgetHostStyle

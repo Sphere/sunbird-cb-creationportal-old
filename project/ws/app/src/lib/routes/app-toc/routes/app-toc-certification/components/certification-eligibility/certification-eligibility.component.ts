@@ -1,7 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core'
+
 import { ICertificationEligibility } from '../../models/certification.model'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-certification-eligibility',
   templateUrl: './certification-eligibility.component.html',
   styleUrls: ['./certification-eligibility.component.scss'],

@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
 
+
 import { ImageCropComponent } from './new-image-crop.component'
+
 
 describe('ImageCropComponent', () => {
   let component: ImageCropComponent

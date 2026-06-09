@@ -1,4 +1,5 @@
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 export interface IIntranetSelector {
   url?: string
   isIntranet?: IIntranetSelectorUnit

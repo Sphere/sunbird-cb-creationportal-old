@@ -1,15 +1,29 @@
 import { Component, OnDestroy, OnInit, AfterViewChecked, HostListener, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core'
+
 import { ActivatedRoute, Data } from '@angular/router'
+
 import { NsContent, WidgetContentService, ContentProgressService } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ConfigurationsService, LoggerService, NsPage } from '@ws-widget/utils'
+
 import { Subscription, Observable } from 'rxjs'
+
 import { share } from 'rxjs/operators'
+
 import { NsAppToc } from '../../models/app-toc.model'
+
 import { AppTocService } from '../../services/app-toc.service'
+
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
+
 import { AccessControlService } from '@ws/author/src/public-api'
+
 import { Location } from '@angular/common'
+
+import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 
 export enum ErrorType {
   internalServer = 'internalServer',
@@ -17,6 +31,7 @@ export enum ErrorType {
   somethingWrong = 'somethingWrong',
 }
 @Component({
+  standalone: false,
   selector: 'ws-app-app-toc-home',
   templateUrl: './app-toc-home.component.html',
   styleUrls: ['./app-toc-home.component.scss'],
@@ -41,6 +56,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       errorType: 'internalServer',
     },
   }
+  proficiencyList: any
   isAuthor = false
   authorBtnWidget: NsPage.INavLink = {
     actionBtnId: 'feature_authoring',
@@ -98,7 +114,9 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     private authAccessControlSvc: AccessControlService,
     private location: Location,
     private progressSvc: ContentProgressService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private editorService: EditorService,
+
   ) {
     // Initialize filteredComments for each role as an empty array
     this.roles.forEach(role => {
@@ -124,14 +142,18 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
           this.progressSvc.getComments(this.content.identifier).subscribe(res => {
             console.log(res)
             this.commentsList = res
-            // Filter comments for each role
             this.roles.forEach(role => {
               this.filteredComments[role] = this.commentsList.filter((comment: { role: string }) => comment.role === role)
             })
             this.isLoading = false
+            this.cdr.detectChanges()
           })
         }
       } else if (data === 'preview') {
+        this.editorService.getAllEntities().subscribe(async (res: any) => {
+          this.proficiencyList = await res.result.response
+          console.log("this.proficiencyList", this.proficiencyList)
+        })
         this.changeText = 'preview'
         this.cdr.detectChanges()
       } else if (data === 'history') {
@@ -141,6 +163,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
           this.progressSvc.getComments(this.content.identifier).subscribe(res => {
             this.commentsList = res
             this.isLoading = false
+            this.cdr.detectChanges()
           })
         }
       } else if (data === 'backFromPreview') {
@@ -191,7 +214,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       })
     }
     this.currentFragment = 'overview'
-    this.route.fragment.subscribe((fragment: string) => {
+    this.route.fragment.subscribe((fragment: string | null) => {
       this.currentFragment = fragment || 'overview'
     })
   }
@@ -257,7 +280,12 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     }
     return returnValue
   }
-
+  showTocBanner(): void {
+    // Set changeText to a value other than 'comments', 'history', or 'preview'
+    // so that ws-app-toc-banner is visible.
+    // For example, an empty string will work if ws-app-toc-banner is shown when changeText !== 'preview'
+    this.changeText = ''
+  }
   redirect(url: string) {
     window.location.assign(`${location.origin}${url}`)
   }

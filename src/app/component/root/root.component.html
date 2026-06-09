@@ -1,5 +1,9 @@
-<mat-progress-bar mode="indeterminate" color="warn" class="route-change" *ngIf="routeChangeInProgress">
-</mat-progress-bar>
+<div class="route-loader-overlay" *ngIf="routeChangeInProgress" aria-live="polite" aria-label="Loading">
+  <div class="route-loader-card">
+    <div class="route-loader-spinner"></div>
+    <p class="route-loader-text">Please wait...</p>
+  </div>
+</div>
 
 <ws-app-public-nav-bar *ngIf="(authSvc.isLoggedIn$ | async) === false"></ws-app-public-nav-bar>
 <!-- <ws-widget-sticky-header> -->

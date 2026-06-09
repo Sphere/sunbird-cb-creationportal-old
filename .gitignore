@@ -1,5 +1,8 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
+# Angular build cache
+/.angular/cache
+
 # compiled output
 /dist/*
 !/dist/index.js
@@ -35,6 +38,9 @@ speed-measure-plugin.json
 !.vscode/extensions.json
 .history/*
 
+# Runtime environment config (injected by CI/CD per environment)
+src/assets/env.js
+
 # misc
 /.sass-cache
 /connect.lock
@@ -49,6 +55,5 @@ testem.log
 .DS_Store
 Thumbs.db
 
-/src/assets
 package-lock.json
 yarn.lock

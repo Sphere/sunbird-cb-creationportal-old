@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core'
+
 import { BehaviorSubject, ReplaySubject } from 'rxjs'
+
 import * as _ from 'lodash'
+
 import { take } from 'rxjs/operators'
+
 
 export interface IPlayerSateStore {
   tocAvailable: boolean

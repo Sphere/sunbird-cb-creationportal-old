@@ -1,6 +1,9 @@
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 // import { NSSearch } from '../_services/widget-search.model'
+
 import { NsCardContent } from '../card-content/card-content.model'
+
 
 export namespace NsNetworkStripNewMultiple {
   export interface INetworkStripMultiple {

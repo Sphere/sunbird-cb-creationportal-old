@@ -1,10 +1,16 @@
 import { Component, Input } from '@angular/core'
+
 import { TreeCatalogService } from '../tree-catalog/tree-catalog.service'
+
 import { TFetchStatus } from '@ws-widget/utils'
+
 import { NSSearch } from '../_services/widget-search.model'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-catalog',
   templateUrl: './btn-catalog.component.html',
   styleUrls: ['./btn-catalog.component.scss'],

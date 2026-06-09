@@ -1,13 +1,20 @@
 import { Component, Input, Self, Optional, ElementRef, SimpleChanges, OnChanges, DoCheck, OnDestroy } from '@angular/core'
+
 import { NgControl, NgForm, FormGroupDirective, FormControl } from '@angular/forms'
-import { ErrorStateMatcher, CanUpdateErrorState } from '@angular/material/core'
+
+import { ErrorStateMatcher } from '@angular/material/core'
+
 import { MatFormFieldControl } from '@angular/material/form-field'
+
 import { Subject } from 'rxjs'
+
 import { QuillComponent } from './quill.component'
+
 
 const nextUniqueId = 0
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-root-mat-quill',
   template: '',
   providers: [
@@ -22,8 +29,7 @@ export class MatQuillComponent extends QuillComponent implements
   OnChanges,
   DoCheck,
   OnDestroy,
-  MatFormFieldControl<string>,
-  CanUpdateErrorState {
+  MatFormFieldControl<string> {
 
   @Input()
   public placeholder = ''

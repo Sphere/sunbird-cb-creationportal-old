@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core'
+
 import { AIHubService } from '../../services/aihub.service'
+
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-author-question-generator',
   templateUrl: './question-generator.component.html',
   styleUrls: ['./question-generator.component.scss']

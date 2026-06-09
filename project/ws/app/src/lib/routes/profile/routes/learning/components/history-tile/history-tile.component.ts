@@ -1,6 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-app-history-tile',
   templateUrl: './history-tile.component.html',
   styleUrls: ['./history-tile.component.scss'],

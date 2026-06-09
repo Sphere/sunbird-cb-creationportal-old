@@ -1,11 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
-import { MatDialog } from '@angular/material'
+
+import { MatDialog } from '@angular/material/dialog'
 import {
   BtnCallDialogComponent,
   IWidgetBtnCallDialogData,
 } from './btn-call-dialog/btn-call-dialog.component'
+
 import { EventService, ConfigurationsService } from '@ws-widget/utils'
+
 
 export interface IWidgetBtnCall {
   userName: string
@@ -13,6 +17,7 @@ export interface IWidgetBtnCall {
   replaceIconWithLabel?: boolean
 }
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-call',
   templateUrl: './btn-call.component.html',
   styleUrls: ['./btn-call.component.scss'],

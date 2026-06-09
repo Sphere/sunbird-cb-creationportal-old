@@ -1,6 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { NsContent } from '../_services/widget-content.model'
+
 
 export interface IWidgetBtnKbAnalytics {
   identifier: string
@@ -13,6 +16,7 @@ export interface IWidgetBtnKbAnalytics {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-widget-btn-kb-analytics',
   templateUrl: './btn-kb-analytics.component.html',
   styleUrls: ['./btn-kb-analytics.component.scss'],

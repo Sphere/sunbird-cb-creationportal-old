@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core'
 
+
 interface IUserName {
   firstName: string
   lastName: string
@@ -7,6 +8,7 @@ interface IUserName {
 }
 
 @Pipe({
+  standalone: false,
   name: 'pipeNameTransform',
 })
 export class PipeNameTransformPipe implements PipeTransform {

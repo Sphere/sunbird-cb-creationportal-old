@@ -1,10 +1,16 @@
 import { Component, Input, OnInit } from '@angular/core'
+
 import { NsContent, NsDiscussionForum } from '@ws-widget/collection'
+
 import { NsWidgetResolver } from '@ws-widget/resolver'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { ConfigurationsService } from '../../../../../../../library/ws-widget/utils/src/public-api'
 
+
 @Component({
+  standalone: false,
   selector: 'viewer-iap-container',
   templateUrl: './iap.component.html',
   styleUrls: ['./iap.component.scss'],

@@ -1,8 +1,13 @@
 import { ChannelResolverService } from './../../../services/resolver.service'
+
 import { Component, OnInit, Input, OnChanges } from '@angular/core'
+
 import { IWidgetAuthor, tDimensions, tSize } from './../../../interface/widget'
+
 import { ChannelStoreService } from './../../../services/store.service'
+
 import { responsiveSuffix, sizeSuffix } from '@ws-widget/collection/src/public-api'
+
 
 interface IAuthorGrid {
   id: string
@@ -11,6 +16,7 @@ interface IAuthorGrid {
 }
 
 @Component({
+  standalone: false,
   selector: 'ws-auth-grid',
   templateUrl: './grid.component.html',
   styleUrls: ['./grid.component.scss'],

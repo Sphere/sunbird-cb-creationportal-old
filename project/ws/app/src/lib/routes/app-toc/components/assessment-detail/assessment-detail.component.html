@@ -1,43 +1,41 @@
 <div class="overview-container">
 
-  <div class="header1">
+  <div class="header1" *ngIf="content?.name">
     <div *ngIf="resourceLink; else elseRouterLock">
-      <a [routerLink]="resourceLink?.url? resourceLink.url : content.viewerUrl "
-        [queryParams]="resourceLink?.queryParams?resourceLink.queryParams : 'preserve' ">
-        {{content.name}}
+      <a [routerLink]="resourceLink?.url ? resourceLink.url : content.viewerUrl"
+        [queryParams]="resourceLink?.queryParams ? resourceLink.queryParams : 'preserve'">
+        {{ content.name }}
       </a>
     </div>
-    <ng-template #elseRouterLock>
-      {{content.name}}
-    </ng-template>
-  </div>
-  <!-- <div class="label1 pt-1">
-    {{assesmentdata.isAssessment ? 'Assessment' : 'Quiz'}}
-  </div> -->
-  <div class="row">
-    <div class=" m-2 ml-0 p-2 ellips">
-      <h4 *ngIf="assesmentdata?.timeLimit" class="label2">
-        {{ assesmentdata.timeLimit | pipeAssessmentDurationTransform: 'mnts' }}
-      </h4>
-
-      <h4 *ngIf="assesmentdata?.duration" class="label2">{{
-        assesmentdata.duration | pipeAssessmentDurationTransform: 'mnts'
-        }}
-      </h4>
-      <h4 class="label3" i18n>Minutes</h4>
-    </div>
-    <div class="m-2 p-2 ellips">
-      <h4 class="label2">
-        {{assesmentdata?.questions.length}}</h4>
-      <h4 class="label3" i18n>Questions</h4>
-    </div>
-    <div class=" m-2 p-2 ellips">
-      <h4 class="label2">{{assesmentdata?.passPercentage ? assesmentdata?.passPercentage : '0' }}<span>%</span></h4>
-      <h4 class="label3" i18n>Required</h4>
-
-    </div>
+    <ng-template #elseRouterLock>{{ content.name }}</ng-template>
   </div>
 
+  <div class="stats-row">
 
+    <div class="stat-circle">
+      <span class="stat-value">
+        <ng-container *ngIf="assesmentdata?.timeLimit">
+          {{ assesmentdata.timeLimit | pipeAssessmentDurationTransform: 'mnts' }}
+        </ng-container>
+        <ng-container *ngIf="!assesmentdata?.timeLimit && assesmentdata?.duration">
+          {{ assesmentdata.duration | pipeAssessmentDurationTransform: 'mnts' }}
+        </ng-container>
+      </span>
+      <span class="stat-label" i18n>Minutes</span>
+    </div>
+
+    <div class="stat-circle">
+      <span class="stat-value">{{ assesmentdata?.questions.length }}</span>
+      <span class="stat-label" i18n>Questions</span>
+    </div>
+
+    <div class="stat-circle">
+      <span class="stat-value">
+        {{ assesmentdata?.passPercentage ? assesmentdata?.passPercentage : '0' }}<span class="stat-percent">%</span>
+      </span>
+      <span class="stat-label" i18n>Required</span>
+    </div>
+
+  </div>
 
 </div>

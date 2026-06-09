@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Observable } from 'rxjs'
+
 import { getStringifiedQueryParams } from '@ws-widget/utils'
+
 import { NsContentStripVertical } from './content-strip-vertical.model'
+
 
 @Injectable({
   providedIn: 'root',

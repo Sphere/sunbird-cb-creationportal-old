@@ -1,8 +1,13 @@
 import { Component, OnInit, Input, OnDestroy, HostBinding } from '@angular/core'
+
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
+
 import { NsNetworkStripNewMultiple } from './network-strip-multiple.model'
+
 import { ContentStripNewMultipleService } from './network-strip-multiple.service'
+
 import { WidgetContentService } from '../_services/widget-content.service'
+
 import {
   TFetchStatus,
   LoggerService,
@@ -10,9 +15,13 @@ import {
   // ConfigurationsService,
   UtilityService,
 } from '@ws-widget/utils'
+
 import { Subscription } from 'rxjs'
+
 // import { filter } from 'rxjs/operators'
+
 // import { SearchServService } from '@ws/app/src/lib/routes/search/services/search-serv.service'
+
 
 interface IStripUnitContentData {
   key: string
@@ -35,6 +44,7 @@ interface IStripUnitContentData {
   } | null
 }
 @Component({
+  standalone: false,
   selector: 'ws-widget-network-strip-multiple',
   templateUrl: './network-strip-multiple.component.html',
   styleUrls: ['./network-strip-multiple.component.scss'],

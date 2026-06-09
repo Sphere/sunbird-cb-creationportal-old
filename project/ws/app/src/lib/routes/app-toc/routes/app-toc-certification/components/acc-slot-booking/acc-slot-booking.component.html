@@ -16,17 +16,15 @@
         <!-- Location -->
         <div class="my-2">
           <mat-form-field class="w-full">
-            <mat-chip-list #locationChips>
-              <mat-chip
+            <mat-chip-grid #locationChips>
+              <mat-chip-row 
                 *ngFor="let location of locationChipList"
                 [value]="location"
-                [selectable]="true"
-                [removable]="true"
                 (removed)="locationRemoved($event.value)"
               >
                 {{ location.dc }}
                 <mat-icon matChipRemove>cancel</mat-icon>
-              </mat-chip>
+              </mat-chip-row>
               <input
                 #locationInput
                 matInput
@@ -52,7 +50,7 @@
                   {{ location.dc }}
                 </mat-option>
               </mat-autocomplete>
-            </mat-chip-list>
+            </mat-chip-grid>
 
             <mat-hint *ngIf="locationFetchStatus === 'fetching'" i18n>
               Fetching locations...

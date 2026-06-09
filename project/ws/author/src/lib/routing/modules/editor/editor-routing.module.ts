@@ -1,8 +1,13 @@
 import { NgModule } from '@angular/core'
+
 import { RouterModule, Routes } from '@angular/router'
+
 import { InitResolver } from '@ws/author/src/lib/services/init-resolve.service'
+
 import { EditorComponent } from './components/editor/editor.component'
+
 import { QualityJSONResolver } from '../../../services/quality-json-resolver.service'
+
 
 const routes: Routes = [
   {

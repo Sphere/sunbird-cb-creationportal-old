@@ -1,86 +1,276 @@
-.custom {
-  padding: 20px 10px;
-  height: 55px;
+// ── Sidebar wrapper ────────────────────────────────────────────────────────
+.quiz-cards {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+// ── Sticky header area ─────────────────────────────────────────────────────
+.qb-sidebar-header {
+  flex-shrink: 0;
+  min-width: 0;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  overflow: hidden;
+}
+
+// Title row: "QUESTIONS" label + collapse chevron
+.qb-sidebar-title-row {
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  box-sizing: border-box;
-  cursor: grab;
+  padding: 10px 8px 6px 12px;
+  overflow: hidden;
 }
 
-.new-display {
+.qb-sidebar-label {
+  font-family: Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qb-collapse-btn {
+  flex-shrink: 0;
+  width: 28px !important;
+  height: 28px !important;
+  line-height: 28px !important;
+  color: #94A3B8;
+
+  ::ng-deep .mat-icon { font-size: 18px; }
+}
+
+// Type selector + add button — CSS grid ensures exact fit every time
+.qb-type-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 10px 10px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+// Outlined form field — design system tokens
+.qb-type-field {
+  min-width: 0;
+  width: 100%;
+
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    padding: 0 10px !important;
+  }
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
+    min-height: 34px !important;
+  }
+
+  // Remove reserved subscript space so the field and "+" button stay centred
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+  }
+
+  --mdc-outlined-text-field-container-shape: 8px;
+  --mdc-outlined-text-field-outline-color: #CBD5E1;
+  --mdc-outlined-text-field-hover-outline-color: #1C5D95;
+  --mdc-outlined-text-field-focus-outline-color: #1C5D95;
+  --mdc-outlined-text-field-focus-outline-width: 2px;
+  --mdc-outlined-text-field-input-text-font: Roboto, sans-serif;
+  --mdc-outlined-text-field-input-text-size: 13px;
+  --mdc-outlined-text-field-input-text-color: #0F172A;
+}
+
+// Add (+) button — fixed 32×32px blue square
+.qb-add-btn {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  background: #1C5D95 !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0;
+  overflow: hidden !important;
+  // MDC icon-button state-layer is 48px by default — shrink to match visual size
+  --mdc-icon-button-state-layer-size: 32px;
+
+  ::ng-deep .mat-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    color: #FFFFFF !important;
+    line-height: 18px !important;
+  }
+
+  &.qb-add-btn--disabled,
+  &[disabled] {
+    opacity: 0.35 !important;
+    cursor: not-allowed !important;
+  }
+}
+
+// ── Scrollable question/page list ──────────────────────────────────────────
+.qb-item-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  padding: 6px 8px 12px;
+  box-sizing: border-box;
+}
+
+.questionlist {
   display: flex;
-  flex-direction: column-reverse;
-}
-
-.cdk-drag-preview {
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  width: 100%;
   box-sizing: border-box;
-  opacity: 1;
-  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
-    0 8px 10px 1px rgba(0, 0, 0, 0.14),
-    0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
-.bordered {
-  border: 1px solid #cecece;
+// Each question/page card
+.qb-item-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  border: 1px solid #E2E8F0 !important;
+  background: #FFFFFF !important;
+  cursor: grab;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: #1C5D95 !important;
+    background: #F8FAFC !important;
+  }
+
+  // Selected + valid
+  &.qb-item-card--active {
+    background: #1C5D95 !important;
+    border-color: #1C5D95 !important;
+
+    .qb-item-label { color: #FFFFFF !important; }
+    .qb-item-delete-btn { color: rgba(255,255,255,0.7) !important; }
+    .qb-item-delete-btn:hover { color: #FFFFFF !important; }
+  }
+
+  // Invalid (incomplete content)
+  &.qb-item-card--invalid {
+    background: #FEF2F2 !important;
+    border-color: #FECACA !important;
+
+    .qb-item-label { color: #B91C1C !important; }
+    .qb-item-delete-btn { color: #B91C1C !important; }
+  }
 }
 
-.cdk-drag-placeholder {
-  opacity: 0;
+.qb-item-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px 6px 10px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 36px;
 }
+
+.qb-item-label {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #334155;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qb-item-delete-btn {
+  flex-shrink: 0;
+  width: 26px !important;
+  height: 26px !important;
+  line-height: 26px !important;
+  padding: 0 !important;
+  color: #CBD5E1;
+  transition: color 0.15s;
+  overflow: hidden !important;
+  --mdc-icon-button-state-layer-size: 26px;
+
+  &:hover:not([disabled]) { color: #EF4444 !important; }
+
+  ::ng-deep .mat-icon {
+    font-size: 15px !important;
+    width: 15px !important;
+    height: 15px !important;
+  }
+}
+
+// Drag-and-drop helpers
+.new-display { display: flex; flex-direction: column; }
+
+.custom-placeholder {
+  border: 2px dashed #CBD5E1;
+  border-radius: 8px;
+  min-height: 36px;
+  opacity: 0.6;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-placeholder { opacity: 0; }
 
 .cdk-drag-animating {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.questionlist.cdk-drop-list-dragging .custom:not(.cdk-drag-placeholder) {
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0.9;
+}
+
+.questionlist.cdk-drop-list-dragging .qb-item-card:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.invalidQues {
-  background-color: rgb(236, 68, 68) !important;
-  color: #fff !important;
-  ;
-}
-
-.ws-mat-primary-background {
-  color: #fff !important;
-}
-
-.custom-placeholder {
-  border: dotted 3px #999;
-  min-height: 85px;
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-  opacity: 0;
-}
-
-::ng-deep .myfield .mat-form-field-wrapper {
-  padding: 0px !important;
-}
-
-.small-button {
-  height: 32px;
-  width: 32px;
-  transition: 0.5s;
-  margin-right: 4px;
-}
-
-.small-icon {
-  font-size: 18px;
-  display: flex;
-  justify-content: center;
-  padding: 0;
-  margin: 0;
-  height: auto;
-  width: auto;
-  transition: 0.5s;
-}
-
-.m-1 {
-  margin: 0.25rem !important;
+// Bordered dots in collapsed mode
+.bordered {
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
 }
 
 .cursor-disable {
   cursor: not-allowed !important;
+}
+
+.invalidQues {
+  background-color: #FEF2F2 !important;
+  color: #B91C1C !important;
 }

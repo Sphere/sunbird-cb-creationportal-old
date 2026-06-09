@@ -1,12 +1,20 @@
 import { Component, OnInit, Input, OnChanges, OnDestroy } from '@angular/core'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
+
 import { QuizStoreService } from '../../services/store.service'
-import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component.ts'
+
+import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { NOTIFICATION_TIME, ASSESSMENT } from '../../constants/quiz-constants'
+
 import { Subscription } from 'rxjs'
+
 import { EditorContentService } from '../../../../../services/editor-content.service'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-auth-question-editor',
   templateUrl: './question-editor.component.html',
   styleUrls: ['./question-editor.component.scss'],
@@ -61,6 +69,7 @@ export class QuestionEditorComponent implements OnInit, OnChanges, OnDestroy {
    * @param type updated property name
    */
   updateSelectedQuiz($event: any, type?: string) {
+    console.log("$event", $event, type)
     const quizData = JSON.parse(JSON.stringify(this.quizStoreSvc.getQuiz(this.quizIndex)))
     let updatedVal: any = {}
     if (type === 'question') {
@@ -73,6 +82,11 @@ export class QuestionEditorComponent implements OnInit, OnChanges, OnDestroy {
       }
       for (let i = 0; i < updatedVal.options.length; i = i + 1) {
         updatedVal.options[i] = { ...quizData.options[i], ...$event.options[i] }
+      }
+      const correctOptions = updatedVal.options.filter((option: any) => option.isCorrect)
+      updatedVal.multiSelection = correctOptions.length > 1 // true if multiple correct options, false otherwise
+      if (type === 'mcq-mca' || type === 'mcq-sca') {
+        updatedVal.questionType = correctOptions.length > 1 ? 'mcq-mca' : 'mcq-sca'// true if multiple correct options, false otherwise
       }
     }
     this.quizStoreSvc.updateQuiz(this.quizIndex, updatedVal)

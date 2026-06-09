@@ -1,37 +1,69 @@
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
-import { Component, OnInit, Input } from '@angular/core'
+
+import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core'
+
 import { Router } from '@angular/router'
+
 import { ICreateEntity } from '@ws/author/src/lib/interface/create-entity'
-import { MatSnackBar, MatDialog } from '@angular/material'
+
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { MatDialog } from '@angular/material/dialog'
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
+
 import { CreateService } from '../create/create.service'
+
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
+
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
+
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
+
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
+
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
+
 import { IprDialogComponent } from '@ws/author/src/lib/modules/shared/components/ipr-dialog/ipr-dialog.component'
+
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+
 import { mergeMap } from 'rxjs/operators'
+
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '../../../../../constants/upload'
+
 import { ConfigurationsService } from '../../../../../../../../../../library/ws-widget/utils/src/lib/services/configurations.service'
+
 import { ImageCropComponent } from '../../../../../../../../../../library/ws-widget/utils/src/public-api'
+
 import { NSApiRequest } from '../../../../../interface/apiRequest'
+
 import { HttpClient } from '@angular/common/http'
+
 import { AUTHORING_BASE, CONTENT_BASE_STATIC } from '../../../../../constants/apiEndpoints'
+
 import { UploadService } from '../../../editor/shared/services/upload.service'
+
 // import { environment } from '../../../../../../../../../../src/environments/environment'
+
 import { ActivatedRoute } from '@angular/router'
+
 import { CollectionStoreService } from '../../../../../../../../author/src/lib/routing/modules/editor/routing/modules/collection/services/store.service'
+
 import { EditorContentService } from 'project/ws/author/src/lib/routing/modules/editor/services/editor-content.service'
+
 import { CollectionResolverService } from 'project/ws/author/src/lib/routing/modules/editor/routing/modules/collection/services/resolver.service'
+
 import { NSContent } from '@ws/author/src/lib/interface/content'
+
 import moment from 'moment'
+
 import {
   ContentProgressService,
 } from '@ws-widget/collection'
+
 @Component({
+  standalone: false,
   // tslint:disable-next-line:component-selector
   selector: 'ws-author-create-course',
   templateUrl: './create-course.component.html',
@@ -90,6 +122,7 @@ export class CreateCourseComponent implements OnInit {
     private editorStore: EditorContentService,
     private resolverService: CollectionResolverService,
     private progressSvc: ContentProgressService,
+    private cdr: ChangeDetectorRef,
   ) { }
   createCourseForm!: FormGroup
   createSelfAssessmentForm!: FormGroup
@@ -234,7 +267,7 @@ export class CreateCourseComponent implements OnInit {
             }
             // tslint:disable-next-line:max-line-length
             const result = await this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier).toPromise().catch((_error: any) => { })
-            if (data && result) {
+            if (result !== undefined) {
               // this.loaderService.changeLoad.next(false)
               this.snackBar.openFromComponent(NotificationComponent, {
                 data: {
@@ -369,7 +402,7 @@ export class CreateCourseComponent implements OnInit {
             }
             await this.progressSvc.addComment(val).toPromise().catch((_error: any) => { })
 
-            if (data && result) {
+            if (true) {
               this.loaderService.changeLoad.next(false)
               this.snackBar.openFromComponent(NotificationComponent, {
                 data: {
@@ -489,7 +522,7 @@ export class CreateCourseComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe({
       next: (result: File) => {
-        if (result) {
+        if (true) {
           formdata.append('content', result, fileName)
           this.loader.changeLoad.next(true)
 
@@ -629,11 +662,13 @@ export class CreateCourseComponent implements OnInit {
 
   showIpr() {
     const dialogRef = this.dialog.open(IprDialogComponent, {
-      width: '70%',
+      width: '560px',
+      maxWidth: '90vw',
       data: { iprAccept: this.iprAccepted },
     })
     dialogRef.afterClosed().subscribe(result => {
       this.iprAccepted = result
+      this.cdr.detectChanges()
     })
   }
 
@@ -648,6 +683,27 @@ export class CreateCourseComponent implements OnInit {
   onSubmit(form: any) {
     this.courseData = form.value
     this.contentClicked()
+  }
+
+  /**
+   * Invoked by the parent stepper's "Next" button (via @ViewChild).
+   * Validates the course form + IPR acceptance before submitting.
+   * Self-assessment is submitted from its competency dropdown, so it is a no-op here.
+   */
+  triggerNext() {
+    if (this.isSelfAssessment) {
+      return
+    }
+    if (this.createCourseForm.invalid || !this.iprAccepted) {
+      this.createCourseForm.markAllAsTouched()
+      this.snackBar.open(
+        'Please enter the course name and description, and accept the IPR Declaration to continue.',
+        'OK',
+        { duration: NOTIFICATION_TIME * 1000 },
+      )
+      return
+    }
+    this.onSubmit(this.createCourseForm)
   }
   createSelfAssessment(form: any) {
     this.courseData = form.value

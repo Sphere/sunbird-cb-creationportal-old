@@ -1,17 +1,18 @@
 import { NgModule } from '@angular/core'
+
 import { CommonModule } from '@angular/common'
+
 import { RouterModule } from '@angular/router'
+
 import { PipeLimitToPipe } from '@ws-widget/utils/src/lib/pipes/pipe-limit-to/pipe-limit-to.pipe'
 
-import {
-  MatCardModule,
-  MatDividerModule,
-  MatButtonModule,
-  MatSnackBarModule,
-  MatIconModule,
-  MatChipsModule,
-} from '@angular/material'
 
+import { MatCardModule } from '@angular/material/card'
+import { MatDividerModule } from '@angular/material/divider'
+import { MatButtonModule } from '@angular/material/button'
+import { MatSnackBarModule } from '@angular/material/snack-bar'
+import { MatIconModule } from '@angular/material/icon'
+import { MatChipsModule } from '@angular/material/chips'
 import {
   // BtnContentDownloadModule,
   // BtnContentFeedbackModule,
@@ -27,21 +28,29 @@ import {
   // PlayerBriefModule,
 } from '@ws-widget/collection'
 
+
 import {
   PipeDurationTransformModule,
   PipeLimitToModule,
   PipePartialContentModule,
 } from '@ws-widget/utils'
 
+
 import { WidgetResolverModule } from '@ws-widget/resolver'
+
 
 // import { HtmlRoutingModule } from './html-routing.module'
 
+
 import { HtmlModule as HtmlPluginModule } from '../../plugins/html/html.module'
 
+
 import { HtmlComponent } from './html.component'
+
 // import { ViewerCourseInfoModule } from '../../plugins/viewer-course-info/viewer-course-info.module'
+
 import { SharedModule } from '../../../../../author/src/lib/modules/shared/shared.module'
+
 
 @NgModule({
   declarations: [HtmlComponent],

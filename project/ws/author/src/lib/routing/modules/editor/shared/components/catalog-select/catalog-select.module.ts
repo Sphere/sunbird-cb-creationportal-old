@@ -1,12 +1,19 @@
-import { NgModule } from '@angular/core'
-import { CommonModule } from '@angular/common'
-import { CatalogSelectComponent } from '../catalog-select/catalog-select.component'
-import { MatTreeModule } from '@angular/material/tree'
-import { MatCheckboxModule } from '@angular/material/checkbox'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatButtonModule, MatDialogModule } from '@angular/material'
+﻿import { NgModule } from '@angular/core'
 
+import { CommonModule } from '@angular/common'
+
+import { CatalogSelectComponent } from '../catalog-select/catalog-select.component'
+
+import { MatTreeModule } from '@angular/material/tree'
+
+import { MatCheckboxModule } from '@angular/material/checkbox'
+
+import { MatFormFieldModule } from '@angular/material/form-field'
+
+import { MatIconModule } from '@angular/material/icon'
+
+import { MatButtonModule } from '@angular/material/button'
+import { MatDialogModule } from '@angular/material/dialog'
 @NgModule({
   declarations: [CatalogSelectComponent],
   imports: [
@@ -19,6 +26,5 @@ import { MatButtonModule, MatDialogModule } from '@angular/material'
     MatDialogModule,
   ],
   exports: [CatalogSelectComponent],
-  entryComponents: [CatalogSelectComponent],
 })
 export class CatalogSelectModule { }

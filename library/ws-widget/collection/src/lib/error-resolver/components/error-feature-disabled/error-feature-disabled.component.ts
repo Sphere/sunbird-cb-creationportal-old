@@ -1,14 +1,21 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core'
+
 import { ActivatedRoute } from '@angular/router'
 
+
 import { Subscription } from 'rxjs'
+
 import { debounceTime } from 'rxjs/operators'
+
 
 import { ConfigurationsService } from '@ws-widget/utils'
 
+
 import { IWidgetErrorFeatureDisabled } from './error-feature-disabled.model'
 
+
 @Component({
+  standalone: false,
   selector: 'ws-widget-error-feature-disabled',
   templateUrl: './error-feature-disabled.component.html',
   styleUrls: ['./error-feature-disabled.component.scss'],

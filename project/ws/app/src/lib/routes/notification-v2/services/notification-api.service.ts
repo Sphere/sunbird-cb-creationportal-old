@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core'
+
 import { HttpClient } from '@angular/common/http'
+
 import { Observable } from 'rxjs'
+
 import {
   INotificationsQueryParams,
   INotificationData,
   ENotificationType,
 } from '../models/notifications.model'
+
 
 @Injectable()
 export class NotificationApiService {
