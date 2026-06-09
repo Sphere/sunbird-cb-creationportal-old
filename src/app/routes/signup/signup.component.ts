@@ -35,6 +35,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     })
   }
 
+  // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method -- stub kept for valueChanges wiring
   ngOnInit() {
     // this.unseenCtrlSub = this.signupForm.valueChanges.subscribe(value => {
     //   console.log('ngOnInit - value', value);

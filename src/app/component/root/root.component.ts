@@ -129,6 +129,7 @@ export class RootComponent implements OnInit, AfterViewInit {
     })
   }
 
+  // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method -- stub kept for initAppUpdateCheck (see below)
   ngAfterViewInit() {
     // this.initAppUpdateCheck()
   }

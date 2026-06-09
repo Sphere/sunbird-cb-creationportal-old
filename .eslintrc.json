@@ -30,6 +30,8 @@
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-non-null-assertion": "warn",
         "@angular-eslint/prefer-inject": "warn",
+        "@angular-eslint/prefer-standalone": "off",
+        "@typescript-eslint/no-namespace": "off",
         "semi": ["error", "never"]
       }
     },
@@ -38,7 +40,9 @@
       "extends": [
         "plugin:@angular-eslint/template/recommended"
       ],
-      "rules": {}
+      "rules": {
+        "@angular-eslint/template/prefer-control-flow": "off"
+      }
     }
   ]
 }
