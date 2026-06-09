@@ -138,3 +138,4 @@ The resolver builds the key `widget:myWidget::default`, checks permissions, then
 - [ ] `WIDGET_REGISTRATION_CONFIG` mapping added (with import)
 - [ ] `widgetData` is typed via the model interface
 - [ ] Follows the design-system / input styling rules (see the `style-form-input` skill for any form fields)
+- [ ] Angular 21 standards (CLAUDE.md §3): `inject()`, `@if`/`@for` control flow, signals for local state, `takeUntilDestroyed`/`async` — without breaking the resolver's `@Input() widgetData` contract

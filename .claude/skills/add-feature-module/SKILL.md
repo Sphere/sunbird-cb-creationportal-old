@@ -36,18 +36,21 @@ project/ws/app/src/lib/routes/<feature-name>/
 `standalone: false` is mandatory (matches migrated declarations).
 
 ```typescript
-import { Component, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
 
 @Component({
   standalone: false,
   selector: 'ws-app-my-feature-home',
   templateUrl: './my-feature-home.component.html',
   styleUrls: ['./my-feature-home.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MyFeatureHomeComponent implements OnInit {
-  ngOnInit() { }
+  ngOnInit() {}
 }
 ```
+
+In the template, use built-in control flow (`@if` / `@for` with `track` / `@switch`) — not `*ngIf` / `*ngFor`. See the Angular 21 standards in CLAUDE.md §3.
 
 ### 3. Feature routing module — `<feature-name>-routing.module.ts`
 
@@ -122,3 +125,4 @@ For data the page needs before activation, add a resolver service (`@Injectable(
 - [ ] `canActivate: [GeneralGuard]` + `requiredFeatures`/`requiredRoles` in route `data`
 - [ ] Feature routing module uses `RouterModule.forChild`
 - [ ] Loading / Empty / Error / Success states considered for the page
+- [ ] Angular 21 standards (CLAUDE.md §3): `inject()`, `@if`/`@for` control flow, `OnPush`, signals for local state, `takeUntilDestroyed`/`async` for subscriptions

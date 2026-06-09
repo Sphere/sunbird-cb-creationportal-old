@@ -104,3 +104,4 @@ Inject the service (`inject()` in new code) in the component/resolver and subscr
 - [ ] No manual auth/org/locale headers (interceptor owns them)
 - [ ] Error/transform handled with `.pipe(map/catchError)` where needed
 - [ ] API contract not changed without approval
+- [ ] Angular 21 standards (CLAUDE.md §3): `inject()` for new services; typed models (no `any`); consumers use `async` pipe / `takeUntilDestroyed`

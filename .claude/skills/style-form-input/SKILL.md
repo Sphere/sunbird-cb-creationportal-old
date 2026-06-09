@@ -44,8 +44,9 @@ Angular Material 17+ MDC components (`mat-form-field`, `mat-checkbox`, …) have
   autocomplete="off"
   maxlength="250" />
 <div class="mc-field-footer">
-  <span *ngIf="form.get('courseName')?.invalid && form.get('courseName')?.touched"
-        class="invalid-text">This field is required</span>
+  @if (form.get('courseName')?.invalid && form.get('courseName')?.touched) {
+    <span class="invalid-text">This field is required</span>
+  }
   <span class="mt-hint">{{ form.get('courseName')?.value?.length || 0 }}/250</span>
 </div>
 ```
@@ -161,3 +162,4 @@ If a Material field genuinely can't be replaced, restyle it via MDC CSS custom p
 - [ ] Inline validation, helper/hint text, required indicator, char counter preserved
 - [ ] No `!important` fighting a global utility class
 - [ ] Error/touched states styled; field works with `formControlName`/`[(ngModel)]`
+- [ ] Angular 21 standards (CLAUDE.md §3): `@if`/`@for` control flow in the template; strongly-typed reactive form (no `any`)
