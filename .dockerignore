@@ -1,0 +1,29 @@
+# Keep the Docker build context small and out of the image.
+# NOTE: do NOT ignore `assets/` — the CI pipeline injects assets/CBP/client-assets
+# into the context and the Dockerfile copies it into dist/www/en/assets.
+# Also keep dist/server.js, dist/index.js, dist/package.json (the Express server).
+
+# Dependencies — reinstalled fresh inside the build (yarn / npm install --production)
+node_modules
+**/node_modules
+
+# Version control + editor/CI metadata
+.git
+.gitignore
+.github
+.vscode
+
+# Angular build cache
+.angular
+
+# Build output regenerated inside the image
+dist/www
+dist/node_modules
+
+# Tests, docs, logs — not needed to build or run
+coverage
+e2e
+docs
+*.log
+npm-debug.log*
+yarn-error.log

@@ -32,7 +32,7 @@ When asked about features or intent, frame answers as a content-creation / CMS t
 
 **Utilities:** moment + moment-timezone, dayjs, lodash, uuid, jQuery (legacy integrations), Shepherd.js, mustache, dom-to-image, file-saver, typeface-roboto.
 
-**Build/DevOps:** ng-packagr 21 · Jest 29 · ESLint 9 / @angular-eslint 21 (legacy `.eslintrc.json`, flat config deferred) · gzipper (gzip+brotli) · Docker (prod base `node:22`) · Jenkins.
+**Build/DevOps:** ng-packagr 21 · Jest 29 · ESLint 9 / @angular-eslint 21 (legacy `.eslintrc.json`, flat config deferred) · gzipper (gzip+brotli) · Docker (multi-stage: `node:20` builder + `node:20-slim` runtime) · Jenkins.
 
 ---
 
