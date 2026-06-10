@@ -82,7 +82,15 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
       this.html = value
     }
     if (this.editorInstance && this.editorInstance.status === 'ready') {
-      this.editorInstance.setData(this.html)
+      // Only push data into the editor for genuine EXTERNAL changes. When the user is
+      // typing, the parent echoes the value straight back through this setter; calling
+      // setData() on that echo resets the caret to position 0, so each keystroke gets
+      // inserted at the start and the text comes out reversed ("gninrom doog"). Skip
+      // setData while the editor has focus, and when the data is already identical.
+      const hasFocus = !!(this.editorInstance.focusManager && this.editorInstance.focusManager.hasFocus)
+      if (!hasFocus && this.editorInstance.getData() !== this.html) {
+        this.editorInstance.setData(this.html)
+      }
     }
   }
   @Input() id = ''

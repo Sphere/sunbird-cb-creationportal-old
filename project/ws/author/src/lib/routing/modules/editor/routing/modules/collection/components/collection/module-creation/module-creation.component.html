@@ -477,7 +477,8 @@
             <!-- Video uploaded -->
             <div *ngIf="uploadVideoUrl && content?.mimeType === 'video/mp4'" class="mc-video-preview">
               <video #videoPlayer width="100%" height="auto" crossorigin="anonymous"
-                [poster]="uploadVideoUrl" class="video-js" controls>
+                [poster]="uploadVideoUrl" class="video-js" controls
+                (loadedmetadata)="onVideoMetadataLoaded($event)">
                 <source [src]="uploadVideoUrl" type="video/mp4">
                 <source [src]="uploadVideoUrl" type="application/x-mpegURL">
                 <track kind="captions" [src]="uploadVideoUrl" srclang="en" label="English" default>
@@ -752,7 +753,8 @@
                 <!-- Video uploaded -->
                 <div *ngIf="uploadVideoUrl && content?.mimeType === 'video/mp4'" class="mc-video-preview">
                   <video #videoPlayer2 width="100%" height="auto" crossorigin="anonymous"
-                    [poster]="uploadVideoUrl" class="video-js" controls>
+                    [poster]="uploadVideoUrl" class="video-js" controls
+                    (loadedmetadata)="onVideoMetadataLoaded($event)">
                     <source [src]="uploadVideoUrl" type="video/mp4">
                     <source [src]="uploadVideoUrl" type="application/x-mpegURL">
                     <track kind="captions" [src]="uploadVideoUrl" srclang="en" label="English" default>
@@ -910,6 +912,10 @@
                   [(ngModel)]="question.timestamp.seconds" [ngModelOptions]="{standalone: true}"
                   placeholder="ss" min="1" max="59" step="1" (ngModelChange)="updateTimestampInSeconds(i)">
               </div>
+              <span class="invalid-text timestamp-error" *ngIf="isTimestampBeyondVideo(question)">
+                Timestamp must be within the video length ({{ videoActualDuration | formatDuration }}).
+                The quiz won't appear after the video ends.
+              </span>
               <div class="mb-2" *ngFor="let subQuestion of question.question; let j = index">
                 <div class="question">
                   <textarea rows="2" matInput [(ngModel)]="subQuestion.text"
@@ -955,13 +961,13 @@
                 </button>
                 <ng-container *ngIf="useResourceSave; else mainQuizSaveBtn">
                   <div *ngIf="isPdfOrAudioOrVedioEnabled">
-                    <button [disabled]="uploadFileName === ''" mat-raised-button
+                    <button [disabled]="uploadFileName === '' || hasTimestampBeyondVideo" mat-raised-button
                       class="width-15 mb-2 text-white mat-button-base save-btn-bottom resourcePdfSave"
                       (click)="resourcePdfSave()">Save</button>
                   </div>
                 </ng-container>
                 <ng-template #mainQuizSaveBtn>
-                  <button [disabled]="(uploadFileName ? uploadFileName === '' : true)" mat-raised-button
+                  <button [disabled]="(uploadFileName ? uploadFileName === '' : true) || hasTimestampBeyondVideo" mat-raised-button
                     *ngIf="moduleButtonName === 'Save' && content?.contentType !== 'Collection' && content?.contentType !== 'CourseUnit' && content?.contentType !== 'Course' && !isLinkEnabled && content?.mimeType !== 'application/json'"
                     class="width-15 text-white mat-button-base save-btn-bottom resourcePdfSave"
                     (click)="saveDetails(moduleName, topicDescription, thumbnail, isNewTab, isShowBtn, content?.mimeType)">

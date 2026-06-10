@@ -64,14 +64,10 @@
           <div class="flex romanN text-center items-center pl-4">{{ i + 1 | romanconvert }}.</div>
           <div class="cursor-auto item1 item-spacing" [ngClass]="{ 'width-31': showHint }">
             <!-- fxFlex.lt-sm="34%" fxFlex.lt-md="35%" fxFlex="37%" -->
-            <mat-form-field class="w-full myfield" appearance="outline">
-              <input matInput formControlName="text" i18n-aria-label aria-label="enter text" />
-            </mat-form-field>
+            <input class="module-input" formControlName="text" i18n-aria-label aria-label="enter text" />
           </div>
           <div class="cursor-auto item1 item-spacing" [ngClass]="{ 'width-31': showHint }">
-            <mat-form-field class="w-full myfield" appearance="outline">
-              <input matInput formControlName="match" i18n-aria-label aria-label="enter match" />
-            </mat-form-field>
+            <input class="module-input" formControlName="match" i18n-aria-label aria-label="enter match" />
           </div>
           <div class="flex hint-button justify-center item-spacing" *ngIf="showHint">
             <button class="inline-flex py-2 px-4 items-center hint" (click)="openCkEditor(i)" mat-button i18n-aria-label aria-label="edit hint"
@@ -139,9 +135,7 @@
                 </div>
 
                 <div class="cursor-auto flex-grow pr-1 minorChange WidthForsmall paddforInput">
-                  <mat-form-field class="myfield w-full" appearance="outline">
-                    <input matInput formControlName="text" i18n-aria-label aria-label="enter text" />
-                  </mat-form-field>
+                  <input class="module-input" formControlName="text" i18n-aria-label aria-label="enter text" />
                 </div>
               </div>
               <div class="flex items-center minorChange">
@@ -171,9 +165,7 @@
                 </div>
 
                 <div class="cursor-auto pr-1 flex-grow minorChange WidthForsmall paddforInput">
-                  <mat-form-field class="myfield w-full" appearance="outline">
-                    <input matInput formControlName="match" i18n-aria-label aria-label="enter match" />
-                  </mat-form-field>
+                  <input class="module-input" formControlName="match" i18n-aria-label aria-label="enter match" />
                 </div>
               </div>
             </div>

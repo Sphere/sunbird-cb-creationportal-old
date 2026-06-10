@@ -1809,6 +1809,13 @@ display: flex;
   font-weight: bold;
 }
 
+// In-video quiz: timestamp-past-end warning
+.timestamp-error {
+  margin-top: -4px;
+  margin-bottom: 10px;
+  max-width: 420px;
+}
+
 .answer-info-input {
   margin-left: 10px;
   width: 200px;

@@ -754,6 +754,33 @@ a.width-auto.mat-mdc-button {
     font-size: 27px;
 }
 
+// ── Dialog close (and other icon) buttons — keep glyph + hover circle aligned ─
+// MDC icon-buttons keep their internal padding, so when a close button is
+// resized the glyph renders toward the top-left while the hover state-layer
+// (the grey circle) stays centred — they no longer line up. Force flex-centring
+// on every icon-button inside a dialog so glyph and hover circle share a centre.
+// Same recipe the codebase already uses for `.small-button`.
+.mat-mdc-dialog-container button.mat-mdc-icon-button,
+.cdk-overlay-container .mat-mdc-dialog-container button.mat-mdc-icon-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  line-height: normal !important;
+
+  .mat-mdc-button-touch-target {
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  .mat-icon,
+  mat-icon {
+    margin: 0 !important;
+    line-height: 1 !important;
+  }
+}
+
 // ── Global snackbar (NotificationComponent) styling ───────────────────────
 .mat-mdc-snack-bar-container {
   --mdc-snackbar-container-color: #1a2d45;

@@ -114,21 +114,24 @@
                       <span>{{isQuiz}} Details</span>
                     </div>
                     <div class="qb-section-body qb-form-row">
-                      <mat-form-field *ngIf="isQuiz == 'Assessment'" appearance="outline" class="qb-field">
-                        <mat-label>Pass Percentage <span class="qb-req">*</span></mat-label>
-                        <input matInput placeholder="e.g. 60" max="100" [(ngModel)]="passPercentage"
-                          (change)="addTodo(passPercentage, 'passPercentage')" type="number" />
-                      </mat-form-field>
-                      <mat-form-field appearance="outline" class="qb-field">
-                        <mat-label>Duration (Minutes) <span class="qb-req">*</span></mat-label>
-                        <input matInput type="number" placeholder="e.g. 30" min="2" [(ngModel)]="assessmentDuration"
-                          (change)="addTodo(assessmentDuration, 'assessmentDuration')" />
-                      </mat-form-field>
-                      <mat-form-field appearance="outline" class="qb-field">
-                        <mat-label>Random Count</mat-label>
-                        <input matInput type="number" placeholder="Random question count" [(ngModel)]="randomCount"
+                      <div class="qb-field" *ngIf="isQuiz == 'Assessment'">
+                        <label class="field-label" for="qbPassPercentage">Pass Percentage <span
+                            class="qb-req">*</span></label>
+                        <input id="qbPassPercentage" class="module-input" type="number" max="100" placeholder="e.g. 60"
+                          [(ngModel)]="passPercentage" (change)="addTodo(passPercentage, 'passPercentage')" />
+                      </div>
+                      <div class="qb-field">
+                        <label class="field-label" for="qbDuration">Duration (Minutes) <span
+                            class="qb-req">*</span></label>
+                        <input id="qbDuration" class="module-input" type="number" min="2" placeholder="e.g. 30"
+                          [(ngModel)]="assessmentDuration" (change)="addTodo(assessmentDuration, 'assessmentDuration')" />
+                      </div>
+                      <div class="qb-field">
+                        <label class="field-label" for="qbRandomCount">Random Count</label>
+                        <input id="qbRandomCount" class="module-input" type="number"
+                          placeholder="Random question count" [(ngModel)]="randomCount"
                           (change)="addTodo(randomCount, 'randomCount')" />
-                      </mat-form-field>
+                      </div>
                     </div>
                   </div>
 

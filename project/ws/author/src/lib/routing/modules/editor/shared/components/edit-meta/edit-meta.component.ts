@@ -216,6 +216,10 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   fieldActive!: boolean
   isFormValid!: boolean
   competencies: any
+  // False until the fresh readcontentV3 response has populated the form. Gates the
+  // Basic Information + Thumbnail fields in the template so the stale cached values
+  // (seeded synchronously) never flash before the latest server data arrives.
+  metaLoaded = false
   constructor(
     // private storeService: CollectionStoreService,
     private formBuilder: FormBuilder,
@@ -806,6 +810,11 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       this.createForm()
     }
     this.canUpdate = false
+    // Hide the Basic Info + Thumbnail fields until the fresh read returns, so the
+    // synchronous stale seeding below isn't shown before the latest data lands.
+    // Show the global "Please wait" loader for the duration of the fetch.
+    this.metaLoaded = false
+    this.loader.changeLoad.next(true)
     const url = this.router.url
     const id = url.split('/')
     this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
@@ -833,6 +842,8 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       } else {
         this.competencies = []
       }
+      // Latest server data is now in the form — safe to reveal the gated fields.
+      this.metaLoaded = true
       if (res.children.length > 0) {
         this.loader.changeLoad.next(true)
         res.children.forEach((element: any) => {
@@ -874,9 +885,14 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
         }
         this.loader.changeLoad.next(false)
       } else {
-
+        this.loader.changeLoad.next(false)
       }
 
+    }, () => {
+      // On read failure, still reveal the fields and hide the loader so the form
+      // isn't stuck behind the overlay.
+      this.metaLoaded = true
+      this.loader.changeLoad.next(false)
     })
     Object.keys(this.contentForm.controls).map(v => {
       try {

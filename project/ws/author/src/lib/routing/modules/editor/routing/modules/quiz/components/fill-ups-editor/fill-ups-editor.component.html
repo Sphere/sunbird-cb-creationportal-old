@@ -37,9 +37,7 @@
       <div class="flex justify-between w-full items-center" [formGroupName]="i">
         <div class="flex romanN text-center items-center pl-4">{{ i + 1 | romanconvert }}.</div>
         <div class="cursor-auto item1 item-spacing">
-          <mat-form-field class="myfield w-full" appearance="outline" appearance="outline">
-            <input matInput formControlName="text" i18n-aria-label aria-label="enter answer" />
-          </mat-form-field>
+          <input class="module-input" formControlName="text" i18n-aria-label aria-label="enter answer" />
         </div>
         <div class="flex hint-button justify-center item-spacing" *ngIf="showHint">
           <button class="inline-flex py-2 px-4 items-center" (click)="openCkEditor(i)" mat-button i18n-aria-label aria-label="edit hint"
@@ -78,9 +76,7 @@
             </div>
             <div class="flex-col w-full">
               <div class="cursor-auto item-spacing">
-                <mat-form-field class="myfield w-full" appearance="outline" appearance="outline">
-                  <input matInput formControlName="text" i18n-aria-label aria-label="enter answer" />
-                </mat-form-field>
+                <input class="module-input" formControlName="text" i18n-aria-label aria-label="enter answer" />
               </div>
             </div>
             <div class="flex justify-start forHeight" *ngIf="showHint">

@@ -453,30 +453,33 @@ animation-delay: -0.5s;
   padding: 0;
 }
 
-// ── MDC form field tokens for content area ─────────────────────────────────
-::ng-deep .qb-content-body .mat-mdc-form-field {
-  --mdc-outlined-text-field-container-shape: 8px;
-  --mdc-outlined-text-field-outline-color: #b8c9d9;
-  --mdc-outlined-text-field-hover-outline-color: #1C5D95;
-  --mdc-outlined-text-field-focus-outline-color: #1C5D95;
-  --mdc-outlined-text-field-focus-outline-width: 2px;
-  --mdc-outlined-text-field-label-text-font: Roboto, sans-serif;
-  --mdc-outlined-text-field-input-text-font: Roboto, sans-serif;
-  --mdc-outlined-text-field-input-text-size: 13px;
-  --mdc-outlined-text-field-label-text-size: 13px;
-  --mdc-outlined-text-field-label-text-color: #64748B;
-  --mdc-outlined-text-field-input-text-color: #0F172A;
+// ── Native form field (replaces MDC outline — see CLAUDE.md §7) ─────────────
+.field-label {
+  display: block;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748B;
+  margin-bottom: 6px;
+}
 
-  // Compact field — 36px total height
-  .mat-mdc-form-field-infix {
-    padding-top: 8px !important;
-    padding-bottom: 8px !important;
-    min-height: 36px !important;
-  }
+.module-input {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  color: #1a2d45;
+  line-height: 1.5;
+  width: 100%;
+  height: 38px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #b8c9d9;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
 
-  .mat-mdc-text-field-wrapper {
-    padding: 0 12px !important;
-  }
+  &:hover { border-color: #8aaac8; }
+  &:focus { outline: none; border-color: #1C5D95; border-width: 2px; }
+  &::placeholder { color: #94A3B8; }
 }
 
 // ── Section cards (Details, Bulk Upload) ────────────────────────────────────
@@ -529,10 +532,12 @@ animation-delay: -0.5s;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .qb-field {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-width: 160px;
   max-width: 240px;
@@ -746,24 +751,8 @@ animation-delay: -0.5s;
   min-height: 44px !important;
 }
 
-// Option form fields (myfield)
-::ng-deep ws-auth-multiple-choice-question .myfield,
-::ng-deep ws-auth-fill-ups-editor .myfield {
-  --mdc-outlined-text-field-container-shape: 8px;
-  --mdc-outlined-text-field-outline-color: #CBD5E1;
-  --mdc-outlined-text-field-hover-outline-color: #1C5D95;
-  --mdc-outlined-text-field-focus-outline-color: #1C5D95;
-  --mdc-outlined-text-field-input-text-font: Roboto, sans-serif;
-  --mdc-outlined-text-field-input-text-size: 13px;
-  --mdc-outlined-text-field-input-text-color: #0F172A;
-}
-
-::ng-deep ws-auth-multiple-choice-question .myfield .mat-mdc-form-field-infix,
-::ng-deep ws-auth-fill-ups-editor .myfield .mat-mdc-form-field-infix {
-  padding-top: 7px !important;
-  padding-bottom: 7px !important;
-  min-height: 34px !important;
-}
+// Option form fields are now native `.module-input` elements styled in each
+// sub-component's SCSS (see CLAUDE.md §7) — no MDC overrides needed here.
 
 // Option delete button — compact, muted
 ::ng-deep ws-auth-multiple-choice-question .optionlist .custom .mat-mdc-icon-button,

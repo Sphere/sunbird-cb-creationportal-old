@@ -231,6 +231,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   hours = 0
   minutes = 0
   seconds = 0
+  // Real length (in seconds) of the uploaded video, read from the browser via the
+  // <video> loadedmetadata event. Used to validate in-video quiz timestamps against
+  // the actual clip — not the manually-typed Duration field. null until a video loads.
+  videoActualDuration: number | null = null
   courseHours = 0
   courseMinutes = 0
   courseSeconds = 0
@@ -723,6 +727,32 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   updateTimestampInSeconds(index: number): void {
     const { hours, minutes, seconds } = this.videoQuestions[index].timestamp
     this.videoQuestions[index].timestampInSeconds = (hours * 3600) + (minutes * 60) + seconds
+  }
+
+  // Captures the true video length from the browser once metadata is available, so
+  // in-video quiz timestamps can be validated against the actual clip rather than the
+  // manually-entered Duration field. Fires for both #videoPlayer and #videoPlayer2.
+  onVideoMetadataLoaded(event: Event): void {
+    const videoEl = event.target as HTMLVideoElement
+    if (videoEl && isFinite(videoEl.duration) && videoEl.duration > 0) {
+      this.videoActualDuration = Math.floor(videoEl.duration)
+    }
+  }
+
+  // True when this question's timestamp falls past the end of the video, so the quiz
+  // would never trigger. Returns false until the real duration is known.
+  isTimestampBeyondVideo(question: { timestampInSeconds: number }): boolean {
+    if (this.videoActualDuration == null) { return false }
+    return question.timestampInSeconds > this.videoActualDuration
+  }
+
+  // True when any in-video quiz question is timestamped past the video end — used to
+  // block Save so an unreachable quiz can't be persisted.
+  get hasTimestampBeyondVideo(): boolean {
+    if (this.videoActualDuration == null || !this.videoQuestions || !this.videoQuestions.length) {
+      return false
+    }
+    return this.videoQuestions.some((q: any) => q.timestampInSeconds > this.videoActualDuration!)
   }
   addOption(questionIndex: number, subQuestionIndex: number) {
     this.videoQuestions[questionIndex].question[subQuestionIndex].options.push({ optionId: this.generateOptionId(), text: '', isCorrect: false, answerInfo: '' })
@@ -2212,6 +2242,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         this.uploadFileName = ''
         this.videoQuestions = []
         this.uploadVideoUrl = ''
+        this.videoActualDuration = null
         this.cdr.detectChanges()
         if (this.videoPlayer) {
           const videoElement = this.videoPlayer.nativeElement
@@ -2371,6 +2402,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     } else if (name == 'Video') {
       this.videoQuestions = []
       this.uploadVideoUrl = ''
+      this.videoActualDuration = null
       this.cdr.detectChanges() // Ensure template updates before manipulating the DOM
       if (this.videoPlayer) {
         const videoElement = this.videoPlayer.nativeElement
@@ -2550,6 +2582,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     this.duration = content.duration
     this.isPdfOrAudioOrVedioEnabled = false
     this.uploadVideoUrl = ''
+    this.videoActualDuration = null
 
     this.videoQuestions = []
     if (content.mimeType == 'text/x-url') {
@@ -2882,9 +2915,11 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     return data.map((item: any, index: number) => {
       const result: any = { index }
 
-      // Check if timestampInSeconds is greater than timeToSeconds
-      console.log("this.timeToSeconds", item.timestampInSeconds, this.timeToSeconds())
-      if (item.timestampInSeconds > this.timeToSeconds()) {
+      // Validate the timestamp against the ACTUAL video length (read from the browser)
+      // when available, falling back to the manually-entered Duration. This stops a quiz
+      // timestamp being accepted just because the typed Duration is larger than the clip.
+      const maxAllowedSeconds = this.videoActualDuration != null ? this.videoActualDuration : this.timeToSeconds()
+      if (item.timestampInSeconds > maxAllowedSeconds) {
         result.invalidTime = true
       } else if (item.timestampInSeconds === 0) {
         result.invalidSec = true

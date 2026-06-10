@@ -46,9 +46,7 @@
         </div>
         <div class="cursor-auto item2 item-spacing">
           <!-- fxFlex.lt-sm="53%" fxFlex="63%" fxFlex.lt-md="58%" -->
-          <mat-form-field class="w-full myfield" appearance="outline">
-            <input matInput formControlName="text" i18n-aria-label aria-label="Enter answer" />
-          </mat-form-field>
+          <input class="module-input" formControlName="text" i18n-aria-label aria-label="Enter answer" />
         </div>
         <div class="flex hint-button justify-center item-spacing" *ngIf="showHint">
           <button class="inline-flex remove-padding items-center" (click)="openCkEditor(i)" i18n-aria-label aria-label="edit hint"
@@ -89,9 +87,7 @@
             <div class="flex-col w-full">
               <div class="cursor-auto item-spacing">
                 <!-- fxFlex.lt-sm="53%" fxFlex="63%" fxFlex.lt-md="58%" -->
-                <mat-form-field class="w-full myfield" appearance="outline">
-                  <input matInput formControlName="text" i18n-aria-label aria-label="Enter answer" />
-                </mat-form-field>
+                <input class="module-input" formControlName="text" i18n-aria-label aria-label="Enter answer" />
               </div>
             </div>
             <div class="flex justify-between forHeight">

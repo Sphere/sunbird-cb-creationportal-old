@@ -141,15 +141,25 @@
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-::ng-deep .myfield .mat-form-field-wrapper,
-::ng-deep .myfield .mat-mdc-text-field-wrapper {
-  padding: 0px !important;
-}
+// Native option input (replaces MDC outline — see CLAUDE.md §7) — text sits
+// left and vertically centred, no reserved subscript band to throw off the row.
+.module-input {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  color: #1a2d45;
+  line-height: 1.5;
+  width: 100%;
+  height: 38px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #b8c9d9;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
 
-// No hint/error shown under these option inputs — remove the reserved subscript
-// band so the field height equals the input box and the row items align to it.
-::ng-deep .myfield .mat-mdc-form-field-subscript-wrapper {
-  display: none;
+  &:hover { border-color: #8aaac8; }
+  &:focus { outline: none; border-color: #1C5D95; border-width: 2px; }
+  &::placeholder { color: #94A3B8; }
 }
 
 .mat-button,

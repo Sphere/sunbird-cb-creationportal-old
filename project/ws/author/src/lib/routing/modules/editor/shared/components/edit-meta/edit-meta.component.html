@@ -313,6 +313,7 @@
             </div>
           </div>
           <div class="em-card-body">
+            <ng-container *ngIf="metaLoaded">
             <mat-form-field appearance="outline" class="em-field"
               [ngClass]="{ 'mat-form-field-invalid': showError('name') }">
               <mat-label i18n>Course Name <span class="em-req">*</span></mat-label>
@@ -343,6 +344,7 @@
               <mat-hint i18n>Primary language of the course content</mat-hint>
               <mat-error i18n>Language is required</mat-error>
             </mat-form-field>
+            </ng-container>
           </div>
         </div>
 
@@ -383,6 +385,7 @@
             </div>
           </div>
           <div class="em-card-body">
+            <ng-container *ngIf="metaLoaded">
             <!-- Preview after upload -->
             <div *ngIf="contentForm.controls.appIcon.value" class="em-thumb-preview">
               <img [src]="contentForm.controls.appIcon.value" alt="Thumbnail preview"
@@ -406,6 +409,7 @@
             <input type="file" #uploadThumbnail
               (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null"
               style="display:none" [accept]="imageTypes.toString()" />
+            </ng-container>
           </div>
         </div>
 
