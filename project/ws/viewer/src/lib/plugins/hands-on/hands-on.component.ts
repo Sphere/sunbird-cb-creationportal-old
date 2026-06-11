@@ -102,6 +102,11 @@ export class HandsOnComponent implements OnInit, OnChanges, OnDestroy {
     private eventSvc: EventService,
   ) { }
 
+  // trackBy so *ngFor reuses rows instead of rebuilding the list on each change.
+  trackByIndex(index: number): number {
+    return index
+  }
+
   ngOnInit() {
     this.EXECUTION_STATUS = NSHandsOnConstants.EXECUTION_STATUS
   }

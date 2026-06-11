@@ -39,7 +39,7 @@
           </div>
           <div *ngIf="!isSelfAssessment" style="width: 324px;" class="model-left-create-content div-1" cdkDropList
             (cdkDropListDropped)="drop($event)">
-            <div class="module-container" *ngFor="let module of courseData?.children;index as i">
+            <div class="module-container" *ngFor="let module of courseData?.children;index as i; trackBy: trackByIdentifier">
               <div>
                 <div (click)="editContent(module)" class="left-block-container main"
                   *ngIf="module.primaryCategory === 'Course Unit'"
@@ -90,7 +90,7 @@
                 </div>
 
                 <div class="children" *ngIf="module?.children?.length > 0&&showChildrenMap[module.identifier]">
-                  <div (click)=" editContent(resource)" *ngFor="let resource of module.children;index as l"
+                  <div (click)=" editContent(resource)" *ngFor="let resource of module.children;index as l; trackBy: trackByIdentifier"
                     class="resource-1" style="cursor:pointer"
                     [ngClass]="editItem === resource.identifier ? 'edit-item' : ''" matTooltip="dragDrop"
                     [matTooltipPosition]="'left'"
@@ -172,7 +172,7 @@
             <!--module left canvas creation-->
             <div class="model-left-create-content div-2" *ngIf="showAddModuleForm && moduleNames.length >0" cdkDropList
               (cdkDropListDropped)="drop($event)">
-              <div (click)="editContent(module)" class="module-container" *ngFor="let module of moduleNames">
+              <div (click)="editContent(module)" class="module-container" *ngFor="let module of moduleNames; trackBy: trackByIdentifier">
                 <div class="mod-heading">
                   <h2 class="module-text" style="margin: 0px !important;">{{module.name !== '' ? module.name : "no
                     title2"}}
@@ -180,7 +180,7 @@
                   <span fxFlex style="flex: 1 1 auto;"></span>
                 </div>
                 <div *ngIf="isOnClickOfResourceTypeEnabled">
-                  <div (click)="editContent(resource)" *ngFor="let resource of resourceNames"
+                  <div (click)="editContent(resource)" *ngFor="let resource of resourceNames; trackBy: trackByIdentifier"
                     class="heading-resource resource-3">
                     <div class="custom-placeholder border border-solid" *cdkDragPlaceholder></div>
                     <mat-icon class="cursor-pointer" matTooltip="dragDrop" [matTooltipPosition]="'left'" cdkDrag
@@ -200,7 +200,7 @@
             </div>
           </div>
           <div *ngIf="isSelfAssessment" class="model-left-create-content div-1 sa-level-list">
-            <div class="module-container" *ngFor="let module of courseData?.children;index as i">
+            <div class="module-container" *ngFor="let module of courseData?.children;index as i; trackBy: trackByIdentifier">
               <div>
                 <div (click)="editContent(module)" class="left-block-container"
                   *ngIf="module.primaryCategory === 'Course Unit'"
@@ -217,7 +217,7 @@
                   </div>
                 </div>
                 <div *ngIf="module?.children?.length > 0">
-                  <div (click)="editContent(resource)" *ngFor="let resource of module.children;index as l"
+                  <div (click)="editContent(resource)" *ngFor="let resource of module.children;index as l; trackBy: trackByIdentifier"
                     class="resource-1" style="cursor:pointer"
                     [ngClass]="editItem === resource.identifier ? 'edit-item' : ''" style="cursor: pointer;">
                     <img *ngIf="editItem !== resource.identifier" src="cbp-assets/icons/Vector.svg" alt="dragDrop"
@@ -259,7 +259,7 @@
             <!--module left canvas creation-->
             <div class="model-left-create-content div-2" *ngIf="showAddModuleForm && moduleNames.length >0" cdkDropList
               (cdkDropListDropped)="drop($event)">
-              <div (click)="editContent(module)" class="module-container" *ngFor="let module of moduleNames">
+              <div (click)="editContent(module)" class="module-container" *ngFor="let module of moduleNames; trackBy: trackByIdentifier">
                 <div class="mod-heading">
                   <h2 class="module-text" style="margin: 0px !important;">{{module.name !== '' ? module.name : "no
                     title2"}}
@@ -267,7 +267,7 @@
                   <span fxFlex style="flex: 1 1 auto;"></span>
                 </div>
                 <div *ngIf="isOnClickOfResourceTypeEnabled">
-                  <div (click)="editContent(resource)" *ngFor="let resource of resourceNames"
+                  <div (click)="editContent(resource)" *ngFor="let resource of resourceNames; trackBy: trackByIdentifier"
                     class="heading-resource resource-3">
                     <div class="custom-placeholder border border-solid" *cdkDragPlaceholder></div>
                     <mat-icon class="cursor-pointer" matTooltip="dragDrop" [matTooltipPosition]="'left'" cdkDrag
@@ -834,7 +834,7 @@
             <ng-container *ngIf="!isSelfAssessment">
               <p class="mc-section-label">Learning Format</p>
               <div class="mc-format-grid">
-                <div class="mc-format-item" *ngFor="let list of contentList"
+                <div class="mc-format-item" *ngFor="let list of contentList; trackBy: trackByIndex"
                   (click)="createResourseContent(list.name, list.type)" role="button" tabindex="0">
                   <div class="mc-format-icon-box">
                     <img loading="lazy" [src]="list.icon" [alt]="list.name" />
@@ -846,7 +846,7 @@
 
             <p class="mc-section-label">Assess your Learners</p>
             <div class="mc-assess-grid">
-              <div class="mc-assess-item" *ngFor="let list of accessList"
+              <div class="mc-assess-item" *ngFor="let list of accessList; trackBy: trackByIndex"
                 (click)="createResourseContent(list.name, list.type)" role="button" tabindex="0">
                 <div class="mc-assess-item-inner">
                   <div class="mc-format-icon-box">
@@ -887,7 +887,7 @@
         <ng-template #videoQuizFormTpl let-useResourceSave="useResourceSave">
           <div *ngIf="showQuizForm" class="module-txt-block quiz-form">
             <div class="tabs">
-              <div *ngFor="let question of videoQuestions; let i = index" class="tab"
+              <div *ngFor="let question of videoQuestions; let i = index; trackBy: trackByIndex" class="tab"
                 [ngClass]="{'active-tab': i === activeTabIndex}" (click)="setActiveTab(i)"
                 (keydown)="handleKeyDown($event, i)">
                 Question {{i + 1}}
@@ -896,7 +896,7 @@
                   src="cbp-assets/icons/bin.svg" alt="delete-icon">
               </div>
             </div>
-            <div *ngFor="let question of videoQuestions; let i = index" class="question-form"
+            <div *ngFor="let question of videoQuestions; let i = index; trackBy: trackByIndex" class="question-form"
               [ngClass]="{'active-form': i === activeTabIndex}">
               <div class="duration-style margin-bottom-s timestamp">
                 <span class="timestamp-text">Timestamp:</span>
@@ -916,7 +916,7 @@
                 Timestamp must be within the video length ({{ videoActualDuration | formatDuration }}).
                 The quiz won't appear after the video ends.
               </span>
-              <div class="mb-2" *ngFor="let subQuestion of question.question; let j = index">
+              <div class="mb-2" *ngFor="let subQuestion of question.question; let j = index; trackBy: trackByIndex">
                 <div class="question">
                   <textarea rows="2" matInput [(ngModel)]="subQuestion.text"
                     [ngModelOptions]="{standalone: true}" class="module-input question-text margin-top-s"
@@ -932,7 +932,7 @@
                       the text field next to it.</span>
                   </div>
                 </div>
-                <div class="mt-1 option-block" *ngFor="let option of subQuestion.options; let k = index">
+                <div class="mt-1 option-block" *ngFor="let option of subQuestion.options; let k = index; trackBy: trackByIndex">
                   <div class="input-container">
                     <div class="option-container">
                       <input type="radio" name="isCorrect-{{i}}-{{j}}" [checked]="option.isCorrect"
@@ -1093,7 +1093,7 @@
             <div class="mt-4">
               <mat-radio-group aria-labelledby="example-radio-group-label"
                 class="flex flex-1 flex-column example-radio-group" [(ngModel)]="fileUploadCondition.url">
-                <mat-radio-button class="example-radio-button" *ngFor="let file of fileList" [value]="file"
+                <mat-radio-button class="example-radio-button" *ngFor="let file of fileList; trackBy: trackByIndex" [value]="file"
                   (change)="selectEntryPoint(file)">
                   {{file}}
                 </mat-radio-button>
@@ -1121,7 +1121,7 @@
               </button>
             </div>
             <div style="max-height: 400px" class="mat-form-field mt-4" id="errorFiles">
-              <div *ngFor="let name of errorFileList">{{name}}</div>
+              <div *ngFor="let name of errorFileList; trackBy: trackByIndex">{{name}}</div>
             </div>
           </div>
           <div class="flex justify-center">

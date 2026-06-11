@@ -666,6 +666,12 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     }
   }
 
+  // trackBy for the form option/chip lists so *ngFor reuses rows instead of
+  // re-rendering the whole list on each change.
+  trackByIndex(index: number): number {
+    return index
+  }
+
   changeCertificate(event: any): void {
     if (event == 'Yes') {
       this.isAddCerticate = true

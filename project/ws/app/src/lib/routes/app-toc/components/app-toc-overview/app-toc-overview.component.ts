@@ -59,6 +59,11 @@ export class AppTocOverviewComponent implements OnInit, OnDestroy {
     }
   }
 
+  // trackBy so *ngFor reuses rows instead of rebuilding the list on each change.
+  trackByIndex(index: number): number {
+    return index
+  }
+
   ngOnInit() {
     if (!this.forPreview) {
       this.forPreview = window.location.href.includes('/author/')

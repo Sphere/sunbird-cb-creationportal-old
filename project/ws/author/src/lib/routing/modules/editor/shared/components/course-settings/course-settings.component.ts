@@ -637,6 +637,12 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   clickedNext() {
     this.authInitService.saveData('saved')
   }
+  // trackBy for the form option/chip lists so *ngFor reuses rows instead of
+  // re-rendering the whole list on each change.
+  trackByIndex(index: number): number {
+    return index
+  }
+
   changeCertificate(event: any): void {
     if (event == 'Yes') {
       this.isAddCerticate = true

@@ -219,7 +219,7 @@
                     Result
                   </th>
                 </tr>
-                <tr *ngFor="let obj of verifyResult?.structural; let i = index">
+                <tr *ngFor="let obj of verifyResult?.structural; let i = index; trackBy: trackByIndex">
                   <td>
                     {{ obj.SNo }}
                   </td>
@@ -247,7 +247,7 @@
                     </mat-icon>
                   </td>
                 </tr>
-                <tr *ngFor="let obj of verifyResult?.sample; let i = index">
+                <tr *ngFor="let obj of verifyResult?.sample; let i = index; trackBy: trackByIndex">
                   <td>
                     {{ obj.SNo }}
                   </td>
@@ -275,7 +275,7 @@
                     </mat-icon>
                   </td>
                 </tr>
-                <tr *ngFor="let obj of verifyResult?.actual; let i = index">
+                <tr *ngFor="let obj of verifyResult?.actual; let i = index; trackBy: trackByIndex">
                   <td>
                     {{ obj.SNo }}
                   </td>
@@ -377,7 +377,7 @@
                     Result
                   </th>
                 </tr>
-                <tr *ngFor="let obj of verifyResult?.Samples; let i = index">
+                <tr *ngFor="let obj of verifyResult?.Samples; let i = index; trackBy: trackByIndex">
                   <td>
                     {{ i + 1 }}
                   </td>
@@ -396,7 +396,7 @@
                     <mat-icon *ngIf="obj.result !== 'Passed'" class="color-red">clear</mat-icon>
                   </td>
                 </tr>
-                <tr *ngFor="let obj of verifyResult?.Hiddens; let i = index">
+                <tr *ngFor="let obj of verifyResult?.Hiddens; let i = index; trackBy: trackByIndex">
                   <td>
                     {{ i + 1 + verifyResult?.Samples?.length }}
                   </td>
@@ -417,7 +417,7 @@
                     <mat-icon *ngIf="obj.result !== 'Passed'" class="color-red">clear</mat-icon>
                   </td>
                 </tr>
-                <tr *ngFor="let obj of verifyResult?.HiddensFailedHalved; let i = index">
+                <tr *ngFor="let obj of verifyResult?.HiddensFailedHalved; let i = index; trackBy: trackByIndex">
                   <td>
                     {{ i + 1 + verifyResult?.Samples?.length + verifyResult?.Hiddens?.length }}
                   </td>
@@ -532,7 +532,7 @@
                     Result
                   </th>
                 </tr>
-                <tr *ngFor="let obj of verifyJavaResult?.structural; let i = index">
+                <tr *ngFor="let obj of verifyJavaResult?.structural; let i = index; trackBy: trackByIndex">
                   <td>
                     {{ i + 1 }}
                   </td>
@@ -570,7 +570,7 @@
                     <mat-icon *ngIf="obj.tcstatus !== 'pass'" class="color-red">clear</mat-icon>
                   </td>
                 </tr>
-                <tr *ngFor="let obj of verifyJavaResult?.sample; let i = index">
+                <tr *ngFor="let obj of verifyJavaResult?.sample; let i = index; trackBy: trackByIndex">
                   <td>
                     {{ (verifyJavaResult?.structural?.length || 0) + i + 1 }}
                   </td>
@@ -606,7 +606,7 @@
                     <mat-icon *ngIf="obj.tcstatus !== 'pass'" class="color-red">clear </mat-icon>
                   </td>
                 </tr>
-                <tr *ngFor="let obj of verifyJavaResult?.actual; let i = index">
+                <tr *ngFor="let obj of verifyJavaResult?.actual; let i = index; trackBy: trackByIndex">
                   <td>
                     {{ (verifyJavaResult?.structural?.length || 0) + (verifyJavaResult?.sample?.length || 0) + i + 1 }}
                   </td>
@@ -666,7 +666,7 @@
                       Violation
                     </th>
                   </tr>
-                  <tr *ngFor="let obj of verifyJavaResult.codeQuality.data; let i = index">
+                  <tr *ngFor="let obj of verifyJavaResult.codeQuality.data; let i = index; trackBy: trackByIndex">
                     <td>
                       {{i + 1}}
                     </td>

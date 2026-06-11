@@ -364,6 +364,17 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     return count
   }
 
+  // trackBy helpers — let *ngFor reuse DOM rows instead of tearing down/rebuilding the
+  // whole list (and its child components) on every change. Identifier for content
+  // nodes, index for primitive/option lists.
+  trackByIdentifier(index: number, item: any): any {
+    return (item && item.identifier) ? item.identifier : index
+  }
+
+  trackByIndex(index: number): number {
+    return index
+  }
+
   constructor(
     private cdr: ChangeDetectorRef,
     public dialog: MatDialog,

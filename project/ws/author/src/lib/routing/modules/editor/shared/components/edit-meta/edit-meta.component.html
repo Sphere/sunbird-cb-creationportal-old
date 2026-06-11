@@ -27,7 +27,7 @@
             <mat-label i18n>Proficiency Level</mat-label>
             <mat-select formControlName="complexityLevel" i18n-placeholder placeholder="--Select--">
               <mat-option *ngIf="!checkCondition('complexityLevel', 'required')" i18n [value]="null">None</mat-option>
-              <mat-option *ngFor="let complexityLevel of complexityLevelList" [value]="complexityLevel">
+              <mat-option *ngFor="let complexityLevel of complexityLevelList; trackBy: trackByIndex" [value]="complexityLevel">
                 {{ complexityLevel }}
               </mat-option>
             </mat-select>
@@ -65,7 +65,7 @@
             [ngClass]="{ 'mat-form-field-invalid': showError('audience') }">
             <mat-label i18n>Audience</mat-label>
             <mat-chip-grid #audienceChipList i18n-aria-label aria-label="Audience selection">
-              <mat-chip-row *ngFor="let job of contentForm.controls.audience.value"
+              <mat-chip-row *ngFor="let job of contentForm.controls.audience.value; trackBy: trackByIndex"
                 (removed)="removeFromFormControl(job, 'audience')">
                 {{ job }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
@@ -78,7 +78,7 @@
             <mat-autocomplete #audienceAuto="matAutocomplete"
               (optionSelected)="addToFormControl($event, 'audience')">
               <mat-option *ngIf="!checkCondition('audience', 'required')" i18n [value]="null">None</mat-option>
-              <mat-option *ngFor="let job of audienceList" [value]="job">{{ job }}</mat-option>
+              <mat-option *ngFor="let job of audienceList; trackBy: trackByIndex" [value]="job">{{ job }}</mat-option>
             </mat-autocomplete>
             <mat-error class="error-font" *ngIf="showError('audience')" i18n>Audience is mandatory</mat-error>
           </mat-form-field>
@@ -90,7 +90,7 @@
             [ngClass]="{ 'mat-form-field-invalid': showError('jobProfile') }">
             <mat-label i18n>Job Profiles</mat-label>
             <mat-chip-grid #jobProfileChipList i18n-aria-label aria-label="Job profile selection">
-              <mat-chip-row *ngFor="let job of contentForm.controls.jobProfile.value"
+              <mat-chip-row *ngFor="let job of contentForm.controls.jobProfile.value; trackBy: trackByIndex"
                 (removed)="removeFromFormControl(job, 'jobProfile')">
                 {{ job }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
@@ -103,7 +103,7 @@
             <mat-autocomplete #jobProfileAuto="matAutocomplete"
               (optionSelected)="addToFormControl($event, 'jobProfile')">
               <mat-option *ngIf="!checkCondition('jobProfile', 'required')" i18n [value]="null">None</mat-option>
-              <mat-option *ngFor="let job of jobProfileList" [value]="job">{{ job }}</mat-option>
+              <mat-option *ngFor="let job of jobProfileList; trackBy: trackByIndex" [value]="job">{{ job }}</mat-option>
             </mat-autocomplete>
             <mat-error class="error-font" *ngIf="showError('jobProfile')" i18n>Job Profile is mandatory</mat-error>
           </mat-form-field>
@@ -115,7 +115,7 @@
             [ngClass]="{ 'mat-form-field-invalid': showError('skills') }">
             <mat-label>Skills</mat-label>
             <mat-chip-grid #skills aria-label="Keyword selection">
-              <mat-chip-row *ngFor="let key of contentForm.controls.skills.value" (removed)="removeSkill(key)">
+              <mat-chip-row *ngFor="let key of contentForm.controls.skills.value; trackBy: trackByIndex" (removed)="removeSkill(key)">
                 {{ key }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
@@ -125,7 +125,7 @@
             </mat-chip-grid>
             <mat-select [compareWith]="compareSkillFn" formControlName="skills"
               [required]="checkCondition('skills', 'required')" multiple>
-              <mat-option *ngFor="let skill of ordinals.skills" [value]="skill">{{ skill.name }}</mat-option>
+              <mat-option *ngFor="let skill of ordinals.skills; trackBy: trackByIndex" [value]="skill">{{ skill.name }}</mat-option>
             </mat-select>
             <mat-error *ngIf="showError('skills')" i18n>Skills is mandatory</mat-error>
           </mat-form-field>
@@ -145,7 +145,7 @@
           [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
           <mat-label [ngClass]="{ required: checkCondition('keywords', 'required') }" i18n>Keywords</mat-label>
           <mat-chip-grid #keywords aria-label="Keyword selection">
-            <mat-chip-row *ngFor="let key of contentForm.controls.keywords.value" (removed)="removeKeyword(key)">
+            <mat-chip-row *ngFor="let key of contentForm.controls.keywords.value; trackBy: trackByIndex" (removed)="removeKeyword(key)">
               {{ key }}
               <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
             </mat-chip-row>
@@ -158,7 +158,7 @@
         <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption
           (optionSelected)="optionSelected($event.option.value); keywordsView.value = ''">
           <mat-option *ngIf="keywordsSearch.value" [value]="keywordsSearch.value">{{ keywordsSearch.value }}</mat-option>
-          <mat-option *ngFor="let option of filteredOptions$ | async" [value]="option">{{ option }}</mat-option>
+          <mat-option *ngFor="let option of filteredOptions$ | async; trackBy: trackByIndex" [value]="option">{{ option }}</mat-option>
         </mat-autocomplete>
       </div>
 
@@ -171,7 +171,7 @@
             [ngClass]="{ 'mat-form-field-invalid': showError('trackContacts') }">
             <mat-label [ngClass]="{ required: checkCondition('trackContacts', 'required') }" i18n>Reviewers</mat-label>
             <mat-chip-grid #reviewerChipList i18n-aria-label aria-label="Reviewer selection">
-              <mat-chip-row *ngFor="let author of contentForm.controls.trackContacts.value"
+              <mat-chip-row *ngFor="let author of contentForm.controls.trackContacts.value; trackBy: trackByIndex"
                 (removed)="removeEmployee(author, 'trackContacts')">
                 {{ author.name }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
@@ -186,7 +186,7 @@
               <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
               <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
                 No user found. Please check the value entered.</mat-option>
-              <mat-option *ngFor="let author of employeeList" [value]="author">
+              <mat-option *ngFor="let author of employeeList; trackBy: trackByIndex" [value]="author">
                 {{ author.displayName }} | {{ author.mail }}
               </mat-option>
             </mat-autocomplete>
@@ -199,7 +199,7 @@
             [ngClass]="{ 'mat-form-field-invalid': showError('publisherDetails') }">
             <mat-label [ngClass]="{ required: checkCondition('publisherDetails', 'required') }" i18n>Publishers</mat-label>
             <mat-chip-grid #publisherChipList aria-label="Publisher selection">
-              <mat-chip-row *ngFor="let author of contentForm.controls.publisherDetails.value"
+              <mat-chip-row *ngFor="let author of contentForm.controls.publisherDetails.value; trackBy: trackByIndex"
                 (removed)="removeEmployee(author, 'publisherDetails')">
                 {{ author.name }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
@@ -214,7 +214,7 @@
               <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
               <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
                 No user found. Please check the value entered.</mat-option>
-              <mat-option *ngFor="let author of employeeList" [value]="author">
+              <mat-option *ngFor="let author of employeeList; trackBy: trackByIndex" [value]="author">
                 {{ author.displayName }} | {{ author.mail }}
               </mat-option>
             </mat-autocomplete>
@@ -227,7 +227,7 @@
             [ngClass]="{ 'mat-form-field-invalid': showError('creatorContacts') }">
             <mat-label i18n>Curators / Contacts</mat-label>
             <mat-chip-grid #creatorChipList aria-label="Creator selection">
-              <mat-chip-row *ngFor="let author of contentForm.controls.creatorContacts.value"
+              <mat-chip-row *ngFor="let author of contentForm.controls.creatorContacts.value; trackBy: trackByIndex"
                 (removed)="removeEmployee(author, 'creatorContacts')">
                 {{ author.name }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
@@ -242,7 +242,7 @@
               <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
               <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
                 No user found. Please check the value entered.</mat-option>
-              <mat-option *ngFor="let author of employeeList" [value]="author">
+              <mat-option *ngFor="let author of employeeList; trackBy: trackByIndex" [value]="author">
                 {{ author.displayName }} | {{ author.mail }}
               </mat-option>
             </mat-autocomplete>
@@ -255,7 +255,7 @@
             [ngClass]="{ 'mat-form-field-invalid': showError('creatorDetails') }">
             <mat-label i18n>Authors</mat-label>
             <mat-chip-grid #creatorDetailsChipList aria-label="Original Author selection">
-              <mat-chip-row *ngFor="let author of contentForm.controls.creatorDetails.value"
+              <mat-chip-row *ngFor="let author of contentForm.controls.creatorDetails.value; trackBy: trackByIndex"
                 (removed)="removeCreatorDetails(author)">
                 {{ author.name }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
@@ -270,7 +270,7 @@
               <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
               <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
                 No user found. Please check the value entered.</mat-option>
-              <mat-option *ngFor="let author of employeeList" [value]="author">
+              <mat-option *ngFor="let author of employeeList; trackBy: trackByIndex" [value]="author">
                 {{ author.displayName }} | {{ author.mail }}
               </mat-option>
             </mat-autocomplete>
@@ -339,7 +339,7 @@
               [ngClass]="{ 'mat-form-field-invalid': showError('lang') }">
               <mat-label i18n>Course Language <span class="em-req">*</span></mat-label>
               <mat-select formControlName="lang">
-                <mat-option *ngFor="let lang of languageList" [value]="lang.value">{{ lang.name }}</mat-option>
+                <mat-option *ngFor="let lang of languageList; trackBy: trackByIndex" [value]="lang.value">{{ lang.name }}</mat-option>
               </mat-select>
               <mat-hint i18n>Primary language of the course content</mat-hint>
               <mat-error i18n>Language is required</mat-error>
@@ -439,7 +439,7 @@
 
             <!-- Competency cards -->
             <div *ngIf="addedCompetency?.length > 0" class="em-comp-list">
-              <div *ngFor="let comp of addedCompetency" class="em-comp-chip">
+              <div *ngFor="let comp of addedCompetency; trackBy: trackByIndex" class="em-comp-chip">
                 <div class="em-comp-info">
                   <span class="em-comp-code">{{ comp.Code }}</span>
                   <span class="em-comp-name">{{ comp.competencyName }}</span>

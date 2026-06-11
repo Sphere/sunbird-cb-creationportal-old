@@ -40,7 +40,7 @@
     <div *ngIf="tocConfig?.overview?.preContents?.enabled && content?.preContents?.length" class="unit-meta-item">
       <h2 class="high">{{ tocConfig?.overview?.preContents?.displayName }}</h2>
       <mat-card-content>
-        <div class="flex mb-1" *ngFor="let preContent of content?.preContents">
+        <div class="flex mb-1" *ngFor="let preContent of content?.preContents; trackBy: trackByIndex">
           <span class="mr-1">
             <mat-icon class="align-bottom">web_asset</mat-icon>
           </span>
@@ -53,7 +53,7 @@
     <div *ngIf="tocConfig?.overview?.postContents?.enabled && content?.postContents?.length" class="unit-meta-item">
       <h2 class="high">{{ tocConfig?.overview?.postContents?.displayName }}</h2>
       <mat-card-content>
-        <div class="flex mb-1" *ngFor="let postContent of content?.postContents">
+        <div class="flex mb-1" *ngFor="let postContent of content?.postContents; trackBy: trackByIndex">
           <span class="mr-1">
             <mat-icon class="align-bottom">web_asset</mat-icon>
           </span>
@@ -67,7 +67,7 @@
       class="unit-meta-item">
       <h2 class="high">{{ tocConfig?.overview?.certificationList?.displayName }}</h2>
       <mat-card-content>
-        <div class="flex mb-1" *ngFor="let certification of content?.certificationList">
+        <div class="flex mb-1" *ngFor="let certification of content?.certificationList; trackBy: trackByIndex">
           <span class="mr-1">
             <mat-icon class="align-bottom">web_asset</mat-icon>
           </span>
@@ -80,7 +80,7 @@
     <div *ngIf="tocConfig?.overview?.studyMaterials?.enabled && content?.studyMaterials?.length" class="unit-meta-item">
       <h2 class="high">{{ tocConfig?.overview?.studyMaterials?.displayName }}</h2>
       <mat-card-content>
-        <div class="flex mb-1" *ngFor="let studyitem of content?.studyMaterials">
+        <div class="flex mb-1" *ngFor="let studyitem of content?.studyMaterials; trackBy: trackByIndex">
           <span class="mr-1">
             <mat-icon class="align-bottom">web_asset</mat-icon>
           </span>
@@ -95,7 +95,7 @@
       " class="unit-meta-item">
       <h2 class="high">{{ tocConfig?.overview?.playgroundResources?.displayName }}</h2>
       <mat-card-content>
-        <div class="flex mb-1" *ngFor="let playgroundResource of content?.playgroundResources">
+        <div class="flex mb-1" *ngFor="let playgroundResource of content?.playgroundResources; trackBy: trackByIndex">
           <span class="mr-1">
             <mat-icon class="align-bottom">web_asset</mat-icon>
           </span>
@@ -108,7 +108,7 @@
     <div *ngIf="tocConfig?.overview?.kArtifacts?.enabled && content?.kArtifacts?.length" class="unit-meta-item">
       <h2 class="high">{{ tocConfig?.overview?.kArtifacts?.displayName }}</h2>
       <mat-card-content>
-        <div class="flex mb-1" *ngFor="let kArtifact of content?.kArtifacts">
+        <div class="flex mb-1" *ngFor="let kArtifact of content?.kArtifacts; trackBy: trackByIndex">
           <span class="mr-1">
             <mat-icon class="align-bottom">web_asset</mat-icon>
           </span>
@@ -124,7 +124,7 @@
       " class="unit-meta-item">
       <h2 class="high">{{ tocConfig?.overview?.equivalentCertifications?.displayName }}</h2>
       <mat-card-content>
-        <div class="flex mb-1" *ngFor="let equivalentCertification of content?.equivalentCertifications">
+        <div class="flex mb-1" *ngFor="let equivalentCertification of content?.equivalentCertifications; trackBy: trackByIndex">
           <span class="mr-1">
             <mat-icon class="align-bottom">web_asset</mat-icon>
           </span>
@@ -139,7 +139,7 @@
       " class="unit-meta-item">
       <h2 class="high">{{ tocConfig?.overview?.softwareRequirements?.displayName }}</h2>
       <mat-card-content>
-        <div class="flex mb-1" *ngFor="let softwareRequirement of content?.softwareRequirements">
+        <div class="flex mb-1" *ngFor="let softwareRequirement of content?.softwareRequirements; trackBy: trackByIndex">
           <span class="mr-1">
             <mat-icon class="align-bottom">web_asset</mat-icon>
           </span>
@@ -154,7 +154,7 @@
       class="unit-meta-item mat-app-background">
       <h2 class="high">{{ tocConfig?.overview?.skills?.displayName }}</h2>
       <mat-chip-set>
-        <mat-chip *ngFor="let skill of content?.skills">{{ skill.name }}</mat-chip>
+        <mat-chip *ngFor="let skill of content?.skills; trackBy: trackByIndex">{{ skill.name }}</mat-chip>
       </mat-chip-set>
     </div>
     <!-- Requirements -->
@@ -164,7 +164,7 @@
         <div class="mat-subheading-1" [innerHTML]="content?.preRequisites"></div>
         <div class="margin-top-s" *ngIf="content?.softwareRequirements?.length">
           <h3 class="mat-h3 margin-bottom-xs" i18n>Software Requirements</h3>
-          <ng-container *ngFor="let requirement of content?.softwareRequirements">
+          <ng-container *ngFor="let requirement of content?.softwareRequirements; trackBy: trackByIndex">
             <a *ngIf="requirement.url" class="margin-right-s" mat-stroked-button target="_blank"
               [href]="requirement.url">
               {{ requirement.title }}
@@ -199,7 +199,7 @@
       <mat-card-content>
         <div class="flex flex-between flex-wrapped">
           <a mat-stroked-button class="topic-button text-truncate"
-            *ngFor="let topic of content?.topics | pipeLimitTo: (viewMoreRelatedTopics ? 24 : 6)" [title]="topic?.name"
+            *ngFor="let topic of content?.topics | pipeLimitTo: (viewMoreRelatedTopics ? 24 : 6); trackBy: trackByIndex" [title]="topic?.name"
             [routerLink]="'/app/concept-graph/' + topic.identifier">
             {{ topic?.name }}
           </a>
@@ -236,7 +236,7 @@
         <h2 class="high" i18n *ngIf="title === 'AUTHOR'">Authors</h2>
         <h2 class="high" i18n *ngIf="title === 'CONTACT'">Curator/Contact</h2>
         <mat-divider></mat-divider>
-        <div *ngFor="let author of authors" class="author">
+        <div *ngFor="let author of authors; trackBy: trackByIndex" class="author">
           <ws-widget-user-image class="author-image" [imageType]="'name-initial'" [userName]="author.name || ''"
             [email]="author.email"></ws-widget-user-image>
           <div class="width-expand flex flex-middle flex-between">
@@ -258,12 +258,12 @@
         <h2 class="high" i18n>This content is part of</h2>
       </mat-card>
       <mat-accordion>
-        <ng-container *ngFor="let key of objKeys(contentParents)">
+        <ng-container *ngFor="let key of objKeys(contentParents); trackBy: trackByIndex">
           <mat-expansion-panel>
             <mat-expansion-panel-header>
               {{ key }}
             </mat-expansion-panel-header>
-            <div class="flex mb-1" *ngFor="let content of contentParents[key]">
+            <div class="flex mb-1" *ngFor="let content of contentParents[key]; trackBy: trackByIndex">
               <span class="mr-1">
                 <mat-icon class="align-bottom">web_asset</mat-icon>
               </span>
