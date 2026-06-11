@@ -26,19 +26,23 @@ export class IapComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit
   ngOnInit() {
   }
   ngAfterViewInit() {
-    window.addEventListener('message', event => {
-      if (!event.data) {
-        this.logger.log('data unavailable')
-        return
-      }
-      if (event.data.functionToExecute && event.data.functionToExecute === 'turnOnProctoring') {
-        this.turnOnProctoring()
-        this.proctoringStarted = true
-      } else if (event.data.functionToExecute && event.data.functionToExecute === 'turnOffProctoring') {
-        this.turnOffProctoring()
-        this.proctoringStarted = false
-      }
-    })
+    window.addEventListener('message', this.onWindowMessage)
+  }
+
+  // Stable handler reference so the 'message' listener is removed on destroy — it was
+  // an anonymous arrow before, so each viewer mount leaked a window 'message' listener.
+  private readonly onWindowMessage = (event: MessageEvent) => {
+    if (!event.data) {
+      this.logger.log('data unavailable')
+      return
+    }
+    if (event.data.functionToExecute && event.data.functionToExecute === 'turnOnProctoring') {
+      this.turnOnProctoring()
+      this.proctoringStarted = true
+    } else if (event.data.functionToExecute && event.data.functionToExecute === 'turnOffProctoring') {
+      this.turnOffProctoring()
+      this.proctoringStarted = false
+    }
   }
   ngOnChanges() {
     // //console.log(this.iapContent)
@@ -49,6 +53,7 @@ export class IapComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit
     }
   }
   ngOnDestroy() {
+    window.removeEventListener('message', this.onWindowMessage)
     if (this.proctoringStarted) {
       this.turnOffProctoring()
     }

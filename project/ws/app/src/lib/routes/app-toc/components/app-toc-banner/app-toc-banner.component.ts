@@ -52,6 +52,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   validPaths = new Set(['overview', 'contents', 'analytics'])
   routerParamSubscription: Subscription | null = null
   routeSubscription: Subscription | null = null
+  routeDataSubscription: Subscription | null = null
   firstResourceLink: { url: string; queryParams: { [key: string]: any } } | null = null
   resumeDataLink: { url: string; queryParams: { [key: string]: any } } | null = null
   isAssessVisible = false
@@ -115,7 +116,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.allowExternalContentReviewer = this.authAccessService.hasRole(['external_content_reviewer_live'])
 
-    this.route.data.subscribe(data => {
+    this.routeDataSubscription = this.route.data.subscribe(data => {
       this.tocConfig = data.pageData.data
       if (this.content && this.isPostAssessment) {
         this.tocSvc.fetchPostAssessmentStatus(this.content.identifier).subscribe(res => {
@@ -318,6 +319,9 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     }
     if (this.routeSubscription) {
       this.routeSubscription.unsubscribe()
+    }
+    if (this.routeDataSubscription) {
+      this.routeDataSubscription.unsubscribe()
     }
   }
   private modifySensibleContentRating() {

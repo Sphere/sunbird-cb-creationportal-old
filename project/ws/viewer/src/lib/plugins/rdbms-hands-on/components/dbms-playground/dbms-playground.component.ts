@@ -1,4 +1,4 @@
-import { Component, OnChanges, Input, ElementRef, ViewChild } from '@angular/core'
+import { Component, OnChanges, OnDestroy, Input, ElementRef, ViewChild } from '@angular/core'
 
 import { RdbmsHandsOnService } from '../../rdbms-hands-on.service'
 
@@ -13,7 +13,7 @@ import { EventService } from '@ws-widget/utils'
   templateUrl: './dbms-playground.component.html',
   styleUrls: ['./dbms-playground.component.scss'],
 })
-export class DbmsPlaygroundComponent implements OnChanges {
+export class DbmsPlaygroundComponent implements OnChanges, OnDestroy {
 
   firstInput = true
   isInput = false
@@ -107,6 +107,16 @@ export class DbmsPlaygroundComponent implements OnChanges {
         this.raiseInteractTelemetry('editor', 'buttonclick')
       }
     },                               2 * 60000)
+  }
+
+  ngOnDestroy() {
+    // Clear the telemetry timers; they previously ran forever after the playground closed.
+    if (this.inputInterval) {
+      clearInterval(this.inputInterval)
+    }
+    if (this.clickInterval) {
+      clearInterval(this.clickInterval)
+    }
   }
 
 }

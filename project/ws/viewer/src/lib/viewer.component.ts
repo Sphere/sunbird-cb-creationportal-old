@@ -63,6 +63,7 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
   private screenSizeSubscription: Subscription | null = null
   private resourceChangeSubscription: Subscription | null = null
+  private contentDataSubscription: Subscription | null = null
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
@@ -80,7 +81,7 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   getContentData(e: any) {
-    e.activatedRoute.data.subscribe((data: { content: { data: NsContent.IContent } }) => {
+    this.contentDataSubscription = e.activatedRoute.data.subscribe((data: { content: { data: NsContent.IContent } }) => {
       if (data.content && data.content.data) {
         this.content = data.content.data
       }
@@ -165,6 +166,9 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
     if (this.resourceChangeSubscription) {
       this.resourceChangeSubscription.unsubscribe()
+    }
+    if (this.contentDataSubscription) {
+      this.contentDataSubscription.unsubscribe()
     }
   }
 

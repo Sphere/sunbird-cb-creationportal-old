@@ -42,6 +42,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   elementPosition: any
   sticky = false
   private defaultSideNavBarOpenedSubscription: any
+  private routerEventsSubscription: any
   @HostListener('window:scroll', ['$event'])
   handleScroll() {
     const windowScroll = window.pageYOffset
@@ -52,7 +53,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   constructor(private valueSvc: ValueService, private router: Router, private activeRoute: ActivatedRoute) {
-    this.router.events.subscribe((event: Event) => {
+    this.routerEventsSubscription = this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationEnd) {
         // Hide loading indicator
         // console.log(event.url)
@@ -91,6 +92,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (this.bannerSubscription) {
       this.bannerSubscription.unsubscribe()
+    }
+    if (this.routerEventsSubscription) {
+      this.routerEventsSubscription.unsubscribe()
     }
   }
 

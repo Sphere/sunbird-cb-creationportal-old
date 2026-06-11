@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, OnDestroy } from '@angular/core'
 
 import { PageEvent } from '@angular/material/paginator'
 import { ActivatedRoute } from '@angular/router'
@@ -33,7 +33,7 @@ interface ILearningHistoryContent {
   templateUrl: './learning-history.component.html',
   styleUrls: ['./learning-history.component.scss'],
 })
-export class LearningHistoryComponent implements OnInit {
+export class LearningHistoryComponent implements OnInit, OnDestroy {
   lhCard: NSLearningHistory.ILearningHistoryItem[] = []
   lhContent: ILearningHistoryContent[] = []
   pageState = -1
@@ -66,6 +66,9 @@ export class LearningHistoryComponent implements OnInit {
   filterList: string[] = ['All']
   error = false
   loader: any
+  // Dedicated handle for the userFetchStatus interval so it can be cleared on destroy.
+  // (`loader` is reused as both this handle and a boolean, so it can't be cleared safely.)
+  private userFetchInterval: any
   myProgress: any
   othersProgress: any
   progressData: any
@@ -98,6 +101,13 @@ export class LearningHistoryComponent implements OnInit {
     private configSvc: ConfigurationsService,
     private valueSvc: ValueService,
   ) {}
+
+  ngOnDestroy() {
+    // Clear the userFetchStatus interval; it was never cleared and kept running.
+    if (this.userFetchInterval) {
+      clearInterval(this.userFetchInterval)
+    }
+  }
 
   ngOnInit() {
     this.isLtMedium$.subscribe((isLtMedium: boolean) => {
@@ -362,6 +372,7 @@ export class LearningHistoryComponent implements OnInit {
           // tslint:disable-next-line:align
           1000,
         )
+        this.userFetchInterval = this.loader
       },
       () => {
         this.error = true

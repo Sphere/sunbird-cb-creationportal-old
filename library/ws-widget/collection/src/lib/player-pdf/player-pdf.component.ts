@@ -222,19 +222,24 @@ export class PlayerPdfComponent extends WidgetBaseComponent
     if (this.containerSection && this.containerSection.nativeElement.clientWidth < 400) {
       this.isSmallViewPort = true
     }
-    document.addEventListener('textlayerrendered', _event => {
-      const pdfLinks = document.getElementsByClassName('linkAnnotation')
-      for (let i = 0; i < pdfLinks.length; i += 1) {
-        if (pdfLinks[i].getElementsByTagName('a')[0] && !pdfLinks[i].getElementsByTagName('a')[0].classList.contains('internalLink')) {
-          pdfLinks[i].getElementsByTagName('a')[0].setAttribute('target', 'blank')
-        }
-      }
-    })
+    document.addEventListener('textlayerrendered', this.onTextLayerRendered)
     if (this.input) {
       this.input.underlineRef.nativeElement.className = null
     }
   }
+  // Stable handler reference so the 'textlayerrendered' listener can be removed
+  // on destroy (it was an anonymous arrow before, so it leaked on every mount).
+  private readonly onTextLayerRendered = () => {
+    const pdfLinks = document.getElementsByClassName('linkAnnotation')
+    for (let i = 0; i < pdfLinks.length; i += 1) {
+      if (pdfLinks[i].getElementsByTagName('a')[0] && !pdfLinks[i].getElementsByTagName('a')[0].classList.contains('internalLink')) {
+        pdfLinks[i].getElementsByTagName('a')[0].setAttribute('target', 'blank')
+      }
+    }
+  }
+
   ngOnDestroy() {
+    document.removeEventListener('textlayerrendered', this.onTextLayerRendered)
     if (this.identifier) {
       this.saveContinueLearning(this.identifier)
       this.fireRealTimeProgress(this.identifier)
