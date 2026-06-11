@@ -15,6 +15,7 @@ These encode the *real* conventions in this codebase (verified against actual fi
 | [`style-form-input`](style-form-input/SKILL.md) | Building/restyling forms — input tokens, native-HTML-over-Material rule, validation/hints. |
 | [`add-api-service`](add-api-service/SKILL.md) | Adding a backend API call with the service / endpoint-constant / auth-interceptor conventions. |
 | [`build-and-deploy`](build-and-deploy/SKILL.md) | Building for prod or debugging a CI/deploy failure (ngcc trap, `dist/www/en`, forbidden flags). |
+| [`release-notes`](release-notes/SKILL.md) | Generating a production release note for a deploy candidate (diffs vs last `cbp-release-*` tag, fills `RELEASE_NOTES/TEMPLATE.md`). |
 
 ## Relationship to the rules file
 
