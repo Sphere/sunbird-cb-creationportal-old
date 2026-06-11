@@ -106,6 +106,8 @@ export * from './lib/services/event.service'
 
 export * from './lib/services/logger.service'
 
+export * from './lib/services/resource-download.service'
+
 export * from './lib/services/ms-office.model'
 
 export * from './lib/services/subapplication-respond.service'

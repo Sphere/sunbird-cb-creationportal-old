@@ -24,6 +24,12 @@
             </span>
             <span class="mc-card-sub">Duration: {{mainCourseDuration !== '' ? mainCourseDuration : '0h 0m 0s'}}</span>
           </div>
+          <button class="mc-download-all" type="button"
+            *ngIf="resourceDownloadSvc.hasDownloadableResources(courseData)"
+            (click)="downloadAllResources($event)"
+            i18n-matTooltip matTooltip="Download all resources (.zip)" aria-label="Download all resources">
+            <mat-icon>cloud_download</mat-icon>
+          </button>
         </div>
         <div class="left-navbar-block">
           <!--module & resource left footer-->
@@ -123,6 +129,12 @@
                         </span>
                       </div>
                     </div>
+                    <button class="resource-dl-btn" type="button"
+                      *ngIf="resource.artifactUrl || resource.downloadUrl"
+                      (click)="downloadOneResource(resource, $event)"
+                      i18n-matTooltip matTooltip="Download resource" aria-label="Download resource">
+                      <mat-icon>cloud_download</mat-icon>
+                    </button>
                   </div>
                 </div>
                 <button class="children" [disabled]="hideResource"
@@ -159,8 +171,12 @@
                       </span>
                     </div>
                   </div>
-
-
+                  <button class="resource-dl-btn" type="button"
+                    *ngIf="module.artifactUrl || module.downloadUrl"
+                    (click)="downloadOneResource(module, $event)"
+                    i18n-matTooltip matTooltip="Download resource" aria-label="Download resource">
+                    <mat-icon>cloud_download</mat-icon>
+                  </button>
                 </div>
               </div>
             </div>

@@ -14,7 +14,7 @@ import {
   WidgetContentService,
 } from '@ws-widget/collection'
 
-import { ConfigurationsService, TFetchStatus } from '@ws-widget/utils'
+import { ConfigurationsService, TFetchStatus, ResourceDownloadService } from '@ws-widget/utils'
 
 import { UtilityService } from '@ws-widget/utils/src/lib/services/utility.service'
 
@@ -85,6 +85,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   } = {}
   cohortTypesEnum = NsCohorts.ECohortTypes
   isReviewer: boolean = false
+  isDownloadingResources = false
   isCreator: boolean = false
   isPublisher: boolean = false
   allowExternalContentReviewer: boolean = false
@@ -103,6 +104,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     private mobileAppsSvc: MobileAppsService,
     private authAccessService: AccessControlService,
     private cdr: ChangeDetectorRef,
+    public resourceDownloadSvc: ResourceDownloadService,
   ) { }
 
   ngOnInit() {
@@ -461,6 +463,30 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   }
   goToPreview() {
     this.tocSvc.changeMessage('preview')
+  }
+
+  // True only for the creator of THIS course (owner) — reviewers/publishers and
+  // other creators don't get the download option.
+  get isCourseCreator(): boolean {
+    const userId = this.configSvc.userProfile && this.configSvc.userProfile.userId
+    return !!userId && !!this.content && (this.content as any).createdBy === userId
+  }
+
+  // Download every resource in the course as one zip (named after the course).
+  async downloadAllResources(event?: MouseEvent): Promise<void> {
+    if (event) { event.stopPropagation() }
+    if (this.isDownloadingResources || !this.resourceDownloadSvc.hasDownloadableResources(this.content as any)) {
+      return
+    }
+    this.isDownloadingResources = true
+    try {
+      await this.resourceDownloadSvc.downloadAllAsZip(this.content as any)
+    } catch {
+      // swallow — a failed download shouldn't break the page
+    } finally {
+      this.isDownloadingResources = false
+      this.cdr.detectChanges()
+    }
   }
   gotoComments() {
     this.tocSvc.changeMessage('comments')

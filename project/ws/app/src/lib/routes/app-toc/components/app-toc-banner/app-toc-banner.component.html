@@ -28,6 +28,11 @@
       <ng-container i18n>Comments</ng-container>
       <span class="action-badge" *ngIf="commentsList?.length">{{ commentsList.length }}</span>
     </button>
+    <button class="accept-btn" *ngIf="isCourseCreator && resourceDownloadSvc.hasDownloadableResources(content)"
+      [disabled]="isDownloadingResources" (click)="downloadAllResources($event)">
+      <ng-container *ngIf="!isDownloadingResources" i18n>Download Resources</ng-container>
+      <ng-container *ngIf="isDownloadingResources" i18n>Preparing…</ng-container>
+    </button>
     <button *ngIf="content?.status === 'Draft'"
       [routerLink]="['/author/editor/' + content?.identifier + '/collection']"
       class="edit-course">

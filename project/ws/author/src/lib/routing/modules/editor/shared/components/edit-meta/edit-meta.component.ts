@@ -484,11 +484,14 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       data: this.selectedSelfCompetency
     })
     dialogRef.afterClosed().subscribe((response: boolean) => {
+      // Only refresh (and show the loader) when a competency was actually added.
+      // On close/cancel (response === false) there's nothing to re-fetch, so the
+      // "Please wait" loader was firing needlessly.
+      if (response !== true) {
+        return
+      }
       this.loader.changeLoad.next(true)
-      // tslint:disable-next-line:no-console
-      console.log(response, this.parentContent)
       let id = this.parentContent || ''
-      //if (response === true) {
       this.editorService.readcontentV3(id).subscribe(async (data: any) => {
         if (data.competencies_v1) {
           this.getAllEntity()

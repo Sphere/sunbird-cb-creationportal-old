@@ -57,6 +57,7 @@
     "husky": "^4.2.3",
     "jquery": "^3.4.1",
     "jsplumb": "2.11.2",
+    "jszip": "^3.10.1",
     "keycloak-angular": "19.0.2",
     "keycloak-js": "24.0.5",
     "material-icons": "^0.3.1",

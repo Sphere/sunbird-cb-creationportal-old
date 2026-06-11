@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 
 import { NsContent, viewerRouteGenerator } from '@ws-widget/collection'
 
-import { ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService, ResourceDownloadService } from '@ws-widget/utils'
 
 import { NsAppToc } from '../../models/app-toc.model'
 
@@ -38,7 +38,29 @@ export class AppTocContentCardComponent implements OnInit, OnChanges {
   }
   defaultThumbnail = ''
   viewChildren = false
-  constructor(private configSvc: ConfigurationsService) { }
+  constructor(
+    private configSvc: ConfigurationsService,
+    private resourceDownloadSvc: ResourceDownloadService,
+  ) { }
+
+  // True only for the creator of THIS content (owner) — not reviewers/publishers,
+  // and not other creators. Matches the resource's createdBy to the logged-in user.
+  get isCourseCreator(): boolean {
+    const userId = this.configSvc.userProfile && this.configSvc.userProfile.userId
+    return !!userId && !!this.content && (this.content as any).createdBy === userId
+  }
+
+  // Download this single resource (file as-is, or quiz -> Excel). Creator only.
+  async downloadResource(): Promise<void> {
+    if (!this.content || (!this.content.artifactUrl && !(this.content as any).downloadUrl)) {
+      return
+    }
+    try {
+      await this.resourceDownloadSvc.downloadResource(this.content as any)
+    } catch {
+      // ignore — a failed download shouldn't break the card
+    }
+  }
 
   ngOnInit() {
     this.evaluateImmediateChildrenStructure()

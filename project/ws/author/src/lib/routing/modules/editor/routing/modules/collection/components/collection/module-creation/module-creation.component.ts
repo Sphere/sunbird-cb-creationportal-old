@@ -50,7 +50,7 @@ import { Router } from '@angular/router'
 
 import { environment } from '../../../../../../../../../../../../../.././src/environments/environment'
 
-import { ConfigurationsService, ImageCropComponent, ValueService } from '../../../../../../../../../../../../../.././library/ws-widget/utils/src/public-api'
+import { ConfigurationsService, ImageCropComponent, ValueService, ResourceDownloadService } from '../../../../../../../../../../../../../.././library/ws-widget/utils/src/public-api'
 
 import { SuccessDialogComponent } from '../../../../../../../../.././modules/shared/components/success-dialog/success-dialog.component'
 
@@ -375,6 +375,39 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     return index
   }
 
+  // Download a single resource (file as-is, or quiz -> Excel). stopPropagation so the
+  // row's edit/drag handlers don't fire when the download icon is clicked.
+  async downloadOneResource(resource: any, event?: Event): Promise<void> {
+    if (event) { event.stopPropagation() }
+    if (!resource || (!resource.artifactUrl && !resource.downloadUrl)) { return }
+    this.loader.changeLoad.next(true)
+    try {
+      await this.resourceDownloadSvc.downloadResource(resource)
+    } catch {
+      this.snackBar.open('Could not download the resource. Please try again.', 'X', {
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    } finally {
+      this.loader.changeLoad.next(false)
+    }
+  }
+
+  // Download every resource in the course as one zip named after the course.
+  async downloadAllResources(event?: Event): Promise<void> {
+    if (event) { event.stopPropagation() }
+    if (!this.resourceDownloadSvc.hasDownloadableResources(this.courseData)) { return }
+    this.loader.changeLoad.next(true)
+    try {
+      await this.resourceDownloadSvc.downloadAllAsZip(this.courseData)
+    } catch {
+      this.snackBar.open('Could not download the resources. Please try again.', 'X', {
+        duration: NOTIFICATION_TIME * 1000,
+      })
+    } finally {
+      this.loader.changeLoad.next(false)
+    }
+  }
+
   constructor(
     private cdr: ChangeDetectorRef,
     public dialog: MatDialog,
@@ -400,6 +433,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     private quizResolverSvc: QuizResolverService,
     private breakpointObserver: BreakpointObserver,
     private progressSvc: ContentProgressService,
+    public resourceDownloadSvc: ResourceDownloadService,
   ) {
     this.resourceLinkForm = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.minLength(1)]),

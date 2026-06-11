@@ -283,6 +283,16 @@
       View Details
     </h3>
   </a>
+  <!-- Download this resource (file as-is, or quiz -> Excel). This is a creation
+       portal — every viewer is a creator/reviewer/publisher — so it's shown for
+       any resource that has a file, no role gate. -->
+  <a mat-menu-item *ngIf="content?.artifactUrl"
+    class="flex flex-middle" (click)="downloadResource()">
+    <mat-icon>cloud_download</mat-icon>
+    <h3 class="margin-remove" i18n>
+      Download
+    </h3>
+  </a>
   <div mat-menu-item>
     <!-- <ws-widget-btn-content-download [widgetData]="
         content

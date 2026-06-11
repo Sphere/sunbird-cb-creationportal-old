@@ -347,20 +347,32 @@
   font-family: Roboto, sans-serif;
 }
 .em-comp-del {
-  width: 26px !important;
-  height: 26px !important;
+  // Native button (not mat-icon-button) so the hover circle is centred on the
+  // icon — the MDC 48px touch-target/ripple couldn't be shrunk to 26px reliably.
+  width: 26px;
+  height: 26px;
   flex-shrink: 0;
-  color: #94A3B8 !important;
-  transition: color 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #94A3B8;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
 
   mat-icon {
-    font-size: 15px !important;
-    width: 15px !important;
-    height: 15px !important;
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
   }
 
   &:hover {
-    color: #EF4444 !important;
+    color: #EF4444;
+    background: #FEE2E2;
   }
 }
 

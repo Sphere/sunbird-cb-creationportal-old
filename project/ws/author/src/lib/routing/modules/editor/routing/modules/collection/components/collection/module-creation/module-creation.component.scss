@@ -2134,3 +2134,73 @@ color: #000000;
     font-weight: 500;
   }
 }
+
+// ── Resource download buttons ─────────────────────────────────────────────
+.resource-dl-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-left: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+  }
+
+  &:hover {
+    color: #1C5D95;
+    background: #eaf1f8;
+  }
+}
+
+// On the selected (dark blue) row the grey icon is invisible — make it white,
+// matching the row's white text, with a subtle translucent hover.
+.edit-item .resource-dl-btn {
+  color: #ffffff;
+
+  &:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.mc-download-all {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid #c9d6e3;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1C5D95;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+
+  &:hover {
+    background: #eaf1f8;
+    border-color: #1C5D95;
+  }
+}

@@ -445,7 +445,7 @@
                   <span class="em-comp-name">{{ comp.competencyName }}</span>
                   <span *ngIf="comp.level" class="em-comp-level" i18n>Level {{ comp.level }}</span>
                 </div>
-                <button mat-icon-button class="em-comp-del" type="button"
+                <button class="em-comp-del" type="button"
                   (click)="deleteCompetancy(comp)" aria-label="Remove">
                   <mat-icon>close</mat-icon>
                 </button>
