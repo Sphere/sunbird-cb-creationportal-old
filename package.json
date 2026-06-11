@@ -1,6 +1,6 @@
 {
   "name": "cbp",
-  "version": "0.0.1",
+  "version": "5.0.0",
   "scripts": {
     "ng": "ng",
     "start": "node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng serve --proxy-config proxy/localhost.proxy.json -o",
