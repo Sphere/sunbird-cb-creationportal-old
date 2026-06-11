@@ -45,11 +45,18 @@ release change for users / content authors, and why does it matter?>
 - [ ] Build verified on a **fresh install** (`rm -rf node_modules && npm install --legacy-peer-deps && npm run build`) — a green *local* build is not proof CI passes
 - [ ] `npm run lint` clean
 - [ ] Smoke-tested on preprod (login, author a course, publish)
-- [ ] Rollback tag confirmed: `<previous cbp-release tag>`
+- [ ] Rollback ref confirmed (re-runnable in Jenkins): `<previous release ref>`
 
-## Rollback
+## Release & rollback
 
-```bash
-git checkout <previous cbp-release tag>
-# redeploy that tag via the normal Jenkins → Docker → Helm pipeline (namespace: dev)
+**Deploy** — this release ships as the **`<release-branch>`** branch; a human runs the
+manual Jenkins job (`Jenkinsfile-sun`) with `github_release_tag = <release-branch>`.
+Pushing the branch only provides the deploy source — it does not deploy on its own.
+
+**Rollback** — re-run the same manual Jenkins job against the previous release ref:
+
+```text
+github_release_tag = <previous release ref>
 ```
+
+(Jenkins → Docker → Helm pipeline, namespace `dev`.)
