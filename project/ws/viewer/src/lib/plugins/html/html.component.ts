@@ -91,6 +91,12 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     }
   }
 
+  // Stable bound reference so addEventListener and removeEventListener use the
+  // SAME function — `this.receiveMessage.bind(this)` created a new reference each
+  // call, so the old removeEventListener never matched and leaked a window
+  // 'message' listener on every viewer mount.
+  private readonly boundReceiveMessage = (msg: any) => this.receiveMessage(msg)
+
   constructor(
     private domSanitizer: DomSanitizer,
     public mobAppSvc: MobileAppsService,
@@ -107,7 +113,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
   ) {
     (window as any).API = this.scormAdapterService
     // if (window.addEventListener) {
-    window.addEventListener('message', this.receiveMessage.bind(this))
+    window.addEventListener('message', this.boundReceiveMessage)
   }
 
   ngOnInit() {
@@ -124,8 +130,12 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
   }
 
   ngOnDestroy() {
-    window.removeEventListener('message', this.receiveMessage)
-    // window.removeEventListener('onmessage', this.receiveMessage)
+    window.removeEventListener('message', this.boundReceiveMessage)
+    // Release the global SCORM adapter reference set in the constructor (only if it
+    // still points at this instance's service) so the component can be GC'd.
+    if ((window as any).API === this.scormAdapterService) {
+      (window as any).API = undefined
+    }
   }
 
   executeForms() {

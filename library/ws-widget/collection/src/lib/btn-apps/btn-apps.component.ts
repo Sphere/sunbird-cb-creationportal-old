@@ -29,13 +29,16 @@ export class BtnAppsComponent extends WidgetBaseComponent
   featuredApps: NsWidgetResolver.IRenderConfigWithTypedData<NsPage.INavLink>[] = []
 
   private pinnedAppsSubs?: Subscription
+  // Tracked so it's unsubscribed on destroy — this is a resolver-rendered widget that
+  // mounts repeatedly, and an untracked router.events sub compounds on every render.
+  private routerEventsSubs?: Subscription
   constructor(
     private dialog: MatDialog,
     private configSvc: ConfigurationsService,
     private router: Router,
   ) {
     super()
-    this.router.events.subscribe(event => {
+    this.routerEventsSubs = this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         if (this.router.url === '/app/features') {
           this.isUrlOpened = true
@@ -63,6 +66,9 @@ export class BtnAppsComponent extends WidgetBaseComponent
   ngOnDestroy() {
     if (this.pinnedAppsSubs) {
       this.pinnedAppsSubs.unsubscribe()
+    }
+    if (this.routerEventsSubs) {
+      this.routerEventsSubs.unsubscribe()
     }
   }
 

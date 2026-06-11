@@ -255,7 +255,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.searchLanguage = savedLanguage
     }
 
-    this.activatedRoute.queryParams.subscribe(params => {
+    // Track the queryParams subscription so ngOnDestroy actually tears it down.
+    // (routerSubscription was an empty `{}` that never held this sub, so it leaked.)
+    this.routerSubscription = this.activatedRoute.queryParams.subscribe(params => {
       if (this.configService.unMappedUser.roles.length === 1 && this.configService.unMappedUser.roles[0] === "PUBLIC") {
         this.status = 'draft'
         this.links = ['Draft']

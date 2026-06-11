@@ -115,6 +115,11 @@ export class WebModuleComponent implements OnInit, OnChanges, OnDestroy {
     if (this.screenSizeSubscription) {
       this.screenSizeSubscription.unsubscribe()
     }
+    // Stop the scroll-tracking interval; it was never cleared and kept running
+    // after the module closed.
+    if (this.scrollTimeInterval) {
+      clearInterval(this.scrollTimeInterval)
+    }
     this.saveContinueLearning(this.widgetData.identifier)
     this.fireRealTimeProgress(this.widgetData.identifier)
   }

@@ -153,6 +153,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   createModule: any
   isLoading: boolean = false;
   backToCourse?: Subscription
+  // Separate handle for the currentNavigationMessage subscription, which previously
+  // shared the `backToCourse` field with isBackButtonClickedMessage and was leaked
+  // (overwritten without unsubscribe). Tracked so ngOnDestroy can clean it up.
+  navigationMessageSub?: Subscription
   isModulePageEnabled: boolean = false;
   isReviewChecklistEnabled: boolean = false;
   // isReviewChecklistSkipEnabled: boolean = false;
@@ -226,7 +230,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.isSubmitPressed = false
         }
       })
-    this.backToCourse = this.initService.currentNavigationMessage.subscribe(
+    this.navigationMessageSub = this.initService.currentNavigationMessage.subscribe(
       (data: any) => {
         // tslint:disable-next-line:no-console
         console.log("data: ", data, this.currentSteps)
@@ -746,6 +750,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.rootSvc.showNavbarDisplay$.next(true)
     if (this.backToCourse) {
       this.backToCourse.unsubscribe()
+    }
+    if (this.navigationMessageSub) {
+      this.navigationMessageSub.unsubscribe()
     }
   }
 
