@@ -7,7 +7,13 @@ description: Generate a production release note for a deploy candidate by diffin
 
 Generates a stakeholder-readable release note for the branch about to ship to prod.
 Baseline is the **last `cbp-release-*` tag**. Output is a versioned file in `RELEASE_NOTES/`.
-This skill **does not** create or push git tags — that stays a human action.
+
+**Deploy model:** production is deployed by a **manual Jenkins job** parameterized by a
+release branch/ref (`github_release_tag`) — a human runs the build and selects the
+branch; it does **not** auto-deploy on push. So a release is cut by creating a release
+branch from the release commit and pushing it (this is **safe** — it just provides the
+deploy source), after which the human triggers Jenkins. After writing the note this
+skill prompts for the **release branch name** and creates/pushes it.
 
 ## Invocation
 
@@ -77,14 +83,28 @@ Leave them unticked (not deleted) otherwise so the reviewer still sees the check
 - Fill Branch / Baseline / Commit count / Author / date (today) in the header table.
 - Write a real Summary — synthesize the buckets into 2–3 plain sentences, don't just restate commit count.
 
-### 7. Report
-Print the path written and a one-line recap. Remind the user this did **not** tag anything:
-> Wrote `RELEASE_NOTES/<version>.md`. When you're ready to ship, tag with
-> `git tag cbp-release-<version> && git push origin cbp-release-<version>`.
+### 7. Bump the version in the docs
+Before cutting the release, align the version metadata so it isn't stale:
+- `package.json` `"version"`, `README.md` `**Version:**`, and `CLAUDE.md` `**Version:**`
+  → set to the release version (e.g. `5.0.0`).
+- The internal library/project `package.json`s (`@ws-widget/*`, `@ws/*`) are path-aliased
+  and never published, so leave them unless the user asks.
+
+### 8. Report, then create the release branch
+Print the note path and a one-line recap. Then create the **release branch** — the
+deploy source the manual Jenkins job points at. Pushing it is **safe** (it does not
+auto-deploy), so just confirm the branch name with the user (don't invent it):
+- **Branch name** — e.g. `cbp-release-<version>` or `release/<version>`.
+
+```bash
+git switch -c <branch-name>     # from the release commit
+git push origin <branch-name>   # safe: provides the deploy source, does NOT ship
+```
+Remind the user the actual deploy is the separate **manual Jenkins build** against that branch.
 
 ## Rules
 
 - **Never invent changes.** Every bullet must trace to a real commit sha in the range. If the range is empty, say so and stop.
-- **Don't tag or push.** Tagging is a deliberate human step (see report).
+- **Confirm the release branch name before creating it** (don't invent it). Pushing the branch is safe — it's the deploy *source*, not the deploy itself; the actual ship is a separate manual Jenkins build (see step 8).
 - **Keep it readable by non-engineers** in Summary and Features; keep `Deploy notes & risk` honest for on-call.
 - Match the repo's existing tone; reuse the gotcha framing from the `build-and-deploy` skill rather than re-explaining it.
