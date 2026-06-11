@@ -2,10 +2,10 @@
 <ng-container *ngIf="data === 'transcodeMessage' || data === 'publishMessage' || data === 'directPublishMessage'">
   <div class="cd-header">
     <span class="cd-header-icon cd-header-icon--info">
-      <mat-icon>info</mat-icon>
+      <mat-icon aria-hidden="true">info</mat-icon>
     </span>
     <div>
-      <p class="cd-title" i18n>Information</p>
+      <h2 mat-dialog-title class="cd-title" i18n>Information</h2>
       <p class="cd-subtitle" i18n>Please read before continuing</p>
     </div>
   </div>
@@ -40,10 +40,10 @@
 
   <div class="cd-header">
     <span class="cd-header-icon cd-header-icon--danger">
-      <mat-icon>error_outline</mat-icon>
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
     </span>
     <div>
-      <p class="cd-title" i18n>Confirm Action</p>
+      <h2 mat-dialog-title class="cd-title" i18n>Confirm Action</h2>
       <p class="cd-subtitle" i18n>This action cannot be undone</p>
     </div>
     <button mat-icon-button class="cd-close" mat-dialog-close aria-label="Close">

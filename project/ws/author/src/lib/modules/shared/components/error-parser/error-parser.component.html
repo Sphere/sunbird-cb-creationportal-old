@@ -3,10 +3,10 @@
   <!-- Header -->
   <div class="ep-header">
     <div class="ep-header-icon">
-      <mat-icon>error_outline</mat-icon>
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
     </div>
     <div class="ep-header-text">
-      <h2 class="ep-title" i18n>Unable to complete action</h2>
+      <h2 mat-dialog-title class="ep-title" i18n>Unable to complete action</h2>
       <p class="ep-subtitle" i18n>Please resolve the following issues before proceeding</p>
     </div>
     <button mat-icon-button class="ep-close-btn" [mat-dialog-close] aria-label="Close">
@@ -24,7 +24,7 @@
     <ng-container *ngIf="processErrorData">
       <div class="ep-error-item" *ngFor="let error of processErrorData; let last = last">
         <div class="ep-item-name">
-          <mat-icon class="ep-item-icon">article</mat-icon>
+          <mat-icon class="ep-item-icon" aria-hidden="true">article</mat-icon>
           <span>{{ error.name || 'Untitled Content' }}</span>
         </div>
         <ul class="ep-item-messages">

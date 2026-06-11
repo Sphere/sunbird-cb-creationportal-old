@@ -23,7 +23,7 @@
       </a>
     </mat-card-content>
     <mat-card-actions>
-      <span *ngIf="data.status && data.status !== 'Draft'"
+      <span *ngIf="(data.status && data.status !== 'Draft') || isForRevision"
         class="course-status-text"
         [ngClass]="getStatusClass()">
         {{ CourseStatusName | uppercase }}
@@ -109,7 +109,7 @@
       </ng-container>
     </div>
     <p class="fs-13 margin-remove flex items-center flex-wrap">
-      <span *ngIf="data.status && data.status !== 'Draft'"
+      <span *ngIf="(data.status && data.status !== 'Draft') || isForRevision"
         class="course-status-text list-status mr-2"
         [ngClass]="getStatusClass()">
         {{ CourseStatusName | uppercase }}

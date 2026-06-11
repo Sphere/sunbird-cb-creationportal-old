@@ -121,6 +121,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   @Output() sendSteps = new EventEmitter<any>();
   contents: NSContent.IContentMeta[] = []
   @Output() actions = new EventEmitter<{ action: string; type?: string }>()
+  // Emits whether the course has the minimum 2 resources required to advance to
+  // Course Settings, so the parent stepper can disable Next until then.
+  @Output() validityChange = new EventEmitter<boolean>()
+  // Relays the nested course-settings form validity up to the parent stepper so
+  // Next on the Course Settings step is disabled until its mandatory fields are filled.
+  @Output() settingsValidityChange = new EventEmitter<boolean>()
   treeControl!: FlatTreeControl<IContentTreeNode>
   expandedNodes = new Set<number>()
   dragEle1: any
@@ -209,7 +215,16 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   independentResourceCount: number = 0;
   imageTypes = IMAGE_SUPPORT_TYPES
   bucket: string = ''
-  courseData: any
+  // Backed by a setter so that every reassignment of the course tree (add / save /
+  // delete resource, reorder, refresh — there are many code paths) re-emits the
+  // "has >= 2 resources" validity to the parent stepper. Relying on a single emit
+  // point left Next disabled after resources were added through other paths.
+  private _courseData: any
+  get courseData(): any { return this._courseData }
+  set courseData(value: any) {
+    this._courseData = value
+    this.validityChange.emit(this.getTotalResourceCount() >= 2)
+  }
   isAssessmentOrQuizEnabled!: boolean
   assessmentOrQuizForm!: FormGroup
   isSettingsPage: boolean = false
@@ -319,9 +334,34 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         this.triggerCourseSettingsNext = true
         setTimeout(() => { this.triggerCourseSettingsNext = false }, 50)
       } else {
+        // A course must contain at least 2 resources before it can move to the
+        // Course Settings step. Block the stepper Next and tell the user otherwise.
+        if (this.getTotalResourceCount() < 2) {
+          this.snackBar.open(
+            'Please add at least 2 resources before proceeding to Course Settings.',
+            'X',
+            { duration: NOTIFICATION_TIME * 1000 },
+          )
+          return
+        }
         this.setSettingsPage()
       }
     }
+  }
+
+  // Counts the resource leaves in the course: any node that is not a module
+  // (CourseUnit), whether placed directly under the course or inside a module.
+  getTotalResourceCount(): number {
+    const modules = (this.courseData && this.courseData.children) || []
+    let count = 0
+    for (const node of modules) {
+      if (node.contentType !== 'CourseUnit') {
+        count += 1
+      } else if (node.children && node.children.length) {
+        count += node.children.filter((child: any) => child.contentType !== 'CourseUnit').length
+      }
+    }
+    return count
   }
 
   constructor(
@@ -1408,7 +1448,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             this.dialog.open(SuccessDialogComponent, {
               width: '450px',
               height: '300x',
-              data: { 'message': 'Course Sent For Review', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+              data: { 'message': 'Course Sent For Review', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
             })
             // this.router.navigate(['author', 'cbp'])
           }
@@ -1901,7 +1941,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           this.dialog.open(SuccessDialogComponent, {
             width: '550px',
             height: '300x',
-            data: { 'message': 'The course has been sent to the Aastrika publisher. Please contact the Aastrika team for course publication.', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+            data: { 'message': 'The course has been sent to the Aastrika publisher. Please contact the Aastrika team for course publication.', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
           })
           // this.router.navigate(['author', 'cbp'])
           // } else {

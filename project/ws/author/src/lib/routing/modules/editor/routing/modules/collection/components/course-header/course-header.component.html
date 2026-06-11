@@ -23,10 +23,8 @@
     </div>
 
 
-    <div *ngFor="let button of requiredConfig || []" class="button-grid cursor-pointer"
-      (click)="action.next(button.event)">
-      <button mat-raised-button
-        class=" header-btn text-white ws-mat-primary-background mat-button-base margin-right-l white-icon border-btn">
+    <div *ngFor="let button of requiredConfig || []" class="button-grid">
+      <button type="button" class="header-action-btn" (click)="action.next(button.event)">
         {{ button.title }}
       </button>
 

@@ -293,7 +293,7 @@ export class CertificateDialogComponent implements OnInit {
                     this.dialog.open(SuccessDialogComponent, {
                       width: '450px',
                       height: '300x',
-                      data: { 'message': 'Course Certificate successfully attached', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': '', 'cert_upload': 'Yes' },
+                      data: { 'message': 'Course Certificate successfully attached', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFFF', 'padding': '6px 11px 10px 6px !important', 'id': '', 'cert_upload': 'Yes' },
                     })
                   }
                 })

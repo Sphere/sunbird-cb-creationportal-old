@@ -1,9 +1,9 @@
 <div class="cert-dialog-container">
   <div class="cert-dialog-body">
     <div class="cert-icon-wrap">
-      <mat-icon class="cert-icon" [ngStyle]="{'color': data.color}">{{ data.icon }}</mat-icon>
+      <mat-icon class="cert-icon" aria-hidden="true" [ngStyle]="{'color': data.color}">{{ data.icon }}</mat-icon>
     </div>
-    <p class="cert-message">{{ data.message }}</p>
+    <p mat-dialog-title class="cert-message">{{ data.message }}</p>
   </div>
   <div class="cert-dialog-actions">
     <button mat-raised-button (click)="routeToDashboard()" class="cert-ok-btn" i18n>Ok</button>

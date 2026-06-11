@@ -39,11 +39,18 @@
 }
 
 .ep-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1a2d45;
-  margin: 0 0 2px;
-  line-height: 1.4;
+  // Values kept !important + padding/::before reset so the mat-dialog-title
+  // directive (added for the dialog accessible name) doesn't alter the look.
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #1a2d45 !important;
+  margin: 0 0 2px !important;
+  padding: 0 !important;
+  line-height: 1.4 !important;
+
+  &::before {
+    display: none !important;
+  }
 }
 
 .ep-subtitle {

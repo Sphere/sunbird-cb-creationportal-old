@@ -24,6 +24,14 @@
   <link rel="stylesheet" type="text/css" href="/theme-igot.css">
   <script rel="preload" src="/assets/env.js" as="script"></script>
   <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
+  <!-- Disable CKEditor 4's built-in version/security notification banner (added in 4.22).
+       Supported, free, LGPL-compliant way to silence the nag for every editor instance.
+       CKEditor 4 is EOL; full editor replacement is tracked separately. -->
+  <script>
+    if (window.CKEDITOR && CKEDITOR.config) {
+      CKEDITOR.config.versionCheck = false;
+    }
+  </script>
 </head>
 
 <body class="mat-app-background mat-body mat-typography custom-scroll">

@@ -78,7 +78,15 @@ export class StatusTrackComponent implements OnInit {
         this.workFlowLog.push(log)
       })
     const systemFlow = this.workFlowService.getWorkFlow(this.content)
-    this.currentStage = systemFlow.indexOf(this.content.status)
+    // The workflow config uses the legacy status stages (Draft, InReview, Reviewed,
+    // ...), but a course in the review/publish phase carries status 'Review' with the
+    // real stage in reviewStatus. Map it so the progress stepper resolves an actual
+    // stage instead of -1 — which previously left the Action Overview empty.
+    let effectiveStatus: string = this.content.status
+    if (effectiveStatus === 'Review') {
+      effectiveStatus = (this.content as any).reviewStatus === 'Reviewed' ? 'Reviewed' : 'InReview'
+    }
+    this.currentStage = systemFlow.indexOf(effectiveStatus)
     if (this.currentStage > -1) {
       systemFlow
         .filter(v => v !== 'Processing')

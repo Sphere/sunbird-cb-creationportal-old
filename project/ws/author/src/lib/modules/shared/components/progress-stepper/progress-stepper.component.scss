@@ -177,6 +177,16 @@ letter-spacing: -0.4px;
   &:active {
     background: #0f3a61;
   }
+
+  &:disabled {
+    background: #b8c9d9;
+    color: #ffffff;
+    cursor: not-allowed;
+  }
+
+  &:disabled:hover {
+    background: #b8c9d9;
+  }
 }
 
 @keyframes ps-spin {

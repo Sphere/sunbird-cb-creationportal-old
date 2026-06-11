@@ -20,6 +20,12 @@ export class CKEditorResolverService {
         scriptElement.src = '/assets/authoring/ckeditor/ckeditor.js'
 
         scriptElement.onload = () => {
+          // Silence CKEditor 4's version/security notification banner (added in 4.22)
+          // for every instance created through this load path. Supported, free flag.
+          const ck = (window as any).CKEDITOR
+          if (ck && ck.config) {
+            ck.config.versionCheck = false
+          }
           this.isExist = true
           observer.next(true)
           observer.complete()

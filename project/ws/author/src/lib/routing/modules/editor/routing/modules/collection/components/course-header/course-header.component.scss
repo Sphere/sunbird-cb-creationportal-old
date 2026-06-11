@@ -1,5 +1,31 @@
 @import 'ws-mixins';
 
+// Header action button (e.g. Review / Publish). Sits on the blue (#1C5D95)
+// toolbar, so it's a white-filled button with blue text for high contrast —
+// the old mat-raised-button rendered white text on the default white MDC
+// surface (invisible). Native button per the "replace MDC, don't patch" rule.
+.header-action-btn {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1C5D95;
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  border-radius: 8px;
+  padding: 8px 24px;
+  margin-right: 24px;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    background: #eaf1f8;
+  }
+
+  &:active {
+    background: #dceafa;
+  }
+}
+
 .logo-dim{
   cursor: pointer !important;
 }

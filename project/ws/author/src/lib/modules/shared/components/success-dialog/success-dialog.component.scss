@@ -50,17 +50,28 @@
 
 .sd-title {
   font-family: Roboto, sans-serif !important;
-  font-size: 15px !important;
-  font-weight: 500 !important;
+  // Card-title step on the type scale (was an off-scale 15px).
+  font-size: 18px !important;
+  font-weight: 600 !important;
   color: #1E293B !important;
   margin: 0 !important;
-  line-height: 1.6 !important;
+  padding: 0 !important;
+  line-height: 1.5 !important;
   max-width: 380px;
+
+  // Neutralise the mat-dialog-title baseline pseudo-element so the heading stays
+  // centered in our custom flex layout.
+  &::before {
+    display: none !important;
+  }
 }
 
 .sd-footer {
   display: flex;
-  justify-content: flex-end;
+  // Centered to match the centered icon + message (this is a centered success
+  // confirmation, not a left-aligned form dialog) — a right-aligned single button
+  // looked off-balance against the symmetric content above it.
+  justify-content: center;
   width: 100%;
 }
 

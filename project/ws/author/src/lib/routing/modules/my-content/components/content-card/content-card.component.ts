@@ -79,9 +79,18 @@ export class ContentCardComponent implements OnInit, OnChanges {
     this.getCourseStatusName()
   }
 
+  // A course rejected back from review carries status 'Draft' with prevStatus
+  // 'Review' — this is what populates the "For Revision" tab. Surface it as its
+  // own badge instead of an indistinguishable 'Draft'.
+  get isForRevision(): boolean {
+    return this.data?.status === 'Draft' && this.data?.prevStatus === 'Review'
+  }
+
   getCourseStatusName(): void {
     const isPublisher = this.accessService.hasRole(['content_publisher'])
-    if (this.data.status === 'Draft') {
+    if (this.isForRevision) {
+      this.CourseStatusName = 'For Revision'
+    } else if (this.data.status === 'Draft') {
       this.CourseStatusName = 'Draft'
     } else if (this.data.status === 'Review') {
       // Publisher sees 'Review' status courses as already reviewed and ready to publish
@@ -96,6 +105,9 @@ export class ContentCardComponent implements OnInit, OnChanges {
   }
 
   getStatusClass(): string {
+    if (this.isForRevision) {
+      return 'status-revision'
+    }
     const isPublisher = this.accessService.hasRole(['content_publisher'])
     if (this.data.status === 'Review' && isPublisher) {
       return 'status-reviewed'

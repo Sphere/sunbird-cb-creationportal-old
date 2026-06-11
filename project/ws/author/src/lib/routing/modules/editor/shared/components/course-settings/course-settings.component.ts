@@ -99,6 +99,9 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   contentMeta!: NSContent.IContentMeta
   @Output() data = new EventEmitter<string>()
   @Output() courseEditFormSubmit = new EventEmitter<boolean>()
+  // Emits live validity of the course-settings form (Reviewers / Publishers /
+  // Source Name / Certificate) so the parent stepper can disable Next until filled.
+  @Output() validityChange = new EventEmitter<boolean>()
   @Input() isSubmitPressed = false
   @Input() triggerNext = false
   @Input() nextAction = 'done'
@@ -2045,6 +2048,13 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
       cneName: new FormControl(''),
       courseVisibility: new FormControl('')
     })
+
+    // Report validity now (initial state) and on every status change so the parent
+    // stepper keeps Next disabled until all mandatory settings fields are filled.
+    this.validityChange.emit(this.contentForm.valid)
+    this.contentForm.statusChanges
+      .pipe(distinctUntilChanged())
+      .subscribe(() => this.validityChange.emit(this.contentForm.valid))
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       if (this.canUpdate) {

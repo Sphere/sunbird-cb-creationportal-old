@@ -261,7 +261,24 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.links = ['Draft']
         this.navigateContents('Draft')
       } else {
-        this.status = params.status
+        let status = params.status
+        // Reviewers and publishers have no Draft tab. When they land on the default
+        // 'draft' (course) or 'selfAssessmentDraft' (self-assessment) — e.g. via the
+        // Courses / Self Assessment header — remap to their first real tab so they
+        // don't see an empty Draft list. Creators keep the Draft default.
+        if (!this.canShow('author_create')) {
+          if (!status || status === 'draft') {
+            if (this.canShow('publish')) { status = 'reviewed' }            // Courses to publish
+            else if (this.canShow('review')) { status = 'inreview' }        // For Review
+          } else if (status === 'selfAssessmentDraft') {
+            if (this.canShow('publish')) { status = 'selfToPublishedCourse' }
+            else if (this.canShow('review')) { status = 'selfSentForReview' }
+          }
+          if (status !== params.status) {
+            this.router.navigate(['/author/my-content'], { queryParams: { status } })
+          }
+        }
+        this.status = status
       }
 
       this.setAction()
@@ -666,18 +683,17 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
   onClickReviewCourse(status: string) {
     console.log("status: ", status)
-    if (this.allowReview && status == 'Draft') {
-      status = 'Sent for review'
-    }
-    if (this.allowPublish && status == 'Draft') {
-      status = 'Courses to publish'
-    }
-    if (this.allowReview && status == 'selfAssessmentDraft') {
-      status = 'Self Sent for review'
-    }
-
-    if ((this.allowPublish) && (status == 'selfAssessmentDraft' || status == 'Self Courses to publish')) {
-      status = 'Self Courses to publish'
+    // Reviewers/publishers (without a creator role) have no Draft tab — remap the
+    // Courses / Self Assessment header click to their first real tab. Creators keep
+    // Draft. Role-based (not config-gated) so it stays correct for every reviewer.
+    if (!this.canShow('author_create')) {
+      if (status == 'Draft') {
+        if (this.canShow('publish')) { status = 'Courses to publish' }
+        else if (this.canShow('review')) { status = 'Sent for review' }
+      } else if (status == 'selfAssessmentDraft') {
+        if (this.canShow('publish')) { status = 'Self Courses to publish' }
+        else if (this.canShow('review')) { status = 'Self Sent for review' }
+      }
     }
     this.link = status
     this.activeLink = status

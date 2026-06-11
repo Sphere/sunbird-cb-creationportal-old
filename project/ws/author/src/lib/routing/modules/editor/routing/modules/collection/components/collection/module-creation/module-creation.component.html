@@ -1138,5 +1138,6 @@
     </div><!-- /mc-builder -->
 
   </div><!-- /mc-builder-wrap -->
-  <ws-auth-course-settings (data)="action($event)" *ngIf="isSettingsPage" [triggerNext]="triggerCourseSettingsNext"></ws-auth-course-settings>
+  <ws-auth-course-settings (data)="action($event)" *ngIf="isSettingsPage" [triggerNext]="triggerCourseSettingsNext"
+    (validityChange)="settingsValidityChange.emit($event)"></ws-auth-course-settings>
 </div>

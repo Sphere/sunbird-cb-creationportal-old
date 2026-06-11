@@ -18,6 +18,8 @@ export class ProgressStepperComponent implements OnInit, OnChanges {
     { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
   ];;
   @Input() header: any = ''
+  // When true, the Next button is disabled (current step's required inputs are incomplete).
+  @Input() nextDisabled = false
   @Output() sendSteps = new EventEmitter<any>()
   @Output() onNext = new EventEmitter<void>()
 

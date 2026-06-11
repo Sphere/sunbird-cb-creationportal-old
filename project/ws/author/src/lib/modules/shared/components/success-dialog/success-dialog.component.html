@@ -1,9 +1,9 @@
 <div class="sd-wrap">
   <div class="sd-body">
     <div class="sd-icon-wrap" [ngStyle]="{'background-color': data.backgroundColor}">
-      <mat-icon class="sd-icon" [ngStyle]="{'color': data.color}">{{data.icon}}</mat-icon>
+      <mat-icon class="sd-icon" aria-hidden="true" [ngStyle]="{'color': data.color}">{{data.icon}}</mat-icon>
     </div>
-    <p class="sd-title">{{data.message}}</p>
+    <h2 mat-dialog-title class="sd-title">{{data.message}}</h2>
   </div>
   <div class="sd-footer">
     <button mat-flat-button class="sd-btn-ok" (click)="routeToDashboard()" i18n>Ok</button>

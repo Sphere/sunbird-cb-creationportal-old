@@ -105,6 +105,9 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   contentMeta!: NSContent.IContentMeta
   @Output() data = new EventEmitter<string>()
   @Output() courseEditFormSubmit = new EventEmitter<boolean>()
+  // Emits the live validity of the course-details form so the parent stepper can
+  // disable Next until every mandatory field (incl. Course Language) is filled.
+  @Output() validityChange = new EventEmitter<boolean>()
   @Input() isSubmitPressed = false
   @Input() triggerNext = false
   @Input() nextAction = 'done'
@@ -657,6 +660,9 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       }
     } else {
       this.isFormValid = false
+      // Surface the inline validation errors (e.g. the "Language is required"
+      // mat-error) instead of the Next click silently doing nothing.
+      this.contentForm.markAllAsTouched()
     }
   }
 
@@ -1994,11 +2000,19 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       instructions: new FormControl('', [Validators.required]),
       versionKey: '',  // (new Date()).getTime()
       purpose: '',
-      lang: new FormControl(''),
+      lang: new FormControl('', [Validators.required]),
       cneName: new FormControl('')
     })
     // tslint:disable-next-line:no-console
     console.log("form validation", this.contentForm)
+
+    // Tell the parent stepper whether the course-details form is currently valid,
+    // both now (initial state) and on every subsequent status change, so it can
+    // keep the Next button disabled until all mandatory fields are filled.
+    this.validityChange.emit(this.contentForm.valid)
+    this.contentForm.statusChanges
+      .pipe(distinctUntilChanged())
+      .subscribe(() => this.validityChange.emit(this.contentForm.valid))
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       if (this.canUpdate) {

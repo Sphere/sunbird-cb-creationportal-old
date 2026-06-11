@@ -335,7 +335,7 @@
               <mat-error i18n>Subtitle is required</mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="em-field"
+            <mat-form-field appearance="outline" class="em-field" hideRequiredMarker
               [ngClass]="{ 'mat-form-field-invalid': showError('lang') }">
               <mat-label i18n>Course Language <span class="em-req">*</span></mat-label>
               <mat-select formControlName="lang">

@@ -51,12 +51,19 @@
   }
 }
 .cd-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #0F172A;
-  margin: 0;
-  font-family: Roboto, sans-serif;
-  line-height: 1.3;
+  // !important + padding/::before reset so the mat-dialog-title directive (added
+  // for the dialog accessible name) keeps this compact header-title style.
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #0F172A !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: Roboto, sans-serif !important;
+  line-height: 1.3 !important;
+
+  &::before {
+    display: none !important;
+  }
 }
 .cd-subtitle {
   font-size: 12px;

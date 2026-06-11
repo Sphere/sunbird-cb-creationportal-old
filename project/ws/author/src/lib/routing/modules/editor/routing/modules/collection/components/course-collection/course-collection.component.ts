@@ -144,6 +144,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   clickedNext: boolean = false;
   triggerEditMetaNext = false
   triggerModuleCreationNext = false
+  // Live validity reported by the step children, used to disable the stepper Next.
+  isCourseDetailsValid = false
+  isCourseBuilderValid = false
+  isCourseSettingsValid = false
   isSelfAssessment: boolean = false
   isMoveCourseToDraft: boolean = false;
   createModule: any
@@ -1699,7 +1703,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.dialog.open(SuccessDialogComponent, {
         width: '450px',
         height: '300x',
-        data: { 'message': 'Course is Live', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+        data: { 'message': 'Course is Live', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
       })
     } else {
       this.loaderService.changeLoad.next(false)
@@ -1770,7 +1774,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.dialog.open(SuccessDialogComponent, {
             width: '550px',
             height: '300x',
-            data: { 'message': 'The course has been sent to the Aastrika publisher. Please contact the Aastrika team for course publication.', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+            data: { 'message': 'The course has been sent to the Aastrika publisher. Please contact the Aastrika team for course publication.', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
           })
           // this.router.navigate(['author', 'cbp'])
           // } else {
@@ -2331,7 +2335,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             this.dialog.open(SuccessDialogComponent, {
               width: '450px',
               height: '300x',
-              data: { 'message': 'Course Sent For Review', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+              data: { 'message': 'Course Sent For Review', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
             })
             // this.router.navigate(['author', 'cbp'])
           }
@@ -3394,6 +3398,38 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       case 'showAddChapter':
         this.showAddchapter = false
     }
+  }
+
+  // Validity reported up from the step children (course-details form / course-builder
+  // resource count). Drives whether the stepper Next button is enabled.
+  onCourseDetailsValidity(valid: boolean) {
+    this.isCourseDetailsValid = valid
+  }
+
+  onCourseBuilderValidity(valid: boolean) {
+    this.isCourseBuilderValid = valid
+  }
+
+  onCourseSettingsValidity(valid: boolean) {
+    this.isCourseSettingsValid = valid
+  }
+
+  // Disable the stepper Next until the current step's mandatory inputs are complete:
+  // Course Details needs a valid form, Course Builder needs at least 2 resources,
+  // Course Settings needs its mandatory fields (Reviewers / Publishers / Source Name / Certificate).
+  get isNextDisabled(): boolean {
+    const activeStep = this.steps.find((s: any) => s.activeStep)
+    if (!activeStep) { return false }
+    if (activeStep.key === 'CourseDetails') {
+      return !this.isCourseDetailsValid
+    }
+    if (activeStep.key === 'CourseBuilder') {
+      return !this.isCourseBuilderValid
+    }
+    if (activeStep.key === 'CourseSettings') {
+      return !this.isCourseSettingsValid
+    }
+    return false
   }
 
   handleStepperNext() {

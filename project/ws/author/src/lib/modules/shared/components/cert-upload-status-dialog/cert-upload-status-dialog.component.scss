@@ -32,12 +32,20 @@
 }
 
 .cert-message {
-  font-family: Roboto, sans-serif;
-  font-size: 15px;
-  font-weight: 400;
-  color: #3a4a5c;
-  line-height: 1.6;
-  margin: 0;
+  // Body-scale message (was off-scale 15px). !important + padding/::before reset
+  // so the mat-dialog-title directive (added for the dialog accessible name) keeps
+  // this body-paragraph style rather than the Material title typography.
+  font-family: Roboto, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  color: #3a4a5c !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  &::before {
+    display: none !important;
+  }
 }
 
 .cert-dialog-actions {

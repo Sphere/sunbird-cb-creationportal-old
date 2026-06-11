@@ -4,6 +4,9 @@ $action-btn-size: 2.5 * $size-m; // 40px
 :host {
   display: block;
   width: 100%;
+  // Card text was falling back to a serif default; force the project's Roboto so
+  // titles and metadata match the rest of the app (e.g. the left nav menu).
+  font-family: Roboto, sans-serif;
 }
 
 .card-container {
@@ -29,6 +32,7 @@ mat-card {
 }
 
 .card-title {
+  font-family: Roboto, sans-serif;
   color: #1C5D95;
   font-size: 16px;
   font-weight: 500;
@@ -89,6 +93,7 @@ mat-card {
 }
 
 .list-title-text {
+  font-family: Roboto, sans-serif;
   font-size: 15px;
   font-weight: 500;
   color: #1a2d45;
@@ -216,6 +221,10 @@ mat-card-actions {
   &.status-reviewed {
     color: #0369a1;
     background: #e0f2fe;
+  }
+  &.status-revision {
+    color: #c2410c;
+    background: #ffedd5;
   }
   &.status-unpublished, &.status-retired {
     color: #b91c1c;
