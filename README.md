@@ -20,7 +20,20 @@ Built by **Tarento** for the Sphere/Aastrika ecosystem on top of Sunbird (EkStep
 
 **Content/media:** ngx-extended-pdf-viewer 26 · video.js 7.6 · Quill 1.3 + ngx-quill 21 · ckeditor4-angular 5.2 · ace-builds · ngx-image-cropper · jsplumb · three.js · vis-network · D3 · Chart.js · xlsx · angularx-qrcode.
 
-**Build/test:** ng-packagr 21 · Jest 29 · ESLint 9 / @angular-eslint 21 · gzipper (gzip + brotli) · Docker (prod base `node:22`) · Jenkins.
+**Build/test:** ng-packagr 21 · Jest 29 · Cypress 13 (e2e) · ESLint 9 / @angular-eslint 21 · Prettier 3 (husky + lint-staged pre-commit) · gzipper (gzip + brotli) · Docker (multi-stage: `node:20` builder + `node:20-slim` runtime) · Jenkins.
+
+---
+
+## Contents
+
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [API & Backend Integration](#api--backend-integration)
+- [Deployment](#deployment)
+- [Migration Notes (Angular 8 → 21)](#migration-notes-angular-8--21)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
@@ -95,14 +108,20 @@ npm run build:local      # dev configuration, no base-href
 
 > **Do not** add `--output-path` on the CLI — it resets `browser:""` and breaks the deploy layout. The output path lives in `angular.json`.
 
-### Test & lint
+### Test, lint & format
 
 ```bash
-npm test                 # Jest
+npm test                 # Jest (unit tests)
+npm run test-watch       # Jest in watch mode
 npm run test-coverage    # Jest with coverage
+npm run e2e              # Cypress (end-to-end)
 npm run lint             # ESLint (ng lint)
 npm run lint:fix         # ESLint autofix
+npm run format           # Prettier — write all *.{ts,html,scss,json,md}
+npm run format:check     # Prettier — check only (no writes)
 ```
+
+> A **husky pre-commit hook** runs `lint-staged`, which formats staged files with Prettier automatically — so commits stay consistent without a manual `npm run format`.
 
 ---
 
@@ -161,3 +180,9 @@ The repo was migrated from **Angular 8 (ViewEngine) → 21** across four milesto
 ## Contributing
 
 Before making design or code changes, read **[CLAUDE.md](CLAUDE.md)** — the shared source of truth covering the project's design & development constitution, UI/Material conventions, and architecture rules. Core principle: **enhance, never remove** — every refactor must preserve all existing business functionality.
+
+---
+
+## License
+
+This is a **private, internal project** (`package.json` → `"private": true`) — proprietary to **Tarento**, built for the Sphere/Aastrika ecosystem. It is not published to npm and is not offered under an open-source license. Usage, distribution, and contributions are governed by the organization's internal terms; contact the maintainers for access.
