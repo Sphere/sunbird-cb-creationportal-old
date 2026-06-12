@@ -285,8 +285,9 @@
   </a>
   <!-- Download this resource (file as-is, or quiz -> Excel). This is a creation
        portal — every viewer is a creator/reviewer/publisher — so it's shown for
-       any resource that has a file, no role gate. -->
-  <a mat-menu-item *ngIf="content?.artifactUrl"
+       any resource that has a file, EXCEPT external live reviewers, who may review
+       but must not download. -->
+  <a mat-menu-item *ngIf="content?.artifactUrl && !isExternalLiveReviewer"
     class="flex flex-middle" (click)="downloadResource()">
     <mat-icon>cloud_download</mat-icon>
     <h3 class="margin-remove" i18n>

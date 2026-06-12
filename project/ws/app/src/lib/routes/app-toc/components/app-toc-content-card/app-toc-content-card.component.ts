@@ -50,8 +50,18 @@ export class AppTocContentCardComponent implements OnInit, OnChanges {
     return !!userId && !!this.content && (this.content as any).createdBy === userId
   }
 
-  // Download this single resource (file as-is, or quiz -> Excel). Creator only.
+  // External live reviewers may only review live content — they must not be able to
+  // download resources, so the download action is hidden for this role.
+  get isExternalLiveReviewer(): boolean {
+    return !!this.configSvc.userRoles && this.configSvc.userRoles.has('external_content_reviewer_live')
+  }
+
+  // Download this single resource (file as-is, or quiz -> Excel).
   async downloadResource(): Promise<void> {
+    // External live reviewers must not download — guard here too, not just in the template.
+    if (this.isExternalLiveReviewer) {
+      return
+    }
     if (!this.content || (!this.content.artifactUrl && !(this.content as any).downloadUrl)) {
       return
     }

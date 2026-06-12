@@ -472,6 +472,12 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     return !!userId && !!this.content && (this.content as any).createdBy === userId
   }
 
+  // External live reviewers may only review live content — never download. Redundant
+  // with isCourseCreator (they're not the owner) but kept explicit for this role.
+  get isExternalLiveReviewer(): boolean {
+    return this.authAccessService.hasRole(['external_content_reviewer_live'])
+  }
+
   // Download every resource in the course as one zip (named after the course).
   async downloadAllResources(event?: MouseEvent): Promise<void> {
     if (event) { event.stopPropagation() }
