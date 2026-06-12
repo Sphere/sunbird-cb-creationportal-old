@@ -33,7 +33,6 @@ Built by **Tarento** for the Sphere/Aastrika ecosystem on top of Sunbird (EkStep
 - [Deployment](#deployment)
 - [Migration Notes (Angular 8 → 21)](#migration-notes-angular-8--21)
 - [Contributing](#contributing)
-- [License](#license)
 
 ---
 
@@ -180,9 +179,3 @@ The repo was migrated from **Angular 8 (ViewEngine) → 21** across four milesto
 ## Contributing
 
 Before making design or code changes, read **[CLAUDE.md](CLAUDE.md)** — the shared source of truth covering the project's design & development constitution, UI/Material conventions, and architecture rules. Core principle: **enhance, never remove** — every refactor must preserve all existing business functionality.
-
----
-
-## License
-
-This is a **private, internal project** (`package.json` → `"private": true`) — proprietary to **Tarento**, built for the Sphere/Aastrika ecosystem. It is not published to npm and is not offered under an open-source license. Usage, distribution, and contributions are governed by the organization's internal terms; contact the maintainers for access.
