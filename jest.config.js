@@ -1,5 +1,8 @@
 // require('jest-preset-angular/ngcc-jest-processor');
 
+const { pathsToModuleNameMapper } = require('ts-jest')
+const { compilerOptions } = require('./tsconfig.json')
+
 globalThis.ngJest = {
   skipNgcc: true,
   tsconfig: 'tsconfig.spec.json', // this is the project root tsconfig
@@ -9,7 +12,31 @@ globalThis.ngJest = {
 module.exports = {
   preset: 'jest-preset-angular',
   setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
+  // Measure coverage across all three monorepo tiers (not just whatever a test
+  // happens to import). Excludes generated/boilerplate files that aren't unit-testable.
+  collectCoverageFrom: [
+    'src/app/**/*.ts',
+    'project/ws/**/*.ts',
+    'library/ws-widget/**/*.ts',
+    '!**/*.spec.ts',
+    '!**/*.module.ts',
+    '!**/*.d.ts',
+    '!**/public-api.ts',
+    '!**/index.ts',
+    '!**/*.model.ts',
+    '!**/environments/**',
+    '!**/*.routing.ts',
+    '!**/*-routing.module.ts',
+  ],
+  coveragePathIgnorePatterns: ['/node_modules/', '/dist/', '/out-tsc/'],
+  // NOTE: add a `coverageThreshold` ratchet once a baseline exists, then raise it
+  // as suites land — starting it now (coverage ~0) would fail the build immediately.
   moduleNameMapper: {
+    // Auto-map every tsconfig path alias so new specs don't each need a hand-written
+    // entry (this is why the suite had only ~12 specs). The curated bare-alias entries
+    // below repeat after this spread and win on key collision (e.g. point package
+    // roots at their public-api.ts instead of the folder).
+    ...pathsToModuleNameMapper(compilerOptions.paths || {}, { prefix: '<rootDir>/' }),
     '^@ws-widget/utils$': '<rootDir>/library/ws-widget/utils',
     '^@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component':
       '<rootDir>/project/ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component.ts',

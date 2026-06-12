@@ -2,9 +2,19 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    // Transpile each spec/source file in isolation instead of type-checking the whole
+    // program. ts-jest otherwise forces CommonJS, which downgrades resolution to node10
+    // and can't read Angular's package `exports` map (e.g. @angular/core/testing). Jest's
+    // own runtime resolver does read exports, so loading still works — and tests run faster.
+    "isolatedModules": true
   },
-  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"],
+  "include": [
+    "src/**/*.ts",
+    "project/**/*.ts",
+    "library/**/*.ts",
+    "src/**/*.d.ts"
+  ],
   "paths": {
     "@ws-widget/resolver": ["library/ws-widget/resolver"],
     "@ws-widget/resolver/*": ["library/ws-widget/resolver/*"],
