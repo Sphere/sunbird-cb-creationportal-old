@@ -573,8 +573,16 @@ ws-auth-content-card-v2 {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  line-height: 38.4px;
-  margin-left: 18px !important;
+  // Mirror the main "My Courses : …" header bar: same 68px height, vertically
+  // centred, full-width bottom divider, anchored at the content top — so both the
+  // label and the divider line up across the sidebar and the content header.
+  display: flex;
+  align-items: center;
+  height: 68px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #dce8f3;
+  line-height: 1;
+  padding-left: 18px;
   margin-bottom: 0px;
   cursor: pointer;
   transition: color 0.15s ease;
