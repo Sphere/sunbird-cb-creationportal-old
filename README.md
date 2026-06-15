@@ -5,7 +5,7 @@ An enterprise Angular SPA for **creating, authoring, managing, and publishing ed
 Built by **Tarento** for the Sphere/Aastrika ecosystem on top of Sunbird (EkStep / DIKSHA).
 
 - **Repo:** https://github.com/Sphere/sunbird-cb-creationportal-old
-- **Version:** 5.0.0
+- **Version:** 5.0.1
 - **Framework:** Angular **21** (migrated from Angular 8)
 
 ---
@@ -56,14 +56,14 @@ angular.json / Dockerfile* / Jenkinsfile
 
 **Path aliases** (defined in `tsconfig` — use these, never relative paths across library boundaries):
 
-| Alias | Path |
-| --- | --- |
-| `@ws-widget/resolver` | `library/ws-widget/resolver` |
+| Alias                   | Path                           |
+| ----------------------- | ------------------------------ |
+| `@ws-widget/resolver`   | `library/ws-widget/resolver`   |
 | `@ws-widget/collection` | `library/ws-widget/collection` |
-| `@ws-widget/utils` | `library/ws-widget/utils` |
-| `@ws/app` | `project/ws/app` |
-| `@ws/author` | `project/ws/author` |
-| `@ws/viewer` | `project/ws/viewer` |
+| `@ws-widget/utils`      | `library/ws-widget/utils`      |
+| `@ws/app`               | `project/ws/app`               |
+| `@ws/author`            | `project/ws/author`            |
+| `@ws/viewer`            | `project/ws/viewer`            |
 
 **Key patterns:** lazy-loaded feature modules (`loadChildren`) · config-driven **widget system** (`@ws-widget/resolver` maps type strings → components at runtime) · interceptor chain (`AppInterceptorService` for Keycloak token + retry) · resolver-based data prefetch · guard chain (`GeneralGuard` → `LoginGuard` → `EmptyRouteGuard`) · `ws` selector prefix on all components.
 
@@ -82,7 +82,7 @@ angular.json / Dockerfile* / Jenkinsfile
 npm install
 ```
 
-> A fresh, clean install matters: a green *local* build is **not** proof CI passes. Angular 21 removed `ngcc`, so stale ngcc-compiled artifacts in `node_modules` can mask incompatibilities. Validate against a fresh install (see Migration Notes).
+> A fresh, clean install matters: a green _local_ build is **not** proof CI passes. Angular 21 removed `ngcc`, so stale ngcc-compiled artifacts in `node_modules` can mask incompatibilities. Validate against a fresh install (see Migration Notes).
 
 ### Run locally
 
@@ -128,15 +128,15 @@ npm run format:check     # Prettier — check only (no writes)
 
 **Dev proxy routes** (`proxy/localhost.proxy.json`):
 
-| Route | Target |
-| --- | --- |
-| `/apis/*` | `https://cbp-sphere.aastrika.org/` (main gateway) |
-| `/content-api/*` | `:3004` |
-| `/content-store/*` | `:3005` |
-| `/chat-bot/*` | `:3006` |
-| `/mobile-apps/*` | `:3007` |
-| `/LA/*` | `:3008` |
-| `/assets/*` | CDN |
+| Route              | Target                                            |
+| ------------------ | ------------------------------------------------- |
+| `/apis/*`          | `https://cbp-sphere.aastrika.org/` (main gateway) |
+| `/content-api/*`   | `:3004`                                           |
+| `/content-store/*` | `:3005`                                           |
+| `/chat-bot/*`      | `:3006`                                           |
+| `/mobile-apps/*`   | `:3007`                                           |
+| `/LA/*`            | `:3008`                                           |
+| `/assets/*`        | CDN                                               |
 
 **Conventions:** Sunbird APIs are wrapped behind the `/apis/proxies/v8/` prefix (versions `/v1/ /v2/ /v8/`). New API calls should go through this prefix unless hitting a microservice directly. Content taxonomy uses `framework` + `channelId`.
 
@@ -170,7 +170,7 @@ The repo was migrated from **Angular 8 (ViewEngine) → 21** across four milesto
 
 **Three gotchas to respect:**
 
-1. **`ckeditor4-angular` must stay ≥ 5.2.1.** v4.0.0 only "worked" locally via stale ngcc-compiled artifacts; a fresh install under Angular 21 fails with `NG6002 … not compatible with Ivy`. v5.2.1 is Ivy-native. *(CKEditor 4 is EOL; a full editor replacement is a separate task.)*
+1. **`ckeditor4-angular` must stay ≥ 5.2.1.** v4.0.0 only "worked" locally via stale ngcc-compiled artifacts; a fresh install under Angular 21 fails with `NG6002 … not compatible with Ivy`. v5.2.1 is Ivy-native. _(CKEditor 4 is EOL; a full editor replacement is a separate task.)_
 2. **Build script flags:** use kebab-case `--base-href=/` only. The old pre-21 flags `--outputPath` / `--baseHref` / `--i18nLocale` are invalid and were removed.
 3. **Deploy output path = `dist/www/en`** (see Deployment above) — do not drop the `/en`.
 
