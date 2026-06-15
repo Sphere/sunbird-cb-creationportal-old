@@ -79,9 +79,7 @@ import { SuccessDialogComponent } from '../../../../../../../../modules/shared/c
 
 // import { VariableAst } from '@angular/compiler'
 
-import {
-  ContentProgressService,
-} from '@ws-widget/collection'
+import { ContentProgressService } from '@ws-widget/collection'
 
 @Component({
   standalone: false,
@@ -139,9 +137,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   versionKey: any
   versionID: any
   resourseSelected = ''
-  isModelHeaderView: boolean = false;
-  showResource: boolean = false;
-  clickedNext: boolean = false;
+  isModelHeaderView: boolean = false
+  showResource: boolean = false
+  clickedNext: boolean = false
   triggerEditMetaNext = false
   triggerModuleCreationNext = false
   // Live validity reported by the step children, used to disable the stepper Next.
@@ -149,24 +147,24 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   isCourseBuilderValid = false
   isCourseSettingsValid = false
   isSelfAssessment: boolean = false
-  isMoveCourseToDraft: boolean = false;
+  isMoveCourseToDraft: boolean = false
   createModule: any
-  isLoading: boolean = false;
+  isLoading: boolean = false
   backToCourse?: Subscription
   // Separate handle for the currentNavigationMessage subscription, which previously
   // shared the `backToCourse` field with isBackButtonClickedMessage and was leaked
   // (overwritten without unsubscribe). Tracked so ngOnDestroy can clean it up.
   navigationMessageSub?: Subscription
-  isModulePageEnabled: boolean = false;
-  isReviewChecklistEnabled: boolean = false;
+  isModulePageEnabled: boolean = false
+  isReviewChecklistEnabled: boolean = false
   // isReviewChecklistSkipEnabled: boolean = false;
-  backToDashboard: boolean = false;
+  backToDashboard: boolean = false
   steps: any = [
     { label: '1. Introduction', key: 'Introduction', activeStep: true, completed: false },
     { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: false },
     { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
-    { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
-  ];
+    { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false },
+  ]
   allowAuthorContentCreate = false
   header: any = 'Course Details'
   constructor(
@@ -210,256 +208,246 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         this.initService.isEditMetaPageAction('backFromModulePage')
       }
     }
-    this.changeMessageSubscription = this.initService.currentMessage.subscribe(
-      (data: any) => {
-        if (data === 'publishResources') {
-          this.takeAction('publishResources')
-        }
-        if (data === 'PublishCBP') {
-          this.PublishCBP()
-        }
-        if (data === 'MoveCourseToDraft') {
-          this.isMoveCourseToDraft = true
-          this.changeStatusToDraft('Content Rejected')
-        }
-        if (data === 'backToCourseDetailsPage') {
-          this.isModulePageEnabled = false
-          this.showAddchapter = false
-          this.viewMode = 'meta'
-          this.clickedNext = false
-          this.isSubmitPressed = false
-        }
-      })
-    this.navigationMessageSub = this.initService.currentNavigationMessage.subscribe(
-      (data: any) => {
-        // tslint:disable-next-line:no-console
-        console.log("data: ", data, this.currentSteps)
-        if (sessionStorage.getItem('isSettingsPage') === '1') {
-          sessionStorage.setItem('isSettingsPage', '0')
-          this.initService.backToHome('fromSettings')
-        }
-        if (this.viewMode === 'assessment' && data === 'CourseDetails') {
-          this.initService.isEditMetaPageAction('backFromModulePage')
-          this.clickedNext = false
-          this.showAddchapter = false
-          this.isModulePageEnabled = false
-          this.viewMode = 'meta'
-        }
-        if (data === 'CourseDetails') {
-          this.loaderService.changeLoad.next(false)
-          this.viewMode = 'meta'
-          this.initService.publishData('backToCourseDetailsPage')
-          this.initService.isEditMetaPageAction('backFromModulePage')
-          this.clickedNext = false
-          this.showAddchapter = false
-          this.isModulePageEnabled = false
-          this.isSubmitPressed = false
-        } else if (data === 'CourseBuilder') {
-          this.loaderService.changeLoad.next(false)
-          this.clickedNext = true
-          this.showAddchapter = false
-          this.isModulePageEnabled = false
-        }
-        else if (data === 'AssessmentBuilder') {
-          this.loaderService.changeLoad.next(false)
-          this.clickedNext = true
-        }
-      })
+    this.changeMessageSubscription = this.initService.currentMessage.subscribe((data: any) => {
+      if (data === 'publishResources') {
+        this.takeAction('publishResources')
+      }
+      if (data === 'PublishCBP') {
+        this.PublishCBP()
+      }
+      if (data === 'MoveCourseToDraft') {
+        this.isMoveCourseToDraft = true
+        this.changeStatusToDraft('Content Rejected')
+      }
+      if (data === 'backToCourseDetailsPage') {
+        this.isModulePageEnabled = false
+        this.showAddchapter = false
+        this.viewMode = 'meta'
+        this.clickedNext = false
+        this.isSubmitPressed = false
+      }
+    })
+    this.navigationMessageSub = this.initService.currentNavigationMessage.subscribe((data: any) => {
+      // tslint:disable-next-line:no-console
+      console.log('data: ', data, this.currentSteps)
+      if (sessionStorage.getItem('isSettingsPage') === '1') {
+        sessionStorage.setItem('isSettingsPage', '0')
+        this.initService.backToHome('fromSettings')
+      }
+      if (this.viewMode === 'assessment' && data === 'CourseDetails') {
+        this.initService.isEditMetaPageAction('backFromModulePage')
+        this.clickedNext = false
+        this.showAddchapter = false
+        this.isModulePageEnabled = false
+        this.viewMode = 'meta'
+      }
+      if (data === 'CourseDetails') {
+        this.loaderService.changeLoad.next(false)
+        this.viewMode = 'meta'
+        this.initService.publishData('backToCourseDetailsPage')
+        this.initService.isEditMetaPageAction('backFromModulePage')
+        this.clickedNext = false
+        this.showAddchapter = false
+        this.isModulePageEnabled = false
+        this.isSubmitPressed = false
+      } else if (data === 'CourseBuilder') {
+        this.loaderService.changeLoad.next(false)
+        this.clickedNext = true
+        this.showAddchapter = false
+        this.isModulePageEnabled = false
+      } else if (data === 'AssessmentBuilder') {
+        this.loaderService.changeLoad.next(false)
+        this.clickedNext = true
+      }
+    })
 
-    this.backToCourse = this.initService.isBackButtonClickedMessage.subscribe(
-      (data: any) => {
-        // tslint:disable-next-line:no-console
-        console.log("data: ", data, this.isSelfAssessment)
-        if (sessionStorage.getItem('isSettingsPage') === '1') {
+    this.backToCourse = this.initService.isBackButtonClickedMessage.subscribe((data: any) => {
+      // tslint:disable-next-line:no-console
+      console.log('data: ', data, this.isSelfAssessment)
+      if (sessionStorage.getItem('isSettingsPage') === '1') {
+        if (this.isSelfAssessment) {
+          this.receiveSteps('AssessmentBuilder')
+        } else {
+          this.receiveSteps('CourseBuilder')
+        }
+        sessionStorage.setItem('isSettingsPage', '0')
+        this.initService.backToHome('fromSettings')
+      } else {
+        sessionStorage.setItem('isSettingsPage', '0')
+        if (this.viewMode === 'assessment') {
           if (this.isSelfAssessment) {
             this.receiveSteps('AssessmentBuilder')
           } else {
             this.receiveSteps('CourseBuilder')
           }
-          sessionStorage.setItem('isSettingsPage', '0')
-          this.initService.backToHome('fromSettings')
-        } else {
-          sessionStorage.setItem('isSettingsPage', '0')
-          if (this.viewMode === 'assessment') {
+          this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
+        } else if (this.showAddchapter) {
+          if (this.viewMode === 'meta' && this.clickedNext) {
+            if (this.isSelfAssessment) {
+              this.router.navigateByUrl('/author/home')
+            }
             if (this.isSelfAssessment) {
               this.receiveSteps('AssessmentBuilder')
             } else {
-              this.receiveSteps('CourseBuilder')
+              this.receiveSteps('CourseDetails')
             }
-            this.initService.isBackButtonClickedFromAssessmentAction('backFromAssessmentDetails')
-          } else if (this.showAddchapter) {
-            if (this.viewMode === 'meta' && this.clickedNext) {
-              if (this.isSelfAssessment) {
-                this.router.navigateByUrl('/author/home')
-              }
-              if (this.isSelfAssessment) {
-                this.receiveSteps('AssessmentBuilder')
-              } else {
-                this.receiveSteps('CourseDetails')
-              }
-              console.log("fadfasdf")
-              this.initService.isEditMetaPageAction('backFromModulePage')
-              this.clickedNext = false
-              this.showAddchapter = false
-              this.isModulePageEnabled = false
-            } else if (this.viewMode === '') {
-              if (this.isSelfAssessment) {
-                this.receiveSteps('AssessmentBuilder')
-              } else {
-                this.receiveSteps('CourseDetails')
-              }
-              console.log("this.viewMode")
-              this.viewMode = 'meta'
-              this.initService.publishData('backToCourseDetailsPage')
+            console.log('fadfasdf')
+            this.initService.isEditMetaPageAction('backFromModulePage')
+            this.clickedNext = false
+            this.showAddchapter = false
+            this.isModulePageEnabled = false
+          } else if (this.viewMode === '') {
+            if (this.isSelfAssessment) {
+              this.receiveSteps('AssessmentBuilder')
+            } else {
+              this.receiveSteps('CourseDetails')
             }
+            console.log('this.viewMode')
+            this.viewMode = 'meta'
+            this.initService.publishData('backToCourseDetailsPage')
+          }
+        } else {
+          if (this.isSelfAssessment && this.clickedNext) {
+            this.router.navigateByUrl('/author/home')
+          }
+          if (this.viewMode === 'meta' && this.clickedNext && !this.isSelfAssessment) {
+            console.log('this.meta')
+            if (this.isSelfAssessment) {
+              this.receiveSteps('AssessmentBuilder')
+            } else {
+              this.receiveSteps('CourseDetails')
+            }
+            this.initService.publishData('backToCourseDetailsPage')
           } else {
-            if (this.isSelfAssessment && this.clickedNext) {
+            if (!this.isSelfAssessment) {
               this.router.navigateByUrl('/author/home')
             }
-            if (this.viewMode === 'meta' && this.clickedNext && !this.isSelfAssessment) {
-              console.log("this.meta")
-              if (this.isSelfAssessment) {
-                this.receiveSteps('AssessmentBuilder')
-              } else {
-                this.receiveSteps('CourseDetails')
-              }
-              this.initService.publishData('backToCourseDetailsPage')
-            } else {
-              if (!this.isSelfAssessment) {
-                this.router.navigateByUrl('/author/home')
-              }
-            }
           }
         }
-      })
-    this.initService.publishMessage.subscribe(
-      (data: any) => {
-        if (data === 'backToCourseDetailsPage' && this.viewMode !== 'assessment') {
-          this.isModulePageEnabled = false
-          this.isLoading = true
-          this.showAddchapter = false
-          this.viewMode = 'meta'
-          this.clickedNext = false
-          setTimeout(() => {
-            this.isLoading = false
-          }, 500)
-        }
-        setTimeout(() => {
-          this.isLoading = false
-        }, 500)
-      })
-    this.initService.isBackButtonFromAssessmentClickedMessage.subscribe(
-      (data: any) => {
+      }
+    })
+    this.initService.publishMessage.subscribe((data: any) => {
+      if (data === 'backToCourseDetailsPage' && this.viewMode !== 'assessment') {
+        this.isModulePageEnabled = false
         this.isLoading = true
-        if ((data === 'backFromAssessmentDetails') && this.viewMode === 'assessment') {
-          // tslint:disable-next-line:no-console
-          console.log("course-collection: " + JSON.stringify(data))
-          this.showAddchapter = true
-          this.viewMode = ''
-          this.clickedNext = true
-          if (this.isSelfAssessment) {
-            this.header = "Self Assessment Details"
-            this.steps = [
-              { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
-              { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
-              { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
-            ]
-          } else {
-            this.steps = [
-              { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
-              { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
-              { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
-              { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
-            ]
-          }
-
-          setTimeout(() => {
-            this.isLoading = false
-          }, 500)
-          // this.save()
-        }
+        this.showAddchapter = false
+        this.viewMode = 'meta'
+        this.clickedNext = false
         setTimeout(() => {
           this.isLoading = false
         }, 500)
-      })
-
-    this.initService.uploadMessage.subscribe(
-      (data: any) => {
-        if (data) {
-          this.save('upload')
-        }
-      })
-    this.initService.saveContentMessage.subscribe(
-      (data: any) => {
-        if (data) {
-          this.isModulePageEnabled = true
-          this.showAddchapter = true
-          this.viewMode = ''
-          this.save()
-        }
-      })
-    this.initService.createModuleMessage.subscribe(
-      (data: any) => {
+      }
+      setTimeout(() => {
+        this.isLoading = false
+      }, 500)
+    })
+    this.initService.isBackButtonFromAssessmentClickedMessage.subscribe((data: any) => {
+      this.isLoading = true
+      if (data === 'backFromAssessmentDetails' && this.viewMode === 'assessment') {
         // tslint:disable-next-line:no-console
-        console.log("data: " + JSON.stringify(data))
-        if (data) {
-          this.createModule = data
-          this.setContentType(data['type'])
-          this.showAddchapter = true
-          if (data['type'] === "assessment") {
-            this.clickedNext = false
-          }
-          // this.viewMode = ''
-          // this.clickedNext = true
-          //this.save()
+        console.log('course-collection: ' + JSON.stringify(data))
+        this.showAddchapter = true
+        this.viewMode = ''
+        this.clickedNext = true
+        if (this.isSelfAssessment) {
+          this.header = 'Self Assessment Details'
+          this.steps = [
+            { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
+            { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
+            { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false },
+          ]
+        } else {
+          this.steps = [
+            { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
+            { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
+            { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
+            { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false },
+          ]
         }
-      })
+
+        setTimeout(() => {
+          this.isLoading = false
+        }, 500)
+        // this.save()
+      }
+      setTimeout(() => {
+        this.isLoading = false
+      }, 500)
+    })
+
+    this.initService.uploadMessage.subscribe((data: any) => {
+      if (data) {
+        this.save('upload')
+      }
+    })
+    this.initService.saveContentMessage.subscribe((data: any) => {
+      if (data) {
+        this.isModulePageEnabled = true
+        this.showAddchapter = true
+        this.viewMode = ''
+        this.save()
+      }
+    })
+    this.initService.createModuleMessage.subscribe((data: any) => {
+      // tslint:disable-next-line:no-console
+      console.log('data: ' + JSON.stringify(data))
+      if (data) {
+        this.createModule = data
+        this.setContentType(data['type'])
+        this.showAddchapter = true
+        if (data['type'] === 'assessment') {
+          this.clickedNext = false
+        }
+        // this.viewMode = ''
+        // this.clickedNext = true
+        //this.save()
+      }
+    })
     if (this.viewMode == 'meta' && !this.clickedNext && !this.showAddchapter && !this.isReviewChecklistEnabled) {
-      console.log("this.viewMeta", this.viewMode, this.clickedNext, this.showAddchapter, this.isReviewChecklistEnabled)
-      console.log("fasrwerweeeeeeeee")
+      console.log('this.viewMeta', this.viewMode, this.clickedNext, this.showAddchapter, this.isReviewChecklistEnabled)
+      console.log('fasrwerweeeeeeeee')
       this.initService.isEditMetaPageAction('backFromModulePage')
       if (this.isSelfAssessment) {
-        this.header = "Self Assessment Details"
+        this.header = 'Self Assessment Details'
         this.steps = [
           { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
           { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: false, completed: true },
-          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false }
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false },
         ]
       } else {
         this.steps = [
           { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
           { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
           { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: true },
-          { label: '4. Course Settings', key: 'CourseSettings', activeStep: true, completed: false }
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: true, completed: false },
         ]
       }
     }
-    this.initService.updateAssessmentMessage.subscribe(
-      (data: any) => {
-        if (data) {
-          // tslint:disable-next-line:no-console
-          console.log(data)
-          this.createModule = data
-          //this.setContentType(data['type'])
-          this.showAddchapter = true
-          this.viewMode = 'assessment'
-          this.clickedNext = false
-          this.cdr.detectChanges()
-          sessionStorage.removeItem('assessment')
-          // if (data['type'] === "assessment" || data.artifactUrl) {
-          //   this.clickedNext = false
-          // }
+    this.initService.updateAssessmentMessage.subscribe((data: any) => {
+      if (data) {
+        // tslint:disable-next-line:no-console
+        console.log(data)
+        this.createModule = data
+        //this.setContentType(data['type'])
+        this.showAddchapter = true
+        this.viewMode = 'assessment'
+        this.clickedNext = false
+        this.cdr.detectChanges()
+        sessionStorage.removeItem('assessment')
+        // if (data['type'] === "assessment" || data.artifactUrl) {
+        //   this.clickedNext = false
+        // }
 
-          if (data.artifactUrl || data.mimeType === "application/json") {
-            sessionStorage.setItem('assessment', JSON.stringify(data.identifier))
-            //this.clickedNext = false
-            //this.redirectUser(data)
-            //this.initService.editAssessmentAction(data)
-            //this.clickedNext = false
-          }
-          //this.editPublishCourse()
+        if (data.artifactUrl || data.mimeType === 'application/json') {
+          sessionStorage.setItem('assessment', JSON.stringify(data.identifier))
+          //this.clickedNext = false
+          //this.redirectUser(data)
+          //this.initService.editAssessmentAction(data)
+          //this.clickedNext = false
         }
-      })
+        //this.editPublishCourse()
+      }
+    })
 
     // this.initService.editAssessmentMessage.subscribe(
     //   (data: any) => {
@@ -483,18 +471,18 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   receiveSteps(steps: any) {
     this.currentSteps = steps
     if (this.isSelfAssessment) {
-      this.header = "Self Assessment Details"
+      this.header = 'Self Assessment Details'
       if (steps === 'AssessmentBuilder') {
         this.steps = [
           { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
           { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
-          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false },
         ]
       } else if (steps === 'AssessmentSettings') {
         this.steps = [
           { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
           { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: false, completed: true },
-          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false }
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false },
         ]
       }
     } else {
@@ -503,7 +491,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
           { label: '2. Course Details', key: 'CourseDetails', activeStep: true, completed: false },
           { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
-          { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false },
         ]
       } else if (steps === 'CourseBuilder') {
         this.loaderService.changeLoad.next(false)
@@ -511,19 +499,17 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
           { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
           { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
-          { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false },
         ]
       } else if (steps === 'CourseSettings') {
         this.steps = [
           { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
           { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
           { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: true },
-          { label: '4. Course Settings', key: 'CourseSettings', activeStep: true, completed: false }
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: true, completed: false },
         ]
       }
     }
-
-
   }
   canShow(role: string): boolean {
     switch (role) {
@@ -536,7 +522,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       case 'author':
         // return this.accessService.hasRole(CREATE_ROLE) || this.accessService.hasRole(REVIEW_ROLE)
         //   || this.accessService.hasRole(PUBLISH_ROLE)
-        return this._configurationsService.userRoles!.has('content_reviewer') || this._configurationsService.userRoles!.has('content_creator') || this._configurationsService.userRoles!.has('content_publisher')
+        return (
+          this._configurationsService.userRoles!.has('content_reviewer') ||
+          this._configurationsService.userRoles!.has('content_creator') ||
+          this._configurationsService.userRoles!.has('content_publisher')
+        )
       case 'author_create':
         //return this.accessService.hasRole(CREATE_ROLE)
         return this._configurationsService.userRoles!.has('content_creator')
@@ -550,11 +540,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.courseId = this.storeService.parentNode[0]
     this.parentNodeId = this.storeService.currentParentNode
 
-
     const content = this.contentService.getUpdatedMeta(this.courseId)
-    const isCreator = (this._configurationsService.userProfile
-      && this._configurationsService.userProfile.userId === content.createdBy)
-      ? true : false
+    const isCreator =
+      this._configurationsService.userProfile && this._configurationsService.userProfile.userId === content.createdBy ? true : false
     this.checkCreator = isCreator
     // console.log("this.parentNodeId = " + this.courseId)
     // this.expandNodesById([this.parentNodeId])
@@ -569,11 +557,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
     this.initService.collectionConfig.actionButtons.buttons.forEach(action => {
       if (
-        this.contentService.checkConditionV2(
-          this.contentService.getOriginalMeta(this.currentParentId),
-          action.conditions,
-          action.title
-        )
+        this.contentService.checkConditionV2(this.contentService.getOriginalMeta(this.currentParentId), action.conditions, action.title)
       ) {
         actionButton.push({
           title: action.title,
@@ -596,18 +580,18 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.clickedNext = true
 
       if (this.isSelfAssessment) {
-        this.header = "Self Assessment Details"
+        this.header = 'Self Assessment Details'
         this.steps = [
           { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
           { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: false, completed: true },
-          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false }
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: true, completed: false },
         ]
       } else {
         this.steps = [
           { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
           { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
           { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: true },
-          { label: '4. Course Settings', key: 'CourseSettings', activeStep: true, completed: false }
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: true, completed: false },
         ]
       }
       this.showAddchapter = true
@@ -616,20 +600,25 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       // this.dialog.closeAll()
       sessionStorage.removeItem('isReviewChecklistSkip')
       // this.isReviewChecklistSkipEnabled = true
-      this.action("push")
+      this.action('push')
     }
     if (this.viewMode === 'meta' && !this.clickedNext) {
       this.steps = [
         { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
         { label: '2. Course Details', key: 'CourseDetails', activeStep: true, completed: false },
         { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
-        { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+        { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false },
       ]
     }
   }
 
   routerValuesCall() {
     this.contentService.changeActiveCont.subscribe(data => {
+      // changeActiveCont is a BehaviorSubject seeded with '' — without this guard the
+      // empty seed clobbers a valid currentCourseId, causing save() to 404 on /hierarchy/?mode=edit.
+      if (!data) {
+        return
+      }
       this.currentContent = data
       this.currentCourseId = data
       if (this.contentService.getUpdatedMeta(data).contentType !== 'Resource') {
@@ -638,7 +627,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     })
     if (this.activateRoute.parent && this.activateRoute.parent.parent) {
       this.routerSubscription = this.activateRoute.parent.parent.data.subscribe(data => {
-
         this.courseName = data.contents[0].content.name
         this.clickedNext = data.contents[0].content.competency
         this.isSelfAssessment = data.contents[0].content.competency
@@ -656,14 +644,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         })
         contentDataMap.forEach(content => this.contentService.setOriginalMeta(content))
         // tslint:disable-next-line:no-console
-        console.log((this.storeService.lexIdMap.get(this.currentContent) as number[]))
+        console.log(this.storeService.lexIdMap.get(this.currentContent) as number[])
         const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
         // tslint:disable-next-line:no-console
         console.log(currentNode)
         this.currentParentId = this.currentContent
-        this.storeService.treeStructureChange.next(
-          this.storeService.flatNodeMap.get(currentNode) as IContentNode,
-        )
+        this.storeService.treeStructureChange.next(this.storeService.flatNodeMap.get(currentNode) as IContentNode)
         this.storeService.currentParentNode = currentNode
         this.storeService.currentSelectedNode = currentNode
         let newCreatedNode = 0
@@ -673,12 +659,18 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.storeService.selectedNodeChange.next(newCreatedNode)
         }
 
-        if (data.contents[0] && data.contents[0].content && data.contents[0].content.children[0] &&
-          data.contents[0].content.children[0].identifier) {
+        if (
+          data.contents[0] &&
+          data.contents[0].content &&
+          data.contents[0].content.children[0] &&
+          data.contents[0].content.children[0].identifier
+        ) {
           // this.subAction({ type: 'editContent', identifier: data.contents[0].content.children[0].identifier, nodeClicked: true })
           // this.storeService.selectedNodeChange.next(data.contents[0].content.children[0].identifier)
           this.subAction({
-            type: 'editContent', identifier: data.contents[0].content.identifier, nodeClicked: true
+            type: 'editContent',
+            identifier: data.contents[0].content.identifier,
+            nodeClicked: true,
           })
           this.storeService.selectedNodeChange.next(data.contents[0].content.identifier)
         }
@@ -695,7 +687,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
         //   }
         // })
-
       })
 
       this.activateRoute.parent.url.subscribe(data => {
@@ -703,7 +694,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         if (urlParam === 'collection') {
           this.headerService.showCreatorHeader(this.courseName)
         }
-
       })
     }
   }
@@ -761,13 +751,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   async setContentType(param: string, filetype?: string) {
-
     this.resourseSelected = param
     if (filetype) {
       this.storeService.uploadFileType.next(filetype)
     }
     if (this.createTopicForm && this.createTopicForm.value) {
-
       this.couseCreated = param
       const asSibling = false
 
@@ -783,7 +771,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       const newData = {
         topicDescription: this.createModule.description,
-        topicName: this.createModule.name
+        topicName: this.createModule.name,
       }
       const parentNode = node
       this.loaderService.changeLoad.next(true)
@@ -794,7 +782,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         'below',
         newData,
         param === 'web' ? 'link' : '',
-
       )
 
       this.snackBar.openFromComponent(NotificationComponent, {
@@ -802,7 +789,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           type: isDone ? Notify.SUCCESS : Notify.FAIL,
         },
         duration: NOTIFICATION_TIME * 1000,
-
       })
 
       if (isDone) {
@@ -832,27 +818,25 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   async tempSave() {
     if (this.contentService.getUpdatedMeta(this.currentCourseId)) {
-
       this.versionKey = await this.editorService.readcontentV3(this.editorService.newCreatedLexid || this.currentCourseId).toPromise()
     }
 
     this.loaderService.changeLoad.next(true)
-    this.triggerSave().subscribe(() => {
-      this.loaderService.changeLoad.next(false)
-      this.snackBar.openFromComponent(NotificationComponent, {
-        data: {
-          type: Notify.SAVE_SUCCESS,
-        },
-        duration: NOTIFICATION_TIME * 1000,
-      })
-      // window.location.reload()
-    },
+    this.triggerSave().subscribe(
+      () => {
+        this.loaderService.changeLoad.next(false)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.SAVE_SUCCESS,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+        // window.location.reload()
+      },
       (error: any) => {
         if (error.status === 409) {
           const errorMap = new Map<string, NSContent.IContentMeta>()
-          Object.keys(this.contentService.originalContent).forEach(v =>
-            errorMap.set(v, this.contentService.originalContent[v]),
-          )
+          Object.keys(this.contentService.originalContent).forEach(v => errorMap.set(v, this.contentService.originalContent[v]))
           const dialog = this.dialog.open(ErrorParserComponent, {
             width: '80vw',
             height: '90vh',
@@ -864,15 +848,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           dialog.afterClosed().subscribe(v => {
             if (v) {
               if (typeof v === 'string') {
-                this.storeService.selectedNodeChange.next(
-                  (this.storeService.lexIdMap.get(v) as number[])[0],
-                )
+                this.storeService.selectedNodeChange.next((this.storeService.lexIdMap.get(v) as number[])[0])
                 this.contentService.changeActiveCont.next(v)
               } else {
                 this.storeService.selectedNodeChange.next(v)
-                this.contentService.changeActiveCont.next(
-                  this.storeService.uniqueIdMap.get(v) as string,
-                )
+                this.contentService.changeActiveCont.next(this.storeService.uniqueIdMap.get(v) as string)
               }
             }
           })
@@ -889,8 +869,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   async save(nextAction?: string) {
-    if (this.isModulePageEnabled && this.viewMode !== 'assessment')
-      this.loaderService.changeLoad.next(true)
+    if (this.isModulePageEnabled && this.viewMode !== 'assessment') this.loaderService.changeLoad.next(true)
 
     if (this.resourseSelected !== '') {
       this.update()
@@ -899,25 +878,30 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     const id = url.split('/')
 
     this.courseID = id[3]
-    console.log("this.currentCourseId", this.currentCourseId)
+    // Recover the active course id from the route if it was cleared by an empty
+    // changeActiveCont emission — guards against the /hierarchy/?mode=edit 404.
+    if (!this.currentCourseId) {
+      this.currentCourseId = this.courseID
+    }
+    console.log('this.currentCourseId', this.currentCourseId)
     const updatedContent = this.contentService.upDatedContent || {}
     // console.log(updatedContent)
     if (this.viewMode === 'assessment') {
       this.triggerQuizSave = true
-    } else
-      if (this.viewMode === 'upload') {
-        // TODO  console.log('viewmode', this.viewMode)
-        this.triggerUploadSave = true
-      }
+    } else if (this.viewMode === 'upload') {
+      // TODO  console.log('viewmode', this.viewMode)
+      this.triggerUploadSave = true
+    }
 
     if (
       (Object.keys(updatedContent).length &&
-        (Object.values(updatedContent).length && JSON.stringify(Object.values(updatedContent)[0]) !== '{}')) ||
+        Object.values(updatedContent).length &&
+        JSON.stringify(Object.values(updatedContent)[0]) !== '{}') ||
       Object.keys(this.storeService.changedHierarchy).length
     ) {
       this.isChanged = true
       this.loaderService.changeLoad.next(true)
-      if (this.contentService.getUpdatedMeta(this.currentCourseId).contentType !== "CourseUnit") {
+      if (this.currentCourseId && this.contentService.getUpdatedMeta(this.currentCourseId).contentType !== 'CourseUnit') {
         this.versionID = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
         this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
       }
@@ -937,13 +921,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
           if (this.isModulePageEnabled && this.viewMode !== 'assessment') {
             this.clickedNext = true
-            console.log("this.viewMode", this.viewMode)
+            console.log('this.viewMode', this.viewMode)
 
             this.steps = [
               { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
               { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
               { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
-              { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+              { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false },
             ]
             this.cdr.detectChanges()
           }
@@ -953,9 +937,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         (error: any) => {
           if (error.status === 409) {
             const errorMap = new Map<string, NSContent.IContentMeta>()
-            Object.keys(this.contentService.originalContent).forEach(v =>
-              errorMap.set(v, this.contentService.originalContent[v]),
-            )
+            Object.keys(this.contentService.originalContent).forEach(v => errorMap.set(v, this.contentService.originalContent[v]))
             const dialog = this.dialog.open(ErrorParserComponent, {
               width: '80vw',
               height: '90vh',
@@ -967,15 +949,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             dialog.afterClosed().subscribe(v => {
               if (v) {
                 if (typeof v === 'string') {
-                  this.storeService.selectedNodeChange.next(
-                    (this.storeService.lexIdMap.get(v) as number[])[0],
-                  )
+                  this.storeService.selectedNodeChange.next((this.storeService.lexIdMap.get(v) as number[])[0])
                   this.contentService.changeActiveCont.next(v)
                 } else {
                   this.storeService.selectedNodeChange.next(v)
-                  this.contentService.changeActiveCont.next(
-                    this.storeService.uniqueIdMap.get(v) as string,
-                  )
+                  this.contentService.changeActiveCont.next(this.storeService.uniqueIdMap.get(v) as string)
                 }
               }
             })
@@ -1006,7 +984,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
             { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: true },
             { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
-            { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+            { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false },
           ]
         }
       }
@@ -1031,15 +1009,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       dialog.afterClosed().subscribe(v => {
         if (v) {
           if (typeof v === 'string') {
-            this.storeService.selectedNodeChange.next(
-              (this.storeService.lexIdMap.get(v) as number[])[0],
-            )
+            this.storeService.selectedNodeChange.next((this.storeService.lexIdMap.get(v) as number[])[0])
             this.contentService.changeActiveCont.next(v)
           } else {
             this.storeService.selectedNodeChange.next(v)
-            this.contentService.changeActiveCont.next(
-              this.storeService.uniqueIdMap.get(v) as string,
-            )
+            this.contentService.changeActiveCont.next(this.storeService.uniqueIdMap.get(v) as string)
           }
         }
       })
@@ -1049,7 +1023,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   }
 
   takeAction(contentAction?: string) {
-
     this.isSubmitPressed = true
     // const needSave = Object.keys(this.contentService.upDatedContent || {}).length
 
@@ -1064,7 +1037,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     //   return
     // }
 
-
     // console.log('this.validationCheck', this.validationCheck)
 
     if (this.validationCheck) {
@@ -1073,14 +1045,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
       this.editorService.readcontentV3(this.contentService.parentContent).subscribe((resData: any) => {
         if (resData && Object.keys(resData).length > 0) {
-          resData.creatorContacts =
-            this.jsonVerify(resData.creatorContacts) ? JSON.parse(resData.creatorContacts) : []
-          resData.trackContacts =
-            this.jsonVerify(resData.reviewer) ? JSON.parse(resData.reviewer) : []
-          resData.creatorDetails =
-            this.jsonVerify(resData.creatorDetails) ? JSON.parse(resData.creatorDetails) : []
-          resData.publisherDetails = this.jsonVerify(resData.publisherDetails) ?
-            JSON.parse(resData.publisherDetails) : []
+          resData.creatorContacts = this.jsonVerify(resData.creatorContacts) ? JSON.parse(resData.creatorContacts) : []
+          resData.trackContacts = this.jsonVerify(resData.reviewer) ? JSON.parse(resData.reviewer) : []
+          resData.creatorDetails = this.jsonVerify(resData.creatorDetails) ? JSON.parse(resData.creatorDetails) : []
+          resData.publisherDetails = this.jsonVerify(resData.publisherDetails) ? JSON.parse(resData.publisherDetails) : []
           if (resData.children.length > 0) {
             resData.children.forEach((element: any) => {
               element.creatorContacts = this.jsonVerify(element.creatorContacts) ? JSON.parse(element.creatorContacts) : []
@@ -1104,65 +1072,71 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         // dialogRef.afterClosed().subscribe((commentsForm: FormGroup) => {
         //   this.finalCall(commentsForm)
         // })
-        dialogRef.afterClosed().subscribe((d) => {
+        dialogRef.afterClosed().subscribe(d => {
           console.log(d)
           // this.finalCall(contentAction)
           if (d) {
             if (this.getAction() === 'sendForReview' && d.value.action === 'reject') {
               contentAction = 'rejectContent'
               // tslint:disable-next-line:no-console
-              console.log("rejectContent")
+              console.log('rejectContent')
               let dat = {
-                "userId": this._configurationsService!.userProfile!.userId,
-                "courseId": this.courseData.identifier,
-                "role": "reviewer",
-                "comments": d.value.comments,
-                "currentStatus": "Sent for Review",
-                "nextStatus": "Draft",
-                "readComments": false,
-                "createdDate": moment(new Date()).toISOString(),
-                "updatedDate": moment(new Date()).toISOString(),
-                "username": this._configurationsService!.userProfile!.userName
+                userId: this._configurationsService!.userProfile!.userId,
+                courseId: this.courseData.identifier,
+                role: 'reviewer',
+                comments: d.value.comments,
+                currentStatus: 'Sent for Review',
+                nextStatus: 'Draft',
+                readComments: false,
+                createdDate: moment(new Date()).toISOString(),
+                updatedDate: moment(new Date()).toISOString(),
+                username: this._configurationsService!.userProfile!.userName,
               }
               console.log(dat)
-              this.progressSvc.addComment(dat).subscribe(res => {
-                console.log(res)
-                if (res) {
+              this.progressSvc.addComment(dat).subscribe(
+                res => {
+                  console.log(res)
+                  if (res) {
+                    this.finalCall(contentAction)
+                  }
+                  //this.commentsList = res
+                },
+                (err: any) => {
+                  console.log(err)
                   this.finalCall(contentAction)
-                }
-                //this.commentsList = res
-              }, (err: any) => {
-                console.log(err)
-                this.finalCall(contentAction)
-              })
+                },
+              )
 
               //this.finalCall(contentAction)
             } else {
               // tslint:disable-next-line:no-console
-              console.log("contentAction", contentAction)
+              console.log('contentAction', contentAction)
               let dat = {
-                "userId": this._configurationsService!.userProfile!.userId,
-                "courseId": this.courseData.identifier,
-                "role": "reviewer",
-                "comments": d.value.comments,
-                "currentStatus": "Sent for Review",
-                "nextStatus": "Sent for Publish",
-                "readComments": false,
-                "createdDate": moment(new Date()).toISOString(),
-                "updatedDate": moment(new Date()).toISOString(),
-                "username": this._configurationsService!.userProfile!.userName
+                userId: this._configurationsService!.userProfile!.userId,
+                courseId: this.courseData.identifier,
+                role: 'reviewer',
+                comments: d.value.comments,
+                currentStatus: 'Sent for Review',
+                nextStatus: 'Sent for Publish',
+                readComments: false,
+                createdDate: moment(new Date()).toISOString(),
+                updatedDate: moment(new Date()).toISOString(),
+                username: this._configurationsService!.userProfile!.userName,
               }
               console.log(dat)
-              this.progressSvc.addComment(dat).subscribe(res => {
-                console.log(res)
-                if (res) {
+              this.progressSvc.addComment(dat).subscribe(
+                res => {
+                  console.log(res)
+                  if (res) {
+                    this.finalCall(contentAction)
+                  }
+                  //this.commentsList = res
+                },
+                (err: any) => {
+                  console.log(err)
                   this.finalCall(contentAction)
-                }
-                //this.commentsList = res
-              }, (err: any) => {
-                console.log(err)
-                this.finalCall(contentAction)
-              })
+                },
+              )
               //this.finalCall(contentAction)
             }
           }
@@ -1172,9 +1146,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         this.finalCall(contentAction)
       }
     }
-
-
-
   }
 
   // finalCall(commentsForm: FormGroup) {
@@ -1350,7 +1321,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //   }
   // }
 
-
   /**
    * Last changed
    */
@@ -1459,8 +1429,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   //   }
   // }
 
-
-
   async finalCall(contentActionTaken: any) {
     let flag = 0
     const resourceListToReview: any = []
@@ -1490,7 +1458,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               versionKey: element.versionKey,
             }
             moduleListToReview.push(tempParentData)
-
           } else {
             const tempData = {
               identifier: element.identifier,
@@ -1513,7 +1480,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           for await (const element of resourceListToReview) {
             if ((element.status === 'Live' || element.status === 'Review') && updatedMeta.status === 'Draft') {
               flag += 1
-            } else if ((element.status === 'Live') && updatedMeta.status === 'Review') {
+            } else if (element.status === 'Live' && updatedMeta.status === 'Review') {
               flag += 1
             } else {
               const requestPayload = {
@@ -1525,11 +1492,15 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 },
               }
 
-              const reviewRes =
-                await this.editorService.sendToReview(element.identifier, updatedMeta.status).toPromise().catch(_error => { })
+              const reviewRes = await this.editorService
+                .sendToReview(element.identifier, updatedMeta.status)
+                .toPromise()
+                .catch(_error => {})
               if (reviewRes && reviewRes.params && reviewRes.params.status === 'successful') {
-                const updateContentRes =
-                  await this.editorService.updateContentWithFewFields(requestPayload, element.identifier).toPromise().catch(_error => { })
+                const updateContentRes = await this.editorService
+                  .updateContentWithFewFields(requestPayload, element.identifier)
+                  .toPromise()
+                  .catch(_error => {})
                 if (updateContentRes && updateContentRes.params && updateContentRes.params.status === 'successful') {
                   flag += 1
                 } else {
@@ -1580,10 +1551,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         if (element.status === 'Live' && element.parentStatus === 'Review') {
           flag += 1
         } else if (element.reviewerStatus === 'Reviewed' && element.status === 'Review') {
-          const publishRes = await this.editorService.publishContent(element.identifier).toPromise().catch(_error => {
-            this.dialog.closeAll()
-            this.snackBar.open(_error.statusText, undefined, { duration: 1000 })
-          })
+          const publishRes = await this.editorService
+            .publishContent(element.identifier)
+            .toPromise()
+            .catch(_error => {
+              this.dialog.closeAll()
+              this.snackBar.open(_error.statusText, undefined, { duration: 1000 })
+            })
           if (publishRes && publishRes.params && publishRes.params.status === 'successful') {
             flag += 1
           } else {
@@ -1631,10 +1605,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         })
         //}
         this.loaderService.changeLoad.next(false)
-
       } else {
         this.loaderService.changeLoad.next(false)
-        this.snackBar.open('The status of the resources present in the course is not correct, please retire the course and start over again', undefined, { duration: 3000 })
+        this.snackBar.open(
+          'The status of the resources present in the course is not correct, please retire the course and start over again',
+          undefined,
+          { duration: 3000 },
+        )
         // this.snackBar.openFromComponent(NotificationComponent, {
         //   data: {
         //     type: Notify.SAVE_FAIL,
@@ -1649,7 +1626,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.loaderService.changeLoad.next(true)
     const url = this.router.url
     const id = url.split('/')
-    const publishParentRes = await this.editorService.publishContent(id[3]).toPromise().catch(_error => { })
+    const publishParentRes = await this.editorService
+      .publishContent(id[3])
+      .toPromise()
+      .catch(_error => {})
     if (publishParentRes && publishParentRes.params && publishParentRes.params.status === 'successful') {
       this.loaderService.changeLoad.next(false)
       this.dialog.closeAll()
@@ -1665,39 +1645,45 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           console.log(data)
           if (data && data.lastPublishedBy === undefined) {
             let obj = {
-              "request": {
-                "courseId": this.contentService.parentContent,
-                "name": "Open Batch",
-                "description": "Open Batch",
-                "enrollmentType": "open",
-                "startDate": moment(new Date()).format("YYYY-MM-DD"),
-                "endDate": "2031-01-01",
-                "enrollmentEndDate": "2030-12-01",
-                "createdBy": this._configurationsService.userProfile!.userId
-              }
+              request: {
+                courseId: this.contentService.parentContent,
+                name: 'Open Batch',
+                description: 'Open Batch',
+                enrollmentType: 'open',
+                startDate: moment(new Date()).format('YYYY-MM-DD'),
+                endDate: '2031-01-01',
+                enrollmentEndDate: '2030-12-01',
+                createdBy: this._configurationsService.userProfile!.userId,
+              },
             }
             let dat = {
-              "userId": this._configurationsService!.userProfile!.userId,
-              "courseId": this.courseData.identifier,
-              "role": "publisher",
-              "comments": "Publisher approved this course to go live.",
-              "currentStatus": "Sent for Publish",
-              "nextStatus": "Course Published",
-              "readComments": false,
-              "createdDate": moment(new Date()).toISOString(),
-              "updatedDate": moment(new Date()).toISOString(),
-              "username": this._configurationsService!.userProfile!.userName
+              userId: this._configurationsService!.userProfile!.userId,
+              courseId: this.courseData.identifier,
+              role: 'publisher',
+              comments: 'Publisher approved this course to go live.',
+              currentStatus: 'Sent for Publish',
+              nextStatus: 'Course Published',
+              readComments: false,
+              createdDate: moment(new Date()).toISOString(),
+              updatedDate: moment(new Date()).toISOString(),
+              username: this._configurationsService!.userProfile!.userName,
             }
             console.log(dat)
-            this.progressSvc.addComment(dat).subscribe(res => {
-              console.log(res)
-              //this.commentsList = res
-            }, (err: any) => {
-              console.log(err)
-            })
+            this.progressSvc.addComment(dat).subscribe(
+              res => {
+                console.log(res)
+                //this.commentsList = res
+              },
+              (err: any) => {
+                console.log(err)
+              },
+            )
             // tslint:disable-next-line:no-console
             console.log(obj)
-            let data = await this.editorService.createBatch(obj).toPromise().catch(_error => { })
+            let data = await this.editorService
+              .createBatch(obj)
+              .toPromise()
+              .catch(_error => {})
             // tslint:disable-next-line:no-console
             console.log(data)
           }
@@ -1710,7 +1696,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       this.dialog.open(SuccessDialogComponent, {
         width: '450px',
         height: '300x',
-        data: { 'message': 'Course is Live', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+        data: {
+          message: 'Course is Live',
+          icon: 'check_circle',
+          color: '#2CB93A',
+          backgroundColor: '#FFFFFF',
+          padding: '6px 11px 10px 6px !important',
+          id: this.contentService.parentContent,
+        },
       })
     } else {
       this.loaderService.changeLoad.next(false)
@@ -1744,8 +1737,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         else if (element.status === 'Review' && element.reviewerStatus === 'Reviewed' && element.parentStatus === 'Review') {
           flag += 1
         } else if (element.reviewerStatus === 'InReview' && element.status === 'Review') {
-          const updateRes =
-            await this.editorService.updateContentForReviwer(requestPayload, element.identifier).toPromise().catch(_error => { })
+          const updateRes = await this.editorService
+            .updateContentForReviwer(requestPayload, element.identifier)
+            .toPromise()
+            .catch(_error => {})
           if (updateRes && updateRes.params && updateRes.params.status === 'successful') {
             flag += 1
           } else {
@@ -1753,7 +1748,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           }
         }
       }
-      console.log("here", flag, resourceList)
+      console.log('here', flag, resourceList)
 
       if (flag === resourceList.length) {
         requestPayload.request.content.versionKey = metaData.versionKey
@@ -1767,8 +1762,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         // }
         // const updateHierarchyRes = await this.editorService.updateHierarchyForReviwer(tempRequset).toPromise().catch(_error => { })
         // if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
-        const parentMetaRes =
-          await this.editorService.updateContentForReviwer(requestPayload, metaData.identifier).toPromise().catch(_error => { })
+        const parentMetaRes = await this.editorService
+          .updateContentForReviwer(requestPayload, metaData.identifier)
+          .toPromise()
+          .catch(_error => {})
         if (parentMetaRes && parentMetaRes.params && parentMetaRes.params.status === 'successful') {
           this.loaderService.changeLoad.next(false)
           this.snackBar.openFromComponent(NotificationComponent, {
@@ -1781,7 +1778,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           this.dialog.open(SuccessDialogComponent, {
             width: '550px',
             height: '300x',
-            data: { 'message': 'The course has been sent to the Aastrika publisher. Please contact the Aastrika team for course publication.', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+            data: {
+              message: 'The course has been sent to the Aastrika publisher. Please contact the Aastrika team for course publication.',
+              icon: 'check_circle',
+              color: 'rgb(44, 185, 58)',
+              backgroundColor: '#FFFFFF',
+              padding: '6px 11px 10px 6px !important',
+              id: this.contentService.parentContent,
+            },
           })
           // this.router.navigate(['author', 'cbp'])
           // } else {
@@ -1880,7 +1884,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     resourceListToReview.push(tempData)
 
     originalData.children.forEach((element: any) => {
-
       if (element.contentType === 'CourseUnit' || element.contentType === 'Collection') {
         if (element.children && element.children.length > 0) {
           element.children.forEach((subElement: any) => {
@@ -1913,8 +1916,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       for await (const element of resourceListToReview) {
         this.loaderService.changeLoad.next(true)
         updateContentReq.request.content.versionKey = element.versionKey
-        const updateContentRes =
-          await this.editorService.updateNewContentV3(_.omit(updateContentReq, 'status'), element.identifier).toPromise().catch(_error => { })
+        const updateContentRes = await this.editorService
+          .updateNewContentV3(_.omit(updateContentReq, 'status'), element.identifier)
+          .toPromise()
+          .catch(_error => {})
         if ((updateContentRes as any) !== undefined) {
           flag += 1
         } else {
@@ -2003,10 +2008,15 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       for await (const element of resourceListToReview) {
         this.loaderService.changeLoad.next(true)
         updateContentReq.request.content.versionKey = element.versionKey
-        const updateContentRes =
-          await this.editorService.updateContentForReviwer(updateContentReq, element.identifier).toPromise().catch(_error => { })
+        const updateContentRes = await this.editorService
+          .updateContentForReviwer(updateContentReq, element.identifier)
+          .toPromise()
+          .catch(_error => {})
         if (updateContentRes && updateContentRes.params && updateContentRes.params.status === 'successful') {
-          const rejectRes: any = await this.editorService.rejectContentApi(requestBody, element.identifier).toPromise().catch(_error => { })
+          const rejectRes: any = await this.editorService
+            .rejectContentApi(requestBody, element.identifier)
+            .toPromise()
+            .catch(_error => {})
           if (rejectRes && rejectRes.params && rejectRes.params.status === 'successful') {
             flag += 1
           } else {
@@ -2026,13 +2036,20 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             },
           },
         }
-        const updateHierarchyRes = await this.editorService.updateHierarchyForReviwer(tempRequset).toPromise().catch(_error => { })
+        const updateHierarchyRes = await this.editorService
+          .updateHierarchyForReviwer(tempRequset)
+          .toPromise()
+          .catch(_error => {})
         if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
-          const parentMetaRes =
-            await this.editorService.updateContentForReviwer(updateContentReq, originalData.identifier).toPromise().catch(_error => { })
+          const parentMetaRes = await this.editorService
+            .updateContentForReviwer(updateContentReq, originalData.identifier)
+            .toPromise()
+            .catch(_error => {})
           if (parentMetaRes && parentMetaRes.params && parentMetaRes.params.status === 'successful') {
-            const rejectParentRes: any =
-              await this.editorService.rejectContentApi(requestBody, originalData.identifier).toPromise().catch(_error => { })
+            const rejectParentRes: any = await this.editorService
+              .rejectContentApi(requestBody, originalData.identifier)
+              .toPromise()
+              .catch(_error => {})
             if (rejectParentRes && rejectParentRes.params && rejectParentRes.params.status === 'successful') {
               this.loaderService.changeLoad.next(false)
               this.snackBar.openFromComponent(NotificationComponent, {
@@ -2049,7 +2066,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               this.dialog.open(SuccessDialogComponent, {
                 width: '450px',
                 height: '300x',
-                data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important', 'id': this.contentService.parentContent },
+                data: {
+                  message: 'Course sent back to Creator’s Draft',
+                  icon: 'cached',
+                  color: 'white',
+                  backgroundColor: '#407BFF',
+                  padding: '5px 9px 8px 6px !important',
+                  id: this.contentService.parentContent,
+                },
               })
               if (!this.isMoveCourseToDraft) {
                 this.router.navigate(['author', 'cbp'])
@@ -2107,38 +2131,47 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           },
         },
       }
-      const updateRes: any =
-        await this.editorService.updateContentForReviwer(updateRequestBody, originalData.identifier).toPromise().catch(_error => { })
+      const updateRes: any = await this.editorService
+        .updateContentForReviwer(updateRequestBody, originalData.identifier)
+        .toPromise()
+        .catch(_error => {})
       if (updateRes && updateRes.params && updateRes.params.status === 'successful') {
-        this.editorService.rejectContentApi(requestBody, originalData.identifier).subscribe((parentData: any) => {
-          if (parentData && parentData.params && parentData.params.status === 'successful') {
-            this.loaderService.changeLoad.next(false)
-            this.snackBar.openFromComponent(NotificationComponent, {
-              data: {
-                type: Notify.SAVE_SUCCESS,
-              },
-              duration: NOTIFICATION_TIME * 1000,
-            })
-            this.dialog.open(SuccessDialogComponent, {
-              width: '450px',
-              height: '300x',
-              data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important', 'id': this.contentService.parentContent },
-            })
-            if (!this.isMoveCourseToDraft) {
-              this.router.navigate(['author', 'cbp'])
+        this.editorService.rejectContentApi(requestBody, originalData.identifier).subscribe(
+          (parentData: any) => {
+            if (parentData && parentData.params && parentData.params.status === 'successful') {
+              this.loaderService.changeLoad.next(false)
+              this.snackBar.openFromComponent(NotificationComponent, {
+                data: {
+                  type: Notify.SAVE_SUCCESS,
+                },
+                duration: NOTIFICATION_TIME * 1000,
+              })
+              this.dialog.open(SuccessDialogComponent, {
+                width: '450px',
+                height: '300x',
+                data: {
+                  message: 'Course sent back to Creator’s Draft',
+                  icon: 'cached',
+                  color: 'white',
+                  backgroundColor: '#407BFF',
+                  padding: '5px 9px 8px 6px !important',
+                  id: this.contentService.parentContent,
+                },
+              })
+              if (!this.isMoveCourseToDraft) {
+                this.router.navigate(['author', 'cbp'])
+              }
+              this.isMoveCourseToDraft = false
+            } else {
+              this.loaderService.changeLoad.next(false)
+              this.snackBar.openFromComponent(NotificationComponent, {
+                data: {
+                  type: Notify.SAVE_FAIL,
+                },
+                duration: NOTIFICATION_TIME * 1000,
+              })
             }
-            this.isMoveCourseToDraft = false
-          } else {
-
-            this.loaderService.changeLoad.next(false)
-            this.snackBar.openFromComponent(NotificationComponent, {
-              data: {
-                type: Notify.SAVE_FAIL,
-              },
-              duration: NOTIFICATION_TIME * 1000,
-            })
-          }
-        },
+          },
           // tslint:disable-next-line: align
           _error => {
             this.loaderService.changeLoad.next(false)
@@ -2148,7 +2181,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               },
               duration: NOTIFICATION_TIME * 1000,
             })
-          })
+          },
+        )
       } else {
         this.loaderService.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
@@ -2282,9 +2316,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   // }
 
-
   finalSaveAndRedirect(updatedMeta: any) {
-    const saveCall = (of({} as any)).pipe(
+    const saveCall = of({} as any).pipe(
       mergeMap(() =>
         this.editorService
           // .forwardBackward(
@@ -2307,8 +2340,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               //   }),
               // ),
               return of({} as any)
-            }
-            ),
+            }),
           ),
       ),
     )
@@ -2323,8 +2355,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             },
           },
         }
-        const updateConentRes =
-          await this.editorService.updateContentWithFewFields(requestPayload, updatedMeta.identifier).toPromise().catch(_error => { })
+        const updateConentRes = await this.editorService
+          .updateContentWithFewFields(requestPayload, updatedMeta.identifier)
+          .toPromise()
+          .catch(_error => {})
         if (updateConentRes && updateConentRes.params && updateConentRes.params.status === 'successful') {
           this.loaderService.changeLoad.next(false)
           this.snackBar.openFromComponent(NotificationComponent, {
@@ -2342,7 +2376,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             this.dialog.open(SuccessDialogComponent, {
               width: '450px',
               height: '300x',
-              data: { 'message': 'Course Sent For Review', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+              data: {
+                message: 'Course Sent For Review',
+                icon: 'check_circle',
+                color: 'rgb(44, 185, 58)',
+                backgroundColor: '#FFFFFF',
+                padding: '6px 11px 10px 6px !important',
+                id: this.contentService.parentContent,
+              },
             })
             // this.router.navigate(['author', 'cbp'])
           }
@@ -2359,9 +2400,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       (error: any) => {
         if (error.status === 409) {
           const errorMap = new Map<string, NSContent.IContentMeta>()
-          Object.keys(this.contentService.originalContent).forEach(v =>
-            errorMap.set(v, this.contentService.originalContent[v]),
-          )
+          Object.keys(this.contentService.originalContent).forEach(v => errorMap.set(v, this.contentService.originalContent[v]))
           const dialog = this.dialog.open(ErrorParserComponent, {
             width: '80vw',
             height: '90vh',
@@ -2373,15 +2412,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           dialog.afterClosed().subscribe(v => {
             if (v) {
               if (typeof v === 'string') {
-                this.storeService.selectedNodeChange.next(
-                  (this.storeService.lexIdMap.get(v) as number[])[0],
-                )
+                this.storeService.selectedNodeChange.next((this.storeService.lexIdMap.get(v) as number[])[0])
                 this.contentService.changeActiveCont.next(v)
               } else {
                 this.storeService.selectedNodeChange.next(v)
-                this.contentService.changeActiveCont.next(
-                  this.storeService.uniqueIdMap.get(v) as string,
-                )
+                this.contentService.changeActiveCont.next(this.storeService.uniqueIdMap.get(v) as string)
               }
             }
           })
@@ -2402,7 +2437,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     this.versionID = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
     this.versionKey = await this.contentService.getUpdatedMeta(this.currentCourseId)
 
-    _.each(updatedContent, i => { if (Object.keys(i).length > 0) { isContentUpdated = true } })
+    _.each(updatedContent, i => {
+      if (Object.keys(i).length > 0) {
+        isContentUpdated = true
+      }
+    })
 
     // const saveCall =
     //   Object.keys(updatedContent).length || Object.keys(this.storeService.changedHierarchy).length
@@ -2413,13 +2452,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         ? this.triggerSave()
         : of({} as any)
 
-
     this.loaderService.changeLoad.next(true)
     saveCall.subscribe(
       () => {
-        this.mimeTypeRoute = VIEWER_ROUTE_FROM_MIME(
-          this.contentService.getUpdatedMeta(id).mimeType as any,
-        )
+        this.mimeTypeRoute = VIEWER_ROUTE_FROM_MIME(this.contentService.getUpdatedMeta(id).mimeType as any)
         this.loaderService.changeLoad.next(false)
         // this.previewIdentifier = id
         this.loaderService.changeLoad.next(false)
@@ -2429,9 +2465,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       error => {
         if (error.status === 409) {
           const errorMap = new Map<string, NSContent.IContentMeta>()
-          Object.keys(this.contentService.originalContent).forEach(v =>
-            errorMap.set(v, this.contentService.originalContent[v]),
-          )
+          Object.keys(this.contentService.originalContent).forEach(v => errorMap.set(v, this.contentService.originalContent[v]))
           const dialog = this.dialog.open(ErrorParserComponent, {
             width: '750px',
             height: '450px',
@@ -2443,15 +2477,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           dialog.afterClosed().subscribe(v => {
             if (v) {
               if (typeof v === 'string') {
-                this.storeService.selectedNodeChange.next(
-                  (this.storeService.lexIdMap.get(v) as number[])[0],
-                )
+                this.storeService.selectedNodeChange.next((this.storeService.lexIdMap.get(v) as number[])[0])
                 this.contentService.changeActiveCont.next(v)
               } else {
                 this.storeService.selectedNodeChange.next(v)
-                this.contentService.changeActiveCont.next(
-                  this.storeService.uniqueIdMap.get(v) as string,
-                )
+                this.contentService.changeActiveCont.next(this.storeService.uniqueIdMap.get(v) as string)
               }
             }
           })
@@ -2929,7 +2959,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
     // console.log('parentNodeId  ', this.parentNodeId, 'currentParentId  ', this.currentParentId)
 
-
     // console.log('COURSE COLLECTION UPDFATEARERTAEA', requestBodyV2, this.storeService.changedHierarchy)
 
     // if (Object.keys(this.storeService.changedHierarchy).length === 0) {
@@ -2949,7 +2978,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       requestBody = {
         request: {
           content: tempUpdateContent,
-        }
+        },
       }
 
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
@@ -2960,8 +2989,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           // (isNumber(requestBody.request.content.duration) ?
           //   `${requestBody.request.content.duration}` :
           //   requestBody.request.content.duration)
-          isNumber(requestBody.request.content.duration) ?
-            requestBody.request.content.duration.toString() : requestBody.request.content.duration
+          isNumber(requestBody.request.content.duration)
+            ? requestBody.request.content.duration.toString()
+            : requestBody.request.content.duration
       }
 
       if (requestBody.request.content.category) {
@@ -3062,8 +3092,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             //     this.contentService.upDatedContent = {}
             //   }),
             // )
-
-          })
+          }),
 
           // ,
           // tap(async () => {
@@ -3087,7 +3116,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           //   // })
           // })
         )
-
       } else {
         if (tempUpdateContent.category === 'Course') {
           let resourceDurat: any = []
@@ -3103,11 +3131,10 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             requestBody.request.content.duration = null
           }
           // tslint:disable-next-line:no-console
-          console.log("sum", sum)
+          console.log('sum', sum)
           if (!this.versionKey.competency) {
             requestBody.request.content.competency = false
             console.log(requestBody, this.versionKey, this.versionKey.competency)
-
           }
           if (this.courseID !== this.currentCourseId) {
             return of(true) // <- wrap boolean in Observable
@@ -3122,7 +3149,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
                 // })
               })
               this.contentService.upDatedContent = {}
-            })
+            }),
           )
         }
         // Object.keys(this.contentService.upDatedContent).forEach(v => {
@@ -3166,13 +3193,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         //     }),
         //   )
         // }
-
       }
 
       /**--------------------end------------------ */
-
-
-
 
       //  return this.editorService.updateContentV3(requestBody, this.currentCourseId).pipe(
       //     tap(() => {
@@ -3187,10 +3210,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       //       // this.contentService.upDatedContent[this.currentCourseId] = {}
       //     }),
       //   )
-
     }
     // }
-
 
     //console.log('updateContentV4  COURSE COLL')
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
@@ -3202,10 +3223,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       },
     }
 
-
     return this.editorService.updateContentV4(requestBodyV2).pipe(
       tap(() => {
-
         this.storeService.changedHierarchy = {}
         Object.keys(this.contentService.upDatedContent).forEach(async id => {
           this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
@@ -3230,7 +3249,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     //     this.contentService.upDatedContent = {}
     //   })
     // )
-
   }
   async update() {
     this.resourseSelected = ''
@@ -3278,7 +3296,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  async subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
+  async subAction(event: { type: string; identifier: string; nodeClicked?: boolean }) {
     // const nodeClicked = event.nodeClicked
     this.contentService.changeActiveCont.next(event.identifier)
     switch (event.type) {
@@ -3319,8 +3337,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             if (ele === content.parent) {
               hierarchyData[content.identifier] = {
                 root: false,
-                contentType: "CourseUnit",
-                primaryCategory: "Course Unit",
+                contentType: 'CourseUnit',
+                primaryCategory: 'Course Unit',
                 children: [],
               }
               hierarchyData[ele].children.push(content.identifier)
@@ -3340,28 +3358,25 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
               console.log(data)
               this.showAddchapter = true
               this.initService.updateResources('update')
-
             })
           })
         }
-        const isCreator = (this._configurationsService.userProfile
-          && this._configurationsService.userProfile.userId === content.createdBy)
-          ? true : false
+        const isCreator =
+          this._configurationsService.userProfile && this._configurationsService.userProfile.userId === content.createdBy ? true : false
         this.checkCreator = isCreator
         if (this.isSelfAssessment) {
-          this.header = "Self Assessment Details"
+          this.header = 'Self Assessment Details'
           this.steps = [
             { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
             { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
-            { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+            { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false },
           ]
         } else {
-
           this.steps = [
             { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
             { label: '2. Course Details', key: 'CourseDetails', activeStep: true, completed: false },
             { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
-            { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+            { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false },
           ]
         }
 
@@ -3376,7 +3391,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         // } else if (content.mimeType === 'application/web-module') {
         //   this.viewMode = 'webmodule'
         // }
-        if (['application/pdf', 'application/x-mpegURL', 'application/vnd.ekstep.html-archive', 'audio/mpeg', 'video/mp4'].includes(content.mimeType)) {
+        if (
+          ['application/pdf', 'application/x-mpegURL', 'application/vnd.ekstep.html-archive', 'audio/mpeg', 'video/mp4'].includes(
+            content.mimeType,
+          )
+        ) {
           this.viewMode = 'upload'
           // } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === 'link') {
         } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === '') {
@@ -3426,7 +3445,9 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   // Course Settings needs its mandatory fields (Reviewers / Publishers / Source Name / Certificate).
   get isNextDisabled(): boolean {
     const activeStep = this.steps.find((s: any) => s.activeStep)
-    if (!activeStep) { return false }
+    if (!activeStep) {
+      return false
+    }
     if (activeStep.key === 'CourseDetails') {
       return !this.isCourseDetailsValid
     }
@@ -3441,18 +3462,25 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   handleStepperNext() {
     const activeStep = this.steps.find((s: any) => s.activeStep)
-    if (!activeStep) { return }
+    if (!activeStep) {
+      return
+    }
     if (activeStep.key === 'CourseDetails') {
       this.isSubmitPressed = true
       this.triggerEditMetaNext = true
-      setTimeout(() => { this.triggerEditMetaNext = false }, 50)
+      setTimeout(() => {
+        this.triggerEditMetaNext = false
+      }, 50)
     } else {
       this.triggerModuleCreationNext = true
-      setTimeout(() => { this.triggerModuleCreationNext = false }, 50)
+      setTimeout(() => {
+        this.triggerModuleCreationNext = false
+      }, 50)
     }
   }
 
-  action(type: string) {      // recheck
+  action(type: string) {
+    // recheck
     switch (type) {
       case 'next':
         this.viewMode = 'meta'
@@ -3463,7 +3491,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         break
 
       case 'scroll':
-
         const el = document.getElementById('edit-meta')
         if (el) {
           el.scrollIntoView()
@@ -3485,7 +3512,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         break
 
       case 'push':
-        console.log("yes here push", this.getAction())
+        console.log('yes here push', this.getAction())
         if (this.getAction() === 'publish') {
           const dialogRefForPublish = this.dialog.open(ConfirmDialogComponent, {
             width: '70%',
@@ -3497,7 +3524,6 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             }
           })
         } else {
-
           this.takeAction('acceptConent')
         }
         break
@@ -3559,9 +3585,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       error => {
         if (error.status === 409) {
           const errorMap = new Map<string, NSContent.IContentMeta>()
-          Object.keys(this.contentService.originalContent).forEach(v =>
-            errorMap.set(v, this.contentService.originalContent[v]),
-          )
+          Object.keys(this.contentService.originalContent).forEach(v => errorMap.set(v, this.contentService.originalContent[v]))
           const dialog = this.dialog.open(ErrorParserComponent, {
             width: '750px',
             height: '450px',
@@ -3573,15 +3597,11 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           dialog.afterClosed().subscribe(v => {
             if (v) {
               if (typeof v === 'string') {
-                this.storeService.selectedNodeChange.next(
-                  (this.storeService.lexIdMap.get(v) as number[])[0],
-                )
+                this.storeService.selectedNodeChange.next((this.storeService.lexIdMap.get(v) as number[])[0])
                 this.contentService.changeActiveCont.next(v)
               } else {
                 this.storeService.selectedNodeChange.next(v)
-                this.contentService.changeActiveCont.next(
-                  this.storeService.uniqueIdMap.get(v) as string,
-                )
+                this.contentService.changeActiveCont.next(this.storeService.uniqueIdMap.get(v) as string)
               }
             }
           })
@@ -3634,12 +3654,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   canDelete() {
     return (
       this.accessControlSvc.hasRole(['editor', 'admin']) ||
-      (['Draft', 'Live'].includes(
-        this.contentService.originalContent[this.currentParentId].status,
-      ) &&
-        this.contentService.originalContent[this.currentParentId].creatorContacts.find(
-          v => v.id === this.accessControlSvc.userId,
-        ))
+      (['Draft', 'Live'].includes(this.contentService.originalContent[this.currentParentId].status) &&
+        this.contentService.originalContent[this.currentParentId].creatorContacts.find(v => v.id === this.accessControlSvc.userId))
     )
   }
 
@@ -3671,8 +3687,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     const emailReqPayload = {
       contentState: actionType,
       contentLink: `${environment.cbpPortal}author/editor/${originalData.identifier}/collection`,
-      contentName: (this._configurationsService.userProfile) ? this._configurationsService.userProfile.userName : '',
-      sender: (this._configurationsService.userProfile) ? this._configurationsService.userProfile.email : '',
+      contentName: this._configurationsService.userProfile ? this._configurationsService.userProfile.userName : '',
+      sender: this._configurationsService.userProfile ? this._configurationsService.userProfile.email : '',
       recipientEmails: <any>[],
     }
     switch (actionType) {
@@ -3725,11 +3741,21 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         break
     }
     if (emailReqPayload.recipientEmails && emailReqPayload.recipientEmails.length > 0) {
-      await this.editorService.sendEmailNotificationAPI(emailReqPayload).toPromise().catch(_error => { })
+      await this.editorService
+        .sendEmailNotificationAPI(emailReqPayload)
+        .toPromise()
+        .catch(_error => {})
     }
   }
 
-  jsonVerify(s: string) { try { JSON.parse(s); return true } catch (e) { return false } }
+  jsonVerify(s: string) {
+    try {
+      JSON.parse(s)
+      return true
+    } catch (e) {
+      return false
+    }
+  }
 
   courseEditFormSubmit(e: boolean) {
     this.isModelHeaderView = e
