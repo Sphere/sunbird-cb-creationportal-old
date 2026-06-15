@@ -75,9 +75,7 @@ import {
 
 import { Router } from '@angular/router'
 
-
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
-
 
 // import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
 
@@ -161,21 +159,19 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   public sideNavBarOpened = false
   // issueCertification!: FormControl
   bucket: string = ''
-  certificateList: any[] = [
-    'Yes', 'No'
-  ]
+  certificateList: any[] = ['Yes', 'No']
   languageList: any[] = [
     {
-      "name": 'English',
-      "value": 'en'
+      name: 'English',
+      value: 'en',
     },
     {
-      "name": 'Hindi',
-      "value": 'hi'
-    }
+      name: 'Hindi',
+      value: 'hi',
+    },
   ]
   proficiency: any
-  isAddCerticate: boolean = false;
+  isAddCerticate: boolean = false
   isEnableTitle: boolean = true
   mainCourseDuration: string = ''
   isSelfAssessment: boolean = false
@@ -197,15 +193,15 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   saveParent: any
   courseData: any
   //UI variables
-  moduleName: string = 'undefined title';
-  isSaveModuleFormEnable: boolean = false;
-  moduleButtonName: string = 'Create';
+  moduleName: string = 'undefined title'
+  isSaveModuleFormEnable: boolean = false
+  moduleButtonName: string = 'Create'
   roles$!: Observable<any[]>
   sourceNames$!: Observable<any[]>
   userId!: any
   givenName!: any
   getAllEntities: any
-  proficiencyList: any[] = [];
+  proficiencyList: any[] = []
   competencies_v1: any
 
   constructor(
@@ -226,24 +222,19 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     private router: Router,
     private storeService: CollectionStoreService,
   ) {
-
     if (this.configSvc.userProfile) {
       this.userId = this.configSvc.userProfile.userId
       this.givenName = this.configSvc.userProfile.givenName
-
     }
     this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {
       this.proficiencyList = await res.result.response
       this.searchComp = this.proficiencyList
-      console.log("yes shree", this.proficiencyList)
-      if (this.isSelfAssessment)
-        this.initializeForm()
-
+      console.log('yes shree', this.proficiencyList)
+      if (this.isSelfAssessment) this.initializeForm()
     })
   }
 
   async ngAfterViewInit() {
-
     this.editorService.readcontentV3(this.contentService.parentUpdatedMeta().identifier).subscribe(async (data: any) => {
       this.courseData = await data
 
@@ -277,7 +268,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   }
 
   ngOnInit() {
-
     // this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {
     //   this.proficiencyList = await res.result.response
     //   this.proficiencyList = this.proficiencyList.map((item: any) => ({
@@ -487,10 +477,12 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
       )
       .subscribe(() => this.fetchRegion())
 
-    this.accessPathsCtrl.valueChanges.pipe(
-      debounceTime(400),
-      filter(v => v),
-    ).subscribe(() => this.fetchAccessRestrictions())
+    this.accessPathsCtrl.valueChanges
+      .pipe(
+        debounceTime(400),
+        filter(v => v),
+      )
+      .subscribe(() => this.fetchAccessRestrictions())
 
     this.contentService.changeActiveCont.subscribe(data => {
       if (this.contentMeta && this.canUpdate) {
@@ -517,8 +509,8 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
       let competencyLevelDescription = JSON.parse(comp.additionalProperties.competencyLevelDescription)
       const identifiers = children.map((val: any) => {
         const matchedItem = {
-          "identifier": val.identifier,
-          "versionKey": val.versionKey
+          identifier: val.identifier,
+          versionKey: val.versionKey,
         }
         return matchedItem
       })
@@ -526,7 +518,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
         return {
           ...item,
           identifier: identifiers[index].identifier,
-          versionKey: identifiers[index].versionKey
+          versionKey: identifiers[index].versionKey,
         }
       })
       if (mergedArray.length > 0) {
@@ -540,51 +532,60 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
             const newData = {
               name: 'Level ' + level.level + ' : ' + (level.name ? level.name : 'Resource'),
               description: level.description ? level.description : '',
-              versionKey: level.versionKey
+              versionKey: level.versionKey,
             }
             let requestBody = {
               request: {
-                content: newData
+                content: newData,
               },
             }
-            await this.editorService.updateNewContentV3(requestBody, level.identifier).toPromise().catch((_error: any) => { })
+            await this.editorService
+              .updateNewContentV3(requestBody, level.identifier)
+              .toPromise()
+              .catch((_error: any) => {})
           }
         }
 
-        let competencies_obj = [{
-          competencyName: comp.name,
-          competencyId: comp.id.toString(),
-        }]
+        let competencies_obj = [
+          {
+            competencyName: comp.name,
+            competencyId: comp.id.toString(),
+          },
+        ]
         let courseData = {
           name: comp.name,
           description: comp.description,
           versionKey: this.contentMeta.identifier,
           competencies_v1: competencies_obj,
-          lang: event
+          lang: event,
         }
         if (event == 'hi') {
           this.courseData.name = competencyDetail['lang-hi-name'] ? competencyDetail['lang-hi-name'] : comp.name
           this.courseData.description = competencyDetail['lang-hi-description'] ? competencyDetail['lang-hi-description'] : comp.description
-          let competencies_obj = [{
-            competencyName: competencyDetail['lang-hi-name'] ? competencyDetail['lang-hi-name'] : comp.name,
-            competencyId: comp.id.toString(),
-          }]
+          let competencies_obj = [
+            {
+              competencyName: competencyDetail['lang-hi-name'] ? competencyDetail['lang-hi-name'] : comp.name,
+              competencyId: comp.id.toString(),
+            },
+          ]
           courseData = {
             name: competencyDetail['lang-hi-name'] ? competencyDetail['lang-hi-name'] : comp.name,
             description: competencyDetail['lang-hi-description'] ? competencyDetail['lang-hi-description'] : comp.description,
             versionKey: this.contentMeta.identifier,
             competencies_v1: competencies_obj,
-            lang: event
+            lang: event,
           }
         }
 
-
         let requestBody = {
           request: {
-            content: courseData
+            content: courseData,
           },
         }
-        await this.editorService.updateNewContentV3(requestBody, this.contentMeta.identifier).toPromise().catch((_error: any) => { })
+        await this.editorService
+          .updateNewContentV3(requestBody, this.contentMeta.identifier)
+          .toPromise()
+          .catch((_error: any) => {})
         await this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
           this.courseData = await data
           this.loader.changeLoad.next(false)
@@ -592,12 +593,9 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
           // NOTE: do NOT subscribe to router.events to trigger the reload — that handler
           // fired on every subsequent NavigationEnd (e.g. the back button) and was never
           // unsubscribed, causing an endless reload loop on the course settings page.
-          this.router
-            .navigate([`/author/editor/${this.contentMeta.identifier}/collection`])
-            .then(() => window.location.reload())
+          this.router.navigate([`/author/editor/${this.contentMeta.identifier}/collection`]).then(() => window.location.reload())
         })
       }
-
     }
 
     // this.contentForm.controls.competencies_v1.setValue(competencies_obj)
@@ -611,9 +609,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     if (!filter) {
       return this.searchComp
     }
-    return this.proficiencyList = this.searchComp.filter((option: any) =>
-      option.name.toLowerCase().includes(filter)
-    )
+    return (this.proficiencyList = this.searchComp.filter((option: any) => option.name.toLowerCase().includes(filter)))
   }
   getFilterData(firstArray: any, secondArray: any) {
     const valuesNotInSecondArray = firstArray.filter((key: any) => {
@@ -646,8 +642,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   changeCertificate(event: any): void {
     if (event == 'Yes') {
       this.isAddCerticate = true
-    }
-    else {
+    } else {
       this.isAddCerticate = false
     }
   }
@@ -680,8 +675,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   }
 
   private set content(contentMeta: NSContent.IContentMeta) {
-    const isCreator = (this.configSvc.userProfile && this.configSvc.userProfile.userId === contentMeta.createdBy)
-      ? true : false
+    const isCreator = this.configSvc.userProfile && this.configSvc.userProfile.userId === contentMeta.createdBy ? true : false
 
     this.contentMeta = contentMeta
 
@@ -702,7 +696,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
       this.contentMeta.trackContacts = JSON.parse(this.contentMeta.reviewer)
     }
 
-
     if (typeof this.contentMeta.creatorDetails === 'string') {
       const parsedDetails: NSContent.IAuthorDetails = JSON.parse(this.contentMeta.creatorDetails)
       this.contentMeta.creatorDetails = [parsedDetails]
@@ -722,9 +715,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     this.canExpiry = this.contentMeta.expiryDate !== '99991231T235959+0000'
     if (this.canExpiry) {
       this.contentMeta.expiryDate =
-        contentMeta.expiryDate && contentMeta.expiryDate.indexOf('+') === 15
-          ? <any>this.convertToISODate(contentMeta.expiryDate)
-          : ''
+        contentMeta.expiryDate && contentMeta.expiryDate.indexOf('+') === 15 ? <any>this.convertToISODate(contentMeta.expiryDate) : ''
     }
     this.contentService.currentContentData = this.contentMeta
     this.contentService.currentContentID = this.contentMeta.identifier
@@ -736,7 +727,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
 
     this.filterOrdinals()
     this.changeResourceType()
-
   }
 
   filterOrdinals() {
@@ -744,32 +734,32 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     this.ordinals.complexityLevel.map((v: any) => {
       if (v.condition) {
         let canAdd = false
-          // tslint:disable-next-line: whitespace
-          ; (v.condition.showFor || []).map((con: any) => {
-            let innerCondition = false
-            Object.keys(con).map(meta => {
-              if (
-                con[meta].indexOf(
-                  (this.contentForm.controls[meta] && this.contentForm.controls[meta].value) ||
+        // tslint:disable-next-line: whitespace
+        ;(v.condition.showFor || []).map((con: any) => {
+          let innerCondition = false
+          Object.keys(con).map(meta => {
+            if (
+              con[meta].indexOf(
+                (this.contentForm.controls[meta] && this.contentForm.controls[meta].value) ||
                   this.contentMeta[meta as keyof NSContent.IContentMeta],
-                ) > -1
-              ) {
-                innerCondition = true
-              }
-            })
-            if (innerCondition) {
-              canAdd = true
+              ) > -1
+            ) {
+              innerCondition = true
             }
           })
+          if (innerCondition) {
+            canAdd = true
+          }
+        })
         if (canAdd) {
           // tslint:disable-next-line: semicolon // tslint:disable-next-line: whitespace
-          ; (v.condition.nowShowFor || []).map((con: any) => {
+          ;(v.condition.nowShowFor || []).map((con: any) => {
             let innerCondition = false
             Object.keys(con).map(meta => {
               if (
                 con[meta].indexOf(
                   (this.contentForm.controls[meta] && this.contentForm.controls[meta].value) ||
-                  this.contentMeta[meta as keyof NSContent.IContentMeta],
+                    this.contentMeta[meta as keyof NSContent.IContentMeta],
                 ) < 0
               ) {
                 innerCondition = true
@@ -796,9 +786,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   assignExpiryDate() {
     this.canExpiry = !this.canExpiry
     this.contentForm.controls.expiryDate.setValue(
-      this.canExpiry
-        ? new Date(new Date().setMonth(new Date().getMonth() + 6))
-        : '99991231T235959+0000',
+      this.canExpiry ? new Date(new Date().setMonth(new Date().getMonth() + 6)) : '99991231T235959+0000',
     )
   }
   assignFields() {
@@ -817,9 +805,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
           this.contentForm.controls[v].setValue(this.contentMeta[v as keyof NSContent.IContentMeta])
         } else {
           if (v === 'expiryDate') {
-            this.contentForm.controls[v].setValue(
-              new Date(new Date().setMonth(new Date().getMonth() + 60)),
-            )
+            this.contentForm.controls[v].setValue(new Date(new Date().setMonth(new Date().getMonth() + 60)))
           } else {
             this.contentForm.controls[v].setValue(
               JSON.parse(
@@ -846,10 +832,8 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
         this.contentForm.controls.cneName.setValue(this.contentMeta.cneName)
         // hardcoded aastrika publisher id
         const baseUrl = window.location.origin.trim()
-        const targetUrl = 'https://cbp-aastrika-stage.tarento.com'.trim()
-        const publisherId = baseUrl === targetUrl
-          ? '8eab395d-46f4-47ff-90af-9d51d5126fc3'
-          : 'b4509d72-87cc-4317-9012-d4b03e307fa5'
+        const targetUrl = 'https://cbp-staging.aastrika.org'.trim()
+        const publisherId = baseUrl === targetUrl ? '8eab395d-46f4-47ff-90af-9d51d5126fc3' : 'b4509d72-87cc-4317-9012-d4b03e307fa5'
         this.contentForm.controls.publisherDetails.setValue([{ id: publisherId, name: 'Publisher Aastrika' }])
 
         if (this.isSubmitPressed) {
@@ -859,7 +843,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
           this.contentForm.controls[v].markAsPristine()
           this.contentForm.controls[v].markAsUntouched()
         }
-      } catch (ex) { }
+      } catch (ex) {}
     })
     this.canUpdate = true
     // tslint:disable-next-line:no-console
@@ -885,34 +869,31 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   initializeForm() {
     if (this.contentMeta.competencies_v1) {
       try {
-        console.log("yes valid", this.contentMeta.competencies_v1)
+        console.log('yes valid', this.contentMeta.competencies_v1)
         let jsonVerify = this.isJsonString(this.contentMeta.competencies_v1)
         if (jsonVerify) {
           const parsedCompetencies = JSON.parse(this.contentMeta.competencies_v1)
-          console.log("parsedCompetencies", parsedCompetencies, this.proficiencyList)
+          console.log('parsedCompetencies', parsedCompetencies, this.proficiencyList)
           if (Array.isArray(parsedCompetencies)) {
             const selectedCompetency = this.proficiencyList.find(
-              (competency: { id: number }) => competency.id == parsedCompetencies[0].competencyId
+              (competency: { id: number }) => competency.id == parsedCompetencies[0].competencyId,
             )
-            console.log("yes here selected: ", selectedCompetency)
+            console.log('yes here selected: ', selectedCompetency)
             if (selectedCompetency) {
               this.competencies_v1 = selectedCompetency
             }
           }
         } else {
           let comp = this.contentMeta.competencies_v1
-          console.log("comp", this.contentMeta.competencies_v1, this.proficiencyList)
+          console.log('comp', this.contentMeta.competencies_v1, this.proficiencyList)
           if (comp) {
-            const selectedCompetency = this.proficiencyList.find(
-              (competency: { id: number }) => competency.id === comp.id
-            )
-            console.log("yes here selected: ", selectedCompetency)
+            const selectedCompetency = this.proficiencyList.find((competency: { id: number }) => competency.id === comp.id)
+            console.log('yes here selected: ', selectedCompetency)
             if (selectedCompetency) {
               this.competencies_v1 = selectedCompetency
             }
           }
         }
-
       } catch (e) {
         console.error('Failed to parse competencies_v1', e)
       }
@@ -995,8 +976,14 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
           this.contentForm.value.rolesMapped = []
         }
         const currentMeta: NSContent.IContentMeta = JSON.parse(JSON.stringify(this.contentForm.value))
-        const exemptArray = ['application/quiz', 'application/x-mpegURL', 'audio/mpeg', 'video/mp4',
-          'application/vnd.ekstep.html-archive', 'application/json']
+        const exemptArray = [
+          'application/quiz',
+          'application/x-mpegURL',
+          'audio/mpeg',
+          'video/mp4',
+          'application/vnd.ekstep.html-archive',
+          'application/json',
+        ]
         if (exemptArray.includes(originalMeta.mimeType)) {
           currentMeta.artifactUrl = originalMeta.artifactUrl
           currentMeta.mimeType = originalMeta.mimeType
@@ -1042,16 +1029,19 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
               currentMeta.sourceName = parentData.sourceName !== '' ? parentData.sourceName : currentMeta.sourceName
             }
             if (!currentMeta.publisherDetailsCtrl) {
-              currentMeta.publisherDetailsCtrl = parentData.publisherDetailsCtrl !== '' ? parentData.publisherDetailsCtrl : currentMeta.publisherDetailsCtrl
+              currentMeta.publisherDetailsCtrl =
+                parentData.publisherDetailsCtrl !== '' ? parentData.publisherDetailsCtrl : currentMeta.publisherDetailsCtrl
             }
             if (!currentMeta.trackContactsCtrl) {
-              currentMeta.trackContactsCtrl = parentData.trackContactsCtrl !== '' ? parentData.trackContactsCtrl : currentMeta.trackContactsCtrl
+              currentMeta.trackContactsCtrl =
+                parentData.trackContactsCtrl !== '' ? parentData.trackContactsCtrl : currentMeta.trackContactsCtrl
             }
             if (!currentMeta.gatingEnabled) {
               currentMeta.gatingEnabled = parentData.gatingEnabled !== false ? parentData.gatingEnabled : currentMeta.gatingEnabled
             }
             if (!currentMeta.courseVisibility) {
-              currentMeta.courseVisibility = parentData.courseVisibility !== false ? parentData.courseVisibility : currentMeta.courseVisibility
+              currentMeta.courseVisibility =
+                parentData.courseVisibility !== false ? parentData.courseVisibility : currentMeta.courseVisibility
             }
             if (!currentMeta.cneName) {
               currentMeta.cneName = parentData.cneName !== '' ? parentData.cneName : currentMeta.cneName
@@ -1061,13 +1051,15 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
               currentMeta.activateLink = parentData.activateLink !== '' ? parentData.activateLink : currentMeta.activateLink
             }
             if (!currentMeta.issueCertification) {
-              currentMeta.issueCertification = parentData.issueCertification !== false ? parentData.issueCertification : currentMeta.issueCertification
+              currentMeta.issueCertification =
+                parentData.issueCertification !== false ? parentData.issueCertification : currentMeta.issueCertification
             }
             // if (!currentMeta.competencies_v1) {
             //   currentMeta.competencies_v1 = parentData.competencies_v1 !== false ? parentData.competencies_v1 : currentMeta.competencies_v1
             // }
             if (!currentMeta.previewLinkFormControl) {
-              currentMeta.previewLinkFormControl = parentData.previewLinkFormControl !== '' ? parentData.previewLinkFormControl : currentMeta.previewLinkFormControl
+              currentMeta.previewLinkFormControl =
+                parentData.previewLinkFormControl !== '' ? parentData.previewLinkFormControl : currentMeta.previewLinkFormControl
             }
             if (!currentMeta.lang) {
               currentMeta.lang = parentData.lang !== '' ? parentData.lang : currentMeta.lang
@@ -1084,25 +1076,24 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
 
         const meta = <any>{}
         if (this.canExpiry) {
-          currentMeta.expiryDate = `${expiryDate
-            .toISOString()
-            .replace(/-/g, '')
-            .replace(/:/g, '')
-            .split('.')[0]
-            }+0000`
+          currentMeta.expiryDate = `${expiryDate.toISOString().replace(/-/g, '').replace(/:/g, '').split('.')[0]}+0000`
         }
         // tslint:disable-next-line:no-console
-        console.log("currentMeta", currentMeta)
+        console.log('currentMeta', currentMeta)
         Object.keys(currentMeta).map(v => {
-          if ((this.isSelfAssessment ? true : v !== 'competencies_v1') &&
-            v !== 'versionKey' && v !== 'visibility' &&
+          if (
+            (this.isSelfAssessment ? true : v !== 'competencies_v1') &&
+            v !== 'versionKey' &&
+            v !== 'visibility' &&
             JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !==
-            JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta]) && v !== 'jobProfile'
+              JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta]) &&
+            v !== 'jobProfile'
           ) {
             if (
               currentMeta[v as keyof NSContent.IContentMeta] ||
               // (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
-              currentMeta[v as keyof NSContent.IContentMeta] === false) {
+              currentMeta[v as keyof NSContent.IContentMeta] === false
+            ) {
               meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
             } else {
               meta[v as keyof NSContent.IContentMeta] = JSON.parse(
@@ -1113,7 +1104,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
                   ][0].value,
                 ),
               )
-
             }
           } else if (v === 'versionKey') {
             meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
@@ -1122,8 +1112,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
             //   // console.log('%c COURSE UNIT ', 'color: #f5ec3d', meta[v],  currentMeta[v])
             //   meta[v as keyof NSContent.IContentMeta] = 'Default'
             // }
-          }
-          else if (v === 'competencies_v1') {
+          } else if (v === 'competencies_v1') {
             // meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
           }
         })
@@ -1147,10 +1136,9 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
         if (this.isSelfAssessment) {
           this.authInitService.isEditMetaPageAction('isSettingsPage')
         }
-
       }
     } catch (ex) {
-      console.log("yes here", ex)
+      console.log('yes here', ex)
       this.snackBar.open('Please Save Parent first and refresh page.')
       if (ex) {
         // this.saveParent = true
@@ -1174,16 +1162,15 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     for (const item of this.rolesArray) {
       if (isNumber(role)) {
         const keys = Object.values(item)
-        console.log("items", item, keys)
+        console.log('items', item, keys)
         if (this.rolesArray.hasOwnProperty(item) && this.rolesArray[item] === role) {
-          console.log("item has role", item)
+          console.log('item has role', item)
           // return item
         }
         // if (keys.length === 1 && item[keys[0]] === role) {
         //   return keys[0]
         // }
       }
-
     }
     return null // Return null if value is not found
   }
@@ -1202,7 +1189,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     let mergedArray: any = []
     if (values.length > 0) {
       mergedArray = [].concat(...values)
-
     }
     return mergedArray
   }
@@ -1281,14 +1267,12 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     const input = event.input
     if (this.configSvc.userProfile) {
       const name = this.configSvc.userProfile || ''
-      console.log("name: ", name)
+      console.log('name: ', name)
     }
     const value = (event.value || '').trim()
     if (value) {
       this.contentForm.controls.creatorDetails.value.push({ id: '', name: value })
-      this.contentForm.controls.creatorDetails.setValue(
-        this.contentForm.controls.creatorDetails.value,
-      )
+      this.contentForm.controls.creatorDetails.setValue(this.contentForm.controls.creatorDetails.value)
     }
     // tslint:disable-next-line:no-console
     // console.log(this.contentForm.controls.creatorDetails)
@@ -1299,13 +1283,10 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     }
   }
 
-
   removeCreatorDetails(keyword: any): void {
     const index = this.contentForm.controls.creatorDetails.value.indexOf(keyword)
     this.contentForm.controls.creatorDetails.value.splice(index, 1)
-    this.contentForm.controls.creatorDetails.setValue(
-      this.contentForm.controls.creatorDetails.value,
-    )
+    this.contentForm.controls.creatorDetails.setValue(this.contentForm.controls.creatorDetails.value)
   }
 
   addToFormControl(event: MatAutocompleteSelectedEvent, fieldName: string): void {
@@ -1512,16 +1493,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   uploadAppIcon(file: File) {
     const formdata = new FormData()
     const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
-    if (
-      !(
-        IMAGE_SUPPORT_TYPES.indexOf(
-          `.${fileName
-            .toLowerCase()
-            .split('.')
-            .pop()}`,
-        ) > -1
-      )
-    ) {
+    if (!(IMAGE_SUPPORT_TYPES.indexOf(`.${fileName.toLowerCase().split('.').pop()}`) > -1)) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_FORMAT,
@@ -1580,113 +1552,105 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
             },
           }
 
-          this.http
-            .post<NSApiRequest.ICreateMetaRequest>(
-              `${AUTHORING_BASE}content/v3/create`,
-              requestBody,
-            )
-            .subscribe(
-              (meta: any) => {
-                // return data.result.identifier
-                this.uploadService
-                  .upload(formdata, {
-                    contentId: meta.result.identifier,
-                    contentType: CONTENT_BASE_STATIC,
+          this.http.post<NSApiRequest.ICreateMetaRequest>(`${AUTHORING_BASE}content/v3/create`, requestBody).subscribe((meta: any) => {
+            // return data.result.identifier
+            this.uploadService
+              .upload(formdata, {
+                contentId: meta.result.identifier,
+                contentType: CONTENT_BASE_STATIC,
+              })
+
+              .subscribe(
+                data => {
+                  if (data && data.name !== 'Error') {
+                    // const generateURL = this.generateUrl(data.artifactUrl)
+                    // const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
+                    //   request: {
+                    //     content: {
+                    //       // content_url: data.result.artifactUrl,
+                    //       // identifier: data.result.identifier,
+                    //       // node_id: data.result.node_id,
+                    //       thumbnail: generateURL,
+                    //       appIcon: generateURL,
+                    //       artifactUrl: generateURL,
+                    //       // versionKey: (new Date()).getTime().toString(),
+                    //       versionKey: meta.result.versionKey,
+                    //     },
+                    //   },
+                    // }
+
+                    // this.apiService
+                    //   .patch<NSApiRequest.ICreateMetaRequest>(
+                    //     `${AUTHORING_BASE}content/v3/update/${data.identifier}`,
+                    //     updateArtf,
+                    //   )
+                    // this.editorService.checkReadAPI(data.identifier)
+                    // .subscribe(
+                    //   (res: any) => {
+                    //     console.log(res)
+                    //     if (res) {
+                    //     }
+                    this.loader.changeLoad.next(false)
+                    this.canUpdate = false
+                    this.contentForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
+                    this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
+                    this.canUpdate = true
+                    // this.data.emit('save')
+                    this.storeData()
+                    this.authInitService.uploadData('thumbnail')
+                    // this.contentForm.controls.posterImage.setValue(data.artifactURL)
+                    this.snackBar.openFromComponent(NotificationComponent, {
+                      data: {
+                        type: Notify.UPLOAD_SUCCESS,
+                      },
+                      duration: NOTIFICATION_TIME * 2000,
+                    })
+                    // })
+                  } else {
+                    this.loader.changeLoad.next(false)
+                    this.snackBar.open(data.message, undefined, { duration: 2000 })
+                  }
+                },
+                () => {
+                  this.loader.changeLoad.next(false)
+                  this.snackBar.openFromComponent(NotificationComponent, {
+                    data: {
+                      type: Notify.UPLOAD_FAIL,
+                    },
+                    duration: NOTIFICATION_TIME * 1000,
                   })
+                },
+              )
 
-                  .subscribe(
-                    data => {
-                      if (data && data.name !== 'Error') {
-                        // const generateURL = this.generateUrl(data.artifactUrl)
-                        // const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
-                        //   request: {
-                        //     content: {
-                        //       // content_url: data.result.artifactUrl,
-                        //       // identifier: data.result.identifier,
-                        //       // node_id: data.result.node_id,
-                        //       thumbnail: generateURL,
-                        //       appIcon: generateURL,
-                        //       artifactUrl: generateURL,
-                        //       // versionKey: (new Date()).getTime().toString(),
-                        //       versionKey: meta.result.versionKey,
-                        //     },
-                        //   },
-                        // }
-
-                        // this.apiService
-                        //   .patch<NSApiRequest.ICreateMetaRequest>(
-                        //     `${AUTHORING_BASE}content/v3/update/${data.identifier}`,
-                        //     updateArtf,
-                        //   )
-                        // this.editorService.checkReadAPI(data.identifier)
-                        // .subscribe(
-                        //   (res: any) => {
-                        //     console.log(res)
-                        //     if (res) {
-                        //     }
-                        this.loader.changeLoad.next(false)
-                        this.canUpdate = false
-                        this.contentForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
-                        this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
-                        this.canUpdate = true
-                        // this.data.emit('save')
-                        this.storeData()
-                        this.authInitService.uploadData('thumbnail')
-                        // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-                        this.snackBar.openFromComponent(NotificationComponent, {
-                          data: {
-                            type: Notify.UPLOAD_SUCCESS,
-                          },
-                          duration: NOTIFICATION_TIME * 2000,
-                        })
-                        // })
-                      } else {
-                        this.loader.changeLoad.next(false)
-                        this.snackBar.open(data.message, undefined, { duration: 2000 })
-                      }
-                    },
-                    () => {
-                      this.loader.changeLoad.next(false)
-                      this.snackBar.openFromComponent(NotificationComponent, {
-                        data: {
-                          type: Notify.UPLOAD_FAIL,
-                        },
-                        duration: NOTIFICATION_TIME * 1000,
-                      })
-                    },
-                  )
-
-                // .subscribe(
-                //   data => {
-                //     if (data.result) {
-                //       this.loader.changeLoad.next(false)
-                //       this.canUpdate = false
-                //       this.contentForm.controls.appIcon.setValue(data.result.artifactUrl)
-                //       this.contentForm.controls.thumbnail.setValue(data.result.artifactUrl)
-                //       // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-                //       this.canUpdate = true
-                //       this.storeData()
-                //       this.snackBar.openFromComponent(NotificationComponent, {
-                //         data: {
-                //           type: Notify.UPLOAD_SUCCESS,
-                //         },
-                //         duration: NOTIFICATION_TIME * 1000,
-                //       })
-                //     }
-                //   },
-                //   () => {
-                //     this.loader.changeLoad.next(false)
-                //     this.snackBar.openFromComponent(NotificationComponent, {
-                //       data: {
-                //         type: Notify.UPLOAD_FAIL,
-                //       },
-                //       duration: NOTIFICATION_TIME * 1000,
-                //     })
-                //   },
-                // )
-              },
-            )
-
+            // .subscribe(
+            //   data => {
+            //     if (data.result) {
+            //       this.loader.changeLoad.next(false)
+            //       this.canUpdate = false
+            //       this.contentForm.controls.appIcon.setValue(data.result.artifactUrl)
+            //       this.contentForm.controls.thumbnail.setValue(data.result.artifactUrl)
+            //       // this.contentForm.controls.posterImage.setValue(data.artifactURL)
+            //       this.canUpdate = true
+            //       this.storeData()
+            //       this.snackBar.openFromComponent(NotificationComponent, {
+            //         data: {
+            //           type: Notify.UPLOAD_SUCCESS,
+            //         },
+            //         duration: NOTIFICATION_TIME * 1000,
+            //       })
+            //     }
+            //   },
+            //   () => {
+            //     this.loader.changeLoad.next(false)
+            //     this.snackBar.openFromComponent(NotificationComponent, {
+            //       data: {
+            //         type: Notify.UPLOAD_FAIL,
+            //       },
+            //       duration: NOTIFICATION_TIME * 1000,
+            //     })
+            //   },
+            // )
+          })
         }
       },
     })
@@ -1694,16 +1658,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   uploadSourceIcon(file: File) {
     const formdata = new FormData()
     const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
-    if (
-      !(
-        IMAGE_SUPPORT_TYPES.indexOf(
-          `.${fileName
-            .toLowerCase()
-            .split('.')
-            .pop()}`,
-        ) > -1
-      )
-    ) {
+    if (!(IMAGE_SUPPORT_TYPES.indexOf(`.${fileName.toLowerCase().split('.').pop()}`) > -1)) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_FORMAT,
@@ -1778,17 +1733,14 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     })
   }
   changeToDefaultImg($event: any) {
-    $event.target.src = this.configSvc.instanceConfig
-      ? this.configSvc.instanceConfig.logos.defaultContent
-      : ''
+    $event.target.src = this.configSvc.instanceConfig ? this.configSvc.instanceConfig.logos.defaultContent : ''
   }
-
 
   generateUrl(oldUrl: any) {
     //const chunk = oldUrl.split('/')
     //const newChunk = environment.azureHost.split('/')
     // @ts-ignore: Unreachable code error
-    this.bucket = window["env"]["azureBucket"]
+    this.bucket = window['env']['azureBucket']
     if (oldUrl.includes(this.bucket)) {
       return oldUrl
     }
@@ -1832,24 +1784,24 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   }
 
   addEmployee(event: MatAutocompleteSelectedEvent, field: string) {
-    console.log("event", event, field)
+    console.log('event', event, field)
     if (event.option.value && event.option.value.id) {
       this.loader.changeLoad.next(true)
-      const observable = ['trackContacts', 'publisherDetails'].includes(field) &&
-        this.accessService.authoringConfig.doUniqueCheck
-        ? this.editorService
-          .checkRole(event.option.value.id)
-          .pipe(
-            map(
-              (v: string[]) =>
-                v.includes('admin') ||
-                v.includes('editor') ||
-                (field === 'trackContacts' && v.includes('reviewer')) ||
-                (field === 'publisherDetails' && v.includes('publisher')) ||
-                (field === 'publisherDetails' && event.option.value.id === this.accessService.userId),
-            ),
-          )
-        : of(true)
+      const observable =
+        ['trackContacts', 'publisherDetails'].includes(field) && this.accessService.authoringConfig.doUniqueCheck
+          ? this.editorService
+              .checkRole(event.option.value.id)
+              .pipe(
+                map(
+                  (v: string[]) =>
+                    v.includes('admin') ||
+                    v.includes('editor') ||
+                    (field === 'trackContacts' && v.includes('reviewer')) ||
+                    (field === 'publisherDetails' && v.includes('publisher')) ||
+                    (field === 'publisherDetails' && event.option.value.id === this.accessService.userId),
+                ),
+              )
+          : of(true)
       observable.subscribe(
         (data: boolean) => {
           if (data) {
@@ -1896,9 +1848,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   private fetchAudience() {
     // console.log("fasdfaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     if ((this.audienceCtrl.value || '').trim()) {
-      this.audienceList = this.ordinals.audience.filter(
-        (v: any) => v.toLowerCase().indexOf(this.audienceCtrl.value.toLowerCase()) > -1,
-      )
+      this.audienceList = this.ordinals.audience.filter((v: any) => v.toLowerCase().indexOf(this.audienceCtrl.value.toLowerCase()) > -1)
     } else {
       this.audienceList = this.ordinals.audience.slice()
     }
@@ -1929,9 +1879,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
 
   private fetchRegion() {
     if ((this.regionCtrl.value || '').trim()) {
-      this.regionList = this.ordinals.region.filter(
-        (v: any) => v.toLowerCase().indexOf(this.regionCtrl.value.toLowerCase()) > -1,
-      )
+      this.regionList = this.ordinals.region.filter((v: any) => v.toLowerCase().indexOf(this.regionCtrl.value.toLowerCase()) > -1)
     } else {
       this.regionList = []
     }
@@ -1939,8 +1887,9 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
 
   private fetchAccessRestrictions() {
     if (this.accessPathsCtrl.value.trim()) {
-      this.accessPathList = this.ordinals.accessPaths.filter((v: any) => v.toLowerCase().
-        indexOf(this.accessPathsCtrl.value.toLowerCase()) === 0)
+      this.accessPathList = this.ordinals.accessPaths.filter(
+        (v: any) => v.toLowerCase().indexOf(this.accessPathsCtrl.value.toLowerCase()) === 0,
+      )
     } else {
       this.accessPathList = this.ordinals.accessPaths.slice()
     }
@@ -1954,7 +1903,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   }
 
   createForm() {
-    console.log("this.isSelfAssessment", this.isSelfAssessment, this.contentForm)
+    console.log('this.isSelfAssessment', this.isSelfAssessment, this.contentForm)
     this.contentForm = this.formBuilder.group({
       accessPaths: [],
       accessibility: [],
@@ -2044,7 +1993,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
       verifiers: [],
       visibility: [],
       instructions: [],
-      versionKey: '',  // (new Date()).getTime()
+      versionKey: '', // (new Date()).getTime()
       purpose: '',
       // langName: '',
       trackContactsCtrl: '',
@@ -2052,15 +2001,13 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
       activateLink: new FormControl(),
       previewLinkFormControl: new FormControl(),
       cneName: new FormControl(''),
-      courseVisibility: new FormControl('')
+      courseVisibility: new FormControl(''),
     })
 
     // Report validity now (initial state) and on every status change so the parent
     // stepper keeps Next disabled until all mandatory settings fields are filled.
     this.validityChange.emit(this.contentForm.valid)
-    this.contentForm.statusChanges
-      .pipe(distinctUntilChanged())
-      .subscribe(() => this.validityChange.emit(this.contentForm.valid))
+    this.contentForm.statusChanges.pipe(distinctUntilChanged()).subscribe(() => this.validityChange.emit(this.contentForm.valid))
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       if (this.canUpdate) {
@@ -2084,18 +2031,14 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
 
     if (this.stage === 1) {
       this.contentForm.controls.creatorContacts.valueChanges.subscribe(() => {
-        this.contentForm.controls.publisherDetails.setValue(
-          this.contentForm.controls.creatorContacts.value || [],
-        )
+        this.contentForm.controls.publisherDetails.setValue(this.contentForm.controls.creatorContacts.value || [])
       })
     }
     const baseUrl = window.location.origin.trim()
-    const targetUrl = 'https://cbp-aastrika-stage.tarento.com'.trim()
-    const publisherId = baseUrl === targetUrl
-      ? '8eab395d-46f4-47ff-90af-9d51d5126fc3'
-      : 'b4509d72-87cc-4317-9012-d4b03e307fa5'
+    const targetUrl = 'https://cbp-staging.aastrika.org'.trim()
+    const publisherId = baseUrl === targetUrl ? '8eab395d-46f4-47ff-90af-9d51d5126fc3' : 'b4509d72-87cc-4317-9012-d4b03e307fa5'
     this.contentForm.controls.publisherDetails.setValue({ id: publisherId, name: 'Publisher Aastrika' })
-    console.log("publisher", this.contentForm.controls.publisherDetailsCtrl)
+    console.log('publisher', this.contentForm.controls.publisherDetailsCtrl)
     //     this.contentForm.controls.publisherDetails.valueChanges.subscribe(() => {
     //   this.contentForm.controls.publisherDetails.setValue(
     //     this.contentForm.controls.publisherDetails.value || [],
@@ -2109,9 +2052,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     })
 
     this.contentForm.controls.resourceCategory.valueChanges.subscribe(() => {
-      this.contentForm.controls.customClassifiers.setValue(
-        this.contentForm.controls.resourceCategory.value,
-      )
+      this.contentForm.controls.customClassifiers.setValue(this.contentForm.controls.resourceCategory.value)
     })
   }
 
@@ -2227,5 +2168,4 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     this.isSaveModuleFormEnable = true
     this.moduleButtonName = 'Save'
   }
-
 }
