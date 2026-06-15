@@ -8,7 +8,7 @@ Guidance for AI coding assistants (and developers) working in this repository. R
 
 An enterprise Angular SPA for **creating, authoring, managing, and publishing educational content** — courses, knowledge artifacts, assessments, and learning materials. It is the **content-authoring (CMS) side** of the Sunbird Competency-Based (CB) learning ecosystem; learners consume content through a separate portal.
 
-- **Organization:** Tarento, built for the Sphere/Aastrika ecosystem on top of Sunbird (EkStep / DIKSHA).
+- **Organization:** Built for the Sphere/Aastrika ecosystem on top of Sunbird (EkStep / DIKSHA).
 - **Repo:** https://github.com/Sphere/sunbird-cb-creationportal-old
 - **Version:** 5.0.0 — **Angular 21** (migrated from Angular 8; see §8).
 

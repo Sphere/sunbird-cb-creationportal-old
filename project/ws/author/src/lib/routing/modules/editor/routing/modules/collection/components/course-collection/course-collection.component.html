@@ -1,10 +1,15 @@
-<ws-author-course-header [backToDashboard]="backToDashboard" [clickedNext]="clickedNext"
-  [isModelHeaderView]="isModelHeaderView" [isSelfAssessment]="isSelfAssessment" [buttonConfig]="actionButton"
-  (action)="action($event)" (subAction)="subAction($event)">
+<ws-author-course-header
+  [backToDashboard]="backToDashboard"
+  [clickedNext]="clickedNext"
+  [isModelHeaderView]="isModelHeaderView"
+  [isSelfAssessment]="isSelfAssessment"
+  [buttonConfig]="actionButton"
+  (action)="action($event)"
+  (subAction)="subAction($event)"
+>
 </ws-author-course-header>
 
 <mat-drawer-container autosize="true" id="auth-toc" class="example-container">
-
   <!-- <mat-drawer mode="side" [(opened)]="sideBarOpened" class="side-nav"> -->
 
   <!-- <div class="sticky"> -->
@@ -29,7 +34,15 @@
   </mat-drawer> -->
   <mat-drawer-content>
     <mat-sidenav-container class="nav-container">
-      <ws-progress-stepper *ngIf="allowAuthorContentCreate" (sendSteps)="receiveSteps($event)" [steps]="steps" [header]="header" [nextDisabled]="isNextDisabled" (onNext)="handleStepperNext()">
+      <ws-progress-stepper
+        *ngIf="allowAuthorContentCreate"
+        (sendSteps)="receiveSteps($event)"
+        [steps]="steps"
+        [header]="header"
+        [nextDisabled]="isNextDisabled"
+        [hideNext]="viewMode === 'assessment'"
+        (onNext)="handleStepperNext()"
+      >
       </ws-progress-stepper>
       <!-- <form [formGroup]="createTopicForm" *ngIf="showAddchapter" class="margin-left-l">
         <div class="margin-top-s">
@@ -94,8 +107,13 @@
           </mat-menu>
         </div>
       </form> -->
-      <ws-auth-url-upload [isCollectionEditor]="true" *ngIf="!showAddchapter && viewMode === 'curate'"
-        [isSubmitPressed]="isSubmitPressed" (data)="action($event)" [isCreatorEnable]="checkCreator">
+      <ws-auth-url-upload
+        [isCollectionEditor]="true"
+        *ngIf="!showAddchapter && viewMode === 'curate'"
+        [isSubmitPressed]="isSubmitPressed"
+        (data)="action($event)"
+        [isCreatorEnable]="checkCreator"
+      >
       </ws-auth-url-upload>
       <!-- <div class="overlay" *ngIf="isLoading">
         <div class="loader-container">
@@ -105,45 +123,69 @@
           </div>
         </div>
       </div> -->
-      <ws-auth-file-upload [isCollectionEditor]="true" *ngIf="false" [isSubmitPressed]="isSubmitPressed"
-        (data)="action($event)" [isCreatorEnable]="checkCreator">
+      <ws-auth-file-upload
+        [isCollectionEditor]="true"
+        *ngIf="false"
+        [isSubmitPressed]="isSubmitPressed"
+        (data)="action($event)"
+        [isCreatorEnable]="checkCreator"
+      >
       </ws-auth-file-upload>
       <!-- <ws-auth-quiz [isCollectionEditor]="true"
         *ngIf="!showAddchapter && viewMode === 'assessment' && !isModelHeaderView" [isSubmitPressed]="isSubmitPressed"
         (data)="action($event)" [isCreatorEnable]="checkCreator"></ws-auth-quiz> -->
-      <ws-auth-quiz [isCollectionEditor]="true" *ngIf="viewMode === 'assessment'" [isSubmitPressed]="isSubmitPressed"
-        (data)="action($event)" [isCreatorEnable]="checkCreator"></ws-auth-quiz>
+      <ws-auth-quiz
+        [isCollectionEditor]="true"
+        *ngIf="viewMode === 'assessment'"
+        [isSubmitPressed]="isSubmitPressed"
+        (data)="action($event)"
+        [isCreatorEnable]="checkCreator"
+      ></ws-auth-quiz>
 
-      <ws-auth-web-module-editor *ngIf="!showAddchapter && viewMode === 'webmodule'" (data)="action($event)">
-      </ws-auth-web-module-editor>
-      <ws-auth-edit-meta [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" [triggerNext]="triggerEditMetaNext" (data)="action($event)"
+      <ws-auth-web-module-editor *ngIf="!showAddchapter && viewMode === 'webmodule'" (data)="action($event)"> </ws-auth-web-module-editor>
+      <ws-auth-edit-meta
+        [parentContent]="currentParentId"
+        [isSubmitPressed]="isSubmitPressed"
+        [triggerNext]="triggerEditMetaNext"
+        (data)="action($event)"
         (validityChange)="onCourseDetailsValidity($event)"
-        *ngIf="!showAddchapter && viewMode === 'meta'&&!isReviewChecklistEnabled&&!clickedNext">
+        *ngIf="!showAddchapter && viewMode === 'meta' && !isReviewChecklistEnabled && !clickedNext"
+      >
       </ws-auth-edit-meta>
       <!--  [class.hidden]="viewMode !== 'meta'" -->
 
       <div *ngIf="isReviewChecklistEnabled">
-        <div class="flex review-block" style="padding: 0px 45px;">
+        <div class="flex review-block" style="padding: 0px 45px">
           <h3 class="info-msg" i18n>
-            <img style="margin-right: 10px;" loading="lazy" src="\cbp-assets\icons\simple-icons_codereview.svg"
-              alt="clock"><span class="mode-block" style="vertical-align: super;">You
-              are in review mode</span>
+            <img style="margin-right: 10px" loading="lazy" src="\cbp-assets\icons\simple-icons_codereview.svg" alt="clock" /><span
+              class="mode-block"
+              style="vertical-align: super"
+              >You are in review mode</span
+            >
           </h3>
         </div>
         <!-- <ws-auth-content-quality type="" (data)="action($event)"></ws-auth-content-quality> -->
-        <ws-auth-content-quality [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" type=""
-          *ngIf="isReviewChecklistEnabled" (data)="action($event)"></ws-auth-content-quality>
+        <ws-auth-content-quality
+          [parentContent]="currentParentId"
+          [isSubmitPressed]="isSubmitPressed"
+          type=""
+          *ngIf="isReviewChecklistEnabled"
+          (data)="action($event)"
+        ></ws-auth-content-quality>
       </div>
-
-
 
       <!-- <ws-auth-edit-meta [parentContent]="currentParentId" [isSubmitPressed]="isSubmitPressed" (data)="action($event)"
         *ngIf="!showAddchapter && viewMode !== 'meta' && showResource == true"
         (courseEditFormSubmit)="courseEditFormSubmit($event)">
       </ws-auth-edit-meta> -->
-      <ws-author-module-creation (sendSteps)="receiveSteps($event)" [clickedNext]="clickedNext" [triggerNext]="triggerModuleCreationNext"
-        (validityChange)="onCourseBuilderValidity($event)" (settingsValidityChange)="onCourseSettingsValidity($event)"
-        *ngIf="clickedNext"></ws-author-module-creation>
+      <ws-author-module-creation
+        (sendSteps)="receiveSteps($event)"
+        [clickedNext]="clickedNext"
+        [triggerNext]="triggerModuleCreationNext"
+        (validityChange)="onCourseBuilderValidity($event)"
+        (settingsValidityChange)="onCourseSettingsValidity($event)"
+        *ngIf="clickedNext"
+      ></ws-author-module-creation>
     </mat-sidenav-container>
   </mat-drawer-content>
 </mat-drawer-container>
