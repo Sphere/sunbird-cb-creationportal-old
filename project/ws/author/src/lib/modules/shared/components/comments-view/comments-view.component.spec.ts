@@ -4,7 +4,6 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 
 import { CommentsViewComponent } from './comments-view.component'
 
-
 describe('CommentsViewComponent', () => {
   let component: CommentsViewComponent
   let fixture: ComponentFixture<CommentsViewComponent>
@@ -13,18 +12,15 @@ describe('CommentsViewComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [CommentsViewComponent],
       providers: [
-        { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
-        { provide: MAT_DIALOG_DATA, useValue: { comment: 'Test Comment' } }
-      ]
-
-    })
-      .compileComponents()
+        { provide: MatDialogRef, useValue: { close: jest.fn() } },
+        { provide: MAT_DIALOG_DATA, useValue: { comment: 'Test Comment' } },
+      ],
+    }).compileComponents()
   })
 
   beforeEach(() => {
     fixture = TestBed.createComponent(CommentsViewComponent)
     component = fixture.componentInstance
-    fixture.detectChanges()
   })
 
   it('should create', () => {
@@ -32,6 +28,7 @@ describe('CommentsViewComponent', () => {
   })
 
   it('should display the comment', () => {
+    fixture.detectChanges()
     const compiled = fixture.nativeElement
     expect(compiled.querySelector('span').textContent).toContain('Test Comment')
   })
@@ -42,5 +39,4 @@ describe('CommentsViewComponent', () => {
     const compiled = fixture.nativeElement
     expect(compiled.querySelector('span').textContent).toContain('Another Test Comment')
   })
-
 })

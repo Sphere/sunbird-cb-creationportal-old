@@ -29,8 +29,17 @@ module.exports = {
     '!**/*-routing.module.ts',
   ],
   coveragePathIgnorePatterns: ['/node_modules/', '/dist/', '/out-tsc/'],
-  // NOTE: add a `coverageThreshold` ratchet once a baseline exists, then raise it
-  // as suites land — starting it now (coverage ~0) would fail the build immediately.
+  // Coverage ratchet: a floor set just below the current measured baseline so the
+  // build fails if coverage regresses. Raise these numbers as new suites land —
+  // never lower them. Current baseline (2026-06): stmts 8.5 / br 7.1 / fn 1.9 / ln 8.0.
+  coverageThreshold: {
+    global: {
+      statements: 8,
+      branches: 7,
+      functions: 1.5,
+      lines: 8,
+    },
+  },
   moduleNameMapper: {
     // Auto-map every tsconfig path alias so new specs don't each need a hand-written
     // entry (this is why the suite had only ~12 specs). The curated bare-alias entries
@@ -118,5 +127,14 @@ module.exports = {
 
     '^project/ws/author/src/lib/services/loader.service':
       '<rootDir>/project/ws/author/src/lib/services/loader.service.ts',
+    '^project/ws/viewer/src/lib/viewer-data.service':
+      '<rootDir>/project/ws/viewer/src/lib/viewer-data.service.ts',
+    // A couple of components import @angular packages via a hardcoded deep-relative
+    // node_modules path (resolves at build time, but not through jest's resolver).
+    // Redirect any such specifier back to the real package.
+    '^.*/node_modules/@angular/router$': '@angular/router',
+    // Baseurl-style absolute imports rooted at the app source (tsconfig baseUrl),
+    // e.g. 'src/app/...'. Keep this last so the explicit aliases above win.
+    '^src/(.*)$': '<rootDir>/src/$1',
   },
 }

@@ -1,18 +1,23 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { RouterTestingModule } from '@angular/router/testing'
 
+import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 
 import { PageTrackComponent } from './page-track.component'
 
-
-describe('StatusTrackComponent', () => {
+describe('PageTrackComponent', () => {
   let component: PageTrackComponent
   let fixture: ComponentFixture<PageTrackComponent>
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [PageTrackComponent],
+      imports: [RouterTestingModule],
+      providers: [AuthInitService],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents()
-  }))
+  })
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PageTrackComponent)

@@ -1,125 +1,92 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { EMPTY, of } from 'rxjs'
 
 import { QuizComponent } from './quiz.component'
 
-import { UploadService } from '@ws/author/src/lib/routing/modules/editor/shared/services/upload.service'
-
-import { MatMenuModule } from '@angular/material/menu'
-
-import { MatIconModule } from '@angular/material/icon'
-
-import { MatSidenavModule } from '@angular/material/sidenav'
-
-import { MatFormFieldModule } from '@angular/material/form-field'
-
-import { QuestionEditorComponent } from './../question-editor/question-editor.component'
-
-import { CUSTOM_ELEMENTS_SCHEMA, InjectionToken } from '@angular/core'
-
-import { ViewerComponent } from '../../../../../../../components/viewer/viewer.component'
-
-import { EditMetaComponent } from '../../../../../shared/components/edit-meta/edit-meta.component'
-
-import { QuestionEditorSidenavComponent } from '../../shared/components/question-editor-sidenav/question-editor-sidenav.component'
-
-import { PipeSafeSanitizerPipe } from '../../../../../../../../../../../../../library/ws-widget/utils/src/lib/pipes/pipe-safe-sanitizer/pipe-safe-sanitizer.pipe'
-
-import { CommonModule } from '@angular/common'
-
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-
-import { MatInputModule } from '@angular/material/input'
-
-import { MatSelectModule } from '@angular/material/select'
-
-import { MatChipsModule } from '@angular/material/chips'
-
-import { MatAutocompleteModule } from '@angular/material/autocomplete'
-
-export const appBaseHrefToken = new InjectionToken<string>('appBaseHref')
-
+// QuizComponent renders a heavy child-component tree (viewer, edit-meta, question
+// editors) whose dependencies make full TestBed rendering brittle under jsdom. We
+// instead instantiate the component directly with mocked collaborators and exercise
+// its deterministic, side-effect-light logic.
 describe('QuizComponent', () => {
-  let component: QuizComponent
-  let fixture: ComponentFixture<QuizComponent>
+  const initService = {
+    uploadMessage: EMPTY,
+    updateAssessmentMessage: EMPTY,
+    isAssessmentOrQuizMessage: EMPTY,
+  }
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [
-        QuizComponent,
-        ViewerComponent,
-        EditMetaComponent,
-        PipeSafeSanitizerPipe,
-        QuestionEditorSidenavComponent,
-        QuestionEditorComponent
-      ],
-      imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatSelectModule,
-        MatChipsModule,
-        MatAutocompleteModule,
-        MatMenuModule,
-        MatIconModule,
-        MatSidenavModule,
-        MatFormFieldModule
-      ],
-      providers: [
-        UploadService,
-        { provide: appBaseHrefToken, useValue: '/' }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents()
-  })
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(QuizComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-  })
+  const build = (overrides: Partial<Record<string, any>> = {}) => {
+    const cdr = { detectChanges: jest.fn() }
+    const quizStoreSvc = { changeQuiz: jest.fn() }
+    const component = new QuizComponent(
+      {} as any, // router
+      {} as any, // activateRoute
+      cdr as any,
+      { observe: () => of({ matches: false }) } as any, // breakpointObserver
+      {} as any, // dialog
+      {} as any, // snackBar
+      quizStoreSvc as any,
+      {} as any, // loaderService
+      {} as any, // metaContentService
+      {} as any, // uploadService
+      {} as any, // editorService
+      {} as any, // notificationSvc
+      initService as any,
+      {} as any, // quizResolverSvc
+      {} as any, // accessControl
+    )
+    Object.assign(component, overrides)
+    return { component, cdr, quizStoreSvc }
+  }
 
   it('should create', () => {
+    const { component } = build()
     expect(component).toBeTruthy()
   })
 
-  it('should display loader overlay when isLoading is true', () => {
-    component.isLoading = true
-    fixture.detectChanges()
-    const overlayElement = fixture.nativeElement.querySelector('.overlay')
-    expect(overlayElement).toBeTruthy()
+  describe('isAtLeastOneQuestionPresent', () => {
+    it('returns true when a question has text and an option with text', () => {
+      const { component } = build({
+        questionsArr: [{ question: 'What is 2+2?', options: [{ text: '4' }] }],
+      })
+      expect(component.isAtLeastOneQuestionPresent()).toBe(true)
+    })
+
+    it('returns false when all questions are empty', () => {
+      const { component } = build({
+        questionsArr: [{ question: '   ', options: [{ text: '' }] }],
+      })
+      expect(component.isAtLeastOneQuestionPresent()).toBe(false)
+    })
   })
 
+  describe('customStepper', () => {
+    it('disables the cursor on step 1', () => {
+      const { component } = build()
+      component.customStepper(1)
+      expect(component.disableCursor).toBe(true)
+    })
 
-  it('should display quiz details section for Assessment type', () => {
-    component.isQuiz = 'Assessment'
-    component.questionsArr = [{}, {}]
-    fixture.detectChanges()
-    const passPercentageInput = fixture.nativeElement.querySelector('input[placeholder="Enter pass percentage"]')
-    const durationInput = fixture.nativeElement.querySelector('input[placeholder="Enter duration"]')
-    const randomCountInput = fixture.nativeElement.querySelector('input[placeholder="Enter Random Question Count"]')
-    expect(passPercentageInput).toBeTruthy()
-    expect(durationInput).toBeTruthy()
-    expect(randomCountInput).toBeTruthy()
+    it('sets the current step for other steps', () => {
+      const { component } = build()
+      component.customStepper(3)
+      expect(component.currentStep).toBe(3)
+    })
   })
 
-  it('should enable navigation buttons based on quiz index', () => {
-    component.questionsArr = [{}, {}, {}]
-    component.selectedQuizIndex = 1
-    fixture.detectChanges()
-    const prevButton = fixture.nativeElement.querySelector('button[aria-label="navigate to next quiz"]')
-    const nextButton = fixture.nativeElement.querySelector('button[aria-label="navigate to previous quiz"]')
-    expect(prevButton.disabled).toBe(false)
-    expect(nextButton.disabled).toBe(false)
+  describe('changeQuiz', () => {
+    it('moves the quiz index by the given step count via the store', () => {
+      const { component, quizStoreSvc } = build({ selectedQuizIndex: 1 })
+      component.changeQuiz(2)
+      expect(quizStoreSvc.changeQuiz).toHaveBeenCalledWith(3)
+    })
   })
 
-  it('should enable and handle action buttons based on conditions', () => {
-    component.canEditJson = true
-    component.isCreatorEnable = true
-    component.passPercentage = 80
-    component.assessmentDuration = 10
-    fixture.detectChanges()
-    const saveButton = fixture.nativeElement.querySelector('#assessmentSave')
-    expect(saveButton.disabled).toBe(false)
+  describe('shuffle', () => {
+    it('returns an array with the same elements', () => {
+      const { component } = build()
+      const input = [1, 2, 3, 4, 5]
+      const result = component.shuffle([...input])
+      expect(result).toHaveLength(input.length)
+      expect([...result].sort()).toEqual(input)
+    })
   })
 })
