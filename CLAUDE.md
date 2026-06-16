@@ -143,6 +143,31 @@ Conventions (Jest + `jest-preset-angular`):
 - **Run via Node 20** (`nvs use node/20.20.1 && npx jest <pattern>`) — Node isn't always on PATH in non-interactive shells.
 - The codegen skills (`add-feature-module`, `add-api-service`, `create-widget`) each include a test step + checklist item — follow them.
 
+### Branching & release workflow (environment promotion)
+
+The repo runs **environment-promotion** branching. Code flows one direction: feature → dev → stage → prod.
+
+| Branch              | Environment / role                                                             | Cut features from it?    |
+| ------------------- | ------------------------------------------------------------------------------ | ------------------------ |
+| `development`       | **Integration branch** — cut all feature branches from here, PR back into here | ✅ **yes — branch here** |
+| `stage`             | Staging environment (pre-prod)                                                 | ❌ promote into it       |
+| `main`              | Production-stable mirror (default, protected)                                  | ❌ promote into it       |
+| `cbp-release-<X.Y>` | Production **deploy snapshot** for a release line                              | ❌ release/hotfix only   |
+
+**New feature or fix:**
+
+```bash
+git checkout development && git pull --ff-only      # always start from the integration branch
+git checkout -b feature/<short-name>                # or fix/<short-name>
+# …implement WITH unit tests (see Testing above)…
+git push -u origin feature/<short-name>             # open a PR INTO development
+```
+
+- **Never branch features off `cbp-release-*` or `main`** — those are deploy/prod refs, not where work happens. A release branch only changes when cutting or hotfixing a release.
+- **Promotion:** `development` → `stage` (staging verify) → `cbp-release-<X.Y>` + `main` (prod). At prod, run the `release-notes` skill: it writes the note, cuts/updates the release branch, and (post-deploy) creates the `cbp-release-<X.Y.Z>` tag + GitHub Release.
+- **Production is marked by the tag** `cbp-release-<X.Y.Z>` + the GitHub Release (the immutable record) — the branches keep moving, the tag does not.
+- Old Angular 8 history is archived in tags (`angular-8-final`, `development-angular-8-final`, `angular21-migration-pr-archive`); the active branches are all Angular 21.
+
 ---
 
 ## 5. API & Backend Integration

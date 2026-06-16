@@ -5,6 +5,13 @@ description: Scaffold a new lazy-loaded feature page/module in the correct monor
 
 # Add a lazy-loaded feature module
 
+> **Branch first.** Cut the feature branch from **`development`** (the integration branch), never from `main` or a `cbp-release-*` branch — the repo uses environment-promotion (feature → dev → stage → prod). See CLAUDE.md §4 "Branching & release workflow".
+>
+> ```bash
+> git checkout development && git pull --ff-only
+> git checkout -b feature/<short-name>
+> ```
+
 Feature pages are lazy-loaded NgModules. Decide the tier first, then scaffold the module, its routing module, and wire it into the root router with a guard.
 
 ## Pick the correct tier (never mix cross-tier concerns)
