@@ -26,6 +26,24 @@ jobs:
       - name: ESLint (must have zero errors)
         run: npm run lint
 
+  test:
+    name: Unit tests + coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # Node 20 matches the runtime (Dockerfile) and the version the suite
+          # was validated on; jest-preset-angular is happiest here.
+          node-version: 20
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps --no-audit --no-fund
+      # Runs the full Jest suite and enforces the coverageThreshold ratchet in
+      # jest.config.js — a PR that fails tests OR drops coverage below the floor
+      # fails this job and cannot merge. Raise the threshold as coverage climbs.
+      - name: Jest (tests + coverage gate)
+        run: npm test -- --coverage --ci
+
   build:
     name: Production build
     runs-on: ubuntu-latest

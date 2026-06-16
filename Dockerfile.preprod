@@ -1,19 +1,32 @@
-FROM node:10
+# Preprod image — mirrors the production Dockerfile (multi-stage, node:20, Express
+# runtime serving dist/www/en) but builds the `preprod` configuration.
+# NOTE: Angular 21 removed `--prod` / `--build-optimizer`; the configuration is
+# selected by `npm run build-preprod` (ng build --configuration=preprod). Do not
+# re-add those flags — see CLAUDE.md §8.
+
+# ── Stage 1: builder ──
+FROM node:20 AS builder
+
+ARG BUILDKIT_INLINE_CACHE=1
 
 WORKDIR /app
 COPY . .
 
-#RUN npm i yarn
-#RUN yarn global add @angular/cli@latest
-
-RUN yarn && yarn add moment && yarn add vis-util && npm run build-preprod --prod --build-optimizer
-#RUN ng build --prod --outputPath=dist/www/en --baseHref=/ --i18nLocale=en --verbose=true
+# Fresh install + preprod build (outputs to dist/www/en), then brotli-compress.
+RUN yarn && yarn add moment && yarn add vis-util && npm run build-preprod
 RUN npm run compress:brotli
-#RUN npm run compress:gzip
+
+# Express static client-assets + the server's own production deps.
+WORKDIR /app/dist
+COPY assets/CBP/client-assets/dist www/en/assets
+RUN npm install --production
+
+# ── Stage 2: runtime ──
+FROM node:20-slim AS runtime
 
 WORKDIR /app/dist
-RUN npm install --production
+COPY --from=builder /app/dist ./
+
 EXPOSE 3024
 
 CMD [ "npm", "run", "serve:prod" ]
-

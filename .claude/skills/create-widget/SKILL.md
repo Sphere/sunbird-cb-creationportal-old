@@ -56,8 +56,7 @@ import { IMyWidgetData } from './my-widget.model'
   templateUrl: './my-widget.component.html',
   styleUrls: ['./my-widget.component.scss'],
 })
-export class MyWidgetComponent extends WidgetBaseComponent
-  implements OnInit, NsWidgetResolver.IWidgetData<IMyWidgetData> {
+export class MyWidgetComponent extends WidgetBaseComponent implements OnInit, NsWidgetResolver.IWidgetData<IMyWidgetData> {
   @Input() widgetData!: IMyWidgetData
 
   ngOnInit() {
@@ -83,7 +82,7 @@ import { MyWidgetComponent } from './my-widget.component'
   imports: [CommonModule, WidgetResolverModule /*, MatCardModule, ... */],
   exports: [MyWidgetComponent],
 })
-export class MyWidgetModule { }
+export class MyWidgetModule {}
 ```
 
 ### 5. Add the type string — `collection.config.ts`
@@ -118,13 +117,16 @@ export * from './lib/my-widget/my-widget.module'
 export * from './lib/my-widget/my-widget.model'
 ```
 
+### 8. Write unit tests (mandatory — ships in the same change)
+
+Every new widget gets a `*.spec.ts` — a hard rule (CLAUDE.md "Testing"), enforced by the CI coverage gate. Test the widget's logic with its typed `widgetData`; use `jest.spyOn`/`jest.fn()` (not Jasmine `spyOn`). For a widget extending `WidgetBaseComponent`, prefer instantiating the class directly (or `TestBed` with `NO_ERRORS_SCHEMA`) and assert behaviour off `widgetData`. Run via Node 20 (`nvs use node/20.20.1 && npx jest <spec>`); confirm green and coverage stays above the ratchet before done.
+
 ## How it renders
 
 Parent templates resolve the widget at runtime by config, not by tag:
 
 ```html
-<ng-container [wsResolverWidget]="{ widgetType: 'myWidget', widgetSubType: 'default', widgetData: data }">
-</ng-container>
+<ng-container [wsResolverWidget]="{ widgetType: 'myWidget', widgetSubType: 'default', widgetData: data }"> </ng-container>
 ```
 
 The resolver builds the key `widget:myWidget::default`, checks permissions, then instantiates the mapped component.
@@ -137,5 +139,6 @@ The resolver builds the key `widget:myWidget::default`, checks permissions, then
 - [ ] `ROOT_WIDGET_CONFIG` entry added
 - [ ] `WIDGET_REGISTRATION_CONFIG` mapping added (with import)
 - [ ] `widgetData` is typed via the model interface
+- [ ] **Unit tests written** (`*.spec.ts`) and green; coverage stays above the ratchet (CI gate)
 - [ ] Follows the design-system / input styling rules (see the `style-form-input` skill for any form fields)
 - [ ] Angular 21 standards (CLAUDE.md §3): `inject()`, `@if`/`@for` control flow, signals for local state, `takeUntilDestroyed`/`async` — without breaking the resolver's `@Input() widgetData` contract

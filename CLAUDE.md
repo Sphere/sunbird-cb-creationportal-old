@@ -128,7 +128,20 @@ npm run lint            # ESLint (ng lint); lint:fix for autofix
 
 **Node:** Angular 21 needs Node 20+. On some Windows shells Node isn't on PATH in non-interactive sessions — prepend your Node install dir to PATH before running `ng`/`npm`.
 
-**CI/CD:** Jenkins (`Jenkinsfile`) → Docker build/push. Build output `dist/www/en` is served by an **Express** server (`dist/server.js`), **not nginx** — see §8.
+**CI/CD:** Jenkins (`Jenkinsfile`) → Docker build/push. Build output `dist/www/en` is served by an **Express** server (`dist/server.js`), **not nginx** — see §8. The GitHub Actions **Quality** workflow (`.github/workflows/quality.yml`) gates every PR on **lint + unit tests/coverage + production build** — all three must pass.
+
+### Testing — required for every feature and fix
+
+**Every new feature or bug fix ships with its own unit tests in the same change** — never deliver code test-less and defer the tests. CI enforces this: `npm test -- --coverage` runs in the Quality workflow and the `coverageThreshold` ratchet in `jest.config.js` fails the build if coverage regresses. Raise the threshold as coverage climbs; never lower it.
+
+Conventions (Jest + `jest-preset-angular`):
+
+- **Spies/mocks:** `jest.spyOn` / `jest.fn()` — **not** Jasmine's global `spyOn` (this is a Jest project; `spyOn` is undefined).
+- **Heavy components** (many injected deps / large template): instantiate the class **directly with mocked collaborators** and test its logic — full `TestBed` rendering of such components is brittle under jsdom. Light components: `TestBed` + `NO_ERRORS_SCHEMA`.
+- **HTTP:** `provideHttpClient()` + `provideHttpClientTesting()` (the `HttpClientTestingModule` is deprecated).
+- **Removed APIs:** use `waitForAsync`/`async-await` (not the removed `async()`), `TestBed.inject` (not `TestBed.get`).
+- **Run via Node 20** (`nvs use node/20.20.1 && npx jest <pattern>`) — Node isn't always on PATH in non-interactive shells.
+- The codegen skills (`add-feature-module`, `add-api-service`, `create-widget`) each include a test step + checklist item — follow them.
 
 ---
 

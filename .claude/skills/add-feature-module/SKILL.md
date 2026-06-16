@@ -9,10 +9,10 @@ Feature pages are lazy-loaded NgModules. Decide the tier first, then scaffold th
 
 ## Pick the correct tier (never mix cross-tier concerns)
 
-- `project/ws/app/`    → `@ws/app` — general feature pages (home, dashboard, search, profile, toc, events)
+- `project/ws/app/` → `@ws/app` — general feature pages (home, dashboard, search, profile, toc, events)
 - `project/ws/author/` → `@ws/author` — content authoring/editor features
 - `project/ws/viewer/` → `@ws/viewer` — content consumption
-- `src/app/`           → app shell, top-level routing, guards, interceptors
+- `src/app/` → app shell, top-level routing, guards, interceptors
 
 Most new pages belong in `project/ws/app/src/lib/routes/<feature-name>/`.
 
@@ -72,7 +72,7 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class MyFeatureRoutingModule { }
+export class MyFeatureRoutingModule {}
 ```
 
 ### 4. Feature module — `<feature-name>.module.ts`
@@ -93,7 +93,7 @@ import { MyFeatureHomeComponent } from './components/my-feature-home/my-feature-
     // MatCardModule, MatButtonModule, MatIconModule, BtnPageBackModule, ...
   ],
 })
-export class MyFeatureModule { }
+export class MyFeatureModule {}
 ```
 
 ### 5. Wire into the root router — `src/app/app-routing.module.ts`
@@ -116,6 +116,15 @@ If the existing routing uses thin `route-*.module.ts` wrappers in `src/app/route
 
 For data the page needs before activation, add a resolver service (`@Injectable()`, `resolve()` returning an `Observable`) and reference it in the route's `resolve: {}`. Use `runGuardsAndResolvers: 'always'` when the same component must re-resolve on param changes.
 
+### 7. Write unit tests (mandatory — ships in the same change)
+
+Every new component/service/resolver gets a `*.spec.ts` covering its logic and the branches you touched — this is a hard rule (CLAUDE.md "Testing"), enforced by the CI coverage gate. Conventions:
+
+- **Spies/mocks:** `jest.spyOn` / `jest.fn()` — **not** Jasmine's global `spyOn` (this is a Jest project).
+- **Heavy components** (many injected deps, big template): instantiate the class **directly with mocked collaborators** and test the logic, rather than brittle full `TestBed` rendering. For light components, `TestBed` with `NO_ERRORS_SCHEMA` is fine.
+- **HTTP:** `provideHttpClient()` + `provideHttpClientTesting()` (not the deprecated `HttpClientTestingModule`).
+- Run via Node 20: `nvs use node/20.20.1 && npx jest <spec>` — confirm green and that coverage doesn't drop below the ratchet before you call it done.
+
 ## Checklist before done
 
 - [ ] Code is in the correct tier (`@ws/app` / `@ws/author` / `@ws/viewer`)
@@ -125,4 +134,5 @@ For data the page needs before activation, add a resolver service (`@Injectable(
 - [ ] `canActivate: [GeneralGuard]` + `requiredFeatures`/`requiredRoles` in route `data`
 - [ ] Feature routing module uses `RouterModule.forChild`
 - [ ] Loading / Empty / Error / Success states considered for the page
+- [ ] **Unit tests written** (`*.spec.ts`) and green; coverage stays above the ratchet (CI gate)
 - [ ] Angular 21 standards (CLAUDE.md §3): `inject()`, `@if`/`@for` control flow, `OnPush`, signals for local state, `takeUntilDestroyed`/`async` for subscriptions

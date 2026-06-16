@@ -10,7 +10,7 @@ HTTP calls live in `@Injectable` services that return typed `Observable<T>`. End
 ## Conventions at a glance
 
 - **`@Injectable({ providedIn: 'root' })`** on every service.
-- **Use `inject()` for new code** — it's the Angular 21 best practice (CLAUDE.md §3) and the `@angular-eslint/prefer-inject` lint rule nudges toward it. Most *existing* services still use constructor injection; when editing one of those, match its style, but write **new** services with `inject()`.
+- **Use `inject()` for new code** — it's the Angular 21 best practice (CLAUDE.md §3) and the `@angular-eslint/prefer-inject` lint rule nudges toward it. Most _existing_ services still use constructor injection; when editing one of those, match its style, but write **new** services with `inject()`.
 - Methods return **`Observable<T>`** with the generic passed to the HTTP method (`this.http.get<T>(...)`).
 - Endpoint URLs go in a **constants file**, composed from base prefixes.
 - New Sunbird API calls go through the **`/apis/proxies/v8/`** prefix unless hitting a microservice directly.
@@ -72,9 +72,7 @@ export class MyResourceService {
   }
 
   saveResource(body: IMyResource): Observable<IMyResource> {
-    return this.http.post<IMyResource>(MY_NEW_ENDPOINT, body).pipe(
-      map(res => res /* transform if needed */),
-    )
+    return this.http.post<IMyResource>(MY_NEW_ENDPOINT, body).pipe(map(res => res /* transform if needed */))
   }
 }
 ```
@@ -82,6 +80,35 @@ export class MyResourceService {
 ### 4. Consume it
 
 Inject the service (`inject()` in new code) in the component/resolver and subscribe (or use the `async` pipe). For route-prefetched data, wrap the call in a resolver service (`@Injectable()` with a `resolve()` returning the `Observable`) and reference it in the route's `resolve: {}`.
+
+### 5. Write unit tests (mandatory — ships in the same change)
+
+Every new service/method gets a `*.spec.ts` — a hard rule (CLAUDE.md "Testing"), enforced by the CI coverage gate. Services are cheap to test by direct instantiation with a mocked `HttpClient`:
+
+```typescript
+import { of } from 'rxjs'
+import { MyResourceService } from './my-resource.service'
+
+describe('MyResourceService', () => {
+  let http: { get: jest.Mock; post: jest.Mock }
+  let service: MyResourceService
+
+  beforeEach(() => {
+    http = { get: jest.fn().mockReturnValue(of({ id: '1' })), post: jest.fn().mockReturnValue(of({})) }
+    service = new MyResourceService(http as any)
+  })
+
+  it('requests the resource by id', done => {
+    service.getResource('1').subscribe(r => {
+      expect(r).toEqual({ id: '1' })
+      done()
+    })
+    expect(http.get).toHaveBeenCalledWith('apis/proxies/v8/.../1')
+  })
+})
+```
+
+Use `jest.spyOn`/`jest.fn()` (not Jasmine `spyOn`); for a `TestBed`-based test use `provideHttpClient()` + `provideHttpClientTesting()`. Run via Node 20 (`nvs use node/20.20.1 && npx jest <spec>`) and confirm green before done.
 
 ## Auth / headers — already handled
 
@@ -103,5 +130,6 @@ Inject the service (`inject()` in new code) in the component/resolver and subscr
 - [ ] Response typed via a model/interface
 - [ ] No manual auth/org/locale headers (interceptor owns them)
 - [ ] Error/transform handled with `.pipe(map/catchError)` where needed
+- [ ] **Unit tests written** (`*.spec.ts`) and green; coverage stays above the ratchet (CI gate)
 - [ ] API contract not changed without approval
 - [ ] Angular 21 standards (CLAUDE.md §3): `inject()` for new services; typed models (no `any`); consumers use `async` pipe / `takeUntilDestroyed`
