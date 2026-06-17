@@ -441,12 +441,16 @@
                 <p class="em-editor-hint" [style.color]="instructionsByteLength > maxInstructionsBytes ? '#d9534f' : '#808080'">
                   {{ instructionsByteLength }} / {{ maxInstructionsBytes }} bytes
                 </p>
-                <mat-error *ngIf="showError('instructions') && contentForm.controls.instructions.hasError('required')" i18n
-                  >Description is required</mat-error
+                <p
+                  class="em-editor-error-msg"
+                  *ngIf="showError('instructions') && contentForm.controls.instructions.hasError('required')"
+                  i18n
                 >
-                <mat-error *ngIf="contentForm.controls.instructions.hasError('maxByteLength')" i18n>
+                  Description is required
+                </p>
+                <p class="em-editor-error-msg" *ngIf="contentForm.controls.instructions.hasError('maxByteLength')" i18n>
                   Description is too long ({{ instructionsByteLength }}/{{ maxInstructionsBytes }} bytes). Please shorten it.
-                </mat-error>
+                </p>
               </div>
             </div>
           </div>
