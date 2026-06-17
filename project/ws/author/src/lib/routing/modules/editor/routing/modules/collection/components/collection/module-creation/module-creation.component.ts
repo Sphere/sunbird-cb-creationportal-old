@@ -1,4 +1,17 @@
-import { Component, ChangeDetectorRef, OnInit, OnChanges, SimpleChanges, AfterViewInit, ViewChild, TemplateRef, Output, EventEmitter, Input, ElementRef } from '@angular/core'
+import {
+  Component,
+  ChangeDetectorRef,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  AfterViewInit,
+  ViewChild,
+  TemplateRef,
+  Output,
+  EventEmitter,
+  Input,
+  ElementRef,
+} from '@angular/core'
 
 declare const zip: any
 
@@ -50,7 +63,12 @@ import { Router } from '@angular/router'
 
 import { environment } from '../../../../../../../../../../../../../.././src/environments/environment'
 
-import { ConfigurationsService, ImageCropComponent, ValueService, ResourceDownloadService } from '../../../../../../../../../../../../../.././library/ws-widget/utils/src/public-api'
+import {
+  ConfigurationsService,
+  ImageCropComponent,
+  ValueService,
+  ResourceDownloadService,
+} from '../../../../../../../../../../../../../.././library/ws-widget/utils/src/public-api'
 
 import { SuccessDialogComponent } from '../../../../../../../../.././modules/shared/components/success-dialog/success-dialog.component'
 
@@ -73,11 +91,7 @@ import { IFormMeta } from '../../../../../../../../../interface/form'
 
 import { VIDEO_MAX_SIZE } from '@ws/author/src/lib/constants/upload'
 
-import {
-  CONTENT_BASE_STATIC,
-  CONTENT_BASE_STREAM,
-  CONTENT_BASE_WEBHOST,
-} from '@ws/author/src/lib/constants/apiEndpoints'
+import { CONTENT_BASE_STATIC, CONTENT_BASE_STREAM, CONTENT_BASE_WEBHOST } from '@ws/author/src/lib/constants/apiEndpoints'
 
 import { ProfanityService } from '../../../../upload/services/profanity.service'
 
@@ -95,9 +109,7 @@ import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/l
 
 import { UserIndexConfirmComponent } from '@ws/author/src/lib/modules/shared/components/user-index-confirm/user-index-confirm.component'
 
-import {
-  ContentProgressService,
-} from '@ws-widget/collection'
+import { ContentProgressService } from '@ws-widget/collection'
 
 import moment from 'moment'
 
@@ -109,16 +121,14 @@ import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
   templateUrl: './module-creation.component.html',
   styleUrls: ['./module-creation.component.scss'],
   providers: [CollectionStoreService, CollectionResolverService, QuizResolverService],
-
 })
-
 export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild('guideline', { static: false }) guideline!: TemplateRef<HTMLElement>
   @ViewChild('errorFile', { static: false }) errorFile!: TemplateRef<HTMLElement>
   @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>
   @ViewChild('videoPlayer', { static: false }) videoPlayer!: ElementRef<HTMLVideoElement>
   @Output() data = new EventEmitter<any>()
-  @Output() sendSteps = new EventEmitter<any>();
+  @Output() sendSteps = new EventEmitter<any>()
   contents: NSContent.IContentMeta[] = []
   @Output() actions = new EventEmitter<{ action: string; type?: string }>()
   // Emits whether the course has the minimum 2 resources required to advance to
@@ -132,38 +142,37 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   dragEle1: any
   dragEle2: any
   dragEle3: any
-  showQuizForm: boolean = false;
+  showQuizForm: boolean = false
   currentIndex: any
-  activeTabIndex: number = 0;
+  activeTabIndex: number = 0
 
-
-  videoQuestions: IVideoQuestionData[] = []; // Initialize videoQuestions as an empty array
+  videoQuestions: IVideoQuestionData[] = [] // Initialize videoQuestions as an empty array
   contentList: any[] = [
     {
       name: 'Link',
       icon: 'cbp-assets/icons/link_icon.png',
-      type: 'web'
+      type: 'web',
     },
     {
       name: 'PDF',
       icon: 'cbp-assets/icons/pdf_icon.svg',
-      type: 'upload'
+      type: 'upload',
     },
     {
       name: 'Audio',
       icon: 'cbp-assets/icons/audio_icon.svg',
-      type: 'upload'
+      type: 'upload',
     },
     {
       name: 'Video',
       icon: 'cbp-assets/icons/video_icon.svg',
-      type: 'upload'
+      type: 'upload',
     },
     {
       name: 'SCORM v1.1/1.2',
       icon: 'cbp-assets/icons/scrom_icon.svg',
-      type: 'upload'
-    }
+      type: 'upload',
+    },
   ]
 
   accessList: any[] = [
@@ -171,14 +180,14 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       name: 'Assessment',
       icon: 'cbp-assets/icons/assessment_icon.svg',
       type: 'assessment',
-      text: 'User can go to next module only when they complete the assessment'
+      text: 'User can go to next module only when they complete the assessment',
     },
     {
       name: 'Quiz',
       icon: 'cbp-assets/icons/quiz_icon.svg',
       type: 'assessment',
-      text: 'Users knowledge check. Shows correct answers at the end of quiz.'
-    }
+      text: 'Users knowledge check. Shows correct answers at the end of quiz.',
+    },
   ]
   assessmentOrQuizName: string = 'Quiz'
   isAddOrEdit: boolean = false
@@ -189,30 +198,30 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   parentHierarchy: number[] = []
   showAddModuleForm: boolean = false
   showSettingsPage: boolean = false
-  moduleNames: any = [];
+  moduleNames: any = []
   isSaveModuleFormEnable: boolean = false
-  moduleButtonName: string = 'Create';
+  moduleButtonName: string = 'Create'
   isResourceTypeEnabled: boolean = false
   isLinkPageEnabled: boolean = false
-  isOnClickOfResourceTypeEnabled: boolean = false;
+  isOnClickOfResourceTypeEnabled: boolean = false
   resourceLinkForm: FormGroup
   resourcePdfForm: FormGroup
   moduleForm!: FormGroup
-  resourceImg: string = '';
-  isLinkEnabled: boolean = false;
+  resourceImg: string = ''
+  isLinkEnabled: boolean = false
   assessment!: boolean
-  isShowDownloadBtnEnabled: boolean = false;
+  isShowDownloadBtnEnabled: boolean = false
   openinnewtab: boolean = false
-  moduleName: string = '';
-  isNewTab: any = '';
-  isShowBtn: any = '';
-  isGating: any = '';
+  moduleName: string = ''
+  isNewTab: any = ''
+  isShowBtn: any = ''
+  isGating: any = ''
   topicDescription: string = ''
   thumbnail: string = ''
-  resourceNames: any = [];
-  resourceCount: number = 0;
-  independentResourceNames: any = [];
-  independentResourceCount: number = 0;
+  resourceNames: any = []
+  resourceCount: number = 0
+  independentResourceNames: any = []
+  independentResourceCount: number = 0
   imageTypes = IMAGE_SUPPORT_TYPES
   bucket: string = ''
   // Backed by a setter so that every reassignment of the course tree (add / save /
@@ -220,7 +229,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   // "has >= 2 resources" validity to the parent stepper. Relying on a single emit
   // point left Next disabled after resources were added through other paths.
   private _courseData: any
-  get courseData(): any { return this._courseData }
+  get courseData(): any {
+    return this._courseData
+  }
   set courseData(value: any) {
     this._courseData = value
     this.validityChange.emit(this.getTotalResourceCount() >= 2)
@@ -234,14 +245,14 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   routerSubscription: Subscription | null = null
   courseName: any
   currentParentId!: string
-  showResource: boolean = false;
+  showResource: boolean = false
   triggerQuizSave = false
   triggerUploadSave = false
   isChanged = false
   versionKey: any
   versionID: any
   isSubmitPressed = false
-  isMoveCourseToDraft: boolean = false;
+  isMoveCourseToDraft: boolean = false
   gatingEnabled!: FormControl
   hours = 0
   minutes = 0
@@ -257,7 +268,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   resourseSelected: string = ''
   viewMode!: string
   content: any
-  canUpdate: boolean = true;
+  canUpdate: boolean = true
   isPdfOrAudioOrVedioEnabled!: boolean
   acceptType!: string | '.mp3,.mp4,.pdf,.zip,.m4v'
   addResourceModule: any = {}
@@ -281,16 +292,17 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   mainCourseDuration: string = ''
   entryPoint: any
   uploadText!: string
-  uploadFileName: string = '';
-  uploadVideoUrl: string = '';
+  uploadFileName: string = ''
+  uploadVideoUrl: string = ''
   uploadIcon!: string
   isSelfAssessment: boolean = false
   hideModule: boolean = false
   hideResource: boolean = false
-  questionType: IQuizQuestionType['fillInTheBlanks'] |
-    IQuizQuestionType['matchTheFollowing'] |
-    IQuizQuestionType['multipleChoiceQuestionSingleCorrectAnswer'] |
-    IQuizQuestionType['multipleChoiceQuestionMultipleCorrectAnswer'] = QUIZ_QUESTION_TYPE['multipleChoiceQuestionSingleCorrectAnswer']
+  questionType:
+    | IQuizQuestionType['fillInTheBlanks']
+    | IQuizQuestionType['matchTheFollowing']
+    | IQuizQuestionType['multipleChoiceQuestionSingleCorrectAnswer']
+    | IQuizQuestionType['multipleChoiceQuestionMultipleCorrectAnswer'] = QUIZ_QUESTION_TYPE['multipleChoiceQuestionSingleCorrectAnswer']
   parentNodeId!: number
   assessmentData: any
   assessmentDuration!: any
@@ -306,7 +318,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   mediumScreenSize!: boolean
   showContent!: boolean
   canEditJson!: boolean
-  questionsArr: any[] = [];
+  questionsArr: any[] = []
   contentLoaded!: boolean
   currentId!: string
   quizDuration: any
@@ -323,25 +335,25 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   editItem: string = ''
   resourceDurat: any = []
   sumDuration: any
-  @Input() clickedNext: boolean = false;
+  @Input() clickedNext: boolean = false
   @Input() triggerNext = false
   triggerCourseSettingsNext = false
-  showChildrenMap: { [key: string]: boolean } = {};
+  showChildrenMap: { [key: string]: boolean } = {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['triggerNext']?.currentValue === true) {
       if (this.isSettingsPage) {
         this.triggerCourseSettingsNext = true
-        setTimeout(() => { this.triggerCourseSettingsNext = false }, 50)
+        setTimeout(() => {
+          this.triggerCourseSettingsNext = false
+        }, 50)
       } else {
         // A course must contain at least 2 resources before it can move to the
         // Course Settings step. Block the stepper Next and tell the user otherwise.
         if (this.getTotalResourceCount() < 2) {
-          this.snackBar.open(
-            'Please add at least 2 resources before proceeding to Course Settings.',
-            'X',
-            { duration: NOTIFICATION_TIME * 1000 },
-          )
+          this.snackBar.open('Please add at least 2 resources before proceeding to Course Settings.', 'X', {
+            duration: NOTIFICATION_TIME * 1000,
+          })
           return
         }
         this.setSettingsPage()
@@ -368,7 +380,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   // whole list (and its child components) on every change. Identifier for content
   // nodes, index for primitive/option lists.
   trackByIdentifier(index: number, item: any): any {
-    return (item && item.identifier) ? item.identifier : index
+    return item && item.identifier ? item.identifier : index
   }
 
   trackByIndex(index: number): number {
@@ -378,8 +390,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   // Download a single resource (file as-is, or quiz -> Excel). stopPropagation so the
   // row's edit/drag handlers don't fire when the download icon is clicked.
   async downloadOneResource(resource: any, event?: Event): Promise<void> {
-    if (event) { event.stopPropagation() }
-    if (!resource || (!resource.artifactUrl && !resource.downloadUrl)) { return }
+    if (event) {
+      event.stopPropagation()
+    }
+    if (!resource || (!resource.artifactUrl && !resource.downloadUrl)) {
+      return
+    }
     this.loader.changeLoad.next(true)
     try {
       await this.resourceDownloadSvc.downloadResource(resource)
@@ -394,8 +410,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
 
   // Download every resource in the course as one zip named after the course.
   async downloadAllResources(event?: Event): Promise<void> {
-    if (event) { event.stopPropagation() }
-    if (!this.resourceDownloadSvc.hasDownloadableResources(this.courseData)) { return }
+    if (event) {
+      event.stopPropagation()
+    }
+    if (!this.resourceDownloadSvc.hasDownloadableResources(this.courseData)) {
+      return
+    }
     this.loader.changeLoad.next(true)
     try {
       await this.resourceDownloadSvc.downloadAllAsZip(this.courseData)
@@ -444,7 +464,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       showDownloadBtn: new FormControl(''),
       isIframeSupported: new FormControl(''),
       isgatingEnabled: new FormControl(),
-      duration: new FormControl('', [Validators.required])
+      duration: new FormControl('', [Validators.required]),
     })
 
     this.fileUploadForm = this.formBuilder.group({
@@ -468,11 +488,11 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       isIframeSupported: new FormControl(''),
       showDownloadBtn: new FormControl(''),
       isgatingEnabled: new FormControl(),
-      duration: new FormControl('', [Validators.required])
+      duration: new FormControl('', [Validators.required]),
     })
 
     this.moduleForm = new FormGroup({
-      appIcon: new FormControl('')
+      appIcon: new FormControl(''),
     })
 
     this.assessmentOrQuizForm = new FormGroup({
@@ -499,13 +519,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       }
     })
 
-    this.initService.updateResourceMessage.subscribe(
-      async (data: any) => {
-        if (data) {
-          await this.ngAfterViewInit()
-          this.cdr.detectChanges()
-        }
-      })
+    this.initService.updateResourceMessage.subscribe(async (data: any) => {
+      if (data) {
+        await this.ngAfterViewInit()
+        this.cdr.detectChanges()
+      }
+    })
   }
 
   ngOnInit() {
@@ -553,7 +572,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     })
     if (this.activateRoute.parent && this.activateRoute.parent.parent) {
       this.routerSubscription = this.activateRoute.parent.parent.data.subscribe(data => {
-
         this.courseName = data.contents[0].content.name
         this.courseData = data.contents[0].content
 
@@ -585,14 +603,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         })
         contentDataMap.forEach(content => this.contentService.setOriginalMeta(content))
         const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
-        console.log("here noe", currentNode)
+        console.log('here noe', currentNode)
         this.currentParentId = this.currentContent
-        this.storeService.treeStructureChange.next(
-          this.storeService.flatNodeMap.get(currentNode) as IContentNode,
-        )
+        this.storeService.treeStructureChange.next(this.storeService.flatNodeMap.get(currentNode) as IContentNode)
         this.storeService.currentParentNode = currentNode
         this.storeService.currentSelectedNode = currentNode
-        console.log("currentSelectedNode", this.storeService.currentParentNode, currentNode)
+        console.log('currentSelectedNode', this.storeService.currentParentNode, currentNode)
         let newCreatedNode = 0
         const newCreatedLexid = this.editorService.newCreatedLexid
         if (newCreatedLexid) {
@@ -600,10 +616,16 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           this.storeService.selectedNodeChange.next(newCreatedNode)
         }
 
-        if (data.contents[0] && data.contents[0].content && data.contents[0].content.children[0] &&
-          data.contents[0].content.children[0].identifier) {
+        if (
+          data.contents[0] &&
+          data.contents[0].content &&
+          data.contents[0].content.children[0] &&
+          data.contents[0].content.children[0].identifier
+        ) {
           this.subActions({
-            type: 'editContent', identifier: data.contents[0].content.identifier, nodeClicked: true
+            type: 'editContent',
+            identifier: data.contents[0].content.identifier,
+            nodeClicked: true,
           })
           this.storeService.selectedNodeChange.next(data.contents[0].content.identifier)
         }
@@ -616,11 +638,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         if (urlParam === 'collection') {
           this.headerService.showCreatorHeader(this.courseName)
         }
-
       })
     }
   }
-  subActions(event: { type: string; identifier: string, nodeClicked?: boolean }) {
+  subActions(event: { type: string; identifier: string; nodeClicked?: boolean }) {
     // const nodeClicked = event.nodeClicked
     this.contentService.changeActiveCont.next(event.identifier)
     switch (event.type) {
@@ -631,7 +652,11 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         if (event.nodeClicked === false) {
         }
         const content = this.contentService.getUpdatedMeta(event.identifier)
-        if (['application/pdf', 'application/x-mpegURL', 'application/vnd.ekstep.html-archive', 'audio/mpeg', 'video/mp4'].includes(content.mimeType)) {
+        if (
+          ['application/pdf', 'application/x-mpegURL', 'application/vnd.ekstep.html-archive', 'audio/mpeg', 'video/mp4'].includes(
+            content.mimeType,
+          )
+        ) {
           this.viewMode = 'upload'
           // } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === 'link') {
         } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === '') {
@@ -648,7 +673,8 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         break
     }
   }
-  action(type: string) {      // recheck
+  action(type: string) {
+    // recheck
     // tslint:disable-next-line:no-console
     switch (type) {
       case 'next':
@@ -660,7 +686,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         break
 
       case 'scroll':
-
         const el = document.getElementById('edit-meta')
         if (el) {
           el.scrollIntoView()
@@ -682,7 +707,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       //   break
 
       case 'push':
-
         if (this.getAction() === 'publish') {
           const dialogRefForPublish = this.dialog.open(ConfirmDialogComponent, {
             width: '70%',
@@ -760,17 +784,17 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     this.videoQuestions.push({
       timestamp: { hours: 0, minutes: 0, seconds: 0 },
       timestampInSeconds: 0,
-      question: [ // Ensure 'question' is used here
+      question: [
+        // Ensure 'question' is used here
         {
           text: '',
-          options: [{ text: '', optionId: this.generateOptionId(), isCorrect: false, answerInfo: '' }]
-        }
-      ]
+          options: [{ text: '', optionId: this.generateOptionId(), isCorrect: false, answerInfo: '' }],
+        },
+      ],
     })
     this.activeTabIndex = this.videoQuestions.length - 1 // Set active tab to the newly added question
     console.log('Video Questions:', this.videoQuestions) // Debugging step
     this.cdr.detectChanges()
-
   }
   deleteQuestion(index: number) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -806,12 +830,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   }
   setCorrectOption(i: number, j: number, k: number): void {
     this.videoQuestions[i].question[j].options.forEach((option, index) => {
-      option.isCorrect = (index === k)
+      option.isCorrect = index === k
     })
   }
   updateTimestampInSeconds(index: number): void {
     const { hours, minutes, seconds } = this.videoQuestions[index].timestamp
-    this.videoQuestions[index].timestampInSeconds = (hours * 3600) + (minutes * 60) + seconds
+    this.videoQuestions[index].timestampInSeconds = hours * 3600 + minutes * 60 + seconds
   }
 
   // Captures the true video length from the browser once metadata is available, so
@@ -827,7 +851,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   // True when this question's timestamp falls past the end of the video, so the quiz
   // would never trigger. Returns false until the real duration is known.
   isTimestampBeyondVideo(question: { timestampInSeconds: number }): boolean {
-    if (this.videoActualDuration == null) { return false }
+    if (this.videoActualDuration == null) {
+      return false
+    }
     return question.timestampInSeconds > this.videoActualDuration
   }
 
@@ -840,7 +866,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     return this.videoQuestions.some((q: any) => q.timestampInSeconds > this.videoActualDuration!)
   }
   addOption(questionIndex: number, subQuestionIndex: number) {
-    this.videoQuestions[questionIndex].question[subQuestionIndex].options.push({ optionId: this.generateOptionId(), text: '', isCorrect: false, answerInfo: '' })
+    this.videoQuestions[questionIndex].question[subQuestionIndex].options.push({
+      optionId: this.generateOptionId(),
+      text: '',
+      isCorrect: false,
+      answerInfo: '',
+    })
   }
 
   clearOption(questionIndex: number, subQuestionIndex: number, optionIndex: number) {
@@ -861,21 +892,20 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     const updatedContent = this.contentService.upDatedContent || {}
     if (this.viewMode === 'assessment') {
       this.triggerQuizSave = true
-    } else
-      if (this.viewMode === 'upload') {
-        // TODO  console.log('viewmode', this.viewMode)
-        this.triggerUploadSave = true
-      }
+    } else if (this.viewMode === 'upload') {
+      // TODO  console.log('viewmode', this.viewMode)
+      this.triggerUploadSave = true
+    }
 
     if (
       (Object.keys(updatedContent).length &&
-        (Object.values(updatedContent).length && JSON.stringify(Object.values(updatedContent)[0]) !== '{}')) ||
+        Object.values(updatedContent).length &&
+        JSON.stringify(Object.values(updatedContent)[0]) !== '{}') ||
       Object.keys(this.storeService.changedHierarchy).length
     ) {
-
       this.isChanged = true
       this.loader.changeLoad.next(true)
-      if (this.contentService.getUpdatedMeta(this.currentCourseId).contentType !== "CourseUnit") {
+      if (this.contentService.getUpdatedMeta(this.currentCourseId).contentType !== 'CourseUnit') {
         this.versionID = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
         this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
       }
@@ -883,7 +913,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.saveTriggerSub = this.triggerSaves().subscribe(
         () => {
           if (nextAction) {
-
             this.action(nextAction)
           }
           this.loader.changeLoad.next(false)
@@ -896,15 +925,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           // tslint:disable-next-line:no-console
 
           // this.isSettingsPage = false
-
         },
         (error: any) => {
           if (error.status === 409) {
             this.isError = true
             const errorMap = new Map<string, NSContent.IContentMeta>()
-            Object.keys(this.contentService.originalContent).forEach(v =>
-              errorMap.set(v, this.contentService.originalContent[v]),
-            )
+            Object.keys(this.contentService.originalContent).forEach(v => errorMap.set(v, this.contentService.originalContent[v]))
             const dialog = this.dialog.open(ErrorParserComponent, {
               width: '600px',
               data: {
@@ -935,7 +961,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             this.courseData = await data
             this.contentService.resetOriginalMetaWithHierarchy(data)
             if (this.isSettingsPage && !this.isError) {
-              this.action("push")
+              this.action('push')
               this.loader.changeLoad.next(false)
             }
             // tslint:disable-next-line: align
@@ -991,30 +1017,34 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         let competencyLevelDescription = tempUpdateContent.competencies_v1.additionalProperties
         let lang = this.courseData.lang
         if (lang == 'hi') {
-          tempUpdateContent.competencies_v1.name = competencyLevelDescription['lang-hi-name'] ? competencyLevelDescription['lang-hi-name'] : tempUpdateContent.competencies_v1.name
+          tempUpdateContent.competencies_v1.name = competencyLevelDescription['lang-hi-name']
+            ? competencyLevelDescription['lang-hi-name']
+            : tempUpdateContent.competencies_v1.name
         }
-        let competencies_obj = [{
-          competencyName: tempUpdateContent.competencies_v1.name,
-          competencyId: tempUpdateContent.competencies_v1.id.toString(),
-        }]
+        let competencies_obj = [
+          {
+            competencyName: tempUpdateContent.competencies_v1.name,
+            competencyId: tempUpdateContent.competencies_v1.id.toString(),
+          },
+        ]
         tempUpdateContent.competencies_v1 = competencies_obj
       }
 
       // this.uploadVideoUrl = tempUpdateContent.artifactUrl ? tempUpdateContent.artifactUrl : ''
-      console.log("tempUpdateContent", tempUpdateContent, this.uploadVideoUrl)
+      console.log('tempUpdateContent', tempUpdateContent, this.uploadVideoUrl)
       requestBody = {
         request: {
           content: tempUpdateContent,
-        }
+        },
       }
       // tslint:disable-next-line:no-console
 
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
 
       if (requestBody.request.content.duration === 0 || requestBody.request.content.duration) {
-        requestBody.request.content.duration =
-          isNumber(requestBody.request.content.duration) ?
-            requestBody.request.content.duration.toString() : requestBody.request.content.duration
+        requestBody.request.content.duration = isNumber(requestBody.request.content.duration)
+          ? requestBody.request.content.duration.toString()
+          : requestBody.request.content.duration
       }
 
       if (requestBody.request.content.category) {
@@ -1067,9 +1097,13 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.contentService.currentContentID = this.currentCourseId
       //let nodesModified = {}
       // tslint:disable-next-line:no-console
-      console.log("requestBody", requestBody)
+      console.log('requestBody', requestBody)
 
-      if (tempUpdateContent.category === 'Resource' || tempUpdateContent.category === undefined || tempUpdateContent.category === 'Course') {
+      if (
+        tempUpdateContent.category === 'Resource' ||
+        tempUpdateContent.category === undefined ||
+        tempUpdateContent.category === 'Course'
+      ) {
         return this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.currentCourseId).pipe(
           tap(() => {
             this.storeService.changedHierarchy = {}
@@ -1079,7 +1113,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
               this.courseData = await data
               this.contentService.resetOriginalMetaWithHierarchy(data)
               if (this.isSettingsPage && !this.isError) {
-                this.action("push")
+                this.action('push')
                 this.loader.changeLoad.next(false)
               }
               // tslint:disable-next-line: align
@@ -1088,12 +1122,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
               this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
             })
             this.contentService.upDatedContent = {}
-          })
+          }),
         )
       } else {
-
       }
-
     }
 
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
@@ -1104,7 +1136,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         },
       },
     }
-
 
     return this.editorService.updateContentV4(requestBodyV2).pipe(
       tap(() => {
@@ -1119,12 +1150,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         this.contentService.upDatedContent = {}
       }),
     )
-
-
   }
   async updates() {
     // tslint:disable-next-line:no-console
-    console.log("update")
+    console.log('update')
     this.resourseSelected = ''
     const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
       request: {
@@ -1144,7 +1173,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   }
   get validationCheck(): boolean {
     const currentNodeId = this.storeService.lexIdMap.get(this.currentParentId) as number[]
-    console.log("this.courseData", this.courseData)
+    console.log('this.courseData', this.courseData)
     let returnValue = this.storeService.validationCheck(currentNodeId[0], this.courseData)
 
     // console.log('returnvalue ', returnValue)
@@ -1163,15 +1192,11 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       dialog.afterClosed().subscribe(v => {
         if (v) {
           if (typeof v === 'string') {
-            this.storeService.selectedNodeChange.next(
-              (this.storeService.lexIdMap.get(v) as number[])[0],
-            )
+            this.storeService.selectedNodeChange.next((this.storeService.lexIdMap.get(v) as number[])[0])
             this.contentService.changeActiveCont.next(v)
           } else {
             this.storeService.selectedNodeChange.next(v)
-            this.contentService.changeActiveCont.next(
-              this.storeService.uniqueIdMap.get(v) as string,
-            )
+            this.contentService.changeActiveCont.next(this.storeService.uniqueIdMap.get(v) as string)
           }
         }
         this.isError = false
@@ -1184,19 +1209,13 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     this.isSubmitPressed = true
 
     if (this.validationCheck) {
-
       this.editorService.readcontentV3(this.contentService.parentContent).subscribe((resData: any) => {
         if (resData && Object.keys(resData).length > 0) {
-          resData.creatorContacts =
-            this.jsonVerify(resData.creatorContacts) ? JSON.parse(resData.creatorContacts) : []
-          resData.trackContacts =
-            this.jsonVerify(resData.reviewer) ? JSON.parse(resData.reviewer) : []
-          resData.gatingEnabled =
-            this.jsonVerify(resData.gatingEnabled) ? JSON.parse(resData.gatingEnabled) : []
-          resData.creatorDetails =
-            this.jsonVerify(resData.creatorDetails) ? JSON.parse(resData.creatorDetails) : []
-          resData.publisherDetails = this.jsonVerify(resData.publisherDetails) ?
-            JSON.parse(resData.publisherDetails) : []
+          resData.creatorContacts = this.jsonVerify(resData.creatorContacts) ? JSON.parse(resData.creatorContacts) : []
+          resData.trackContacts = this.jsonVerify(resData.reviewer) ? JSON.parse(resData.reviewer) : []
+          resData.gatingEnabled = this.jsonVerify(resData.gatingEnabled) ? JSON.parse(resData.gatingEnabled) : []
+          resData.creatorDetails = this.jsonVerify(resData.creatorDetails) ? JSON.parse(resData.creatorDetails) : []
+          resData.publisherDetails = this.jsonVerify(resData.publisherDetails) ? JSON.parse(resData.publisherDetails) : []
           if (resData.children.length > 0) {
             resData.children.forEach((element: any) => {
               element.creatorContacts = this.jsonVerify(element.creatorContacts) ? JSON.parse(element.creatorContacts) : []
@@ -1218,7 +1237,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           data: this.contentService.getOriginalMeta(this.currentParentId),
         })
 
-        dialogRef.afterClosed().subscribe((d) => {
+        dialogRef.afterClosed().subscribe(d => {
           console.log(d)
           this.isVisibleReviewDialog = false
           // this.finalCall(contentAction)
@@ -1227,55 +1246,59 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
               contentAction = 'rejectContent'
               //this.finalCall(contentAction)
               let dat = {
-                "userId": this._configurationsService!.userProfile!.userId,
-                "courseId": this.courseData.identifier,
-                "role": "creator",
-                "comments": d.value.comments,
-                "currentStatus": "Draft",
-                "nextStatus": "Sent for Review",
-                "readComments": false,
-                "createdDate": moment(new Date()).toISOString(),
-                "updatedDate": moment(new Date()).toISOString(),
-                "username": this._configurationsService!.userProfile!.userName
-
+                userId: this._configurationsService!.userProfile!.userId,
+                courseId: this.courseData.identifier,
+                role: 'creator',
+                comments: d.value.comments,
+                currentStatus: 'Draft',
+                nextStatus: 'Sent for Review',
+                readComments: false,
+                createdDate: moment(new Date()).toISOString(),
+                updatedDate: moment(new Date()).toISOString(),
+                username: this._configurationsService!.userProfile!.userName,
               }
-              this.progressSvc.addComment(dat).subscribe(res => {
-                console.log(res)
-                if (res) {
-                  this.finalCall(contentAction)
-                }
-                //this.commentsList = res
-              }, (err: any) => {
-                console.log(err)
-                this.finalCall(contentAction)
-              })
-              console.log(contentAction)
-            } else {
-              console.log(contentAction)
-              if (contentAction === 'acceptConent') {
-                let dat = {
-                  "userId": this._configurationsService!.userProfile!.userId,
-                  "courseId": this.courseData.identifier,
-                  "role": "creator",
-                  "comments": d.value.comments,
-                  "currentStatus": "Draft",
-                  "nextStatus": "Sent for Review",
-                  "readComments": false,
-                  "createdDate": moment(new Date()).toISOString(),
-                  "updatedDate": moment(new Date()).toISOString(),
-                  "username": this._configurationsService!.userProfile!.userName
-
-                }
-                this.progressSvc.addComment(dat).subscribe(res => {
+              this.progressSvc.addComment(dat).subscribe(
+                res => {
                   console.log(res)
                   if (res) {
                     this.finalCall(contentAction)
                   }
                   //this.commentsList = res
-                }, (err: any) => {
+                },
+                (err: any) => {
                   console.log(err)
                   this.finalCall(contentAction)
-                })
+                },
+              )
+              console.log(contentAction)
+            } else {
+              console.log(contentAction)
+              if (contentAction === 'acceptConent') {
+                let dat = {
+                  userId: this._configurationsService!.userProfile!.userId,
+                  courseId: this.courseData.identifier,
+                  role: 'creator',
+                  comments: d.value.comments,
+                  currentStatus: 'Draft',
+                  nextStatus: 'Sent for Review',
+                  readComments: false,
+                  createdDate: moment(new Date()).toISOString(),
+                  updatedDate: moment(new Date()).toISOString(),
+                  username: this._configurationsService!.userProfile!.userName,
+                }
+                this.progressSvc.addComment(dat).subscribe(
+                  res => {
+                    console.log(res)
+                    if (res) {
+                      this.finalCall(contentAction)
+                    }
+                    //this.commentsList = res
+                  },
+                  (err: any) => {
+                    console.log(err)
+                    this.finalCall(contentAction)
+                  },
+                )
               }
               //this.finalCall(contentAction)
             }
@@ -1284,14 +1307,11 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       }
       if (contentAction === 'publishResources') {
         // tslint:disable-next-line:no-console
-        console.log("here", this.getAction())
+        console.log('here', this.getAction())
 
         this.finalCall(contentAction)
       }
     }
-
-
-
   }
   async finalCall(contentActionTaken: any) {
     console.log(contentActionTaken, 'tok')
@@ -1302,7 +1322,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
     if (contentActionTaken === 'acceptConent' || contentActionTaken === 'publishResources') {
       if (originalData && originalData.children && originalData.children.length > 0) {
-
         for (const element of originalData.children) {
           if (element.contentType === 'CourseUnit' || element.contentType === 'Collection') {
             if (element.children.length > 0) {
@@ -1326,7 +1345,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
               versionKey: element.versionKey,
             }
             moduleListToReview.push(tempParentData)
-
           } else {
             const tempData = {
               name: element.name,
@@ -1346,13 +1364,11 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           //this.contentPublish(originalData, resourceListToReview)
           // this.contentPublish(resourceListToReview)
         } else if (resourceListToReview.length > 0) {
-
           this.loader.changeLoad.next(true)
           for await (const element of resourceListToReview) {
-
             if ((element.status === 'Live' || element.status === 'Review') && updatedMeta.status === 'Draft') {
               flag += 1
-            } else if ((element.status === 'Live') && updatedMeta.status === 'Review') {
+            } else if (element.status === 'Live' && updatedMeta.status === 'Review') {
               flag += 1
             } else {
               const requestPayload = {
@@ -1364,17 +1380,19 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                 },
               }
 
-              const reviewRes =
-                await this.editorService.sendToReview(element.identifier, updatedMeta.status).toPromise().catch(async _error => {
-                  console.log("_error.error.params", _error.error, element)
+              const reviewRes = await this.editorService
+                .sendToReview(element.identifier, updatedMeta.status)
+                .toPromise()
+                .catch(async _error => {
+                  console.log('_error.error.params', _error.error, element)
                   if (_error.error.params.status === 'failed') {
-                    let error = [{
-                      "id": element.identifier,
-                      "name": element.name,
-                      "message": [
-                        "File is not uploaded correctly"
-                      ]
-                    }]
+                    let error = [
+                      {
+                        id: element.identifier,
+                        name: element.name,
+                        message: ['File is not uploaded correctly'],
+                      },
+                    ]
                     const dialog = this.dialog.open(ErrorParserComponent, {
                       width: '80vw',
                       height: '90vh',
@@ -1382,13 +1400,15 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                         processErrorData: error,
                       },
                     })
-                    console.log("dialog", dialog, error)
+                    console.log('dialog', dialog, error)
                   }
                 })
 
               if (reviewRes && reviewRes.params && reviewRes.params.status === 'successful') {
-                const updateContentRes =
-                  await this.editorService.updateContentWithFewFields(requestPayload, element.identifier).toPromise().catch(_error => { })
+                const updateContentRes = await this.editorService
+                  .updateContentWithFewFields(requestPayload, element.identifier)
+                  .toPromise()
+                  .catch(_error => {})
                 if (updateContentRes && updateContentRes.params && updateContentRes.params.status === 'successful') {
                   flag += 1
                 } else {
@@ -1430,12 +1450,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       }
     } else {
       // tslint:disable-next-line:no-console
-      console.log("yes here")
+      console.log('yes here')
       // this.changeStatusToDraft('Content Rejected')
     }
   }
   finalSaveAndRedirect(updatedMeta: any) {
-    const saveCall = (of({} as any)).pipe(
+    const saveCall = of({} as any).pipe(
       mergeMap(() =>
         this.editorService
           // .forwardBackward(
@@ -1458,8 +1478,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
               //   }),
               // ),
               return of({} as any)
-            }
-            ),
+            }),
           ),
       ),
     )
@@ -1474,8 +1493,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             },
           },
         }
-        const updateConentRes =
-          await this.editorService.updateContentWithFewFields(requestPayload, updatedMeta.identifier).toPromise().catch(_error => { })
+        const updateConentRes = await this.editorService
+          .updateContentWithFewFields(requestPayload, updatedMeta.identifier)
+          .toPromise()
+          .catch(_error => {})
         if (updateConentRes && updateConentRes.params && updateConentRes.params.status === 'successful') {
           this.loader.changeLoad.next(false)
           this.snackBar.openFromComponent(NotificationComponent, {
@@ -1493,7 +1514,14 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             this.dialog.open(SuccessDialogComponent, {
               width: '450px',
               height: '300x',
-              data: { 'message': 'Course Sent For Review', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+              data: {
+                message: 'Course Sent For Review',
+                icon: 'check_circle',
+                color: 'rgb(44, 185, 58)',
+                backgroundColor: '#FFFFFF',
+                padding: '6px 11px 10px 6px !important',
+                id: this.contentService.parentContent,
+              },
             })
             // this.router.navigate(['author', 'cbp'])
           }
@@ -1510,9 +1538,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       (error: any) => {
         if (error.status === 409) {
           const errorMap = new Map<string, NSContent.IContentMeta>()
-          Object.keys(this.contentService.originalContent).forEach(v =>
-            errorMap.set(v, this.contentService.originalContent[v]),
-          )
+          Object.keys(this.contentService.originalContent).forEach(v => errorMap.set(v, this.contentService.originalContent[v]))
           this.isError = true
           const dialog = this.dialog.open(ErrorParserComponent, {
             width: '80vw',
@@ -1525,15 +1551,11 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           dialog.afterClosed().subscribe(v => {
             if (v) {
               if (typeof v === 'string') {
-                this.storeService.selectedNodeChange.next(
-                  (this.storeService.lexIdMap.get(v) as number[])[0],
-                )
+                this.storeService.selectedNodeChange.next((this.storeService.lexIdMap.get(v) as number[])[0])
                 this.contentService.changeActiveCont.next(v)
               } else {
                 this.storeService.selectedNodeChange.next(v)
-                this.contentService.changeActiveCont.next(
-                  this.storeService.uniqueIdMap.get(v) as string,
-                )
+                this.contentService.changeActiveCont.next(this.storeService.uniqueIdMap.get(v) as string)
               }
             }
             this.isError = false
@@ -1554,8 +1576,8 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     const emailReqPayload = {
       contentState: actionType,
       contentLink: `${environment.cbpPortal}author/editor/${originalData.identifier}/collection`,
-      contentName: (this._configurationsService.userProfile) ? this._configurationsService.userProfile.userName : '',
-      sender: (this._configurationsService.userProfile) ? this._configurationsService.userProfile.email : '',
+      contentName: this._configurationsService.userProfile ? this._configurationsService.userProfile.userName : '',
+      sender: this._configurationsService.userProfile ? this._configurationsService.userProfile.email : '',
       recipientEmails: <any>[],
     }
     switch (actionType) {
@@ -1608,7 +1630,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         break
     }
     if (emailReqPayload.recipientEmails && emailReqPayload.recipientEmails.length > 0) {
-      await this.editorService.sendEmailNotificationAPI(emailReqPayload).toPromise().catch(_error => { })
+      await this.editorService
+        .sendEmailNotificationAPI(emailReqPayload)
+        .toPromise()
+        .catch(_error => {})
     }
   }
   getMessage(type: 'success' | 'failure') {
@@ -1697,10 +1722,15 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       for await (const element of resourceListToReview) {
         this.loader.changeLoad.next(true)
         updateContentReq.request.content.versionKey = element.versionKey
-        const updateContentRes =
-          await this.editorService.updateContentForReviwer(updateContentReq, element.identifier).toPromise().catch(_error => { })
+        const updateContentRes = await this.editorService
+          .updateContentForReviwer(updateContentReq, element.identifier)
+          .toPromise()
+          .catch(_error => {})
         if (updateContentRes && updateContentRes.params && updateContentRes.params.status === 'successful') {
-          const rejectRes: any = await this.editorService.rejectContentApi(requestBody, element.identifier).toPromise().catch(_error => { })
+          const rejectRes: any = await this.editorService
+            .rejectContentApi(requestBody, element.identifier)
+            .toPromise()
+            .catch(_error => {})
           if (rejectRes && rejectRes.params && rejectRes.params.status === 'successful') {
             flag += 1
           } else {
@@ -1720,13 +1750,20 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             },
           },
         }
-        const updateHierarchyRes = await this.editorService.updateHierarchyForReviwer(tempRequset).toPromise().catch(_error => { })
+        const updateHierarchyRes = await this.editorService
+          .updateHierarchyForReviwer(tempRequset)
+          .toPromise()
+          .catch(_error => {})
         if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
-          const parentMetaRes =
-            await this.editorService.updateContentForReviwer(updateContentReq, originalData.identifier).toPromise().catch(_error => { })
+          const parentMetaRes = await this.editorService
+            .updateContentForReviwer(updateContentReq, originalData.identifier)
+            .toPromise()
+            .catch(_error => {})
           if (parentMetaRes && parentMetaRes.params && parentMetaRes.params.status === 'successful') {
-            const rejectParentRes: any =
-              await this.editorService.rejectContentApi(requestBody, originalData.identifier).toPromise().catch(_error => { })
+            const rejectParentRes: any = await this.editorService
+              .rejectContentApi(requestBody, originalData.identifier)
+              .toPromise()
+              .catch(_error => {})
             if (rejectParentRes && rejectParentRes.params && rejectParentRes.params.status === 'successful') {
               this.loader.changeLoad.next(false)
               this.snackBar.openFromComponent(NotificationComponent, {
@@ -1743,7 +1780,14 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
               this.dialog.open(SuccessDialogComponent, {
                 width: '450px',
                 height: '300x',
-                data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important', 'id': this.contentService.parentContent },
+                data: {
+                  message: 'Course sent back to Creator’s Draft',
+                  icon: 'cached',
+                  color: 'white',
+                  backgroundColor: '#407BFF',
+                  padding: '5px 9px 8px 6px !important',
+                  id: this.contentService.parentContent,
+                },
               })
               if (!this.isMoveCourseToDraft) {
                 this.router.navigate(['author', 'cbp'])
@@ -1801,38 +1845,47 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           },
         },
       }
-      const updateRes: any =
-        await this.editorService.updateContentForReviwer(updateRequestBody, originalData.identifier).toPromise().catch(_error => { })
+      const updateRes: any = await this.editorService
+        .updateContentForReviwer(updateRequestBody, originalData.identifier)
+        .toPromise()
+        .catch(_error => {})
       if (updateRes && updateRes.params && updateRes.params.status === 'successful') {
-        this.editorService.rejectContentApi(requestBody, originalData.identifier).subscribe((parentData: any) => {
-          if (parentData && parentData.params && parentData.params.status === 'successful') {
-            this.loader.changeLoad.next(false)
-            this.snackBar.openFromComponent(NotificationComponent, {
-              data: {
-                type: Notify.SAVE_SUCCESS,
-              },
-              duration: NOTIFICATION_TIME * 1000,
-            })
-            this.dialog.open(SuccessDialogComponent, {
-              width: '450px',
-              height: '300x',
-              data: { 'message': 'Course sent back to Creator’s Draft', 'icon': 'cached', 'color': 'white', 'backgroundColor': '#407BFF', 'padding': '5px 9px 8px 6px !important', 'id': this.contentService.parentContent },
-            })
-            if (!this.isMoveCourseToDraft) {
-              this.router.navigate(['author', 'cbp'])
+        this.editorService.rejectContentApi(requestBody, originalData.identifier).subscribe(
+          (parentData: any) => {
+            if (parentData && parentData.params && parentData.params.status === 'successful') {
+              this.loader.changeLoad.next(false)
+              this.snackBar.openFromComponent(NotificationComponent, {
+                data: {
+                  type: Notify.SAVE_SUCCESS,
+                },
+                duration: NOTIFICATION_TIME * 1000,
+              })
+              this.dialog.open(SuccessDialogComponent, {
+                width: '450px',
+                height: '300x',
+                data: {
+                  message: 'Course sent back to Creator’s Draft',
+                  icon: 'cached',
+                  color: 'white',
+                  backgroundColor: '#407BFF',
+                  padding: '5px 9px 8px 6px !important',
+                  id: this.contentService.parentContent,
+                },
+              })
+              if (!this.isMoveCourseToDraft) {
+                this.router.navigate(['author', 'cbp'])
+              }
+              this.isMoveCourseToDraft = false
+            } else {
+              this.loader.changeLoad.next(false)
+              this.snackBar.openFromComponent(NotificationComponent, {
+                data: {
+                  type: Notify.SAVE_FAIL,
+                },
+                duration: NOTIFICATION_TIME * 1000,
+              })
             }
-            this.isMoveCourseToDraft = false
-          } else {
-
-            this.loader.changeLoad.next(false)
-            this.snackBar.openFromComponent(NotificationComponent, {
-              data: {
-                type: Notify.SAVE_FAIL,
-              },
-              duration: NOTIFICATION_TIME * 1000,
-            })
-          }
-        },
+          },
           // tslint:disable-next-line: align
           _error => {
             this.loader.changeLoad.next(false)
@@ -1842,7 +1895,8 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
               },
               duration: NOTIFICATION_TIME * 1000,
             })
-          })
+          },
+        )
       } else {
         this.loader.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
@@ -1869,10 +1923,13 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         if (element.status === 'Live' && element.parentStatus === 'Review') {
           flag += 1
         } else if (element.reviewerStatus === 'Reviewed' && element.status === 'Review') {
-          const publishRes = await this.editorService.publishContent(element.identifier).toPromise().catch(_error => {
-            this.dialog.closeAll()
-            this.snackBar.open(_error.statusText, undefined, { duration: 1000 })
-          })
+          const publishRes = await this.editorService
+            .publishContent(element.identifier)
+            .toPromise()
+            .catch(_error => {
+              this.dialog.closeAll()
+              this.snackBar.open(_error.statusText, undefined, { duration: 1000 })
+            })
           if (publishRes && publishRes.params && publishRes.params.status === 'successful') {
             flag += 1
           } else {
@@ -1921,10 +1978,13 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         })
         //}
         this.loader.changeLoad.next(false)
-
       } else {
         this.loader.changeLoad.next(false)
-        this.snackBar.open('The status of the resources present in the course is not correct, please retire the course and start over again', undefined, { duration: 3000 })
+        this.snackBar.open(
+          'The status of the resources present in the course is not correct, please retire the course and start over again',
+          undefined,
+          { duration: 3000 },
+        )
         // this.snackBar.openFromComponent(NotificationComponent, {
         //   data: {
         //     type: Notify.SAVE_FAIL,
@@ -1951,8 +2011,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         if (element.status === 'Live' && element.parentStatus === 'Review') {
           flag += 1
         } else if (element.reviewerStatus === 'InReview' && element.status === 'Review') {
-          const updateRes =
-            await this.editorService.updateContentForReviwer(requestPayload, element.identifier).toPromise().catch(_error => { })
+          const updateRes = await this.editorService
+            .updateContentForReviwer(requestPayload, element.identifier)
+            .toPromise()
+            .catch(_error => {})
           if (updateRes && updateRes.params && updateRes.params.status === 'successful') {
             flag += 1
           } else {
@@ -1972,8 +2034,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         // }
         // const updateHierarchyRes = await this.editorService.updateHierarchyForReviwer(tempRequset).toPromise().catch(_error => { })
         // if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
-        const parentMetaRes =
-          await this.editorService.updateContentForReviwer(requestPayload, metaData.identifier).toPromise().catch(_error => { })
+        const parentMetaRes = await this.editorService
+          .updateContentForReviwer(requestPayload, metaData.identifier)
+          .toPromise()
+          .catch(_error => {})
         if (parentMetaRes && parentMetaRes.params && parentMetaRes.params.status === 'successful') {
           this.loader.changeLoad.next(false)
           this.snackBar.openFromComponent(NotificationComponent, {
@@ -1986,7 +2050,14 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           this.dialog.open(SuccessDialogComponent, {
             width: '550px',
             height: '300x',
-            data: { 'message': 'The course has been sent to the Aastrika publisher. Please contact the Aastrika team for course publication.', 'icon': 'check_circle', 'color': 'rgb(44, 185, 58)', 'backgroundColor': '#FFFFFF', 'padding': '6px 11px 10px 6px !important', 'id': this.contentService.parentContent },
+            data: {
+              message: 'The course has been sent to the Aastrika publisher. Please contact the Aastrika team for course publication.',
+              icon: 'check_circle',
+              color: 'rgb(44, 185, 58)',
+              backgroundColor: '#FFFFFF',
+              padding: '6px 11px 10px 6px !important',
+              id: this.contentService.parentContent,
+            },
           })
           // this.router.navigate(['author', 'cbp'])
           // } else {
@@ -2045,86 +2116,89 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     }
   }
   ngAfterViewInit() {
-    this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
-      this.courseData = data
-      this.isSaveModuleFormEnable = true
-      if (this.courseData && this.courseData.children && this.courseData.children.length >= 2) {
-        this.showSettingsPage = true
-      }
+    this.editorService.readcontentV3(this.contentService.parentContent).subscribe(
+      (data: any) => {
+        this.courseData = data
+        this.isSaveModuleFormEnable = true
+        if (this.courseData && this.courseData.children && this.courseData.children.length >= 2) {
+          this.showSettingsPage = true
+        }
 
-      this.moduleName = data.name
-      this.topicDescription = data.description
-      this.thumbnail = data.thumbnail
+        this.moduleName = data.name
+        this.topicDescription = data.description
+        this.thumbnail = data.thumbnail
 
-      // if (data.duration) {
-      //   const minutes = data.duration > 59 ? Math.floor(data.duration / 60) : 0
-      //   const second = data.duration % 60
-      //   const hour = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
-      //   const minute = minutes ? minutes % 60 : 0
-      //   const seconds = second || 0
-      //   this.mainCourseDuration = hour + ':' + minute + ':' + seconds
-      // }
-      if (data.children && data.children.length > 0) {
-        this.loader.changeLoad.next(true)
-        // Wrap in try/finally so an exception in the duration math (reduce /
-        // setCourseDuration) can never leave the global loader stuck on `true`,
-        // which previously showed an endless full-screen spinner (e.g. when
-        // navigating back from the course settings page).
-        try {
-          data.children.forEach((element: any) => {
-            if (element.contentType !== 'CourseUnit' && element.duration) {
-              this.resourceDurat.push(parseInt(element.duration))
-            }
-            if (element.children && element.children.length > 0) {
-              element.children.forEach((ele: any) => {
-                if (ele.duration) {
-                  this.resourceDurat.push(parseInt(ele.duration))
-                }
-              })
-            }
-          })
-          // tslint:disable-next-line:no-console
-          console.log(this.resourceDurat)
-          if (this.resourceDurat.length > 0) {
-            this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
+        // if (data.duration) {
+        //   const minutes = data.duration > 59 ? Math.floor(data.duration / 60) : 0
+        //   const second = data.duration % 60
+        //   const hour = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
+        //   const minute = minutes ? minutes % 60 : 0
+        //   const seconds = second || 0
+        //   this.mainCourseDuration = hour + ':' + minute + ':' + seconds
+        // }
+        if (data.children && data.children.length > 0) {
+          this.loader.changeLoad.next(true)
+          // Wrap in try/finally so an exception in the duration math (reduce /
+          // setCourseDuration) can never leave the global loader stuck on `true`,
+          // which previously showed an endless full-screen spinner (e.g. when
+          // navigating back from the course settings page).
+          try {
+            data.children.forEach((element: any) => {
+              if (element.contentType !== 'CourseUnit' && element.duration) {
+                this.resourceDurat.push(parseInt(element.duration))
+              }
+              if (element.children && element.children.length > 0) {
+                element.children.forEach((ele: any) => {
+                  if (ele.duration) {
+                    this.resourceDurat.push(parseInt(ele.duration))
+                  }
+                })
+              }
+            })
             // tslint:disable-next-line:no-console
-            console.log(this.sumDuration.toString(), this.courseData.duration)
-            if (this.sumDuration.toString() !== this.courseData.duration) {
-              let requestBody: any
-              requestBody = {
-                request: {
-                  content: {
-                    duration: isNumber(this.sumDuration) ?
-                      this.sumDuration.toString() : this.sumDuration,
-                    versionKey: data.versionKey
+            console.log(this.resourceDurat)
+            if (this.resourceDurat.length > 0) {
+              this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
+              // tslint:disable-next-line:no-console
+              console.log(this.sumDuration.toString(), this.courseData.duration)
+              if (this.sumDuration.toString() !== this.courseData.duration) {
+                let requestBody: any
+                requestBody = {
+                  request: {
+                    content: {
+                      duration: isNumber(this.sumDuration) ? this.sumDuration.toString() : this.sumDuration,
+                      versionKey: data.versionKey,
+                    },
                   },
                 }
+                this.editorService
+                  .updateNewContentV3(_.omit(requestBody, ['resourceType']), this.courseData.identifier)
+                  .subscribe((response: any) => {
+                    // tslint:disable-next-line:no-console
+                    console.log(response)
+                  })
               }
-              this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.courseData.identifier).subscribe((response: any) => {
-                // tslint:disable-next-line:no-console
-                console.log(response)
-              })
+              this.setCourseDuration(this.sumDuration)
             }
-            this.setCourseDuration(this.sumDuration)
+          } finally {
+            this.loader.changeLoad.next(false)
           }
-        } finally {
-          this.loader.changeLoad.next(false)
         }
-      }
-      //this.isResourceTypeEnabled = true
-      // tslint:disable-next-line:no-console
-      console.log(this.isSaveModuleFormEnable)
-      //this.contentService.resetOriginalMetaWithHierarchy(data)
-      this.cdr.detectChanges()
-    }, (error: any) => {
-      // Never leave the global loader spinning if the content read fails.
-      // tslint:disable-next-line:no-console
-      console.log('module-creation ngAfterViewInit read failed', error)
-      this.loader.changeLoad.next(false)
-    })
+        //this.isResourceTypeEnabled = true
+        // tslint:disable-next-line:no-console
+        console.log(this.isSaveModuleFormEnable)
+        //this.contentService.resetOriginalMetaWithHierarchy(data)
+        this.cdr.detectChanges()
+      },
+      (error: any) => {
+        // Never leave the global loader spinning if the content read fails.
+        // tslint:disable-next-line:no-console
+        console.log('module-creation ngAfterViewInit read failed', error)
+        this.loader.changeLoad.next(false)
+      },
+    )
   }
   setSettingsPage() {
-
     // this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
     //   if (data) {
     //     this.courseData = await data
@@ -2140,12 +2214,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       sessionStorage.setItem('isSettingsPage', '1')
       this.isSettingsPage = true
       this.editItem = ''
-      console.log("this.settingsPage", this.isSettingsPage)
+      console.log('this.settingsPage', this.isSettingsPage)
       if (this.isSelfAssessment) {
         const steps = [
           { label: '1. Self Assessment Details', key: 'AssessmentDetails', activeStep: false, completed: true },
           { label: '2. Self Assessment Builder', key: 'AssessmentBuilder', activeStep: true, completed: false },
-          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false }
+          { label: '3. Self Assessment Settings', key: 'AssessmentSettings', activeStep: false, completed: false },
         ]
         console.log(steps)
         this.sendSteps.emit('AssessmentSettings')
@@ -2154,23 +2228,22 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           { label: '1. Introduction', key: 'Introduction', activeStep: false, completed: true },
           { label: '2. Course Details', key: 'CourseDetails', activeStep: true, completed: false },
           { label: '3. Course Builder', key: 'CourseBuilder', activeStep: false, completed: false },
-          { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false }
+          { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false },
         ]
         console.log(steps)
         this.sendSteps.emit('CourseSettings')
       }
     }, 1000)
     // tslint:disable-next-line:no-console
-
   }
   moduleCreate(name: string, input1: string, input2: string) {
     // tslint:disable-next-line:no-console
     console.log(input1, input2)
     let obj: any = {}
     if (this.moduleButtonName == 'Create') {
-      obj["type"] = 'collection'
-      obj["name"] = input1
-      obj["description"] = input2
+      obj['type'] = 'collection'
+      obj['name'] = input1
+      obj['description'] = input2
       this.addResourceModule = obj
       this.moduleName = name
       this.isSaveModuleFormEnable = true
@@ -2210,13 +2283,11 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.mainCourseDuration = this.courseHours + 'h ' + this.courseMinutes + 'm ' + this.courseSeconds + 's '
     } else {
       this.mainCourseDuration = '0h ' + '0m ' + '0s '
-
     }
-
   }
   async resourceLinkSave() {
     // tslint:disable-next-line:no-console
-    console.log(" this.resourceLinkForm", this.resourceLinkForm)
+    console.log(' this.resourceLinkForm', this.resourceLinkForm)
     if (this.resourceLinkForm.status == 'INVALID' && !this.isAssessmentOrQuizEnabled) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -2224,8 +2295,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         },
         duration: NOTIFICATION_TIME * 1000,
       })
-    } else if (this.resourceLinkForm.controls.instructions.status == 'INVALID' ||
-      this.resourceLinkForm.controls.appIcon.status == 'INVALID') {
+    } else if (
+      this.resourceLinkForm.controls.instructions.status == 'INVALID' ||
+      this.resourceLinkForm.controls.appIcon.status == 'INVALID'
+    ) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.REQUIRED_FIELD,
@@ -2244,11 +2317,11 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       } else {
         //this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
         let iframeSupported
-        if (this.resourceLinkForm.value.isIframeSupported)
-          iframeSupported = 'Yes'
-        else
-          iframeSupported = 'No'
-        var res = this.resourceLinkForm.value.artifactUrl.match(/(http(s)?:\/\/.)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
+        if (this.resourceLinkForm.value.isIframeSupported) iframeSupported = 'Yes'
+        else iframeSupported = 'No'
+        var res = this.resourceLinkForm.value.artifactUrl.match(
+          /(http(s)?:\/\/.)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g,
+        )
         this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
         if (res !== null) {
           if (this.resourceLinkForm.value.name.trim() === '') {
@@ -2269,8 +2342,8 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
               duration: this.resourceLinkForm.value.duration,
               versionKey: this.updatedVersionKey,
             }
-            // Add isCorrectAnswerPopUp for assessments
-            if (this.content && this.content.isAssessment && !this.isSelfAssessment) {
+            // Add isCorrectAnswerPopUp for assessments only
+            if (this.isAssessmentResource) {
               rBody['isCorrectAnswerPopUp'] = this.content.isCorrectAnswerPopUp !== undefined ? this.content.isCorrectAnswerPopUp : true
             }
             await this.contentService.setUpdatedMeta(rBody, this.currentContent)
@@ -2302,8 +2375,8 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
               //gatingEnabled: this.resourceLinkForm.value.isgatingEnabled,
               versionKey: this.versionKey.versionKey,
             }
-            // Add isCorrectAnswerPopUp for assessments
-            if (this.content && this.content.isAssessment && !this.isSelfAssessment) {
+            // Add isCorrectAnswerPopUp for assessments only
+            if (this.isAssessmentResource) {
               rBody['isCorrectAnswerPopUp'] = this.content.isCorrectAnswerPopUp !== undefined ? this.content.isCorrectAnswerPopUp : true
             }
             await this.contentService.setUpdatedMeta(rBody, this.currentContent)
@@ -2313,15 +2386,14 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         }
       }
     }
-
   }
   async deleteUploadedFile() {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
-      data: 'delete'
+      data: 'delete',
     })
     dialogRef.afterClosed().subscribe(async confirm => {
-      console.log("confirm", confirm)
+      console.log('confirm', confirm)
       if (confirm) {
         this.contentService.removeListOfFilesAndUpdatedIPR(this.currentContent)
         this.uploadFileName = ''
@@ -2341,75 +2413,72 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         meta['artifactUrl'] = null
         meta['downloadUrl'] = null
         if (this.content.mimeType === 'video/mp4' || this.content.mimeType === 'audio/mpeg') {
-          meta['duration'] = "0"
+          meta['duration'] = '0'
           meta['videoQuestions'] = []
         }
         let requestBody = {
           request: {
-            content: meta
-          }
+            content: meta,
+          },
         }
         this.contentService.setUpdatedMeta(meta, this.currentContent)
         this.loader.changeLoad.next(true)
-        await this.editorService.updateNewContentV3(requestBody, this.currentContent).subscribe(
-          async (info: any) => {
-            // tslint:disable-next-line:no-console
-            console.log('info', info, this.contentService.parentContent)
-            if (info) {
-              await this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
-                this.courseData = data
-                // tslint:disable-next-line:no-console
-                console.log("this.courseData", this.courseData)
-                if (info) {
-                  const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
+        await this.editorService.updateNewContentV3(requestBody, this.currentContent).subscribe(async (info: any) => {
+          // tslint:disable-next-line:no-console
+          console.log('info', info, this.contentService.parentContent)
+          if (info) {
+            await this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
+              this.courseData = data
+              // tslint:disable-next-line:no-console
+              console.log('this.courseData', this.courseData)
+              if (info) {
+                const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
 
-                  const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
-                    request: {
-                      data: {
-                        nodesModified: this.contentService.getNodeModifyData(),
-                        hierarchy: hierarchyData,
-                      },
+                const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
+                  request: {
+                    data: {
+                      nodesModified: this.contentService.getNodeModifyData(),
+                      hierarchy: hierarchyData,
                     },
-                  }
-                  this.loader.changeLoad.next(true)
-                  await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-                    this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
-                      this.courseData = data
-
-                      if (this.courseData && this.courseData.children.length >= 2) {
-                        this.showSettingsPage = true
-                      } else {
-                        this.showSettingsPage = false
-                      }
-                      this.getChildrenCount()
-
-                      this.loader.changeLoad.next(false)
-                      this.snackBar.openFromComponent(NotificationComponent, {
-                        data: {
-                          type: Notify.UPLOAD_FILE_REMOVED,
-                        },
-                        duration: NOTIFICATION_TIME * 1000,
-                      })
-                      this.contentService.resetOriginalMetaWithHierarchy(data)
-                      if (this.content.mimeType === 'video/mp4' || this.content.mimeType === 'audio/mpeg') {
-                        this.updateCouseDuration(data)
-                        this.setDuration(0)
-                      }
-                    })
-                  })
+                  },
                 }
-              })
-            }
-          })
+                this.loader.changeLoad.next(true)
+                await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
+                  this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+                    this.courseData = data
 
+                    if (this.courseData && this.courseData.children.length >= 2) {
+                      this.showSettingsPage = true
+                    } else {
+                      this.showSettingsPage = false
+                    }
+                    this.getChildrenCount()
+
+                    this.loader.changeLoad.next(false)
+                    this.snackBar.openFromComponent(NotificationComponent, {
+                      data: {
+                        type: Notify.UPLOAD_FILE_REMOVED,
+                      },
+                      duration: NOTIFICATION_TIME * 1000,
+                    })
+                    this.contentService.resetOriginalMetaWithHierarchy(data)
+                    if (this.content.mimeType === 'video/mp4' || this.content.mimeType === 'audio/mpeg') {
+                      this.updateCouseDuration(data)
+                      this.setDuration(0)
+                    }
+                  })
+                })
+              }
+            })
+          }
+        })
       }
     })
-
   }
 
   updateCouseDuration(data: any) {
     let resourceDurat: any = []
-    let sumDuration: any = "0"
+    let sumDuration: any = '0'
     if (data.children.length > 0) {
       data.children.forEach((element: any) => {
         if (element.duration) {
@@ -2428,7 +2497,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       if (resourceDurat.length > 0) {
         sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
       }
-
     }
     let requestBody: any
     // tslint:disable-next-line:no-console
@@ -2437,18 +2505,18 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       requestBody = {
         request: {
           content: {
-            duration: isNumber(sumDuration) ?
-              sumDuration.toString() : sumDuration,
-            versionKey: data.versionKey
+            duration: isNumber(sumDuration) ? sumDuration.toString() : sumDuration,
+            versionKey: data.versionKey,
           },
-        }
+        },
       }
-      this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.contentService.parentContent).subscribe((response: any) => {
-        // tslint:disable-next-line:no-console
-        console.log('duration', response.duration)
-        this.setCourseDuration(isNumber(sumDuration) ?
-          sumDuration.toString() : sumDuration)
-      })
+      this.editorService
+        .updateNewContentV3(_.omit(requestBody, ['resourceType']), this.contentService.parentContent)
+        .subscribe((response: any) => {
+          // tslint:disable-next-line:no-console
+          console.log('duration', response.duration)
+          this.setCourseDuration(isNumber(sumDuration) ? sumDuration.toString() : sumDuration)
+        })
     }
   }
   createResourseContent(name: string, type: string) {
@@ -2520,9 +2588,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.isPdfOrAudioOrVedioEnabled = false
       let obj: any = {}
       sessionStorage.clear()
-      obj["type"] = 'assessment'
-      obj["name"] = 'assessment'
-      obj["description"] = 'assessment'
+      obj['type'] = 'assessment'
+      obj['name'] = 'assessment'
+      obj['description'] = 'assessment'
       sessionStorage.setItem('assessment', 'true')
       //this.initService.updateAssessment(obj)
       this.setContentType(type)
@@ -2535,9 +2603,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.isPdfOrAudioOrVedioEnabled = false
       sessionStorage.clear()
       let obj: any = {}
-      obj["type"] = 'assessment'
-      obj["name"] = 'quiz'
-      obj["description"] = 'quiz'
+      obj['type'] = 'assessment'
+      obj['name'] = 'quiz'
+      obj['description'] = 'quiz'
       sessionStorage.setItem('quiz', 'true')
       //this.initService.updateAssessment(obj)
       this.setContentType(type)
@@ -2565,12 +2633,11 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     this.showChildrenMap[module.identifier] = !this.showChildrenMap[module.identifier]
   }
 
-
   async addResModule(modID: string, courseID: string) {
     this.clearForm()
-    this.addResourceModule["module"] = true
-    this.addResourceModule["modID"] = modID
-    this.addResourceModule["courseID"] = courseID
+    this.addResourceModule['module'] = true
+    this.addResourceModule['modID'] = modID
+    this.addResourceModule['courseID'] = courseID
     //this.addIndependentResource()
     this.showAddModuleForm = true
     this.isResourceTypeEnabled = true
@@ -2584,7 +2651,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   async addIndependentResource() {
     const dialogRef = this.dialog.open(UserIndexConfirmComponent, {
       width: '420px',
-      data: { 'message': 'You are adding resource outside the module. Would you like to go ahead?', 'id': this.contentService.parentContent },
+      data: { message: 'You are adding resource outside the module. Would you like to go ahead?', id: this.contentService.parentContent },
     })
     dialogRef.afterClosed().subscribe(async result => {
       console.log(result)
@@ -2593,9 +2660,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         this.loader.changeLoad.next(true)
 
         this.clearForm()
-        this.addResourceModule["module"] = false
-        this.addResourceModule["modID"] = this.courseData.identifier
-        this.addResourceModule["courseID"] = this.courseData.identifier
+        this.addResourceModule['module'] = false
+        this.addResourceModule['modID'] = this.courseData.identifier
+        this.addResourceModule['courseID'] = this.courseData.identifier
         this.showAddModuleForm = true
         this.isResourceTypeEnabled = true
 
@@ -2604,25 +2671,21 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         })
         this.editItem = ''
         this.loader.changeLoad.next(false)
-
       } else {
         dialogRef.close()
         this.showAddModuleForm = false
       }
     })
-
   }
 
   changeToDefaultImg($event: any) {
-    $event.target.src = this._configurationsService.instanceConfig
-      ? this._configurationsService.instanceConfig.logos.defaultContent
-      : ''
+    $event.target.src = this._configurationsService.instanceConfig ? this._configurationsService.instanceConfig.logos.defaultContent : ''
   }
 
   async editContent(content: any) {
     this.currentCourseId = content.identifier
-    console.log("content", content)
-    console.log("this.currentCourseId", this.currentCourseId)
+    console.log('content', content)
+    console.log('this.currentCourseId', this.currentCourseId)
     this.loader.changeLoad.next(true)
     if (content.contentType !== 'CourseUnit') {
       this.loader.changeLoad.next(true)
@@ -2633,7 +2696,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         this.loader.changeLoad.next(false)
       })
     }
-
 
     this.editItem = content.identifier
     this.currentContent = content.identifier
@@ -2677,7 +2739,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.isAssessmentOrQuizEnabled = false
       this.editResourceLinks = content.artifactUrl ? content.artifactUrl : ''
       // tslint:disable-next-line:no-console
-      console.log("link content", this.isLinkEnabled, this.editResourceLinks)
+      console.log('link content', this.isLinkEnabled, this.editResourceLinks)
       //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType == 'application/pdf') {
       this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
@@ -2706,7 +2768,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     } else if (content.mimeType === 'video/mp4') {
       this.activeTabIndex = 0
       // tslint:disable-next-line:no-console
-      console.log("this.uploadFile", content.artifactUrl)
+      console.log('this.uploadFile', content.artifactUrl)
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('/').pop() : ''
       this.uploadVideoUrl = content.artifactUrl ? content.artifactUrl : ''
       this.cdr.detectChanges() // Ensure template updates before manipulating the DOM
@@ -2739,16 +2801,18 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else {
-      if (content.mimeType == "application/json") {
-        const fileData = ((content.artifactUrl || content.downloadUrl) ?
-          this.quizResolverSvc.getJSON(this.generateUrl(content.artifactUrl || content.downloadUrl)) : of({} as any))
+      if (content.mimeType == 'application/json') {
+        const fileData =
+          content.artifactUrl || content.downloadUrl
+            ? this.quizResolverSvc.getJSON(this.generateUrl(content.artifactUrl || content.downloadUrl))
+            : of({} as any)
         fileData.subscribe(jsonResponse => {
           if (jsonResponse && Object.keys(jsonResponse).length > 1) {
             if (jsonResponse) {
               if (jsonResponse.isAssessment) {
                 this.initService.isAssessmentOrQuizAction(jsonResponse.isAssessment)
                 if (jsonResponse.isAssessment === true) {
-                  this.assessmentOrQuizName = "Assessment"
+                  this.assessmentOrQuizName = 'Assessment'
                 }
               }
             }
@@ -2774,7 +2838,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     }
   }
   editAssessmentRes(content?: any) {
-    console.log("content module", content, this.moduleName, this.isSelfAssessment)
+    console.log('content module', content, this.moduleName, this.isSelfAssessment)
     // Show the global "Please wait..." loader while the assessment/quiz builder
     // mounts and loads — otherwise there's a blank page during the transition.
     // The quiz component clears this loader once its UI is ready (and has a 3s
@@ -2783,7 +2847,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     if (this.isSelfAssessment) {
       // Defer quiz mount by one task so Angular gets a render cycle to paint the
       // overlay before the quiz component mounts.
-      setTimeout(() => { this.initService.updateAssessment(content) }, 50)
+      setTimeout(() => {
+        this.initService.updateAssessment(content)
+      }, 50)
       return
     }
     if (content.name !== this.moduleName && this.moduleName && !this.isSelfAssessment) {
@@ -2794,8 +2860,8 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
 
       const body = {
         request: {
-          content: requestBody
-        }
+          content: requestBody,
+        },
       }
       this.editorService.updateNewContentV3(body, this.content.identifier).subscribe(
         async (info: any) => {
@@ -2811,25 +2877,26 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         },
         () => {
           this.loader.changeLoad.next(false)
-        })
+        },
+      )
     } else {
       // Defer quiz mount by one task so the overlay paints first.
-      setTimeout(() => { this.initService.updateAssessment(content) }, 50)
+      setTimeout(() => {
+        this.initService.updateAssessment(content)
+      }, 50)
     }
-
-
   }
 
   async addAssessment() {
     this.loader.changeLoadState(true)
 
     this.viewMode = 'assessment'
-    this.addResourceModule["viewMode"] = 'assessment'
+    this.addResourceModule['viewMode'] = 'assessment'
     let obj: any = {}
-    obj["type"] = 'assessment'
-    obj["name"] = 'assessment'
-    obj["description"] = 'assessment'
-    console.log("obj: " + JSON.stringify(obj))
+    obj['type'] = 'assessment'
+    obj['name'] = 'assessment'
+    obj['description'] = 'assessment'
+    console.log('obj: ' + JSON.stringify(obj))
     if (this.resourceLinkForm.value.name) {
       const requestBody: any = {
         name: this.resourceLinkForm.value.name,
@@ -2838,38 +2905,27 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
 
       const body = {
         request: {
-          content: requestBody
-        }
+          content: requestBody,
+        },
       }
-      this.editorService.updateNewContentV3(body, this.currentContent).subscribe(
-        async (info: any) => {
-          // tslint:disable-next-line:no-console
-          console.log('info', info, this.content)
-          if (info) {
-            this.editItem = ''
-            this.initService.updateAssessment(obj)
-            this.loader.changeLoadState(false)
-          }
-        })
+      this.editorService.updateNewContentV3(body, this.currentContent).subscribe(async (info: any) => {
+        // tslint:disable-next-line:no-console
+        console.log('info', info, this.content)
+        if (info) {
+          this.editItem = ''
+          this.initService.updateAssessment(obj)
+          this.loader.changeLoadState(false)
+        }
+      })
     } else {
       this.initService.updateAssessment(obj)
     }
   }
 
-
   uploadAppIcon(file: File) {
     const formdata = new FormData()
     const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
-    if (
-      !(
-        IMAGE_SUPPORT_TYPES.indexOf(
-          `.${fileName
-            .toLowerCase()
-            .split('.')
-            .pop()}`,
-        ) > -1
-      )
-    ) {
+    if (!(IMAGE_SUPPORT_TYPES.indexOf(`.${fileName.toLowerCase().split('.').pop()}`) > -1)) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_FORMAT,
@@ -2929,145 +2985,145 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             },
           }
 
-          this.http
-            .post<NSApiRequest.ICreateMetaRequest>(
-              `${AUTHORING_BASE}content/v3/create`,
-              requestBody,
-            )
-            .subscribe(
-              (meta: any) => {
-                // return data.result.identifier
-                this.uploadService
-                  .upload(formdata, {
-                    contentId: meta.result.identifier,
-                    contentType: CONTENT_BASE_STATIC,
-                  })
+          this.http.post<NSApiRequest.ICreateMetaRequest>(`${AUTHORING_BASE}content/v3/create`, requestBody).subscribe((meta: any) => {
+            // return data.result.identifier
+            this.uploadService
+              .upload(formdata, {
+                contentId: meta.result.identifier,
+                contentType: CONTENT_BASE_STATIC,
+              })
 
-                  .subscribe(
-                    data => {
-                      if (data && data.name !== 'Error') {
-                        this.loader.changeLoad.next(false)
-                        //this.moduleForm.controls.appIcon.setValue(data.artifactUrl)
-                        //this.courseData.thumbnail = data.artifactUrl
-                        let meta: any = {}
-                        let requestBody: any
-                        // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
-                        //   console.log(resData)
-                        // })
+              .subscribe(data => {
+                if (data && data.name !== 'Error') {
+                  this.loader.changeLoad.next(false)
+                  //this.moduleForm.controls.appIcon.setValue(data.artifactUrl)
+                  //this.courseData.thumbnail = data.artifactUrl
+                  let meta: any = {}
+                  let requestBody: any
+                  // this.editorService.readcontentV3(this.courseData.identifier).subscribe((resData: any) => {
+                  //   console.log(resData)
+                  // })
 
-                        meta["appIcon"] = data.artifactUrl
-                        meta["thumbnail"] = data.content_url
-                        this.thumbnail = data.content_url
-                        meta["versionKey"] = this.courseData.versionKey
-                        this.contentService.currentContentData = meta
+                  meta['appIcon'] = data.artifactUrl
+                  meta['thumbnail'] = data.content_url
+                  this.thumbnail = data.content_url
+                  meta['versionKey'] = this.courseData.versionKey
+                  this.contentService.currentContentData = meta
 
-                        this.contentService.currentContentID = this.content.identifier
-                        this.contentService.setUpdatedMeta(meta, this.content.identifier || data.identifier)
-                        // tslint:disable-next-line:no-console
+                  this.contentService.currentContentID = this.content.identifier
+                  this.contentService.setUpdatedMeta(meta, this.content.identifier || data.identifier)
+                  // tslint:disable-next-line:no-console
 
-                        console.log(meta)
-                        requestBody = {
-                          request: {
-                            content: meta
-                          }
-                        }
-                        this.contentService.setUpdatedMeta(meta, this.content.identifier)
-                        //this.initService.uploadData('thumbnail')
-                        if (this.content.contentType === 'Resource' || this.content.contentType === 'Course') {
-                          this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
-                            (info: any) => {
-                              // tslint:disable-next-line:no-console
-                              console.log('info', info)
-                              if (info) {
-                                this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
-                                  this.courseData = data
-                                })
-                                //this.update()
-                              }
-                            })
-                        } else {
-                          this.update()
-                        }
+                  console.log(meta)
+                  requestBody = {
+                    request: {
+                      content: meta,
+                    },
+                  }
+                  this.contentService.setUpdatedMeta(meta, this.content.identifier)
+                  //this.initService.uploadData('thumbnail')
+                  if (this.content.contentType === 'Resource' || this.content.contentType === 'Course') {
+                    this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe((info: any) => {
+                      // tslint:disable-next-line:no-console
+                      console.log('info', info)
+                      if (info) {
+                        this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
+                          this.courseData = data
+                        })
+                        //this.update()
                       }
                     })
+                  } else {
+                    this.update()
+                  }
+                }
               })
+          })
         }
-      }
+      },
     })
   }
   findInvalidEntriesIndices(data: any): any[] {
     const seenTimestamps = new Set<number>()
-    return data.map((item: any, index: number) => {
-      const result: any = { index }
+    return data
+      .map((item: any, index: number) => {
+        const result: any = { index }
 
-      // Validate the timestamp against the ACTUAL video length (read from the browser)
-      // when available, falling back to the manually-entered Duration. This stops a quiz
-      // timestamp being accepted just because the typed Duration is larger than the clip.
-      const maxAllowedSeconds = this.videoActualDuration != null ? this.videoActualDuration : this.timeToSeconds()
-      if (item.timestampInSeconds > maxAllowedSeconds) {
-        result.invalidTime = true
-      } else if (item.timestampInSeconds === 0) {
-        result.invalidSec = true
-      } else {
-        result.invalidTime = false
-      }
-      // Check for duplicate timestamps
-      if (seenTimestamps.has(item.timestampInSeconds)) {
-        result.duplicateTimestamp = true
-      } else {
-        seenTimestamps.add(item.timestampInSeconds)
-      }
-      // Check all questions
-      const hasInvalidQuestion = item.question.some((q: { text: any; options: any[] }) => {
-        // Check if question text is empty
-        if (!q.text) {
-          result.invalidQuestion = true
-          return true
+        // Validate the timestamp against the ACTUAL video length (read from the browser)
+        // when available, falling back to the manually-entered Duration. This stops a quiz
+        // timestamp being accepted just because the typed Duration is larger than the clip.
+        const maxAllowedSeconds = this.videoActualDuration != null ? this.videoActualDuration : this.timeToSeconds()
+        if (item.timestampInSeconds > maxAllowedSeconds) {
+          result.invalidTime = true
+        } else if (item.timestampInSeconds === 0) {
+          result.invalidSec = true
+        } else {
+          result.invalidTime = false
         }
+        // Check for duplicate timestamps
+        if (seenTimestamps.has(item.timestampInSeconds)) {
+          result.duplicateTimestamp = true
+        } else {
+          seenTimestamps.add(item.timestampInSeconds)
+        }
+        // Check all questions
+        const hasInvalidQuestion = item.question.some((q: { text: any; options: any[] }) => {
+          // Check if question text is empty
+          if (!q.text) {
+            result.invalidQuestion = true
+            return true
+          }
 
-        // Check if options array is empty or contains invalid options (empty text)
-        // Check if options array contains fewer than 2 options or has empty option text
-        const hasEmptyOptionText = q.options.some((opt: { text: any }) => !opt.text)
-        if (!q.options || hasEmptyOptionText) {
-          result.invalidOption = true
-          return true
-        }
-        if (q.options.length < 2) {
-          result.invalidMinOption = true
-          return true
-        }
-        // Ensure at least one option is correct
-        const isCorrectInvalid = !q.options.some((opt: { isCorrect: any }) => opt.isCorrect)
-        if (isCorrectInvalid) {
-          result.invalidIsCorrect = true
-          return true
-        }
-        const hasMissingAnswerInfo = q.options.some((opt: { answerInfo: any }) => {
-          return !opt.answerInfo
+          // Check if options array is empty or contains invalid options (empty text)
+          // Check if options array contains fewer than 2 options or has empty option text
+          const hasEmptyOptionText = q.options.some((opt: { text: any }) => !opt.text)
+          if (!q.options || hasEmptyOptionText) {
+            result.invalidOption = true
+            return true
+          }
+          if (q.options.length < 2) {
+            result.invalidMinOption = true
+            return true
+          }
+          // Ensure at least one option is correct
+          const isCorrectInvalid = !q.options.some((opt: { isCorrect: any }) => opt.isCorrect)
+          if (isCorrectInvalid) {
+            result.invalidIsCorrect = true
+            return true
+          }
+          const hasMissingAnswerInfo = q.options.some((opt: { answerInfo: any }) => {
+            return !opt.answerInfo
+          })
+          if (hasMissingAnswerInfo) {
+            result.invalidAnswerInfo = true
+            return true
+          }
+
+          return false
         })
-        if (hasMissingAnswerInfo) {
-          result.invalidAnswerInfo = true
-          return true
+        if (
+          hasInvalidQuestion ||
+          result.invalidOption ||
+          result.invalidIsCorrect ||
+          result.duplicateTimestamp ||
+          result.invalidAnswerInfo ||
+          result.invalidTime ||
+          result.invalidSec
+        ) {
+          return result
         }
 
-        return false
+        return null
       })
-      if (hasInvalidQuestion || result.invalidOption || result.invalidIsCorrect || result.duplicateTimestamp || result.invalidAnswerInfo || result.invalidTime || result.invalidSec) {
-        return result
-      }
-
-      return null
-    }).filter((entry: any) => entry !== null)[0] // Return the first object with issues
+      .filter((entry: any) => entry !== null)[0] // Return the first object with issues
   }
-
-
 
   notifyInvalid(invalid: any) {
     if (invalid.invalidTime) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.DURATION_CANT_BE_GREATER,
-          data: invalid
+          data: invalid,
         },
         duration: NOTIFICATION_TIME * 1000,
       })
@@ -3076,7 +3132,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.DUPLICATE_TIMESTAMP,
-          data: invalid
+          data: invalid,
         },
         duration: NOTIFICATION_TIME * 1000,
       })
@@ -3085,7 +3141,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.QUESTION_DURATION_CANT_BE_0,
-          data: invalid
+          data: invalid,
         },
         duration: NOTIFICATION_TIME * 1000,
       })
@@ -3094,7 +3150,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_QUESTION,
-          data: invalid
+          data: invalid,
         },
         duration: NOTIFICATION_TIME * 1000,
       })
@@ -3103,7 +3159,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_OPTION,
-          data: invalid
+          data: invalid,
         },
         duration: NOTIFICATION_TIME * 1000,
       })
@@ -3112,7 +3168,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_ANSWER_INFO,
-          data: invalid
+          data: invalid,
         },
         duration: NOTIFICATION_TIME * 1000,
       })
@@ -3121,7 +3177,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_MIN_OPTION,
-          data: invalid
+          data: invalid,
         },
         duration: NOTIFICATION_TIME * 1000,
       })
@@ -3130,20 +3186,27 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_IS_CORRECT,
-          data: invalid
+          data: invalid,
         },
         duration: NOTIFICATION_TIME * 1000,
       })
     }
   }
 
+  // "Show Correct Answer Popup" applies ONLY to an Assessment resource — never a
+  // Quiz (isAssessment === false), a Self Assessment (isSelfAssessment), or any
+  // other resource type (pdf/audio/video/link). Gate on the assessment mimeType so
+  // a stale `isAssessment` flag leaking onto a non-assessment resource can't show it.
+  get isAssessmentResource(): boolean {
+    return this.content?.mimeType === 'application/json' && !!this.content?.isAssessment && !this.isSelfAssessment
+  }
 
   async saveDetails(name: string, topicDescription: string, thumbnail: string, isNewTab: any, isShowBtn: any, content: string) {
     let meta: any = {}
     let requestBody: any
     let invalid: any = this.findInvalidEntriesIndices(this.videoQuestions)
 
-    console.log("this.videoQuestions", invalid, this.videoQuestions)
+    console.log('this.videoQuestions', invalid, this.videoQuestions)
     if (invalid) {
       this.notifyInvalid(invalid)
     } else {
@@ -3161,37 +3224,34 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           duration: NOTIFICATION_TIME * 1000,
         })
       } else {
-        if (isNewTab)
-          iframeSupported = 'Yes'
-        else
-          iframeSupported = 'No'
-        if (isShowBtn)
-          showDownloadBtn = 'Yes'
-        else
-          showDownloadBtn = 'No'
+        if (isNewTab) iframeSupported = 'Yes'
+        else iframeSupported = 'No'
+        if (isShowBtn) showDownloadBtn = 'Yes'
+        else showDownloadBtn = 'No'
         if (this.acceptType === '.zip') {
           iframeSupported = 'Yes'
         }
-        meta["appIcon"] = thumbnail
-        meta["thumbnail"] = thumbnail
-        meta["versionKey"] = this.updatedVersionKey
-        meta["instructions"] = topicDescription
-        meta["description"] = topicDescription
-        meta["name"] = name ? name.trim() : name
-        meta["duration"] = this.timeToSeconds().toString()
+        meta['appIcon'] = thumbnail
+        meta['thumbnail'] = thumbnail
+        meta['versionKey'] = this.updatedVersionKey
+        meta['instructions'] = topicDescription
+        meta['description'] = topicDescription
+        meta['name'] = name ? name.trim() : name
+        meta['duration'] = this.timeToSeconds().toString()
         // meta["gatingEnabled"] = isGating
-        meta["isIframeSupported"] = iframeSupported
-        meta["showDownloadBtn"] = showDownloadBtn
-        // Save isCorrectAnswerPopUp for assessments
-        if (this.content && this.content.isAssessment && !this.isSelfAssessment && this.content.isCorrectAnswerPopUp !== undefined) {
-          meta["isCorrectAnswerPopUp"] = this.content.isCorrectAnswerPopUp
+        meta['isIframeSupported'] = iframeSupported
+        meta['showDownloadBtn'] = showDownloadBtn
+        // Save isCorrectAnswerPopUp for assessments only
+        if (this.isAssessmentResource && this.content.isCorrectAnswerPopUp !== undefined) {
+          meta['isCorrectAnswerPopUp'] = this.content.isCorrectAnswerPopUp
         }
 
-
-        var res = this.editResourceLinks.match(/^(?:https?:\/\/)(?:www\.)(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/)
+        var res = this.editResourceLinks.match(
+          /^(?:https?:\/\/)(?:www\.)(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/,
+        )
         // var res = this.editResourceLinks.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)
         if (res !== null && this.content.mimeType === 'text/x-url') {
-          meta["artifactUrl"] = this.editResourceLinks
+          meta['artifactUrl'] = this.editResourceLinks
         }
         if (res == null && this.content.mimeType === 'text/x-url') {
           this.snackBar.openFromComponent(NotificationComponent, {
@@ -3204,7 +3264,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           if (name.trim() === '') {
             this.snackBar.openFromComponent(NotificationComponent, {
               data: {
-                type: (this.content.contentType === 'Resource' ? Notify.INVALID_RESOURCE_NAME : Notify.INVALID_MODULE_NAME),
+                type: this.content.contentType === 'Resource' ? Notify.INVALID_RESOURCE_NAME : Notify.INVALID_MODULE_NAME,
               },
               duration: NOTIFICATION_TIME * 1000,
             })
@@ -3213,8 +3273,8 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             this.contentService.currentContentID = this.content.identifier
             requestBody = {
               request: {
-                content: meta
-              }
+                content: meta,
+              },
             }
 
             this.contentService.setUpdatedMeta(meta, this.content.identifier)
@@ -3223,19 +3283,18 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                 // this.removeEmptyQuestions()
                 meta.videoQuestions = this.videoQuestions
               }
-              console.log("this.questions", this.videoQuestions)
-              this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(
-                async (info: any) => {
+              console.log('this.questions', this.videoQuestions)
+              this.editorService.updateNewContentV3(requestBody, this.content.identifier).subscribe(async (info: any) => {
+                // tslint:disable-next-line:no-console
+                console.log('info', info)
+                if (info) {
+                  let result = await this.update()
                   // tslint:disable-next-line:no-console
-                  console.log('info', info)
-                  if (info) {
-                    let result = await this.update()
-                    // tslint:disable-next-line:no-console
-                    console.log(result)
-                    this.clearForm()
-                    this.editItem = ''
-                  }
-                })
+                  console.log(result)
+                  this.clearForm()
+                  this.editItem = ''
+                }
+              })
             } else {
               let result = await this.update()
               // tslint:disable-next-line:no-console
@@ -3246,22 +3305,26 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           }
         }
       }
-
     }
-
   }
 
   generateUrl(oldUrl: any) {
     //const chunk = oldUrl.split('/')
     //const newChunk = environment.azureHost.split('/')
     // @ts-ignore: Unreachable code error
-    this.bucket = window["env"]["azureBucket"]
+    this.bucket = window['env']['azureBucket']
     if (oldUrl.includes(this.bucket)) {
       return oldUrl
     }
-
   }
-  jsonVerify(s: string) { try { JSON.parse(s); return true } catch (e) { return false } }
+  jsonVerify(s: string) {
+    try {
+      JSON.parse(s)
+      return true
+    } catch (e) {
+      return false
+    }
+  }
 
   routerValuesCall() {
     this.contentService.changeActiveCont.subscribe(data => {
@@ -3274,7 +3337,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
 
     if (this.activateRoute.parent && this.activateRoute.parent.parent) {
       this.activateRoute.parent.parent.data.subscribe(data => {
-
         this.courseName = data.contents[0].content.name
 
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
@@ -3291,9 +3353,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         contentDataMap.forEach(content => this.contentService.setOriginalMeta(content))
         const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
         this.currentParentId = this.currentContent
-        this.storeService.treeStructureChange.next(
-          this.storeService.flatNodeMap.get(currentNode) as IContentNode,
-        )
+        this.storeService.treeStructureChange.next(this.storeService.flatNodeMap.get(currentNode) as IContentNode)
         this.storeService.currentParentNode = currentNode
         this.storeService.currentSelectedNode = currentNode
         let newCreatedNode = 0
@@ -3302,8 +3362,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
           this.storeService.selectedNodeChange.next(newCreatedNode)
         }
-        if (data.contents[0] && data.contents[0].content && data.contents[0].content.children[0] &&
-          data.contents[0].content.children[0].identifier) {
+        if (
+          data.contents[0] &&
+          data.contents[0].content &&
+          data.contents[0].content.children[0] &&
+          data.contents[0].content.children[0].identifier
+        ) {
           this.storeService.selectedNodeChange.next(data.contents[0].content.children[0].identifier)
         }
       })
@@ -3313,7 +3377,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         if (urlParam === 'collection') {
           this.headerService.showCreatorHeader(this.courseName)
         }
-
       })
     }
   }
@@ -3328,11 +3391,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
 
     if (
       (Object.keys(updatedContent).length &&
-        (Object.values(updatedContent).length && JSON.stringify(Object.values(updatedContent)[0]) !== '{}')) ||
+        Object.values(updatedContent).length &&
+        JSON.stringify(Object.values(updatedContent)[0]) !== '{}') ||
       Object.keys(this.storeService.changedHierarchy).length
     ) {
       this.loader.changeLoad.next(true)
-      if (this.contentService.getUpdatedMeta(this.currentCourseId).contentType !== "CourseUnit") {
+      if (this.contentService.getUpdatedMeta(this.currentCourseId).contentType !== 'CourseUnit') {
         this.versionID = await this.editorService.readcontentV3(this.currentCourseId).toPromise()
         this.versionKey = this.contentService.getUpdatedMeta(this.currentCourseId)
       }
@@ -3349,9 +3413,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         (error: any) => {
           if (error.status === 409) {
             const errorMap = new Map<string, NSContent.IContentMeta>()
-            Object.keys(this.contentService.originalContent).forEach(v =>
-              errorMap.set(v, this.contentService.originalContent[v]),
-            )
+            Object.keys(this.contentService.originalContent).forEach(v => errorMap.set(v, this.contentService.originalContent[v]))
             this.isError = true
             const dialog = this.dialog.open(ErrorParserComponent, {
               width: '80vw',
@@ -3364,15 +3426,11 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             dialog.afterClosed().subscribe(v => {
               if (v) {
                 if (typeof v === 'string') {
-                  this.storeService.selectedNodeChange.next(
-                    (this.storeService.lexIdMap.get(v) as number[])[0],
-                  )
+                  this.storeService.selectedNodeChange.next((this.storeService.lexIdMap.get(v) as number[])[0])
                   this.contentService.changeActiveCont.next(v)
                 } else {
                   this.storeService.selectedNodeChange.next(v)
-                  this.contentService.changeActiveCont.next(
-                    this.storeService.uniqueIdMap.get(v) as string,
-                  )
+                  this.contentService.changeActiveCont.next(this.storeService.uniqueIdMap.get(v) as string)
                 }
               }
               this.isError = false
@@ -3385,7 +3443,8 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-        })
+        },
+      )
     }
   }
   async update() {
@@ -3427,7 +3486,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           if (resourceDurat.length > 0) {
             sumDuration = resourceDurat.reduce((a: any, b: any) => a + b)
           }
-
         }
         let requestBody: any
         // tslint:disable-next-line:no-console
@@ -3436,18 +3494,18 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           requestBody = {
             request: {
               content: {
-                duration: isNumber(sumDuration) ?
-                  sumDuration.toString() : sumDuration,
-                versionKey: data.versionKey
+                duration: isNumber(sumDuration) ? sumDuration.toString() : sumDuration,
+                versionKey: data.versionKey,
               },
-            }
+            },
           }
-          this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.contentService.parentContent).subscribe((response: any) => {
-            // tslint:disable-next-line:no-console
-            console.log('duration', response.duration)
-            this.setCourseDuration(isNumber(sumDuration) ?
-              sumDuration.toString() : sumDuration)
-          })
+          this.editorService
+            .updateNewContentV3(_.omit(requestBody, ['resourceType']), this.contentService.parentContent)
+            .subscribe((response: any) => {
+              // tslint:disable-next-line:no-console
+              console.log('duration', response.duration)
+              this.setCourseDuration(isNumber(sumDuration) ? sumDuration.toString() : sumDuration)
+            })
         }
 
         if (this.courseData && this.courseData.children.length >= 2) {
@@ -3460,10 +3518,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         this.loader.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
-            type: Notify.SUCCESS
+            type: Notify.SUCCESS,
           },
           duration: NOTIFICATION_TIME * 500,
-
         })
         this.contentService.resetOriginalMetaWithHierarchy(data)
         // tslint:disable-next-line: align
@@ -3506,14 +3563,14 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       requestBody = {
         request: {
           content: tempUpdateContent,
-        }
+        },
       }
       requestBody.request.content = this.contentService.cleanProperties(requestBody.request.content)
       if (requestBody.request.content.duration === 0 || requestBody.request.content.duration) {
         // tslint:disable-next-line:max-line-length
-        requestBody.request.content.duration =
-          isNumber(requestBody.request.content.duration) ?
-            requestBody.request.content.duration.toString() : requestBody.request.content.duration
+        requestBody.request.content.duration = isNumber(requestBody.request.content.duration)
+          ? requestBody.request.content.duration.toString()
+          : requestBody.request.content.duration
       }
 
       if (requestBody.request.content.category) {
@@ -3600,7 +3657,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
               // })
             })
             this.contentService.upDatedContent = {}
-          })
+          }),
         )
       } else {
         if (tempUpdateContent.category === 'Course') {
@@ -3617,7 +3674,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                 // })
               })
               this.contentService.upDatedContent = {}
-            })
+            }),
           )
         }
       }
@@ -3634,7 +3691,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
 
     return this.editorService.updateContentV4(requestBodyV2).pipe(
       tap(() => {
-
         this.storeService.changedHierarchy = {}
         Object.keys(this.contentService.upDatedContent).forEach(async id => {
           this.contentService.resetOriginalMeta(this.contentService.upDatedContent[id], id)
@@ -3646,10 +3702,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         this.contentService.upDatedContent = {}
       }),
     )
-
   }
 
-  subAction(event: { type: string; identifier: string, nodeClicked?: boolean }) {
+  subAction(event: { type: string; identifier: string; nodeClicked?: boolean }) {
     this.contentService.changeActiveCont.next(event.identifier)
     switch (event.type) {
       case 'editContent':
@@ -3667,15 +3722,18 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           }
           // this.resourceLinkForm.controls.name.setValue(content.name)
         }
-        const isCreator = (this._configurationsService.userProfile
-          && this._configurationsService.userProfile.userId === content.createdBy)
-          ? true : false
+        const isCreator =
+          this._configurationsService.userProfile && this._configurationsService.userProfile.userId === content.createdBy ? true : false
         this.checkCreator = isCreator
         // const isCreator = (this.configSvc.userProfile
         //   && this.configSvc.userProfile.userId === content.createdBy)
         //   ? true : false
         // this.checkCreator = isCreator
-        if (['application/pdf', 'application/x-mpegURL', 'application/vnd.ekstep.html-archive', 'audio/mpeg', 'video/mp4'].includes(content.mimeType)) {
+        if (
+          ['application/pdf', 'application/x-mpegURL', 'application/vnd.ekstep.html-archive', 'audio/mpeg', 'video/mp4'].includes(
+            content.mimeType,
+          )
+        ) {
           this.viewMode = 'upload'
           // } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === 'link') {
         } else if (['video/x-youtube', 'text/x-url', 'application/html'].includes(content.mimeType) && content.fileType === '') {
@@ -3704,7 +3762,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     if (filetype) {
       this.storeService.uploadFileType.next(filetype)
     }
-    console.log("filetype", filetype)
+    console.log('filetype', filetype)
     let couseCreated = type
     const asSibling = false
     const node = {
@@ -3721,7 +3779,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       topicDescription: '',
       topicName: type.type === 'collection' ? 'Add Module' : 'Resource',
       isAssessment: this.assessment,
-      isCorrectAnswerPopUp: this.assessment && !this.isSelfAssessment ? false : undefined
+      isCorrectAnswerPopUp: this.assessment && !this.isSelfAssessment ? false : undefined,
     }
     if (type.type === 'collection') {
       this.storeService.parentData = this.courseData
@@ -3750,21 +3808,20 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     // })
     if (isDone) {
       const newCreatedLexid = this.editorService.newCreatedLexid
-      if (this.addResourceModule["module"] === true) {
+      if (this.addResourceModule['module'] === true) {
         let request: any
         request = {
           request: {
-            rootId: this.addResourceModule["courseID"],
-            unitId: this.addResourceModule["modID"],
+            rootId: this.addResourceModule['courseID'],
+            unitId: this.addResourceModule['modID'],
             children: [this.editorService.resourseID],
           },
         }
-        console.log("yes here module", request, this.addResourceModule["modID"])
+        console.log('yes here module', request, this.addResourceModule['modID'])
         //if (this.parentNode[0] !== dropNode.identifier) {
         const result = await this.editorService.resourceToModule(request).toPromise()
         // tslint:disable-next-line:no-console
         console.log(result)
-
 
         await this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
           this.courseData = await data
@@ -3778,7 +3835,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           }
 
           Object.keys(hierarchyData).forEach((ele: any) => {
-            if (ele === this.addResourceModule["modID"]) {
+            if (ele === this.addResourceModule['modID']) {
               hierarchyData[ele].children.push(this.editorService.resourseID)
             }
           })
@@ -3810,12 +3867,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         //this.courseData = []
         await this.editorService.readcontentV3(this.contentService.parentContent).subscribe(async (data: any) => {
           this.courseData = await data
-          console.log("data", data)
+          console.log('data', data)
           // this.content.parent = data.identifier
           const hierarchyData = this.storeService.getNewTreeHierarchy(this.courseData)
 
           Object.keys(hierarchyData).forEach((ele: any) => {
-            if (ele === this.addResourceModule["courseID"]) {
+            if (ele === this.addResourceModule['courseID']) {
               hierarchyData[this.editorService.resourseID] = {
                 root: false,
                 name: this.resourseSelected !== 'assessment' ? 'Resource 1' : 'Assessment',
@@ -3848,7 +3905,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             })
           })
         })
-
       }
       if (newCreatedLexid) {
         const newCreatedNode = (this.storeService.lexIdMap.get(newCreatedLexid) as number[])[0]
@@ -3870,23 +3926,17 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   }
   copyToClipboard(module: any) {
     // tslint:disable-next-line:no-console
-    navigator.clipboard.writeText(module).then().catch(e => console.log(e))
+    navigator.clipboard
+      .writeText(module)
+      .then()
+      .catch(e => console.log(e))
   }
 
   uploadResourceAppIcon(file: File) {
     const formdata = new FormData()
     const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
 
-    if (
-      !(
-        IMAGE_SUPPORT_TYPES.indexOf(
-          `.${fileName
-            .toLowerCase()
-            .split('.')
-            .pop()}`,
-        ) > -1
-      )
-    ) {
+    if (!(IMAGE_SUPPORT_TYPES.indexOf(`.${fileName.toLowerCase().split('.').pop()}`) > -1)) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_FORMAT,
@@ -3947,59 +3997,52 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             },
           }
 
-          this.http
-            .post<NSApiRequest.ICreateMetaRequest>(
-              `${AUTHORING_BASE}content/v3/create`,
-              requestBody,
-            )
-            .subscribe(
-              (meta: any) => {
-                this.uploadService
-                  .upload(formdata, {
-                    contentId: meta.result.identifier,
-                    contentType: CONTENT_BASE_STATIC,
-                  })
-
-                  .subscribe(
-                    data => {
-                      if (data && data.name !== 'Error') {
-                        this.loader.changeLoad.next(false)
-                        this.canUpdate = false
-                        this.resourceLinkForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
-                        this.resourceLinkForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
-                        this.resourcePdfForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
-                        this.resourcePdfForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
-                        this.canUpdate = true
-                        // this.data.emit('save')
-                        this.updateStoreData()
-
-                        this.initService.uploadData('thumbnail')
-                        // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-                        this.snackBar.openFromComponent(NotificationComponent, {
-                          data: {
-                            type: Notify.UPLOAD_SUCCESS,
-                          },
-                          duration: NOTIFICATION_TIME * 2000,
-                        })
-                      }
-                      else {
-                        this.loader.changeLoad.next(false)
-                        this.snackBar.open(data.message, undefined, { duration: 2000 })
-                      }
-                    },
-                    () => {
-                      this.loader.changeLoad.next(false)
-                      this.snackBar.openFromComponent(NotificationComponent, {
-                        data: {
-                          type: Notify.UPLOAD_FAIL,
-                        },
-                        duration: NOTIFICATION_TIME * 1000,
-                      })
-                    },
-                  )
+          this.http.post<NSApiRequest.ICreateMetaRequest>(`${AUTHORING_BASE}content/v3/create`, requestBody).subscribe((meta: any) => {
+            this.uploadService
+              .upload(formdata, {
+                contentId: meta.result.identifier,
+                contentType: CONTENT_BASE_STATIC,
               })
+
+              .subscribe(
+                data => {
+                  if (data && data.name !== 'Error') {
+                    this.loader.changeLoad.next(false)
+                    this.canUpdate = false
+                    this.resourceLinkForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
+                    this.resourceLinkForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
+                    this.resourcePdfForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
+                    this.resourcePdfForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
+                    this.canUpdate = true
+                    // this.data.emit('save')
+                    this.updateStoreData()
+
+                    this.initService.uploadData('thumbnail')
+                    // this.contentForm.controls.posterImage.setValue(data.artifactURL)
+                    this.snackBar.openFromComponent(NotificationComponent, {
+                      data: {
+                        type: Notify.UPLOAD_SUCCESS,
+                      },
+                      duration: NOTIFICATION_TIME * 2000,
+                    })
+                  } else {
+                    this.loader.changeLoad.next(false)
+                    this.snackBar.open(data.message, undefined, { duration: 2000 })
+                  }
+                },
+                () => {
+                  this.loader.changeLoad.next(false)
+                  this.snackBar.openFromComponent(NotificationComponent, {
+                    data: {
+                      type: Notify.UPLOAD_FAIL,
+                    },
+                    duration: NOTIFICATION_TIME * 1000,
+                  })
+                },
+              )
+          })
         }
-      }
+      },
     })
   }
 
@@ -4008,8 +4051,14 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       const originalMeta = this.contentService.getOriginalMeta(this.editorService.newCreatedLexid)
       if (originalMeta) {
         const currentMeta: NSContent.IContentMeta = JSON.parse(JSON.stringify(this.resourceLinkForm.value))
-        const exemptArray = ['application/quiz', 'application/x-mpegURL', 'audio/mpeg', 'video/mp4',
-          'application/vnd.ekstep.html-archive', 'application/json']
+        const exemptArray = [
+          'application/quiz',
+          'application/x-mpegURL',
+          'audio/mpeg',
+          'video/mp4',
+          'application/vnd.ekstep.html-archive',
+          'application/json',
+        ]
         if (exemptArray.includes(originalMeta.mimeType)) {
           currentMeta.artifactUrl = originalMeta.artifactUrl
           currentMeta.mimeType = originalMeta.mimeType
@@ -4060,8 +4109,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             }
             if (!currentMeta.lang) {
               currentMeta.lang = parentData.lang !== '' ? parentData.lang : currentMeta.lang
-
-
             }
           }
         }
@@ -4077,14 +4124,17 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
 
         Object.keys(currentMeta).map(v => {
           if (
-            v !== 'versionKey' && v !== 'visibility' &&
+            v !== 'versionKey' &&
+            v !== 'visibility' &&
             JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !==
-            JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta]) && v !== 'jobProfile'
+              JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta]) &&
+            v !== 'jobProfile'
           ) {
             if (
               currentMeta[v as keyof NSContent.IContentMeta] ||
               // (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
-              currentMeta[v as keyof NSContent.IContentMeta] === false) {
+              currentMeta[v as keyof NSContent.IContentMeta] === false
+            ) {
               if (v !== 'isIframeSupported') {
                 meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
               }
@@ -4100,9 +4150,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                     ),
                   )
                 }
-
               }
-
             }
           } else if (v === 'versionKey') {
             meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
@@ -4136,12 +4184,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       url: '',
     }
     let type
-    if (file.type == 'video/mp4')
-      type = '.mp4'
-    else if (file.type == 'video/m4v')
-      type = '.m4v'
-    else
-      type = this.acceptType
+    if (file.type == 'video/mp4') type = '.mp4'
+    else if (file.type == 'video/m4v') type = '.m4v'
+    else type = this.acceptType
 
     const fileName = file.name.replace(/[^A-Za-z0-9_.]/g, '')
     if (fileName.toLowerCase().endsWith(type)) {
@@ -4191,9 +4236,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
               this.fileUploadCondition.iframe &&
               this.fileUploadCondition.eval &&
               this.fileUploadCondition.preview &&
-              this.fileUploadCondition.externalReference && this.fileUploadCondition.isSubmitPressed
+              this.fileUploadCondition.externalReference &&
+              this.fileUploadCondition.isSubmitPressed
             ) {
-
               this.assignFileValues(file, fileName)
               this.fileUploaded = file
               // this.triggerUpload()
@@ -4206,8 +4251,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           this.triggerUpload()
         }
       }
-    }
-    else {
+    } else {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_FORMAT,
@@ -4225,7 +4269,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     this.file = file
     this.mimeType = fileName.toLowerCase().endsWith('.pdf')
       ? 'application/pdf'
-      : (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v'))
+      : fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v')
         ? 'video/mp4'
         : fileName.toLowerCase().endsWith('.zip')
           ? 'application/vnd.ekstep.html-archive'
@@ -4235,8 +4279,8 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     // tslint:disable-next-line:no-console
     console.log(currentContentData)
     if (
-      (currentContentData.status === 'Live' || currentContentData.prevStatus === 'Live')
-      && this.mimeType !== currentContentData.mimeType
+      (currentContentData.status === 'Live' || currentContentData.prevStatus === 'Live') &&
+      this.mimeType !== currentContentData.mimeType
     ) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -4246,7 +4290,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       })
       this.fileUploadForm.controls.artifactUrl.setValue(currentContentData.artifactUrl)
       // tslint:disable-next-line:no-console
-      console.log("this.fileUploadForm.controls.artifactUrl", this.fileUploadForm.controls.artifactUrl)
+      console.log('this.fileUploadForm.controls.artifactUrl', this.fileUploadForm.controls.artifactUrl)
       this.mimeType = currentContentData.mimeType
       this.iprChecked()
     } else {
@@ -4259,7 +4303,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     // tslint:disable-next-line:no-console
-    console.log("this.uploadFileName", this.mimeType)
+    console.log('this.uploadFileName', this.mimeType)
     if (this.mimeType == 'application/pdf') {
       this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
     } else if (this.mimeType == 'application/vnd.ekstep.html-archive') {
@@ -4267,8 +4311,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     } else {
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
     }
-
-
   }
 
   iprChecked() {
@@ -4305,12 +4347,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         const error = document.getElementById('errorFiles')
         if (error) {
           for (let i = 0; i < error.children.length; i += 1) {
-            error.children[i].innerHTML = error.children[i].innerHTML.replace(
-              /[^A-Za-z0-9./]/g,
-              match => {
-                return `<i style=background-color:red;font-weight:bold>${match}</i>`
-              },
-            )
+            error.children[i].innerHTML = error.children[i].innerHTML.replace(/[^A-Za-z0-9./]/g, match => {
+              return `<i style=background-color:red;font-weight:bold>${match}</i>`
+            })
           }
         }
       })
@@ -4326,7 +4365,8 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           this.fileUploadCondition.eval &&
           this.fileUploadCondition.preview &&
           this.fileUploadCondition.externalReference &&
-          this.fileUploadCondition.url && this.selectedEntryFile
+          this.fileUploadCondition.url &&
+          this.selectedEntryFile
         ) {
           const fileName = this.fileUploaded.name.replace(/[^A-Za-z0-9_.]/g, '')
           this.uploadFileName = fileName
@@ -4340,9 +4380,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     this.entryPoint = '/' + `${file}`
   }
   getDuration() {
-    const content = document.createElement(
-      this.mimeType === 'video/mp4' ? 'video' : 'audio',
-    )
+    const content = document.createElement(this.mimeType === 'video/mp4' ? 'video' : 'audio')
     content.preload = 'metadata'
     content.onloadedmetadata = () => {
       window.URL.revokeObjectURL(content.src)
@@ -4352,10 +4390,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   }
 
   async resourcePdfSave() {
-    console.log("this.resource", this.resourcePdfForm, this.videoQuestions)
+    console.log('this.resource', this.resourcePdfForm, this.videoQuestions)
     let invalid: any = this.findInvalidEntriesIndices(this.videoQuestions)
 
-    console.log("this.videoQuestions", invalid, this.videoQuestions)
+    console.log('this.videoQuestions', invalid, this.videoQuestions)
     if (invalid) {
       this.notifyInvalid(invalid)
     } else {
@@ -4384,14 +4422,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         } else {
           this.resourcePdfForm.controls.duration.setValue(this.timeToSeconds())
           let iframeSupported, showDownloadBtn
-          if (this.resourcePdfForm.value.isIframeSupported)
-            iframeSupported = 'Yes'
-          else
-            iframeSupported = 'No'
-          if (this.resourcePdfForm.value.showDownloadBtn)
-            showDownloadBtn = 'Yes'
-          else
-            showDownloadBtn = 'No'
+          if (this.resourcePdfForm.value.isIframeSupported) iframeSupported = 'Yes'
+          else iframeSupported = 'No'
+          if (this.resourcePdfForm.value.showDownloadBtn) showDownloadBtn = 'Yes'
+          else showDownloadBtn = 'No'
 
           if (this.acceptType === '.zip') {
             iframeSupported = 'Yes'
@@ -4414,7 +4448,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             gatingEnabled: this.resourcePdfForm.value.isgatingEnabled,
             duration: this.resourcePdfForm.value.duration,
             versionKey: this.updatedVersionKey,
-            videoQuestions: this.videoQuestions ? this.videoQuestions : []
+            videoQuestions: this.videoQuestions ? this.videoQuestions : [],
           }
           await this.contentService.setUpdatedMeta(rBody, this.currentContent)
           await this.update()
@@ -4438,7 +4472,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       isIframeSupported: '',
       showDownloadBtn: '',
       isgatingEnabled: '',
-      duration: ''
+      duration: '',
     })
 
     this.resourceLinkForm.setValue({
@@ -4450,7 +4484,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       isIframeSupported: '',
       showDownloadBtn: '',
       isgatingEnabled: '',
-      duration: ''
+      duration: '',
     })
 
     this.fileUploadForm.reset()
@@ -4466,7 +4500,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     this.hours = 0
     this.minutes = 0
     this.seconds = 0
-
   }
   dragDrop(type1: any, type2: any, type3: string) {
     console.log(type1, type1.parent, type2, type3)
@@ -4490,8 +4523,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             if (child1.identifier === data) {
               return child1
             }
-          }
-          )
+          })
         }
       })
       console.log(found1)
@@ -4562,101 +4594,111 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     console.log(hierarchy, 'init')
 
     if (previousIndex > currentIndex) {
-      if (previousFound && currentFound && previousFound.parent === this.courseData.identifier &&
-        currentFound.parent === this.courseData.identifier && currentFound.contentType === "Resource" && previousFound.contentType === "Resource") {
+      if (
+        previousFound &&
+        currentFound &&
+        previousFound.parent === this.courseData.identifier &&
+        currentFound.parent === this.courseData.identifier &&
+        currentFound.contentType === 'Resource' &&
+        previousFound.contentType === 'Resource'
+      ) {
         console.log('1')
         let parentData = hierarchy[this.courseData.identifier]
-        let prevIndex = parentData["children"].indexOf(previousFound.identifier)
+        let prevIndex = parentData['children'].indexOf(previousFound.identifier)
         //parentData["children"].splice(prevIndex, 0, currentFound.identifier)
         //parentData["children"].splice(prevIndex + 1, 1)
-        let currIndex = parentData["children"].indexOf(currentFound.identifier)
-        parentData["children"].splice(prevIndex, 1)
-        parentData["children"].splice(currIndex, 0, previousFound.identifier)
+        let currIndex = parentData['children'].indexOf(currentFound.identifier)
+        parentData['children'].splice(prevIndex, 1)
+        parentData['children'].splice(currIndex, 0, previousFound.identifier)
         //parentData["children"].splice(prevIndex, 1)
-        console.log(parentData["children"])
+        console.log(parentData['children'])
       } else {
-        let prevContent = previousFound//this.compute(previousFound.identifier)
-        let currentContent = currentFound//this.compute(currentFound.identifier)
-        console.log(prevContent, currentContent, currentFound, currentContent["0"])
+        let prevContent = previousFound //this.compute(previousFound.identifier)
+        let currentContent = currentFound //this.compute(currentFound.identifier)
+        console.log(prevContent, currentContent, currentFound, currentContent['0'])
 
-        let prevData = prevContent["0"] === undefined ? previousFound : prevContent[0]
-        let currData = currentContent["0"] === undefined ? currentFound : currentContent[0]
-        if (currData.contentType === "CourseUnit" && prevData.contentType === 'Resource') {
+        let prevData = prevContent['0'] === undefined ? previousFound : prevContent[0]
+        let currData = currentContent['0'] === undefined ? currentFound : currentContent[0]
+        if (currData.contentType === 'CourseUnit' && prevData.contentType === 'Resource') {
           let cCourseData = hierarchy[currData.identifier]
-          console.log(cCourseData["children"])
-          if (cCourseData["children"].length == 0) {
-            cCourseData["children"].push(previousFound.identifier)
+          console.log(cCourseData['children'])
+          if (cCourseData['children'].length == 0) {
+            cCourseData['children'].push(previousFound.identifier)
           } else {
             let courseData = hierarchy[currData.parent]
-            let cIndex = courseData["children"].indexOf(currData.identifier)
-            courseData["children"].splice(cIndex, 0, previousFound.identifier)
+            let cIndex = courseData['children'].indexOf(currData.identifier)
+            courseData['children'].splice(cIndex, 0, previousFound.identifier)
           }
         } else {
           if (currData.contentType === 'Resource' && prevData.contentType === 'Resource') {
             let cCourseData = hierarchy[currData.parent]
-            let cIndex = cCourseData["children"].indexOf(currData.identifier)
-            cCourseData["children"].splice(cIndex, 0, previousFound.identifier)
+            let cIndex = cCourseData['children'].indexOf(currData.identifier)
+            cCourseData['children'].splice(cIndex, 0, previousFound.identifier)
           }
         }
         if (prevData.contentType === 'Resource') {
           let pCourseData = hierarchy[prevData.parent]
-          let pIndex = pCourseData["children"].lastIndexOf(previousFound.identifier)
-          pCourseData["children"].splice(pIndex, 1)
+          let pIndex = pCourseData['children'].lastIndexOf(previousFound.identifier)
+          pCourseData['children'].splice(pIndex, 1)
         }
         if (prevData.contentType === 'CourseUnit') {
           let pCourseData = hierarchy[prevData.parent]
-          let cIndex = pCourseData["children"].indexOf(currData.identifier)
-          let pIndex = pCourseData["children"].indexOf(previousFound.identifier)
-          pCourseData["children"].splice(pIndex, 1)
-          pCourseData["children"].splice(cIndex, 0, previousFound.identifier)
+          let cIndex = pCourseData['children'].indexOf(currData.identifier)
+          let pIndex = pCourseData['children'].indexOf(previousFound.identifier)
+          pCourseData['children'].splice(pIndex, 1)
+          pCourseData['children'].splice(cIndex, 0, previousFound.identifier)
         }
         console.log(hierarchy)
       }
     } else if (previousIndex <= currentIndex) {
       console.log('2')
-      if (previousFound && currentFound && previousFound.parent === this.courseData.identifier &&
-        currentFound.parent === this.courseData.identifier && currentFound.contentType === "Resource" && previousFound.contentType === "Resource") {
+      if (
+        previousFound &&
+        currentFound &&
+        previousFound.parent === this.courseData.identifier &&
+        currentFound.parent === this.courseData.identifier &&
+        currentFound.contentType === 'Resource' &&
+        previousFound.contentType === 'Resource'
+      ) {
         let parentData = hierarchy[this.courseData.identifier]
-        let prevIndex = parentData["children"].indexOf(previousFound.identifier)
-        let currIndex = parentData["children"].indexOf(currentFound.identifier)
-        parentData["children"].splice(prevIndex, 1)
-        parentData["children"].splice(currIndex, 0, previousFound.identifier)
-        console.log(parentData["children"])
+        let prevIndex = parentData['children'].indexOf(previousFound.identifier)
+        let currIndex = parentData['children'].indexOf(currentFound.identifier)
+        parentData['children'].splice(prevIndex, 1)
+        parentData['children'].splice(currIndex, 0, previousFound.identifier)
+        console.log(parentData['children'])
       } else {
         console.log('here123')
-        let prevContent = previousFound//this.compute(previousFound.identifier)
-        let currentContent = currentFound//this.compute(currentFound.identifier)
+        let prevContent = previousFound //this.compute(previousFound.identifier)
+        let currentContent = currentFound //this.compute(currentFound.identifier)
 
         console.log(prevContent, currentContent)
-        let prevData = prevContent["0"] === undefined ? previousFound : prevContent[0]
-        let currData = currentContent["0"] === undefined ? currentFound : currentContent[0]
+        let prevData = prevContent['0'] === undefined ? previousFound : prevContent[0]
+        let currData = currentContent['0'] === undefined ? currentFound : currentContent[0]
 
-        if (currData.contentType === "CourseUnit" && prevData.contentType === 'Resource') {
-
+        if (currData.contentType === 'CourseUnit' && prevData.contentType === 'Resource') {
           let cCourseData = hierarchy[currData.identifier]
-          console.log(cCourseData["children"])
-          if (cCourseData["children"].length == 0) {
-            cCourseData["children"].push(previousFound.identifier)
+          console.log(cCourseData['children'])
+          if (cCourseData['children'].length == 0) {
+            cCourseData['children'].push(previousFound.identifier)
           } else {
-
             let courseData = hierarchy[currData.parent]
-            let cIndex = courseData["children"].indexOf(currData.identifier)
-            courseData["children"].splice(cIndex, 0, previousFound.identifier)
+            let cIndex = courseData['children'].indexOf(currData.identifier)
+            courseData['children'].splice(cIndex, 0, previousFound.identifier)
             // let cIndex = cCourseData["children"].indexOf(currData.identifier)
             // cCourseData["children"].splice(cIndex, 0, previousFound.identifier)
           }
         } else {
-          if (currData.contentType === 'Resource'
-            && prevData.contentType === 'Resource'
-          ) {
-
+          if (currData.contentType === 'Resource' && prevData.contentType === 'Resource') {
             console.log(identfs[identfs.length - 1] === currData.identifier)
             if (identfs[identfs.length - 1] === currData.identifier) {
               let cCourseData1 = hierarchy[this.courseData.identifier]
               this.loader.changeLoad.next(false)
               const dialogRef = this.dialog.open(UserIndexConfirmComponent, {
                 width: '420px',
-                data: { 'message': 'You are adding resource outside the module. Would you like to go ahead?', 'id': this.contentService.parentContent },
+                data: {
+                  message: 'You are adding resource outside the module. Would you like to go ahead?',
+                  id: this.contentService.parentContent,
+                },
               })
 
               dialogRef.afterClosed().subscribe(async result => {
@@ -4664,21 +4706,21 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                 this.loader.changeLoad.next(true)
 
                 if (result === 'New') {
-                  cCourseData1["children"].push(prevPosition)
+                  cCourseData1['children'].push(prevPosition)
                   console.log(cCourseData1)
                 } else {
                   let cCourseData2 = hierarchy[currData.parent]
-                  console.log(cCourseData2["children"])
-                  let cIndex = cCourseData2["children"].indexOf(currData.identifier)
+                  console.log(cCourseData2['children'])
+                  let cIndex = cCourseData2['children'].indexOf(currData.identifier)
                   console.log(cIndex)
-                  cCourseData2["children"].splice(cIndex + 1, 0, previousFound.identifier)
+                  cCourseData2['children'].splice(cIndex + 1, 0, previousFound.identifier)
                 }
                 if (prevData.contentType === 'Resource') {
                   let pCourseData = hierarchy[prevData.parent]
-                  console.log(pCourseData["children"])
-                  let pIndex = pCourseData["children"].indexOf(previousFound.identifier)
+                  console.log(pCourseData['children'])
+                  let pIndex = pCourseData['children'].indexOf(previousFound.identifier)
                   console.log(pIndex)
-                  pCourseData["children"].splice(pIndex, 1)
+                  pCourseData['children'].splice(pIndex, 1)
                   console.log(pCourseData)
                 }
                 console.log(hierarchy, 'final123--------')
@@ -4692,7 +4734,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                   },
                 }
 
-                console.log(requestBodyV2, "data123")
+                console.log(requestBodyV2, 'data123')
                 await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
                   this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
                     this.loader.changeLoad.next(false)
@@ -4704,28 +4746,25 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             } else {
               let cCourseData = hierarchy[currData.parent]
               console.log(cCourseData)
-              let cIndex = cCourseData["children"].indexOf(currData.identifier)
+              let cIndex = cCourseData['children'].indexOf(currData.identifier)
               console.log(cIndex)
-              cCourseData["children"].splice(cIndex + 1, 0, previousFound.identifier)
-              console.log(cCourseData["children"], 'pppp')
+              cCourseData['children'].splice(cIndex + 1, 0, previousFound.identifier)
+              console.log(cCourseData['children'], 'pppp')
             }
-
           }
         }
         if (prevData.contentType === 'Resource') {
           let pCourseData = hierarchy[prevData.parent]
-          let pIndex = pCourseData["children"].indexOf(previousFound.identifier)
-          pCourseData["children"].splice(pIndex, 1)
+          let pIndex = pCourseData['children'].indexOf(previousFound.identifier)
+          pCourseData['children'].splice(pIndex, 1)
           console.log(pCourseData)
         }
         if (prevData.contentType === 'CourseUnit') {
-
           let pCourseData = hierarchy[prevData.parent]
-          let cIndex = pCourseData["children"].indexOf(currData.identifier)
-          let pIndex = pCourseData["children"].indexOf(previousFound.identifier)
-          pCourseData["children"].splice(pIndex, 1)
-          pCourseData["children"].splice(cIndex, 0, previousFound.identifier)
-
+          let cIndex = pCourseData['children'].indexOf(currData.identifier)
+          let pIndex = pCourseData['children'].indexOf(previousFound.identifier)
+          pCourseData['children'].splice(pIndex, 1)
+          pCourseData['children'].splice(cIndex, 0, previousFound.identifier)
         }
         console.log(hierarchy)
         //console.log(currData["children"])
@@ -4737,12 +4776,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       if (currentPosition === prevPosition) {
         if (identfs.includes(prevPosition)) {
           let parentData = hierarchy[this.courseData.identifier]
-          parentData["children"].push(prevPosition)
+          parentData['children'].push(prevPosition)
           if (currentFound.contentType === 'Resource') {
             let pCourseData = hierarchy[currentFound.parent]
             console.log(pCourseData)
-            let pIndex = pCourseData["children"].indexOf(currentFound.identifier)
-            pCourseData["children"].splice(pIndex, 1)
+            let pIndex = pCourseData['children'].indexOf(currentFound.identifier)
+            pCourseData['children'].splice(pIndex, 1)
           }
         }
       }
@@ -4760,7 +4799,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       },
     }
 
-    console.log(requestBodyV2, "data")
+    console.log(requestBodyV2, 'data')
     await this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
       this.editorService.readcontentV3(this.contentService.parentContent).subscribe((data: any) => {
         this.loader.changeLoad.next(false)
@@ -4815,10 +4854,15 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       if (requestBody.request.content.category) {
         delete (requestBody as any).request.content.category
       }
-      const contenUpdateRes: any =
-        await this.editorService.updateContentV3(requestBody, currentContent).toPromise().catch(_error => { })
+      const contenUpdateRes: any = await this.editorService
+        .updateContentV3(requestBody, currentContent)
+        .toPromise()
+        .catch(_error => {})
       if (contenUpdateRes && contenUpdateRes.params && contenUpdateRes.params.status === 'successful') {
-        const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
+        const hierarchyData = await this.editorService
+          .readcontentV3(this.contentService.parentContent)
+          .toPromise()
+          .catch(_error => {})
         if (hierarchyData) {
           this.loader.changeLoad.next(true)
           this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
@@ -4832,11 +4876,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
 
   upload() {
     const formdata = new FormData()
-    formdata.append(
-      'content',
-      this.file as Blob,
-      (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''),
-    )
+    formdata.append('content', this.file as Blob, (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''))
     this.loader.changeLoad.next(true)
     this.uploadService
       .upload(
@@ -4853,13 +4893,14 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         undefined,
         // this.mimeType === 'application/html',
         this.mimeType === 'application/vnd.ekstep.html-archive',
-      ).pipe(
+      )
+      .pipe(
         tap(v => {
           this.canUpdate = false
           // const artifactUrl = v.result && v.result.artifactUrl ? v.result.artifactUrl : ''
           const artifactUrl = v && v.artifactUrl ? v.artifactUrl : ''
           // tslint:disable-next-line:no-console
-          console.log("this.mimeType", this.mimeType)
+          console.log('this.mimeType', this.mimeType)
           if (this.mimeType === 'video/mp4' || this.mimeType === 'application/pdf' || this.mimeType === 'audio/mpeg') {
             this.fileUploadForm.controls.artifactUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
             this.fileUploadForm.controls.downloadUrl.setValue(v ? this.generateUrl(artifactUrl) : '')
@@ -4879,8 +4920,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
           if (this.mimeType === 'application/vnd.ekstep.html-archive' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
             this.fileUploadForm.controls.isExternal.setValue(false)
-            this.fileUploadForm.controls['streamingUrl'].setValue(v ?
-              this.generateStreamUrl((this.fileUploadCondition.url) ? this.fileUploadCondition.url : '') : '')
+            this.fileUploadForm.controls['streamingUrl'].setValue(
+              v ? this.generateStreamUrl(this.fileUploadCondition.url ? this.fileUploadCondition.url : '') : '',
+            )
             this.fileUploadForm.controls['entryPoint'].setValue(this.entryPoint ? this.entryPoint : '')
             this.fileUploadForm.controls.duration.setValue(this.duration)
           }
@@ -4898,7 +4940,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           this.canUpdate = true
         }),
         mergeMap(v => {
-
           if (this.mimeType === 'application/pdf') {
             this.profanityCheckAPICall(v.artifactUrl)
           }
@@ -4921,7 +4962,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             this.courseData = data
           })
           this.loader.changeLoad.next(false)
-          console.log("uploadVideoUrl", this.uploadVideoUrl)
+          console.log('uploadVideoUrl', this.uploadVideoUrl)
         },
         () => {
           this.loader.changeLoad.next(false)
@@ -4937,9 +4978,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       )
   }
   validateFile(file: File) {
-    const content = document.createElement(
-      this.mimeType === 'video/mp4' ? 'video' : 'audio',
-    )
+    const content = document.createElement(this.mimeType === 'video/mp4' ? 'video' : 'audio')
     content.preload = 'metadata'
     content.onloadedmetadata = () => {
       window.URL.revokeObjectURL(content.src)
@@ -4952,9 +4991,8 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     return `${environment.azureHost}/${environment.azureBucket}/html/${this.currentContent}-snapshot/${fileName}`
   }
 
-
   profanityCheckAPICall(url: string) {
-    this.profanityService.startProfanity(this.currentContent, url, (this.file ? this.file.name : this.currentContent)).subscribe()
+    this.profanityService.startProfanity(this.currentContent, url, this.file ? this.file.name : this.currentContent).subscribe()
   }
 
   errorMessage() {
@@ -4973,18 +5011,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     Object.keys(currentMeta).map(v => {
       if (
         v !== 'versionKey' &&
-        JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !==
-        JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])
+        JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !== JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])
       ) {
-        if (
-          currentMeta[v] ||
-          (this.initService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
-            currentMeta[v] === false)
-        ) {
+        if (currentMeta[v] || (this.initService.authConfig[v as keyof IFormMeta].type === 'boolean' && currentMeta[v] === false)) {
           if (v !== 'duration') {
             meta[v] = currentMeta[v]
           }
-
         } else {
           if (v !== 'duration') {
             meta[v] = JSON.parse(
@@ -5014,7 +5046,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   }
   /*PDF/audio/vedio functionality end*/
   takeActions(action: string, node: IContentTreeNode) {
-    console.log("action", action, node)
+    console.log('action', action, node)
     switch (action) {
       case 'editMeta':
       case 'editContent':
@@ -5029,7 +5061,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   }
 
   delete(node: IContentTreeNode) {
-    console.log("node", node)
+    console.log('node', node)
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '420px',
       data: 'deleteTreeNode',
@@ -5054,17 +5086,16 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         }
         node.parent = parent
 
-
-        console.log("yes here", hierarchyData, node)
+        console.log('yes here', hierarchyData, node)
         Object.keys(hierarchyData).forEach(async (ele: any) => {
           if (ele === node.identifier) {
             this.storeService.deleteContentNode(node)
             delete (hierarchyData as any)[ele]
           }
           if (ele === node.parent) {
-            const index = hierarchyData[ele]["children"].indexOf(node.identifier)
+            const index = hierarchyData[ele]['children'].indexOf(node.identifier)
             if (index > -1) {
-              hierarchyData[ele]["children"].splice(index, 1)
+              hierarchyData[ele]['children'].splice(index, 1)
               const requestBodyV2: NSApiRequest.IContentUpdateV3 = {
                 request: {
                   data: {
@@ -5087,10 +5118,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                   }
                   this.snackBar.openFromComponent(NotificationComponent, {
                     data: {
-                      type: Notify.SUCCESS
+                      type: Notify.SUCCESS,
                     },
                     duration: NOTIFICATION_TIME * 500,
-
                   })
                   this.loader.changeLoad.next(false)
                   this.clearForm()
@@ -5136,7 +5166,6 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   }
   /*Assessment functionality start*/
   getassessment() {
-
     this.activeContentSubscription = this.contentService.changeActiveCont.subscribe(id => {
       this.allLanguages = this.initService.ordinals.subTitles
       this.loader.changeLoadState(true)
@@ -5156,8 +5185,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           this.quizResolverSvc.getUpdatedData(v.contents[0].content.identifier).subscribe(newData => {
             const quizContent = this.contentService.getOriginalMeta(this.contentService.currentContent)
             if (quizContent.mimeType === 'application/json') {
-              const fileData = ((quizContent.artifactUrl || quizContent.downloadUrl) ?
-                this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl)) : of({} as any))
+              const fileData =
+                quizContent.artifactUrl || quizContent.downloadUrl
+                  ? this.quizResolverSvc.getJSON(this.generateUrl(quizContent.artifactUrl || quizContent.downloadUrl))
+                  : of({} as any)
               fileData.subscribe(jsonResponse => {
                 if (jsonResponse && Object.keys(jsonResponse).length > 1) {
                   if (v.contents && v.contents.length) {
@@ -5165,7 +5196,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                       v.contents[0].data = jsonResponse
                       this.quizStoreSvc.assessmentDuration = jsonResponse.assessmentDuration
                       this.quizStoreSvc.passPercentage = jsonResponse.passPercentage
-                      this.assessmentDuration = (jsonResponse.assessmentDuration) / 60
+                      this.assessmentDuration = jsonResponse.assessmentDuration / 60
                       this.passPercentage = jsonResponse.passPercentage
                     }
                     this.allContents.push(v.contents[0].content)
@@ -5180,8 +5211,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                           // need to arrange
                           this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
                           this.resourceType = quizContent.categoryType || 'Assessment'
-                          this.questionsArr =
-                            this.quizStoreSvc.collectiveQuiz[id] || []
+                          this.questionsArr = this.quizStoreSvc.collectiveQuiz[id] || []
                           this.contentLoaded = true
                           this.questionsArr = this.quizStoreSvc.collectiveQuiz[id]
                           this.currentId = id
@@ -5194,8 +5224,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                     this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
                     this.resourceType = quizContent.categoryType || 'Assessment'
                     this.quizDuration = quizContent.duration || '300'
-                    this.questionsArr =
-                      this.quizStoreSvc.collectiveQuiz[id] || []
+                    this.questionsArr = this.quizStoreSvc.collectiveQuiz[id] || []
                     this.contentLoaded = true
                   }
                   if (!this.quizStoreSvc.collectiveQuiz[id]) {
@@ -5207,8 +5236,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                   this.canEditJson = this.quizResolverSvc.canEdit(quizContent)
                   this.resourceType = quizContent.categoryType || 'Assessment'
                   this.quizDuration = quizContent.duration || '300'
-                  this.questionsArr =
-                    this.quizStoreSvc.collectiveQuiz[id] || []
+                  this.questionsArr = this.quizStoreSvc.collectiveQuiz[id] || []
                   this.contentLoaded = true
                   if (!this.quizStoreSvc.collectiveQuiz[id]) {
                     this.quizStoreSvc.collectiveQuiz[id] = []
@@ -5248,7 +5276,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         type: 'editAssessment',
         index: index + 1,
         currentContent: this.currentContent,
-        data: data
+        data: data,
       },
     })
     dialogRefForPublish.componentInstance.onFormChange.subscribe((result: any) => {
@@ -5334,11 +5362,14 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
               gatingEnabled: this.isGating,
               instructions: this.topicDescription,
               thumbnail: this.thumbnail,
-              duration: this.timeToSeconds().toString()
+              duration: this.timeToSeconds().toString(),
             },
           },
         }
-        await this.editorService.updateNewContentV3(updateContentReq, this.currentCourseId).toPromise().catch((_error: any) => { })
+        await this.editorService
+          .updateNewContentV3(updateContentReq, this.currentCourseId)
+          .toPromise()
+          .catch((_error: any) => {})
         await this.editorService.readcontentV3(this.currentCourseId).subscribe(async (data: any) => {
           this.courseData = data
           this.loader.changeLoad.next(false)
