@@ -1,29 +1,25 @@
-<form [formGroup]="contentForm" *ngIf="!clickedBtnNext&&contentForm">
+<form [formGroup]="contentForm" *ngIf="!clickedBtnNext && contentForm">
   <!-- ── Course Settings Sidenav ─────────────────────────────────────────── -->
   <mat-sidenav class="em-sidenav" position="end" [fixedInViewport]="true" [(opened)]="sideNavBarOpened">
-
     <!-- Header -->
     <div class="em-sn-header">
       <div class="em-sn-header-inner">
         <span class="em-card-icon"><mat-icon>tune</mat-icon></span>
         <span class="em-sn-title" i18n>Course Settings</span>
       </div>
-      <button mat-icon-button class="em-sn-close" type="button"
-        (click)="sideNavBarOpened = false" aria-label="Close settings">
+      <button mat-icon-button class="em-sn-close" type="button" (click)="sideNavBarOpened = false" aria-label="Close settings">
         <mat-icon>close</mat-icon>
       </button>
     </div>
 
     <!-- Body -->
     <div class="em-sn-body">
-
       <!-- Display Settings -->
       <div class="em-sn-section">
         <p class="em-sn-section-label" i18n>Display Settings</p>
 
         <div [ngClass]="{ disable: checkCondition('complexityLevel', 'disabled') }">
-          <mat-form-field appearance="outline" class="em-field"
-            [ngClass]="{ 'mat-form-field-invalid': showError('complexityLevel') }">
+          <mat-form-field appearance="outline" class="em-field" [ngClass]="{ 'mat-form-field-invalid': showError('complexityLevel') }">
             <mat-label i18n>Proficiency Level</mat-label>
             <mat-select formControlName="complexityLevel" i18n-placeholder placeholder="--Select--">
               <mat-option *ngIf="!checkCondition('complexityLevel', 'required')" i18n [value]="null">None</mat-option>
@@ -37,8 +33,7 @@
         </div>
 
         <div [ngClass]="{ disable: checkCondition('visibility', 'disabled') }">
-          <mat-form-field appearance="outline" class="em-field"
-            [ngClass]="{ 'mat-form-field-invalid': showError('visibility') }">
+          <mat-form-field appearance="outline" class="em-field" [ngClass]="{ 'mat-form-field-invalid': showError('visibility') }">
             <mat-label i18n>Preview in Draft Mode</mat-label>
             <mat-select formControlName="visibility" i18n-placeholder placeholder="--Select--">
               <mat-option [value]="'Private'" i18n>Don't Allow</mat-option>
@@ -46,9 +41,12 @@
             </mat-select>
             <mat-hint>
               <span i18n>Anyone with this URL can see the content</span>
-              <mat-icon *ngIf="contentForm.controls.visibility.value === 'Public'"
+              <mat-icon
+                *ngIf="contentForm.controls.visibility.value === 'Public'"
                 matTooltip="Click to copy the private url"
-                class="em-sn-copy-icon" (click)="copyData('previewUrl')">file_copy
+                class="em-sn-copy-icon"
+                (click)="copyData('previewUrl')"
+                >file_copy
               </mat-icon>
             </mat-hint>
             <mat-error *ngIf="showError('visibility')" i18n>This field is mandatory</mat-error>
@@ -61,22 +59,29 @@
         <p class="em-sn-section-label" i18n>Audience & Targeting</p>
 
         <div [ngClass]="{ disable: checkCondition('audience', 'disabled') }">
-          <mat-form-field appearance="outline" class="em-field"
-            [ngClass]="{ 'mat-form-field-invalid': showError('audience') }">
+          <mat-form-field appearance="outline" class="em-field" [ngClass]="{ 'mat-form-field-invalid': showError('audience') }">
             <mat-label i18n>Audience</mat-label>
             <mat-chip-grid #audienceChipList i18n-aria-label aria-label="Audience selection">
-              <mat-chip-row *ngFor="let job of contentForm.controls.audience.value; trackBy: trackByIndex"
-                (removed)="removeFromFormControl(job, 'audience')">
+              <mat-chip-row
+                *ngFor="let job of contentForm.controls.audience.value; trackBy: trackByIndex"
+                (removed)="removeFromFormControl(job, 'audience')"
+              >
                 {{ job }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
-              <input i18n-placeholder placeholder="Add audience..." #audienceView
-                [formControl]="audienceCtrl" [matChipInputFor]="audienceChipList"
-                [matAutocomplete]="audienceAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
+              <input
+                i18n-placeholder
+                placeholder="Add audience..."
+                #audienceView
+                [formControl]="audienceCtrl"
+                [matChipInputFor]="audienceChipList"
+                [matAutocomplete]="audienceAuto"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="false"
+                (matChipInputTokenEnd)="removeField($event)"
+              />
             </mat-chip-grid>
-            <mat-autocomplete #audienceAuto="matAutocomplete"
-              (optionSelected)="addToFormControl($event, 'audience')">
+            <mat-autocomplete #audienceAuto="matAutocomplete" (optionSelected)="addToFormControl($event, 'audience')">
               <mat-option *ngIf="!checkCondition('audience', 'required')" i18n [value]="null">None</mat-option>
               <mat-option *ngFor="let job of audienceList; trackBy: trackByIndex" [value]="job">{{ job }}</mat-option>
             </mat-autocomplete>
@@ -84,24 +89,30 @@
           </mat-form-field>
         </div>
 
-        <div *ngIf="checkCondition('jobProfile', 'show')"
-          [ngClass]="{ disable: checkCondition('jobProfile', 'disabled') }">
-          <mat-form-field appearance="outline" class="em-field"
-            [ngClass]="{ 'mat-form-field-invalid': showError('jobProfile') }">
+        <div *ngIf="checkCondition('jobProfile', 'show')" [ngClass]="{ disable: checkCondition('jobProfile', 'disabled') }">
+          <mat-form-field appearance="outline" class="em-field" [ngClass]="{ 'mat-form-field-invalid': showError('jobProfile') }">
             <mat-label i18n>Job Profiles</mat-label>
             <mat-chip-grid #jobProfileChipList i18n-aria-label aria-label="Job profile selection">
-              <mat-chip-row *ngFor="let job of contentForm.controls.jobProfile.value; trackBy: trackByIndex"
-                (removed)="removeFromFormControl(job, 'jobProfile')">
+              <mat-chip-row
+                *ngFor="let job of contentForm.controls.jobProfile.value; trackBy: trackByIndex"
+                (removed)="removeFromFormControl(job, 'jobProfile')"
+              >
                 {{ job }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
-              <input i18n-placeholder placeholder="Add job profile..." #jobProfileView
-                [formControl]="jobProfileCtrl" [matChipInputFor]="jobProfileChipList"
-                [matAutocomplete]="jobProfileAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
+              <input
+                i18n-placeholder
+                placeholder="Add job profile..."
+                #jobProfileView
+                [formControl]="jobProfileCtrl"
+                [matChipInputFor]="jobProfileChipList"
+                [matAutocomplete]="jobProfileAuto"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="false"
+                (matChipInputTokenEnd)="removeField($event)"
+              />
             </mat-chip-grid>
-            <mat-autocomplete #jobProfileAuto="matAutocomplete"
-              (optionSelected)="addToFormControl($event, 'jobProfile')">
+            <mat-autocomplete #jobProfileAuto="matAutocomplete" (optionSelected)="addToFormControl($event, 'jobProfile')">
               <mat-option *ngIf="!checkCondition('jobProfile', 'required')" i18n [value]="null">None</mat-option>
               <mat-option *ngFor="let job of jobProfileList; trackBy: trackByIndex" [value]="job">{{ job }}</mat-option>
             </mat-autocomplete>
@@ -109,22 +120,25 @@
           </mat-form-field>
         </div>
 
-        <div *ngIf="checkCondition('skills', 'show')"
-          [ngClass]="{ disable: checkCondition('skills', 'disabled') }">
-          <mat-form-field appearance="outline" class="em-field"
-            [ngClass]="{ 'mat-form-field-invalid': showError('skills') }">
+        <div *ngIf="checkCondition('skills', 'show')" [ngClass]="{ disable: checkCondition('skills', 'disabled') }">
+          <mat-form-field appearance="outline" class="em-field" [ngClass]="{ 'mat-form-field-invalid': showError('skills') }">
             <mat-label>Skills</mat-label>
             <mat-chip-grid #skills aria-label="Keyword selection">
               <mat-chip-row *ngFor="let key of contentForm.controls.skills.value; trackBy: trackByIndex" (removed)="removeSkill(key)">
                 {{ key }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
-              <input i18n-placeholder formControlName="skills" placeholder="Add skills..." #skillsView
-                [matChipInputFor]="skills" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                [matChipInputAddOnBlur]="true" />
+              <input
+                i18n-placeholder
+                formControlName="skills"
+                placeholder="Add skills..."
+                #skillsView
+                [matChipInputFor]="skills"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="true"
+              />
             </mat-chip-grid>
-            <mat-select [compareWith]="compareSkillFn" formControlName="skills"
-              [required]="checkCondition('skills', 'required')" multiple>
+            <mat-select [compareWith]="compareSkillFn" formControlName="skills" [required]="checkCondition('skills', 'required')" multiple>
               <mat-option *ngFor="let skill of ordinals.skills; trackBy: trackByIndex" [value]="skill">{{ skill.name }}</mat-option>
             </mat-select>
             <mat-error *ngIf="showError('skills')" i18n>Skills is mandatory</mat-error>
@@ -136,27 +150,39 @@
       <div class="em-sn-section" [ngClass]="{ disable: checkCondition('keywords', 'disabled') }">
         <p class="em-sn-section-label">
           <span i18n>Keywords</span>
-          <mat-icon class="em-sn-copy-icon"
+          <mat-icon
+            class="em-sn-copy-icon"
             *ngIf="contentForm.controls.keywords.value && contentForm.controls.keywords.value.length"
-            (click)="copyData('keyword')">file_copy
+            (click)="copyData('keyword')"
+            >file_copy
           </mat-icon>
         </p>
-        <mat-form-field class="em-field" appearance="outline"
-          [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
+        <mat-form-field class="em-field" appearance="outline" [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
           <mat-label [ngClass]="{ required: checkCondition('keywords', 'required') }" i18n>Keywords</mat-label>
           <mat-chip-grid #keywords aria-label="Keyword selection">
             <mat-chip-row *ngFor="let key of contentForm.controls.keywords.value; trackBy: trackByIndex" (removed)="removeKeyword(key)">
               {{ key }}
               <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
             </mat-chip-row>
-            <input i18n-placeholder [formControl]="keywordsCtrl" [matAutocomplete]="auto"
-              placeholder="Type and press Enter..." #keywordsView [matChipInputFor]="keywords"
-              [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
-              (matChipInputTokenEnd)="addKeyword($event)" #keywordsSearch />
+            <input
+              i18n-placeholder
+              [formControl]="keywordsCtrl"
+              [matAutocomplete]="auto"
+              placeholder="Type and press Enter..."
+              #keywordsView
+              [matChipInputFor]="keywords"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              [matChipInputAddOnBlur]="false"
+              (matChipInputTokenEnd)="addKeyword($event)"
+              #keywordsSearch
+            />
           </mat-chip-grid>
         </mat-form-field>
-        <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption
-          (optionSelected)="optionSelected($event.option.value); keywordsView.value = ''">
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          autoActiveFirstOption
+          (optionSelected)="optionSelected($event.option.value); keywordsView.value = ''"
+        >
           <mat-option *ngIf="keywordsSearch.value" [value]="keywordsSearch.value">{{ keywordsSearch.value }}</mat-option>
           <mat-option *ngFor="let option of filteredOptions$ | async; trackBy: trackByIndex" [value]="option">{{ option }}</mat-option>
         </mat-autocomplete>
@@ -167,25 +193,33 @@
         <p class="em-sn-section-label" i18n>Stakeholders</p>
 
         <div [ngClass]="{ disable: checkCondition('trackContacts', 'disabled') }">
-          <mat-form-field appearance="outline" class="em-field"
-            [ngClass]="{ 'mat-form-field-invalid': showError('trackContacts') }">
+          <mat-form-field appearance="outline" class="em-field" [ngClass]="{ 'mat-form-field-invalid': showError('trackContacts') }">
             <mat-label [ngClass]="{ required: checkCondition('trackContacts', 'required') }" i18n>Reviewers</mat-label>
             <mat-chip-grid #reviewerChipList i18n-aria-label aria-label="Reviewer selection">
-              <mat-chip-row *ngFor="let author of contentForm.controls.trackContacts.value; trackBy: trackByIndex"
-                (removed)="removeEmployee(author, 'trackContacts')">
+              <mat-chip-row
+                *ngFor="let author of contentForm.controls.trackContacts.value; trackBy: trackByIndex"
+                (removed)="removeEmployee(author, 'trackContacts')"
+              >
                 {{ author.name }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
-              <input i18n-placeholder placeholder="Search by email..." #trackContactsView
-                [formControl]="trackContactsCtrl" [matChipInputFor]="reviewerChipList"
-                [matAutocomplete]="reivewerAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
+              <input
+                i18n-placeholder
+                placeholder="Search by email..."
+                #trackContactsView
+                [formControl]="trackContactsCtrl"
+                [matChipInputFor]="reviewerChipList"
+                [matAutocomplete]="reivewerAuto"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="false"
+                (matChipInputTokenEnd)="removeField($event)"
+              />
             </mat-chip-grid>
-            <mat-autocomplete #reivewerAuto="matAutocomplete"
-              (optionSelected)="addEmployee($event, 'trackContacts')">
+            <mat-autocomplete #reivewerAuto="matAutocomplete" (optionSelected)="addEmployee($event, 'trackContacts')">
               <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
               <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
-                No user found. Please check the value entered.</mat-option>
+                No user found. Please check the value entered.</mat-option
+              >
               <mat-option *ngFor="let author of employeeList; trackBy: trackByIndex" [value]="author">
                 {{ author.displayName }} | {{ author.mail }}
               </mat-option>
@@ -195,25 +229,33 @@
         </div>
 
         <div [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
-          <mat-form-field appearance="outline" class="em-field"
-            [ngClass]="{ 'mat-form-field-invalid': showError('publisherDetails') }">
+          <mat-form-field appearance="outline" class="em-field" [ngClass]="{ 'mat-form-field-invalid': showError('publisherDetails') }">
             <mat-label [ngClass]="{ required: checkCondition('publisherDetails', 'required') }" i18n>Publishers</mat-label>
             <mat-chip-grid #publisherChipList aria-label="Publisher selection">
-              <mat-chip-row *ngFor="let author of contentForm.controls.publisherDetails.value; trackBy: trackByIndex"
-                (removed)="removeEmployee(author, 'publisherDetails')">
+              <mat-chip-row
+                *ngFor="let author of contentForm.controls.publisherDetails.value; trackBy: trackByIndex"
+                (removed)="removeEmployee(author, 'publisherDetails')"
+              >
                 {{ author.name }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
-              <input i18n-placeholder placeholder="Search by email..." #publisherDetailsView
-                [formControl]="publisherDetailsCtrl" [matChipInputFor]="publisherChipList"
-                [matAutocomplete]="publisherAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
+              <input
+                i18n-placeholder
+                placeholder="Search by email..."
+                #publisherDetailsView
+                [formControl]="publisherDetailsCtrl"
+                [matChipInputFor]="publisherChipList"
+                [matAutocomplete]="publisherAuto"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="false"
+                (matChipInputTokenEnd)="removeField($event)"
+              />
             </mat-chip-grid>
-            <mat-autocomplete #publisherAuto="matAutocomplete"
-              (optionSelected)="addEmployee($event, 'publisherDetails')">
+            <mat-autocomplete #publisherAuto="matAutocomplete" (optionSelected)="addEmployee($event, 'publisherDetails')">
               <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
               <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
-                No user found. Please check the value entered.</mat-option>
+                No user found. Please check the value entered.</mat-option
+              >
               <mat-option *ngFor="let author of employeeList; trackBy: trackByIndex" [value]="author">
                 {{ author.displayName }} | {{ author.mail }}
               </mat-option>
@@ -223,25 +265,33 @@
         </div>
 
         <div [ngClass]="{ disable: checkCondition('creatorContacts', 'disabled') }">
-          <mat-form-field appearance="outline" class="em-field"
-            [ngClass]="{ 'mat-form-field-invalid': showError('creatorContacts') }">
+          <mat-form-field appearance="outline" class="em-field" [ngClass]="{ 'mat-form-field-invalid': showError('creatorContacts') }">
             <mat-label i18n>Curators / Contacts</mat-label>
             <mat-chip-grid #creatorChipList aria-label="Creator selection">
-              <mat-chip-row *ngFor="let author of contentForm.controls.creatorContacts.value; trackBy: trackByIndex"
-                (removed)="removeEmployee(author, 'creatorContacts')">
+              <mat-chip-row
+                *ngFor="let author of contentForm.controls.creatorContacts.value; trackBy: trackByIndex"
+                (removed)="removeEmployee(author, 'creatorContacts')"
+              >
                 {{ author.name }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
-              <input i18n-placeholder placeholder="Search by email..." #creatorContactsView
-                [formControl]="creatorContactsCtrl" [matChipInputFor]="creatorChipList"
-                [matAutocomplete]="creatorAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
+              <input
+                i18n-placeholder
+                placeholder="Search by email..."
+                #creatorContactsView
+                [formControl]="creatorContactsCtrl"
+                [matChipInputFor]="creatorChipList"
+                [matAutocomplete]="creatorAuto"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="false"
+                (matChipInputTokenEnd)="removeField($event)"
+              />
             </mat-chip-grid>
-            <mat-autocomplete #creatorAuto="matAutocomplete"
-              (optionSelected)="addEmployee($event, 'creatorContacts')">
+            <mat-autocomplete #creatorAuto="matAutocomplete" (optionSelected)="addEmployee($event, 'creatorContacts')">
               <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
               <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
-                No user found. Please check the value entered.</mat-option>
+                No user found. Please check the value entered.</mat-option
+              >
               <mat-option *ngFor="let author of employeeList; trackBy: trackByIndex" [value]="author">
                 {{ author.displayName }} | {{ author.mail }}
               </mat-option>
@@ -251,25 +301,33 @@
         </div>
 
         <div [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
-          <mat-form-field appearance="outline" class="em-field"
-            [ngClass]="{ 'mat-form-field-invalid': showError('creatorDetails') }">
+          <mat-form-field appearance="outline" class="em-field" [ngClass]="{ 'mat-form-field-invalid': showError('creatorDetails') }">
             <mat-label i18n>Authors</mat-label>
             <mat-chip-grid #creatorDetailsChipList aria-label="Original Author selection">
-              <mat-chip-row *ngFor="let author of contentForm.controls.creatorDetails.value; trackBy: trackByIndex"
-                (removed)="removeCreatorDetails(author)">
+              <mat-chip-row
+                *ngFor="let author of contentForm.controls.creatorDetails.value; trackBy: trackByIndex"
+                (removed)="removeCreatorDetails(author)"
+              >
                 {{ author.name }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
-              <input i18n-placeholder placeholder="Enter name..." #creatorDetailsView
-                [formControl]="creatorDetailsCtrl" [matChipInputFor]="creatorDetailsChipList"
-                [matAutocomplete]="originalAuthorsAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="addCreatorDetails($event)" />
+              <input
+                i18n-placeholder
+                placeholder="Enter name..."
+                #creatorDetailsView
+                [formControl]="creatorDetailsCtrl"
+                [matChipInputFor]="creatorDetailsChipList"
+                [matAutocomplete]="originalAuthorsAuto"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="false"
+                (matChipInputTokenEnd)="addCreatorDetails($event)"
+              />
             </mat-chip-grid>
-            <mat-autocomplete #originalAuthorsAuto="matAutocomplete"
-              (optionSelected)="addEmployee($event, 'creatorDetails')">
+            <mat-autocomplete #originalAuthorsAuto="matAutocomplete" (optionSelected)="addEmployee($event, 'creatorDetails')">
               <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
               <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
-                No user found. Please check the value entered.</mat-option>
+                No user found. Please check the value entered.</mat-option
+              >
               <mat-option *ngFor="let author of employeeList; trackBy: trackByIndex" [value]="author">
                 {{ author.displayName }} | {{ author.mail }}
               </mat-option>
@@ -285,8 +343,7 @@
       <button mat-stroked-button class="em-btn-draft" type="button" (click)="sideNavBarOpened = false">
         <span i18n>Cancel</span>
       </button>
-      <button mat-flat-button class="em-btn-next" type="button"
-        (click)="data.emit('save'); isSubmitPressed = true">
+      <button mat-flat-button class="em-btn-next" type="button" (click)="data.emit('save'); isSubmitPressed = true">
         <span i18n>Save Settings</span>
       </button>
     </div>
@@ -294,170 +351,202 @@
 
   <!-- ── Main Content ────────────────────────────────────────────────────── -->
   <div id="edit-meta" [ngClass]="{ disable: !isEditEnabled }">
-  <div class="em-page">
+    <div class="em-page">
+      <!-- ── 2-column page grid ── -->
+      <div class="em-grid">
+        <!-- ══ LEFT COLUMN ════════════════════════════════════════════════ -->
+        <div class="em-col-left">
+          <!-- Card: Basic Information -->
+          <div class="em-card">
+            <div class="em-card-header">
+              <span class="em-card-icon"><mat-icon>edit_note</mat-icon></span>
+              <div>
+                <h3 class="em-card-title" i18n>Basic Information</h3>
+                <p class="em-card-sub" i18n>Core details learners will see</p>
+              </div>
+            </div>
+            <div class="em-card-body">
+              <ng-container *ngIf="metaLoaded">
+                <mat-form-field appearance="outline" class="em-field" [ngClass]="{ 'mat-form-field-invalid': showError('name') }">
+                  <mat-label i18n>Course Name <span class="em-req">*</span></mat-label>
+                  <input
+                    matInput
+                    trim="blur"
+                    formControlName="name"
+                    #name
+                    maxlength="500"
+                    (keyup)="setPurposeValue(name.value)"
+                    i18n-placeholder
+                    placeholder="e.g., Advanced Infection Control Practices"
+                  />
+                  <mat-hint>{{ name.value.length }} / 500 <span i18n>characters</span></mat-hint>
+                  <mat-error i18n>Course name is required</mat-error>
+                </mat-form-field>
 
+                <mat-form-field appearance="outline" class="em-field" [ngClass]="{ 'mat-form-field-invalid': showError('subTitle') }">
+                  <mat-label i18n>Subtitle <span class="em-req">*</span></mat-label>
+                  <input
+                    matInput
+                    trim="blur"
+                    formControlName="subTitle"
+                    #subTitle
+                    maxlength="500"
+                    (keyup)="setPurposeValue(subTitle.value)"
+                    [required]="checkCondition('subTitle', 'required') ? true : null"
+                    i18n-placeholder
+                    placeholder="Short summary displayed to learners"
+                  />
+                  <mat-hint>{{ subTitle.value.length }} / 500 <span i18n>characters</span></mat-hint>
+                  <mat-error i18n>Subtitle is required</mat-error>
+                </mat-form-field>
 
-    <!-- ── 2-column page grid ── -->
-    <div class="em-grid">
-
-      <!-- ══ LEFT COLUMN ════════════════════════════════════════════════ -->
-      <div class="em-col-left">
-
-        <!-- Card: Basic Information -->
-        <div class="em-card">
-          <div class="em-card-header">
-            <span class="em-card-icon"><mat-icon>edit_note</mat-icon></span>
-            <div>
-              <h3 class="em-card-title" i18n>Basic Information</h3>
-              <p class="em-card-sub" i18n>Core details learners will see</p>
+                <mat-form-field
+                  appearance="outline"
+                  class="em-field"
+                  hideRequiredMarker
+                  [ngClass]="{ 'mat-form-field-invalid': showError('lang') }"
+                >
+                  <mat-label i18n>Course Language <span class="em-req">*</span></mat-label>
+                  <mat-select formControlName="lang">
+                    <mat-option *ngFor="let lang of languageList; trackBy: trackByIndex" [value]="lang.value">{{ lang.name }}</mat-option>
+                  </mat-select>
+                  <mat-hint i18n>Primary language of the course content</mat-hint>
+                  <mat-error i18n>Language is required</mat-error>
+                </mat-form-field>
+              </ng-container>
             </div>
           </div>
-          <div class="em-card-body">
-            <ng-container *ngIf="metaLoaded">
-            <mat-form-field appearance="outline" class="em-field"
-              [ngClass]="{ 'mat-form-field-invalid': showError('name') }">
-              <mat-label i18n>Course Name <span class="em-req">*</span></mat-label>
-              <input matInput trim="blur" formControlName="name" #name maxlength="500"
-                (keyup)="setPurposeValue(name.value)"
-                i18n-placeholder placeholder="e.g., Advanced Infection Control Practices" />
-              <mat-hint>{{ name.value.length }} / 500 <span i18n>characters</span></mat-hint>
-              <mat-error i18n>Course name is required</mat-error>
-            </mat-form-field>
 
-            <mat-form-field appearance="outline" class="em-field"
-              [ngClass]="{ 'mat-form-field-invalid': showError('subTitle') }">
-              <mat-label i18n>Subtitle <span class="em-req">*</span></mat-label>
-              <input matInput trim="blur" formControlName="subTitle" #subTitle maxlength="500"
-                (keyup)="setPurposeValue(subTitle.value)"
-                [required]="checkCondition('subTitle', 'required') ? true : null"
-                i18n-placeholder placeholder="Short summary displayed to learners" />
-              <mat-hint>{{ subTitle.value.length }} / 500 <span i18n>characters</span></mat-hint>
-              <mat-error i18n>Subtitle is required</mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="em-field" hideRequiredMarker
-              [ngClass]="{ 'mat-form-field-invalid': showError('lang') }">
-              <mat-label i18n>Course Language <span class="em-req">*</span></mat-label>
-              <mat-select formControlName="lang">
-                <mat-option *ngFor="let lang of languageList; trackBy: trackByIndex" [value]="lang.value">{{ lang.name }}</mat-option>
-              </mat-select>
-              <mat-hint i18n>Primary language of the course content</mat-hint>
-              <mat-error i18n>Language is required</mat-error>
-            </mat-form-field>
-            </ng-container>
-          </div>
-        </div>
-
-        <!-- Card: Course Description -->
-        <div class="em-card" [ngClass]="{ disable: checkCondition('instructions', 'disabled') }">
-          <div class="em-card-header">
-            <span class="em-card-icon"><mat-icon>subject</mat-icon></span>
-            <div>
-              <h3 class="em-card-title" i18n>Course Description</h3>
-              <p class="em-card-sub" i18n>Objectives, audience and key learning outcomes</p>
+          <!-- Card: Course Description -->
+          <div class="em-card" [ngClass]="{ disable: checkCondition('instructions', 'disabled') }">
+            <div class="em-card-header">
+              <span class="em-card-icon"><mat-icon>subject</mat-icon></span>
+              <div>
+                <h3 class="em-card-title" i18n>Course Description</h3>
+                <p class="em-card-sub" i18n>Objectives, audience and key learning outcomes</p>
+              </div>
             </div>
-          </div>
-          <div class="em-card-body">
-            <div *ngIf="contentForm && contentForm.controls"
-              [ngClass]="{ 'em-editor-error': showError('instructions') }">
-              <ws-auth-plain-ckeditor [editCoursePage]="'yes'" [editMeta]="editMeta" [location]="location"
-                [id]="contentMeta.identifier" [content]="contentForm.controls.instructions.value || ''"
-                (value)="updateContentService('instructions', $event)">
-              </ws-auth-plain-ckeditor>
-              <p class="em-editor-hint" i18n>Describe your course in 1–4 paragraphs</p>
-              <mat-error *ngIf="showError('instructions')" i18n>Description is required</mat-error>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /em-col-left -->
-
-      <!-- ══ RIGHT COLUMN ═══════════════════════════════════════════════ -->
-      <div class="em-col-right">
-
-        <!-- Card: Thumbnail -->
-        <div class="em-card" [ngClass]="{ disable: checkCondition('appIcon', 'disabled') }">
-          <div class="em-card-header">
-            <span class="em-card-icon"><mat-icon>image</mat-icon></span>
-            <div>
-              <h3 class="em-card-title" i18n>Course Thumbnail <span class="em-req">*</span></h3>
-              <p class="em-card-sub" i18n>760 × 400 px · JPG or PNG · max 1 MB</p>
-            </div>
-          </div>
-          <div class="em-card-body">
-            <ng-container *ngIf="metaLoaded">
-            <!-- Preview after upload -->
-            <div *ngIf="contentForm.controls.appIcon.value" class="em-thumb-preview">
-              <img [src]="contentForm.controls.appIcon.value" alt="Thumbnail preview"
-                class="em-thumb-img" (error)="changeToDefaultImg($event)" />
-              <button mat-stroked-button class="em-thumb-replace" type="button"
-                (click)="uploadThumbnail.click()">
-                <mat-icon>swap_horiz</mat-icon> <span i18n>Replace Image</span>
-              </button>
-            </div>
-
-            <!-- Drop zone (no image) -->
-            <div *ngIf="!contentForm.controls.appIcon.value" class="em-dropzone"
-              (click)="uploadThumbnail.click()"
-              (dragover)="$event.preventDefault()"
-              (drop)="$event.preventDefault(); uploadAppIcon($event.dataTransfer.files[0])">
-              <mat-icon class="em-dz-icon">cloud_upload</mat-icon>
-              <p class="em-dz-title" i18n>Drag & drop or <span class="em-dz-link">browse</span></p>
-              <p class="em-dz-meta" i18n>JPG, PNG · 760 × 400 px · max 1 MB</p>
-            </div>
-
-            <input type="file" #uploadThumbnail
-              (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null"
-              style="display:none" [accept]="imageTypes.toString()" />
-            </ng-container>
-          </div>
-        </div>
-
-        <!-- Card: Competencies -->
-        <div class="em-card">
-          <div class="em-card-header">
-            <span class="em-card-icon"><mat-icon>school</mat-icon></span>
-            <div>
-              <h3 class="em-card-title" i18n>Competencies</h3>
-              <p class="em-card-sub" i18n>Map required skills to this course</p>
-            </div>
-            <button mat-flat-button class="em-add-comp-btn" (click)="addCompetency()" type="button">
-              <mat-icon>add</mat-icon> <span i18n>Add</span>
-            </button>
-          </div>
-          <div class="em-card-body em-comp-body">
-
-            <!-- Empty state -->
-            <div *ngIf="!addedCompetency || addedCompetency?.length === 0" class="em-comp-empty">
-              <mat-icon class="em-comp-empty-icon">radar</mat-icon>
-              <p class="em-comp-empty-title" i18n>No competencies added yet</p>
-              <p class="em-comp-empty-sub" i18n>Add at least one competency before publishing</p>
-              <button mat-stroked-button class="em-comp-cta" (click)="addCompetency()" type="button">
-                <mat-icon>add_circle_outline</mat-icon> <span i18n>Add Competency</span>
-              </button>
-            </div>
-
-            <!-- Competency cards -->
-            <div *ngIf="addedCompetency?.length > 0" class="em-comp-list">
-              <div *ngFor="let comp of addedCompetency; trackBy: trackByIndex" class="em-comp-chip">
-                <div class="em-comp-info">
-                  <span class="em-comp-code">{{ comp.Code }}</span>
-                  <span class="em-comp-name">{{ comp.competencyName }}</span>
-                  <span *ngIf="comp.level" class="em-comp-level" i18n>Level {{ comp.level }}</span>
-                </div>
-                <button class="em-comp-del" type="button"
-                  (click)="deleteCompetancy(comp)" aria-label="Remove">
-                  <mat-icon>close</mat-icon>
-                </button>
+            <div class="em-card-body">
+              <div *ngIf="contentForm && contentForm.controls" [ngClass]="{ 'em-editor-error': showError('instructions') }">
+                <ws-auth-plain-ckeditor
+                  [editCoursePage]="'yes'"
+                  [editMeta]="editMeta"
+                  [location]="location"
+                  [id]="contentMeta.identifier"
+                  [content]="contentForm.controls.instructions.value || ''"
+                  (value)="updateContentService('instructions', $event)"
+                >
+                </ws-auth-plain-ckeditor>
+                <p class="em-editor-hint" i18n>Describe your course in 1–4 paragraphs</p>
+                <p class="em-editor-hint" [style.color]="instructionsByteLength > maxInstructionsBytes ? '#d9534f' : '#808080'">
+                  {{ instructionsByteLength }} / {{ maxInstructionsBytes }} bytes
+                </p>
+                <mat-error *ngIf="showError('instructions') && contentForm.controls.instructions.hasError('required')" i18n
+                  >Description is required</mat-error
+                >
+                <mat-error *ngIf="contentForm.controls.instructions.hasError('maxByteLength')" i18n>
+                  Description is too long ({{ instructionsByteLength }}/{{ maxInstructionsBytes }} bytes). Please shorten it.
+                </mat-error>
               </div>
             </div>
           </div>
         </div>
+        <!-- /em-col-left -->
 
-      </div><!-- /em-col-right -->
-    </div><!-- /em-grid -->
+        <!-- ══ RIGHT COLUMN ═══════════════════════════════════════════════ -->
+        <div class="em-col-right">
+          <!-- Card: Thumbnail -->
+          <div class="em-card" [ngClass]="{ disable: checkCondition('appIcon', 'disabled') }">
+            <div class="em-card-header">
+              <span class="em-card-icon"><mat-icon>image</mat-icon></span>
+              <div>
+                <h3 class="em-card-title" i18n>Course Thumbnail <span class="em-req">*</span></h3>
+                <p class="em-card-sub" i18n>760 × 400 px · JPG or PNG · max 1 MB</p>
+              </div>
+            </div>
+            <div class="em-card-body">
+              <ng-container *ngIf="metaLoaded">
+                <!-- Preview after upload -->
+                <div *ngIf="contentForm.controls.appIcon.value" class="em-thumb-preview">
+                  <img
+                    [src]="contentForm.controls.appIcon.value"
+                    alt="Thumbnail preview"
+                    class="em-thumb-img"
+                    (error)="changeToDefaultImg($event)"
+                  />
+                  <button mat-stroked-button class="em-thumb-replace" type="button" (click)="uploadThumbnail.click()">
+                    <mat-icon>swap_horiz</mat-icon> <span i18n>Replace Image</span>
+                  </button>
+                </div>
 
+                <!-- Drop zone (no image) -->
+                <div
+                  *ngIf="!contentForm.controls.appIcon.value"
+                  class="em-dropzone"
+                  (click)="uploadThumbnail.click()"
+                  (dragover)="$event.preventDefault()"
+                  (drop)="$event.preventDefault(); uploadAppIcon($event.dataTransfer.files[0])"
+                >
+                  <mat-icon class="em-dz-icon">cloud_upload</mat-icon>
+                  <p class="em-dz-title" i18n>Drag & drop or <span class="em-dz-link">browse</span></p>
+                  <p class="em-dz-meta" i18n>JPG, PNG · 760 × 400 px · max 1 MB</p>
+                </div>
 
-  </div><!-- /em-page -->
-  </div><!-- /edit-meta -->
+                <input
+                  type="file"
+                  #uploadThumbnail
+                  (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null"
+                  style="display: none"
+                  [accept]="imageTypes.toString()"
+                />
+              </ng-container>
+            </div>
+          </div>
+
+          <!-- Card: Competencies -->
+          <div class="em-card">
+            <div class="em-card-header">
+              <span class="em-card-icon"><mat-icon>school</mat-icon></span>
+              <div>
+                <h3 class="em-card-title" i18n>Competencies</h3>
+                <p class="em-card-sub" i18n>Map required skills to this course</p>
+              </div>
+              <button mat-flat-button class="em-add-comp-btn" (click)="addCompetency()" type="button">
+                <mat-icon>add</mat-icon> <span i18n>Add</span>
+              </button>
+            </div>
+            <div class="em-card-body em-comp-body">
+              <!-- Empty state -->
+              <div *ngIf="!addedCompetency || addedCompetency?.length === 0" class="em-comp-empty">
+                <mat-icon class="em-comp-empty-icon">radar</mat-icon>
+                <p class="em-comp-empty-title" i18n>No competencies added yet</p>
+                <p class="em-comp-empty-sub" i18n>Add at least one competency before publishing</p>
+                <button mat-stroked-button class="em-comp-cta" (click)="addCompetency()" type="button">
+                  <mat-icon>add_circle_outline</mat-icon> <span i18n>Add Competency</span>
+                </button>
+              </div>
+
+              <!-- Competency cards -->
+              <div *ngIf="addedCompetency?.length > 0" class="em-comp-list">
+                <div *ngFor="let comp of addedCompetency; trackBy: trackByIndex" class="em-comp-chip">
+                  <div class="em-comp-info">
+                    <span class="em-comp-code">{{ comp.Code }}</span>
+                    <span class="em-comp-name">{{ comp.competencyName }}</span>
+                    <span *ngIf="comp.level" class="em-comp-level" i18n>Level {{ comp.level }}</span>
+                  </div>
+                  <button class="em-comp-del" type="button" (click)="deleteCompetancy(comp)" aria-label="Remove">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /em-col-right -->
+      </div>
+      <!-- /em-grid -->
+    </div>
+    <!-- /em-page -->
+  </div>
+  <!-- /edit-meta -->
 </form>
