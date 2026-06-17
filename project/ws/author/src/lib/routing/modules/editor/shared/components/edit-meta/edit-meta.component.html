@@ -445,8 +445,7 @@
                   >Description is required</mat-error
                 >
                 <mat-error *ngIf="contentForm.controls.instructions.hasError('maxByteLength')" i18n>
-                  Description is too long ({{ instructionsByteLength }}/{{ maxInstructionsBytes }} bytes). Please shorten it or remove heavy
-                  formatting pasted from Word/Docs — over-long descriptions break content search indexing.
+                  Description is too long ({{ instructionsByteLength }}/{{ maxInstructionsBytes }} bytes). Please shorten it.
                 </mat-error>
               </div>
             </div>
