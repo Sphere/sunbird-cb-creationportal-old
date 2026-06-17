@@ -101,34 +101,34 @@ Before cutting the release, align the version metadata so it isn't stale:
 - The internal library/project `package.json`s (`@ws-widget/*`, `@ws/*`) are path-aliased
   and never published, so leave them unless the user asks.
 
-### 8. Report, then create the release branch
+### 8. Land the version bump + note on `main` via a PR (never push to `main` directly)
 
-Print the note path and a one-line recap. Then create the **release branch** — the
-deploy source the manual Jenkins job points at. Pushing it is **safe** (it does not
-auto-deploy), so just confirm the branch name with the user (don't invent it):
-
-- **Branch name** — e.g. `cbp-release-<version>` or `release/<version>`.
+The bump + note from steps 6–7 are done on a **prep branch**, then merged to `main` through a PR — `main` is protected and we never push to it directly. `gh` is **not installed**; create + merge the PR via the GitHub REST API (auth with the token from `git credential fill`, never print it).
 
 ```bash
-git switch -c <branch-name>     # from the release commit
-git push origin <branch-name>   # safe: provides the deploy source, does NOT ship
+git push -u origin <prep-branch>
+# POST /repos/Sphere/sunbird-cb-creationportal-old/pulls  (head=<prep-branch>, base=main)
+# then PUT  /repos/Sphere/sunbird-cb-creationportal-old/pulls/<n>/merge
 ```
 
-Remind the user the actual deploy is the separate **manual Jenkins build** against that branch.
+Then **sync `development`** to `main` (`git push origin main:development`); promote to `stage` when promoting.
 
-### 9. Tag the release **and** publish the GitHub Release (do both together)
+### 9. Cut the build branch + tag, then publish the GitHub Release
 
-A release isn't finished at the branch — once the build is deployed, tagging **always** also publishes the GitHub Release in the same flow (don't stop at the tag). Confirm the exact **deployed commit** if it's ambiguous (the Jenkins build ref), then tag that commit.
+From the merged `main` commit, create the two release artifacts. **The build branch and the tag MUST have different names** — a same-named branch+tag is an ambiguous git ref.
 
 ```bash
-# Annotated tag at the deployed commit. Use the .Z patch form (cbp-release-X.Y.Z) —
-# a branch named cbp-release-X.Y already exists, so a bare cbp-release-X.Y tag would
-# create an ambiguous ref.
-git tag -a cbp-release-<X.Y.Z> <deployed-commit> -m "Production release <X.Y.Z>"
-git push origin cbp-release-<X.Y.Z>
+# Build branch — what Jenkins deploys from (deploy is from a BRANCH, not a tag).
+# A NEW branch per release; never advance a previous/frozen release branch.
+git branch cbp-release-<X.Y.Z> <release-commit>
+git push origin refs/heads/cbp-release-<X.Y.Z>:refs/heads/cbp-release-<X.Y.Z>
+
+# Tag — immutable marker for the GitHub Release. Note the `v` prefix (distinct from the branch).
+git tag -a v<X.Y.Z> <release-commit> -m "Production release <X.Y.Z> (build branch: cbp-release-<X.Y.Z>)"
+git push origin v<X.Y.Z>
 ```
 
-Then publish the GitHub Release from that tag, using the note as the body. **`gh` is NOT installed** in this environment — authenticate the REST call with the token from `git credential fill` (never print it):
+Then publish the GitHub Release from the **`v<X.Y.Z>` tag**, body = the note (`gh` not installed → REST API with the `git credential fill` token):
 
 ```bash
 CRED=$(printf "protocol=https\nhost=github.com\n\n" | git credential fill)
@@ -140,19 +140,20 @@ const body=fs.readFileSync("RELEASE_NOTES/<version>.md","utf8");
   const r=await fetch("https://api.github.com/repos/Sphere/sunbird-cb-creationportal-old/releases",{
     method:"POST",
     headers:{Authorization:`Bearer ${process.env.GITHUB_TOKEN}`,Accept:"application/vnd.github+json","User-Agent":"release-script","X-GitHub-Api-Version":"2022-11-28"},
-    body:JSON.stringify({tag_name:"cbp-release-<X.Y.Z>",name:"<X.Y.Z> — <title>",body,draft:false,prerelease:false})
+    body:JSON.stringify({tag_name:"v<X.Y.Z>",name:"<X.Y.Z> — <title>",body,draft:false,prerelease:false})
   });
   const j=await r.json();
   console.log("HTTP",r.status, j.html_url||JSON.stringify(j.errors||j.message));
 })();'
 ```
 
-HTTP 201 = published. Report the release URL. (Proven for 5.0.0.)
+HTTP 201 = published. Report the release URL. **Deploy** = point the manual Jenkins job at the **build branch** `cbp-release-<X.Y.Z>` (proven for 5.0.0 / 5.0.1).
 
 ## Rules
 
 - **Never invent changes.** Every bullet must trace to a real commit sha in the range. If the range is empty, say so and stop.
-- **Confirm the release branch name before creating it** (don't invent it). Pushing the branch is safe — it's the deploy _source_, not the deploy itself; the actual ship is a separate manual Jenkins build (see step 8).
+- **Never push to `main` directly** — the bump + note land via a PR (step 8). **Never advance a previous/frozen release branch** (`cbp-release-5.0` stays pinned); each release gets its **own new** `cbp-release-<X.Y.Z>` build branch.
+- **Deploy is from the build BRANCH, not the tag.** Branch `cbp-release-<X.Y.Z>` (Jenkins deploy source) and tag `v<X.Y.Z>` (GitHub Release marker) **must have different names** — a same-named branch+tag is an ambiguous git ref.
+- **Tag ⇒ Release, always together** (step 9): when asked only to "create the tag/release", still do the whole step — `v<X.Y.Z>` tag + GitHub Release from it.
 - **Keep it readable by non-engineers** in Summary and Features; keep `Deploy notes & risk` honest for on-call.
 - Match the repo's existing tone; reuse the gotcha framing from the `build-and-deploy` skill rather than re-explaining it.
-- **Tag ⇒ Release, always together** (step 9). When asked only to "create the tag", still publish the GitHub Release in the same flow. Tag the **deployed** commit, and use the `cbp-release-X.Y.Z` form (not the bare `cbp-release-X.Y`, which collides with the branch name).
