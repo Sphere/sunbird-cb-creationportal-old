@@ -163,10 +163,22 @@ git checkout -b feature/<short-name>                # or fix/<short-name>
 git push -u origin feature/<short-name>             # open a PR INTO main
 ```
 
-- **Branch from `main`, not `cbp-release-*`.** `main` holds the same stable code but is meant to advance; a release branch must stay frozen to its release (the `cbp-release-<X.Y.Z>` tag is the real prod marker). Branching features off a release branch breaks that.
-- **Promotion / deploy:** verify `main` through `development` → `stage`, then cut/update `cbp-release-<X.Y>` for prod. Run the `release-notes` skill: it writes the note, cuts/updates the release branch, and (post-deploy) creates the `cbp-release-<X.Y.Z>` tag + GitHub Release.
-- **Production is marked by the tag** `cbp-release-<X.Y.Z>` + the GitHub Release (the immutable record) — branches keep moving, the tag does not.
+- **Branch from `main`, not `cbp-release-*`.** `main` holds the same stable code but is meant to advance; a release branch is frozen to its release. Branching features off a release branch breaks that.
+- **Deploy is from a BRANCH, not a tag.** The manual Jenkins job (`github_release_tag`) is pointed at a per-release **build branch** `cbp-release-<X.Y.Z>`. Each release gets its **own new** build branch cut from `main`; **never advance a previous/frozen release branch** (e.g. `cbp-release-5.0` stays pinned).
+- **The tag is `v<X.Y.Z>`** (immutable marker + GitHub Release). The build branch and the tag **must have different names** — a same-named branch+tag is an ambiguous git ref. So: branch `cbp-release-<X.Y.Z>`, tag `v<X.Y.Z>`.
 - Old Angular 8 history is archived in tags (`angular-8-final`, `development-angular-8-final`, `angular21-migration-pr-archive`); the active branches are all Angular 21.
+
+### Release runbook (when cutting a release)
+
+Run the `release-notes` skill — it automates most of this. The full, ordered flow:
+
+1. **Verify green:** lint + unit tests/coverage + production build all pass.
+2. **On a prep branch** (never push to `main` directly): bump the version in `package.json` + `README.md` + `CLAUDE.md`, and write `RELEASE_NOTES/<X.Y.Z>.md` (diff vs the previous release tag; follow `RELEASE_NOTES/TEMPLATE.md`).
+3. **PR → merge** the prep branch into `main`.
+4. **Sync `development`** to `main` (and promote to `stage` when promoting).
+5. From the merged `main` commit, cut the **build branch `cbp-release-<X.Y.Z>`** and the **tag `v<X.Y.Z>`**.
+6. **Publish the GitHub Release** from the `v<X.Y.Z>` tag (body = the release note).
+7. **Deploy** by pointing the Jenkins job at the **build branch** `cbp-release-<X.Y.Z>`. Rollback = re-run against the previous release branch/tag.
 
 ---
 
