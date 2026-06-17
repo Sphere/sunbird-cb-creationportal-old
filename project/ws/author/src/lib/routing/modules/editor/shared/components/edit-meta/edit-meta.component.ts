@@ -17,6 +17,12 @@ import {
 
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 
+import {
+  MAX_INSTRUCTIONS_BYTES,
+  maxByteLengthValidator,
+  utf8ByteLength,
+} from '@ws/author/src/lib/modules/shared/validators/byte-length.validator'
+
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete'
 import { MatChipInputEvent } from '@angular/material/chips'
 
@@ -68,7 +74,6 @@ import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-po
 
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
 
-
 import {
   debounceTime,
   distinctUntilChanged,
@@ -81,7 +86,6 @@ import {
 import { Router } from '@angular/router'
 
 import { NSApiRequest } from '../../../../../../interface/apiRequest'
-
 
 // import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.service'
 
@@ -164,32 +168,30 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   selfAssessment!: FormControl
   //issueCertification!: FormControl
   bucket: string = ''
-  certificateList: any[] = [
-    'Yes', 'No'
-  ]
+  certificateList: any[] = ['Yes', 'No']
   languageList: any[] = [
     {
-      "name": 'English',
-      "value": 'en'
+      name: 'English',
+      value: 'en',
     },
     {
-      "name": 'Hindi',
-      "value": 'hi'
+      name: 'Hindi',
+      value: 'hi',
     },
     {
-      "name": 'Kannada',
-      "value": 'kn'
+      name: 'Kannada',
+      value: 'kn',
     },
     {
-      "name": 'Assamese',
-      "value": 'as'
+      name: 'Assamese',
+      value: 'as',
     },
     {
-      "name": 'Odia',
-      "value": 'or'
+      name: 'Odia',
+      value: 'or',
     },
   ]
-  isAddCerticate: boolean = false;
+  isAddCerticate: boolean = false
   resourceDurat: any = []
   sumDuration: any
   proficiencyList: any
@@ -213,9 +215,9 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   saveParent: any
   languageList$!: Observable<any[]>
   //UI variables
-  moduleName: string = 'undefined title';
-  isSaveModuleFormEnable: boolean = false;
-  moduleButtonName: string = 'Create';
+  moduleName: string = 'undefined title'
+  isSaveModuleFormEnable: boolean = false
+  moduleButtonName: string = 'Create'
   fieldActive!: boolean
   isFormValid!: boolean
   competencies: any
@@ -241,8 +243,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     private http: HttpClient,
     private router: Router,
   ) {
-
-
     // this.authInitService.publishMessage.subscribe(
     //   (data: any) => {
     //     console.log("edit-meta", data)
@@ -429,14 +429,16 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       )
       .subscribe(() => this.fetchRegion())
 
-    this.accessPathsCtrl.valueChanges.pipe(
-      debounceTime(400),
-      filter(v => v),
-    ).subscribe(() => this.fetchAccessRestrictions())
+    this.accessPathsCtrl.valueChanges
+      .pipe(
+        debounceTime(400),
+        filter(v => v),
+      )
+      .subscribe(() => this.fetchAccessRestrictions())
 
     this.saveTriggerSub = this.contentService.changeActiveCont.subscribe(data => {
       // tslint:disable-next-line:no-console
-      console.log("data", data)
+      console.log('data', data)
       if (this.contentMeta && this.canUpdate) {
         this.storeData()
       }
@@ -481,7 +483,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     const dialogRef = this.dialog.open(CompetencyPopupComponent, {
       width: '40%',
       maxHeight: '90vh',
-      data: this.selectedSelfCompetency
+      data: this.selectedSelfCompetency,
     })
     dialogRef.afterClosed().subscribe((response: boolean) => {
       // Only refresh (and show the loader) when a competency was actually added.
@@ -515,64 +517,63 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     dialogRef.afterClosed().subscribe((confirm: any) => {
       if (confirm) {
         this.loader.changeLoad.next(true)
-        this.editorService.checkReadAPI(id)
-          .subscribe(async (res: any) => {
-            data = await res.result.content
-            let competencyID: string
-            let arr1: string[] = []
-            let arr2: { competencyName: any; competencyId: any; level: any }[] = []
-            let requestBody: any
-            let meta
-            if (data.competencySearch === undefined) {
-              meta = {
-                versionKey: data.versionKey,
-                competencySearch: [],
-                competency: false,
-                competencies_v1: []
-              }
+        this.editorService.checkReadAPI(id).subscribe(async (res: any) => {
+          data = await res.result.content
+          let competencyID: string
+          let arr1: string[] = []
+          let arr2: { competencyName: any; competencyId: any; level: any }[] = []
+          let requestBody: any
+          let meta
+          if (data.competencySearch === undefined) {
+            meta = {
+              versionKey: data.versionKey,
+              competencySearch: [],
+              competency: false,
+              competencies_v1: [],
+            }
+          } else {
+            arr2 = JSON.parse(data.competencies_v1)
+            if (data.competencySearch) {
+              arr1 = data.competencySearch
+            }
+            if (competency.level) {
+              competencyID = competency.competencyId + '-' + competency.level.toString()
             } else {
-
-              arr2 = JSON.parse(data.competencies_v1)
-              if (data.competencySearch) {
-                arr1 = data.competencySearch
-              }
-              if (competency.level) {
-                competencyID = competency.competencyId + '-' + competency.level.toString()
-              } else {
-                competencyID = competency.competencyId
-              }
-              arr1 = arr1.filter(e => e !== competencyID)
-              for (var n = 0; n < arr2.length; n++) {
-                if (arr2[n].competencyName === competency.competencyName && arr2[n].competencyId === competency.competencyId && arr2[n].level === competency.level) {
-                  arr2.splice(n, 1)
-                  break
-                }
-              }
-
-              meta = {
-                versionKey: data.versionKey,
-                competencySearch: arr1,
-                competency: false,
-                competencies_v1: arr2
+              competencyID = competency.competencyId
+            }
+            arr1 = arr1.filter(e => e !== competencyID)
+            for (var n = 0; n < arr2.length; n++) {
+              if (
+                arr2[n].competencyName === competency.competencyName &&
+                arr2[n].competencyId === competency.competencyId &&
+                arr2[n].level === competency.level
+              ) {
+                arr2.splice(n, 1)
+                break
               }
             }
 
-            requestBody = {
-              request: {
-                content: meta
-              }
+            meta = {
+              versionKey: data.versionKey,
+              competencySearch: arr1,
+              competency: false,
+              competencies_v1: arr2,
             }
-            this.editorService.updateNewContentV3(requestBody, id)
-              .subscribe(
-                (response: any) => {
-                  if (response) {
-                    this.loadCompetancy()
-                  }
-                })
+          }
+
+          requestBody = {
+            request: {
+              content: meta,
+            },
+          }
+          this.editorService.updateNewContentV3(requestBody, id).subscribe((response: any) => {
+            if (response) {
+              this.loadCompetancy()
+            }
           })
+        })
       }
     })
-
   }
 
   checkMandatoryFields() {
@@ -678,8 +679,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   changeCertificate(event: any): void {
     if (event == 'Yes') {
       this.isAddCerticate = true
-    }
-    else {
+    } else {
       this.isAddCerticate = false
     }
   }
@@ -709,8 +709,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   }
 
   private set content(contentMeta: NSContent.IContentMeta) {
-    const isCreator = (this.configSvc.userProfile && this.configSvc.userProfile.userId === contentMeta.createdBy)
-      ? true : false
+    const isCreator = this.configSvc.userProfile && this.configSvc.userProfile.userId === contentMeta.createdBy ? true : false
 
     this.contentMeta = contentMeta
 
@@ -740,9 +739,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     this.canExpiry = this.contentMeta.expiryDate !== '99991231T235959+0000'
     if (this.canExpiry) {
       this.contentMeta.expiryDate =
-        contentMeta.expiryDate && contentMeta.expiryDate.indexOf('+') === 15
-          ? <any>this.convertToISODate(contentMeta.expiryDate)
-          : ''
+        contentMeta.expiryDate && contentMeta.expiryDate.indexOf('+') === 15 ? <any>this.convertToISODate(contentMeta.expiryDate) : ''
     }
     this.contentService.currentContentData = this.contentMeta
     this.contentService.currentContentID = this.contentMeta.identifier
@@ -763,32 +760,32 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     this.ordinals.complexityLevel.map((v: any) => {
       if (v.condition) {
         let canAdd = false
-          // tslint:disable-next-line: whitespace
-          ; (v.condition.showFor || []).map((con: any) => {
-            let innerCondition = false
-            Object.keys(con).map(meta => {
-              if (
-                con[meta].indexOf(
-                  (this.contentForm.controls[meta] && this.contentForm.controls[meta].value) ||
+        // tslint:disable-next-line: whitespace
+        ;(v.condition.showFor || []).map((con: any) => {
+          let innerCondition = false
+          Object.keys(con).map(meta => {
+            if (
+              con[meta].indexOf(
+                (this.contentForm.controls[meta] && this.contentForm.controls[meta].value) ||
                   this.contentMeta[meta as keyof NSContent.IContentMeta],
-                ) > -1
-              ) {
-                innerCondition = true
-              }
-            })
-            if (innerCondition) {
-              canAdd = true
+              ) > -1
+            ) {
+              innerCondition = true
             }
           })
+          if (innerCondition) {
+            canAdd = true
+          }
+        })
         if (canAdd) {
           // tslint:disable-next-line: semicolon // tslint:disable-next-line: whitespace
-          ; (v.condition.nowShowFor || []).map((con: any) => {
+          ;(v.condition.nowShowFor || []).map((con: any) => {
             let innerCondition = false
             Object.keys(con).map(meta => {
               if (
                 con[meta].indexOf(
                   (this.contentForm.controls[meta] && this.contentForm.controls[meta].value) ||
-                  this.contentMeta[meta as keyof NSContent.IContentMeta],
+                    this.contentMeta[meta as keyof NSContent.IContentMeta],
                 ) < 0
               ) {
                 innerCondition = true
@@ -815,9 +812,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   assignExpiryDate() {
     this.canExpiry = !this.canExpiry
     this.contentForm.controls.expiryDate.setValue(
-      this.canExpiry
-        ? new Date(new Date().setMonth(new Date().getMonth() + 6))
-        : '99991231T235959+0000',
+      this.canExpiry ? new Date(new Date().setMonth(new Date().getMonth() + 6)) : '99991231T235959+0000',
     )
   }
   assignFields() {
@@ -832,83 +827,86 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     this.loader.changeLoad.next(true)
     const url = this.router.url
     const id = url.split('/')
-    this.editorService.readcontentV3(id[3]).subscribe((res: any) => {
-      // tslint:disable-next-line:no-console
-      console.log(res)
-      this.contentMeta = res
-      this.contentMeta = res
-      this.contentForm.controls.name.setValue(res.name)
-      this.contentForm.controls.appIcon.setValue(res.appIcon)
-      this.contentForm.controls.thumbnail.setValue(res.appIcon)
-      this.contentForm.controls.instructions.setValue(res.instructions)
-      this.contentForm.controls.lang.setValue(res.lang)
-      this.contentForm.controls.subTitle.setValue(res.subTitle)
-      this.contentForm.controls.sourceName.setValue(res.sourceName)
-      this.contentForm.controls.gatingEnabled.setValue(res.gatingEnabled)
-      this.contentForm.controls.courseVisibility.setValue(res.courseVisibility)
-      this.contentForm.controls.selfAssessment.setValue(res.selfAssessment)
-      if (this.contentForm.controls.selfAssessment.value) {
-        this.selectedSelfCompetency = true
-      }
-      if (res.competencies_v1) {
-        this.getAllEntity()
-        this.competencies = JSON.parse(res.competencies_v1)
-        console.log("this.competencies", res)
-      } else {
-        this.competencies = []
-      }
-      // Latest server data is now in the form — safe to reveal the gated fields.
-      this.metaLoaded = true
-      if (res.children.length > 0) {
-        this.loader.changeLoad.next(true)
-        res.children.forEach((element: any) => {
-          if (element.duration) {
-            this.resourceDurat.push(parseInt(element.duration))
-          }
-          if (element.children && element.children.length > 0) {
-            element.children.forEach((ele: any) => {
-              if (ele.duration) {
-                this.resourceDurat.push(parseInt(ele.duration))
-              }
-            })
-          }
-        })
+    this.editorService.readcontentV3(id[3]).subscribe(
+      (res: any) => {
         // tslint:disable-next-line:no-console
-        console.log(this.resourceDurat)
-        if (this.resourceDurat.length > 0) {
-          this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
+        console.log(res)
+        this.contentMeta = res
+        this.contentMeta = res
+        this.contentForm.controls.name.setValue(res.name)
+        this.contentForm.controls.appIcon.setValue(res.appIcon)
+        this.contentForm.controls.thumbnail.setValue(res.appIcon)
+        this.contentForm.controls.instructions.setValue(res.instructions)
+        this.contentForm.controls.lang.setValue(res.lang)
+        this.contentForm.controls.subTitle.setValue(res.subTitle)
+        this.contentForm.controls.sourceName.setValue(res.sourceName)
+        this.contentForm.controls.gatingEnabled.setValue(res.gatingEnabled)
+        this.contentForm.controls.courseVisibility.setValue(res.courseVisibility)
+        this.contentForm.controls.selfAssessment.setValue(res.selfAssessment)
+        if (this.contentForm.controls.selfAssessment.value) {
+          this.selectedSelfCompetency = true
+        }
+        if (res.competencies_v1) {
+          this.getAllEntity()
+          this.competencies = JSON.parse(res.competencies_v1)
+          console.log('this.competencies', res)
+        } else {
+          this.competencies = []
+        }
+        // Latest server data is now in the form — safe to reveal the gated fields.
+        this.metaLoaded = true
+        if (res.children.length > 0) {
+          this.loader.changeLoad.next(true)
+          res.children.forEach((element: any) => {
+            if (element.duration) {
+              this.resourceDurat.push(parseInt(element.duration))
+            }
+            if (element.children && element.children.length > 0) {
+              element.children.forEach((ele: any) => {
+                if (ele.duration) {
+                  this.resourceDurat.push(parseInt(ele.duration))
+                }
+              })
+            }
+          })
           // tslint:disable-next-line:no-console
-          console.log(this.sumDuration.toString(), this.contentMeta.duration)
-          if (this.sumDuration.toString() !== this.contentMeta.duration) {
-            let requestBody: any
-            requestBody = {
-              request: {
-                content: {
-                  duration: isNumber(this.sumDuration) ?
-                    this.sumDuration.toString() : this.sumDuration,
-                  versionKey: res.versionKey
+          console.log(this.resourceDurat)
+          if (this.resourceDurat.length > 0) {
+            this.sumDuration = this.resourceDurat.reduce((a: any, b: any) => a + b)
+            // tslint:disable-next-line:no-console
+            console.log(this.sumDuration.toString(), this.contentMeta.duration)
+            if (this.sumDuration.toString() !== this.contentMeta.duration) {
+              let requestBody: any
+              requestBody = {
+                request: {
+                  content: {
+                    duration: isNumber(this.sumDuration) ? this.sumDuration.toString() : this.sumDuration,
+                    versionKey: res.versionKey,
+                  },
                 },
               }
+              this.editorService
+                .updateNewContentV3(_.omit(requestBody, ['resourceType']), this.contentMeta.identifier)
+                .subscribe((response: any) => {
+                  // tslint:disable-next-line:no-console
+                  console.log(response)
+                })
             }
-            this.editorService.updateNewContentV3(_.omit(requestBody, ['resourceType']), this.contentMeta.identifier).subscribe((response: any) => {
-              // tslint:disable-next-line:no-console
-              console.log(response)
-            })
+            this.loader.changeLoad.next(false)
+            this.setDuration(this.sumDuration)
           }
           this.loader.changeLoad.next(false)
-          this.setDuration(this.sumDuration)
+        } else {
+          this.loader.changeLoad.next(false)
         }
+      },
+      () => {
+        // On read failure, still reveal the fields and hide the loader so the form
+        // isn't stuck behind the overlay.
+        this.metaLoaded = true
         this.loader.changeLoad.next(false)
-      } else {
-        this.loader.changeLoad.next(false)
-      }
-
-    }, () => {
-      // On read failure, still reveal the fields and hide the loader so the form
-      // isn't stuck behind the overlay.
-      this.metaLoaded = true
-      this.loader.changeLoad.next(false)
-    })
+      },
+    )
     Object.keys(this.contentForm.controls).map(v => {
       try {
         if (
@@ -919,9 +917,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
           this.contentForm.controls[v].setValue(this.contentMeta[v as keyof NSContent.IContentMeta])
         } else {
           if (v === 'expiryDate') {
-            this.contentForm.controls[v].setValue(
-              new Date(new Date().setMonth(new Date().getMonth() + 60)),
-            )
+            this.contentForm.controls[v].setValue(new Date(new Date().setMonth(new Date().getMonth() + 60)))
           } else {
             this.contentForm.controls[v].setValue(
               JSON.parse(
@@ -939,7 +935,9 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
         this.contentForm.controls.sourceName.setValue(this.contentMeta.sourceName)
         this.contentForm.controls.lang.setValue(this.contentMeta.lang)
         this.contentForm.controls.gatingEnabled.setValue(this.contentMeta.gatingEnabled)
-        this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification === undefined ? false : this.contentMeta.issueCertification)
+        this.contentForm.controls.issueCertification.setValue(
+          this.contentMeta.issueCertification === undefined ? false : this.contentMeta.issueCertification,
+        )
 
         if (this.contentMeta.competencies_v1) {
           // this.getAllEntity()
@@ -952,7 +950,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
           this.contentForm.controls[v].markAsPristine()
           this.contentForm.controls[v].markAsUntouched()
         }
-      } catch (ex) { }
+      } catch (ex) {}
     })
     this.canUpdate = true
     this.storeData()
@@ -974,7 +972,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
 
           const finalComp = {
             ...element,
-            ...matchingValue.additionalProperties
+            ...matchingValue.additionalProperties,
           }
           return finalComp
         })
@@ -1056,8 +1054,14 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       if (originalMeta && this.isEditEnabled) {
         const expiryDate = this.contentForm.value.expiryDate
         const currentMeta: NSContent.IContentMeta = JSON.parse(JSON.stringify(this.contentForm.value))
-        const exemptArray = ['application/quiz', 'application/x-mpegURL', 'audio/mpeg', 'video/mp4',
-          'application/vnd.ekstep.html-archive', 'application/json']
+        const exemptArray = [
+          'application/quiz',
+          'application/x-mpegURL',
+          'audio/mpeg',
+          'video/mp4',
+          'application/vnd.ekstep.html-archive',
+          'application/json',
+        ]
         if (exemptArray.includes(originalMeta.mimeType)) {
           currentMeta.artifactUrl = originalMeta.artifactUrl
           currentMeta.mimeType = originalMeta.mimeType
@@ -1105,8 +1109,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
             }
             if (!currentMeta.lang) {
               currentMeta.lang = parentData.lang !== '' ? parentData.lang : currentMeta.lang
-
-
             }
           }
         }
@@ -1120,26 +1122,27 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
 
         const meta = <any>{}
         if (this.canExpiry) {
-          currentMeta.expiryDate = `${expiryDate
-            .toISOString()
-            .replace(/-/g, '')
-            .replace(/:/g, '')
-            .split('.')[0]
-            }+0000`
+          currentMeta.expiryDate = `${expiryDate.toISOString().replace(/-/g, '').replace(/:/g, '').split('.')[0]}+0000`
         }
         Object.keys(currentMeta).map(v => {
           if (
-            v !== 'versionKey' && v !== 'visibility' &&
+            v !== 'versionKey' &&
+            v !== 'visibility' &&
             JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !==
-            JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta]) && v !== 'jobProfile'
+              JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta]) &&
+            v !== 'jobProfile'
           ) {
             if (
               currentMeta[v as keyof NSContent.IContentMeta] ||
               // (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
-              currentMeta[v as keyof NSContent.IContentMeta] === false) {
+              currentMeta[v as keyof NSContent.IContentMeta] === false
+            ) {
               meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
             } else {
-              if (this.authInitService.authConfig[v as keyof IFormMeta] && this.authInitService.authConfig[v as keyof IFormMeta].defaultValue) {
+              if (
+                this.authInitService.authConfig[v as keyof IFormMeta] &&
+                this.authInitService.authConfig[v as keyof IFormMeta].defaultValue
+              ) {
                 if (v !== 'isIframeSupported') {
                   meta[v as keyof NSContent.IContentMeta] = JSON.parse(
                     JSON.stringify(
@@ -1151,7 +1154,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
                   )
                 }
               }
-
             }
           } else if (v === 'versionKey') {
             meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
@@ -1180,7 +1182,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
           delete meta.artifactUrl
         }
         this.contentService.setUpdatedMeta(meta, this.contentMeta.identifier)
-
       }
     } catch (ex) {
       // tslint:disable-next-line:no-console
@@ -1258,9 +1259,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     const value = (event.value || '').trim()
     if (value) {
       this.contentForm.controls.creatorDetails.value.push({ id: '', name: value })
-      this.contentForm.controls.creatorDetails.setValue(
-        this.contentForm.controls.creatorDetails.value,
-      )
+      this.contentForm.controls.creatorDetails.setValue(this.contentForm.controls.creatorDetails.value)
     }
     // Reset the input value
     if (input) {
@@ -1271,9 +1270,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   removeCreatorDetails(keyword: any): void {
     const index = this.contentForm.controls.creatorDetails.value.indexOf(keyword)
     this.contentForm.controls.creatorDetails.value.splice(index, 1)
-    this.contentForm.controls.creatorDetails.setValue(
-      this.contentForm.controls.creatorDetails.value,
-    )
+    this.contentForm.controls.creatorDetails.setValue(this.contentForm.controls.creatorDetails.value)
   }
 
   addToFormControl(event: MatAutocompleteSelectedEvent, fieldName: string): void {
@@ -1473,16 +1470,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   uploadAppIcon(file: File) {
     const formdata = new FormData()
     const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
-    if (
-      !(
-        IMAGE_SUPPORT_TYPES.indexOf(
-          `.${fileName
-            .toLowerCase()
-            .split('.')
-            .pop()}`,
-        ) > -1
-      )
-    ) {
+    if (!(IMAGE_SUPPORT_TYPES.indexOf(`.${fileName.toLowerCase().split('.').pop()}`) > -1)) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_FORMAT,
@@ -1509,11 +1497,9 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       img.src = reader.result as string
       img.onload = () => {
         if (img.width < 760 || img.height < 400) {
-          this.snackBar.open(
-            `Image resolution must be at least 760 x 400 px. Current: ${img.width} x ${img.height} px`,
-            undefined,
-            { duration: 4000 },
-          )
+          this.snackBar.open(`Image resolution must be at least 760 x 400 px. Current: ${img.width} x ${img.height} px`, undefined, {
+            duration: 4000,
+          })
           return
         }
         this.openThumbnailCropDialog(file, fileName, formdata)
@@ -1561,113 +1547,105 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
             },
           }
 
-          this.http
-            .post<NSApiRequest.ICreateMetaRequest>(
-              `${AUTHORING_BASE}content/v3/create`,
-              requestBody,
-            )
-            .subscribe(
-              (meta: any) => {
-                // return data.result.identifier
-                this.uploadService
-                  .upload(formdata, {
-                    contentId: meta.result.identifier,
-                    contentType: CONTENT_BASE_STATIC,
+          this.http.post<NSApiRequest.ICreateMetaRequest>(`${AUTHORING_BASE}content/v3/create`, requestBody).subscribe((meta: any) => {
+            // return data.result.identifier
+            this.uploadService
+              .upload(formdata, {
+                contentId: meta.result.identifier,
+                contentType: CONTENT_BASE_STATIC,
+              })
+
+              .subscribe(
+                data => {
+                  if (data && data.name !== 'Error') {
+                    // const generateURL = this.generateUrl(data.artifactUrl)
+                    // const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
+                    //   request: {
+                    //     content: {
+                    //       // content_url: data.result.artifactUrl,
+                    //       // identifier: data.result.identifier,
+                    //       // node_id: data.result.node_id,
+                    //       thumbnail: generateURL,
+                    //       appIcon: generateURL,
+                    //       artifactUrl: generateURL,
+                    //       // versionKey: (new Date()).getTime().toString(),
+                    //       versionKey: meta.result.versionKey,
+                    //     },
+                    //   },
+                    // }
+
+                    // this.apiService
+                    //   .patch<NSApiRequest.ICreateMetaRequest>(
+                    //     `${AUTHORING_BASE}content/v3/update/${data.identifier}`,
+                    //     updateArtf,
+                    //   )
+                    // this.editorService.checkReadAPI(data.identifier)
+                    // .subscribe(
+                    //   (res: any) => {
+                    //     console.log(res)
+                    //     if (res) {
+                    //     }
+                    this.loader.changeLoad.next(false)
+                    this.canUpdate = false
+                    this.contentForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
+                    this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
+                    this.canUpdate = true
+                    // this.data.emit('save')
+                    this.storeData()
+                    this.authInitService.uploadData('thumbnail')
+                    // this.contentForm.controls.posterImage.setValue(data.artifactURL)
+                    this.snackBar.openFromComponent(NotificationComponent, {
+                      data: {
+                        type: Notify.UPLOAD_SUCCESS,
+                      },
+                      duration: NOTIFICATION_TIME * 2000,
+                    })
+                    // })
+                  } else {
+                    this.loader.changeLoad.next(false)
+                    this.snackBar.open(data.message, undefined, { duration: 2000 })
+                  }
+                },
+                () => {
+                  this.loader.changeLoad.next(false)
+                  this.snackBar.openFromComponent(NotificationComponent, {
+                    data: {
+                      type: Notify.UPLOAD_FAIL,
+                    },
+                    duration: NOTIFICATION_TIME * 1000,
                   })
+                },
+              )
 
-                  .subscribe(
-                    data => {
-                      if (data && data.name !== 'Error') {
-                        // const generateURL = this.generateUrl(data.artifactUrl)
-                        // const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
-                        //   request: {
-                        //     content: {
-                        //       // content_url: data.result.artifactUrl,
-                        //       // identifier: data.result.identifier,
-                        //       // node_id: data.result.node_id,
-                        //       thumbnail: generateURL,
-                        //       appIcon: generateURL,
-                        //       artifactUrl: generateURL,
-                        //       // versionKey: (new Date()).getTime().toString(),
-                        //       versionKey: meta.result.versionKey,
-                        //     },
-                        //   },
-                        // }
-
-                        // this.apiService
-                        //   .patch<NSApiRequest.ICreateMetaRequest>(
-                        //     `${AUTHORING_BASE}content/v3/update/${data.identifier}`,
-                        //     updateArtf,
-                        //   )
-                        // this.editorService.checkReadAPI(data.identifier)
-                        // .subscribe(
-                        //   (res: any) => {
-                        //     console.log(res)
-                        //     if (res) {
-                        //     }
-                        this.loader.changeLoad.next(false)
-                        this.canUpdate = false
-                        this.contentForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
-                        this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
-                        this.canUpdate = true
-                        // this.data.emit('save')
-                        this.storeData()
-                        this.authInitService.uploadData('thumbnail')
-                        // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-                        this.snackBar.openFromComponent(NotificationComponent, {
-                          data: {
-                            type: Notify.UPLOAD_SUCCESS,
-                          },
-                          duration: NOTIFICATION_TIME * 2000,
-                        })
-                        // })
-                      } else {
-                        this.loader.changeLoad.next(false)
-                        this.snackBar.open(data.message, undefined, { duration: 2000 })
-                      }
-                    },
-                    () => {
-                      this.loader.changeLoad.next(false)
-                      this.snackBar.openFromComponent(NotificationComponent, {
-                        data: {
-                          type: Notify.UPLOAD_FAIL,
-                        },
-                        duration: NOTIFICATION_TIME * 1000,
-                      })
-                    },
-                  )
-
-                // .subscribe(
-                //   data => {
-                //     if (data.result) {
-                //       this.loader.changeLoad.next(false)
-                //       this.canUpdate = false
-                //       this.contentForm.controls.appIcon.setValue(data.result.artifactUrl)
-                //       this.contentForm.controls.thumbnail.setValue(data.result.artifactUrl)
-                //       // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-                //       this.canUpdate = true
-                //       this.storeData()
-                //       this.snackBar.openFromComponent(NotificationComponent, {
-                //         data: {
-                //           type: Notify.UPLOAD_SUCCESS,
-                //         },
-                //         duration: NOTIFICATION_TIME * 1000,
-                //       })
-                //     }
-                //   },
-                //   () => {
-                //     this.loader.changeLoad.next(false)
-                //     this.snackBar.openFromComponent(NotificationComponent, {
-                //       data: {
-                //         type: Notify.UPLOAD_FAIL,
-                //       },
-                //       duration: NOTIFICATION_TIME * 1000,
-                //     })
-                //   },
-                // )
-              },
-            )
-
+            // .subscribe(
+            //   data => {
+            //     if (data.result) {
+            //       this.loader.changeLoad.next(false)
+            //       this.canUpdate = false
+            //       this.contentForm.controls.appIcon.setValue(data.result.artifactUrl)
+            //       this.contentForm.controls.thumbnail.setValue(data.result.artifactUrl)
+            //       // this.contentForm.controls.posterImage.setValue(data.artifactURL)
+            //       this.canUpdate = true
+            //       this.storeData()
+            //       this.snackBar.openFromComponent(NotificationComponent, {
+            //         data: {
+            //           type: Notify.UPLOAD_SUCCESS,
+            //         },
+            //         duration: NOTIFICATION_TIME * 1000,
+            //       })
+            //     }
+            //   },
+            //   () => {
+            //     this.loader.changeLoad.next(false)
+            //     this.snackBar.openFromComponent(NotificationComponent, {
+            //       data: {
+            //         type: Notify.UPLOAD_FAIL,
+            //       },
+            //       duration: NOTIFICATION_TIME * 1000,
+            //     })
+            //   },
+            // )
+          })
         }
       },
     })
@@ -1675,16 +1653,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   uploadSourceIcon(file: File) {
     const formdata = new FormData()
     const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
-    if (
-      !(
-        IMAGE_SUPPORT_TYPES.indexOf(
-          `.${fileName
-            .toLowerCase()
-            .split('.')
-            .pop()}`,
-        ) > -1
-      )
-    ) {
+    if (!(IMAGE_SUPPORT_TYPES.indexOf(`.${fileName.toLowerCase().split('.').pop()}`) > -1)) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_FORMAT,
@@ -1759,17 +1728,14 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     })
   }
   changeToDefaultImg($event: any) {
-    $event.target.src = this.configSvc.instanceConfig
-      ? this.configSvc.instanceConfig.logos.defaultContent
-      : ''
+    $event.target.src = this.configSvc.instanceConfig ? this.configSvc.instanceConfig.logos.defaultContent : ''
   }
-
 
   generateUrl(oldUrl: any) {
     //const chunk = oldUrl.split('/')
     //const newChunk = environment.azureHost.split('/')
     // @ts-ignore: Unreachable code error
-    this.bucket = window["env"]["azureBucket"]
+    this.bucket = window['env']['azureBucket']
     if (oldUrl.includes(this.bucket)) {
       return oldUrl
     }
@@ -1816,21 +1782,21 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   addEmployee(event: MatAutocompleteSelectedEvent, field: string) {
     if (event.option.value && event.option.value.id) {
       this.loader.changeLoad.next(true)
-      const observable = ['trackContacts', 'publisherDetails'].includes(field) &&
-        this.accessService.authoringConfig.doUniqueCheck
-        ? this.editorService
-          .checkRole(event.option.value.id)
-          .pipe(
-            map(
-              (v: string[]) =>
-                v.includes('admin') ||
-                v.includes('editor') ||
-                (field === 'trackContacts' && v.includes('reviewer')) ||
-                (field === 'publisherDetails' && v.includes('publisher')) ||
-                (field === 'publisherDetails' && event.option.value.id === this.accessService.userId),
-            ),
-          )
-        : of(true)
+      const observable =
+        ['trackContacts', 'publisherDetails'].includes(field) && this.accessService.authoringConfig.doUniqueCheck
+          ? this.editorService
+              .checkRole(event.option.value.id)
+              .pipe(
+                map(
+                  (v: string[]) =>
+                    v.includes('admin') ||
+                    v.includes('editor') ||
+                    (field === 'trackContacts' && v.includes('reviewer')) ||
+                    (field === 'publisherDetails' && v.includes('publisher')) ||
+                    (field === 'publisherDetails' && event.option.value.id === this.accessService.userId),
+                ),
+              )
+          : of(true)
       observable.subscribe(
         (data: boolean) => {
           if (data) {
@@ -1876,9 +1842,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
 
   private fetchAudience() {
     if ((this.audienceCtrl.value || '').trim()) {
-      this.audienceList = this.ordinals.audience.filter(
-        (v: any) => v.toLowerCase().indexOf(this.audienceCtrl.value.toLowerCase()) > -1,
-      )
+      this.audienceList = this.ordinals.audience.filter((v: any) => v.toLowerCase().indexOf(this.audienceCtrl.value.toLowerCase()) > -1)
     } else {
       this.audienceList = this.ordinals.audience.slice()
     }
@@ -1896,9 +1860,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
 
   private fetchRegion() {
     if ((this.regionCtrl.value || '').trim()) {
-      this.regionList = this.ordinals.region.filter(
-        (v: any) => v.toLowerCase().indexOf(this.regionCtrl.value.toLowerCase()) > -1,
-      )
+      this.regionList = this.ordinals.region.filter((v: any) => v.toLowerCase().indexOf(this.regionCtrl.value.toLowerCase()) > -1)
     } else {
       this.regionList = []
     }
@@ -1906,11 +1868,23 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
 
   private fetchAccessRestrictions() {
     if (this.accessPathsCtrl.value.trim()) {
-      this.accessPathList = this.ordinals.accessPaths.filter((v: any) => v.toLowerCase().
-        indexOf(this.accessPathsCtrl.value.toLowerCase()) === 0)
+      this.accessPathList = this.ordinals.accessPaths.filter(
+        (v: any) => v.toLowerCase().indexOf(this.accessPathsCtrl.value.toLowerCase()) === 0,
+      )
     } else {
       this.accessPathList = this.ordinals.accessPaths.slice()
     }
+  }
+
+  // Byte budget for the course Description (`instructions`) — drives the counter and
+  // the over-limit message. Capped in UTF-8 bytes (not chars) because the search
+  // indexer's Elasticsearch keyword limit is byte-based; see byte-length.validator.ts.
+  get maxInstructionsBytes(): number {
+    return MAX_INSTRUCTIONS_BYTES
+  }
+
+  get instructionsByteLength(): number {
+    return utf8ByteLength(this.contentForm && this.contentForm.controls.instructions ? this.contentForm.controls.instructions.value : '')
   }
 
   checkCondition(meta: string, type: 'show' | 'required' | 'disabled'): boolean {
@@ -2006,22 +1980,20 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       unit: [],
       verifiers: [],
       visibility: [],
-      instructions: new FormControl('', [Validators.required]),
-      versionKey: '',  // (new Date()).getTime()
+      instructions: new FormControl('', [Validators.required, maxByteLengthValidator(MAX_INSTRUCTIONS_BYTES)]),
+      versionKey: '', // (new Date()).getTime()
       purpose: '',
       lang: new FormControl('', [Validators.required]),
-      cneName: new FormControl('')
+      cneName: new FormControl(''),
     })
     // tslint:disable-next-line:no-console
-    console.log("form validation", this.contentForm)
+    console.log('form validation', this.contentForm)
 
     // Tell the parent stepper whether the course-details form is currently valid,
     // both now (initial state) and on every subsequent status change, so it can
     // keep the Next button disabled until all mandatory fields are filled.
     this.validityChange.emit(this.contentForm.valid)
-    this.contentForm.statusChanges
-      .pipe(distinctUntilChanged())
-      .subscribe(() => this.validityChange.emit(this.contentForm.valid))
+    this.contentForm.statusChanges.pipe(distinctUntilChanged()).subscribe(() => this.validityChange.emit(this.contentForm.valid))
 
     this.contentForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       if (this.canUpdate) {
@@ -2045,9 +2017,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
 
     if (this.stage === 1) {
       this.contentForm.controls.creatorContacts.valueChanges.subscribe(() => {
-        this.contentForm.controls.publisherDetails.setValue(
-          this.contentForm.controls.creatorContacts.value || [],
-        )
+        this.contentForm.controls.publisherDetails.setValue(this.contentForm.controls.creatorContacts.value || [])
       })
     }
 
@@ -2064,9 +2034,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     })
 
     this.contentForm.controls.resourceCategory.valueChanges.subscribe(() => {
-      this.contentForm.controls.customClassifiers.setValue(
-        this.contentForm.controls.resourceCategory.value,
-      )
+      this.contentForm.controls.customClassifiers.setValue(this.contentForm.controls.resourceCategory.value)
     })
   }
 
@@ -2181,5 +2149,4 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     this.isSaveModuleFormEnable = true
     this.moduleButtonName = 'Save'
   }
-
 }
