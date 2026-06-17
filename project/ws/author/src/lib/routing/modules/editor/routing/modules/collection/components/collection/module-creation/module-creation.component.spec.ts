@@ -62,7 +62,6 @@ import { Subject, of, BehaviorSubject } from 'rxjs'
 
 import { ZipJSResolverService } from '../../../../../../../../../../../../author/src/lib/services/zip-js-resolve.service'
 
-
 describe('ModuleCreationComponent without extractFile()', () => {
   let component: ModuleCreationComponent
   let fixture: ComponentFixture<ModuleCreationComponent>
@@ -74,12 +73,7 @@ describe('ModuleCreationComponent without extractFile()', () => {
     }
 
     await TestBed.configureTestingModule({
-      declarations: [
-        ModuleCreationComponent,
-        CourseSettingsComponent,
-        FormatDurationPipe,
-        MimeTypePipe,
-      ],
+      declarations: [ModuleCreationComponent, CourseSettingsComponent, FormatDurationPipe, MimeTypePipe],
       imports: [
         BrowserAnimationsModule,
         MatGridListModule,
@@ -97,12 +91,15 @@ describe('ModuleCreationComponent without extractFile()', () => {
         MatAutocompleteModule,
         MatSelectModule,
         RouterModule,
-        HttpClientTestingModule
+        HttpClientTestingModule,
       ],
       providers: [
         { provide: EditorContentService, useValue: mockContentService },
         { provide: APP_BASE_HREF, useValue: '/' },
-        { provide: AuthInitService, useValue: { backToHomeMessage: new Subject<any>(), changeActiveCont: of({}), updateResourceMessage: new Subject<any>() } },
+        {
+          provide: AuthInitService,
+          useValue: { backToHomeMessage: new Subject<any>(), changeActiveCont: of({}), updateResourceMessage: new Subject<any>() },
+        },
         { provide: Router, useValue: {} },
         { provide: MatDialog, useValue: {} },
         { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } },
@@ -112,7 +109,7 @@ describe('ModuleCreationComponent without extractFile()', () => {
         { provide: QuizStoreService, useValue: {} },
         { provide: QuizResolverService, useValue: {} },
         { provide: ZipJSResolverService, useValue: {} },
-      ]
+      ],
     }).compileComponents()
 
     fixture = TestBed.createComponent(ModuleCreationComponent)
@@ -138,7 +135,7 @@ describe('ModuleCreationComponent without extractFile()', () => {
     expect(component.showChildrenMap[module.identifier]).toBe(false)
   })
 
-  it('should not change other modules\' showChildren properties', () => {
+  it("should not change other modules' showChildren properties", () => {
     const module1 = { identifier: 'module1' }
     const module2 = { identifier: 'module2' }
 
@@ -151,4 +148,36 @@ describe('ModuleCreationComponent without extractFile()', () => {
     expect(component.showChildrenMap[module2.identifier]).toBe(false)
   })
 
+  describe('isAssessmentResource (drives the "Show Correct Answer Popup" visibility)', () => {
+    it('is true only for an Assessment (application/json + isAssessment, not self-assessment)', () => {
+      component.isSelfAssessment = false
+      component.content = { mimeType: 'application/json', isAssessment: true } as any
+      expect(component.isAssessmentResource).toBe(true)
+    })
+
+    it('is false for a Quiz (application/json but isAssessment false)', () => {
+      component.isSelfAssessment = false
+      component.content = { mimeType: 'application/json', isAssessment: false } as any
+      expect(component.isAssessmentResource).toBe(false)
+    })
+
+    it('is false for a Self Assessment', () => {
+      component.isSelfAssessment = true
+      component.content = { mimeType: 'application/json', isAssessment: true } as any
+      expect(component.isAssessmentResource).toBe(false)
+    })
+
+    it('is false for pdf / audio / video even if isAssessment leaks truthy', () => {
+      component.isSelfAssessment = false
+      for (const mimeType of ['application/pdf', 'audio/mpeg', 'video/mp4', 'text/x-url']) {
+        component.content = { mimeType, isAssessment: true } as any
+        expect(component.isAssessmentResource).toBe(false)
+      }
+    })
+
+    it('is false when there is no content', () => {
+      component.content = undefined as any
+      expect(component.isAssessmentResource).toBe(false)
+    })
+  })
 })
