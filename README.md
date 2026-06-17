@@ -5,7 +5,7 @@ An enterprise Angular SPA for **creating, authoring, managing, and publishing ed
 Built for the Sphere/Aastrika ecosystem on top of Sunbird (EkStep / DIKSHA).
 
 - **Repo:** https://github.com/Sphere/sunbird-cb-creationportal-old
-- **Version:** 5.0.0
+- **Version:** 5.0.1
 - **Framework:** Angular **21** (migrated from Angular 8)
 
 ---
