@@ -145,14 +145,14 @@ Conventions (Jest + `jest-preset-angular`):
 
 ### Branching & release workflow
 
-Feature branches are cut from **`main`** — the stable, production-aligned trunk. `development` and `stage` are environment branches that `main` is promoted through to verify before a release; `cbp-release-*` is the frozen production deploy snapshot.
+Feature branches are cut from **`main`** — the stable, production-aligned trunk. `development` and `stage` are environment branches that `main` is promoted through to verify before a release; `release-*` is the frozen production deploy snapshot.
 
-| Branch              | Role                                                                                      | Cut features from it?                               |
-| ------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| `main`              | **Stable trunk** (default, protected) — mirrors production, keeps moving as features land | ✅ **yes — branch here**, PR back here              |
-| `development`       | Dev-environment branch (promotion target for verifying `main`)                            | ❌ promote into it                                  |
-| `stage`             | Staging environment (pre-prod)                                                            | ❌ promote into it                                  |
-| `cbp-release-<X.Y>` | **Frozen** production deploy snapshot for a release line                                  | ❌ release/hotfix only — never branch features here |
+| Branch            | Role                                                                                      | Cut features from it?                               |
+| ----------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| `main`            | **Stable trunk** (default, protected) — mirrors production, keeps moving as features land | ✅ **yes — branch here**, PR back here              |
+| `development`     | Dev-environment branch (promotion target for verifying `main`)                            | ❌ promote into it                                  |
+| `stage`           | Staging environment (pre-prod)                                                            | ❌ promote into it                                  |
+| `release-<X.Y.Z>` | **Frozen** production deploy snapshot for a release                                       | ❌ release/hotfix only — never branch features here |
 
 **New feature or fix:**
 
@@ -163,9 +163,9 @@ git checkout -b feature/<short-name>                # or fix/<short-name>
 git push -u origin feature/<short-name>             # open a PR INTO main
 ```
 
-- **Branch from `main`, not `cbp-release-*`.** `main` holds the same stable code but is meant to advance; a release branch is frozen to its release. Branching features off a release branch breaks that.
-- **Deploy is from a BRANCH, not a tag.** The manual Jenkins job (`github_release_tag`) is pointed at a per-release **build branch** `cbp-release-<X.Y.Z>`. Each release gets its **own new** build branch cut from `main`; **never advance a previous/frozen release branch** (e.g. `cbp-release-5.0` stays pinned).
-- **The tag is `v<X.Y.Z>`** (immutable marker + GitHub Release). The build branch and the tag **must have different names** — a same-named branch+tag is an ambiguous git ref. So: branch `cbp-release-<X.Y.Z>`, tag `v<X.Y.Z>`.
+- **Branch from `main`, not `release-*`.** `main` holds the same stable code but is meant to advance; a release branch is frozen to its release. Branching features off a release branch breaks that.
+- **Deploy is from a BRANCH, not a tag.** The manual Jenkins job (`github_release_tag`) is pointed at a per-release **build branch** `release-<X.Y.Z>`. Each release gets its **own new** build branch cut from `main`; **never advance a previous/frozen release branch** (e.g. `release-5.0.1` stays pinned).
+- **The tag is `v<X.Y.Z>`** (immutable marker + GitHub Release). The build branch and the tag **must have different names** — a same-named branch+tag is an ambiguous git ref. So: branch `release-<X.Y.Z>`, tag `v<X.Y.Z>`.
 - Old Angular 8 history is archived in tags (`angular-8-final`, `development-angular-8-final`, `angular21-migration-pr-archive`); the active branches are all Angular 21.
 
 ### Release runbook (when cutting a release)
@@ -173,12 +173,12 @@ git push -u origin feature/<short-name>             # open a PR INTO main
 Run the `release-notes` skill — it automates most of this. The full, ordered flow:
 
 1. **Verify green:** lint + unit tests/coverage + production build all pass.
-2. **On a prep branch** (never push to `main` directly): bump the version in `package.json` + `README.md` + `CLAUDE.md`, and write `RELEASE_NOTES/<X.Y.Z>.md` (diff vs the previous release tag; follow `RELEASE_NOTES/TEMPLATE.md`).
+2. **On a prep branch** (never push to `main` directly): bump the version in `package.json` + `README.md` + `CLAUDE.md`, and write `RELEASE_NOTES/release-<X.Y.Z>.md` (diff vs the previous release tag; follow `RELEASE_NOTES/TEMPLATE.md`).
 3. **PR → merge** the prep branch into `main`.
 4. **Sync `development`** to `main` (and promote to `stage` when promoting).
-5. From the merged `main` commit, cut the **build branch `cbp-release-<X.Y.Z>`** and the **tag `v<X.Y.Z>`**.
+5. From the merged `main` commit, cut the **build branch `release-<X.Y.Z>`** and the **tag `v<X.Y.Z>`**.
 6. **Publish the GitHub Release** from the `v<X.Y.Z>` tag (body = the release note).
-7. **Deploy** by pointing the Jenkins job at the **build branch** `cbp-release-<X.Y.Z>`. Rollback = re-run against the previous release branch/tag.
+7. **Deploy** by pointing the Jenkins job at the **build branch** `release-<X.Y.Z>`. Rollback = re-run against the previous release branch/tag.
 
 ---
 

@@ -2,7 +2,7 @@
 
 |                              |                                              |
 | ---------------------------- | -------------------------------------------- |
-| **Build branch deployed**    | `cbp-release-5.0.2` (Jenkins deploy source)  |
+| **Build branch deployed**    | `release-5.0.2` (Jenkins deploy source)      |
 | **Tag**                      | `v5.0.2` (immutable marker + GitHub Release) |
 | **Baseline (previous prod)** | `v5.0.1`                                     |
 | **Commits**                  | `2` (1 UI fix + release-runbook docs)        |
@@ -26,7 +26,7 @@ A small patch on top of 5.0.1: the course **Description** over-limit error messa
 
 ## 📚 Docs / Chore
 
-- Codified the **release runbook** in CLAUDE.md and the `release-notes` skill: deploy from a build branch `cbp-release-X.Y.Z` (not a tag), tag `vX.Y.Z` (distinct name), prep via PR (no direct push to `main`), never advance a frozen release branch; corrected `RELEASE_NOTES/5.0.1.md` wording (`f457c227`).
+- Codified the **release runbook** in CLAUDE.md and the `release-notes` skill: deploy from a build branch `release-X.Y.Z` (not a tag), tag `vX.Y.Z` (distinct name), prep via PR (no direct push to `main`), never advance a frozen release branch; corrected `RELEASE_NOTES/5.0.1.md` wording (`f457c227`).
 
 ## ⚠️ Deploy notes & risk
 
@@ -44,12 +44,12 @@ A small patch on top of 5.0.1: the course **Description** over-limit error messa
 - [ ] `npm run lint` clean
 - [ ] `npm test -- --coverage` green
 - [ ] Smoke-test: paste an over-long Description, confirm the error reads like "Subtitle is required" (small red text), not oversized
-- [ ] Rollback ref confirmed: `v5.0.1` / branch `cbp-release-5.0.1`
+- [ ] Rollback ref confirmed: `v5.0.1` / branch `release-5.0.1`
 
 ## Release & rollback
 
-**Deploy** — a human runs the manual Jenkins job (`Jenkinsfile-sun`) pointed at the **build branch** `cbp-release-5.0.2` (deploy is from a branch, not a tag). Each release gets its own new build branch + a `v<X.Y.Z>` tag; the previous `cbp-release-5.0.1` branch stays frozen.
+**Deploy** — a human runs the manual Jenkins job (`Jenkinsfile-sun`) pointed at the **build branch** `release-5.0.2` (deploy is from a branch, not a tag). Each release gets its own new build branch + a `v<X.Y.Z>` tag; the previous `release-5.0.1` branch stays frozen.
 
-**Rollback** — re-run the same manual Jenkins job against the previous release branch `cbp-release-5.0.1`.
+**Rollback** — re-run the same manual Jenkins job against the previous release branch `release-5.0.1`.
 
 (Jenkins → Docker → Helm pipeline.)

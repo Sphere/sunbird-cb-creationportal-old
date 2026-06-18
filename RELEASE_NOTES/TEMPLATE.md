@@ -1,11 +1,11 @@
 # Release <version> — <YYYY-MM-DD>
 
-| | |
-|---|---|
-| **Branch deployed** | `<branch>` |
-| **Baseline (previous prod)** | `<previous cbp-release tag>` |
-| **Commits** | `<n>` |
-| **Author** | `<name>` |
+|                              |                                          |
+| ---------------------------- | ---------------------------------------- |
+| **Branch deployed**          | `release-<X.Y.Z>`                        |
+| **Baseline (previous prod)** | `<previous release-X.Y.Z or vX.Y.Z tag>` |
+| **Commits**                  | `<n>`                                    |
+| **Author**                   | `<name>`                                 |
 
 ## Summary
 
@@ -42,15 +42,15 @@ release change for users / content authors, and why does it matter?>
 
 ## ✅ Pre-deploy checklist
 
-- [ ] Build verified on a **fresh install** (`rm -rf node_modules && npm install --legacy-peer-deps && npm run build`) — a green *local* build is not proof CI passes
+- [ ] Build verified on a **fresh install** (`rm -rf node_modules && npm install --legacy-peer-deps && npm run build`) — a green _local_ build is not proof CI passes
 - [ ] `npm run lint` clean
 - [ ] Smoke-tested on preprod (login, author a course, publish)
 - [ ] Rollback ref confirmed (re-runnable in Jenkins): `<previous release ref>`
 
 ## Release & rollback
 
-**Deploy** — this release ships as the **`<release-branch>`** branch; a human runs the
-manual Jenkins job (`Jenkinsfile-sun`) with `github_release_tag = <release-branch>`.
+**Deploy** — this release ships as the **`release-<X.Y.Z>`** branch; a human runs the
+manual Jenkins job (`Jenkinsfile-sun`) with `github_release_tag = release-<X.Y.Z>`.
 Pushing the branch only provides the deploy source — it does not deploy on its own.
 
 **Rollback** — re-run the same manual Jenkins job against the previous release ref:
