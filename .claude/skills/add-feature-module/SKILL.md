@@ -5,7 +5,7 @@ description: Scaffold a new lazy-loaded feature page/module in the correct monor
 
 # Add a lazy-loaded feature module
 
-> **Branch first.** Cut the feature branch from **`main`** (the stable trunk) — never from a `cbp-release-*` branch, which stays frozen to its release. See CLAUDE.md §4 "Branching & release workflow".
+> **Branch first.** Cut the feature branch from **`main`** (the stable trunk) — never from a `release-*` branch, which stays frozen to its release. See CLAUDE.md §4 "Branching & release workflow".
 >
 > ```bash
 > git checkout main && git pull --ff-only

@@ -1,10 +1,10 @@
 name: Build
+# Manual-only. This ran on every push/PR and failed at "SonarQube Scan" because no
+# SONAR_TOKEN secret is configured — going red on every change and duplicating the
+# "Quality" workflow. Run it on demand once the token is set (Settings → Secrets →
+# SONAR_TOKEN), or re-enable the push/pull_request triggers then.
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 jobs:
   SonarCloud:
     name: SonarCloud

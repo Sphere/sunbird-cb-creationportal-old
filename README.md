@@ -160,13 +160,13 @@ The production bundle is served by an **Express** server (`dist/server.js`, via 
 
 The whole release is one connected flow (the `release-notes` skill automates most of it):
 
-1. **Generate the release note** — `/release-notes` diffs the branch against the last `cbp-release-*` tag, fills `RELEASE_NOTES/<version>.md`, and bumps the version in `package.json` / `README.md` / `CLAUDE.md`.
-2. **Cut the release branch** — `cbp-release-<X.Y>` from the release commit; push it (safe — it's only the deploy _source_, it does not auto-deploy).
-3. **Tag + GitHub Release** — after deploy, create the annotated tag `cbp-release-<X.Y.Z>` at the **deployed** commit and publish the GitHub Release from it (body = the release note). Tagging always also publishes the Release.
-4. **Deploy** — a human runs the manual Jenkins job (`Jenkinsfile-sun`) with `github_release_tag = <ref>`. That parameter accepts **either the release branch or the tag** — it just checks out the ref and builds. Pipeline: Jenkins → Docker (multi-stage `node:20`, Express runtime) → Helm.
-5. **Rollback** — re-run the same Jenkins job against the previous release ref (e.g. `cbp-release-4.0`).
+1. **Generate the release note** — `/release-notes` diffs the branch against the last `v*` tag, writes `RELEASE_NOTES/release-<X.Y.Z>.md`, and bumps the version in `package.json` / `README.md` / `CLAUDE.md`.
+2. **Cut the release branch** — `release-<X.Y.Z>` from the release commit; push it (safe — it's only the deploy _source_, it does not auto-deploy).
+3. **Tag + GitHub Release** — create the annotated tag `v<X.Y.Z>` at the release commit and publish the GitHub Release from it (body = the release note). Tagging always also publishes the Release.
+4. **Deploy** — a human runs the manual Jenkins job (`Jenkinsfile-sun`) with `github_release_tag = release-<X.Y.Z>`. Pipeline: Jenkins → Docker (multi-stage `node:20`, Express runtime) → Helm.
+5. **Rollback** — re-run the same Jenkins job against the previous release branch (e.g. `release-5.0.1`).
 
-> Tag naming: use the `cbp-release-X.Y.Z` (patch) form for tags. A bare `cbp-release-X.Y` collides with the release **branch** name and creates an ambiguous git ref.
+> Naming: build branch is `release-<X.Y.Z>`; tag is `v<X.Y.Z>`. They **must differ** — a same-named branch+tag is an ambiguous git ref.
 
 ---
 
