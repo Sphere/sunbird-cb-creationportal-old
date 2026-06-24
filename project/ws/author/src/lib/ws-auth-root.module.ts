@@ -16,7 +16,6 @@ import { NgModule, ErrorHandler } from '@angular/core'
 
 import { CommonModule, APP_BASE_HREF, PlatformLocation } from '@angular/common'
 
-
 import { WsAuthorRootRoutingModule } from './ws-auth-root-routing.module'
 
 import { AuthRootComponent } from './components/root/root.component'
@@ -26,8 +25,6 @@ import { SharedModule } from './modules/shared/shared.module'
 import { AuthNavigationComponent } from './components/auth-navigation/auth-navigation.component'
 
 import { ContentTOCResolver } from './services/content-resolve.service'
-
-import { TocComponent } from './routing/components/toc/toc.component'
 
 import { CreateModule } from './routing/modules/create/create.module'
 
@@ -53,7 +50,6 @@ import { QualityJSONResolver } from './services/quality-json-resolver.service'
 
 import { ReviewerChecklist } from '../lib/routing/modules/editor/shared/components/reviewer-checklist/reviewer-checklist.component'
 
-
 /**
  * This function is used internal to get a string instance of the `<base href="" />` value from `index.html`.
  * This is an exported function, instead of a private function or inline lambda, to prevent this error:
@@ -70,16 +66,8 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
 }
 
 @NgModule({
-  declarations: [AuthRootComponent, AuthNavigationComponent, TocComponent, ViewerComponent, ReviewerChecklist],
-  imports: [
-    CommonModule,
-    SharedModule,
-    CreateModule,
-    HomeModule,
-    WsAuthorRootRoutingModule,
-    PipeSafeSanitizerModule,
-    BtnPageBackModule,
-  ],
+  declarations: [AuthRootComponent, AuthNavigationComponent, ViewerComponent, ReviewerChecklist],
+  imports: [CommonModule, SharedModule, CreateModule, HomeModule, WsAuthorRootRoutingModule, PipeSafeSanitizerModule, BtnPageBackModule],
   providers: [
     AuthInitService,
     CKEditorResolverService,
@@ -99,7 +87,7 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
       deps: [PlatformLocation],
     },
     AuthNavBarToggleService,
-    QualityJSONResolver
+    QualityJSONResolver,
   ],
 })
-export class WsAuthorRootModule { }
+export class WsAuthorRootModule {}

@@ -65,7 +65,6 @@ import { CertificateDialogComponent } from './components/certificate-upload-dial
 
 import { CommentsViewComponent } from './components/comments-view/comments-view.component'
 
-
 import { CommentsComponent } from './components/comments/comments.component'
 
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component'
@@ -102,8 +101,6 @@ import { ShowHideToolTipDirective } from './directives/show-hide-tool-tip.direct
 
 import { StatusTrackComponent } from './components/status-track/status-track.component'
 
-import { FeedbackFormComponent } from './components/feedback-form/feedback-form.component'
-
 import { SuccessDialogComponent } from './components/success-dialog/success-dialog.component'
 
 import { CompetencyPopupComponent } from 'src/app/competency-popup/competency-popup.component'
@@ -116,10 +113,7 @@ import { UserIndexConfirmComponent } from './components/user-index-confirm/user-
 
 import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image-upload-intro-popup.component'
 
-import { PageTrackComponent } from './components/page-track/page-track.component'
-
 import { ProgressStepperComponent } from './components/progress-stepper/progress-stepper.component'
-
 
 @NgModule({
   declarations: [
@@ -143,15 +137,13 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     DraftDialogComponent,
     ShowHideToolTipDirective,
     StatusTrackComponent,
-    FeedbackFormComponent,
     SuccessDialogComponent,
     CompetencyPopupComponent,
     ImageUploadIntroPopupComponent,
     PlayerNavigationWidgetComponent,
     CertificateStatusDialogComponentDialogComponent,
     UserIndexConfirmComponent,
-    PageTrackComponent,
-    ProgressStepperComponent
+    ProgressStepperComponent,
   ],
   imports: [
     CommonModule,
@@ -246,13 +238,11 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     DraftDialogComponent,
     ShowHideToolTipDirective,
     StatusTrackComponent,
-    FeedbackFormComponent,
     SuccessDialogComponent,
     UserIndexConfirmComponent,
     PlayerNavigationWidgetComponent,
     CertificateStatusDialogComponentDialogComponent,
-    PageTrackComponent,
-    ProgressStepperComponent
+    ProgressStepperComponent,
   ],
   providers: [
     ApiService,
@@ -264,4 +254,4 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     { provide: MatDialogRef, useValue: {} },
   ],
 })
-export class SharedModule { }
+export class SharedModule {}
