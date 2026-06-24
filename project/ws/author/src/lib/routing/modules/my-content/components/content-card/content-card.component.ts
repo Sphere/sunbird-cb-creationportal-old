@@ -16,7 +16,6 @@ import { LoaderService } from 'project/ws/author/src/lib/services/loader.service
 
 import { CertificateStatusDialogComponentDialogComponent } from '../../../../../modules/shared/components/cert-upload-status-dialog/cert-upload-status-dialogcomponent'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-root-content-card',
@@ -30,7 +29,7 @@ export class ContentCardComponent implements OnInit, OnChanges {
   @Input() forExpiry = false
   @Input() forDelete = false
   @Input() changeView = false
-  @Input() hideThumbnail = false  // true for self-assessment (no thumbnail expected)
+  @Input() hideThumbnail = false // true for self-assessment (no thumbnail expected)
   addedCompetency: any
   filteredSubTitles: any[] = []
   translationArray: any = []
@@ -40,13 +39,14 @@ export class ContentCardComponent implements OnInit, OnChanges {
   @Output() action = new EventEmitter<any>()
   isBaseContent: Boolean = true
   isReviewerOrPublisher: Boolean = false
-  constructor(private accessService: AccessControlService,
+  constructor(
+    private accessService: AccessControlService,
     private authInitService: AuthInitService,
     private router: Router,
     private editorService: EditorService,
     public dialog: MatDialog,
     private loader: LoaderService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     // Courses without an uploaded thumbnail get a default grey placeholder.
@@ -55,12 +55,16 @@ export class ContentCardComponent implements OnInit, OnChanges {
     if (!this.hideThumbnail) {
       this.data.appIcon = this.data.appIcon || 'cbp-assets/icons/default.png'
     }
-    if (this.accessService.hasRole(['content_reviewer']) || this.accessService.hasRole(['external_content_reviewer_live']) || this.accessService.hasRole(['content_publisher'])) {
+    if (
+      this.accessService.hasRole(['content_reviewer']) ||
+      this.accessService.hasRole(['external_content_reviewer_live']) ||
+      this.accessService.hasRole(['content_publisher'])
+    ) {
       this.isReviewerOrPublisher = true
     } else {
       this.isReviewerOrPublisher = false
     }
-    if ((this.router.url).includes('published')) {
+    if (this.router.url.includes('published')) {
       this.pageName = true
     }
     if (this.data.hasTranslations && this.data.hasTranslations.length) {
@@ -71,9 +75,7 @@ export class ContentCardComponent implements OnInit, OnChanges {
       this.translationArray = this.translationArray.concat(this.data.isTranslationOf)
     }
     this.filteredSubTitles = this.translationArray.length
-      ? this.ordinals.subTitles.filter(
-        (elem: any) => !this.translationArray.find((item: any) => elem.srclang === item.locale),
-      )
+      ? this.ordinals.subTitles.filter((elem: any) => !this.translationArray.find((item: any) => elem.srclang === item.locale))
       : this.ordinals.subTitles
     this.userId = this.accessService.userId
     this.getCourseStatusName()
@@ -120,30 +122,27 @@ export class ContentCardComponent implements OnInit, OnChanges {
     }
   }
   getCourseCompetency() {
-    let combinedArray = ''
-    if (this.data.competencies_v1 && this.data.competencies_v1.length > 0) {
-      let competencies = JSON.parse(this.data.competencies_v1)
-      let finalComp = ""
+    if (!this.data.competencies_v1?.length) {
+      this.addedCompetency = []
+      return
+    }
+    let competencies: any[]
+    try {
+      const raw = this.data.competencies_v1
+      competencies = typeof raw === 'string' ? JSON.parse(raw) : raw
       if (!Array.isArray(competencies)) {
         competencies = [competencies]
       }
-
-      combinedArray = competencies.map((element: any) => {
-        if (element.competencyId) {
-          const matchingValue = this.competencyData.find((value: any) => value.id == element.competencyId)
-          finalComp = {
-            ...element,
-            ...(matchingValue && matchingValue.additionalProperties ? matchingValue.additionalProperties : {})
-          }
-          return finalComp
-        }
-        return finalComp
-
-
-      })
+    } catch {
+      competencies = []
     }
 
-    this.addedCompetency = combinedArray
+    this.addedCompetency = competencies
+      .filter((element: any) => element?.competencyId)
+      .map((element: any) => {
+        const match = this.competencyData?.find((value: any) => String(value.entityId) === String(element.competencyId))
+        return { ...element, code: match?.code, name: match?.name || element.competencyName }
+      })
   }
 
   getName(lang: string): string {
@@ -198,7 +197,10 @@ export class ContentCardComponent implements OnInit, OnChanges {
         break
       case 'preview':
         // if (this.data.status === 'Review' || this.data.status === 'QualityReview') {
-        if ((this.data.reviewStatus === 'InReview' && this.data.status === 'Review') || (this.data.reviewStatus === 'Reviewed' && this.data.status === 'Review')) {
+        if (
+          (this.data.reviewStatus === 'InReview' && this.data.status === 'Review') ||
+          (this.data.reviewStatus === 'Reviewed' && this.data.status === 'Review')
+        ) {
           returnValue = this.accessService.hasAccess(this.data)
         }
         break
@@ -238,16 +240,14 @@ export class ContentCardComponent implements OnInit, OnChanges {
         }
         requestBody = {
           request: {
-            content: meta
-          }
+            content: meta,
+          },
         }
-        this.editorService.updateNewContentV3(requestBody, data.identifier).subscribe(
-          (response: any) => {
-            if (response.params.status === "successful") {
-              this.router.navigateByUrl(`/author/editor/${data.identifier}`)
-            }
-          })
-
+        this.editorService.updateNewContentV3(requestBody, data.identifier).subscribe((response: any) => {
+          if (response.params.status === 'successful') {
+            this.router.navigateByUrl(`/author/editor/${data.identifier}`)
+          }
+        })
       })
     } else {
       this.router.navigateByUrl(`/author/editor/${data.identifier}`)
@@ -276,7 +276,8 @@ export class ContentCardComponent implements OnInit, OnChanges {
           this.dialog.open(CertificateStatusDialogComponentDialogComponent, {
             width: '440px',
             data: {
-              message: 'There is already a certificate assigned to this course. To modify it please contact Aastrika support at support@aastrika.org from your registered email id.',
+              message:
+                'There is already a certificate assigned to this course. To modify it please contact Aastrika support at support@aastrika.org from your registered email id.',
               icon: 'info',
               color: '#f44336',
               cert_upload: 'Yes',
@@ -297,8 +298,6 @@ export class ContentCardComponent implements OnInit, OnChanges {
         })
       }
     })
-
-
   }
 
   changeToDefaultImg($event: any) {

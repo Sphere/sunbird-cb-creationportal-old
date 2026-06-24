@@ -17,11 +17,7 @@ import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
 
-import {
-  IAuthoringPagination,
-  IFilterMenuNode,
-  IMenuFlatNode,
-} from '@ws/author/src/lib/interface/authored'
+import { IAuthoringPagination, IFilterMenuNode, IMenuFlatNode } from '@ws/author/src/lib/interface/authored'
 
 import { NSContent } from '@ws/author/src/lib/interface/content'
 
@@ -59,7 +55,6 @@ import { ConfigurationsService } from '@ws-widget/utils'
 
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-my-content',
@@ -67,7 +62,6 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
   styleUrls: ['./my-content.component.scss'],
 })
 export class MyContentComponent implements OnInit, OnDestroy {
-
   constructor(
     private myContSvc: MyContentService,
     private activatedRoute: ActivatedRoute,
@@ -92,10 +86,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       node => node.expandable,
       node => node.content,
     )
-    this.dataSource = new MatTreeFlatDataSource(
-      this.filterMenuTreeControl,
-      this.filterMenuTreeFlattener,
-    )
+    this.dataSource = new MatTreeFlatDataSource(this.filterMenuTreeControl, this.filterMenuTreeFlattener)
     this.dataSource.data = this.filterMenuItems
     this.userId = this.accessService.userId
     this.isAdmin = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor'])
@@ -114,13 +105,13 @@ export class MyContentComponent implements OnInit, OnDestroy {
   finalFilters: any = []
   allLanguages: any[] = [
     {
-      "name": "English",
-      "value": "en"
+      name: 'English',
+      value: 'en',
     },
     {
-      "name": "Hindi",
-      "value": "hi"
-    }
+      name: 'Hindi',
+      value: 'hi',
+    },
   ]
   searchLanguage = ''
   allLanguages$!: Observable<any>
@@ -137,20 +128,20 @@ export class MyContentComponent implements OnInit, OnDestroy {
   isAdmin = false
   currentAction: 'author' | 'reviewer' | 'expiry' | 'deleted' = 'author'
   listview = true
-  links = ['Draft', 'Sent for review', 'Courses to publish', 'Published Courses', 'Retired'];
-  activeLink = this.links[0];
+  links = ['Draft', 'Sent for review', 'Courses to publish', 'Published Courses', 'Retired']
+  activeLink = this.links[0]
   isSelectedColor: boolean = true
-  isSelectedReviewCourse: boolean = false;
-  isSelectedRevisionCourse: boolean = false;
-  isSelectedSelfRevisionCourse: boolean = false;
-  isSelectedPublishCourse: boolean = false;
-  isSelectedToPublishCourse: boolean = false;
-  isSelectedToExternalCouseReview: boolean = false;
+  isSelectedReviewCourse: boolean = false
+  isSelectedRevisionCourse: boolean = false
+  isSelectedSelfRevisionCourse: boolean = false
+  isSelectedPublishCourse: boolean = false
+  isSelectedToPublishCourse: boolean = false
+  isSelectedToExternalCouseReview: boolean = false
   isSelectedToExternalSelfAssessmentReview: boolean = false
   isSelectedAllCourse: boolean = false
   isSelectedCourseWithoutCertificate: boolean = false
   isSelectedCourseWithCertificate: boolean = false
-  isSelectedRetiredCourse: boolean = false;
+  isSelectedRetiredCourse: boolean = false
   isSelectedCertificate: boolean = false
   link: string = ''
   isContentExpanded: boolean = false
@@ -162,9 +153,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
   isSelectedSelfReviewCourse: boolean = false
   isSelectedToSelfPublishCourse: boolean = false
   isSelectedSelfRetiredCourse: boolean = false
-  @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<
-    any
-  >
+  @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<any>
 
   // sideNavBarOpened = true
   isAihub = false
@@ -228,14 +217,16 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.newDesign = l.get(this.accessService, 'authoringConfig.newDesign')
     this.ordinals = this.authInitService.ordinals
     this.allLanguages$ = (this.editorService.languageList() || []) as any
-    this.allLanguages$.subscribe((langs: any) => { this.allLanguages = langs })
+    this.allLanguages$.subscribe((langs: any) => {
+      this.allLanguages = langs
+    })
     this.sourceNames$ = this.editorService.sourceNames() // Assign the observable
     this.sourceNames$.subscribe(async (data: any) => {
       if (data.length > 0) {
         this.sourceName = data
       }
     })
-    console.log("this.allLanguages", this.authInitService.ordinals.subTitles)
+    console.log('this.allLanguages', this.authInitService.ordinals.subTitles)
 
     // Restore filters from service
     const savedFilters = this.filterStateService.getFilters()
@@ -258,7 +249,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // Track the queryParams subscription so ngOnDestroy actually tears it down.
     // (routerSubscription was an empty `{}` that never held this sub, so it leaked.)
     this.routerSubscription = this.activatedRoute.queryParams.subscribe(params => {
-      if (this.configService.unMappedUser.roles.length === 1 && this.configService.unMappedUser.roles[0] === "PUBLIC") {
+      if (this.configService.unMappedUser.roles.length === 1 && this.configService.unMappedUser.roles[0] === 'PUBLIC') {
         this.status = 'draft'
         this.links = ['Draft']
         this.navigateContents('Draft')
@@ -270,11 +261,18 @@ export class MyContentComponent implements OnInit, OnDestroy {
         // don't see an empty Draft list. Creators keep the Draft default.
         if (!this.canShow('author_create')) {
           if (!status || status === 'draft') {
-            if (this.canShow('publish')) { status = 'reviewed' }            // Courses to publish
-            else if (this.canShow('review')) { status = 'inreview' }        // For Review
+            if (this.canShow('publish')) {
+              status = 'reviewed'
+            } // Courses to publish
+            else if (this.canShow('review')) {
+              status = 'inreview'
+            } // For Review
           } else if (status === 'selfAssessmentDraft') {
-            if (this.canShow('publish')) { status = 'selfToPublishedCourse' }
-            else if (this.canShow('review')) { status = 'selfSentForReview' }
+            if (this.canShow('publish')) {
+              status = 'selfToPublishedCourse'
+            } else if (this.canShow('review')) {
+              status = 'selfSentForReview'
+            }
           }
           if (status !== params.status) {
             this.router.navigate(['/author/my-content'], { queryParams: { status } })
@@ -296,7 +294,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.allowPublish = this.canShow('publish') && this.accessService.authoringConfig.allowPublish
     this.allowExternalContentReviewer = this.canShow('external_content_reviewer')
     this.isContentExpanded = true
-    console.log("status: ", this.status)
+    console.log('status: ', this.status)
     if (this.status === 'allCourses' || this.status === 'coursesWithoutCertificate' || this.status === 'courseWithCertificate') {
       this.links = ['All Courses', 'Courses without certificate', 'Courses with certificate']
       this.isContentExpanded = false
@@ -332,7 +330,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isSelectedCourseWithoutCertificate = false
         this.isSelectedCourseWithCertificate = true
       }
-
     } else if (this.status === 'Draft') {
       this.link = 'Draft'
       this.links = ['Draft', 'Sent for review', 'Published Courses', 'Retired']
@@ -383,7 +380,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
     //   this.isSelectedCourseWithCertificate = false
     // }
     else if (this.status === 'selfAssessmentDraft') {
-      console.log("yes here")
+      console.log('yes here')
       this.isSelfAssessmentExpanded = true
       this.createCourseBtn = false
       this.currentTab = 'Self Assessment'
@@ -403,8 +400,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    }
-    else if (this.status === 'selfSentForReview') {
+    } else if (this.status === 'selfSentForReview') {
       this.isSelfAssessmentExpanded = true
       this.createCourseBtn = false
       this.currentTab = 'Self Assessment'
@@ -424,8 +420,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    }
-    else if (this.status === 'selfToPublishedCourse') {
+    } else if (this.status === 'selfToPublishedCourse') {
       this.isSelfAssessmentExpanded = true
       this.createCourseBtn = false
       this.currentTab = 'Self Assessment'
@@ -445,9 +440,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = true
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-      console.log("this tab", this.currentTab)
-    }
-    else if (this.status === 'selfPublishedCourse') {
+      console.log('this tab', this.currentTab)
+    } else if (this.status === 'selfPublishedCourse') {
       this.isSelfAssessmentExpanded = true
       this.createCourseBtn = false
       this.currentTab = 'Self Assessment'
@@ -467,8 +461,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = true
       this.isSelectedSelfRetiredCourse = false
-    }
-    else if (this.status === 'selfRetiredCourse') {
+    } else if (this.status === 'selfRetiredCourse') {
       this.isSelfAssessmentExpanded = true
       this.createCourseBtn = false
       this.currentTab = 'Self Assessment'
@@ -488,8 +481,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = true
-    }
-    else if (this.status === 'inreview') {
+    } else if (this.status === 'inreview') {
       this.isSelfAssessmentExpanded = false
       this.createCourseBtn = false
       this.currentTab = 'My Courses'
@@ -509,8 +501,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    }
-    else if (this.status === 'reviewed') {
+    } else if (this.status === 'reviewed') {
       this.isSelfAssessmentExpanded = false
       this.createCourseBtn = false
       this.currentTab = 'My Courses'
@@ -530,8 +521,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    }
-    else if (this.status === 'externalCourseReview') {
+    } else if (this.status === 'externalCourseReview') {
       this.isSelfAssessmentExpanded = false
       this.createCourseBtn = false
       this.currentTab = 'Live Courses'
@@ -553,7 +543,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfRetiredCourse = false
       this.isSelectedToExternalCouseReview = true
       this.isSelectedToExternalSelfAssessmentReview = false
-
     } else if (this.status == 'externalSelfAssessmentReview') {
       this.isSelfAssessmentExpanded = true
       this.createCourseBtn = false
@@ -577,9 +566,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfRetiredCourse = false
       this.isSelectedToExternalCouseReview = false
       this.isSelectedToExternalSelfAssessmentReview = true
-
-    }
-    else if (this.status === 'published') {
+    } else if (this.status === 'published') {
       this.isSelfAssessmentExpanded = false
       this.createCourseBtn = false
       this.currentTab = 'My Courses'
@@ -599,8 +586,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    }
-    else if (this.status === 'unpublished') {
+    } else if (this.status === 'unpublished') {
       this.isSelfAssessmentExpanded = false
       this.createCourseBtn = false
       this.currentTab = 'My Courses'
@@ -640,8 +626,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    }
-    else if (this.status === 'AIHub') {
+    } else if (this.status === 'AIHub') {
       this.createCourseBtn = false
       this.currentTab = 'AIHub'
       this.currentStatus = 'AIHub'
@@ -657,8 +642,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedCourseWithoutCertificate = false
       this.isSelectedCourseWithCertificate = false
       this.isAihub = true
-    }
-    else if (this.status === 'selfCourseRevision') {
+    } else if (this.status === 'selfCourseRevision') {
       this.isSelfAssessmentExpanded = true
       this.createCourseBtn = false
       this.currentTab = 'Self Assessment'
@@ -679,22 +663,27 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
     }
-    console.log("this.currentTab", this.currentTab)
+    console.log('this.currentTab', this.currentTab)
   }
 
-
   onClickReviewCourse(status: string) {
-    console.log("status: ", status)
+    console.log('status: ', status)
     // Reviewers/publishers (without a creator role) have no Draft tab — remap the
     // Courses / Self Assessment header click to their first real tab. Creators keep
     // Draft. Role-based (not config-gated) so it stays correct for every reviewer.
     if (!this.canShow('author_create')) {
       if (status == 'Draft') {
-        if (this.canShow('publish')) { status = 'Courses to publish' }
-        else if (this.canShow('review')) { status = 'Sent for review' }
+        if (this.canShow('publish')) {
+          status = 'Courses to publish'
+        } else if (this.canShow('review')) {
+          status = 'Sent for review'
+        }
       } else if (status == 'selfAssessmentDraft') {
-        if (this.canShow('publish')) { status = 'Self Courses to publish' }
-        else if (this.canShow('review')) { status = 'Self Sent for review' }
+        if (this.canShow('publish')) {
+          status = 'Self Courses to publish'
+        } else if (this.canShow('review')) {
+          status = 'Self Sent for review'
+        }
       }
     }
     this.link = status
@@ -728,8 +717,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    }
-    else if (status == 'Courses to publish') {
+    } else if (status == 'Courses to publish') {
       this.createCourseBtn = true
       this.currentTab = 'My Courses'
       this.currentStatus = 'Courses to publish'
@@ -749,8 +737,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    }
-    else if (status == 'Published') {
+    } else if (status == 'Published') {
       this.createCourseBtn = true
       this.currentTab = 'My Courses'
       this.currentStatus = 'Published'
@@ -770,8 +757,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    }
-    else if (status == 'Retired') {
+    } else if (status == 'Retired') {
       this.createCourseBtn = true
       this.currentTab = 'My Courses'
       this.currentStatus = 'Retired'
@@ -791,8 +777,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    }
-    else if (status == 'Draft') {
+    } else if (status == 'Draft') {
       this.createCourseBtn = true
       this.currentTab = 'My Courses'
       this.currentStatus = 'Draft'
@@ -812,9 +797,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-
-    }
-    else if (status == 'All Courses') {
+    } else if (status == 'All Courses') {
       this.currentTab = 'Manage Courses'
       this.currentStatus = 'All Courses'
       this.isSelectedColor = true
@@ -832,8 +815,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    }
-    else if (status == 'Courses without certificate') {
+    } else if (status == 'Courses without certificate') {
       this.currentTab = 'Manage Courses'
       this.currentStatus = 'Courses without certificate'
       this.isSelectedColor = true
@@ -851,9 +833,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    }
-
-    else if (status == 'Courses with certificate') {
+    } else if (status == 'Courses with certificate') {
       this.currentTab = 'Manage Courses'
       this.currentStatus = 'Courses with certificate'
       this.isSelectedColor = true
@@ -871,8 +851,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    }
-    else if (status == 'Self Assessment Draft' || status == 'selfAssessmentDraft') {
+    } else if (status == 'Self Assessment Draft' || status == 'selfAssessmentDraft') {
       this.createCourseBtn = false
       this.currentTab = 'Self Assessment'
       this.currentStatus = 'Draft'
@@ -891,9 +870,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-
-    }
-    else if (status == 'Self Sent for review') {
+    } else if (status == 'Self Sent for review') {
       this.createCourseBtn = false
       this.currentTab = 'Self Assessment'
       this.currentStatus = 'Sent for review'
@@ -912,9 +889,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-
-    }
-    else if (status == 'Self Courses to publish') {
+    } else if (status == 'Self Courses to publish') {
       this.createCourseBtn = false
       this.currentTab = 'Self Assessment'
       this.currentStatus = 'Courses to publish'
@@ -933,9 +908,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = true
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-
-    }
-    else if (status == 'Self Published Courses') {
+    } else if (status == 'Self Published Courses') {
       this.createCourseBtn = false
       this.currentTab = 'Self Assessment'
       this.currentStatus = 'Published'
@@ -954,9 +927,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = true
       this.isSelectedSelfRetiredCourse = false
-
-    }
-    else if (status == 'Self Retired Courses') {
+    } else if (status == 'Self Retired Courses') {
       this.createCourseBtn = false
       this.currentTab = 'Self Assessment'
       this.currentStatus = 'Retired'
@@ -975,9 +946,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = true
-
-    }
-    else if (status == 'for revision') {
+    } else if (status == 'for revision') {
       this.createCourseBtn = true
       this.currentTab = 'For revision'
       this.currentStatus = 'For revision'
@@ -996,9 +965,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-
-    }
-    else if (status == 'self for revision') {
+    } else if (status == 'self for revision') {
       this.createCourseBtn = false
       this.currentTab = 'Self Assessment'
       this.currentStatus = 'For revision'
@@ -1018,7 +985,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-
     } else if (status == 'External Courses to Review') {
       this.createCourseBtn = false
       this.currentTab = 'Live Courses'
@@ -1041,7 +1007,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfRetiredCourse = false
       this.isSelectedToExternalCouseReview = true
       this.isSelectedToExternalSelfAssessmentReview = false
-
     } else if (status == 'External Self Assessment to Review') {
       this.createCourseBtn = false
       this.currentTab = 'Live Self Assessment'
@@ -1064,13 +1029,10 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfRetiredCourse = false
       this.isSelectedToExternalCouseReview = false
       this.isSelectedToExternalSelfAssessmentReview = true
-
     }
 
     this.navigateContents(status)
   }
-
-
 
   navigateContents(data: string): void {
     switch (data) {
@@ -1249,8 +1211,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'published' } })
         break
 
-
-
       case 'Retired':
         this.isAihub = false
         this.link = 'Retired'
@@ -1402,7 +1362,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfRetiredCourse' } })
         break
     }
-
   }
 
   fetchStatus() {
@@ -1505,10 +1464,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         // pageNo: loadMoreFlag ? this.pagination.offset : 0,
         sort_by: { lastUpdatedOn: 'desc' },
         // pageSize: this.pagination.limit,
-        facets: [
-          'primaryCategory',
-          'mimeType',
-        ],
+        facets: ['primaryCategory', 'mimeType'],
         // pageNo: loadMoreFlag ? this.pagination.offset : 0,
         // sort: [{ lastUpdatedOn: 'desc' }],
         // pageSize: this.pagination.limit,
@@ -1541,14 +1497,10 @@ export class MyContentComponent implements OnInit, OnDestroy {
       requestData.request.filters['competency'] = false
     } else if (this.status == 'selfRetiredCourse' || this.status == 'selfCourseRevision') {
       requestData.request.filters['competency'] = true
-
-    }
-    else if (this.status == 'externalCourseReview') {
+    } else if (this.status == 'externalCourseReview') {
       requestData.request.filters['competency'] = false
-
     } else if (this.status == 'externalSelfAssessmentReview') {
       requestData.request.filters['competency'] = true
-
     }
 
     // requestData.request.filters['contentType'] = ['Collection', 'Course', 'Learning Path']
@@ -1604,26 +1556,26 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'selfSentForReview':
       case 'selfPublishedCourse':
         if (this.accessService.hasRole(['content_creator'])) {
-          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+          requestData.request.filters['createdBy'] = this.configService.userProfile ? this.configService.userProfile.userId : ''
         } else if (this.accessService.hasRole(['content_reviewer'])) {
-          requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+          requestData.request.filters['reviewerIDs'] = this.configService.userProfile ? [this.configService.userProfile.userId] : []
         } else if (this.accessService.hasRole(['content_publisher'])) {
-          requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+          requestData.request.filters['publisherIDs'] = this.configService.userProfile ? [this.configService.userProfile.userId] : []
         }
 
         break
       case 'publish':
         requestData.request.filters['reviewStatus'] = 'Reviewed'
         requestData.request.filters['competency'] = false
-        requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+        requestData.request.filters['publisherIDs'] = this.configService.userProfile ? [this.configService.userProfile.userId] : []
         break
       case 'processing':
         if (this.accessService.hasRole(['content_publisher'])) {
-          requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+          requestData.request.filters['publisherIDs'] = this.configService.userProfile ? [this.configService.userProfile.userId] : []
         } else if (this.accessService.hasRole(['content_creator'])) {
-          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+          requestData.request.filters['createdBy'] = this.configService.userProfile ? this.configService.userProfile.userId : ''
         } else if (this.accessService.hasRole(['content_reviewer'])) {
-          requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+          requestData.request.filters['reviewerIDs'] = this.configService.userProfile ? [this.configService.userProfile.userId] : []
         }
         // else if (this.accessService.hasRole(['content_publisher'])) {
         //   requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
@@ -1632,7 +1584,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'reviewed':
         requestData.request.filters['reviewStatus'] = 'Reviewed'
         if (this.accessService.hasRole(['content_publisher'])) {
-          requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+          requestData.request.filters['publisherIDs'] = this.configService.userProfile ? [this.configService.userProfile.userId] : []
         }
         requestData.request.filters['competency'] = false
         break
@@ -1640,61 +1592,66 @@ export class MyContentComponent implements OnInit, OnDestroy {
         requestData.request.filters['reviewStatus'] = 'InReview'
         if (this.accessService.hasRole(['content_creator'])) {
           requestData.request.filters['competency'] = false
-          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
-        } else
-          if (this.accessService.hasRole(['content_reviewer'])) {
-            requestData.request.filters['competency'] = false
-            requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
-          } else if (this.accessService.hasRole(['content_publisher'])) {
-            requestData.request.filters['competency'] = false
-            requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
-          }
+          requestData.request.filters['createdBy'] = this.configService.userProfile ? this.configService.userProfile.userId : ''
+        } else if (this.accessService.hasRole(['content_reviewer'])) {
+          requestData.request.filters['competency'] = false
+          requestData.request.filters['reviewerIDs'] = this.configService.userProfile ? this.configService.userProfile.userId : ''
+        } else if (this.accessService.hasRole(['content_publisher'])) {
+          requestData.request.filters['competency'] = false
+          requestData.request.filters['publisherIDs'] = this.configService.userProfile ? this.configService.userProfile.userId : ''
+        }
         break
       case 'draft':
         // case 'unpublished':
-        if (this.accessService.hasRole(['content_creator']) ||
+        if (
+          this.accessService.hasRole(['content_creator']) ||
           this.accessService.hasRole(['content_reviewer']) ||
           this.configService.userRoles!.has('public') ||
-          this.accessService.hasRole(['content_publisher'])) {
+          this.accessService.hasRole(['content_publisher'])
+        ) {
           requestData.request.filters['competency'] = false
-          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+          requestData.request.filters['createdBy'] = this.configService.userProfile ? this.configService.userProfile.userId : ''
         }
         break
       case 'courseRevision':
         // case 'unpublished':
-        if (this.accessService.hasRole(['content_creator']) ||
+        if (
+          this.accessService.hasRole(['content_creator']) ||
           this.accessService.hasRole(['content_reviewer']) ||
           this.configService.userRoles!.has('public') ||
-          this.accessService.hasRole(['content_publisher'])) {
+          this.accessService.hasRole(['content_publisher'])
+        ) {
           requestData.request.filters['competency'] = false
-          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+          requestData.request.filters['createdBy'] = this.configService.userProfile ? this.configService.userProfile.userId : ''
         }
         break
       case 'selfCourseRevision':
         // case 'unpublished':
-        if (this.accessService.hasRole(['content_creator']) ||
+        if (
+          this.accessService.hasRole(['content_creator']) ||
           this.accessService.hasRole(['content_reviewer']) ||
           this.configService.userRoles!.has('public') ||
-          this.accessService.hasRole(['content_publisher'])) {
+          this.accessService.hasRole(['content_publisher'])
+        ) {
           requestData.request.filters['competency'] = true
-          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+          requestData.request.filters['createdBy'] = this.configService.userProfile ? this.configService.userProfile.userId : ''
         }
         break
       case 'unpublished':
         if (this.accessService.hasRole(['content_creator'])) {
           requestData.request.filters['competency'] = false
-          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+          requestData.request.filters['createdBy'] = this.configService.userProfile ? this.configService.userProfile.userId : ''
         } else if (this.accessService.hasRole(['content_reviewer'])) {
           requestData.request.filters['competency'] = false
-          requestData.request.filters['reviewerIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+          requestData.request.filters['reviewerIDs'] = this.configService.userProfile ? [this.configService.userProfile.userId] : []
         } else if (this.accessService.hasRole(['content_publisher'])) {
           requestData.request.filters['competency'] = false
-          requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+          requestData.request.filters['publisherIDs'] = this.configService.userProfile ? [this.configService.userProfile.userId] : []
         }
         break
       case 'selfRetiredCourse':
         if (this.accessService.hasRole(['content_creator'])) {
-          requestData.request.filters['createdBy'] = (this.configService.userProfile) ? this.configService.userProfile.userId : ''
+          requestData.request.filters['createdBy'] = this.configService.userProfile ? this.configService.userProfile.userId : ''
         }
         requestData.request.filters['competency'] = true
         break
@@ -1702,7 +1659,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         requestData.request.filters['reviewStatus'] = 'Reviewed'
         requestData.request.filters['status'] = 'Review'
         if (this.accessService.hasRole(['content_publisher'])) {
-          requestData.request.filters['publisherIDs'] = (this.configService.userProfile) ? [this.configService.userProfile.userId] : []
+          requestData.request.filters['publisherIDs'] = this.configService.userProfile ? [this.configService.userProfile.userId] : []
         }
         break
     }
@@ -1712,54 +1669,47 @@ export class MyContentComponent implements OnInit, OnDestroy {
     const observable =
       this.status === 'expiry' || this.newDesign
         ? this.myContSvc.fetchFromSearchV6(searchV6Data, this.isAdmin).pipe(
-          map((v: any) => {
-            return {
-              result: {
-                response: v,
-              },
-            }
-          }),
-        )
+            map((v: any) => {
+              return {
+                result: {
+                  response: v,
+                },
+              }
+            }),
+          )
         : this.myContSvc.fetchContent(requestData)
     this.loadService.changeLoad.next(true)
     observable.subscribe(
       data => {
         this.loadService.changeLoad.next(false)
         if (changeFilter) {
-          this.filterMenuItems =
-            data && data.result && data.result.facets
-              ? data.result.facets
-              : this.filterMenuItems
+          this.filterMenuItems = data && data.result && data.result.facets ? data.result.facets : this.filterMenuItems
           this.dataSource.data = this.filterMenuItems
         }
-        console.log("1667", data.result.content)
+        console.log('1667', data.result.content)
         this.cardContent =
           loadMoreFlag && !this.queryFilter
-            ? (this.cardContent || []).concat(
-              data && data.result ? data.result.content : [],
-            )
+            ? (this.cardContent || []).concat(data && data.result ? data.result.content : [])
             : data && data.result.content
               ? data.result.content
               : []
-        this.editorService.getAllEntities().subscribe((res: any) => {
-          this.proficiencyList = res.result.response
+        const lang = (this.cardContent[0] as any)?.lang || 'en'
+        this.editorService.getAllEntities(lang).subscribe((res: any) => {
+          this.proficiencyList = res.result.entity
           this.cdr.detectChanges()
         })
         if (this.status === 'draft' || this.status === 'selfAssessmentDraft') {
-          console.log("this.status = ", this.status)
-          const filteredContent = (data && data.result && data.result.content) ?
-            data.result.content.filter((item: any) => item.prevStatus !== 'Review') : []
+          console.log('this.status = ', this.status)
+          const filteredContent =
+            data && data.result && data.result.content ? data.result.content.filter((item: any) => item.prevStatus !== 'Review') : []
           this.cardContent = filteredContent
         }
 
-        console.log("this.cardContent", this.cardContent)
+        console.log('this.cardContent', this.cardContent)
 
         this.totalContent = data && data.result ? data.result.count : 0
         this.count[this.status] = this.totalContent
-        this.showLoadMore =
-          this.pagination.offset * this.pagination.limit + this.pagination.limit < this.totalContent
-            ? true
-            : false
+        this.showLoadMore = this.pagination.offset * this.pagination.limit + this.pagination.limit < this.totalContent ? true : false
         this.fetchError = false
         // Root component's loader subscription calls detectChanges() BEFORE this
         // point (on loadService.changeLoad.next(false)), so cardContent changes
@@ -1787,15 +1737,11 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.pagination.offset = 0
     this.sideNavBarOpened = false
     const filterIndex = this.filters.findIndex(v => v.displayName === node.displayName)
-    const filterMenuItemsIndex = this.filterMenuItems.findIndex((obj: any) =>
-      obj.content.some((val: any) => val.type === node.type),
-    )
+    const filterMenuItemsIndex = this.filterMenuItems.findIndex((obj: any) => obj.content.some((val: any) => val.type === node.type))
     const ind = this.finalFilters.indexOf(this.filterMenuItems[filterMenuItemsIndex].type)
     if (filterIndex === -1 && node.checked) {
       this.filters.push(node)
-      this.filterMenuItems[filterMenuItemsIndex].content.find(
-        (v: any) => v.displayName === node.displayName,
-      ).checked = true
+      this.filterMenuItems[filterMenuItemsIndex].content.find((v: any) => v.displayName === node.displayName).checked = true
 
       if (ind === -1) {
         this.finalFilters.push({
@@ -1806,9 +1752,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.finalFilters[ind].value.push(node.type)
       }
     } else {
-      this.filterMenuItems[filterMenuItemsIndex].content.find(
-        (v: any) => v.displayName === node.displayName,
-      ).checked = false
+      this.filterMenuItems[filterMenuItemsIndex].content.find((v: any) => v.displayName === node.displayName).checked = false
       this.filters.splice(filterIndex, 1)
       this.finalFilters.splice(ind, 1)
     }
@@ -1832,11 +1776,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-          console.log("1760")
+          console.log('1760')
 
-          this.cardContent = (this.cardContent || []).filter(
-            v => v.identifier !== request.identifier,
-          )
+          this.cardContent = (this.cardContent || []).filter(v => v.identifier !== request.identifier)
         },
         error => {
           if (error.status === 409) {
@@ -1870,7 +1812,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
           },
           duration: NOTIFICATION_TIME * 1000,
         })
-        console.log("1797")
+        console.log('1797')
 
         this.cardContent = (this.cardContent || []).filter(v => v.identifier !== request.identifier)
       },
@@ -1976,10 +1918,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
           this.deleteContent(content.data)
         } else if (content.type === 'restoreDeleted') {
           this.restoreContent(content.data)
-        } else if (
-          content.type === 'unpublish' ||
-          (content.type === 'moveToDraft' && content.data.status === 'Unpublished')
-        ) {
+        } else if (content.type === 'unpublish' || (content.type === 'moveToDraft' && content.data.status === 'Unpublished')) {
           this.unPublishOrDraft(content.data)
         } else {
           this.forwardBackward(content)
@@ -2000,7 +1939,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
           },
           duration: NOTIFICATION_TIME * 1000,
         })
-        console.log("1926")
+        console.log('1926')
 
         this.cardContent = (this.cardContent || []).filter(v => v.identifier !== request.identifier)
       },
@@ -2064,11 +2003,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-          console.log("1989")
+          console.log('1989')
 
-          this.cardContent = (this.cardContent || []).filter(
-            v => v.identifier !== content.data.identifier,
-          )
+          this.cardContent = (this.cardContent || []).filter(v => v.identifier !== content.data.identifier)
         },
         error => {
           if (error.status === 409) {
@@ -2104,11 +2041,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(`/author/editor/${event.data.identifier}`)
         break
       case 'remove':
-        console.log("2030")
+        console.log('2030')
 
-        this.cardContent = (this.cardContent || []).filter(
-          v => v.identifier !== event.data.identifier,
-        )
+        this.cardContent = (this.cardContent || []).filter(v => v.identifier !== event.data.identifier)
         break
       case 'moveToInReview':
       case 'moveToDraft':
@@ -2133,7 +2068,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((userAction?: { isExtend: boolean; expiryDate?: string }) => {
       if (userAction) {
-        console.log("2059")
+        console.log('2059')
 
         this.cardContent = (this.cardContent || []).filter(v => v.identifier !== content.identifier)
       }
@@ -2165,7 +2100,11 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'author':
         // return this.accessService.hasRole(CREATE_ROLE) || this.accessService.hasRole(REVIEW_ROLE)
         //   || this.accessService.hasRole(PUBLISH_ROLE)
-        return this.configService.userRoles!.has('content_reviewer') || this.configService.userRoles!.has('content_creator') || this.configService.userRoles!.has('content_publisher')
+        return (
+          this.configService.userRoles!.has('content_reviewer') ||
+          this.configService.userRoles!.has('content_creator') ||
+          this.configService.userRoles!.has('content_publisher')
+        )
       case 'author_create':
         //return this.accessService.hasRole(CREATE_ROLE)
         return this.configService.userRoles!.has('content_creator')

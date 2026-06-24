@@ -1,17 +1,17 @@
 // ── MDC Form Field Design Tokens ──────────────────────────────────────────
 ::ng-deep .mat-mdc-form-field {
   --mdc-outlined-text-field-container-shape: 8px;
-  --mdc-outlined-text-field-outline-color: #CBD5E1;
-  --mdc-outlined-text-field-hover-outline-color: #1C5D95;
-  --mdc-outlined-text-field-focus-outline-color: #1C5D95;
+  --mdc-outlined-text-field-outline-color: #cbd5e1;
+  --mdc-outlined-text-field-hover-outline-color: #1c5d95;
+  --mdc-outlined-text-field-focus-outline-color: #1c5d95;
   --mdc-outlined-text-field-focus-outline-width: 2px;
   --mdc-outlined-text-field-label-text-font: Roboto, sans-serif;
   --mdc-outlined-text-field-input-text-font: Roboto, sans-serif;
   --mdc-outlined-text-field-label-text-size: 14px;
   --mdc-outlined-text-field-input-text-size: 14px;
-  --mdc-outlined-text-field-label-text-color: #64748B;
-  --mdc-outlined-text-field-input-text-color: #0F172A;
-  --mdc-outlined-text-field-hover-label-text-color: #1C5D95;
+  --mdc-outlined-text-field-label-text-color: #64748b;
+  --mdc-outlined-text-field-input-text-color: #0f172a;
+  --mdc-outlined-text-field-hover-label-text-color: #1c5d95;
 }
 ::ng-deep .mat-mdc-form-field-hint-wrapper,
 ::ng-deep .mat-mdc-form-field-error-wrapper {
@@ -27,31 +27,57 @@
 
 // ── Select Panel ───────────────────────────────────────────────────────────
 ::ng-deep .mat-mdc-select-panel {
-  background: #FFFFFF !important;
+  background: #ffffff !important;
   border-radius: 8px !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
 }
 ::ng-deep .mat-mdc-option {
-  background: #FFFFFF !important;
+  background: #ffffff !important;
   font-family: Roboto, sans-serif !important;
   font-size: 14px !important;
-  color: #0F172A !important;
+  color: #0f172a !important;
   min-height: 40px !important;
 }
 ::ng-deep .mat-mdc-option:hover:not(.mdc-list-item--disabled),
 ::ng-deep .mat-mdc-option.mat-mdc-option-active {
-  background: #EBF4FD !important;
+  background: #ebf4fd !important;
 }
 ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
-  background: #EBF4FD !important;
-  color: #1C5D95 !important;
+  background: #ebf4fd !important;
+  color: #1c5d95 !important;
   font-weight: 500 !important;
+}
+
+// ── Autocomplete Panel ──────────────────────────────────────────────────────
+::ng-deep .mat-mdc-autocomplete-panel {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+  padding: 4px 0 !important;
+}
+::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option {
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 14px !important;
+  line-height: 40px !important;
+}
+// Primary-text must be flex so the code badge aligns inline with the name
+::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option .mdc-list-item__primary-text {
+  display: flex !important;
+  align-items: center !important;
+  font-family: Roboto, sans-serif !important;
+  font-size: 13px !important;
+  color: inherit !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 // ── Manual required indicator (replaces AM's suppressed auto-marker) ──────
 // The span is placed inside mat-label in the template for required fields
 .cs-req {
-  color: #EF4444;
+  color: #ef4444;
   font-weight: 600;
   margin-left: 1px;
 }
@@ -61,12 +87,12 @@
 // Set the property on the chip host AND force colour on all inner text nodes.
 ::ng-deep .mat-mdc-chip-row,
 ::ng-deep .mat-mdc-chip.mat-mdc-standard-chip {
-  --mdc-chip-elevated-container-color: #1C5D95 !important;
-  --mdc-chip-label-text-color: #FFFFFF !important;
-  --mdc-chip-with-trailing-icon-trailing-icon-color: rgba(255,255,255,0.7) !important;
-  --mdc-chip-with-icon-icon-color: rgba(255,255,255,0.7) !important;
-  --mdc-chip-elevated-selected-container-color: #1C5D95 !important;
-  background-color: #1C5D95 !important;
+  --mdc-chip-elevated-container-color: #1c5d95 !important;
+  --mdc-chip-label-text-color: #ffffff !important;
+  --mdc-chip-with-trailing-icon-trailing-icon-color: rgba(255, 255, 255, 0.7) !important;
+  --mdc-chip-with-icon-icon-color: rgba(255, 255, 255, 0.7) !important;
+  --mdc-chip-elevated-selected-container-color: #1c5d95 !important;
+  background-color: #1c5d95 !important;
   border-radius: 6px !important;
   height: 26px !important;
 }
@@ -76,7 +102,7 @@
 ::ng-deep .mat-mdc-chip-row .mat-mdc-chip-action-label,
 ::ng-deep .mat-mdc-chip.mat-mdc-standard-chip .mdc-evolution-chip__text-label,
 ::ng-deep .mat-mdc-chip.mat-mdc-standard-chip .mat-mdc-chip-action-label {
-  color: #FFFFFF !important;
+  color: #ffffff !important;
   font-family: Roboto, sans-serif !important;
   font-size: 12px !important;
 }
@@ -85,7 +111,7 @@
 ::ng-deep .mat-mdc-chip-row .mat-icon,
 ::ng-deep .mat-mdc-chip-row .mdc-evolution-chip__icon--trailing,
 ::ng-deep .mat-mdc-chip.mat-mdc-standard-chip .mat-icon {
-  color: rgba(255,255,255,0.7) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
   font-size: 16px !important;
   width: 16px !important;
   height: 16px !important;
@@ -94,7 +120,7 @@
 // ── Page Container ────────────────────────────────────────────────────────
 .cs-page {
   padding: 24px 32px 96px;
-  background: #F8FAFC;
+  background: #f8fafc;
   min-height: calc(100vh - 160px);
   font-family: Roboto, sans-serif;
   box-sizing: border-box;
@@ -110,10 +136,12 @@
 
 // ── Card ──────────────────────────────────────────────────────────────────
 .cs-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.07),
+    0 1px 2px rgba(0, 0, 0, 0.04);
   overflow: hidden;
   transition: box-shadow 0.2s ease;
 
@@ -127,22 +155,22 @@
   align-items: center;
   gap: 12px;
   padding: 14px 20px;
-  border-bottom: 1px solid #F1F5F9;
-  background: #FAFBFC;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafbfc;
 }
 
 .cs-card-icon {
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: #EBF4FD;
+  background: #ebf4fd;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 
   mat-icon {
-    color: #1C5D95;
+    color: #1c5d95;
     font-size: 20px;
     width: 20px;
     height: 20px;
@@ -152,7 +180,7 @@
 .cs-card-title {
   font-size: 14px;
   font-weight: 600;
-  color: #0F172A;
+  color: #0f172a;
   margin: 0;
   font-family: Roboto, sans-serif;
   line-height: 1.3;
@@ -175,7 +203,7 @@
 .cs-hint {
   font-family: Roboto, sans-serif !important;
   font-size: 11px !important;
-  color: #64748B !important;
+  color: #64748b !important;
 }
 
 // ── Locked chip (read-only publisher) ─────────────────────────────────────
@@ -186,7 +214,7 @@
 }
 ::ng-deep .cs-chip-locked .mdc-evolution-chip__text-label,
 ::ng-deep .cs-chip-locked .mat-mdc-chip-action-label {
-  color: #FFFFFF !important;
+  color: #ffffff !important;
 }
 
 // ── Fixed Bottom Action Bar ───────────────────────────────────────────────
@@ -196,8 +224,8 @@
   left: 0;
   right: 0;
   z-index: 200;
-  background: #FFFFFF;
-  border-top: 1px solid #E2E8F0;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
   padding: 10px 32px;
   display: flex;
@@ -217,11 +245,13 @@
   font-weight: 600 !important;
   height: 38px !important;
   border-radius: 8px !important;
-  background: #1C5D95 !important;
-  color: #FFFFFF !important;
+  background: #1c5d95 !important;
+  color: #ffffff !important;
   padding: 0 20px !important;
   letter-spacing: 0.2px;
-  transition: background 0.2s, box-shadow 0.2s;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
 
   mat-icon {
     font-size: 17px;
@@ -231,13 +261,13 @@
   }
 
   &:hover:not([disabled]) {
-    background: #154F81 !important;
+    background: #154f81 !important;
     box-shadow: 0 4px 12px rgba(28, 93, 149, 0.35) !important;
   }
 
   &[disabled] {
-    background: #E2E8F0 !important;
-    color: #94A3B8 !important;
+    background: #e2e8f0 !important;
+    color: #475569 !important;
     box-shadow: none !important;
   }
 }
@@ -252,6 +282,25 @@
 .module-input {
   padding: 0 16px;
   height: 40px;
+}
+
+// Overlay panel is appended to body — needs ::ng-deep to reach option content
+::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option .cs-opt-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #1c5d95;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-right: 10px;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  min-width: 28px;
+  line-height: 1;
 }
 
 // ── Responsive ────────────────────────────────────────────────────────────

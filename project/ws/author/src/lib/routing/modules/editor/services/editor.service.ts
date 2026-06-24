@@ -1,4 +1,3 @@
-
 import { HttpClient } from '@angular/common/http'
 
 import { Injectable } from '@angular/core'
@@ -49,7 +48,6 @@ import { environment } from '../../../../../../../../../src/environments/environ
 
 // import { HttpHeaders } from '@angular/common/http'
 
-
 @Injectable({ providedIn: 'root' })
 export class EditorService {
   accessPath: string[] = []
@@ -64,7 +62,7 @@ export class EditorService {
     private userAutoComplete: UserAutocompleteService,
     private configSvc: ConfigurationsService,
     private http: HttpClient,
-  ) { }
+  ) {}
 
   create(meta: NSApiRequest.ICreateMetaRequestGeneral): Observable<string> {
     const requestBody: NSApiRequest.ICreateMetaRequest = {
@@ -110,14 +108,10 @@ export class EditorService {
     //     // tslint:disable-next-line:max-line-length
     //     `/api/course/v1/batch/read/${id}`,
     //   )
-    return this.http
-      .post<any>('apis/proxies/v8/learner/course/v1/batch/list', req)
-      .pipe(
-        retry(1),
-        map(
-          (data: any) => data.result.response.content
-        )
-      )
+    return this.http.post<any>('apis/proxies/v8/learner/course/v1/batch/list', req).pipe(
+      retry(1),
+      map((data: any) => data.result.response.content),
+    )
   }
   createTemplate(data: any): Observable<any> {
     console.log(data)
@@ -129,19 +123,19 @@ export class EditorService {
     const requestBody: any = {
       request: {
         content: {
-          "name": data.name,
+          name: data.name,
           code: randomNumber,
-          mimeType: "image/svg+xml",
+          mimeType: 'image/svg+xml',
           createdBy: this.accessService.userId,
-          createdFor: [(this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId) ? this.configSvc.userProfile.rootOrgId : ''],
+          createdFor: [this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId ? this.configSvc.userProfile.rootOrgId : ''],
           creator: this.accessService.userName,
-          "contentType": "Asset",
-          "primaryCategory": "Asset",
-          "generateDIALCodes": "No",
-          "dialcodeRequired": "No",
+          contentType: 'Asset',
+          primaryCategory: 'Asset',
+          generateDIALCodes: 'No',
+          dialcodeRequired: 'No',
           framework: environment.framework,
-        }
-      }
+        },
+      },
     }
     return this.http
       .post<NSApiRequest.ICreateMetaRequestV2>(
@@ -171,7 +165,7 @@ export class EditorService {
           code: randomNumber,
           contentType: meta.contentType,
           createdBy: this.accessService.userId,
-          createdFor: [(this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId) ? this.configSvc.userProfile.rootOrgId : ''],
+          createdFor: [this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId ? this.configSvc.userProfile.rootOrgId : ''],
           creator: this.accessService.userName,
           // description: '',
           framework: environment.framework,
@@ -181,13 +175,13 @@ export class EditorService {
           instructions: '',
           // organisation: [environment.organisation],
           organisation: [
-            (this.configSvc.userProfile && this.configSvc.userProfile.departmentName) ? this.configSvc.userProfile.departmentName : '',
+            this.configSvc.userProfile && this.configSvc.userProfile.departmentName ? this.configSvc.userProfile.departmentName : '',
           ],
           isExternal: meta.mimeType === 'application/html',
           primaryCategory: meta.primaryCategory,
           license: 'CC BY 4.0',
           ownershipType: ['createdFor'],
-          purpose: (meta.description) ? meta.description : '',
+          purpose: meta.description ? meta.description : '',
         },
       },
     }
@@ -208,35 +202,27 @@ export class EditorService {
 
   readContent(id: string): Observable<NSContent.IContentMeta> {
     this.newCreatedLexid = id
-    return this.apiService.get<NSContent.IContentMeta>(
-      `${CONTENT_READ}${id}${this.accessService.orgRootOrgAsQuery}`,
-    )
+    return this.apiService.get<NSContent.IContentMeta>(`${CONTENT_READ}${id}${this.accessService.orgRootOrgAsQuery}`)
   }
 
   readContentV2(id: string): Observable<NSContent.IContentMeta> {
     this.newCreatedLexid = id
-    return this.apiService.get<NSContent.IContentMeta>(
-      `${AUTHORING_BASE}content/v3/read/${id}?mode=edit`,
-    ).pipe(
+    return this.apiService.get<NSContent.IContentMeta>(`${AUTHORING_BASE}content/v3/read/${id}?mode=edit`).pipe(
       map((data: any) => {
         return data.result.content
-      })
+      }),
     )
   }
 
   readcontentV3(id: string): Observable<NSContent.IContentMeta> {
-    return this.apiService.get<NSContent.IContentMeta>(
-      `/apis/proxies/v8/action/content/v3/hierarchy/${id}?mode=edit`
-    ).pipe(
+    return this.apiService.get<NSContent.IContentMeta>(`/apis/proxies/v8/action/content/v3/hierarchy/${id}?mode=edit`).pipe(
       map((data: any) => {
         return data.result.content
-      })
+      }),
     )
   }
   contentRead(id: string): Observable<any> {
-    const res = this.apiService.get<any>(
-      `/apis/proxies/v8/action/content/v3/hierarchy/${id}.img`
-    )
+    const res = this.apiService.get<any>(`/apis/proxies/v8/action/content/v3/hierarchy/${id}.img`)
     return res
   }
 
@@ -244,110 +230,81 @@ export class EditorService {
     if (this.someDataObservable) {
       return this.someDataObservable
     }
-    this.someDataObservable = this.apiService.get<any>(
-      `/apis/authApi/content/v3/read/${id}?mode=edit`
-    ).pipe(share())
+    this.someDataObservable = this.apiService.get<any>(`/apis/authApi/content/v3/read/${id}?mode=edit`).pipe(share())
     return this.someDataObservable
   }
 
-  getAllEntities(): any {
-    let data: any = {
-      "search": {
-        "type": "Competency"
-      }
+  getAllEntities(language: string = 'en'): any {
+    const body = {
+      entityType: 'Competency',
+      language,
+      query: '',
+      strict: 'false',
+      field: ['code', 'name', 'levels'],
     }
-    return this.http
-      .post<any>(
-        `/apis/protected/v8/entityCompetency/getAllEntity`,
-        data,
-      )
+    return this.http.post<any>('/apis/proxies/v8/entity/v1/search', body)
   }
-  getEntities(id: any): any {
-    let data: any = {
-      "search": {
-        "type": "Competency",
-        "id": id
-      }
+  getEntities(id: any, language: string = 'en'): any {
+    const body = {
+      entityType: 'Competency',
+      language,
+      query: String(id),
+      strict: 'true',
+      field: ['code', 'name', 'levels'],
     }
-    return this.http
-      .post<any>(
-        `/apis/protected/v8/entityCompetency/getAllEntity`,
-        data,
-      )
+    return this.http.post<any>('/apis/proxies/v8/entity/v1/search', body)
   }
   createBatch(data: any): Observable<any> {
-    return this.http
-      .post<any>(
-        `/apis/proxies/v8/learner/course/v1/batch/create`,
-        data,
-      ).pipe(retry(1))
+    return this.http.post<any>(`/apis/proxies/v8/learner/course/v1/batch/create`, data).pipe(retry(1))
   }
-  createAndReadModule(
-    requestPayload: any,
-    parentId: any
-  ): Observable<any> {
+  createAndReadModule(requestPayload: any, parentId: any): Observable<any> {
     return this.createModule(requestPayload).pipe(mergeMap(data => this.getModuleContent(parentId, data)))
   }
   getModuleContent(id: string, moduleId: any): Observable<NSContent.IContentMeta> {
-    return this.apiService.get<NSContent.IContentMeta>(
-      `/apis/proxies/v8/action/content/v3/hierarchy/${id}?mode=edit`
+    return this.apiService.get<NSContent.IContentMeta>(`/apis/proxies/v8/action/content/v3/hierarchy/${id}?mode=edit`).pipe(
+      map((data: any) => {
+        const tempReturnData = data.result.content.children.filter((v: NSContent.IContentMeta) => v.identifier === moduleId)
+        this.newCreatedLexid = tempReturnData[0].identifier
+        return tempReturnData[0]
+      }),
     )
-      .pipe(
-        map((data: any) => {
-          const tempReturnData = data.result.content.children.filter((v: NSContent.IContentMeta) => v.identifier === moduleId)
-          this.newCreatedLexid = tempReturnData[0].identifier
-          return tempReturnData[0]
-        })
-      )
   }
   createModule(meta: any) {
-    return this.apiService.patch<null>(
-      `/apis/proxies/v8/action/content/v3/hierarchy/update`,
-      meta,
+    return (
+      this.apiService
+        .patch<null>(`/apis/proxies/v8/action/content/v3/hierarchy/update`, meta)
+        // .pipe(
+        //   map((data: any) => {
+        //     return data.result
+        //   })
+        //   )
+        .pipe(
+          map((data: any) => {
+            const temp = Object.keys(data.result.identifiers).filter((v: any) => !v.includes('do_'))
+            return data.result.identifiers[temp[0]]
+          }),
+        )
     )
-      // .pipe(
-      //   map((data: any) => {
-      //     return data.result
-      //   })
-      //   )
-      .pipe(
-        map((data: any) => {
-          const temp = Object.keys(data.result.identifiers).filter((v: any) => !v.includes('do_'))
-          return data.result.identifiers[temp[0]]
-        })
-      )
   }
 
-  createAndReadContentV2(
-    meta: NSApiRequest.ICreateMetaRequestGeneralV2,
-  ): Observable<NSContent.IContentMeta> {
+  createAndReadContentV2(meta: NSApiRequest.ICreateMetaRequestGeneralV2): Observable<NSContent.IContentMeta> {
     return this.createV2(meta).pipe(mergeMap(data => this.readContentV2(data)))
   }
 
   readMultipleContent(ids: string[]): Observable<NSContent.IContentMeta[]> {
-    return this.apiService.get<NSContent.IContentMeta>(
-      `${CONTENT_READ_MULTIPLE_HIERARCHY}${ids.join()}`,
-    )
+    return this.apiService.get<NSContent.IContentMeta>(`${CONTENT_READ_MULTIPLE_HIERARCHY}${ids.join()}`)
   }
 
-  createAndReadContent(
-    meta: NSApiRequest.ICreateMetaRequestGeneral,
-  ): Observable<NSContent.IContentMeta> {
+  createAndReadContent(meta: NSApiRequest.ICreateMetaRequestGeneral): Observable<NSContent.IContentMeta> {
     return this.create(meta).pipe(mergeMap(data => this.readContent(data)))
   }
 
   updateContent(meta: NSApiRequest.IContentUpdate): Observable<null> {
-    return this.apiService.post<null>(
-      `${CONTENT_SAVE}${this.accessService.orgRootOrgAsQuery}`,
-      meta,
-    )
+    return this.apiService.post<null>(`${CONTENT_SAVE}${this.accessService.orgRootOrgAsQuery}`, meta)
   }
 
   updateContentV2(meta: NSApiRequest.IContentUpdate): Observable<null> {
-    return this.apiService.post<null>(
-      `${CONTENT_SAVE_V2}${this.accessService.orgRootOrgAsQuery}`,
-      meta,
-    )
+    return this.apiService.post<null>(`${CONTENT_SAVE_V2}${this.accessService.orgRootOrgAsQuery}`, meta)
   }
   rejectContentApi(requestPayload: any, id: string): Observable<null> {
     return this.apiService.post<any>(REJECT_CONTENT + id, requestPayload)
@@ -378,10 +335,7 @@ export class EditorService {
   }
 
   updateContentV4(meta: NSApiRequest.IContentUpdateV3): Observable<null> {
-    return this.apiService.patch<null>(
-      `/apis/proxies/v8/action/content/v3/hierarchy/update`,
-      meta,
-    )
+    return this.apiService.patch<null>(`/apis/proxies/v8/action/content/v3/hierarchy/update`, meta)
   }
 
   // updateContentV6(meta: NSApiRequest.IContentUpdateV3, check: boolean): Observable<null> {
@@ -395,24 +349,15 @@ export class EditorService {
   // }
 
   updateContentWithFewFields(requestBody: any, identifier: string): Observable<any> {
-    return this.apiService.patch<any>(
-      `/apis/proxies/v8/action/content/v3/update/${identifier}`,
-      requestBody,
-    )
+    return this.apiService.patch<any>(`/apis/proxies/v8/action/content/v3/update/${identifier}`, requestBody)
   }
 
   updateContentForReviwer(requestBody: any, identifier: string): Observable<any> {
-    return this.apiService.patch<any>(
-      `/apis/proxies/v8/action/content/v3/updateReviewStatus/${identifier}`,
-      requestBody
-    )
+    return this.apiService.patch<any>(`/apis/proxies/v8/action/content/v3/updateReviewStatus/${identifier}`, requestBody)
   }
 
   updateHierarchyForReviwer(meta: NSApiRequest.IContentUpdateV3): Observable<any> {
-    return this.apiService.patch<null>(
-      `/apis/proxies/v8/action/content/v3/hierarchyUpdate`,
-      meta,
-    )
+    return this.apiService.patch<null>(`/apis/proxies/v8/action/content/v3/hierarchyUpdate`, meta)
   }
 
   fetchEmployeeList(data: string, roleType?: string): Observable<any[]> {
@@ -449,27 +394,24 @@ export class EditorService {
 
   searchV6Content(query = '*', locale: string): Observable<ISearchContent[]> {
     return this.apiService
-      .post<ISearchResult>(
-        this.accessService.hasRole(['editor', 'admin']) ? SEARCH_V6_ADMIN : SEARCH_V6_AUTH,
-        {
-          query: query || '*',
-          locale: [locale],
-          pageSize: 20,
-          pageNo: 0,
-          filters: [
-            {
-              andFilters: [
-                {
-                  status: ['Live'],
-                  contentType: ['Course', 'Collection', 'Learning Path', 'Resource'],
-                },
-              ],
-            },
-          ],
-          uuid: this.accessService.userId,
-          rootOrg: this.accessService.rootOrg,
-        },
-      )
+      .post<ISearchResult>(this.accessService.hasRole(['editor', 'admin']) ? SEARCH_V6_ADMIN : SEARCH_V6_AUTH, {
+        query: query || '*',
+        locale: [locale],
+        pageSize: 20,
+        pageNo: 0,
+        filters: [
+          {
+            andFilters: [
+              {
+                status: ['Live'],
+                contentType: ['Course', 'Collection', 'Learning Path', 'Resource'],
+              },
+            ],
+          },
+        ],
+        uuid: this.accessService.userId,
+        rootOrg: this.accessService.rootOrg,
+      })
       .pipe(
         map(v => (v && v.result ? v.result : [])),
         catchError(_ => of([])),
@@ -480,12 +422,7 @@ export class EditorService {
     return this.apiService.get<any>(url)
   }
 
-  forwardBackward(
-    meta: NSApiRequest.IForwardBackwardActionGeneral,
-    id: string,
-    status: string,
-  ): Observable<null> {
-
+  forwardBackward(meta: NSApiRequest.IForwardBackwardActionGeneral, id: string, status: string): Observable<null> {
     const requestBody: NSApiRequest.IForwardBackwardAction = {
       actor: this.accessService.userId,
       ...meta,
@@ -571,15 +508,15 @@ export class EditorService {
     return this.accessPath.length
       ? of()
       : this.apiService.get<string[]>(`/apis/protected/V8/user/accessControl`).pipe(
-        map((v: { special: { accessPaths: string[] }[] }) => {
-          if (v) {
-            v.special.forEach(acc => {
-              this.accessPath = this.accessPath.concat(acc.accessPaths)
-            })
-          }
-          return this.accessPath
-        }),
-      )
+          map((v: { special: { accessPaths: string[] }[] }) => {
+            if (v) {
+              v.special.forEach(acc => {
+                this.accessPath = this.accessPath.concat(acc.accessPaths)
+              })
+            }
+            return this.accessPath
+          }),
+        )
   }
 
   copy(lexId: string, url: string) {
@@ -603,16 +540,14 @@ export class EditorService {
     return isKnowledgeBoard
       ? this.apiService.delete(`${CONTENT_DELETE}/${id}/kb${this.accessService.orgRootOrgAsQuery}`)
       : this.apiService.post(`${CONTENT_DELETE}${this.accessService.orgRootOrgAsQuery}`, {
-        identifier: id,
-        author: this.accessService.userId,
-        isAdmin: this.accessService.hasRole(['editor', 'admin']),
-      })
+          identifier: id,
+          author: this.accessService.userId,
+          isAdmin: this.accessService.hasRole(['editor', 'admin']),
+        })
   }
 
   getDataForContent(id: string) {
-    return this.apiService.get<{ content: NSContent.IContentMeta, data: any }[]>(
-      `${CONTENT_READ_HIERARCHY_AND_DATA}${id}`,
-    ).pipe(
+    return this.apiService.get<{ content: NSContent.IContentMeta; data: any }[]>(`${CONTENT_READ_HIERARCHY_AND_DATA}${id}`).pipe(
       catchError((v: any) => {
         return of(v)
       }),
@@ -623,43 +558,35 @@ export class EditorService {
     return this.apiService.post<any>(EMAIL_NOTIFICATION, requestBody)
   }
   rolesMappingAPI(): Observable<any> {
-    return this.apiService.get<any>(
-      `apis/public/v8/competencyAssets/rolesMappingData`
-    ).pipe(
+    return this.apiService.get<any>(`apis/public/v8/competencyAssets/rolesMappingData`).pipe(
       map((data: any) => {
         return data.response
-      })
+      }),
     )
   }
   rolesMapped(): Observable<any> {
-    return this.apiService.get<any>(
-      `https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json`
-    ).pipe(
+    return this.apiService.get<any>(`https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json`).pipe(
       map((data: any) => {
         return data.roles
-      })
+      }),
     )
   }
   sourceNames(): Observable<any> {
     const cacheBuster = new Date().getTime()
-    return this.apiService.get<any>(
-      `https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json?v=${cacheBuster}`
-    ).pipe(
+    return this.apiService.get<any>(`https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json?v=${cacheBuster}`).pipe(
       map((data: any) => {
-        console.log("response sourceNames", data)
+        console.log('response sourceNames', data)
         return data.sourceName
-      })
+      }),
     )
   }
   languageList(): Observable<any> {
     const cacheBuster = new Date().getTime()
-    return this.apiService.get<any>(
-      `https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json?v=${cacheBuster}`
-    ).pipe(
+    return this.apiService.get<any>(`https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json?v=${cacheBuster}`).pipe(
       map((data: any) => {
-        console.log("response languageList", data)
+        console.log('response languageList', data)
         return data.languageList
-      })
+      }),
     )
   }
 }

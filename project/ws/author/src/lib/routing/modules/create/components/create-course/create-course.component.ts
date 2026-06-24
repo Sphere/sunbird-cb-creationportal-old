@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs'
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 
 import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core'
@@ -58,9 +59,7 @@ import { NSContent } from '@ws/author/src/lib/interface/content'
 
 import moment from 'moment'
 
-import {
-  ContentProgressService,
-} from '@ws-widget/collection'
+import { ContentProgressService } from '@ws-widget/collection'
 
 @Component({
   standalone: false,
@@ -70,10 +69,9 @@ import {
   styleUrls: ['./create-course.component.scss'],
   providers: [CollectionStoreService, CollectionResolverService],
 })
-
 export class CreateCourseComponent implements OnInit {
   @Input() content: any
-  lang: string = 'en'; // Default to English
+  lang: string = 'en' // Default to English
   currentContent!: string
   currentCourseId!: string
   language = ''
@@ -90,13 +88,13 @@ export class CreateCourseComponent implements OnInit {
   isSelfAssessment = false
   languageList: any[] = [
     {
-      "name": 'English',
-      "value": 'en'
+      name: 'English',
+      value: 'en',
     },
     {
-      "name": 'Hindi',
-      "value": 'hi'
-    }
+      name: 'Hindi',
+      value: 'hi',
+    },
   ]
   addResourceModule: any = {}
   resourseSelected: string = ''
@@ -123,16 +121,18 @@ export class CreateCourseComponent implements OnInit {
     private resolverService: CollectionResolverService,
     private progressSvc: ContentProgressService,
     private cdr: ChangeDetectorRef,
-  ) { }
+  ) {}
   createCourseForm!: FormGroup
   createSelfAssessmentForm!: FormGroup
   proficiency: any
   getAllEntities: any
   ngOnInit() {
-    this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {
-      this.proficiencyList = await res.result.response
+    const lang = this.configSvc.activeLocale?.locals[0] || 'en'
+    this.getAllEntities = this.editorService.getAllEntities(lang).subscribe((res: any) => {
+      this.proficiencyList = res.result.entity
       this.searchComp = this.proficiencyList
     })
+
     this.route.queryParams.subscribe(params => {
       // Access individual query parameters
       const value = params['status']
@@ -144,11 +144,17 @@ export class CreateCourseComponent implements OnInit {
       courseName: new FormControl('', [Validators.required]),
       // courseSummary: new FormControl(''),
       courseDescription: new FormControl('', [Validators.required]),
-      appIcon: new FormControl([])
+      appIcon: new FormControl([]),
     })
     this.createSelfAssessmentForm = this.fb.group({
       lang: new FormControl(''),
       proficiency: new FormControl('', [Validators.required]),
+    })
+    // Filter as the user types; skip when value is an object (option was just selected)
+    this.createSelfAssessmentForm.controls['proficiency'].valueChanges.subscribe((val: any) => {
+      if (typeof val === 'string') {
+        this.onKey(val)
+      }
     })
     this.authInitService.creationEntity.forEach(v => {
       // console.log('vvvvvvvv   ', v)
@@ -160,7 +166,7 @@ export class CreateCourseComponent implements OnInit {
           this.entity.push(v)
           if (this.entity[1]) {
             // this.content = this.entity[1]          // Here type is Learning Path
-            this.content = this.entity[0]             // Here type is course
+            this.content = this.entity[0] // Here type is course
           }
           v.enabled = true
           // this.entity.push(v)
@@ -176,49 +182,49 @@ export class CreateCourseComponent implements OnInit {
     // if (navigation && navigation.extras && navigation.extras.state) {
     //   this.content = navigation.extras.state
     // }
-
   }
 
+  // displayWith function for mat-autocomplete — shows "CODE - Name" in the input after selection
+  displayCompetency = (option: any): string => {
+    if (!option) return ''
+    if (typeof option === 'string') return option
+    return option.code ? `${option.code} - ${option.name}` : option.name || ''
+  }
 
   onKey(value: string) {
     this.proficiencyList = this.search(value)
   }
   eventSelection(event: any) {
     this.proficiency = event
+    this.createSelfAssessmentForm.controls['proficiency'].setValue(event, { emitEvent: false })
+    this.createSelfAssessment(this.createSelfAssessmentForm)
   }
   search(value: string) {
-    let filter = value.toLowerCase()
+    const filter = (value || '').toLowerCase()
     if (!filter) {
       return this.searchComp
     }
-
-    return this.proficiencyList = this.searchComp.filter((option: any) => {
-      const nameMatches = option.name.toLowerCase().includes(filter)
-      const codeMatches = option.additionalProperties && option.additionalProperties.Code
-        ? option.additionalProperties.Code.toLowerCase().includes(filter)
-        : false
-
+    return this.searchComp.filter((option: any) => {
+      const nameMatches = option.name?.toLowerCase().includes(filter)
+      const codeMatches = option.code?.toLowerCase().includes(filter)
       return nameMatches || codeMatches
     })
   }
 
-
-
   createSelfAssessmentCourse() {
     this.loaderService.changeLoad.next(true)
-    const competency = this.proficiencyList.find((obj: any) => obj.id === this.courseData.proficiency.id)
-    let competencyLevelDescription = competency.additionalProperties
-    let lang = this.courseData.lang
-    if (lang == 'hi') {
-      this.courseData.courseName = competencyLevelDescription['lang-hi-name'] ? competencyLevelDescription['lang-hi-name'] : this.courseData.proficiency.name
-      this.courseData.courseDescription = competencyLevelDescription['lang-hi-description'] ? competencyLevelDescription['lang-hi-description'] : this.courseData.proficiency.description
-      console.log("competency.additionalProperties", this.courseData)
+    // proficiency is the entity object set by eventSelection — use it directly
+    const competency = this.courseData.proficiency
+    const lang = this.courseData.lang
+    if (lang === 'hi') {
+      this.courseData.courseName = competency['lang-hi-name'] || competency.name
+      this.courseData.courseDescription = competency['lang-hi-description'] || competency.description
     } else {
-      this.courseData.courseName = this.courseData.proficiency.name
-      this.courseData.courseDescription = this.courseData.proficiency.description
+      this.courseData.courseName = competency.name
+      this.courseData.courseDescription = competency.description
     }
 
-    console.log("complete", competency, this.courseData)
+    console.log('complete', competency, this.courseData)
 
     if (this.content && competency && this.courseData.proficiency.name) {
       this.svc
@@ -229,121 +235,113 @@ export class CreateCourseComponent implements OnInit {
           locale: this.language,
           primaryCategory: this.content.primaryCategory,
           ...(this.content.additionalMeta || {}),
-
-        }).pipe(mergeMap((id: string) => {
-
-          this.identifier = id
-          const request = {
-            category: {
-              context: [
-                {
-                  type: 'course',
-                  identifier: this.identifier.identifier,
-                },
-              ],
-            },
-          }
-          return this.svc.createForum(request)
-        }))
-        .subscribe(
-          async (data: any) => {
-            let competencies_obj = [{
-              competencyName: this.courseData.courseName,
-              competencyId: this.courseData.proficiency.id.toString(),
-            }]
-            let link = "https://sunbirdcontent.s3-ap-south-1.amazonaws.com/content/do_1139718921061744641126/artifact/do_1139718921061744641126_1705553236239_justwhiteplainwhitewhitewallpaperpreview1705553235473.jpg"
+        })
+        .pipe(
+          mergeMap((id: string) => {
+            this.identifier = id
+            const request = {
+              category: {
+                context: [
+                  {
+                    type: 'course',
+                    identifier: this.identifier.identifier,
+                  },
+                ],
+              },
+            }
+            return this.svc.createForum(request)
+          }),
+        )
+        .subscribe({
+          next: async () => {
+            const competencies_obj = [
+              {
+                competencyName: this.courseData.courseName,
+                competencyId: this.courseData.proficiency.entityId.toString(),
+              },
+            ]
+            const link =
+              'https://sunbirdcontent.s3-ap-south-1.amazonaws.com/content/do_1139718921061744641126/artifact/do_1139718921061744641126_1705553236239_justwhiteplainwhitewhitewallpaperpreview1705553235473.jpg'
 
             const updateContentReq: any = {
               request: {
                 content: {
                   competency: true,
                   competencies_v1: competencies_obj,
-                  lang: this.courseData.lang ? this.courseData.lang : 'en',
+                  lang: this.courseData.lang || 'en',
                   versionKey: this.identifier.versionKey,
                   appIcon: link,
-                  thumbnail: link
+                  thumbnail: link,
                 },
               },
             }
-            // tslint:disable-next-line:max-line-length
-            const result = await this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier).toPromise().catch((_error: any) => { })
-            if (result !== undefined) {
-              // this.loaderService.changeLoad.next(false)
+            const updateResult = await lastValueFrom(
+              this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier),
+            ).catch((_error: any) => undefined)
+
+            if (updateResult !== undefined) {
               this.snackBar.openFromComponent(NotificationComponent, {
-                data: {
-                  type: Notify.CONTENT_SELF_ASSESSMENT_SUCCESS,
-                },
+                data: { type: Notify.CONTENT_SELF_ASSESSMENT_SUCCESS },
                 duration: NOTIFICATION_TIME * 3000,
               })
-              let competencyLevelDescription: any = []
-              if (competency.additionalProperties.competencyLevelDescription) {
-                competencyLevelDescription = JSON.parse(competency.additionalProperties.competencyLevelDescription)
-              }
-              // console.log("competencyLevelDescription", competencyLevelDescription)
+
+              // Map new API levels (levelNumber/levelName) to shape setContentType expects
+              const levels: any[] = (competency.levels || []).map((l: any) => ({
+                level: l.levelNumber,
+                name: l.levelName,
+                description: l.description || '',
+              }))
+
               this.editorStore.parentContent = this.identifier.identifier
-              this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(async (data: any) => {
-                this.courseData = data
-                this.getChildrenCount()
+              this.editorService.readcontentV3(this.editorStore.parentContent).subscribe({
+                next: async (parentData: any) => {
+                  this.courseData = parentData
+                  this.getChildrenCount()
 
-                const contentDataMap = new Map<string, NSContent.IContentMeta>()
-                // data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
-                this.storeService.parentNode.push(data.identifier)
-                this.resolverService.buildTreeAndMap(
-                  data,
-                  contentDataMap,
-                  this.storeService.flatNodeMap,
-                  this.storeService.uniqueIdMap,
-                  this.storeService.lexIdMap,
-                )
-                // })
-                this.currentContent = this.identifier.identifier
-                this.currentCourseId = this.identifier.identifier
-                contentDataMap.forEach(content => this.editorStore.setOriginalMeta(content))
-                const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
-                this.storeService.currentParentNode = currentNode
-                this.storeService.currentSelectedNode = currentNode
+                  const contentDataMap = new Map<string, NSContent.IContentMeta>()
+                  this.storeService.parentNode.push(parentData.identifier)
+                  this.resolverService.buildTreeAndMap(
+                    parentData,
+                    contentDataMap,
+                    this.storeService.flatNodeMap,
+                    this.storeService.uniqueIdMap,
+                    this.storeService.lexIdMap,
+                  )
+                  this.currentContent = this.identifier.identifier
+                  this.currentCourseId = this.identifier.identifier
+                  contentDataMap.forEach(content => this.editorStore.setOriginalMeta(content))
+                  const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
+                  this.storeService.currentParentNode = currentNode
+                  this.storeService.currentSelectedNode = currentNode
 
-                if (competencyLevelDescription.length > 0) {
-                  this.loaderService.changeLoad.next(true)
-                  for (const level of competencyLevelDescription) {
-                    if (level) {
-                      if (lang == 'hi') {
-                        level.name = level['lang-hi-name'] ? level['lang-hi-name'] : level.name
-                        level.description = level['lang-hi-description'] ? level['lang-hi-description'] : level.description
-                        console.log("level 1", level)
-                      }
-                      console.log("level", level)
+                  if (levels.length > 0) {
+                    this.loaderService.changeLoad.next(true)
+                    for (const level of levels) {
                       this.courseData = await this.editorService.readcontentV3(this.editorStore.parentContent).toPromise()
-                      this.editorStore.setOriginalMeta(data)
+                      this.editorStore.setOriginalMeta(parentData)
                       await this.setContentType('assessment', level, '')
                     }
                   }
-                }
-                // this.loaderService.changeLoad.next(false)
-                this.router.navigateByUrl(`/author/editor/${this.editorStore.parentContent}/collection`, { state: this.courseData })
+                  this.router.navigateByUrl(`/author/editor/${this.editorStore.parentContent}/collection`, { state: this.courseData })
+                },
               })
             }
-
           },
-          error => {
+          error: (error: any) => {
             if (error.status === 409) {
               this.dialog.open(ErrorParserComponent, {
                 width: '80vw',
                 height: '90vh',
-                data: {
-                  errorFromBackendData: error.error,
-                },
+                data: { errorFromBackendData: error.error },
               })
             }
             this.loaderService.changeLoad.next(false)
             this.snackBar.openFromComponent(NotificationComponent, {
-              data: {
-                type: Notify.CONTENT_FAIL,
-              },
+              data: { type: Notify.CONTENT_FAIL },
               duration: NOTIFICATION_TIME * 1000,
             })
           },
-        )
+        })
     }
   }
   contentClicked() {
@@ -358,25 +356,25 @@ export class CreateCourseComponent implements OnInit {
           locale: this.language,
           primaryCategory: this.content.primaryCategory,
           ...(this.content.additionalMeta || {}),
-
-        }).pipe(mergeMap((id: string) => {
-
-          this.identifier = id
-          const request = {
-            category: {
-              context: [
-                {
-                  type: 'course',
-                  identifier: this.identifier.identifier,
-                },
-              ],
-            },
-          }
-          return this.svc.createForum(request)
-        }))
+        })
+        .pipe(
+          mergeMap((id: string) => {
+            this.identifier = id
+            const request = {
+              category: {
+                context: [
+                  {
+                    type: 'course',
+                    identifier: this.identifier.identifier,
+                  },
+                ],
+              },
+            }
+            return this.svc.createForum(request)
+          }),
+        )
         .subscribe(
           async (data: any) => {
-
             const updateContentReq: any = {
               request: {
                 content: {
@@ -386,21 +384,27 @@ export class CreateCourseComponent implements OnInit {
               },
             }
             // tslint:disable-next-line:max-line-length
-            const result = await this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier).toPromise().catch((_error: any) => { })
-            console.log("this.configSvc!.userProfile!.userId", this.configSvc!.userProfile!.userName)
+            const result = await this.editorService
+              .updateNewContentV3(updateContentReq, this.identifier.identifier)
+              .toPromise()
+              .catch((_error: any) => {})
+            console.log('this.configSvc!.userProfile!.userId', this.configSvc!.userProfile!.userName)
             let val = {
-              "userId": this.configSvc!.userProfile!.userId,
-              "username": this.configSvc!.userProfile!.userName,
-              "courseId": this.identifier.identifier,
-              "role": "creator",
-              "comments": 'Course Created',
-              "currentStatus": "course-created",
-              "nextStatus": "Draft",
-              "readComments": false,
-              "createdDate": moment(new Date()).toISOString(),
-              "updatedDate": moment(new Date()).toISOString(),
+              userId: this.configSvc!.userProfile!.userId,
+              username: this.configSvc!.userProfile!.userName,
+              courseId: this.identifier.identifier,
+              role: 'creator',
+              comments: 'Course Created',
+              currentStatus: 'course-created',
+              nextStatus: 'Draft',
+              readComments: false,
+              createdDate: moment(new Date()).toISOString(),
+              updatedDate: moment(new Date()).toISOString(),
             }
-            await this.progressSvc.addComment(val).toPromise().catch((_error: any) => { })
+            await this.progressSvc
+              .addComment(val)
+              .toPromise()
+              .catch((_error: any) => {})
 
             if (true) {
               this.loaderService.changeLoad.next(false)
@@ -410,10 +414,8 @@ export class CreateCourseComponent implements OnInit {
                 },
                 duration: NOTIFICATION_TIME * 1000,
               })
-              this.router.navigateByUrl(`/author/editor/${this.identifier.identifier
-                }`)
+              this.router.navigateByUrl(`/author/editor/${this.identifier.identifier}`)
             }
-
           },
           error => {
             if (error.status === 409) {
@@ -438,6 +440,15 @@ export class CreateCourseComponent implements OnInit {
   }
   langSelected(selectedLang: string) {
     this.lang = selectedLang
+    this.proficiency = null
+    // Reset clears the autocomplete input display as well as the form value
+    this.createSelfAssessmentForm.controls['proficiency'].reset('', { emitEvent: false })
+    this.proficiencyList = []
+    this.searchComp = []
+    this.editorService.getAllEntities(selectedLang).subscribe((res: any) => {
+      this.proficiencyList = res.result.entity
+      this.searchComp = this.proficiencyList
+    })
   }
   createForm() {
     this.createCourseForm = this.formBuilder.group({
@@ -446,16 +457,14 @@ export class CreateCourseComponent implements OnInit {
   }
 
   changeToDefaultImg($event: any) {
-    $event.target.src = this.configSvc.instanceConfig
-      ? this.configSvc.instanceConfig.logos.defaultContent
-      : ''
+    $event.target.src = this.configSvc.instanceConfig ? this.configSvc.instanceConfig.logos.defaultContent : ''
   }
 
   generateUrl(oldUrl: any) {
     //const chunk = oldUrl.split('/')
     //const newChunk = environment.azureHost.split('/')
     // @ts-ignore: Unreachable code error
-    this.bucket = window["env"]["azureBucket"]
+    this.bucket = window['env']['azureBucket']
     if (oldUrl.includes(this.bucket)) {
       return oldUrl
     }
@@ -476,20 +485,10 @@ export class CreateCourseComponent implements OnInit {
     // return newUrl
   }
 
-
   uploadAppIcon(file: File) {
     const formdata = new FormData()
     const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
-    if (
-      !(
-        IMAGE_SUPPORT_TYPES.indexOf(
-          `.${fileName
-            .toLowerCase()
-            .split('.')
-            .pop()}`,
-        ) > -1
-      )
-    ) {
+    if (!(IMAGE_SUPPORT_TYPES.indexOf(`.${fileName.toLowerCase().split('.').pop()}`) > -1)) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_FORMAT,
@@ -548,113 +547,105 @@ export class CreateCourseComponent implements OnInit {
             },
           }
 
-          this.http
-            .post<NSApiRequest.ICreateMetaRequest>(
-              `${AUTHORING_BASE}content/v3/create`,
-              requestBody,
-            )
-            .subscribe(
-              (meta: any) => {
-                // return data.result.identifier
-                this.uploadService
-                  .upload(formdata, {
-                    contentId: meta.result.identifier,
-                    contentType: CONTENT_BASE_STATIC,
+          this.http.post<NSApiRequest.ICreateMetaRequest>(`${AUTHORING_BASE}content/v3/create`, requestBody).subscribe((meta: any) => {
+            // return data.result.identifier
+            this.uploadService
+              .upload(formdata, {
+                contentId: meta.result.identifier,
+                contentType: CONTENT_BASE_STATIC,
+              })
+
+              .subscribe(
+                data => {
+                  if (data && data.name !== 'Error') {
+                    // const generateURL = this.generateUrl(data.artifactUrl)
+                    // const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
+                    //   request: {
+                    //     content: {
+                    //       // content_url: data.result.artifactUrl,
+                    //       // identifier: data.result.identifier,
+                    //       // node_id: data.result.node_id,
+                    //       thumbnail: generateURL,
+                    //       appIcon: generateURL,
+                    //       artifactUrl: generateURL,
+                    //       // versionKey: (new Date()).getTime().toString(),
+                    //       versionKey: meta.result.versionKey,
+                    //     },
+                    //   },
+                    // }
+
+                    // this.apiService
+                    //   .patch<NSApiRequest.ICreateMetaRequest>(
+                    //     `${AUTHORING_BASE}content/v3/update/${data.identifier}`,
+                    //     updateArtf,
+                    //   )
+                    // this.editorService.checkReadAPI(data.identifier)
+                    // .subscribe(
+                    //   (res: any) => {
+                    //     console.log(res)
+                    //     if (res) {
+                    //     }
+                    this.loader.changeLoad.next(false)
+                    this.canUpdate = false
+                    this.createCourseForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
+                    this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
+                    this.canUpdate = true
+                    // this.data.emit('save')
+                    // this.storeData()
+                    this.authInitService.uploadData('thumbnail')
+                    // this.contentForm.controls.posterImage.setValue(data.artifactURL)
+                    this.snackBar.openFromComponent(NotificationComponent, {
+                      data: {
+                        type: Notify.UPLOAD_SUCCESS,
+                      },
+                      duration: NOTIFICATION_TIME * 2000,
+                    })
+                    // })
+                  } else {
+                    this.loader.changeLoad.next(false)
+                    this.snackBar.open(data.message, undefined, { duration: 2000 })
+                  }
+                },
+                () => {
+                  this.loader.changeLoad.next(false)
+                  this.snackBar.openFromComponent(NotificationComponent, {
+                    data: {
+                      type: Notify.UPLOAD_FAIL,
+                    },
+                    duration: NOTIFICATION_TIME * 1000,
                   })
+                },
+              )
 
-                  .subscribe(
-                    data => {
-                      if (data && data.name !== 'Error') {
-                        // const generateURL = this.generateUrl(data.artifactUrl)
-                        // const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
-                        //   request: {
-                        //     content: {
-                        //       // content_url: data.result.artifactUrl,
-                        //       // identifier: data.result.identifier,
-                        //       // node_id: data.result.node_id,
-                        //       thumbnail: generateURL,
-                        //       appIcon: generateURL,
-                        //       artifactUrl: generateURL,
-                        //       // versionKey: (new Date()).getTime().toString(),
-                        //       versionKey: meta.result.versionKey,
-                        //     },
-                        //   },
-                        // }
-
-                        // this.apiService
-                        //   .patch<NSApiRequest.ICreateMetaRequest>(
-                        //     `${AUTHORING_BASE}content/v3/update/${data.identifier}`,
-                        //     updateArtf,
-                        //   )
-                        // this.editorService.checkReadAPI(data.identifier)
-                        // .subscribe(
-                        //   (res: any) => {
-                        //     console.log(res)
-                        //     if (res) {
-                        //     }
-                        this.loader.changeLoad.next(false)
-                        this.canUpdate = false
-                        this.createCourseForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
-                        this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
-                        this.canUpdate = true
-                        // this.data.emit('save')
-                        // this.storeData()
-                        this.authInitService.uploadData('thumbnail')
-                        // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-                        this.snackBar.openFromComponent(NotificationComponent, {
-                          data: {
-                            type: Notify.UPLOAD_SUCCESS,
-                          },
-                          duration: NOTIFICATION_TIME * 2000,
-                        })
-                        // })
-                      } else {
-                        this.loader.changeLoad.next(false)
-                        this.snackBar.open(data.message, undefined, { duration: 2000 })
-                      }
-                    },
-                    () => {
-                      this.loader.changeLoad.next(false)
-                      this.snackBar.openFromComponent(NotificationComponent, {
-                        data: {
-                          type: Notify.UPLOAD_FAIL,
-                        },
-                        duration: NOTIFICATION_TIME * 1000,
-                      })
-                    },
-                  )
-
-                // .subscribe(
-                //   data => {
-                //     if (data.result) {
-                //       this.loader.changeLoad.next(false)
-                //       this.canUpdate = false
-                //       this.contentForm.controls.appIcon.setValue(data.result.artifactUrl)
-                //       this.contentForm.controls.thumbnail.setValue(data.result.artifactUrl)
-                //       // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-                //       this.canUpdate = true
-                //       this.storeData()
-                //       this.snackBar.openFromComponent(NotificationComponent, {
-                //         data: {
-                //           type: Notify.UPLOAD_SUCCESS,
-                //         },
-                //         duration: NOTIFICATION_TIME * 1000,
-                //       })
-                //     }
-                //   },
-                //   () => {
-                //     this.loader.changeLoad.next(false)
-                //     this.snackBar.openFromComponent(NotificationComponent, {
-                //       data: {
-                //         type: Notify.UPLOAD_FAIL,
-                //       },
-                //       duration: NOTIFICATION_TIME * 1000,
-                //     })
-                //   },
-                // )
-              },
-            )
-
+            // .subscribe(
+            //   data => {
+            //     if (data.result) {
+            //       this.loader.changeLoad.next(false)
+            //       this.canUpdate = false
+            //       this.contentForm.controls.appIcon.setValue(data.result.artifactUrl)
+            //       this.contentForm.controls.thumbnail.setValue(data.result.artifactUrl)
+            //       // this.contentForm.controls.posterImage.setValue(data.artifactURL)
+            //       this.canUpdate = true
+            //       this.storeData()
+            //       this.snackBar.openFromComponent(NotificationComponent, {
+            //         data: {
+            //           type: Notify.UPLOAD_SUCCESS,
+            //         },
+            //         duration: NOTIFICATION_TIME * 1000,
+            //       })
+            //     }
+            //   },
+            //   () => {
+            //     this.loader.changeLoad.next(false)
+            //     this.snackBar.openFromComponent(NotificationComponent, {
+            //       data: {
+            //         type: Notify.UPLOAD_FAIL,
+            //       },
+            //       duration: NOTIFICATION_TIME * 1000,
+            //     })
+            //   },
+            // )
+          })
         }
       },
     })
@@ -696,11 +687,9 @@ export class CreateCourseComponent implements OnInit {
     }
     if (this.createCourseForm.invalid || !this.iprAccepted) {
       this.createCourseForm.markAllAsTouched()
-      this.snackBar.open(
-        'Please enter the course name and description, and accept the IPR Declaration to continue.',
-        'OK',
-        { duration: NOTIFICATION_TIME * 1000 },
-      )
+      this.snackBar.open('Please enter the course name and description, and accept the IPR Declaration to continue.', 'OK', {
+        duration: NOTIFICATION_TIME * 1000,
+      })
       return
     }
     this.onSubmit(this.createCourseForm)
@@ -735,13 +724,13 @@ export class CreateCourseComponent implements OnInit {
         expandable: true,
         level: 1,
       }
-      console.log("level", level)
+      console.log('level', level)
       const newData = {
         topicDescription: level.description ? level.description : '',
         topicName: 'Level ' + level.level + ' : ' + (level.name ? level.name : 'Resource'),
-        isAssessment: true
+        isAssessment: true,
       }
-      console.log("level name", newData)
+      console.log('level name', newData)
       if (type.type === 'collection') {
         this.storeService.parentData = this.courseData
       }
@@ -753,7 +742,7 @@ export class CreateCourseComponent implements OnInit {
         asSibling ? node.id : undefined,
         'below',
         newData,
-        couseCreated === 'web' ? 'link' : ''
+        couseCreated === 'web' ? 'link' : '',
       )
 
       if (isDone) {
@@ -785,7 +774,7 @@ export class CreateCourseComponent implements OnInit {
             },
           },
         }
-        const dataAfterUpdate = await new Promise((resolve) => {
+        const dataAfterUpdate = await new Promise(resolve => {
           this.editorService.updateContentV4(requestBodyV2).subscribe((data: any) => {
             resolve(data)
           })
@@ -807,7 +796,6 @@ export class CreateCourseComponent implements OnInit {
         //   },
         //   duration: NOTIFICATION_TIME * 1000,
         // })
-
       }
     } catch (error) {
       console.error('Error in setContentType:', error)
@@ -815,8 +803,6 @@ export class CreateCourseComponent implements OnInit {
       // this.loaderService.changeLoad.next(false)
     }
   }
-
-
 
   getChildrenCount(): any {
     let count = 0
@@ -839,5 +825,4 @@ export class CreateCourseComponent implements OnInit {
 
     return count
   }
-
 }
