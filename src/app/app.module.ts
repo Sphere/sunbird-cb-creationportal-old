@@ -21,7 +21,14 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatListModule } from '@angular/material/list'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { BtnFeatureModule, ErrorResolverModule, TourModule, WIDGET_REGISTERED_MODULES, WIDGET_REGISTRATION_CONFIG, PipeContentRoutePipe } from '@ws-widget/collection'
+import {
+  BtnFeatureModule,
+  ErrorResolverModule,
+  TourModule,
+  WIDGET_REGISTERED_MODULES,
+  WIDGET_REGISTRATION_CONFIG,
+  PipeContentRoutePipe,
+} from '@ws-widget/collection'
 import { StickyHeaderModule } from '@ws-widget/collection/src/lib/_common/sticky-header/sticky-header.module'
 import { WidgetResolverModule } from '@ws-widget/resolver'
 import { LoggerService, PipeSafeSanitizerModule } from '@ws-widget/utils'
@@ -43,7 +50,6 @@ import { LoginRootDirective } from './component/login-root/login-root.directive'
 import { TncRendererComponent } from './component/tnc-renderer/tnc-renderer.component'
 import { MobileAppModule } from './routes/public/mobile-app/mobile-app.module'
 import { PublicAboutModule } from './routes/public/public-about/public-about.module'
-import { PublicContactModule } from './routes/public/public-contact/public-contact.module'
 import { PublicFaqModule } from './routes/public/public-faq/public-faq.module'
 import { TncComponent } from './routes/tnc/tnc.component'
 import { AppInterceptorService } from './services/app-interceptor.service'
@@ -51,7 +57,6 @@ import { AppRetryInterceptorService } from './services/app-retry-interceptor.ser
 import { TncAppResolverService } from './services/tnc-app-resolver.service'
 import { TncPublicResolverService } from './services/tnc-public-resolver.service'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { PublicReleaseModule } from './routes/public/public-release/public-about.module'
 import { AppTocResolverService } from '@ws/author'
 import { AuthInitService } from '../../project/ws/author/src/lib/services/init.service'
 import { OrgComponent } from '../../project/ws/app/src/lib/routes/org/components/org/org.component'
@@ -116,16 +121,12 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     SearchModule,
     BtnFeatureModule,
     PublicAboutModule,
-    PublicContactModule,
     PublicFaqModule,
-    PublicReleaseModule,
     MobileAppModule,
     PipeSafeSanitizerModule,
     TourModule,
   ],
-  exports: [
-    TncComponent,
-  ],
+  exports: [TncComponent],
   bootstrap: [RootComponent],
   providers: [
     {
@@ -145,10 +146,7 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
         strokeWidth: 4,
       },
     },
-    provideHttpClient(
-      withInterceptorsFromDi(),
-      withJsonpSupport(),
-    ),
+    provideHttpClient(withInterceptorsFromDi(), withJsonpSupport()),
     KeycloakService,
     { provide: HTTP_INTERCEPTORS, useClass: AppInterceptorService, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: AppRetryInterceptorService, multi: true },
@@ -166,4 +164,4 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     AuthInitService,
   ],
 })
-export class AppModule { }
+export class AppModule {}

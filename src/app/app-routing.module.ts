@@ -32,11 +32,7 @@ import { MobileAppHomeComponent } from './routes/public/mobile-app/components/mo
 
 import { PublicAboutComponent } from './routes/public/public-about/public-about.component'
 
-import { PublicContactComponent } from './routes/public/public-contact/public-contact.component'
-
 import { PublicFaqComponent } from './routes/public/public-faq/public-faq.component'
-
-import { PublicReleaseComponent } from './routes/public/public-release/public-release.component'
 
 import { TncComponent } from './routes/tnc/tnc.component'
 
@@ -52,7 +48,6 @@ import { QualityJSONResolver } from '../../project/ws/author/src/lib/services/qu
 
 import { InitResolver } from '@ws/author/src/lib/services/init-resolve.service'
 
-
 // 💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥
 // Please declare routes in alphabetical order
 // 😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵
@@ -61,7 +56,6 @@ import { OrgComponent } from '../../project/ws/app/src/lib/routes/org/components
 import { OrgServiceService } from '../../project/ws/app/src/lib/routes/org/org-service.service'
 
 const routes: Routes = [
-
   {
     path: '',
     pathMatch: 'full',
@@ -130,14 +124,12 @@ const routes: Routes = [
   },
   {
     path: 'app/my-dashboard',
-    loadChildren: () =>
-      import('./routes/route-my-dashboard.module').then(u => u.RouteMyDashboardModule),
+    loadChildren: () => import('./routes/route-my-dashboard.module').then(u => u.RouteMyDashboardModule),
     // canActivate: [GeneralGuard, LearningGuard],
   },
   {
     path: 'app/notifications',
-    loadChildren: () =>
-      import('./routes/route-notification-app.module').then(u => u.RouteNotificationAppModule),
+    loadChildren: () => import('./routes/route-notification-app.module').then(u => u.RouteNotificationAppModule),
     data: {
       // requiredRoles: [
       //   'content-creator',
@@ -154,8 +146,7 @@ const routes: Routes = [
   },
   {
     path: 'app/profile',
-    loadChildren: () =>
-      import('./routes/route-profile-app.module').then(u => u.RouteProfileAppModule),
+    loadChildren: () => import('./routes/route-profile-app.module').then(u => u.RouteProfileAppModule),
     data: {
       // requiredRoles: [
       //   'content-creator',
@@ -197,8 +188,7 @@ const routes: Routes = [
   },
   {
     path: 'app/search',
-    loadChildren: () =>
-      import('./routes/route-search-app.module').then(u => u.RouteSearchAppModule),
+    loadChildren: () => import('./routes/route-search-app.module').then(u => u.RouteSearchAppModule),
     data: {
       pageType: 'feature',
       pageKey: 'search',
@@ -220,13 +210,11 @@ const routes: Routes = [
   },
   {
     path: 'app/signup',
-    loadChildren: () =>
-      import('./routes/signup/signup.module').then(u => u.SignupModule),
+    loadChildren: () => import('./routes/signup/signup.module').then(u => u.SignupModule),
   },
   {
     path: 'app/auto-signup/:id',
-    loadChildren: () =>
-      import('./routes/signup-auto/signup-auto.module').then(u => u.SignupAutoModule),
+    loadChildren: () => import('./routes/signup-auto/signup-auto.module').then(u => u.SignupAutoModule),
   },
   {
     path: 'app/tnc',
@@ -250,8 +238,7 @@ const routes: Routes = [
       // ],
     },
     canActivate: [GeneralGuard],
-    loadChildren: () =>
-      import('./routes/route-authoring-app.module').then(u => u.AuthoringAppModule),
+    loadChildren: () => import('./routes/route-authoring-app.module').then(u => u.AuthoringAppModule),
   },
   {
     path: 'error-access-forbidden',
@@ -371,33 +358,11 @@ const routes: Routes = [
     },
   },
   {
-    path: 'public/contact',
-    component: PublicContactComponent,
-    data: {
-      pageType: 'feature',
-      pageKey: 'public-faq',
-    },
-    resolve: {
-      pageData: PageResolve,
-    },
-  },
-  {
     path: 'public/mobile-app',
     component: MobileAppHomeComponent,
     data: {
       pageType: 'feature',
       pageKey: 'mobile-app',
-    },
-    resolve: {
-      pageData: PageResolve,
-    },
-  },
-  {
-    path: 'public/release',
-    component: PublicReleaseComponent,
-    data: {
-      pageType: 'feature',
-      pageKey: 'public-releases',
     },
     resolve: {
       pageData: PageResolve,
@@ -514,4 +479,4 @@ const routes: Routes = [
   exports: [RouterModule],
   providers: [ExploreDetailResolve, QualityJSONResolver],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
