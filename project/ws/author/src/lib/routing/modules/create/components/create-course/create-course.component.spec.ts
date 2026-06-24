@@ -134,12 +134,15 @@ describe('CreateCourseComponent', () => {
 
     it('eventSelection stores the proficiency', () => {
       const { component } = build()
+      component.ngOnInit()
+      jest.spyOn(component, 'createSelfAssessment').mockImplementation(() => {})
       component.eventSelection({ id: 5 })
       expect(component.proficiency).toEqual({ id: 5 })
     })
 
     it('langSelected stores the selected language', () => {
       const { component } = build()
+      component.ngOnInit()
       component.langSelected('hi')
       expect(component.lang).toBe('hi')
     })
