@@ -87,8 +87,6 @@ import { StatusDisplayComponent } from './components/status-display/status-displ
 
 import { LastUpdateDisplayComponent } from './components/last-update-display/last-update-display.component'
 
-import { ExpiryDateDisplayComponent } from './components/expiry-date-display/expiry-date-display.component'
-
 import { DeleteDialogComponent } from './components/delete-dialog/delete-dialog.component'
 
 import { RestoreDialogComponent } from './components/restore-dialog/restore-dialog.component'
@@ -130,7 +128,6 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     AuthExpiryDateConfirmComponent,
     StatusDisplayComponent,
     LastUpdateDisplayComponent,
-    ExpiryDateDisplayComponent,
     DeleteDialogComponent,
     RestoreDialogComponent,
     UnpublishDialogComponent,

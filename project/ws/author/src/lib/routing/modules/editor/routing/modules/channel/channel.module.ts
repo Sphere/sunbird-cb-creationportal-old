@@ -87,8 +87,6 @@ import { SelectorResponsiveV2Component } from './components/input/selector-respo
 
 import { GalleryV2Component } from './components/input/gallery-v2/gallery-v2.component'
 
-import { SearchTemplateComponent } from './components/input/search-template/search-template.component'
-
 import { ChannelResolverService } from './services/resolver.service'
 
 import { MediaWrapperComponent } from './components/input/media-wrapper/media-wrapper.component'
@@ -133,7 +131,6 @@ import { DraggableModule } from '../../../../../../directives/draggable/draggabl
     TitleComponent,
     SelectorResponsiveV2Component,
     GalleryV2Component,
-    SearchTemplateComponent,
     MediaWrapperComponent,
     IntranetSelectorComponent,
   ],

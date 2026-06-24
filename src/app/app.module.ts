@@ -43,7 +43,6 @@ import { LoginComponent } from './component/login/login.component'
 import { AppFooterComponent } from './component/app-footer/app-footer.component'
 import { AppNavBarComponent } from './component/app-nav-bar/app-nav-bar.component'
 import { AppPublicNavBarComponent } from './component/app-public-nav-bar/app-public-nav-bar.component'
-import { DialogConfirmComponent } from './component/dialog-confirm/dialog-confirm.component'
 import { InvalidUserComponent } from './component/invalid-user/invalid-user.component'
 import { LoginRootComponent } from './component/login-root/login-root.component'
 import { LoginRootDirective } from './component/login-root/login-root.directive'
@@ -85,7 +84,6 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     TncRendererComponent,
     AppFooterComponent,
     InvalidUserComponent,
-    DialogConfirmComponent,
     LoginRootComponent,
     LoginRootDirective,
     OrgComponent,
