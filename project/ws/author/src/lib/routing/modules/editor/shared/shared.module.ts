@@ -27,8 +27,6 @@ import { EditMetaComponent } from './components/edit-meta/edit-meta.component'
 
 import { PlainCKEditorComponent } from './components/plain-ckeditor/plain-ckeditor.component'
 
-import { MatQuillComponent } from './components/rich-text-editor/my-own.component'
-
 import { QuillComponent } from './components/rich-text-editor/quill.component'
 
 import { DragDropDirective } from './directives/drag-drop.directive'
@@ -37,20 +35,12 @@ import { UploadService } from './services/upload.service'
 
 import { BackNavigateService } from './services/backNavigate.service'
 
-import { BaseComponent } from './components/editor/base/base.component'
-
-import { EditMetaV2Component } from './components/editor/edit-meta-v2/edit-meta-v2.component'
-
-import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal.component'
-
 import { CourseSettingsComponent } from './components/course-settings/course-settings.component'
 
 import { ContentQualityService } from './services/content-quality.service'
 
-
 @NgModule({
   declarations: [
-    MatQuillComponent,
     QuillComponent,
     PlainCKEditorComponent,
     EditMetaComponent,
@@ -59,10 +49,7 @@ import { ContentQualityService } from './services/content-quality.service'
     AuthLanguageSelectBarComponent,
     AuthPickerComponent,
     AuthEditorActionButtonsComponent,
-    BaseComponent,
-    EditMetaV2Component,
-    ConfirmModalComponent,
-    CourseSettingsComponent
+    CourseSettingsComponent,
   ],
   imports: [
     CommonModule,
@@ -76,7 +63,6 @@ import { ContentQualityService } from './services/content-quality.service'
     CatalogSelectModule,
   ],
   exports: [
-    MatQuillComponent,
     QuillComponent,
     PlainCKEditorComponent,
     EditMetaComponent,
@@ -84,9 +70,8 @@ import { ContentQualityService } from './services/content-quality.service'
     AceEditorComponent,
     AuthEditorActionButtonsComponent,
     AuthPickerComponent,
-    ConfirmModalComponent,
-    CourseSettingsComponent
+    CourseSettingsComponent,
   ],
   providers: [UploadService, BackNavigateService, ContentQualityService],
 })
-export class EditorSharedModule { }
+export class EditorSharedModule {}
