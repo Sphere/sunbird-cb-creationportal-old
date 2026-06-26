@@ -19,8 +19,6 @@ import { AceEditorComponent } from './components/ace-editor/ace-editor.component
 
 import { AuthEditorActionButtonsComponent } from './components/auth-editor-action-buttons/auth-editor-action-buttons.component'
 
-import { AuthLanguageSelectBarComponent } from './components/auth-language-select-bar/auth-language-select-bar.component'
-
 import { AuthPickerComponent } from './components/auth-picker/auth-picker.component'
 
 import { EditMetaComponent } from './components/edit-meta/edit-meta.component'
@@ -46,7 +44,6 @@ import { ContentQualityService } from './services/content-quality.service'
     EditMetaComponent,
     DragDropDirective,
     AceEditorComponent,
-    AuthLanguageSelectBarComponent,
     AuthPickerComponent,
     AuthEditorActionButtonsComponent,
     CourseSettingsComponent,

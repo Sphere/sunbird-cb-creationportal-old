@@ -81,8 +81,6 @@ import { ContentStripSingleComponent } from './components/input/content-strip-si
 
 import { ImageGalleryComponent } from './components/input/image-gallery/image-gallery.component'
 
-import { TitleComponent } from './components/input/title/title.component'
-
 import { SelectorResponsiveV2Component } from './components/input/selector-responsive-v2/selector-responsive-v2.component'
 
 import { GalleryV2Component } from './components/input/gallery-v2/gallery-v2.component'
@@ -128,7 +126,6 @@ import { DraggableModule } from '../../../../../../directives/draggable/draggabl
     HtmlV2Component,
     ContentStripSingleComponent,
     ImageGalleryComponent,
-    TitleComponent,
     SelectorResponsiveV2Component,
     GalleryV2Component,
     MediaWrapperComponent,

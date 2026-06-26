@@ -4,14 +4,9 @@ import { CommonModule } from '@angular/common'
 
 import { BtnPreviewComponent } from './btn-preview.component'
 
-import { BtnPreviewDialogComponent } from './btn-preview-dialog/btn-preview-dialog.component'
-
-
 @NgModule({
-  declarations: [BtnPreviewComponent, BtnPreviewDialogComponent],
-  imports: [
-    CommonModule,
-  ],
+  declarations: [BtnPreviewComponent],
+  imports: [CommonModule],
   exports: [BtnPreviewComponent],
 })
-export class BtnPreviewModule { }
+export class BtnPreviewModule {}

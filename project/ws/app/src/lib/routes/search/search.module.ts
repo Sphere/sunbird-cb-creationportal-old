@@ -33,7 +33,6 @@ import {
   BtnPlaylistModule,
   DisplayContentTypeModule,
   PipeContentRouteModule,
-  BtnKbAnalyticsModule,
   UserAutocompleteModule,
 } from '@ws-widget/collection'
 
@@ -41,7 +40,10 @@ import { WidgetResolverModule } from '@ws-widget/resolver'
 
 import {
   DefaultThumbnailModule,
-  HorizontalScrollerModule, PipeDurationTransformModule, PipeLimitToModule, PipePartialContentModule,
+  HorizontalScrollerModule,
+  PipeDurationTransformModule,
+  PipeLimitToModule,
+  PipePartialContentModule,
 } from '@ws-widget/utils/src/public-api'
 
 // import { TrainingApiService } from '../infy/routes/training/apis/training-api.service'
@@ -77,7 +79,6 @@ import { SearchRoutingModule } from './search-routing.module'
 import { PeopleComponent } from './routes/people/people.component'
 
 import { SearchInputHomeComponent } from './components/search-input-home/search-input-home.component'
-
 
 @NgModule({
   declarations: [
@@ -129,7 +130,6 @@ import { SearchInputHomeComponent } from './components/search-input-home/search-
     BtnPlaylistModule,
     // BtnGoalsModule,
     BtnContentMailMeModule,
-    BtnKbAnalyticsModule,
     PipePartialContentModule,
     HorizontalScrollerModule,
     MatProgressSpinnerModule,
@@ -143,4 +143,4 @@ import { SearchInputHomeComponent } from './components/search-input-home/search-
   exports: [ItemTileComponent, SearchInputComponent, SearchInputHomeComponent],
   // providers: [TrainingApiService, TrainingService],
 })
-export class SearchModule { }
+export class SearchModule {}

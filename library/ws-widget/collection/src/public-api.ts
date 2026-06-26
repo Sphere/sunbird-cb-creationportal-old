@@ -10,7 +10,6 @@ export * from './lib/author-card/author-card.module'
 
 export * from './lib/author-card/author-card.model'
 
-
 export * from './lib/_common/avatar-photo/avatar-photo.module'
 
 export * from './lib/btn-apps/btn-apps.module'
@@ -22,8 +21,6 @@ export * from './lib/btn-catalog/btn-catalog.module'
 export * from './lib/btn-channel-analytics/btn-channel-analytics.module'
 
 export * from './lib/btn-content-download/btn-content-download.module'
-
-export * from './lib/btn-content-download/btn-content-download.service'
 
 export * from './lib/btn-content-feedback-v2/btn-content-feedback-v2.module'
 
@@ -45,10 +42,6 @@ export * from './lib/btn-content-share/btn-content-share.module'
 
 export * from './lib/btn-feature/btn-feature.module'
 
-export * from './lib/btn-follow/btn-follow.module'
-
-export * from './lib/btn-follow/btn-follow.service'
-
 export * from './lib/btn-fullscreen/btn-fullscreen.module'
 
 export * from './lib/btn-mail-user/btn-mail-user.module'
@@ -69,8 +62,6 @@ export * from './lib/btn-playlist/btn-playlist.service'
 
 export * from './lib/btn-preview/btn-preview.module'
 
-export * from './lib/btn-preview/btn-preview.service'
-
 export * from './lib/btn-settings/btn-settings.module'
 
 export * from './lib/btn-settings/btn-settings.service'
@@ -80,8 +71,6 @@ export * from './lib/_common/language-selector/language-selector.module'
 export * from './lib/_common/app-tour-dialog/app-tour-dialog.module'
 
 export * from './lib/_common/app-tour-dialog/app-tour-dialog.component'
-
-export * from './lib/btn-kb-analytics/btn-kb-analytics.module'
 
 export * from './lib/card-table/card-table.module'
 
@@ -275,7 +264,6 @@ export * from './lib/_common/user-content-rating/user-content-rating.module'
 
 export * from './lib/_common/user-content-detailed-rating/user-content-detailed-rating.module'
 
-
 export * from './lib/_common/user-image/user-image.module'
 
 export * from './lib/_common/avatar-photo/avatar-photo.module'
@@ -304,7 +292,6 @@ export * from './lib/graph-general/graph-general.service'
 
 // export * from './lib/ui-table/ui-table.module'
 
-
 // Modules required by Ivy — must be explicitly exported (were missing from public-api)
 export * from './lib/btn-profile/btn-profile.module'
 
@@ -329,4 +316,3 @@ export * from './lib/profile-v2/profile-departments/profile-departments.module'
 export * from './lib/profile-v2/profile-hobbies/profile-hobbies.module'
 
 export * from './lib/activity-strip-multiple/activity-strip-multiple.module'
-
