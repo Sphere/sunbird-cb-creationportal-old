@@ -24,6 +24,3 @@ export * from './lib/routes/search/search.module'
 // export * from './lib/routes/social/social.module'
 
 export * from './lib/routes/app-event/app-event.module'
-
-// export * from './lib/routes/home/home.module'
-
