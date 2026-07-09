@@ -1,11 +1,8 @@
-import {
-  Component, OnInit, Inject
-} from '@angular/core'
+import { Component, OnInit, Inject } from '@angular/core'
 
-import {
-  MatDialogRef,
-  MAT_DIALOG_DATA
-} from '@angular/material/dialog'
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+
+import { FormControl } from '@angular/forms'
 
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 
@@ -21,16 +18,16 @@ import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
 
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 
-
 @Component({
   standalone: false,
   selector: 'ws-competency-popup',
   templateUrl: './competency-popup.component.html',
-  styleUrls: ['./competency-popup.component.scss']
+  styleUrls: ['./competency-popup.component.scss'],
 })
 export class CompetencyPopupComponent implements OnInit {
   proficiency: any
   proficiencyList: any
+  competencyCtrl = new FormControl('')
   parentData: any
   levelList: any[] = [
     { selected: false, alreadyAdded: false, value: '1', name: 'Level 1' },
@@ -55,17 +52,34 @@ export class CompetencyPopupComponent implements OnInit {
     this.selectedSelfAssessment = data
   }
 
+  displayCompetency = (option: any): string => {
+    if (!option) {
+      return ''
+    }
+    if (typeof option === 'string') {
+      return option
+    }
+    return option.code ? `${option.code} - ${option.name}` : option.name || ''
+  }
+
   ngOnInit() {
     if (this.selectedSelfAssessment === true) {
       this.disableLevel = true
     }
-    this.editorService.getAllEntities().subscribe(async (res: any) => {
-      this.proficiencyList = await res.result.response
-      this.searchComp = this.proficiencyList
-    })
     const id = this.router.url.split('/')[3]
     this.editorService.readcontentV3(id).subscribe((res: any) => {
       this.parentData = res
+      const lang = res?.lang || 'en'
+      this.editorService.getAllEntities(lang).subscribe((entRes: any) => {
+        this.proficiencyList = entRes.result.entity
+        this.searchComp = this.proficiencyList
+      })
+    })
+
+    this.competencyCtrl.valueChanges.subscribe((val: any) => {
+      if (typeof val === 'string') {
+        this.onKey(val)
+      }
     })
   }
 
@@ -73,7 +87,10 @@ export class CompetencyPopupComponent implements OnInit {
   eventSelection(event: any) {
     this.proficiency = event
     // Reset all levels
-    this.levelList.forEach(l => { l.selected = false; l.alreadyAdded = false })
+    this.levelList.forEach(l => {
+      l.selected = false
+      l.alreadyAdded = false
+    })
     this.hasOneChecked = false
 
     if (!this.disableLevel && this.parentData?.competencies_v1 && event?.id) {
@@ -81,11 +98,13 @@ export class CompetencyPopupComponent implements OnInit {
       try {
         const raw = this.parentData.competencies_v1
         // API returns a JSON string; after an in-memory write it may be an array already
-        existing = typeof raw === 'string' ? JSON.parse(raw) : (Array.isArray(raw) ? raw : [])
-      } catch { existing = [] }
+        existing = typeof raw === 'string' ? JSON.parse(raw) : Array.isArray(raw) ? raw : []
+      } catch {
+        existing = []
+      }
 
       existing.forEach((comp: any) => {
-        if (String(comp.competencyId) === String(event.id) && comp.level !== undefined) {
+        if (String(comp.competencyId) === String(event.entityId) && comp.level !== undefined) {
           const found = this.levelList.find(l => String(l.value) === String(comp.level))
           if (found) {
             found.selected = true
@@ -109,23 +128,21 @@ export class CompetencyPopupComponent implements OnInit {
     }
 
     // Gather currently selected levels from levelList directly (avoids null selectLevel bug)
-    const selectedLevels = this.disableLevel
-      ? []
-      : this.levelList.filter(l => l.selected)
+    const selectedLevels = this.disableLevel ? [] : this.levelList.filter(l => l.selected)
 
-    let arr1: string[] = this.parentData?.competencySearch
-      ? [...this.parentData.competencySearch]
-      : []
+    let arr1: string[] = this.parentData?.competencySearch ? [...this.parentData.competencySearch] : []
     let arr2: any[] = []
     try {
       const raw = this.parentData?.competencies_v1
       if (raw) {
-        arr2 = typeof raw === 'string' ? JSON.parse(raw) : (Array.isArray(raw) ? raw : [])
+        arr2 = typeof raw === 'string' ? JSON.parse(raw) : Array.isArray(raw) ? raw : []
       }
-    } catch { arr2 = [] }
+    } catch {
+      arr2 = []
+    }
 
     // Remove all existing entries for this competency so we can re-add cleanly (no duplicates)
-    const compIdStr = String(proficiency.id)
+    const compIdStr = String(proficiency.entityId)
     arr1 = arr1.filter((id: string) => !String(id).startsWith(compIdStr + '-') && String(id) !== compIdStr)
     arr2 = arr2.filter((comp: any) => String(comp.competencyId) !== compIdStr)
 
@@ -154,8 +171,8 @@ export class CompetencyPopupComponent implements OnInit {
     }
 
     this.loader.changeLoad.next(true)
-    this.editorService.updateNewContentV3({ request: { content: meta } }, this.parentData.identifier)
-      .subscribe((response: any) => {
+    this.editorService.updateNewContentV3({ request: { content: meta } }, this.parentData.identifier).subscribe(
+      (response: any) => {
         if (response?.params?.status === 'successful') {
           this.dialogRef.close(true)
         } else {
@@ -165,13 +182,15 @@ export class CompetencyPopupComponent implements OnInit {
             duration: NOTIFICATION_TIME * 1000,
           })
         }
-      }, () => {
+      },
+      () => {
         this.loader.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
           data: { type: Notify.FAIL },
           duration: NOTIFICATION_TIME * 1000,
         })
-      })
+      },
+    )
   }
 
   onKey(value: string) {
@@ -180,12 +199,12 @@ export class CompetencyPopupComponent implements OnInit {
 
   search(value: string) {
     const filter = value.toLowerCase()
-    if (!filter) { return this.searchComp }
+    if (!filter) {
+      return this.searchComp
+    }
     return this.searchComp.filter((option: any) => {
       const nameMatches = option.name.toLowerCase().includes(filter)
-      const codeMatches = option.additionalProperties?.Code
-        ? option.additionalProperties.Code.toLowerCase().includes(filter)
-        : false
+      const codeMatches = option.code ? option.code.toLowerCase().includes(filter) : false
       return nameMatches || codeMatches
     })
   }

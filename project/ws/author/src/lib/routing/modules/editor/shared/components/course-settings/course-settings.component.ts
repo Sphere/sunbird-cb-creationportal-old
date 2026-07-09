@@ -127,6 +127,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   regionCtrl!: FormControl
   accessPathsCtrl!: FormControl
   keywordsCtrl!: FormControl
+  competencySearchCtrl = new FormControl('')
   selectedSkills: string[] = []
   canUpdate = true
   ordinals!: any
@@ -226,10 +227,10 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
       this.userId = this.configSvc.userProfile.userId
       this.givenName = this.configSvc.userProfile.givenName
     }
-    this.getAllEntities = this.editorService.getAllEntities().subscribe(async (res: any) => {
-      this.proficiencyList = await res.result.response
+    const lang = (this.contentMeta as any)?.lang || 'en'
+    this.getAllEntities = this.editorService.getAllEntities(lang).subscribe((res: any) => {
+      this.proficiencyList = res.result.entity
       this.searchComp = this.proficiencyList
-      console.log('yes shree', this.proficiencyList)
       if (this.isSelfAssessment) this.initializeForm()
     })
   }
@@ -503,35 +504,27 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     // this.contentForm.controls.name.setValue(event.name)
     // this.contentForm.controls.description.setValue(event.description)
     // this.competencies_v1 = event
-    let competencyDetail = comp.additionalProperties
-    if (comp.additionalProperties.competencyLevelDescription) {
+    const entityLevels: any[] = comp.levels || []
+    if (entityLevels.length > 0) {
       let children: any = this.contentMeta.children
-      let competencyLevelDescription = JSON.parse(comp.additionalProperties.competencyLevelDescription)
-      const identifiers = children.map((val: any) => {
-        const matchedItem = {
-          identifier: val.identifier,
-          versionKey: val.versionKey,
-        }
-        return matchedItem
-      })
-      const mergedArray = competencyLevelDescription.map((item: any, index: string | number) => {
-        return {
-          ...item,
-          identifier: identifiers[index].identifier,
-          versionKey: identifiers[index].versionKey,
-        }
-      })
+      const identifiers = children.map((val: any) => ({
+        identifier: val.identifier,
+        versionKey: val.versionKey,
+      }))
+      const mergedArray = entityLevels.map((item: any, index: number) => ({
+        ...item,
+        identifier: identifiers[index]?.identifier,
+        versionKey: identifiers[index]?.versionKey,
+      }))
       if (mergedArray.length > 0) {
         this.loader.changeLoad.next(true)
         for (const level of mergedArray) {
           if (level) {
-            if (event == 'hi') {
-              level.name = level['lang-hi-name'] ? level['lang-hi-name'] : level.name
-              level.description = level['lang-hi-description'] ? level['lang-hi-description'] : level.description
-            }
+            const levelName = level.levelName || level.name || 'Resource'
+            const levelNum = level.levelNumber ?? level.level
             const newData = {
-              name: 'Level ' + level.level + ' : ' + (level.name ? level.name : 'Resource'),
-              description: level.description ? level.description : '',
+              name: 'Level ' + levelNum + ' : ' + levelName,
+              description: level.description || '',
               versionKey: level.versionKey,
             }
             let requestBody = {
@@ -549,7 +542,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
         let competencies_obj = [
           {
             competencyName: comp.name,
-            competencyId: comp.id.toString(),
+            competencyId: comp.entityId.toString(),
           },
         ]
         let courseData = {
@@ -560,17 +553,17 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
           lang: event,
         }
         if (event == 'hi') {
-          this.courseData.name = competencyDetail['lang-hi-name'] ? competencyDetail['lang-hi-name'] : comp.name
-          this.courseData.description = competencyDetail['lang-hi-description'] ? competencyDetail['lang-hi-description'] : comp.description
+          this.courseData.name = comp['lang-hi-name'] || comp.name
+          this.courseData.description = comp['lang-hi-description'] || comp.description
           let competencies_obj = [
             {
-              competencyName: competencyDetail['lang-hi-name'] ? competencyDetail['lang-hi-name'] : comp.name,
-              competencyId: comp.id.toString(),
+              competencyName: comp['lang-hi-name'] || comp.name,
+              competencyId: comp.entityId.toString(),
             },
           ]
           courseData = {
-            name: competencyDetail['lang-hi-name'] ? competencyDetail['lang-hi-name'] : comp.name,
-            description: competencyDetail['lang-hi-description'] ? competencyDetail['lang-hi-description'] : comp.description,
+            name: comp['lang-hi-name'] || comp.name,
+            description: comp['lang-hi-description'] || comp.description,
             versionKey: this.contentMeta.identifier,
             competencies_v1: competencies_obj,
             lang: event,
@@ -601,15 +594,34 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     // this.contentForm.controls.competencies_v1.setValue(competencies_obj)
   }
 
+  // displayWith for mat-autocomplete — shows "CODE - Name" in the input after selection
+  displayCompetency = (option: any): string => {
+    if (!option) return ''
+    if (typeof option === 'string') return ''
+    return option.code ? `${option.code} - ${option.name}` : option.name || ''
+  }
+
+  // Called when the user picks an option — keeps competencies_v1 in sync and triggers the save
+  onCompetencySelected(lang: string, comp: any) {
+    this.competencies_v1 = comp
+    this.competencySearchCtrl.setValue(comp, { emitEvent: false })
+    this.contentForm.controls['competencies_v1'].setValue(comp, { emitEvent: false })
+    this.eventSelection(lang, comp)
+  }
+
   onKey(value: string) {
     this.proficiencyList = this.search(value)
   }
   search(value: string) {
-    let filter = value.toLowerCase()
+    const filter = value.toLowerCase()
     if (!filter) {
       return this.searchComp
     }
-    return (this.proficiencyList = this.searchComp.filter((option: any) => option.name.toLowerCase().includes(filter)))
+    return this.searchComp.filter((option: any) => {
+      const nameMatch = option.name?.toLowerCase().includes(filter)
+      const codeMatch = option.code?.toLowerCase().includes(filter)
+      return nameMatch || codeMatch
+    })
   }
   getFilterData(firstArray: any, secondArray: any) {
     const valuesNotInSecondArray = firstArray.filter((key: any) => {
@@ -846,9 +858,13 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
       } catch (ex) {}
     })
     this.canUpdate = true
-    // tslint:disable-next-line:no-console
-    console.log('saved', this.contentForm.controls, this.proficiencyList)
     this.storeData()
+
+    // Restore saved competency selection. If the proficiency list hasn't loaded
+    // yet, initializeForm() in the API callback will handle it once it arrives.
+    if (this.isSelfAssessment && this.proficiencyList.length > 0) {
+      this.initializeForm()
+    }
 
     if (this.isSubmitPressed) {
       this.contentForm.markAsDirty()
@@ -867,36 +883,35 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     }
   }
   initializeForm() {
-    if (this.contentMeta.competencies_v1) {
-      try {
-        console.log('yes valid', this.contentMeta.competencies_v1)
-        let jsonVerify = this.isJsonString(this.contentMeta.competencies_v1)
-        if (jsonVerify) {
-          const parsedCompetencies = JSON.parse(this.contentMeta.competencies_v1)
-          console.log('parsedCompetencies', parsedCompetencies, this.proficiencyList)
-          if (Array.isArray(parsedCompetencies)) {
-            const selectedCompetency = this.proficiencyList.find(
-              (competency: { id: number }) => competency.id == parsedCompetencies[0].competencyId,
-            )
-            console.log('yes here selected: ', selectedCompetency)
-            if (selectedCompetency) {
-              this.competencies_v1 = selectedCompetency
-            }
-          }
-        } else {
-          let comp = this.contentMeta.competencies_v1
-          console.log('comp', this.contentMeta.competencies_v1, this.proficiencyList)
-          if (comp) {
-            const selectedCompetency = this.proficiencyList.find((competency: { id: number }) => competency.id === comp.id)
-            console.log('yes here selected: ', selectedCompetency)
-            if (selectedCompetency) {
-              this.competencies_v1 = selectedCompetency
-            }
-          }
-        }
-      } catch (e) {
-        console.error('Failed to parse competencies_v1', e)
+    if (!this.contentMeta.competencies_v1) {
+      return
+    }
+    try {
+      const raw = this.contentMeta.competencies_v1
+      // Normalise: could be a JSON string, an array, or a single object
+      let list: any[]
+      if (typeof raw === 'string') {
+        const parsed = JSON.parse(raw)
+        list = Array.isArray(parsed) ? parsed : [parsed]
+      } else {
+        list = Array.isArray(raw) ? raw : [raw]
       }
+      const savedId = list[0]?.competencyId
+      if (!savedId) {
+        return
+      }
+      // Match on entityId (numeric string) — never on id (compound "C2_en")
+      const match = this.proficiencyList.find((c: any) => String(c.entityId) === String(savedId))
+      if (match) {
+        this.competencies_v1 = match
+        // Sync both the display ctrl (search input) and the form ctrl (validation/state)
+        this.competencySearchCtrl.setValue(match, { emitEvent: false })
+        if (this.contentForm?.controls['competencies_v1']) {
+          this.contentForm.controls['competencies_v1'].setValue(match, { emitEvent: false })
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse competencies_v1', e)
     }
   }
   convertToISODate(date = ''): Date {
@@ -2002,6 +2017,19 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
       previewLinkFormControl: new FormControl(),
       cneName: new FormControl(''),
       courseVisibility: new FormControl(''),
+    })
+
+    // Filter competency list as user types via the standalone search ctrl.
+    // competencies_v1 in the form is never written to by keystrokes — only by selection or explicit reset.
+    this.competencySearchCtrl.valueChanges.subscribe((val: any) => {
+      if (typeof val === 'string') {
+        this.onKey(val)
+        if (!val) {
+          // User cleared the field — reset the actual form value so validation reflects the empty state
+          this.competencies_v1 = null
+          this.contentForm.controls['competencies_v1'].setValue(null, { emitEvent: true })
+        }
+      }
     })
 
     // Report validity now (initial state) and on every status change so the parent

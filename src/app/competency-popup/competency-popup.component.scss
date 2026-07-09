@@ -3,35 +3,44 @@
 //  8px grid · Roboto · WCAG AA
 // ═══════════════════════════════════════════════════════════════════════════
 
-// ── mat-select dropdown panel (CDK overlay — must be global) ─────────────
-::ng-deep .mat-mdc-select-panel {
-  background: #FFFFFF !important;
-  border: 1px solid #E2E8F0 !important;
+// ── Autocomplete panel (CDK overlay — must be global) ────────────────────
+::ng-deep .mat-mdc-autocomplete-panel {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
   padding: 4px 0 !important;
 }
-::ng-deep .mat-mdc-option {
+::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option {
   font-family: Roboto, sans-serif !important;
   font-size: 13px !important;
-  color: #0F172A !important;
+  color: #0f172a !important;
   min-height: 40px !important;
-  padding: 0 16px !important;
+  height: 40px !important;
+  padding: 0 14px !important;
   line-height: 40px !important;
 }
-::ng-deep .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
-  background: #EBF4FD !important;
+::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background: #ebf4fd !important;
 }
-::ng-deep .mat-mdc-option.mat-mdc-option-active,
-::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-  background: #EBF4FD !important;
-  color: #1C5D95 !important;
+::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option.mat-mdc-option-active {
+  background: #ebf4fd !important;
+}
+::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+  background: #ebf4fd !important;
+  color: #1c5d95 !important;
   font-weight: 600 !important;
 }
-::ng-deep .mat-mdc-option .mdc-list-item__primary-text {
+// Primary-text must be flex so the code badge sits inline with the name
+::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option .mdc-list-item__primary-text {
+  display: flex !important;
+  align-items: center !important;
   font-family: Roboto, sans-serif !important;
   font-size: 13px !important;
   color: inherit !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 // ── Reset Material dialog container padding ───────────────────────────────
@@ -49,14 +58,14 @@
 // ── MDC Form Field Tokens — match edit-meta exactly ───────────────────────
 ::ng-deep .cp-field.mat-mdc-form-field {
   --mdc-outlined-text-field-container-shape: 8px;
-  --mdc-outlined-text-field-outline-color: #CBD5E1;
-  --mdc-outlined-text-field-hover-outline-color: #1C5D95;
-  --mdc-outlined-text-field-focus-outline-color: #1C5D95;
+  --mdc-outlined-text-field-outline-color: #cbd5e1;
+  --mdc-outlined-text-field-hover-outline-color: #1c5d95;
+  --mdc-outlined-text-field-focus-outline-color: #1c5d95;
   --mdc-outlined-text-field-focus-outline-width: 2px;
   --mdc-outlined-text-field-input-text-font: Roboto, sans-serif;
   --mdc-outlined-text-field-input-text-size: 14px;
-  --mdc-outlined-text-field-input-text-color: #0F172A;
-  --mdc-outlined-text-field-label-text-color: #64748B;
+  --mdc-outlined-text-field-input-text-color: #0f172a;
+  --mdc-outlined-text-field-label-text-color: #64748b;
 }
 
 // ── Checkbox MDC overrides ────────────────────────────────────────────────
@@ -75,8 +84,8 @@
   display: none !important;
 }
 ::ng-deep .cp-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
-  background-color: #1C5D95 !important;
-  border-color: #1C5D95 !important;
+  background-color: #1c5d95 !important;
+  border-color: #1c5d95 !important;
 }
 ::ng-deep .cp-checkbox .mdc-label {
   font-size: 13px !important;
@@ -91,8 +100,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 20px;
-  border-bottom: 1px solid #E2E8F0;
-  background: #FAFBFC;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fafbfc;
   flex-shrink: 0;
 }
 .cp-header-inner {
@@ -104,14 +113,14 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: #EBF4FD;
+  background: #ebf4fd;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 
   mat-icon {
-    color: #1C5D95;
+    color: #1c5d95;
     font-size: 20px;
     width: 20px;
     height: 20px;
@@ -121,99 +130,81 @@
 .cp-title {
   font-size: 14px;
   font-weight: 600;
-  color: #0F172A;
+  color: #0f172a;
   margin: 0;
   font-family: Roboto, sans-serif;
   line-height: 1.3;
 }
 .cp-subtitle {
   font-size: 12px;
-  color: #64748B;
+  color: #64748b;
   margin: 2px 0 0;
   font-family: Roboto, sans-serif;
 }
 .cp-close {
   width: 32px !important;
   height: 32px !important;
-  color: #64748B !important;
+  color: #64748b !important;
   border-radius: 6px !important;
   flex-shrink: 0;
 
-  mat-icon { font-size: 20px; width: 20px; height: 20px; }
-  &:hover { background: #F1F5F9 !important; color: #0F172A !important; }
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  &:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+  }
 }
 
 // ── Sections ──────────────────────────────────────────────────────────────
 .cp-section {
   padding: 16px 20px;
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid #f1f5f9;
 
-  &:last-child { border-bottom: none; }
+  &:last-child {
+    border-bottom: none;
+  }
 }
 .cp-section-label {
   font-size: 10px;
   font-weight: 700;
-  color: #94A3B8;
+  color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.9px;
   margin: 0 0 12px;
   font-family: Roboto, sans-serif;
 }
 
-// ── Competency search bar + dropdown ─────────────────────────────────────
-.cp-search-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid #CBD5E1;
-  border-radius: 8px;
-  padding: 0 12px;
-  background: #F8FAFC;
-  margin-bottom: 10px;
-  transition: border-color 0.2s;
-
-  &:focus-within {
-    border-color: #1C5D95;
-    background: #FFFFFF;
-    box-shadow: 0 0 0 3px rgba(28, 93, 149, 0.08);
-  }
-}
-.cp-search-icon {
-  font-size: 18px !important;
-  width: 18px !important;
-  height: 18px !important;
-  color: #94A3B8;
-  flex-shrink: 0;
-}
-.cp-search-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  height: 40px;
-  font-size: 13px;
-  font-family: Roboto, sans-serif;
-  color: #0F172A;
-  background: transparent;
-
-  &::placeholder { color: #94A3B8; }
-}
+// ── Competency autocomplete field ─────────────────────────────────────────
 .cp-field {
   width: 100%;
   display: block;
 }
 ::ng-deep .cp-field .mat-mdc-form-field-hint {
   font-size: 11px !important;
-  color: #94A3B8 !important;
+  color: #94a3b8 !important;
   font-family: Roboto, sans-serif !important;
 }
-.cp-opt-code {
+// Code badge — lives in CDK overlay, must use ::ng-deep
+::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option .cp-opt-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 10px;
   font-weight: 700;
-  color: #1C5D95;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-right: 6px;
-  font-family: Roboto, sans-serif;
+  color: #1c5d95;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-right: 10px;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  min-width: 28px;
+  line-height: 1;
 }
 
 // ── Level grid ────────────────────────────────────────────────────────────
@@ -227,30 +218,32 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
-  background: #F8FAFC;
-  transition: border-color 0.15s, background 0.15s;
+  background: #f8fafc;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
   cursor: pointer;
 
   &.cp-level-selected {
-    border-color: #93C5FD;
-    background: #EFF8FF;
+    border-color: #93c5fd;
+    background: #eff8ff;
   }
   &.cp-level-existing {
-    border-color: #1C5D95;
-    background: #EBF4FD;
+    border-color: #1c5d95;
+    background: #ebf4fd;
   }
   &:hover:not(.cp-level-selected) {
-    border-color: #CBD5E1;
-    background: #F1F5F9;
+    border-color: #cbd5e1;
+    background: #f1f5f9;
   }
 }
 .cp-level-badge {
   font-size: 10px;
   font-weight: 700;
-  color: #1C5D95;
-  background: #DBEAFE;
+  color: #1c5d95;
+  background: #dbeafe;
   padding: 2px 8px;
   border-radius: 999px;
   font-family: Roboto, sans-serif;
@@ -265,8 +258,8 @@
   justify-content: flex-end !important;
   gap: 10px !important;
   padding: 12px 20px !important;
-  border-top: 1px solid #E2E8F0;
-  background: #FAFBFC;
+  border-top: 1px solid #e2e8f0;
+  background: #fafbfc;
 }
 .cp-btn-cancel {
   font-size: 13px !important;
@@ -275,10 +268,12 @@
   height: 36px !important;
   border-radius: 8px !important;
   color: #475569 !important;
-  border-color: #CBD5E1 !important;
+  border-color: #cbd5e1 !important;
   padding: 0 16px !important;
 
-  &:hover { background: #F1F5F9 !important; }
+  &:hover {
+    background: #f1f5f9 !important;
+  }
 }
 .cp-btn-confirm {
   font-size: 13px !important;
@@ -286,8 +281,8 @@
   font-weight: 600 !important;
   height: 36px !important;
   border-radius: 8px !important;
-  background: #1C5D95 !important;
-  color: #FFFFFF !important;
+  background: #1c5d95 !important;
+  color: #ffffff !important;
   padding: 0 18px !important;
 
   mat-icon {
@@ -297,9 +292,11 @@
     margin-right: 4px;
   }
 
-  &:hover:not([disabled]) { background: #154F81 !important; }
+  &:hover:not([disabled]) {
+    background: #154f81 !important;
+  }
   &[disabled] {
-    background: #E2E8F0 !important;
-    color: #94A3B8 !important;
+    background: #e2e8f0 !important;
+    color: #475569 !important;
   }
 }

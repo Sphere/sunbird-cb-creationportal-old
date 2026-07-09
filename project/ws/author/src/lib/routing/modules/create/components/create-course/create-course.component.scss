@@ -7,17 +7,17 @@
 // Identical tokens to edit-meta for visual parity across steps
 ::ng-deep .mat-mdc-form-field {
   --mdc-outlined-text-field-container-shape: 8px;
-  --mdc-outlined-text-field-outline-color: #CBD5E1;
-  --mdc-outlined-text-field-hover-outline-color: #1C5D95;
-  --mdc-outlined-text-field-focus-outline-color: #1C5D95;
+  --mdc-outlined-text-field-outline-color: #cbd5e1;
+  --mdc-outlined-text-field-hover-outline-color: #1c5d95;
+  --mdc-outlined-text-field-focus-outline-color: #1c5d95;
   --mdc-outlined-text-field-focus-outline-width: 2px;
   --mdc-outlined-text-field-label-text-font: Roboto, sans-serif;
   --mdc-outlined-text-field-input-text-font: Roboto, sans-serif;
   --mdc-outlined-text-field-label-text-size: 14px;
   --mdc-outlined-text-field-input-text-size: 14px;
-  --mdc-outlined-text-field-label-text-color: #64748B;
-  --mdc-outlined-text-field-input-text-color: #0F172A;
-  --mdc-outlined-text-field-hover-label-text-color: #1C5D95;
+  --mdc-outlined-text-field-label-text-color: #64748b;
+  --mdc-outlined-text-field-input-text-color: #0f172a;
+  --mdc-outlined-text-field-hover-label-text-color: #1c5d95;
 }
 ::ng-deep .mat-mdc-form-field-hint-wrapper,
 ::ng-deep .mat-mdc-form-field-error-wrapper {
@@ -26,7 +26,63 @@
 ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-hint {
   font-family: Roboto, sans-serif !important;
   font-size: 11px !important;
-  color: #64748B !important;
+  color: #64748b !important;
+}
+
+// Suppress AM's auto-required double-star
+::ng-deep .mdc-floating-label--required::after,
+::ng-deep .mat-mdc-form-field .mat-mdc-floating-label.mdc-floating-label--required::after {
+  content: '' !important;
+  display: none !important;
+}
+
+// ── Select Panel + Options ────────────────────────────────────────────────
+::ng-deep .mat-mdc-select-panel {
+  background: #ffffff !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+}
+::ng-deep .mat-mdc-option {
+  background: #ffffff !important;
+  font-family: Roboto, sans-serif !important;
+  font-size: 14px !important;
+  color: #0f172a !important;
+  min-height: 40px !important;
+}
+::ng-deep .mat-mdc-option:hover:not(.mdc-list-item--disabled),
+::ng-deep .mat-mdc-option.mat-mdc-option-active {
+  background: #ebf4fd !important;
+}
+::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+  background: #ebf4fd !important;
+  color: #1c5d95 !important;
+  font-weight: 500 !important;
+}
+
+// ── Autocomplete Panel ──────────────────────────────────────────────────────
+::ng-deep .mat-mdc-autocomplete-panel {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+  padding: 4px 0 !important;
+}
+::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option {
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 14px !important;
+  line-height: 40px !important;
+}
+// Primary-text must be flex so the code badge aligns inline with the name
+::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option .mdc-list-item__primary-text {
+  display: flex !important;
+  align-items: center !important;
+  font-family: Roboto, sans-serif !important;
+  font-size: 13px !important;
+  color: inherit !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 // ── Checkbox MDC overrides ────────────────────────────────────────────────
@@ -45,15 +101,15 @@
   display: none !important;
 }
 ::ng-deep .cc-ipr-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
-  background-color: #1C5D95 !important;
-  border-color: #1C5D95 !important;
+  background-color: #1c5d95 !important;
+  border-color: #1c5d95 !important;
 }
 
 // ── Page Container ────────────────────────────────────────────────────────
 // Matches em-page from edit-meta exactly
 .cc-page {
   padding: 20px 32px 24px;
-  background: #F8FAFC;
+  background: #f8fafc;
   min-height: calc(100vh - 160px);
   font-family: Roboto, sans-serif;
   display: flex;
@@ -64,10 +120,12 @@
 // ── Card ──────────────────────────────────────────────────────────────────
 // Exact match to em-card from edit-meta
 .cc-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.07),
+    0 1px 2px rgba(0, 0, 0, 0.04);
   overflow: hidden;
   transition: box-shadow 0.2s ease;
 
@@ -80,21 +138,21 @@
   align-items: center;
   gap: 12px;
   padding: 14px 20px;
-  border-bottom: 1px solid #F1F5F9;
-  background: #FAFBFC;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafbfc;
 }
 .cc-card-icon {
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: #EBF4FD;
+  background: #ebf4fd;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 
   mat-icon {
-    color: #1C5D95;
+    color: #1c5d95;
     font-size: 20px;
     width: 20px;
     height: 20px;
@@ -103,14 +161,14 @@
 .cc-card-title {
   font-size: 14px;
   font-weight: 600;
-  color: #0F172A;
+  color: #0f172a;
   margin: 0;
   font-family: Roboto, sans-serif;
   line-height: 1.3;
 }
 .cc-card-sub {
   font-size: 12px;
-  color: #64748B;
+  color: #64748b;
   margin: 2px 0 0;
   font-family: Roboto, sans-serif;
 }
@@ -128,7 +186,7 @@
   margin-bottom: 4px;
 }
 .cc-req {
-  color: #EF4444;
+  color: #ef4444;
   margin-left: 1px;
 }
 
@@ -136,15 +194,25 @@
 .cc-ipr-card {
   transition: border-color 0.2s;
 
-  .cc-ipr-icon-wrap { background: #F1F5F9; }
-  .cc-ipr-icon-mat { color: #64748B; }
+  .cc-ipr-icon-wrap {
+    background: #f1f5f9;
+  }
+  .cc-ipr-icon-mat {
+    color: #64748b;
+  }
 
   &.cc-ipr-accepted {
-    border-color: #93C5FD;
+    border-color: #93c5fd;
 
-    .cc-card-header { background: #EFF8FF; }
-    .cc-ipr-icon-wrap { background: #DBEAFE; }
-    .cc-ipr-icon-mat { color: #1C5D95; }
+    .cc-card-header {
+      background: #eff8ff;
+    }
+    .cc-ipr-icon-wrap {
+      background: #dbeafe;
+    }
+    .cc-ipr-icon-mat {
+      color: #1c5d95;
+    }
   }
 }
 .cc-ipr-icon-mat {
@@ -166,32 +234,42 @@
   gap: 8px;
 }
 .cc-ipr-link {
-  color: #1C5D95;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #1c5d95;
   font-weight: 600;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;
 
-  &:hover { color: #154F81; }
+  &:hover {
+    color: #154f81;
+  }
 }
 
 // ── Responsive ────────────────────────────────────────────────────────────
 @media (max-width: 600px) {
-  .cc-page { padding: 16px 16px 24px; }
+  .cc-page {
+    padding: 16px 16px 24px;
+  }
 }
 
 // ── Self Assessment ───────────────────────────────────────────────────────
 .sa-page {
   padding: 20px 32px 80px;
-  background: #F8FAFC;
+  background: #f8fafc;
   min-height: calc(100vh - 160px);
   font-family: Roboto, sans-serif;
 }
 .sa-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.07),
+    0 1px 2px rgba(0, 0, 0, 0.04);
   overflow: hidden;
 }
 .sa-card-header {
@@ -199,31 +277,36 @@
   align-items: center;
   gap: 12px;
   padding: 14px 20px;
-  border-bottom: 1px solid #F1F5F9;
-  background: #FAFBFC;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafbfc;
 }
 .sa-card-icon {
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: #EBF4FD;
+  background: #ebf4fd;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 
-  mat-icon { color: #1C5D95; font-size: 20px; width: 20px; height: 20px; }
+  mat-icon {
+    color: #1c5d95;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
 }
 .sa-card-title {
   font-size: 14px;
   font-weight: 600;
-  color: #0F172A;
+  color: #0f172a;
   margin: 0;
   font-family: Roboto, sans-serif;
 }
 .sa-card-sub {
   font-size: 12px;
-  color: #64748B;
+  color: #64748b;
   margin: 2px 0 0;
   font-family: Roboto, sans-serif;
 }
@@ -233,34 +316,35 @@
 .sa-fields-row {
   display: flex;
   gap: 16px;
+  align-items: flex-start;
 }
 .sa-field {
   flex: 1;
 }
-// Search input lives inside the CDK overlay portal (outside component DOM)
-// so component-scoped encapsulation never reaches it — must use ::ng-deep
-::ng-deep .sa-search-input {
-  display: block;
-  width: calc(100% - 32px) !important;
-  margin: 8px 16px !important;
-  padding: 6px 12px !important;
-  height: 36px;
-  border: 1px solid #E2E8F0 !important;
-  border-radius: 6px !important;
-  outline: none;
-  font-family: Roboto, sans-serif;
-  font-size: 14px;
-  color: #0F172A !important;
-  background: #F8FAFC !important;
-  box-sizing: border-box;
 
-  &::placeholder { color: #94A3B8; }
+// (search + select are now a single mat-autocomplete field — no extra wrappers needed)
 
-  &:focus {
-    border-color: #1C5D95 !important;
-    background: #FFFFFF !important;
-    box-shadow: 0 0 0 3px rgba(28, 93, 149, 0.08);
-  }
+// Overlay panel appended to body — ::ng-deep required to reach option content
+::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option .sa-opt-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #1c5d95;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-right: 10px;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  min-width: 28px;
+  line-height: 1;
 }
 
-.disable { opacity: 0.3; pointer-events: none; cursor: none; }
+.disable {
+  opacity: 0.3;
+  pointer-events: none;
+  cursor: none;
+}

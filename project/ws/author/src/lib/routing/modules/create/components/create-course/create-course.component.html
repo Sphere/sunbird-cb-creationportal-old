@@ -1,7 +1,6 @@
 <!-- ══ STEP 1 — Course Introduction ══════════════════════════════════════ -->
 <div *ngIf="!isSelfAssessment" class="cc-page">
   <form [formGroup]="createCourseForm" autocomplete="off">
-
     <!-- ── Card 1: Basic Information ──────────────────────────────────── -->
     <div class="cc-card">
       <div class="cc-card-header">
@@ -12,28 +11,26 @@
         </div>
       </div>
       <div class="cc-card-body">
-
         <mat-form-field appearance="outline" class="cc-field" hideRequiredMarker>
           <mat-label>Course Name <span class="cc-req">*</span></mat-label>
-          <input matInput #courseName formControlName="courseName" maxlength="100"
-            placeholder="e.g. Infection Prevention and Control" />
+          <input matInput #courseName formControlName="courseName" maxlength="100" placeholder="e.g. Infection Prevention and Control" />
           <mat-hint>{{ courseName.value.length }} / 100 · Use a clear title describing what learners will gain</mat-hint>
-          <mat-error *ngIf="createCourseForm.controls.courseName.errors?.required">
-            Course name is required
-          </mat-error>
+          <mat-error *ngIf="createCourseForm.controls.courseName.errors?.required"> Course name is required </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="cc-field" hideRequiredMarker>
           <mat-label>Description <span class="cc-req">*</span></mat-label>
-          <textarea matInput #courseIntroduction maxlength="2000" rows="3"
+          <textarea
+            matInput
+            #courseIntroduction
+            maxlength="2000"
+            rows="3"
             formControlName="courseDescription"
-            placeholder="Briefly describe what learners will gain. Include objectives, target audience, and key outcomes."></textarea>
+            placeholder="Briefly describe what learners will gain. Include objectives, target audience, and key outcomes."
+          ></textarea>
           <mat-hint>Aim for 2–4 sentences. Strong descriptions improve course discoverability.</mat-hint>
-          <mat-error *ngIf="createCourseForm.controls.courseDescription.errors?.required">
-            Description is required
-          </mat-error>
+          <mat-error *ngIf="createCourseForm.controls.courseDescription.errors?.required"> Description is required </mat-error>
         </mat-form-field>
-
       </div>
     </div>
 
@@ -50,23 +47,20 @@
       </div>
       <div class="cc-card-body">
         <p class="cc-ipr-text">
-          By checking the box below, you confirm that this course content is your original work
-          or that you have obtained all necessary permissions. You agree it does not infringe
-          any copyright, trademark, or intellectual property rights.
+          By checking the box below, you confirm that this course content is your original work or that you have obtained all necessary
+          permissions. You agree it does not infringe any copyright, trademark, or intellectual property rights.
         </p>
         <div class="cc-ipr-check-row">
           <mat-checkbox [checked]="iprAccepted" (change)="iprChecked()" class="cc-ipr-checkbox">
             I have read and agree to the
-            <span class="cc-ipr-link" (click)="showIpr(); $event.stopPropagation()">
-              IPR Declaration
-            </span>
+            <button type="button" class="cc-ipr-link" (click)="showIpr(); $event.stopPropagation()">IPR Declaration</button>
           </mat-checkbox>
         </div>
       </div>
     </div>
-
   </form>
-</div><!-- /cc-page -->
+</div>
+<!-- /cc-page -->
 
 <!-- ══ SELF ASSESSMENT ════════════════════════════════════════════════════ -->
 <div *ngIf="isSelfAssessment" class="sa-page">
@@ -81,6 +75,7 @@
       </div>
       <div class="sa-card-body">
         <div class="sa-fields-row">
+          <!-- Language -->
           <mat-form-field appearance="outline" class="sa-field" hideRequiredMarker>
             <mat-label>Language</mat-label>
             <mat-select (selectionChange)="langSelected($event.value)" formControlName="lang">
@@ -89,23 +84,29 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
+
+          <!-- Competency: single searchable autocomplete — one field, one border -->
           <mat-form-field appearance="outline" class="sa-field" hideRequiredMarker>
             <mat-label>Competency <span class="cc-req">*</span></mat-label>
-            <mat-select
-              (selectionChange)="createSelfAssessment(createSelfAssessmentForm,'createSelfAssessmentForm')"
-              formControlName="proficiency" [(ngModel)]="proficiency"
-              (selectionChange)="eventSelection($event.value)">
-              <input placeholder="Search Competency" matInput class="sa-search-input"
-                (keyup)="onKey($event.target.value)">
-              <ng-container *ngFor="let list of proficiencyList">
-                <mat-option *ngIf="lang === 'hi' && list.additionalProperties['lang-hi-name']" [value]="list">
-                  {{ list.additionalProperties.Code }} - {{ list.additionalProperties['lang-hi-name'] }}
-                </mat-option>
-                <mat-option *ngIf="lang !== 'hi'" [value]="list">
-                  {{ list.additionalProperties.Code }} - {{ list.name }}
-                </mat-option>
-              </ng-container>
-            </mat-select>
+            <input
+              matInput
+              formControlName="proficiency"
+              [matAutocomplete]="compAuto"
+              placeholder="Type to search by name or code..."
+              autocomplete="off"
+            />
+            <mat-autocomplete
+              #compAuto="matAutocomplete"
+              [displayWith]="displayCompetency"
+              (opened)="onKey('')"
+              (optionSelected)="eventSelection($event.option.value)"
+            >
+              <mat-option *ngFor="let list of proficiencyList" [value]="list">
+                <span class="sa-opt-code">{{ list.code }}</span>
+                {{ lang === 'hi' && list['lang-hi-name'] ? list['lang-hi-name'] : list.name }}
+              </mat-option>
+            </mat-autocomplete>
+            <mat-hint>{{ proficiencyList?.length || 0 }} competencies</mat-hint>
             <mat-error>This field is mandatory</mat-error>
           </mat-form-field>
         </div>

@@ -1,7 +1,6 @@
 <form [formGroup]="contentForm">
   <div class="cs-page">
     <div class="cs-grid">
-
       <!-- ══ Column 1: Organization Settings ════════════════════════════════ -->
       <div class="cs-card">
         <div class="cs-card-header">
@@ -11,28 +10,35 @@
           </div>
         </div>
         <div class="cs-card-body">
-
           <!-- Reviewers -->
           <div [ngClass]="{ disable: checkCondition('trackContacts', 'disabled') }">
-            <mat-form-field appearance="outline" class="cs-field"
-              [ngClass]="{ 'mat-form-field-invalid': showError('trackContacts') }">
+            <mat-form-field appearance="outline" class="cs-field" [ngClass]="{ 'mat-form-field-invalid': showError('trackContacts') }">
               <mat-label>Reviewers <span class="cs-req" aria-hidden="true">*</span></mat-label>
               <mat-chip-grid #reviewerChipList i18n-aria-label aria-label="Reviewer selection">
-                <mat-chip-row *ngFor="let author of contentForm.controls.trackContacts.value; trackBy: trackByIndex"
-                  (removed)="removeEmployee(author, 'trackContacts')">
+                <mat-chip-row
+                  *ngFor="let author of contentForm.controls.trackContacts.value; trackBy: trackByIndex"
+                  (removed)="removeEmployee(author, 'trackContacts')"
+                >
                   {{ author.name }}
                   <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                 </mat-chip-row>
-                <input i18n-placeholder placeholder="Search by email..." #trackContactsView
-                  [formControl]="trackContactsCtrl" [matChipInputFor]="reviewerChipList"
-                  [matAutocomplete]="reivewerAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                  [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
+                <input
+                  i18n-placeholder
+                  placeholder="Search by email..."
+                  #trackContactsView
+                  [formControl]="trackContactsCtrl"
+                  [matChipInputFor]="reviewerChipList"
+                  [matAutocomplete]="reivewerAuto"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  [matChipInputAddOnBlur]="false"
+                  (matChipInputTokenEnd)="removeField($event)"
+                />
               </mat-chip-grid>
-              <mat-autocomplete #reivewerAuto="matAutocomplete"
-                (optionSelected)="addEmployee($event, 'trackContacts')">
+              <mat-autocomplete #reivewerAuto="matAutocomplete" (optionSelected)="addEmployee($event, 'trackContacts')">
                 <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
                 <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
-                  No user found. Please check the value entered.</mat-option>
+                  No user found. Please check the value entered.</mat-option
+                >
                 <mat-option *ngFor="let author of employeeList; trackBy: trackByIndex" [value]="author">
                   {{ author.displayName }} | {{ author.mail }}
                 </mat-option>
@@ -43,22 +49,34 @@
 
           <!-- Publishers -->
           <div [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
-            <mat-form-field aria-readonly="true" appearance="outline" class="cs-field"
-              [ngClass]="{ 'mat-form-field-invalid': showError('publisherDetails') }">
+            <mat-form-field
+              aria-readonly="true"
+              appearance="outline"
+              class="cs-field"
+              [ngClass]="{ 'mat-form-field-invalid': showError('publisherDetails') }"
+            >
               <mat-label>Publishers <span class="cs-req" aria-hidden="true">*</span></mat-label>
               <mat-chip-grid #publisherChipList aria-label="Publisher selection">
                 <mat-chip-row class="cs-chip-locked">Pubisher Aastrika</mat-chip-row>
-                <input disabled="true" formControlName="publisherDetails" i18n-placeholder
-                  placeholder="Search by email..." #publisherDetailsView [formControl]="publisherDetailsCtrl"
-                  [matChipInputFor]="publisherChipList" [matAutocomplete]="publisherAuto"
-                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
-                  (matChipInputTokenEnd)="removeField($event)" />
+                <input
+                  disabled="true"
+                  formControlName="publisherDetails"
+                  i18n-placeholder
+                  placeholder="Search by email..."
+                  #publisherDetailsView
+                  [formControl]="publisherDetailsCtrl"
+                  [matChipInputFor]="publisherChipList"
+                  [matAutocomplete]="publisherAuto"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  [matChipInputAddOnBlur]="false"
+                  (matChipInputTokenEnd)="removeField($event)"
+                />
               </mat-chip-grid>
-              <mat-autocomplete #publisherAuto="matAutocomplete"
-                (optionSelected)="addEmployee($event, 'publisherDetails')">
+              <mat-autocomplete #publisherAuto="matAutocomplete" (optionSelected)="addEmployee($event, 'publisherDetails')">
                 <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
                 <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
-                  No user found. Please check the value entered.</mat-option>
+                  No user found. Please check the value entered.</mat-option
+                >
                 <mat-option *ngFor="let author of employeeList; trackBy: trackByIndex" [value]="author">
                   {{ author.displayName }} | {{ author.mail }}
                 </mat-option>
@@ -69,8 +87,7 @@
 
           <!-- Source Name -->
           <div [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
-            <mat-form-field appearance="outline" class="cs-field"
-              [ngClass]="{ 'mat-form-field-invalid': showError('sourceName') }">
+            <mat-form-field appearance="outline" class="cs-field" [ngClass]="{ 'mat-form-field-invalid': showError('sourceName') }">
               <mat-label>Source Name <span class="cs-req" aria-hidden="true">*</span></mat-label>
               <mat-select formControlName="sourceName" i18n-placeholder placeholder="Select Source Name">
                 <mat-option *ngFor="let name of sourceName; trackBy: trackByIndex" [value]="name">{{ name }}</mat-option>
@@ -79,27 +96,34 @@
           </div>
 
           <!-- Authors -->
-          <div *ngIf="!isSelfAssessment"
-            [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
-            <mat-form-field appearance="outline" class="cs-field"
-              [ngClass]="{ 'mat-form-field-invalid': showError('creatorDetails') }">
+          <div *ngIf="!isSelfAssessment" [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
+            <mat-form-field appearance="outline" class="cs-field" [ngClass]="{ 'mat-form-field-invalid': showError('creatorDetails') }">
               <mat-label i18n>Authors</mat-label>
               <mat-chip-grid #creatorDetailsChipList aria-label="Author selection">
-                <mat-chip-row *ngFor="let author of contentForm.controls.creatorDetails.value; trackBy: trackByIndex"
-                  (removed)="removeCreatorDetails(author)">
+                <mat-chip-row
+                  *ngFor="let author of contentForm.controls.creatorDetails.value; trackBy: trackByIndex"
+                  (removed)="removeCreatorDetails(author)"
+                >
                   {{ author.name }}
                   <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                 </mat-chip-row>
-                <input i18n-placeholder placeholder="Enter name..." #creatorDetailsView
-                  [formControl]="creatorDetailsCtrl" [matChipInputFor]="creatorDetailsChipList"
-                  [matAutocomplete]="originalAuthorsAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                  [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="addCreatorDetails($event)" />
+                <input
+                  i18n-placeholder
+                  placeholder="Enter name..."
+                  #creatorDetailsView
+                  [formControl]="creatorDetailsCtrl"
+                  [matChipInputFor]="creatorDetailsChipList"
+                  [matAutocomplete]="originalAuthorsAuto"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  [matChipInputAddOnBlur]="false"
+                  (matChipInputTokenEnd)="addCreatorDetails($event)"
+                />
               </mat-chip-grid>
-              <mat-autocomplete #originalAuthorsAuto="matAutocomplete"
-                (optionSelected)="addEmployee($event, 'creatorDetails')">
+              <mat-autocomplete #originalAuthorsAuto="matAutocomplete" (optionSelected)="addEmployee($event, 'creatorDetails')">
                 <mat-option *ngIf="fetchTagsStatus === 'fetching'" i18n>Fetching users...</mat-option>
                 <mat-option *ngIf="fetchTagsStatus === 'done' && !employeeList.length" i18n>
-                  No user found. Please check the value entered.</mat-option>
+                  No user found. Please check the value entered.</mat-option
+                >
                 <mat-option *ngFor="let author of employeeList; trackBy: trackByIndex" [value]="author">
                   {{ author.displayName }} | {{ author.mail }}
                 </mat-option>
@@ -107,43 +131,57 @@
               <mat-error *ngIf="showError('creatorDetails')" i18n>Original Authors is mandatory</mat-error>
             </mat-form-field>
           </div>
-
         </div>
-      </div><!-- /column 1 -->
+      </div>
+      <!-- /column 1 -->
 
       <!-- ══ Column 2: Self Assessment Settings OR Course Setup ═════════════ -->
       <div class="cs-card">
-
         <!-- Self Assessment variant -->
         <ng-container *ngIf="isSelfAssessment">
           <div class="cs-card-header">
-            <span class="cs-card-icon"><mat-icon>quiz</mat-icon></span>
+            <span class="cs-card-icon"><mat-icon>assignment</mat-icon></span>
             <div><h3 class="cs-card-title" i18n>Self Assessment Settings</h3></div>
           </div>
           <div class="cs-card-body">
             <div [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
-              <mat-form-field appearance="outline" class="cs-field"
-                [ngClass]="{ 'mat-form-field-invalid': showError('lang') }">
+              <mat-form-field appearance="outline" class="cs-field" [ngClass]="{ 'mat-form-field-invalid': showError('lang') }">
                 <mat-label>Language <span class="cs-req" aria-hidden="true">*</span></mat-label>
-                <mat-select (selectionChange)="eventSelection($event.value, competencies_v1)"
-                  formControlName="lang" i18n-placeholder placeholder="Select language">
+                <mat-select
+                  (selectionChange)="eventSelection($event.value, competencies_v1)"
+                  formControlName="lang"
+                  i18n-placeholder
+                  placeholder="Select language"
+                >
                   <mat-option *ngFor="let lang of languageList; trackBy: trackByIndex" [value]="lang.value">{{ lang.name }}</mat-option>
                 </mat-select>
                 <mat-error *ngIf="showError('lang')" i18n>Language is required</mat-error>
               </mat-form-field>
             </div>
             <div [ngClass]="{ disable: checkCondition('creatorDetails', 'disabled') }">
-              <mat-form-field aria-readonly="true" appearance="outline" class="cs-field">
+              <mat-form-field appearance="outline" class="cs-field" [ngClass]="{ 'mat-form-field-invalid': showError('competencies_v1') }">
                 <mat-label>Competency <span class="cs-req" aria-hidden="true">*</span></mat-label>
-                <mat-select [disabled]="true" formControlName="competencies_v1" [(ngModel)]="competencies_v1"
-                  placeholder="Select Competency" (selectionChange)="eventSelection($event.value)">
-                  <input placeholder="Search Competency" matInput class="module-input"
-                    (keyup)="onKey($event.target.value)">
+                <input
+                  matInput
+                  [formControl]="competencySearchCtrl"
+                  [matAutocomplete]="compAuto"
+                  placeholder="Type to search by name or code..."
+                  autocomplete="off"
+                  (blur)="contentForm.controls['competencies_v1'].markAsTouched()"
+                />
+                <mat-autocomplete
+                  #compAuto="matAutocomplete"
+                  [displayWith]="displayCompetency"
+                  (opened)="onKey('')"
+                  (optionSelected)="onCompetencySelected(contentForm?.value?.lang, $event.option.value)"
+                >
                   <mat-option *ngFor="let list of proficiencyList; trackBy: trackByIndex" [value]="list">
-                    {{ list.additionalProperties?.Code }} - {{ list.name }}
+                    <span class="cs-opt-code">{{ list.code }}</span>
+                    {{ list.name }}
                   </mat-option>
-                </mat-select>
-                <mat-error i18n>This field is mandatory</mat-error>
+                </mat-autocomplete>
+                <mat-hint>{{ proficiencyList?.length || 0 }} competencies</mat-hint>
+                <mat-error *ngIf="showError('competencies_v1')" i18n>This field is mandatory</mat-error>
               </mat-form-field>
             </div>
           </div>
@@ -155,12 +193,9 @@
             <span class="cs-card-icon"><mat-icon>tune</mat-icon></span>
             <div><h3 class="cs-card-title" i18n>Course Setup</h3></div>
           </div>
-          <div class="cs-card-body"
-            [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
-
+          <div class="cs-card-body" [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
             <!-- Certificate -->
-            <mat-form-field appearance="outline" class="cs-field"
-              [ngClass]="{ 'mat-form-field-invalid': showError('issueCertification') }">
+            <mat-form-field appearance="outline" class="cs-field" [ngClass]="{ 'mat-form-field-invalid': showError('issueCertification') }">
               <mat-label>Certificate <span class="cs-req" aria-hidden="true">*</span></mat-label>
               <mat-select formControlName="issueCertification" i18n-placeholder placeholder="Select">
                 <mat-option [value]="true" i18n>Yes</mat-option>
@@ -178,8 +213,7 @@
             </mat-form-field>
 
             <!-- Enable Step-by-Step Learning -->
-            <mat-form-field appearance="outline" class="cs-field"
-              [ngClass]="{ 'mat-form-field-invalid': showError('gatingEnabled') }">
+            <mat-form-field appearance="outline" class="cs-field" [ngClass]="{ 'mat-form-field-invalid': showError('gatingEnabled') }">
               <mat-label i18n>Enable Step-by-Step Learning</mat-label>
               <mat-select formControlName="gatingEnabled" i18n-placeholder placeholder="Select">
                 <mat-option [value]="true" i18n>Yes</mat-option>
@@ -190,8 +224,7 @@
             </mat-form-field>
 
             <!-- Private Course -->
-            <mat-form-field appearance="outline" class="cs-field"
-              [ngClass]="{ 'mat-form-field-invalid': showError('courseVisibility') }">
+            <mat-form-field appearance="outline" class="cs-field" [ngClass]="{ 'mat-form-field-invalid': showError('courseVisibility') }">
               <mat-label i18n>Private Course</mat-label>
               <mat-select formControlName="courseVisibility" i18n-placeholder placeholder="Select">
                 <mat-option [value]="true" i18n>Yes</mat-option>
@@ -200,11 +233,10 @@
               <mat-hint class="cs-hint" i18n>Only learners with the course link can access it</mat-hint>
               <mat-error *ngIf="showError('courseVisibility')" i18n>Private course is mandatory</mat-error>
             </mat-form-field>
-
           </div>
         </ng-container>
-
-      </div><!-- /column 2 -->
+      </div>
+      <!-- /column 2 -->
 
       <!-- ══ Column 3: Learner Settings ═════════════════════════════════════ -->
       <div class="cs-card" *ngIf="!isSelfAssessment">
@@ -212,27 +244,32 @@
           <span class="cs-card-icon"><mat-icon>people</mat-icon></span>
           <div><h3 class="cs-card-title" i18n>Learner Settings</h3></div>
         </div>
-        <div class="cs-card-body"
-          [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
-
+        <div class="cs-card-body" [ngClass]="{ disable: checkCondition('publisherDetails', 'disabled') }">
           <!-- Audience -->
           <div *ngIf="roles$ | async as roles">
-            <mat-form-field appearance="outline" class="cs-field"
-              [ngClass]="{ 'mat-form-field-invalid': showError('rolesMapped') }">
+            <mat-form-field appearance="outline" class="cs-field" [ngClass]="{ 'mat-form-field-invalid': showError('rolesMapped') }">
               <mat-label i18n>Audience</mat-label>
               <mat-chip-grid #rolesMappedChipList i18n-aria-label aria-label="Roles selection">
-                <mat-chip-row *ngFor="let role of contentForm.controls.rolesMapped.value; trackBy: trackByIndex"
-                  (removed)="removeFromFormControl(role, 'rolesMapped')">
+                <mat-chip-row
+                  *ngFor="let role of contentForm.controls.rolesMapped.value; trackBy: trackByIndex"
+                  (removed)="removeFromFormControl(role, 'rolesMapped')"
+                >
                   {{ role }}
                   <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                 </mat-chip-row>
-                <input i18n-placeholder placeholder="Select Roles" #rolesMappedView
-                  [formControl]="rolesMappedCtrl" [matChipInputFor]="rolesMappedChipList"
-                  [matAutocomplete]="rolesMappedAuto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                  [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="removeField($event)" />
+                <input
+                  i18n-placeholder
+                  placeholder="Select Roles"
+                  #rolesMappedView
+                  [formControl]="rolesMappedCtrl"
+                  [matChipInputFor]="rolesMappedChipList"
+                  [matAutocomplete]="rolesMappedAuto"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  [matChipInputAddOnBlur]="false"
+                  (matChipInputTokenEnd)="removeField($event)"
+                />
               </mat-chip-grid>
-              <mat-autocomplete #rolesMappedAuto="matAutocomplete"
-                (optionSelected)="addToFormControl($event, 'rolesMapped')">
+              <mat-autocomplete #rolesMappedAuto="matAutocomplete" (optionSelected)="addToFormControl($event, 'rolesMapped')">
                 <mat-option *ngIf="!checkCondition('rolesMapped', 'required')" i18n [value]="null">None</mat-option>
                 <mat-option *ngFor="let role of rolesMappedList; trackBy: trackByIndex" [value]="role">{{ role }}</mat-option>
               </mat-autocomplete>
@@ -241,23 +278,32 @@
           </div>
 
           <!-- Keywords -->
-          <mat-form-field class="cs-field" appearance="outline"
-            [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
+          <mat-form-field class="cs-field" appearance="outline" [ngClass]="{ 'mat-form-field-invalid': showError('keywords') }">
             <mat-label i18n>Keywords</mat-label>
             <mat-chip-grid #keywords aria-label="Keyword selection">
-              <mat-chip-row *ngFor="let key of contentForm.controls.keywords.value; trackBy: trackByIndex"
-                (removed)="removeKeyword(key)">
+              <mat-chip-row *ngFor="let key of contentForm.controls.keywords.value; trackBy: trackByIndex" (removed)="removeKeyword(key)">
                 {{ key }}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
-              <input i18n-placeholder [formControl]="keywordsCtrl" [matAutocomplete]="auto"
-                placeholder="Add keywords..." #keywordsView [matChipInputFor]="keywords"
-                [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false"
-                (matChipInputTokenEnd)="addKeyword($event)" #keywordsSearch />
+              <input
+                i18n-placeholder
+                [formControl]="keywordsCtrl"
+                [matAutocomplete]="auto"
+                placeholder="Add keywords..."
+                #keywordsView
+                [matChipInputFor]="keywords"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="false"
+                (matChipInputTokenEnd)="addKeyword($event)"
+                #keywordsSearch
+              />
             </mat-chip-grid>
           </mat-form-field>
-          <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption
-            (optionSelected)="optionSelected($event.option.value); keywordsView.value = ''">
+          <mat-autocomplete
+            #auto="matAutocomplete"
+            autoActiveFirstOption
+            (optionSelected)="optionSelected($event.option.value); keywordsView.value = ''"
+          >
             <mat-option *ngIf="keywordsSearch.value" [value]="keywordsSearch.value">
               {{ keywordsSearch.value }}
             </mat-option>
@@ -265,12 +311,11 @@
               {{ option }}
             </mat-option>
           </mat-autocomplete>
-
         </div>
-      </div><!-- /column 3 -->
-
-    </div><!-- /cs-grid -->
-  </div><!-- /cs-page -->
-
-
+      </div>
+      <!-- /column 3 -->
+    </div>
+    <!-- /cs-grid -->
+  </div>
+  <!-- /cs-page -->
 </form>

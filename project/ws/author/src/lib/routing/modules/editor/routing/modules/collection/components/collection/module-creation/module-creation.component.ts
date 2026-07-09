@@ -1014,17 +1014,13 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       }
 
       if (this.isSelfAssessment) {
-        let competencyLevelDescription = tempUpdateContent.competencies_v1.additionalProperties
-        let lang = this.courseData.lang
-        if (lang == 'hi') {
-          tempUpdateContent.competencies_v1.name = competencyLevelDescription['lang-hi-name']
-            ? competencyLevelDescription['lang-hi-name']
-            : tempUpdateContent.competencies_v1.name
-        }
-        let competencies_obj = [
+        const entity = tempUpdateContent.competencies_v1
+        const lang = this.courseData.lang
+        const name = lang === 'hi' ? entity['lang-hi-name'] || entity.name : entity.name
+        const competencies_obj = [
           {
-            competencyName: tempUpdateContent.competencies_v1.name,
-            competencyId: tempUpdateContent.competencies_v1.id.toString(),
+            competencyName: name,
+            competencyId: entity.entityId.toString(),
           },
         ]
         tempUpdateContent.competencies_v1 = competencies_obj

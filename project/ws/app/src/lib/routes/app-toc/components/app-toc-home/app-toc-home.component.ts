@@ -24,7 +24,6 @@ import { Location } from '@angular/common'
 
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 
-
 export enum ErrorType {
   internalServer = 'internalServer',
   serviceUnavailable = 'serviceUnavailable',
@@ -66,9 +65,9 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
   optmisticPercentage: number = 0
   // Define roles array
-  roles: string[] = ['reviewer', 'publisher', 'creator'];
+  roles: string[] = ['reviewer', 'publisher', 'creator']
   // Filter comments for each role
-  filteredComments: { [key: string]: any } = {};
+  filteredComments: { [key: string]: any } = {}
   tocConfig: any = null
   contentTypes = NsContent.EContentTypes
   askAuthorEnabled = true
@@ -116,7 +115,6 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     private progressSvc: ContentProgressService,
     private cdr: ChangeDetectorRef,
     private editorService: EditorService,
-
   ) {
     // Initialize filteredComments for each role as an empty array
     this.roles.forEach(role => {
@@ -134,7 +132,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       this.roles = ['creator', 'reviewer']
     }
     this.tocSvc.currentMessage.subscribe(async (data: any) => {
-      console.log("yes here", data)
+      console.log('yes here', data)
       if (data === 'comments') {
         this.isLoading = true
         this.changeText = 'comments'
@@ -150,9 +148,9 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
           })
         }
       } else if (data === 'preview') {
-        this.editorService.getAllEntities().subscribe(async (res: any) => {
-          this.proficiencyList = await res.result.response
-          console.log("this.proficiencyList", this.proficiencyList)
+        const lang = (this.content as any)?.lang || 'en'
+        this.editorService.getAllEntities(lang).subscribe((res: any) => {
+          this.proficiencyList = res.result.entity
         })
         this.changeText = 'preview'
         this.cdr.detectChanges()
@@ -174,7 +172,6 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   ngOnInit() {
-
     // this.route.fragment.subscribe(fragment => { this.fragment = fragment })
     this.location.subscribe((event: any) => {
       console.log(event)
@@ -270,7 +267,10 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
         break
       case 'preview':
         // if (this.content.status === 'Review' || this.content.status === 'QualityReview') {
-        if ((this.content.reviewStatus === 'InReview' && this.content.status === 'Review') || (this.content.reviewStatus === 'Reviewed' && this.content.status === 'Review')) {
+        if (
+          (this.content.reviewStatus === 'InReview' && this.content.status === 'Review') ||
+          (this.content.reviewStatus === 'Reviewed' && this.content.status === 'Review')
+        ) {
           returnValue = this.authAccessControlSvc.hasAccess(this.content)
         }
         break
@@ -308,7 +308,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
           behavior: 'smooth',
         })
       }
-    } catch (e) { }
+    } catch (e) {}
   }
 
   checkJson(str: any) {
@@ -386,7 +386,7 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
   // }
 
   scrollToTop() {
-    (function smoothscroll() {
+    ;(function smoothscroll() {
       const currentScroll = document.documentElement.scrollTop || document.body.scrollTop
       if (currentScroll > 0) {
         // window.requestAnimationFrame(smoothscroll)

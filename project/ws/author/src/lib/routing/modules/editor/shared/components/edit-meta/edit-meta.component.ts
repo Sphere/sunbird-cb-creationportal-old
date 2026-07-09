@@ -963,24 +963,22 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     }
   }
   getAllEntity() {
-    this.editorService.getAllEntities().subscribe(async (res: any) => {
-      this.proficiencyList = await res.result.response
+    const lang = (this.contentMeta as any)?.lang || this.configSvc.activeLocale?.locals[0] || 'en'
+    this.editorService.getAllEntities(lang).subscribe((res: any) => {
+      this.proficiencyList = res.result.entity
       let combinedArray = ''
       if (this.competencies && this.competencies.length > 0) {
         combinedArray = this.competencies.map((element: any) => {
-          const matchingValue = this.proficiencyList.find((value: any) => value.id == element.competencyId)
-
+          const matchingValue = this.proficiencyList.find((value: any) => value.entityId == element.competencyId)
           const finalComp = {
             ...element,
-            ...matchingValue.additionalProperties,
+            code: matchingValue?.code,
           }
           return finalComp
         })
       }
 
       this.addedCompetency = combinedArray
-      // this.code = this.competencies.map((entity: any) => this.proficiencyList.find((e: any) => e.id = entity.competencyId))
-      // console.log("this.proficiencyList", combinedArray)
     })
   }
   convertToISODate(date = ''): Date {
