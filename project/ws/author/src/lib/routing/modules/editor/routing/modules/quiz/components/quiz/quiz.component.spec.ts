@@ -89,4 +89,28 @@ describe('QuizComponent', () => {
       expect([...result].sort()).toEqual(input)
     })
   })
+
+  describe('shouldPreserveUnsavedQuestions', () => {
+    it('preserves in-memory questions when the store is dirty and already loaded for the id', () => {
+      // A background reload must not overwrite unsaved edits (e.g. a just-inserted image).
+      const { component, quizStoreSvc } = build()
+      ;(quizStoreSvc as any).hasChanged = true
+      ;(quizStoreSvc as any).collectiveQuiz = { c1: [{ question: 'q' }] }
+      expect(component.shouldPreserveUnsavedQuestions('c1')).toBe(true)
+    })
+
+    it('allows a backend load on a clean (unmodified) store', () => {
+      const { component, quizStoreSvc } = build()
+      ;(quizStoreSvc as any).hasChanged = false
+      ;(quizStoreSvc as any).collectiveQuiz = { c1: [{ question: 'q' }] }
+      expect(component.shouldPreserveUnsavedQuestions('c1')).toBe(false)
+    })
+
+    it('allows a backend load when the id has no questions yet (fresh navigation)', () => {
+      const { component, quizStoreSvc } = build()
+      ;(quizStoreSvc as any).hasChanged = true
+      ;(quizStoreSvc as any).collectiveQuiz = {}
+      expect(component.shouldPreserveUnsavedQuestions('c2')).toBe(false)
+    })
+  })
 })
