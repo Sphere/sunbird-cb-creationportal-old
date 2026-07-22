@@ -10,7 +10,7 @@ An enterprise Angular SPA for **creating, authoring, managing, and publishing ed
 
 - **Organization:** Built for the Sphere/Aastrika ecosystem on top of Sunbird (EkStep / DIKSHA).
 - **Repo:** https://github.com/Sphere/sunbird-cb-creationportal-old
-- **Version:** 5.1.1 — **Angular 21** (migrated from Angular 8; see §8).
+- **Version:** 5.1.2 — **Angular 21** (migrated from Angular 8; see §8).
 
 When asked about features or intent, frame answers as a content-creation / CMS tool for an education platform — not a learner-facing app.
 
