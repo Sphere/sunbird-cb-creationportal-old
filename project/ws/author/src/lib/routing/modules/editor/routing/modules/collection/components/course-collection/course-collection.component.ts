@@ -986,6 +986,13 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
             { label: '3. Course Builder', key: 'CourseBuilder', activeStep: true, completed: false },
             { label: '4. Course Settings', key: 'CourseSettings', activeStep: false, completed: false },
           ]
+          // This branch runs synchronously inside edit-meta's ngOnChanges, i.e.
+          // during the parent's change-detection pass that has already checked
+          // this component — so the Course Details → Course Builder view swap
+          // won't render until some later event ticks change detection (the
+          // "blank page until you move the mouse" bug). The successful-save
+          // branch above already does this; the up-to-date path must too.
+          this.cdr.detectChanges()
         }
       }
     }
