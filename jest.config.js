@@ -32,13 +32,13 @@ module.exports = {
   // Coverage ratchet: a floor set just below the current measured baseline so the
   // build fails if coverage regresses. Raise these numbers as new suites land —
   // never lower them. Current baseline (2026-07, SonarQube A-grade M1 service specs):
-  // stmts 9.97 / br 8.54 / fn 3.38 / ln 9.47.
+  // stmts 10.09 / br 8.61 / fn 3.68 / ln 9.58.
   coverageThreshold: {
     global: {
-      statements: 9.9,
-      branches: 8.5,
-      functions: 3.3,
-      lines: 9.4,
+      statements: 10,
+      branches: 8.6,
+      functions: 3.6,
+      lines: 9.5,
     },
   },
   moduleNameMapper: {
