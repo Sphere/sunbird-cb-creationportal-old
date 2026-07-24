@@ -1,19 +1,43 @@
-name: Build
-# Manual-only. This ran on every push/PR and failed at "SonarQube Scan" because no
-# SONAR_TOKEN secret is configured — going red on every change and duplicating the
-# "Quality" workflow. Run it on demand once the token is set (Settings → Secrets →
-# SONAR_TOKEN), or re-enable the push/pull_request triggers then.
+name: SonarCloud
+
+# Manual-only until a SONAR_TOKEN secret is configured. This job used to run on
+# every push/PR and failed at "SonarQube Scan" because no SONAR_TOKEN exists —
+# going red on every change. Once the token is set (Settings → Secrets and
+# variables → Actions → SONAR_TOKEN), swap `workflow_dispatch` for the
+# push/pull_request triggers below so analysis (incl. coverage) runs per PR.
 on:
   workflow_dispatch:
+  # Enable these once SONAR_TOKEN is set:
+  # push:
+  #   branches: [main]
+  # pull_request:
+  #   branches: [main]
+  #   types: [opened, synchronize, reopened]
+
 jobs:
   SonarCloud:
     name: SonarCloud
     runs-on: ubuntu-latest
-    environment : SONAR_TOKEN
+    environment: SONAR_TOKEN
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+          # Disable shallow clone for better relevancy of blame/new-code analysis.
+          fetch-depth: 0
+
+      # Coverage must be generated BEFORE the scan so sonar can read
+      # coverage/lcov.info (wired via sonar.javascript.lcov.reportPaths in
+      # sonar-project.properties). Node 20 matches the runtime and the version
+      # the Jest suite is validated on. package-lock.json is gitignored and there
+      # is a known jest 29 vs 30 peer conflict, so use --legacy-peer-deps.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps --no-audit --no-fund
+      - name: Jest (produce coverage/lcov.info)
+        run: npm test -- --coverage --ci
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:
