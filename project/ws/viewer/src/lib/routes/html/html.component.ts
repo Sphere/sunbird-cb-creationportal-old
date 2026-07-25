@@ -166,7 +166,7 @@ export class HtmlComponent implements OnInit, OnDestroy {
   }
 
   async saveContinueLearning(content: NsContent.IContent | null) {
-    return new Promise(async resolve => {
+    return new Promise(resolve => {
       if (
         this.activatedRoute.snapshot.queryParams.collectionType &&
         content &&
