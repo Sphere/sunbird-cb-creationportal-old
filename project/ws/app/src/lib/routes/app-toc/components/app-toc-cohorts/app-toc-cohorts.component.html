@@ -10,17 +10,21 @@
           <h3 *ngIf="cohortResults[cohortTypesEnum.ACTIVE_USERS].hasError" class="mat-error text-center" i18n>
             Failed to fetch active users
           </h3>
-          <h3 *ngIf="
-              !cohortResults[cohortTypesEnum.ACTIVE_USERS].hasError &&
-              !cohortResults[cohortTypesEnum.ACTIVE_USERS].contents.length
-            " class="text-center" i18n>
+          <h3
+            *ngIf="!cohortResults[cohortTypesEnum.ACTIVE_USERS].hasError && !cohortResults[cohortTypesEnum.ACTIVE_USERS].contents.length"
+            class="text-center"
+            i18n
+          >
             None
           </h3>
           <!-- <div *ngFor="let cohort of cohortResults[cohortTypesEnum.ACTIVE_USERS].contents"
             [ngTemplateOutlet]="unitCohort" [ngTemplateOutletContext]="{ user: cohort }"></div> -->
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 col-gap-4">
-            <ng-container *ngFor="let cohort of cohortResults[cohortTypesEnum.ACTIVE_USERS].contents"
-              [ngTemplateOutlet]="unitCohortNew" [ngTemplateOutletContext]="{ user: cohort }">
+            <ng-container
+              *ngFor="let cohort of cohortResults[cohortTypesEnum.ACTIVE_USERS].contents"
+              [ngTemplateOutlet]="unitCohortNew"
+              [ngTemplateOutletContext]="{ user: cohort }"
+            >
             </ng-container>
           </div>
         </div>
@@ -38,15 +42,21 @@
           <h3 *ngIf="cohortResults[cohortTypesEnum.TOP_PERFORMERS].hasError" class="mat-error text-center" i18n>
             Failed to fetch top performers
           </h3>
-          <h3 *ngIf="
-              !cohortResults[cohortTypesEnum.TOP_PERFORMERS].hasError &&
-              !cohortResults[cohortTypesEnum.TOP_PERFORMERS].contents.length
-            " class="text-center" i18n>
+          <h3
+            *ngIf="
+              !cohortResults[cohortTypesEnum.TOP_PERFORMERS].hasError && !cohortResults[cohortTypesEnum.TOP_PERFORMERS].contents.length
+            "
+            class="text-center"
+            i18n
+          >
             None
           </h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 col-gap-4">
-            <ng-container *ngFor="let cohort of cohortResults[cohortTypesEnum.TOP_PERFORMERS].contents"
-              [ngTemplateOutlet]="unitCohortNew" [ngTemplateOutletContext]="{ user: cohort }"></ng-container>
+            <ng-container
+              *ngFor="let cohort of cohortResults[cohortTypesEnum.TOP_PERFORMERS].contents"
+              [ngTemplateOutlet]="unitCohortNew"
+              [ngTemplateOutletContext]="{ user: cohort }"
+            ></ng-container>
           </div>
         </div>
         <div *ngIf="!cohortResults[cohortTypesEnum.TOP_PERFORMERS]" class="text-center">
@@ -94,18 +104,20 @@
       </mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
         <div *ngIf="cohortResults[cohortTypesEnum.AUTHORS]">
-          <h3 *ngIf="cohortResults[cohortTypesEnum.AUTHORS].hasError" class="mat-error text-center" i18n>
-            Failed to fetch curators
-          </h3>
-          <h3 *ngIf="
-              !cohortResults[cohortTypesEnum.AUTHORS].hasError &&
-              !cohortResults[cohortTypesEnum.AUTHORS].contents.length
-            " class="text-center" i18n>
+          <h3 *ngIf="cohortResults[cohortTypesEnum.AUTHORS].hasError" class="mat-error text-center" i18n>Failed to fetch curators</h3>
+          <h3
+            *ngIf="!cohortResults[cohortTypesEnum.AUTHORS].hasError && !cohortResults[cohortTypesEnum.AUTHORS].contents.length"
+            class="text-center"
+            i18n
+          >
             None
           </h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 col-gap-4">
-            <ng-container *ngFor="let cohort of cohortResults[cohortTypesEnum.AUTHORS].contents"
-              [ngTemplateOutlet]="unitCohortNew" [ngTemplateOutletContext]="{ user: cohort }"></ng-container>
+            <ng-container
+              *ngFor="let cohort of cohortResults[cohortTypesEnum.AUTHORS].contents"
+              [ngTemplateOutlet]="unitCohortNew"
+              [ngTemplateOutletContext]="{ user: cohort }"
+            ></ng-container>
           </div>
         </div>
         <div *ngIf="!cohortResults[cohortTypesEnum.AUTHORS]" class="text-center">
@@ -140,27 +152,25 @@
   <ng-template #unitCohort let-user="user">
     <div class="unit-cohort">
       <ws-widget-user-image class="cohort-image" [email]="user.email"></ws-widget-user-image>
-      <div (click)="goToUserProfile(user)" [ngClass]="{'cursor-pointer': enablePeopleSearch}"
-        class="width-expand padding-left-xs">
+      <div (click)="goToUserProfile(user)" [ngClass]="{ 'cursor-pointer': enablePeopleSearch }" class="width-expand padding-left-xs">
         <div class="mat-body-strong cohorts-name">
-          {{
-            { firstName: user.first_name, lastName: user.last_name, email: user.email }
-              | pipeNameTransform
-          }}
+          {{ { firstName: user.first_name, lastName: user.last_name, email: user.email } | pipeNameTransform }}
         </div>
         <div class="mat-caption cohorts-desc">{{ user.desc }}</div>
       </div>
       <div class="width-auto">
-        <ws-widget-btn-mail-user [widgetData]="{ content: content, emails: [user.email] }"></ws-widget-btn-mail-user>
-        <ws-widget-btn-call *ngIf="user.phone_No !== '0'" [widgetData]="{
+        <ws-widget-btn-call
+          *ngIf="user.phone_No !== '0'"
+          [widgetData]="{
             userName:
               {
                 firstName: user.first_name,
                 lastName: user.last_name,
-                email: user.email
+                email: user.email,
               } | pipeNameTransform,
-            userPhone: user.phone_No
-          }"></ws-widget-btn-call>
+            userPhone: user.phone_No,
+          }"
+        ></ws-widget-btn-call>
       </div>
     </div>
   </ng-template>
@@ -169,33 +179,35 @@
     <div class="unit-cohort sm:pr-8 md:pr-10">
       <!-- <ws-widget-user-image class="cohort-image" [email]="user.email"></ws-widget-user-image> -->
 
-      <ws-widget-user-image class="user-image" [imageType]="'user-photo'" [userName]="getUserFullName(user)"
-        [imageSize]="'small'" [email]="user.email" [imageUrl]="user.photo || ''"></ws-widget-user-image>
-      <div (click)="goToUserProfile(user)" [ngClass]="{'cursor-pointer': enablePeopleSearch}"
-        class="width-expand padding-left-xs">
+      <ws-widget-user-image
+        class="user-image"
+        [imageType]="'user-photo'"
+        [userName]="getUserFullName(user)"
+        [imageSize]="'small'"
+        [email]="user.email"
+        [imageUrl]="user.photo || ''"
+      ></ws-widget-user-image>
+      <div (click)="goToUserProfile(user)" [ngClass]="{ 'cursor-pointer': enablePeopleSearch }" class="width-expand padding-left-xs">
         <div class="mat-body-strong cohorts-name">
-          {{
-              { firstName: user.first_name, lastName: user.last_name, email: user.email }
-                | pipeNameTransform
-            }}
+          {{ { firstName: user.first_name, lastName: user.last_name, email: user.email } | pipeNameTransform }}
         </div>
         <div class="mat-caption cohorts-desc">{{ user.desc }}</div>
       </div>
       <div class="width-auto user-action-container">
-        <ws-widget-btn-mail-user [widgetData]="{ content: content, emails: [user.email], user: user }">
-        </ws-widget-btn-mail-user>
-        <ws-widget-btn-call *ngIf="user.phone_No !== '0'" [widgetData]="{
-              userName:
-                {
-                  firstName: user.first_name,
-                  lastName: user.last_name,
-                  email: user.email
-                } | pipeNameTransform,
-              userPhone: user.phone_No
-            }"></ws-widget-btn-call>
+        <ws-widget-btn-call
+          *ngIf="user.phone_No !== '0'"
+          [widgetData]="{
+            userName:
+              {
+                firstName: user.first_name,
+                lastName: user.last_name,
+                email: user.email,
+              } | pipeNameTransform,
+            userPhone: user.phone_No,
+          }"
+        ></ws-widget-btn-call>
       </div>
     </div>
     <!-- </div> -->
-
   </ng-template>
 </section>

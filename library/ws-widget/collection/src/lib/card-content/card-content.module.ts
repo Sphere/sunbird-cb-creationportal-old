@@ -20,23 +20,15 @@ import {
   PipePartialContentModule,
 } from '@ws-widget/utils'
 
-import { BtnChannelAnalyticsModule } from '../btn-channel-analytics/btn-channel-analytics.module'
-
 // import { BtnContentDownloadModule } from '../btn-content-download/btn-content-download.module'
 
-import { BtnContentFeedbackV2Module } from '../btn-content-feedback-v2/btn-content-feedback-v2.module'
-
 import { BtnContentLikeModule } from '../btn-content-like/btn-content-like.module'
-
-import { BtnContentMailMeModule } from '../btn-content-mail-me/btn-content-mail-me.module'
 
 // import { BtnContentShareModule } from '../btn-content-share/btn-content-share.module'
 
 // import { BtnGoalsModule } from '../btn-goals/btn-goals.module'
 
 // import { BtnKbModule } from '../btn-kb/btn-kb.module'
-
-import { BtnPlaylistModule } from '../btn-playlist/btn-playlist.module'
 
 import { ContentProgressModule } from '../_common/content-progress/content-progress.module'
 
@@ -74,11 +66,7 @@ import { CardContentComponent } from './card-content.component'
     BtnContentLikeModule,
     // BtnContentShareModule,
     // BtnGoalsModule,
-    BtnPlaylistModule,
-    BtnContentMailMeModule,
     UserImageModule,
-    BtnChannelAnalyticsModule,
-    BtnContentFeedbackV2Module,
   ],
   exports: [CardContentComponent],
 })

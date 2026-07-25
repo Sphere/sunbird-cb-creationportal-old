@@ -2,7 +2,6 @@
 
 import { CommonModule } from '@angular/common'
 
-
 import { MatCardModule } from '@angular/material/card'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatToolbarModule } from '@angular/material/toolbar'
@@ -21,15 +20,13 @@ import { MatRadioModule } from '@angular/material/radio'
 import { MatTableModule } from '@angular/material/table'
 import { ViewerRoutingModule } from './viewer-routing.module'
 
-
 import {
   PipeDurationTransformModule,
   PipeLimitToModule,
   DefaultThumbnailModule,
   PipePartialContentModule,
-  PipeAssessmentDurationTransformModule
+  PipeAssessmentDurationTransformModule,
 } from '@ws-widget/utils'
-
 
 import {
   ErrorResolverModule,
@@ -40,13 +37,10 @@ import {
   BtnContentLikeModule,
   // BtnContentShareModule,
   // BtnGoalsModule,
-  BtnPlaylistModule,
   // BtnContentFeedbackModule,
   DisplayContentTypeIconModule,
-  BtnContentFeedbackV2Module,
   // PlayerBriefModule,
 } from '@ws-widget/collection'
-
 
 import { WidgetResolverModule } from '@ws-widget/resolver'
 
@@ -63,7 +57,6 @@ import { MatDialogModule } from '@angular/material/dialog'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 
 import { AppTocModule } from '@ws/app'
-
 
 @NgModule({
   declarations: [ViewerComponent, ViewerTocComponent, ReviewDialogComponent],
@@ -96,9 +89,7 @@ import { AppTocModule } from '@ws/app'
     BtnContentLikeModule,
     // BtnContentShareModule,
     // BtnGoalsModule,
-    BtnPlaylistModule,
     // BtnContentFeedbackModule,
-    BtnContentFeedbackV2Module,
     DisplayContentTypeIconModule,
     PipePartialContentModule,
     MatTabsModule,
@@ -109,7 +100,7 @@ import { AppTocModule } from '@ws/app'
     MatProgressBarModule,
     MatRadioModule,
     MatTableModule,
-    AppTocModule
+    AppTocModule,
   ],
 })
-export class ViewerModule { }
+export class ViewerModule {}

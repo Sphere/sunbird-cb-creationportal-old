@@ -12,34 +12,19 @@ import {
   BtnContentLikeModule,
   // BtnContentShareModule,
   // BtnGoalsModule,
-  BtnPlaylistModule,
   DisplayContentTypeModule,
   UserImageModule,
-  UserContentRatingModule,
-  BtnContentFeedbackV2Module,
 } from '@ws-widget/collection'
 
-
-import {
-  PipeDurationTransformModule,
-  PipeLimitToModule,
-  PipePartialContentModule,
-} from '@ws-widget/utils'
-
+import { PipeDurationTransformModule, PipeLimitToModule, PipePartialContentModule } from '@ws-widget/utils'
 
 import { WidgetResolverModule } from '@ws-widget/resolver'
 
-
 import { ResourceCollectionRoutingModule } from './resource-collection-routing.module'
-
 
 import { ResourceCollectionComponent } from './resource-collection.component'
 
-
-import {
-  ResourceCollectionModule as ResourceCollectionViewContainerModule,
-} from '../../route-view-container/resource-collection/resource-collection.module'
-
+import { ResourceCollectionModule as ResourceCollectionViewContainerModule } from '../../route-view-container/resource-collection/resource-collection.module'
 
 @NgModule({
   declarations: [ResourceCollectionComponent],
@@ -56,15 +41,12 @@ import {
     BtnContentLikeModule,
     // BtnContentShareModule,
     // BtnGoalsModule,
-    BtnPlaylistModule,
     DisplayContentTypeModule,
     UserImageModule,
     PipeDurationTransformModule,
     PipeLimitToModule,
     PipePartialContentModule,
-    UserContentRatingModule,
-    BtnContentFeedbackV2Module,
     ResourceCollectionViewContainerModule,
   ],
 })
-export class ResourceCollectionModule { }
+export class ResourceCollectionModule {}

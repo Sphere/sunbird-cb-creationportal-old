@@ -1,6 +1,5 @@
 <ng-container *ngIf="content">
   <ng-container *ngIf="isCollection">
-
     <!-- <div class="flex flex-col">
       <div class="card-collection w-auto sm:w-100">
         <img class="card-thumbnail ws-mat-primary-lite-background" [src]="content?.appIcon | relativeUrl"
@@ -154,10 +153,8 @@
               </span>
               <span *ngIf="contentStructure?.interactiveVideo > 0">
                 <ng-container> {{ contentStructure?.interactiveVideo }}</ng-container>
-                <ng-container *ngIf="contentStructure?.interactiveVideo === 1" i18n>
-                  Interactive Video</ng-container>
-                <ng-container *ngIf="contentStructure?.interactiveVideo > 1" i18n>
-                  Interactive Videos</ng-container>
+                <ng-container *ngIf="contentStructure?.interactiveVideo === 1" i18n> Interactive Video</ng-container>
+                <ng-container *ngIf="contentStructure?.interactiveVideo > 1" i18n> Interactive Videos</ng-container>
               </span>
               <span *ngIf="contentStructure?.youtube > 0">
                 <ng-container> {{ contentStructure?.youtube }}</ng-container>
@@ -201,9 +198,7 @@
                 <ng-container *ngIf="contentStructure?.other > 1" i18n> Other Items</ng-container>
               </span>
             </div>
-
           </div>
-
         </div>
         <button *ngIf="content?.artifactUrl" type="button" mat-icon-button [matMenuTriggerFor]="buttonMenu">
           <mat-icon>more_vertical</mat-icon>
@@ -220,8 +215,14 @@
     </div>
 
     <div *ngIf="viewChildren">
-      <ws-app-toc-content-card [forPreview]="forPreview" [content]="child" [expandAll]="expandAll" [rootId]="rootId"
-        [rootContentType]="rootContentType" *ngFor="let child of content?.children; trackBy: contentTrackBy">
+      <ws-app-toc-content-card
+        [forPreview]="forPreview"
+        [content]="child"
+        [expandAll]="expandAll"
+        [rootId]="rootId"
+        [rootContentType]="rootContentType"
+        *ngFor="let child of content?.children; trackBy: contentTrackBy"
+      >
       </ws-app-toc-content-card>
     </div>
   </ng-container>
@@ -233,31 +234,31 @@
           <div class="resource-meta-row" *ngIf="content?.mimeType">
             <div class="type-block" [ngSwitch]="content?.mimeType | lowercase">
               <span *ngSwitchCase="'application/pdf'" class="type-label">
-                <img class="content-type-img" src="cbp-assets/images/pdf-icon.png" alt="PDF"> PDF
+                <img class="content-type-img" src="cbp-assets/images/pdf-icon.png" alt="PDF" /> PDF
               </span>
               <span *ngSwitchCase="'audio/mpeg'" class="type-label">
-                <img class="content-type-img-dark" src="cbp-assets/images/audio-img.svg" alt="Audio"> Audio
+                <img class="content-type-img-dark" src="cbp-assets/images/audio-img.svg" alt="Audio" /> Audio
               </span>
               <span *ngSwitchCase="'application/x-mpegURL'" class="type-label">
-                <img class="content-type-img-dark" src="cbp-assets/images/audio-img.svg" alt="Audio"> Audio
+                <img class="content-type-img-dark" src="cbp-assets/images/audio-img.svg" alt="Audio" /> Audio
               </span>
               <span *ngSwitchCase="'video/mp4'" class="type-label">
-                <img class="content-type-img" src="cbp-assets/images/video-icon.png" alt="Video"> Video
+                <img class="content-type-img" src="cbp-assets/images/video-icon.png" alt="Video" /> Video
               </span>
               <span *ngSwitchCase="'application/html'" class="type-label">
-                <img class="content-type-img" src="cbp-assets/images/SCROM-img.svg" alt="SCORM"> SCORM
+                <img class="content-type-img" src="cbp-assets/images/SCROM-img.svg" alt="SCORM" /> SCORM
               </span>
               <span *ngSwitchCase="'application/web-module'" class="type-label">
-                <img class="content-type-img" src="cbp-assets/images/SCROM-img.svg" alt="SCORM"> SCORM
+                <img class="content-type-img" src="cbp-assets/images/SCROM-img.svg" alt="SCORM" /> SCORM
               </span>
               <span *ngSwitchCase="'application/vnd.ekstep.html-archive'" class="type-label">
-                <img class="content-type-img-dark" src="cbp-assets/images/SCROM-img.svg" alt="SCORM"> SCORM
+                <img class="content-type-img-dark" src="cbp-assets/images/SCROM-img.svg" alt="SCORM" /> SCORM
               </span>
               <span *ngSwitchCase="'video/x-youtube'" class="type-label">
-                <img class="content-type-img" src="cbp-assets/images/link-icon.png" alt="Link"> Link
+                <img class="content-type-img" src="cbp-assets/images/link-icon.png" alt="Link" /> Link
               </span>
               <span *ngSwitchCase="'text/x-url'" class="type-label">
-                <img class="content-type-img" src="cbp-assets/images/link-icon.png" alt="Link"> Link
+                <img class="content-type-img" src="cbp-assets/images/link-icon.png" alt="Link" /> Link
               </span>
               <span *ngSwitchCase="'application/quiz'" class="type-label">Quiz</span>
               <span *ngSwitchCase="'application/json'" class="type-label">
@@ -276,23 +277,17 @@
 </ng-container>
 
 <mat-menu #buttonMenu="matMenu">
-  <a mat-menu-item [routerLink]="'../../' + content?.identifier + '/overview'" [queryParams]="contextPath"
-    class="flex flex-middle">
+  <a mat-menu-item [routerLink]="'../../' + content?.identifier + '/overview'" [queryParams]="contextPath" class="flex flex-middle">
     <mat-icon>toc</mat-icon>
-    <h3 class="margin-remove" i18n>
-      View Details
-    </h3>
+    <h3 class="margin-remove" i18n>View Details</h3>
   </a>
   <!-- Download this resource (file as-is, or quiz -> Excel). This is a creation
        portal — every viewer is a creator/reviewer/publisher — so it's shown for
        any resource that has a file, EXCEPT external live reviewers, who may review
        but must not download. -->
-  <a mat-menu-item *ngIf="content?.artifactUrl && !isExternalLiveReviewer"
-    class="flex flex-middle" (click)="downloadResource()">
+  <a mat-menu-item *ngIf="content?.artifactUrl && !isExternalLiveReviewer" class="flex flex-middle" (click)="downloadResource()">
     <mat-icon>cloud_download</mat-icon>
-    <h3 class="margin-remove" i18n>
-      Download
-    </h3>
+    <h3 class="margin-remove" i18n>Download</h3>
   </a>
   <div mat-menu-item>
     <!-- <ws-widget-btn-content-download [widgetData]="
@@ -304,6 +299,6 @@
     </ws-widget-btn-content-like>
     <ws-widget-btn-content-share [widgetData]="content"></ws-widget-btn-content-share>
     <ws-widget-btn-goals></ws-widget-btn-goals>
-    <ws-widget-btn-playlist></ws-widget-btn-playlist> -->
+     -->
   </div>
 </mat-menu>

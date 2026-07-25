@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common'
 
 import { RouterModule } from '@angular/router'
 
-
 import { MatCardModule } from '@angular/material/card'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
@@ -17,27 +16,16 @@ import {
   BtnContentLikeModule,
   // BtnContentShareModule,
   // BtnGoalsModule,
-  BtnPlaylistModule,
   DisplayContentTypeModule,
   UserImageModule,
-  UserContentRatingModule,
-  BtnContentFeedbackV2Module,
   // PlayerBriefModule,
 } from '@ws-widget/collection'
 
-
-import {
-  PipeDurationTransformModule,
-  PipeLimitToModule,
-  PipePartialContentModule,
-} from '@ws-widget/utils'
-
+import { PipeDurationTransformModule, PipeLimitToModule, PipePartialContentModule } from '@ws-widget/utils'
 
 import { WidgetResolverModule } from '@ws-widget/resolver'
 
-
 import { YoutubeComponent } from './youtube.component'
-
 
 @NgModule({
   declarations: [YoutubeComponent],
@@ -48,7 +36,6 @@ import { YoutubeComponent } from './youtube.component'
     BtnContentLikeModule,
     // BtnContentShareModule,
     // BtnGoalsModule,
-    BtnPlaylistModule,
     CommonModule,
     DisplayContentTypeModule,
     MatCardModule,
@@ -62,12 +49,8 @@ import { YoutubeComponent } from './youtube.component'
     PipePartialContentModule,
     UserImageModule,
     WidgetResolverModule,
-    UserContentRatingModule,
-    BtnContentFeedbackV2Module,
     // PlayerBriefModule,
   ],
-  exports: [
-    YoutubeComponent,
-  ],
+  exports: [YoutubeComponent],
 })
-export class YoutubeModule { }
+export class YoutubeModule {}

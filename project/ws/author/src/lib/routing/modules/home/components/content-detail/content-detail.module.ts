@@ -2,15 +2,7 @@
 
 import { NgModule } from '@angular/core'
 
-import {
-  AtGlanceModule,
-  AuthorCardModule,
-  CardTableModule,
-  LeftMenuModule,
-  PipeContentRouteModule,
-  UserContentDetailedRatingModule,
-  UserContentRatingModule,
-} from '@ws-widget/collection'
+import { AuthorCardModule, CardTableModule, LeftMenuModule, PipeContentRouteModule } from '@ws-widget/collection'
 
 import { SharedModule } from '@ws/author/src/lib/modules/shared/shared.module'
 
@@ -40,7 +32,6 @@ import { ContentDiscussionComponent } from './components/content-discussion/cont
 
 import { LocalDataService } from './services/local-data.service'
 
-
 @NgModule({
   declarations: [ContentDetailHomeComponent, ContentDetailComponent, ContentInsightsComponent, ContentDiscussionComponent],
   imports: [
@@ -54,18 +45,8 @@ import { LocalDataService } from './services/local-data.service'
     CardTableModule,
     LeftMenuModule,
     WidgetResolverModule,
-    AtGlanceModule,
     AuthorCardModule,
-    UserContentRatingModule,
-    UserContentDetailedRatingModule,
   ],
-  providers: [
-    AppTocService,
-    MyContentService,
-    AppTocResolverService,
-    MyTocService,
-    LocalDataService,
-
-  ],
+  providers: [AppTocService, MyContentService, AppTocResolverService, MyTocService, LocalDataService],
 })
-export class ContentDetailModule { }
+export class ContentDetailModule {}

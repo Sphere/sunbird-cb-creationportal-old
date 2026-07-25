@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core'
 
 import { CommonModule } from '@angular/common'
 
-
 import { AppSetupRoutingModule } from './app-setup-routing.module'
 
 import { AppSetupHomeComponent } from './app-setup-home.component'
@@ -27,12 +26,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 
 import { WidgetResolverModule } from '@ws-widget/resolver'
 
-import {
-  LocaleTranslatorModule,
-  LanguageSelectorModule,
-  AppTourDialogModule,
-  BtnPageBackModule,
-} from '@ws-widget/collection'
+import { AppTourDialogModule, BtnPageBackModule } from '@ws-widget/collection'
 
 import { AboutVideoModule } from '../info/about-video/about-video.module'
 
@@ -56,16 +50,8 @@ import { Globals } from './globals'
 
 // import { InterestModule } from '../profile/routes/interest/interest.module'
 
-
 @NgModule({
-  declarations: [
-    AppSetupHomeComponent,
-    HomeComponent,
-    LangSelectComponent,
-    TncComponent,
-    TncRendererComponent,
-    SetupDoneComponent,
-  ],
+  declarations: [AppSetupHomeComponent, HomeComponent, LangSelectComponent, TncComponent, TncRendererComponent, SetupDoneComponent],
   imports: [
     CommonModule,
     AppSetupRoutingModule,
@@ -91,12 +77,10 @@ import { Globals } from './globals'
     // SettingsModule,
     AboutVideoModule,
     WidgetResolverModule,
-    LocaleTranslatorModule,
     InterestModules,
-    LanguageSelectorModule,
     AppTourDialogModule,
     // InterestModule,
   ],
   providers: [TncAppResolverService, Globals],
 })
-export class AppSetupModule { }
+export class AppSetupModule {}

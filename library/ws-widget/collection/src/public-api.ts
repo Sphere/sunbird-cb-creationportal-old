@@ -2,7 +2,6 @@
 export * from './lib/btn-apps/btn-apps.model'
 
 // modules
-export * from './lib/at-glance/at-glance.module'
 
 export * from './lib/at-glance/at-glance.model'
 
@@ -18,33 +17,17 @@ export * from './lib/btn-call/btn-call.module'
 
 export * from './lib/btn-catalog/btn-catalog.module'
 
-export * from './lib/btn-channel-analytics/btn-channel-analytics.module'
-
 export * from './lib/btn-content-download/btn-content-download.module'
-
-export * from './lib/btn-content-feedback-v2/btn-content-feedback-v2.module'
-
-export * from './lib/btn-content-feedback-v2/components/feedback-snackbar/feedback-snackbar.component'
-
-export * from './lib/btn-content-feedback-v2/models/btn-content-feedback-v2.model'
-
-export * from './lib/btn-content-feedback-v2/models/feedback.model'
-
-export * from './lib/btn-content-feedback-v2/services/feedback.service'
 
 export * from './lib/btn-content-like/btn-content-like.module'
 
 export * from './lib/btn-content-like/btn-content-like.service'
-
-export * from './lib/btn-content-mail-me/btn-content-mail-me.module'
 
 export * from './lib/btn-content-share/btn-content-share.module'
 
 export * from './lib/btn-feature/btn-feature.module'
 
 export * from './lib/btn-fullscreen/btn-fullscreen.module'
-
-export * from './lib/btn-mail-user/btn-mail-user.module'
 
 export * from './lib/btn-page-back/btn-page-back.module'
 
@@ -56,17 +39,11 @@ export * from './lib/btn-page-back-nav/btn-page-back-nav.service'
 
 export * from './lib/btn-playlist/btn-playlist.model'
 
-export * from './lib/btn-playlist/btn-playlist.module'
-
 export * from './lib/btn-playlist/btn-playlist.service'
 
 export * from './lib/btn-preview/btn-preview.module'
 
-export * from './lib/btn-settings/btn-settings.module'
-
 export * from './lib/btn-settings/btn-settings.service'
-
-export * from './lib/_common/language-selector/language-selector.module'
 
 export * from './lib/_common/app-tour-dialog/app-tour-dialog.module'
 
@@ -205,8 +182,6 @@ export * from './lib/_common/display-content-type-icon/display-content-type-icon
 
 export * from './lib/_common/display-content-type/display-content-type.module'
 
-export * from './lib/_common/locale-translator/locale-translator.module'
-
 export * from './lib/_common/pipe-content-route/pipe-content-route.module'
 
 export * from './lib/_common/pipe-content-route/pipe-content-route.pipe'
@@ -226,9 +201,6 @@ export * from './lib/_common/user-autocomplete/user-autocomplete.module'
 export * from './lib/_common/user-autocomplete/user-autocomplete.service'
 
 // common modules
-export * from './lib/_common/user-content-rating/user-content-rating.module'
-
-export * from './lib/_common/user-content-detailed-rating/user-content-detailed-rating.module'
 
 export * from './lib/_common/user-image/user-image.module'
 

@@ -22,13 +22,8 @@ import { NsAppToc } from '../../models/app-toc.model'
 
 import { AppTocService } from '../../services/app-toc.service'
 
-import { BtnMailUserDialogComponent } from '@ws-widget/collection/src/lib/btn-mail-user/btn-mail-user-dialog/btn-mail-user-dialog.component'
-
-import { IBtnMailUser } from '@ws-widget/collection/src/lib/btn-mail-user/btn-mail-user.component'
-
 import { MatDialog } from '@angular/material/dialog'
 import { TitleTagService } from '@ws/app/src/lib/routes/app-toc/services/title-tag.service'
-
 
 @Component({
   standalone: false,
@@ -105,7 +100,6 @@ export class AppTocSinglePageComponent implements OnInit, OnDestroy {
       case NsContent.EContentTypes.KNOWLEDGE_BOARD:
         return `${locationOrigin}/app/knowledge-board/${data.identifier}`
       case NsContent.EContentTypes.KNOWLEDGE_ARTIFACT:
-
         return `${locationOrigin}/app/toc/${data.identifier}/overview`
       default:
         return `${locationOrigin}/app/toc/${data.identifier}/overview`
@@ -129,11 +123,7 @@ export class AppTocSinglePageComponent implements OnInit, OnDestroy {
   }
 
   setSocialMediaMetaTags(data: any) {
-    this.titleTagService.setSocialMediaTags(
-      this.detailUrl(data),
-      data.name,
-      data.description,
-      data.appIcon)
+    this.titleTagService.setSocialMediaTags(this.detailUrl(data), data.name, data.description, data.appIcon)
   }
 
   private initData(data: Data) {
@@ -158,16 +148,14 @@ export class AppTocSinglePageComponent implements OnInit, OnDestroy {
       const contentParentReq: NsAppToc.IContentParentReq = {
         fields: ['contentType', 'name'],
       }
-      this.tocSharedSvc
-        .fetchContentParent(this.content.identifier, contentParentReq, this.forPreview)
-        .subscribe(
-          res => {
-            this.parseContentParent(res)
-          },
-          _err => {
-            this.contentParents = {}
-          },
-        )
+      this.tocSharedSvc.fetchContentParent(this.content.identifier, contentParentReq, this.forPreview).subscribe(
+        res => {
+          this.parseContentParent(res)
+        },
+        _err => {
+          this.contentParents = {}
+        },
+      )
     }
   }
 
@@ -223,25 +211,5 @@ export class AppTocSinglePageComponent implements OnInit, OnDestroy {
     //     .getTrainingCount(this.content.identifier)
     //     .pipe(retry(2))
     // }
-  }
-
-  openQueryMailDialog(content: any, data: any) {
-    const emailArray = []
-    emailArray.push(data.email)
-    const dialogdata = {
-      content,
-      user: data,
-      emails: emailArray,
-    }
-    dialogdata.user.isAuthor = true
-    this.dialog.open<BtnMailUserDialogComponent, IBtnMailUser>(
-      BtnMailUserDialogComponent,
-      {
-        // width: '50vw',
-        minWidth: '40vw',
-        maxWidth: '80vw',
-        data: dialogdata,
-      }
-    )
   }
 }

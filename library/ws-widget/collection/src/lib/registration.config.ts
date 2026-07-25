@@ -4,9 +4,6 @@ import { NsWidgetResolver } from '@ws-widget/resolver'
 import { BtnAppsComponent } from './btn-apps/btn-apps.component'
 
 // Modules
-import { AtGlanceModule } from './at-glance/at-glance.module'
-
-import { AtGlanceComponent } from './at-glance/at-glance.component'
 
 import { AuthorCardModule } from './author-card/author-card.module'
 
@@ -24,17 +21,9 @@ import { BtnCatalogComponent } from './btn-catalog/btn-catalog.component'
 
 import { BtnCatalogModule } from './btn-catalog/btn-catalog.module'
 
-import { BtnChannelAnalyticsComponent } from './btn-channel-analytics/btn-channel-analytics.component'
-
-import { BtnChannelAnalyticsModule } from './btn-channel-analytics/btn-channel-analytics.module'
-
 import { BtnContentLikeComponent } from './btn-content-like/btn-content-like.component'
 
 import { BtnContentLikeModule } from './btn-content-like/btn-content-like.module'
-
-import { BtnContentMailMeComponent } from './btn-content-mail-me/btn-content-mail-me.component'
-
-import { BtnContentMailMeModule } from './btn-content-mail-me/btn-content-mail-me.module'
 
 import { BtnContentShareComponent } from './btn-content-share/btn-content-share.component'
 
@@ -56,19 +45,11 @@ import { BtnFullscreenComponent } from './btn-fullscreen/btn-fullscreen.componen
 
 import { BtnFullscreenModule } from './btn-fullscreen/btn-fullscreen.module'
 
-import { BtnMailUserComponent } from './btn-mail-user/btn-mail-user.component'
-
-import { BtnMailUserModule } from './btn-mail-user/btn-mail-user.module'
-
 import { BtnPageBackComponent } from './btn-page-back/btn-page-back.component'
 
 import { BtnPageBackNavModule } from './btn-page-back-nav/btn-page-back-nav.module'
 
 import { BtnPageBackModule } from './btn-page-back/btn-page-back.module'
-
-import { BtnPlaylistComponent } from './btn-playlist/btn-playlist.component'
-
-import { BtnPlaylistModule } from './btn-playlist/btn-playlist.module'
 
 import { BtnPreviewComponent } from './btn-preview/btn-preview.component'
 
@@ -77,10 +58,6 @@ import { BtnPreviewModule } from './btn-preview/btn-preview.module'
 import { BtnProfileComponent } from './btn-profile/btn-profile.component'
 
 import { BtnProfileModule } from './btn-profile/btn-profile.module'
-
-import { BtnSettingsComponent } from './btn-settings/btn-settings.component'
-
-import { BtnSettingsModule } from './btn-settings/btn-settings.module'
 
 import { CardBreadcrumbComponent } from './card-breadcrumb/card-breadcrumb.component'
 
@@ -227,27 +204,21 @@ import { DiscussionForumComponent } from './discussion-forum/components/discussi
 // import { UserListDisplayComponent } from './ui-table/components/user-list-display/user-list-display.component'
 
 export const WIDGET_REGISTERED_MODULES = [
-  AtGlanceModule,
   AuthorCardModule,
   AvatarPhotoModule,
   BtnAppsModule,
   BtnCallModule,
   BtnCatalogModule,
-  BtnChannelAnalyticsModule,
 
   BtnContentDownloadModule,
   BtnGoalsModule,
   BtnContentLikeModule,
-  BtnContentMailMeModule,
   BtnContentShareModule,
   BtnFullscreenModule,
-  BtnMailUserModule,
   BtnPageBackNavModule,
   BtnPageBackModule,
-  BtnPlaylistModule,
   BtnPreviewModule,
   BtnProfileModule,
-  BtnSettingsModule,
   CardBreadcrumbModule,
   CardContentModule,
   CardTableModule,
@@ -290,11 +261,6 @@ export const WIDGET_REGISTERED_MODULES = [
 
 export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] = [
   {
-    widgetType: ROOT_WIDGET_CONFIG.atGlance._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.atGlance.default,
-    component: AtGlanceComponent,
-  },
-  {
     widgetType: ROOT_WIDGET_CONFIG.authorCard._type,
     widgetSubType: ROOT_WIDGET_CONFIG.authorCard.default,
     component: AuthorCardComponent,
@@ -316,11 +282,6 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.channelAnalytics,
-    component: BtnChannelAnalyticsComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentDownload,
     component: BtnContentDownloadComponent,
   },
@@ -333,11 +294,6 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.goals,
     component: BtnGoalsComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentMailMe,
-    component: BtnContentMailMeComponent,
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
@@ -356,18 +312,8 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.mailUser,
-    component: BtnMailUserComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.pageBack,
     component: BtnPageBackComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.playlist,
-    component: BtnPlaylistComponent,
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
@@ -378,11 +324,6 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.newProfile,
     component: BtnProfileComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.setting,
-    component: BtnSettingsComponent,
   },
 
   {
