@@ -33,7 +33,6 @@ mat-drawer {
 
 .custom {
   cursor: pointer;
-  font-size: 50px;
   height: 30px;
   width: 30px;
   font-size: 30px;
@@ -80,7 +79,7 @@ mat-drawer {
 
 .open-bar {
   display: block;
-  margin-left: -10px
+  margin-left: -10px;
 }
 
 ::ng-deep .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
