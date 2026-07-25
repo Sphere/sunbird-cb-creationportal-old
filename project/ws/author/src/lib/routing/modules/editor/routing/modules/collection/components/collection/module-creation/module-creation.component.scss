@@ -422,8 +422,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 4px;
-  background: #fff;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
   text-align: center;
   margin-left: 10px;
@@ -538,9 +536,7 @@
   margin: 2vh 10px;
   border-radius: 12px;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
   background: #fcf9f4;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
 }
 .photo-icon {
   position: relative;
@@ -942,7 +938,6 @@
   margin-bottom: 10px;
 }
 .module-container {
-  border-radius: 10px;
   border: 1px solid #1c5d95;
   background: #f3f8fd;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
@@ -1818,7 +1813,6 @@ ul li {
   background-color: #ebebeb;
   width: Hug (92px) px;
   height: Fixed (34px) px;
-  padding: 4px 0px 0px 0px;
   gap: 4px;
   border-radius: 8px 8px 0px 0px;
   display: flex;
@@ -1915,8 +1909,6 @@ ul li {
 .option-input {
   line-height: 5vh;
   line-height: 1.5rem;
-  border-radius: 1vh;
-  background-color: white;
   border-radius: 6px;
   background: #fff;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
