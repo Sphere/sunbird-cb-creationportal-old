@@ -123,10 +123,8 @@ export class EditorContentService {
   }
 
   cleanProperties(objParam: any) {
-    const propertiesTobeExcluded: any = []
     const obj = { ...objParam }
-    let propNames = Object.getOwnPropertyNames(obj)
-    propNames = propNames.filter(el => !propertiesTobeExcluded.includes(el))
+    const propNames = Object.getOwnPropertyNames(obj)
     for (const prop of propNames) {
       const propName = prop
       // tslint:disable-next-line: max-line-length
