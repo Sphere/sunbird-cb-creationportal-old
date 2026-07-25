@@ -46,7 +46,7 @@ mat-card-actions {
   margin: 0 auto;
   // border: 1px solid;
   // font-weight: 500;
-  box-shadow: 0px 10px 30p;
+  box-shadow: 0px 10px 30px;
   /*#99999933*/
   border-radius: 8px;
 }
@@ -62,7 +62,6 @@ mat-card-actions {
 .margin-f {
   margin: 0 0 1rem 0 !important;
 }
-
 
 .hobby {
   display: flex;
@@ -80,12 +79,10 @@ mat-card-actions {
 
   @include breakpoint-xs {
     width: auto;
-
   }
 
   @include breakpoint-s {
     width: auto;
-
   }
 }
 

@@ -127,7 +127,7 @@ a {
   border-top: 1px solid $color-thin-gray;
   border-left: 1px solid $color-thin-gray;
   position: absolute;
-  font-family: Roboto;
+  font-family: Roboto, sans-serif;
 
   display: none;
   right: 18px;
@@ -198,4 +198,3 @@ $user-size: 100%;
 .text-automationcentral {
   color: $color-cdg-tool !important;
 }
-
