@@ -47,7 +47,6 @@ import { AppTocContentCardComponent } from './components/app-toc-content-card/ap
 
 import { AppTocDiscussionComponent } from './components/app-toc-discussion/app-toc-discussion.component'
 
-
 // services
 import { AppTocResolverService } from './resolvers/app-toc-resolver.service'
 
@@ -55,10 +54,8 @@ import { AppTocService } from './services/app-toc.service'
 
 // import { TrainingApiService } from '../infy/routes/training/apis/training-api.service'
 
-
 // custom modules
 import { WidgetResolverModule } from '@ws-widget/resolver'
-
 
 import {
   PipeDurationTransformModule,
@@ -69,7 +66,7 @@ import {
   DefaultThumbnailModule,
   PipeNameTransformModule,
   PipeCountTransformModule,
-  PipeAssessmentDurationTransformModule
+  PipeAssessmentDurationTransformModule,
 } from '@ws-widget/utils'
 
 import {
@@ -126,8 +123,6 @@ import { FormsModule } from '@angular/forms'
 import { AppTocAnalyticsTilesComponent } from './components/app-toc-analytics-tiles/app-toc-analytics-tiles.component'
 
 import { KnowledgeArtifactDetailsComponent } from './components/knowledge-artifact-details/knowledge-artifact-details.component'
-
-import { ProfileImageModule } from '../../../../../../../library/ws-widget/collection/src/lib/_common/profile-image/profile-image.module'
 
 import { EditorService } from '../../../../../author/src/lib/routing/modules/editor/services/editor.service'
 
@@ -239,7 +234,6 @@ import { AppTocCertificateModalComponent } from './components/app-toc-certificat
     CardContentModule,
     // BtnContentShareModule,
     UserAutocompleteModule,
-    ProfileImageModule,
   ],
   providers: [
     AppTocResolverService,
@@ -256,4 +250,4 @@ import { AppTocCertificateModalComponent } from './components/app-toc-certificat
   ],
   exports: [AppTocDiscussionComponent, AssessmentDetailComponent],
 })
-export class AppTocModule { }
+export class AppTocModule {}

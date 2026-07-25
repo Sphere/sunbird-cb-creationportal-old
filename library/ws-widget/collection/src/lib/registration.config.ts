@@ -12,7 +12,6 @@ import { AuthorCardModule } from './author-card/author-card.module'
 
 import { AuthorCardComponent } from './author-card/author-card.component'
 
-
 import { AvatarPhotoModule } from './_common/avatar-photo/avatar-photo.module'
 
 import { BtnAppsModule } from './btn-apps/btn-apps.module'
@@ -45,11 +44,9 @@ import { BtnContentDownloadComponent } from './btn-content-download/btn-content-
 
 import { BtnContentDownloadModule } from './btn-content-download/btn-content-download.module'
 
-
 import { BtnGoalsComponent } from './btn-goals/btn-goals.component'
 
 import { BtnGoalsModule } from './btn-goals/btn-goals.module'
-
 
 import { BtnFeatureComponent } from './btn-feature/btn-feature.component'
 
@@ -119,21 +116,9 @@ import { ContentStripSingleComponent } from './content-strip-single/content-stri
 
 import { ContentStripSingleModule } from './content-strip-single/content-strip-single.module'
 
-import { ElementHtmlComponent } from './element-html/element-html.component'
-
-import { ElementHtmlModule } from './element-html/element-html.module'
-
-import { EmbeddedPageComponent } from './embedded-page/embedded-page.component'
-
-import { EmbeddedPageModule } from './embedded-page/embedded-page.module'
-
 import { ErrorResolverComponent } from './error-resolver/error-resolver.component'
 
 import { ErrorResolverModule } from './error-resolver/error-resolver.module'
-
-import { GalleryViewComponent } from './gallery-view/gallery-view.component'
-
-import { GalleryViewModule } from './gallery-view/gallery-view.module'
 
 import { GraphGeneralComponent } from './graph-general/graph-general.component'
 
@@ -151,23 +136,7 @@ import { IntranetSelectorComponent } from './intranet-selector/intranet-selector
 
 import { IntranetSelectorModule } from './intranet-selector/intranet-selector.module'
 
-import { LayoutLinearComponent } from './layout-linear/layout-linear.component'
-
-import { LayoutLinearModule } from './layout-linear/layout-linear.module'
-
-import { LayoutTabComponent } from './layout-tab/layout-tab.component'
-
-import { LayoutTabModule } from './layout-tab/layout-tab.module'
-
-import { NewGridLayoutComponent } from './new-grid-layout/new-grid-layout.component'
-
-import { NewGridLayoutModule } from './new-grid-layout/new-grid-layout.module'
-
-import { NetworkStripMultipleModule } from './network-strip-multiple/network-strip-multiple.module'
-
 import { ActivityStripMultipleModule } from './activity-strip-multiple/activity-strip-multiple.module'
-
-import { NetworkStripMultipleComponent } from './network-strip-multiple/network-strip-multiple.component'
 
 import { ActivityStripMultipleComponent } from './activity-strip-multiple/activity-strip-multiple.component'
 
@@ -187,23 +156,7 @@ import { ProfileCompetenciesComponent } from './profile-v2/profile-competencies/
 
 import { ProfileCompetenciesModule } from './profile-v2/profile-competencies/profile-competencies.module'
 
-import { ProfileCretificationsComponent } from './profile-v2/profile-cretifications/profile-cretifications.component'
-
-import { ProfileCretificationsModule } from './profile-v2/profile-cretifications/profile-cretifications.module'
-
-import { ProfileDepartmentsComponent } from './profile-v2/profile-departments/profile-departments.component'
-
-import { ProfileDepartmentsModule } from './profile-v2/profile-departments/profile-departments.module'
-
-import { ProfileHobbiesModule } from './profile-v2/profile-hobbies/profile-hobbies.module'
-
-import { ProfileHobbiesComponent } from './profile-v2/profile-hobbies/profile-hobbies.component'
-
 import { PickerContentModule } from './picker-content/picker-content.module'
-
-import { PlayerAmpComponent } from './player-amp/player-amp.component'
-
-import { PlayerAmpModule } from './player-amp/player-amp.module'
 
 import { PlayerAudioComponent } from './player-audio/player-audio.component'
 
@@ -237,22 +190,7 @@ import { SelectorResponsiveComponent } from './selector-responsive/selector-resp
 
 import { SelectorResponsiveModule } from './selector-responsive/selector-responsive.module'
 
-import { SlidersMobComponent } from './sliders-mob/sliders-mob.component'
-
-import { SlidersMobModule } from './sliders-mob/sliders-mob.module'
-
-import { SlidersComponent } from './sliders/sliders.component'
-
-import { SlidersModule } from './sliders/sliders.module'
-
-import { TreeCatalogComponent } from './tree-catalog/tree-catalog.component'
-
 import { TreeCatalogModule } from './tree-catalog/tree-catalog.module'
-
-import { TreeComponent } from './tree/tree.component'
-
-import { TreeModule } from './tree/tree.module'
-
 
 import { ContentStripVerticalModule } from './content-strip-vertical/content-strip-vertical.module'
 
@@ -263,7 +201,6 @@ import { ContentStripVerticalComponent } from './content-strip-vertical/content-
 // import { CardHomeDiscussComponent } from './card-home-discuss/card-home-discuss.component'
 
 // import { CardBrowseCourseComponent } from './card-browse-course/card-browse-course.component'
-
 
 // import { CardNetworkHomeModule } from './card-network-home/card-network-home.module'
 
@@ -288,7 +225,6 @@ import { DiscussionForumModule } from './discussion-forum/discussion-forum.modul
 import { DiscussionForumComponent } from './discussion-forum/components/discussion-forum/discussion-forum.component'
 
 // import { UserListDisplayComponent } from './ui-table/components/user-list-display/user-list-display.component'
-
 
 export const WIDGET_REGISTERED_MODULES = [
   AtGlanceModule,
@@ -328,13 +264,8 @@ export const WIDGET_REGISTERED_MODULES = [
   ContentStripVerticalModule,
   DiscussionForumModule,
   GraphGeneralModule,
-  LayoutLinearModule,
-  LayoutTabModule,
   LeftMenuModule,
-  NewGridLayoutModule,
-  NetworkStripMultipleModule,
   PickerContentModule,
-  PlayerAmpModule,
   PlayerAudioModule,
   PlayerPdfModule,
   PlayerSlidesModule,
@@ -342,26 +273,17 @@ export const WIDGET_REGISTERED_MODULES = [
   PlayerWebPagesModule,
   PlayerYoutubeModule,
   ReleaseNotesModule,
-  SlidersModule,
-  ElementHtmlModule,
-  TreeModule,
   TreeCatalogModule,
   PageModule,
   ProfileAcademicsModule,
   ProfileCareerModule,
   ProfileCompetenciesModule,
-  ProfileCretificationsModule,
-  ProfileDepartmentsModule,
-  ProfileHobbiesModule,
-  EmbeddedPageModule,
   SelectorResponsiveModule,
   GridLayoutModule,
   ErrorResolverModule,
   BtnFeatureModule,
-  GalleryViewModule,
   ImageMapResponsiveModule,
   IntranetSelectorModule,
-  SlidersMobModule,
 
   ActivityStripMultipleModule,
 ]
@@ -504,34 +426,14 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     component: GraphGeneralComponent,
   },
   {
-    widgetType: ROOT_WIDGET_CONFIG.layout._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.layout.linear,
-    component: LayoutLinearComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.layout._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.layout.tab,
-    component: LayoutTabComponent,
-  },
-  {
     widgetType: ROOT_WIDGET_CONFIG.menus._type,
     widgetSubType: ROOT_WIDGET_CONFIG.menus.leftMenu,
     component: LeftMenuComponent,
   },
   {
-    widgetType: ROOT_WIDGET_CONFIG.networkStrip._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.networkStrip.multipleStrip,
-    component: NetworkStripMultipleComponent,
-  },
-  {
     widgetType: ROOT_WIDGET_CONFIG.activityStrip._type,
     widgetSubType: ROOT_WIDGET_CONFIG.activityStrip.multipleStrip,
     component: ActivityStripMultipleComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.player._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.player.amp,
-    component: PlayerAmpComponent,
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.player._type,
@@ -569,26 +471,6 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     component: ReleaseNotesComponent,
   },
   {
-    widgetType: ROOT_WIDGET_CONFIG.slider._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.slider.carousel,
-    component: SlidersComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.slider._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.slider.mob,
-    component: SlidersMobComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.tree._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.tree.tree,
-    component: TreeComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.tree._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.tree.catalog,
-    component: TreeCatalogComponent,
-  },
-  {
     widgetType: ROOT_WIDGET_CONFIG.page._type,
     widgetSubType: ROOT_WIDGET_CONFIG.page.standard,
     component: PageComponent,
@@ -608,31 +490,6 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     widgetSubType: ROOT_WIDGET_CONFIG.profileV2.competencies,
     component: ProfileCompetenciesComponent,
   },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.profileV2._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.profileV2.certifications,
-    component: ProfileCretificationsComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.profileV2._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.profileV2.hobbies,
-    component: ProfileHobbiesComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.profileV2._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.profileV2.departments,
-    component: ProfileDepartmentsComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.page._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.page.embedded,
-    component: EmbeddedPageComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.element._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.element.html,
-    component: ElementHtmlComponent,
-  },
 
   {
     widgetType: ROOT_WIDGET_CONFIG.selector._type,
@@ -650,11 +507,6 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     component: GridLayoutComponent,
   },
   {
-    widgetType: ROOT_WIDGET_CONFIG.layout._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.layout.newgrid,
-    component: NewGridLayoutComponent,
-  },
-  {
     widgetType: ROOT_WIDGET_CONFIG.errorResolver._type,
     widgetSubType: ROOT_WIDGET_CONFIG.errorResolver.errorResolver,
     component: ErrorResolverComponent,
@@ -663,11 +515,6 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.feature,
     component: BtnFeatureComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.gallery._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.gallery.galleryView,
-    component: GalleryViewComponent,
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.imageMap._type,

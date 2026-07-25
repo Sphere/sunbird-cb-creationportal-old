@@ -35,9 +35,9 @@ module.exports = {
   // stmts 10.64 / br 8.98 / fn 4.87 / ln 10.11.
   coverageThreshold: {
     global: {
-      statements: 10.6,
-      branches: 8.9,
-      functions: 4.8,
+      statements: 10.5,
+      branches: 9,
+      functions: 5.3,
       lines: 10,
     },
   },

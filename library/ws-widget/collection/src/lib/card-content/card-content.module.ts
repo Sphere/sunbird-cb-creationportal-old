@@ -44,8 +44,6 @@ import { DisplayContentTypeModule } from '../_common/display-content-type/displa
 
 import { PipeContentRouteModule } from '../_common/pipe-content-route/pipe-content-route.module'
 
-import { ProfileImageModule } from '../_common/profile-image/profile-image.module'
-
 import { UserImageModule } from '../_common/user-image/user-image.module'
 
 import { CardContentComponent } from './card-content.component'
@@ -80,7 +78,6 @@ import { CardContentComponent } from './card-content.component'
     BtnContentMailMeModule,
     UserImageModule,
     BtnChannelAnalyticsModule,
-    ProfileImageModule,
     BtnContentFeedbackV2Module,
   ],
   exports: [CardContentComponent],
