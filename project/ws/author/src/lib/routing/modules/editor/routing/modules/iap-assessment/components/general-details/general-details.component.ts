@@ -19,7 +19,13 @@ import { LoaderService } from '../../../../../../../../services/loader.service'
 
 import { EditorContentService } from '../../../../../services/editor-content.service'
 
-import { IAssessmentDetails, IQuestionDetail, IQuestionDetailsContent, ISectionDetailsContent, IResponseQuestion } from '../../interface/iap-assessment.interface'
+import {
+  IAssessmentDetails,
+  IQuestionDetail,
+  IQuestionDetailsContent,
+  ISectionDetailsContent,
+  IResponseQuestion,
+} from '../../interface/iap-assessment.interface'
 
 import { IapAssessmentService } from '../../services/iap-assessment.service'
 
@@ -29,22 +35,15 @@ import { ViewQuestionDialogComponent } from '../view-question-dialog/view-questi
 
 import { CONTENT_BASE_WEBHOST_ASSETS } from '../../../../../../../../constants/apiEndpoints'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-general-details',
   templateUrl: './general-details.component.html',
   styleUrls: ['./general-details.component.scss', '../iap-assessment/iap-assessment.component.scss'],
-  animations: [
-    trigger('detailExpand', [
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],
+  animations: [trigger('detailExpand', [transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)'))])],
 })
 export class GeneralDetailsComponent implements OnInit {
-  @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<
-    any
-    >
+  @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<any>
   @Output() data = new EventEmitter<string>()
   @Output() id = new EventEmitter<string>()
   _id!: string
@@ -97,14 +96,7 @@ export class GeneralDetailsComponent implements OnInit {
   expandedElement: any
   groupqueCount = 0
   tempSection!: ISectionDetailsContent
-  displayedColumns: string[] = [
-    'Title',
-    'Topic',
-    'Tags',
-    'Question Type',
-    'Add/Remove',
-    'View Question',
-  ]
+  displayedColumns: string[] = ['Title', 'Topic', 'Tags', 'Question Type', 'Add/Remove', 'View Question']
   options = [
     { name: 'Add Questions', icon: 'add' },
     { name: 'Edit/View Section', icon: 'edit' },
@@ -127,7 +119,7 @@ export class GeneralDetailsComponent implements OnInit {
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private formBuilder: FormBuilder,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.contentService.changeActiveCont.subscribe(data1 => (this.currentContent = data1))
@@ -149,10 +141,7 @@ export class GeneralDetailsComponent implements OnInit {
         }
         this._service.getContestDetails(data).subscribe(res => {
           this.contestData = res
-          this.contentService.setIapContent(
-            { ['_id']: value.contentIdAtSource } as any,
-            this.currentContent,
-          )
+          this.contentService.setIapContent({ ['_id']: value.contentIdAtSource } as any, this.currentContent)
           this._id = value.contentIdAtSource
           this.id.emit(this._id)
           this.contentForm = new FormGroup({
@@ -227,15 +216,12 @@ export class GeneralDetailsComponent implements OnInit {
           if (res1.status === 'done') {
             this.contentService.setUpdatedMeta({ ['contentIdAtSource']: this._id } as any, this.currentContent)
           }
-
         })
-
       })
       this.contentForm = new FormGroup({
         assessmentInstruction: new FormControl(''),
       })
     }
-
   }
   createForm() {
     this.generalDetailsForm = this.formBuilder.group({
@@ -289,10 +275,7 @@ export class GeneralDetailsComponent implements OnInit {
       this.currentContent,
     )
     if (e === 'true') {
-      this.contentService.setIapContent(
-        { ['objNegMarksEnable']: 'yes' } as any,
-        this.currentContent,
-      )
+      this.contentService.setIapContent({ ['objNegMarksEnable']: 'yes' } as any, this.currentContent)
     } else {
       this.contentService.setIapContent({ ['objNegMarksEnable']: 'no' } as any, this.currentContent)
     }
@@ -328,9 +311,7 @@ export class GeneralDetailsComponent implements OnInit {
 
   // this function is to get objective questions from backend
   renderObjectiveQuestions() {
-
     this._service.getObjQuestions(this.questionDetails).subscribe(res => {
-
       this.objQuestionData = <IResponseQuestion>res
       if (this.tempSection && this.tempSection.objectiveQuestionsList && this.tempSection.objectiveQuestionsList.length !== 0) {
         this.objQuestionData.data.forEach(quedata => {
@@ -445,7 +426,7 @@ export class GeneralDetailsComponent implements OnInit {
       }
     })
   }
-  setSortBy(value: any) {
+  selectSortBy(value: any) {
     this.sortbyValue = value
   }
   // Section Related Functions
@@ -547,7 +528,6 @@ export class GeneralDetailsComponent implements OnInit {
       this.questionDetails.sortBy = 'most Recent'
       this.questionType = 'Most Recent'
     }
-
   }
   countTotalNoOfQuestionsInSections() {
     this.sectionDataList.forEach(section => {
@@ -561,7 +541,6 @@ export class GeneralDetailsComponent implements OnInit {
       if (section.objectiveQuestionsList) {
         section.numberOfQuestionsAdded = section.objectiveQuestionsList.length + this.groupqueCount
       }
-
     })
   }
   openDialog(section: ISectionDetailsContent): void {
@@ -581,11 +560,13 @@ export class GeneralDetailsComponent implements OnInit {
           section.sectionDescription = result.value.sectionDescription
           const editSectiondata = {
             testId: this._id,
-            sectionData: [{
-              _id: section._id,
-              sectionName: section.sectionName,
-              sectionDescription: section.sectionDescription,
-            }],
+            sectionData: [
+              {
+                _id: section._id,
+                sectionName: section.sectionName,
+                sectionDescription: section.sectionDescription,
+              },
+            ],
           }
           this._service.editSectionName(editSectiondata).subscribe(response => {
             this.dummyResponse = response
@@ -671,5 +652,4 @@ export class GeneralDetailsComponent implements OnInit {
       }
     })
   }
-
 }

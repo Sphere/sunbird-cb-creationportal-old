@@ -1,14 +1,22 @@
-<mat-tab-group class="w80" dynamicHeight="true" [selectedIndex]="selected.value" (selectedTabChange)="hideQuestions(selected.value)"
-  (selectedIndexChange)="selected.setValue($event)">
+<mat-tab-group
+  class="w80"
+  dynamicHeight="true"
+  [selectedIndex]="selected.value"
+  (selectedTabChange)="hideQuestions(selected.value)"
+  (selectedIndexChange)="selected.setValue($event)"
+>
   <mat-tab label="General Details">
     <div class="margin-top-m margin-left-xl">
       <div class="margin-top-s">
-        <p class="font-weight-bold margin-remove-bottom required" i18n>
-          Instructions
-        </p>
+        <p class="font-weight-bold margin-remove-bottom required" i18n>Instructions</p>
         <div class="margin-top-xs w100">
-          <ws-auth-plain-ckeditor doRegex="true" [location]="location" [id]="currentContent" [content]="contentForm.value.assessmentInstruction"
-            (value)="updateContentService('instructions', $event)">
+          <ws-auth-plain-ckeditor
+            doRegex="true"
+            [location]="location"
+            [id]="currentContent"
+            [content]="contentForm.value.assessmentInstruction"
+            (value)="updateContentService('instructions', $event)"
+          >
           </ws-auth-plain-ckeditor>
         </div>
       </div>
@@ -16,18 +24,23 @@
         <form [formGroup]="generalDetailsForm">
           <div class="flex-container">
             <div class="margin-top-xs w50">
-              <p class="font-weight-bold margin-remove-bottom required" i18n>
-                Provide pass percentage for the assessment
-              </p>
+              <p class="font-weight-bold margin-remove-bottom required" i18n>Provide pass percentage for the assessment</p>
               <mat-form-field (change)="passPercentage($event.target.value)" appearance="outline" class="margin-top-xs w60">
-                <input required type="number" min='1' max='100' oninput="validity.valid||(value='');" autocomplete="off" matInput placeholder="in percentage"
-                  formControlName="passPercentage" />
+                <input
+                  required
+                  type="number"
+                  min="1"
+                  max="100"
+                  oninput="validity.valid || (value = '')"
+                  autocomplete="off"
+                  matInput
+                  placeholder="in percentage"
+                  formControlName="passPercentage"
+                />
               </mat-form-field>
             </div>
             <div class="margin-top-xs w50">
-              <p class="font-weight-bold margin-remove-bottom" i18n>
-                Allow user to view the score?
-              </p>
+              <p class="font-weight-bold margin-remove-bottom" i18n>Allow user to view the score?</p>
               <mat-form-field appearance="outline" class="margin-top-xs w60">
                 <mat-select (selectionChange)="viewMarks($event.value)" formControlName="viewMarks" placeholder="e.g. Yes">
                   <mat-option value="true" i18n>Yes</mat-option>
@@ -38,11 +51,13 @@
           </div>
           <div class="flex-container">
             <div class="margin-top-xs w50 disable">
-              <p class="font-weight-bold margin-remove-bottom" i18n>
-                Allow video proctoring in the assessment?
-              </p>
+              <p class="font-weight-bold margin-remove-bottom" i18n>Allow video proctoring in the assessment?</p>
               <mat-form-field appearance="outline" class="margin-top-xs w60">
-                <mat-select (selectionChange)="videoProctoringChange($event.value)" formControlName="videoProctoring" placeholder="e.g. Yes">
+                <mat-select
+                  (selectionChange)="videoProctoringChange($event.value)"
+                  formControlName="videoProctoring"
+                  placeholder="e.g. Yes"
+                >
                   <mat-option value="true" i18n>Yes</mat-option>
                   <mat-option value="false" i18n>No</mat-option>
                 </mat-select>
@@ -52,12 +67,13 @@
               <label>
                 <div class="margin-top-xs flex flex-middle">
                   <b i18n>Allow proctoring in the assessment?</b>
-                  <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showinfo('proctor')">info
-                  </mat-icon>
+                  <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showinfo('proctor')">info </mat-icon>
                 </div>
-                <span i18n *ngIf="showInfo">Turn on remote proctoring which will disable and monitor activities like print screen, navigating out of
-                  the test window, tab switches, copying the test content etc. Some of these actions cannot be blocked due
-                  to browser and OS restrictions but all will be monitored and saved.</span>
+                <span i18n *ngIf="showInfo"
+                  >Turn on remote proctoring which will disable and monitor activities like print screen, navigating out of the test window,
+                  tab switches, copying the test content etc. Some of these actions cannot be blocked due to browser and OS restrictions but
+                  all will be monitored and saved.</span
+                >
               </label>
               <mat-form-field appearance="outline" class="margin-top-xs w60">
                 <mat-select (selectionChange)="proctor($event.value)" formControlName="proctor" placeholder="e.g. Yes">
@@ -69,9 +85,7 @@
           </div>
           <div class="flex-container">
             <div class="margin-top-xs w50">
-              <p class="font-weight-bold margin-remove-bottom" i18n>
-                Enable negative mark in the assessment?
-              </p>
+              <p class="font-weight-bold margin-remove-bottom" i18n>Enable negative mark in the assessment?</p>
               <mat-form-field appearance="outline" class="margin-top-xs w60">
                 <mat-select (selectionChange)="objNegMarksEnable($event.value)" formControlName="objNegMarksEnable" placeholder="e.g. Yes">
                   <mat-option value="true" i18n>Yes</mat-option>
@@ -81,9 +95,7 @@
             </div>
 
             <div class="margin-top-xs w50">
-              <p class="font-weight-bold margin-remove-bottom" i18n>
-                Allow user to review their attempt?
-              </p>
+              <p class="font-weight-bold margin-remove-bottom" i18n>Allow user to review their attempt?</p>
               <mat-form-field appearance="outline" class="margin-top-xs w60">
                 <mat-select (selectionChange)="reviewAttempt($event.value)" formControlName="reviewAttempt" placeholder="e.g. Yes">
                   <mat-option value="true" i18n>Yes</mat-option>
@@ -93,12 +105,19 @@
             </div>
           </div>
           <div *ngIf="generalDetailsForm.value.objNegMarksEnable === 'true'" class="margin-top-xs w50">
-            <p class="font-weight-bold margin-remove-bottom required" i18n>
-              Negative mark percentage for each question
-            </p>
+            <p class="font-weight-bold margin-remove-bottom required" i18n>Negative mark percentage for each question</p>
             <mat-form-field (change)="objNegMarks($event.target.value)" appearance="outline" class="margin-top-xs w60">
-              <input type="number" min='1' max='100' oninput="validity.valid||(value='');" [required]="generalDetailsForm.value.objNegMarksEnable === 'true'"
-                autocomplete="off" matInput placeholder="Negative mark" formControlName="objNegMarks" />
+              <input
+                type="number"
+                min="1"
+                max="100"
+                oninput="validity.valid || (value = '')"
+                [required]="generalDetailsForm.value.objNegMarksEnable === 'true'"
+                autocomplete="off"
+                matInput
+                placeholder="Negative mark"
+                formControlName="objNegMarks"
+              />
             </mat-form-field>
           </div>
         </form>
@@ -115,31 +134,30 @@
     </div>
   </mat-tab>
   <mat-tab label="Add Sections">
-    <p class="mat-h4 margin-top-s" i18n>
-      You can add multiple sections to an assessment and also multiple questions to each sections.
-    </p>
+    <p class="mat-h4 margin-top-s" i18n>You can add multiple sections to an assessment and also multiple questions to each sections.</p>
     <form [formGroup]="addSectionForm" (ngSubmit)="addSection()">
       <div class="margin-top-xs">
-        <p class="font-weight-bold margin-remove-bottom required" i18n>
-          Section Name
-        </p>
+        <p class="font-weight-bold margin-remove-bottom required" i18n>Section Name</p>
         <mat-form-field appearance="outline" class="margin-top-xs w100">
           <input autocomplete="off" matInput maxlength="500" placeholder="Enter section name" formControlName="sectionName" />
           <mat-hint align="end">{{ addSectionForm.value.sectionName.length }} / 500</mat-hint>
         </mat-form-field>
       </div>
       <div class="margin-top-xs">
-        <p class="font-weight-bold margin-remove-bottom" i18n>
-          Section Description
-        </p>
+        <p class="font-weight-bold margin-remove-bottom" i18n>Section Description</p>
         <mat-form-field appearance="outline" class="margin-top-xs w100">
           <textarea matInput maxlength="1000" placeholder="Enter section description" formControlName="sectionDescription"></textarea>
           <mat-hint align="end">{{ addSectionForm.value.sectionDescription.length }} / 1000</mat-hint>
         </mat-form-field>
       </div>
-      <div class="flex flex-end margin-bottom-xl ">
-        <button type="submit" mat-raised-button class="ws-mat-primary-background margin-top-m" [disabled]="!addSectionForm.value.sectionName">
-          <div class="flex flex-middle ">
+      <div class="flex flex-end margin-bottom-xl">
+        <button
+          type="submit"
+          mat-raised-button
+          class="ws-mat-primary-background margin-top-m"
+          [disabled]="!addSectionForm.value.sectionName"
+        >
+          <div class="flex flex-middle">
             <p class="text-white margin-remove-bottom" i18n>Add Section</p>
           </div>
         </button>
@@ -147,30 +165,37 @@
     </form>
     <div class="margin-top-xs">
       <div id="sectionContainer" class="flex-container">
-        <mat-card [ngClass]="{ expanded: section.showOptions }" class="mat-card section-card ws-mat-primary-border-top-bolder mat-elevation-z6 margin-bottom-l"
-          *ngFor="let section of sectionDataList; index as i">
-          <div [@detailExpand]="section.showOptions ? 'expanded' : 'collapsed'" class="entity-container cursor-pointer" (click)="openOptions(section)">
+        <mat-card
+          [ngClass]="{ expanded: section.showOptions }"
+          class="mat-card section-card ws-mat-primary-border-top-bolder mat-elevation-z6 margin-bottom-l"
+          *ngFor="let section of sectionDataList; index as i"
+        >
+          <div
+            [@detailExpand]="section.showOptions ? 'expanded' : 'collapsed'"
+            class="entity-container cursor-pointer"
+            (click)="openOptions(section)"
+          >
             <div class="icon-container1 ws-mat-primary-background-op30">
               <mat-icon class="ws-mat-primary-text">widgets</mat-icon>
             </div>
 
-            <div class=" badge-data">
+            <div class="badge-data">
               <div class="mat-title margin-remove ws-mat-primary-text truncate-cell-section">
                 {{ section.sectionName }}
               </div>
               <div class="mat-body margin-top-s">
-                {{ section.sectionDescription.length > 40 ? section.sectionDescription.substr(0, 39) + '...' : section.sectionDescription
-                }}
+                {{ section.sectionDescription.length > 40 ? section.sectionDescription.substr(0, 39) + '...' : section.sectionDescription }}
               </div>
             </div>
             <mat-icon *ngIf="!section.showOptions" class="arrow-icon">keyboard_arrow_down</mat-icon>
           </div>
-          <div class="mat-body noOfQuestions">
-            Total Number of Questions : {{ section.numberOfQuestionsAdded }}
-          </div>
+          <div class="mat-body noOfQuestions">Total Number of Questions : {{ section.numberOfQuestionsAdded }}</div>
           <div class="margin-left-l animated" *ngIf="section.showOptions">
             <ng-container *ngFor="let option of options; let idx = index">
-              <div class="flex flex-middle margin-left-l cursor-pointer margin-bottom-s padding-top-s" (click)="cardActions(option.name, section)">
+              <div
+                class="flex flex-middle margin-left-l cursor-pointer margin-bottom-s padding-top-s"
+                (click)="cardActions(option.name, section)"
+              >
                 <mat-icon class="ws-mat-primary-text">{{ option.icon }}</mat-icon>
                 <p class="margin-left-m margin-remove-bottom">{{ option.name }}</p>
               </div>
@@ -181,7 +206,7 @@
       </div>
     </div>
 
-    <div class="flex flex-end margin-top-l margin-bottom-s ">
+    <div class="flex flex-end margin-top-l margin-bottom-s">
       <button mat-raised-button type="button" class="text-white ws-mat-primary-background text-white margin-right-m" (click)="save()">
         <span class="text-white" i18n>Save</span>
       </button>
@@ -197,36 +222,31 @@
         <mat-radio-button i18n color="primary" value="groups">Question Groups</mat-radio-button>
       </mat-radio-group>
     </div>
-    <div class="section-title-questions mat-h2">
-      Section Name : {{tempSection.sectionName}}
-    </div>
+    <div class="section-title-questions mat-h2">Section Name : {{ tempSection.sectionName }}</div>
 
     <div *ngIf="showObjective">
-      <div class="flex items-center search  border border-solid search-border">
-        <div class=" border-right flex items-center">
+      <div class="flex items-center search border border-solid search-border">
+        <div class="border-right flex items-center">
           <button mat-button [matMenuTriggerFor]="sortType">
             <span *ngIf="sortbyValue">{{ sortbyValue }}</span>
             <mat-icon>arrow_drop_down</mat-icon>
           </button>
         </div>
-        <div class=" border-right flex items-center">
+        <div class="border-right flex items-center">
           <button mat-button [matMenuTriggerFor]="queTypemenu">
             <span *ngIf="questionType">{{ questionType }}</span>
             <mat-icon>arrow_drop_down</mat-icon>
           </button>
         </div>
-        <div *ngIf="searchClicked" class=" border-right flex items-center">
-          <button mat-button (click)='clearAllFilters()'>
-            Clear All Filters
-          </button>
+        <div *ngIf="searchClicked" class="border-right flex items-center">
+          <button mat-button (click)="clearAllFilters()">Clear All Filters</button>
         </div>
-        <div class=" width-3-4 pl-2">
-          <form (submit)='searchQuestions()'>
+        <div class="width-3-4 pl-2">
+          <form (submit)="searchQuestions()">
             <mat-form-field class="w-full" appearance="none" [floatLabel]="'never'">
               <input type="text" matInput #searchInput name="searchBox" placeholder="Search for question" />
             </mat-form-field>
           </form>
-
         </div>
         <div (click)="searchQuestions()" class="flex items-center justify-center w-16 pointer">
           <mat-icon>search</mat-icon>
@@ -237,7 +257,7 @@
           <button mat-menu-item class="flex flex-between disable">
             <span i18n class="flex items-center w-full">SEARCH BY </span>
           </button>
-          <button mat-menu-item class="flex flex-between" *ngFor="let element of sortBy" (click)="setSortBy(element)">
+          <button mat-menu-item class="flex flex-between" *ngFor="let element of sortBy" (click)="selectSortBy(element)">
             <span class="flex items-center w-full">
               <span>{{ element }}</span>
             </span>
@@ -258,7 +278,7 @@
       </mat-menu>
       <mat-spinner class="loader" *ngIf="loaderFlag" color="primary" mode="indeterminate" diameter="60"></mat-spinner>
       <div class="margin-top-xs">
-        <div *ngIf="!loaderFlag && objDataSource && objDataSource.length!==0" class="mat-elevation-z8">
+        <div *ngIf="!loaderFlag && objDataSource && objDataSource.length !== 0" class="mat-elevation-z8">
           <table mat-table [dataSource]="objDataSource" multiTemplateDataRows>
             <ng-container matColumnDef="Title">
               <th i18n mat-header-cell *matHeaderCellDef>Title</th>
@@ -282,10 +302,22 @@
             <ng-container matColumnDef="Add/Remove">
               <th i18n mat-header-cell *matHeaderCellDef>Add/Remove</th>
               <td mat-cell *matCellDef="let element">
-                <mat-icon class="cursor-pointer icon-hover" *ngIf="!element.contestAdded && !element.loader" matTooltip="Add Question" (click)="add(element)"
-                  color="primary">add_circle</mat-icon>
-                <mat-icon class="cursor-pointer icon-hover" *ngIf="element.contestAdded && !element.loader" matTooltip="Remove Question"
-                  (click)="remove(element)" color="warn">remove_circle</mat-icon>
+                <mat-icon
+                  class="cursor-pointer icon-hover"
+                  *ngIf="!element.contestAdded && !element.loader"
+                  matTooltip="Add Question"
+                  (click)="add(element)"
+                  color="primary"
+                  >add_circle</mat-icon
+                >
+                <mat-icon
+                  class="cursor-pointer icon-hover"
+                  *ngIf="element.contestAdded && !element.loader"
+                  matTooltip="Remove Question"
+                  (click)="remove(element)"
+                  color="warn"
+                  >remove_circle</mat-icon
+                >
                 <mat-spinner color="primary" mode="indeterminate" diameter="30" *ngIf="element.loader"></mat-spinner>
               </td>
             </ng-container>
@@ -293,7 +325,13 @@
             <ng-container matColumnDef="View Question">
               <th i18n mat-header-cell *matHeaderCellDef>View Question</th>
               <td mat-cell *matCellDef="let element">
-                <mat-icon class="cursor-pointer icon-hover" matTooltip="View Question" (click)="openViewQuestionDialog(element)" color="primary">zoom_out_map</mat-icon>
+                <mat-icon
+                  class="cursor-pointer icon-hover"
+                  matTooltip="View Question"
+                  (click)="openViewQuestionDialog(element)"
+                  color="primary"
+                  >zoom_out_map</mat-icon
+                >
               </td>
             </ng-container>
 
@@ -341,33 +379,60 @@
         Question Groups are randomized questions of a particular category by creating a group, then adding into an assessment.
       </p>
       <div class="flex-container">
-        <mat-card *ngFor="let question of groupQuestionData" class=" section-card heightAuto ws-mat-primary-border-top-bolder mat-elevation-z6 margin-bottom-l">
+        <mat-card
+          *ngFor="let question of groupQuestionData"
+          class="section-card heightAuto ws-mat-primary-border-top-bolder mat-elevation-z6 margin-bottom-l"
+        >
           <div class="fs16 font-weight-bold truncate-cell-group">{{ question.title }}</div>
           <div>{{ question.groupDescription }}</div>
           <form [formGroup]="groupForm">
             <div class="flex-container">
               <div class="margin-top-xs w30">
                 <mat-form-field appearance="outline" class="margin-top-xs w100">
-                  <input type="number" min='1' [max]='question.noOfQuestions' oninput="validity.valid||(value='');" matInput placeholder="1 to {{ question.noOfQuestions }}"
-                    formControlName="randomization" />
+                  <input
+                    type="number"
+                    min="1"
+                    [max]="question.noOfQuestions"
+                    oninput="validity.valid || (value = '')"
+                    matInput
+                    placeholder="1 to {{ question.noOfQuestions }}"
+                    formControlName="randomization"
+                  />
                 </mat-form-field>
               </div>
 
-              <button *ngIf="!question.addedToContest" type="button" mat-raised-button class="ws-mat-primary-background margin-top-m group-btn"
-                [disabled]="!groupForm.value.randomization" (click)="addGroupToSection(question)">
-                <div class="flex flex-middle ">
+              <button
+                *ngIf="!question.addedToContest"
+                type="button"
+                mat-raised-button
+                class="ws-mat-primary-background margin-top-m group-btn"
+                [disabled]="!groupForm.value.randomization"
+                (click)="addGroupToSection(question)"
+              >
+                <div class="flex flex-middle">
                   <p class="text-white margin-remove-bottom" i18n>Add Group To Section</p>
                 </div>
               </button>
-              <button *ngIf="question.addedToContest" type="button" mat-raised-button class="ws-mat-primary-background margin-top-m group-btn"
-                [disabled]="!groupForm.value.randomization" (click)="editRandomization(question)">
-                <div class="flex flex-middle ">
+              <button
+                *ngIf="question.addedToContest"
+                type="button"
+                mat-raised-button
+                class="ws-mat-primary-background margin-top-m group-btn"
+                [disabled]="!groupForm.value.randomization"
+                (click)="editRandomization(question)"
+              >
+                <div class="flex flex-middle">
                   <p class="text-white margin-remove-bottom" i18n>Edit Randomization</p>
                 </div>
               </button>
-              <button *ngIf="question.addedToContest" type="button" mat-raised-button class="ws-mat-primary-background margin-top-m group-btn margin-left-xs"
-                (click)="removeGroupQuestion(question)">
-                <div class="flex flex-middle ">
+              <button
+                *ngIf="question.addedToContest"
+                type="button"
+                mat-raised-button
+                class="ws-mat-primary-background margin-top-m group-btn margin-left-xs"
+                (click)="removeGroupQuestion(question)"
+              >
+                <div class="flex flex-middle">
                   <p class="text-white margin-remove-bottom" i18n>Delete</p>
                 </div>
               </button>
