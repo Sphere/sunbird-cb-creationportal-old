@@ -10,7 +10,6 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'
 
-
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout'
 
 import { map, mergeMap, tap, catchError } from 'rxjs/operators'
@@ -21,7 +20,6 @@ import { ActivatedRoute, Router } from '@angular/router'
 
 import { FormGroup } from '@angular/forms'
 
-
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
 
 import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/components/comments-dialog/comments-dialog.component'
@@ -29,7 +27,6 @@ import { CommentsDialogComponent } from '@ws/author/src/lib/modules/shared/compo
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
 
 import { ErrorParserComponent } from '@ws/author/src/lib/modules/shared/components/error-parser/error-parser.component'
-
 
 import { EditorContentService } from '@ws/author/src/lib/routing/modules/editor/services/editor-content.service'
 
@@ -43,7 +40,6 @@ import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 
-
 import { Page, ModuleObj, WebModuleData } from '../web-module.class'
 
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
@@ -51,7 +47,6 @@ import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 import { NSContent } from '@ws/author/src/lib/interface/content'
 
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
-
 
 import {
   CONTENT_BASE_WEBHOST_ASSETS,
@@ -70,16 +65,13 @@ import { PlainCKEditorComponent } from '../../../../../shared/components/plain-c
 
 import { NotificationService } from '@ws/author/src/lib/services/notification.service'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-web-module-editor',
   templateUrl: './web-module-editor.component.html',
   styleUrls: ['./web-module-editor.component.scss'],
 })
-
 export class WebModuleEditorComponent implements OnInit, OnDestroy {
-
   userData: { [key: string]: WebModuleData } = {}
   currentId = ''
   selectedPage = 0
@@ -120,7 +112,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
     private authInitService: AuthInitService,
     private accessService: AccessControlService,
     private notificationSvc: NotificationService,
-  ) { }
+  ) {}
 
   ngOnDestroy() {
     if (this.activeContentSubscription) {
@@ -144,19 +136,16 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
     //   }
     // })
     if (this.activateRoute.parent && this.activateRoute.parent.parent) {
-
       const id = this.router.url.split('/')[3]
 
       // const self = this
       // get course details
       this.editorService.getDataForContent(id).subscribe(data => {
-
         const courseChildren = data[0].content.children
-        if (courseChildren) { }
+        if (courseChildren) {
+        }
         courseChildren.forEach((child: NSContent.IContentMeta) => {
-
           if (child.mimeType === 'application/web-module') {
-
             this.editorService.getDataForContent(child.identifier).subscribe(data2 => {
               this.allContents.push(data[0].content)
 
@@ -167,7 +156,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
               if (formattedObj.pageJson) {
                 formattedObj.pageJson.map((obj: ModuleObj) => {
                   if (obj.audio && obj.audio.length) {
-                    obj.audio.map(audioObj => {
+                    obj.audio.forEach(audioObj => {
                       // audioObj.URL = JSON.parse(JSON.stringify(
                       //   audioBaseURL + audioObj.URL
                       // ).replace(this.downloadRegex, this.regexDownloadReplace))
@@ -186,8 +175,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
               formattedObj.pages = formattedObj.pages.map((p: any, index: number) => {
                 let pageBody = p
                 if (p.match(getBodyReg)) {
-                  pageBody = p.match(getBodyReg)[1]
-                    .replace('src="', ` src="${this.imagesUrlbase}`)
+                  pageBody = p.match(getBodyReg)[1].replace('src="', ` src="${this.imagesUrlbase}`)
                   // .replace(reg2, ` href="${this.imagesUrlbase}"`)
                 }
                 const fileInd = parseInt(formattedObj.pageJson[index].URL.replace('/assets/index', ''), 10)
@@ -254,7 +242,6 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
       this.currentId = id
       this.changePage(0)
     })
-
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -309,8 +296,8 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
 
   // add new page
   addPage() {
-    const fileIndex = this.userData[this.currentId].pages.length ?
-      this.userData[this.currentId].pages[this.userData[this.currentId].pages.length - 1].fileIndex + 1
+    const fileIndex = this.userData[this.currentId].pages.length
+      ? this.userData[this.currentId].pages[this.userData[this.currentId].pages.length - 1].fileIndex + 1
       : 1
     const newModuleObj = new ModuleObj({ URL: `${STREAM_FILES}index${fileIndex}.html`, title: '' })
     const newPageObj = new Page({ fileIndex, body: '' })
@@ -324,8 +311,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
     this.userData[this.currentId].pages[this.selectedPage].body = i
     this.userData[this.currentId].pages[this.selectedPage].isBdchanged = true
     // on save pressed if invalid it will be set as false otherwise it would be undefined
-    if (this.userData[this.currentId].pages[this.selectedPage].isInvalid
-      && this.userData[this.currentId].pages[this.selectedPage].body) {
+    if (this.userData[this.currentId].pages[this.selectedPage].isInvalid && this.userData[this.currentId].pages[this.selectedPage].body) {
       this.userData[this.currentId].pages[this.selectedPage].isInvalid = false
     }
     this.changedContent = true
@@ -355,7 +341,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
         const dataLen = this.userData[this.currentId].pages.length
         if (i === this.selectedPage) {
           this.changePage(i && dataLen ? i - 1 : i)
-        } else if (this.selectedPage > dataLen && i < this.selectedPage || this.selectedPage === dataLen) {
+        } else if ((this.selectedPage > dataLen && i < this.selectedPage) || this.selectedPage === dataLen) {
           this.changePage(this.selectedPage - 1)
         }
         this.changedContent = true
@@ -378,8 +364,9 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
     })
     if (languagesForDropDown.length) {
       const contentLocale = this.metaContentService.getUpdatedMeta(this.currentId).locale
-      const defaultSelectedLang = languagesForDropDown.filter(l => l.srclang === contentLocale).length ?
-        contentLocale : languagesForDropDown[0].srclang
+      const defaultSelectedLang = languagesForDropDown.filter(l => l.srclang === contentLocale).length
+        ? contentLocale
+        : languagesForDropDown[0].srclang
       const dialogRef = this.dialog.open(UploadAudioComponent, {
         data: {
           id: this.currentId,
@@ -408,7 +395,6 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
   uploadJson(data: any, fileName: string, location: '/web-hosted' | '/web-hosted/assets') {
     let content = JSON.parse(JSON.stringify(data))
     if (fileName.endsWith('.html')) {
-
       content = `<html><head></head><body>${content}</body></html>`
       content = content.replace(new RegExp('\r?\n?\t', 'g'), '')
       // const blob = new Blob([JSON.stringify(content, null, 2)], { type: 'text/html' })
@@ -419,18 +405,14 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
       //   { contentId: this.currentId, contentType: location }
       // )
     }
-    return this.uploadService.encodedUpload(
-      content,
-      fileName,
-      { contentId: this.currentId, contentType: location },
-    )
+    return this.uploadService.encodedUpload(content, fileName, { contentId: this.currentId, contentType: location })
   }
 
   triggerUpload() {
     const moduledata = JSON.parse(JSON.stringify(this.userData[this.currentId].pageJson))
     moduledata.map((e: ModuleObj) => {
       if (e.audio && e.audio.length) {
-        e.audio.map(a => {
+        e.audio.forEach(a => {
           a.URL = STREAM_FILES + a.title
         })
       } else {
@@ -439,43 +421,44 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
     })
     const changedPages = this.userData[this.currentId].pages.filter(e => e.isBdchanged)
     const getUrlReg = new RegExp(/<img\s+[^>]*?src=("|')([^"']+)\1/)
-    const res = changedPages.length ? changedPages.map(e => {
-      if (!this.imagesUrlbase && e.body.match(getUrlReg)) {
-        const url = (e.body.match(getUrlReg) as any)[2]
-        this.imagesUrlbase = `${url.substring(0, url.lastIndexOf('/'))}/`
-      }
-      const htmlFile = JSON.parse(
-        JSON.stringify(e.body)
-          .replace(/<a href/gm, '<a target=\\"_blank\\" href')
-          .replace(this.imagesUrlbase, '')
-          .replace(/(<img.*width=)['"](\d+?)['"](.*\/>)/gm, '$1"$2" style="width:100%; heigth: auto; max-width:$2" $3')
-      )
-      // .replace(/ href=\s*['"].*?\/web-hosted\/.*?lex_.*?\/assets\/(.*?)['"]/gm, ' href="$1"')
-      const fileName = `index${e.fileIndex}.html`
-      return this.uploadJson(htmlFile, fileName, CONTENT_BASE_WEBHOST_ASSETS)
-    }) : of({} as any)
+    const res = changedPages.length
+      ? changedPages.map(e => {
+          if (!this.imagesUrlbase && e.body.match(getUrlReg)) {
+            const url = (e.body.match(getUrlReg) as any)[2]
+            this.imagesUrlbase = `${url.substring(0, url.lastIndexOf('/'))}/`
+          }
+          const htmlFile = JSON.parse(
+            JSON.stringify(e.body)
+              .replace(/<a href/gm, '<a target=\\"_blank\\" href')
+              .replace(this.imagesUrlbase, '')
+              .replace(/(<img.*width=)['"](\d+?)['"](.*\/>)/gm, '$1"$2" style="width:100%; heigth: auto; max-width:$2" $3'),
+          )
+          // .replace(/ href=\s*['"].*?\/web-hosted\/.*?lex_.*?\/assets\/(.*?)['"]/gm, ' href="$1"')
+          const fileName = `index${e.fileIndex}.html`
+          return this.uploadJson(htmlFile, fileName, CONTENT_BASE_WEBHOST_ASSETS)
+        })
+      : of({} as any)
     return forkJoin(res).pipe(
       mergeMap(() => {
-        this.userData[this.currentId].pages.map(p => p.isBdchanged = false)
+        this.userData[this.currentId].pages.forEach(p => (p.isBdchanged = false))
         return this.uploadJson(moduledata, WEB_MODULE_JSON_FILE_NAME, CONTENT_BASE_WEBHOST)
-      })
+      }),
     )
   }
 
   wrapperForTriggerSave() {
     this.loaderService.changeLoad.next(true)
-    return (this.changedContent ? this.triggerUpload() : of({} as any))
-      .pipe(
-        mergeMap(v => {
-          const updatedMeta = JSON.parse(JSON.stringify(this.metaContentService.upDatedContent[this.currentId] || {}))
-          if (v && v.code) {
-            updatedMeta.artifactUrl = (v.authArtifactURL || v.artifactURL).replace(/%2F/g, '/')
-            updatedMeta.downloadUrl = v.downloadURL.replace(/%2F/g, '/')
-            this.changedContent = false
-          }
-          return this.triggerSave(updatedMeta, this.currentId)
-        }),
-      )
+    return (this.changedContent ? this.triggerUpload() : of({} as any)).pipe(
+      mergeMap(v => {
+        const updatedMeta = JSON.parse(JSON.stringify(this.metaContentService.upDatedContent[this.currentId] || {}))
+        if (v && v.code) {
+          updatedMeta.artifactUrl = (v.authArtifactURL || v.artifactURL).replace(/%2F/g, '/')
+          updatedMeta.downloadUrl = v.downloadURL.replace(/%2F/g, '/')
+          this.changedContent = false
+        }
+        return this.triggerSave(updatedMeta, this.currentId)
+      }),
+    )
   }
 
   triggerSave(meta: NSContent.IContentMeta, id: string) {
@@ -489,9 +472,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
         },
       },
     }
-    return this.editorService
-      .updateContent(requestBody)
-      .pipe(tap(() => this.metaContentService.resetOriginalMeta(meta, id)))
+    return this.editorService.updateContent(requestBody).pipe(tap(() => this.metaContentService.resetOriginalMeta(meta, id)))
   }
 
   action(type: string) {
@@ -560,16 +541,12 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
   }
 
   isPublisherSame(): boolean {
-    const publisherDetails =
-      this.metaContentService.getUpdatedMeta(this.currentId).publisherDetails || []
+    const publisherDetails = this.metaContentService.getUpdatedMeta(this.currentId).publisherDetails || []
     return publisherDetails.find(v => v.id === this.accessService.userId) ? true : false
   }
 
   isDirectPublish(): boolean {
-    return (
-      ['Draft', 'Live'].includes(this.metaContentService.originalContent[this.currentId].status) &&
-      this.isPublisherSame()
-    )
+    return ['Draft', 'Live'].includes(this.metaContentService.originalContent[this.currentId].status) && this.isPublisherSame()
   }
 
   finalCall(commentsForm: FormGroup) {
@@ -578,11 +555,9 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
         comment: commentsForm.controls.comments.value,
         operation:
           commentsForm.controls.action.value === 'accept' ||
-            ['Draft', 'Live'].includes(
-              this.metaContentService.originalContent[this.currentId].status,
-            )
+          ['Draft', 'Live'].includes(this.metaContentService.originalContent[this.currentId].status)
             ? ((this.accessService.authoringConfig.isMultiStepFlow && this.isDirectPublish()) ||
-              !this.accessService.authoringConfig.isMultiStepFlow) &&
+                !this.accessService.authoringConfig.isMultiStepFlow) &&
               this.accessService.rootOrg.toLowerCase() === 'client1'
               ? 100000
               : 1
@@ -591,34 +566,18 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
 
       const updatedContent: any = this.metaContentService.upDatedContent[this.currentId] || {}
       const updatedMeta = this.metaContentService.getUpdatedMeta(this.currentId)
-      const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || {})
-        .length
-      const saveCall = (needSave
-        ? this.triggerSave(updatedContent, this.currentId)
-        : of({} as any)
-      ).pipe(
+      const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || {}).length
+      const saveCall = (needSave ? this.triggerSave(updatedContent, this.currentId) : of({} as any)).pipe(
         mergeMap(() =>
-          this.editorService
-            .forwardBackward(
-              body,
-              this.currentId,
-              this.metaContentService.originalContent[this.currentId].status,
-            )
-            .pipe(
-              mergeMap(() =>
-                this.notificationSvc
-                  .triggerPushPullNotification(
-                    updatedMeta,
-                    body.comment,
-                    body.operation ? true : false,
-                  )
-                  .pipe(
-                    catchError(() => {
-                      return of({} as any)
-                    }),
-                  ),
+          this.editorService.forwardBackward(body, this.currentId, this.metaContentService.originalContent[this.currentId].status).pipe(
+            mergeMap(() =>
+              this.notificationSvc.triggerPushPullNotification(updatedMeta, body.comment, body.operation ? true : false).pipe(
+                catchError(() => {
+                  return of({} as any)
+                }),
               ),
             ),
+          ),
         ),
       )
       this.loaderService.changeLoad.next(true)
@@ -641,10 +600,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
         error => {
           if (error.status === 409) {
             const errorMap = new Map<string, NSContent.IContentMeta>()
-            errorMap.set(
-              this.currentId,
-              this.metaContentService.getUpdatedMeta(this.currentId),
-            )
+            errorMap.set(this.currentId, this.metaContentService.getUpdatedMeta(this.currentId))
             this.dialog.open(ErrorParserComponent, {
               width: '80vw',
               height: '90vh',
@@ -712,27 +668,25 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
   }
 
   takeAction() {
-    const needSave = Object.keys((this.metaContentService.upDatedContent[this.currentId] || {})).length
-      || this.changedContent
-    if (!needSave &&
-      (this.metaContentService.getUpdatedMeta(this.currentId).status === 'Live')
-    ) {
+    const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || {}).length || this.changedContent
+    if (!needSave && this.metaContentService.getUpdatedMeta(this.currentId).status === 'Live') {
       this.showNotification(Notify.UP_TO_DATE)
       return
     }
-    this.validationCheck().subscribe(valid => {
-      this.loaderService.changeLoad.next(false)
-      if (valid) {
-        const dialogRef = this.dialog.open(CommentsDialogComponent, {
-          width: '750px',
-          height: '450px',
-          data: this.metaContentService.getOriginalMeta(this.currentId),
-        })
-        dialogRef.afterClosed().subscribe((commentsForm: FormGroup) => {
-          this.finalCall(commentsForm)
-        })
-      }
-    },
+    this.validationCheck().subscribe(
+      valid => {
+        this.loaderService.changeLoad.next(false)
+        if (valid) {
+          const dialogRef = this.dialog.open(CommentsDialogComponent, {
+            width: '750px',
+            height: '450px',
+            data: this.metaContentService.getOriginalMeta(this.currentId),
+          })
+          dialogRef.afterClosed().subscribe((commentsForm: FormGroup) => {
+            this.finalCall(commentsForm)
+          })
+        }
+      },
       // tslint:disable-next-line: align
       () => {
         this.showNotification(Notify.SAVE_FAIL)
@@ -742,8 +696,10 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
 
   validationCheck(): Observable<boolean> {
     let returnValue = true
-    if (!this.metaContentService.isValid(this.currentId) || !this.metaContentService.isValid(this.currentId)
-      && !this.metaContentService.getUpdatedMeta(this.currentId).artifactUrl) {
+    if (
+      !this.metaContentService.isValid(this.currentId) ||
+      (!this.metaContentService.isValid(this.currentId) && !this.metaContentService.getUpdatedMeta(this.currentId).artifactUrl)
+    ) {
       this.showNotification(Notify.MANDATORY_FIELD_ERROR)
       returnValue = false
     } else if (this.changedContent) {
@@ -758,17 +714,15 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
 
   preview() {
     if (this.userData[this.currentId].pages.length) {
-      const needSave = this.changedContent ||
-        Object.keys((this.metaContentService.upDatedContent[this.currentId] || {})).length
+      const needSave = this.changedContent || Object.keys(this.metaContentService.upDatedContent[this.currentId] || {}).length
       if (needSave) {
         if (this.checkValidity(this.currentId)) {
-          this.wrapperForTriggerSave().subscribe(() => {
-            this.loaderService.changeLoad.next(false)
-            this.previewMode = true
-            this.mimeTypeRoute = VIEWER_ROUTE_FROM_MIME(
-              this.metaContentService.getUpdatedMeta(this.currentId).mimeType as any,
-            )
-          },
+          this.wrapperForTriggerSave().subscribe(
+            () => {
+              this.loaderService.changeLoad.next(false)
+              this.previewMode = true
+              this.mimeTypeRoute = VIEWER_ROUTE_FROM_MIME(this.metaContentService.getUpdatedMeta(this.currentId).mimeType as any)
+            },
             // tslint:disable-next-line: align
             () => {
               this.loaderService.changeLoad.next(false)
@@ -778,9 +732,7 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
         }
       } else {
         this.previewMode = true
-        this.mimeTypeRoute = VIEWER_ROUTE_FROM_MIME(
-          this.metaContentService.getUpdatedMeta(this.currentId).mimeType as any,
-        )
+        this.mimeTypeRoute = VIEWER_ROUTE_FROM_MIME(this.metaContentService.getUpdatedMeta(this.currentId).mimeType as any)
       }
     } else {
       this.showNotification(Notify.WEB_MODULE_MIN_PAGE_REQUIRED)
@@ -808,46 +760,44 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
 
   createInAnotherLanguage(lang: string) {
     this.loaderService.changeLoad.next(true)
-    this.metaContentService.createInAnotherLanguage(lang, { artifactURL: '', downloadUrl: '' })
-      .subscribe(
-        data => {
-          this.loaderService.changeLoad.next(false)
-          if (data !== true) {
-            this.allContents.push(data as NSContent.IContentMeta)
-            this.changeContent(data as NSContent.IContentMeta)
-            this.showNotification(Notify.CONTENT_CREATE_SUCCESS)
-          } else {
-            this.showNotification(Notify.DATA_PRESENT)
-          }
-        },
-        error => {
-          if (error.status === 409) {
-            const errorMap = new Map<string, NSContent.IContentMeta>()
-            errorMap.set(this.currentId, this.metaContentService.getUpdatedMeta(this.currentId))
-            this.dialog.open(ErrorParserComponent, {
-              width: '750px',
-              height: '450px',
-              data: {
-                errorFromBackendData: error.error,
-                dataMapping: errorMap,
-              },
-            })
-          }
-          this.loaderService.changeLoad.next(false)
-          this.snackBar.openFromComponent(NotificationComponent, {
+    this.metaContentService.createInAnotherLanguage(lang, { artifactURL: '', downloadUrl: '' }).subscribe(
+      data => {
+        this.loaderService.changeLoad.next(false)
+        if (data !== true) {
+          this.allContents.push(data as NSContent.IContentMeta)
+          this.changeContent(data as NSContent.IContentMeta)
+          this.showNotification(Notify.CONTENT_CREATE_SUCCESS)
+        } else {
+          this.showNotification(Notify.DATA_PRESENT)
+        }
+      },
+      error => {
+        if (error.status === 409) {
+          const errorMap = new Map<string, NSContent.IContentMeta>()
+          errorMap.set(this.currentId, this.metaContentService.getUpdatedMeta(this.currentId))
+          this.dialog.open(ErrorParserComponent, {
+            width: '750px',
+            height: '450px',
             data: {
-              type: Notify.CONTENT_FAIL,
+              errorFromBackendData: error.error,
+              dataMapping: errorMap,
             },
-            duration: 3 * 1000,
           })
-        },
-      )
+        }
+        this.loaderService.changeLoad.next(false)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.CONTENT_FAIL,
+          },
+          duration: 3 * 1000,
+        })
+      },
+    )
   }
 
   save() {
-    const needSave = Object.keys((this.metaContentService.upDatedContent[this.currentId] || {})).length
-      || this.changedContent
-    if (this.userData[this.currentId].pages.length > 0 && (needSave)) {
+    const needSave = Object.keys(this.metaContentService.upDatedContent[this.currentId] || {}).length || this.changedContent
+    if (this.userData[this.currentId].pages.length > 0 && needSave) {
       if (this.checkValidity(this.currentId)) {
         // if any change in data, then upload json
         this.wrapperForTriggerSave().subscribe(
@@ -891,10 +841,10 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
   }
 
   canDelete() {
-    return this.accessService.hasRole(['editor', 'admin']) ||
+    return (
+      this.accessService.hasRole(['editor', 'admin']) ||
       (['Draft', 'Live'].includes(this.metaContentService.originalContent[this.currentId].status) &&
-        this.metaContentService.originalContent[this.currentId].creatorContacts.find(v => v.id === this.accessService.userId)
-      )
+        this.metaContentService.originalContent[this.currentId].creatorContacts.find(v => v.id === this.accessService.userId))
+    )
   }
-
 }

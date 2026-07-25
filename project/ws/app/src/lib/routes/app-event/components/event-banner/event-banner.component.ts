@@ -4,7 +4,6 @@ import { Subscription, timer } from 'rxjs'
 
 import { Router, ActivatedRoute } from '@angular/router'
 
-
 interface ITimer {
   hours: number
   mins: number
@@ -14,9 +13,7 @@ interface ITimer {
   selector: 'ws-app-event-banner',
   templateUrl: './event-banner.component.html',
   styleUrls: ['./event-banner.component.scss'],
-
 })
-
 export class EventBannerComponent implements OnDestroy, OnChanges, OnInit {
   @Input() data: any
   @Input() totalEvent = 1
@@ -36,28 +33,24 @@ export class EventBannerComponent implements OnDestroy, OnChanges, OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
-  ) { }
+  ) {}
 
   ngOnChanges() {
     // this.reInitiateSlideInterval()
     // this.timerData()
-
   }
 
   ngOnInit() {
     this.calculateTime()
     // const t: Observable<number> = interval(60000)
-    this.currentSubscription = timer(0, 60000)
-      .subscribe(() => {
-        this.allRemainingTime = []
-        this.sessionTime.map(
-          (v: number, index: number) => {
-            this.sessionTime[index] = v - 60000
-            this.allRemainingTime.push(this.convertMinutes(this.sessionTime[index]))
-            this.changeDetector.detectChanges()
-          }
-        )
+    this.currentSubscription = timer(0, 60000).subscribe(() => {
+      this.allRemainingTime = []
+      this.sessionTime.forEach((v: number, index: number) => {
+        this.sessionTime[index] = v - 60000
+        this.allRemainingTime.push(this.convertMinutes(this.sessionTime[index]))
+        this.changeDetector.detectChanges()
       })
+    })
   }
 
   ngOnDestroy() {

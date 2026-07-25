@@ -47,7 +47,6 @@ import { IAssessmentDetails } from '../../interface/iap-assessment.interface'
 
 import { IapAssessmentService } from '../../services/iap-assessment.service'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-root-iap-assessment',
@@ -65,7 +64,7 @@ export class IapAssessmentComponent implements OnInit {
     private router: Router,
     public _service: IapAssessmentService,
     private snackBar: MatSnackBar,
-  ) { }
+  ) {}
 
   _id!: string
   contentForm = new FormGroup({
@@ -109,14 +108,7 @@ export class IapAssessmentComponent implements OnInit {
   groupQuestionData!: any[]
 
   expandedElement: any
-  displayedColumns: string[] = [
-    'Title',
-    'Topic',
-    'Tags',
-    'Question Type',
-    'Add/Remove',
-    'View question',
-  ]
+  displayedColumns: string[] = ['Title', 'Topic', 'Tags', 'Question Type', 'Add/Remove', 'View question']
   objDataSource = new MatTableDataSource()
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator | null = null
 
@@ -130,9 +122,7 @@ export class IapAssessmentComponent implements OnInit {
   ngOnInit() {
     this.showSettingButtons = this.accessService.rootOrg === 'Siemens'
     this.allLanguages = this.authInitService.ordinals.subTitles
-    Object.keys(this.contentService.originalContent).map(v =>
-      this.contents.push(this.contentService.originalContent[v]),
-    )
+    Object.keys(this.contentService.originalContent).forEach(v => this.contents.push(this.contentService.originalContent[v]))
     this.contentService.changeActiveCont.subscribe(data1 => (this.currentContent = data1))
     this.loaderService.changeLoadState(true)
   }
@@ -218,16 +208,12 @@ export class IapAssessmentComponent implements OnInit {
 
   preview() {
     const updatedContent = this.contentService.upDatedContent[this.currentContent] || {}
-    const saveCall = Object.keys(updatedContent).length
-      ? this.triggerSave(updatedContent, this.currentContent)
-      : of({} as any)
+    const saveCall = Object.keys(updatedContent).length ? this.triggerSave(updatedContent, this.currentContent) : of({} as any)
     this.loaderService.changeLoad.next(true)
     saveCall.subscribe(
       () => {
         this.loaderService.changeLoad.next(false)
-        this.mimeTypeRoute = VIEWER_ROUTE_FROM_MIME(
-          this.contentService.getUpdatedMeta(this.currentContent).mimeType as any,
-        )
+        this.mimeTypeRoute = VIEWER_ROUTE_FROM_MIME(this.contentService.getUpdatedMeta(this.currentContent).mimeType as any)
         this.previewMode = true
       },
       error => {
@@ -296,10 +282,7 @@ export class IapAssessmentComponent implements OnInit {
     this._id = value
   }
   saveCallIap() {
-    this.contentService.setUpdatedMeta(
-      { ['contentIdAtSource']: this._id } as any,
-      this.currentContent,
-    )
+    this.contentService.setUpdatedMeta({ ['contentIdAtSource']: this._id } as any, this.currentContent)
     const meta = this.contentService.getUpdatedMeta(this.currentContent)
 
     this.contentService.setIapContent({ ['testName']: meta.name } as any, this.currentContent)
@@ -328,9 +311,7 @@ export class IapAssessmentComponent implements OnInit {
         },
       },
     }
-    return this.editorService
-      .updateContent(requestBody)
-      .pipe(tap(() => this.contentService.resetOriginalMeta(meta, id)))
+    return this.editorService.updateContent(requestBody).pipe(tap(() => this.contentService.resetOriginalMeta(meta, id)))
   }
 
   delete() {
@@ -414,13 +395,8 @@ export class IapAssessmentComponent implements OnInit {
   }
 
   takeAction() {
-    const needSave = Object.keys(this.contentService.upDatedContent[this.currentContent] || {})
-      .length
-    if (
-      !needSave &&
-      this.contentService.getUpdatedMeta(this.currentContent).status === 'Live' &&
-      !this.isChanged
-    ) {
+    const needSave = Object.keys(this.contentService.upDatedContent[this.currentContent] || {}).length
+    if (!needSave && this.contentService.getUpdatedMeta(this.currentContent).status === 'Live' && !this.isChanged) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.UP_TO_DATE,
@@ -473,18 +449,16 @@ export class IapAssessmentComponent implements OnInit {
         comment: commentsForm.controls.comments.value,
         operation:
           commentsForm.controls.action.value === 'accept' ||
-            ['Draft', 'Live'].includes(this.contentService.originalContent[this.currentContent].status)
+          ['Draft', 'Live'].includes(this.contentService.originalContent[this.currentContent].status)
             ? 1
             : -1,
       }
 
       const updatedContent = this.contentService.upDatedContent[this.currentContent] || {}
-      const needSave = Object.keys(this.contentService.upDatedContent[this.currentContent] || {})
-        .length
-      const saveCall = (needSave
-        ? this.triggerSave(updatedContent, this.currentContent)
-        : of({} as any)
-      ).pipe(mergeMap(() => this.editorService.forwardBackward(body, this.currentContent)))
+      const needSave = Object.keys(this.contentService.upDatedContent[this.currentContent] || {}).length
+      const saveCall = (needSave ? this.triggerSave(updatedContent, this.currentContent) : of({} as any)).pipe(
+        mergeMap(() => this.editorService.forwardBackward(body, this.currentContent)),
+      )
       this.loaderService.changeLoad.next(true)
 
       saveCall.subscribe(
@@ -506,10 +480,7 @@ export class IapAssessmentComponent implements OnInit {
         error => {
           if (error.status === 409) {
             const errorMap = new Map<string, NSContent.IContentMeta>()
-            errorMap.set(
-              this.currentContent,
-              this.contentService.getUpdatedMeta(this.currentContent),
-            )
+            errorMap.set(this.currentContent, this.contentService.getUpdatedMeta(this.currentContent))
             this.dialog.open(ErrorParserComponent, {
               width: '80vw',
               height: '90vh',
@@ -546,9 +517,7 @@ export class IapAssessmentComponent implements OnInit {
   }
 
   getAction(): string {
-    if (
-      this.contentService.originalContent[this.currentContent].contentType === 'Knowledge Artifact'
-    ) {
+    if (this.contentService.originalContent[this.currentContent].contentType === 'Knowledge Artifact') {
       return 'publish'
     }
     switch (this.contentService.originalContent[this.currentContent].status) {

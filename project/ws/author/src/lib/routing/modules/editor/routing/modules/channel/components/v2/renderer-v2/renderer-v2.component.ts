@@ -20,7 +20,6 @@ import { ChannelResolverService } from './../../../services/resolver.service'
 
 import { ChannelStoreService } from './../../../services/store.service'
 
-
 interface IAuthorGrid {
   id: string
   className: string
@@ -46,7 +45,7 @@ export class RendererV2Component implements OnInit, OnChanges {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private renderService: ChannelResolverService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.store.update.subscribe((id: string) => {
@@ -67,13 +66,12 @@ export class RendererV2Component implements OnInit, OnChanges {
       this.containerClass = `-mx-${this.widget.data.gutter}`
     }
     const gutterAdjustment = this.widget.data.gutter !== null ? `p-${this.widget.data.gutter}` : ''
-    this.widget.children.map(row => {
+    this.widget.children.forEach(row => {
       const child = this.store.getUpdatedContent(row)
       const data: IAuthorGrid = {
         id: child.id,
         className: Object.entries(child.dimensions as Record<tDimensions, tSize>).reduce(
-          (agg, [k, v]) =>
-            `${agg} ${(responsiveSuffix as { [id: string]: string })[k]}:${sizeSuffix[v]}`,
+          (agg, [k, v]) => `${agg} ${(responsiveSuffix as { [id: string]: string })[k]}:${sizeSuffix[v]}`,
           `${child.className} w-full ${gutterAdjustment}`,
         ),
         styles: child.styles || {},
@@ -139,8 +137,7 @@ export class RendererV2Component implements OnInit, OnChanges {
         } else {
           otherStrip = true
         }
-        totalSize =
-          totalSize + Math.max((content.dimensions as any).xLarge || 0, (content.dimensions as any).large || 0)
+        totalSize = totalSize + Math.max((content.dimensions as any).xLarge || 0, (content.dimensions as any).large || 0)
       })
       if (totalSize + Math.max(currentSize.dimensions.xLarge, currentSize.dimensions.large) > 12) {
         this.snackBar.openFromComponent(NotificationComponent, {
@@ -151,8 +148,10 @@ export class RendererV2Component implements OnInit, OnChanges {
         })
         return
       }
-      if ((isMultiStripPresent && currentSize.widgetSubType !== 'contentStripMultiple') ||
-        (otherStrip && currentSize.widgetSubType === 'contentStripMultiple')) {
+      if (
+        (isMultiStripPresent && currentSize.widgetSubType !== 'contentStripMultiple') ||
+        (otherStrip && currentSize.widgetSubType === 'contentStripMultiple')
+      ) {
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
             type: Notify.MULTI_STRIP_VIOLATION,
@@ -189,7 +188,7 @@ export class RendererV2Component implements OnInit, OnChanges {
         if (typeof id === 'string') {
           this.store.deleteNode(id)
         } else {
-          this.processedWidgets[id as number].map(v => {
+          this.processedWidgets[id as number].forEach(v => {
             this.store.deleteNode(v.id, false)
             this.initiate()
           })

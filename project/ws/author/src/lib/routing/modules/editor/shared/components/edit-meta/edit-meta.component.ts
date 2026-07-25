@@ -763,7 +763,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
         // tslint:disable-next-line: whitespace
         ;(v.condition.showFor || []).map((con: any) => {
           let innerCondition = false
-          Object.keys(con).map(meta => {
+          Object.keys(con).forEach(meta => {
             if (
               con[meta].indexOf(
                 (this.contentForm.controls[meta] && this.contentForm.controls[meta].value) ||
@@ -781,7 +781,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
           // tslint:disable-next-line: semicolon // tslint:disable-next-line: whitespace
           ;(v.condition.nowShowFor || []).map((con: any) => {
             let innerCondition = false
-            Object.keys(con).map(meta => {
+            Object.keys(con).forEach(meta => {
               if (
                 con[meta].indexOf(
                   (this.contentForm.controls[meta] && this.contentForm.controls[meta].value) ||
@@ -907,7 +907,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
         this.loader.changeLoad.next(false)
       },
     )
-    Object.keys(this.contentForm.controls).map(v => {
+    Object.keys(this.contentForm.controls).forEach(v => {
       try {
         if (
           this.contentMeta[v as keyof NSContent.IContentMeta] ||
@@ -1005,7 +1005,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
         this.configSvc.instanceConfig.authoring &&
         this.configSvc.instanceConfig.authoring.urlPatternMatching
       ) {
-        this.configSvc.instanceConfig.authoring.urlPatternMatching.map(v => {
+        this.configSvc.instanceConfig.authoring.urlPatternMatching.forEach(v => {
           if (artifactUrl.match(v.pattern) && v.allowIframe && v.source === 'youtube') {
             this.contentForm.controls.mimeType.setValue('video/x-youtube')
           }
@@ -1122,7 +1122,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
         if (this.canExpiry) {
           currentMeta.expiryDate = `${expiryDate.toISOString().replace(/-/g, '').replace(/:/g, '').split('.')[0]}+0000`
         }
-        Object.keys(currentMeta).map(v => {
+        Object.keys(currentMeta).forEach(v => {
           if (
             v !== 'versionKey' &&
             v !== 'visibility' &&

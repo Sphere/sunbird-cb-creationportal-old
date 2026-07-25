@@ -8,7 +8,6 @@ import { ISpeakerDetails } from '../../interfaces/speaker-details.model'
 
 import { EventService } from '../../services/event.service'
 
-
 @Component({
   standalone: false,
   selector: 'ws-app-event-sessions',
@@ -29,7 +28,7 @@ export class EventSessionsComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private appEventSvc: EventService,
     private changeDetector: ChangeDetectorRef,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.appEventSvc.bannerisEnabled.next(true)
@@ -39,7 +38,7 @@ export class EventSessionsComponent implements OnInit, OnDestroy {
         this.data = []
         Object.keys(data.eventdata.data.SessionCards.Sessions).forEach((v: any, index: number) => {
           this.data.push({
-            sessionID: `${this.session}${(index + 1)}`,
+            sessionID: `${this.session}${index + 1}`,
             speakerType: data.eventdata.data.SessionCards.Sessions[v].SessionType,
             speakerImage: data.eventdata.data.SessionCards.Sessions[v].SessionImage,
             speakerKeynote: data.eventdata.data.SessionCards.Sessions[v].SessionTitle,
@@ -52,29 +51,22 @@ export class EventSessionsComponent implements OnInit, OnDestroy {
         })
         if (this.data && this.data.length > 0) {
           this.calculateTime()
-          this.currentSubscription = timer(0, 60000)
-            .subscribe(() => {
-              this.liveSpeaker = []
-              this.sessionStartTime.map(
-                (v: number, index: number) => {
-                  this.sessionStartTime[index] = v - 60000
-                  this.sessionEndTime[index] = this.sessionEndTime[index] - 60000
-                  if (this.data &&
-                    this.data.length > 0 &&
-                    this.sessionStartTime[index] < 0 &&
-                    this.sessionEndTime[index] > 0) {
-                    this.liveSpeaker.push(this.data[index])
-                  } else {
-                  }
-                  this.data[index].startRemainingTime = this.sessionStartTime[index]
-                  this.data[index].endRemaningTime = this.sessionEndTime[index]
-                }
-              )
-              this.changeDetector.detectChanges()
+          this.currentSubscription = timer(0, 60000).subscribe(() => {
+            this.liveSpeaker = []
+            this.sessionStartTime.forEach((v: number, index: number) => {
+              this.sessionStartTime[index] = v - 60000
+              this.sessionEndTime[index] = this.sessionEndTime[index] - 60000
+              if (this.data && this.data.length > 0 && this.sessionStartTime[index] < 0 && this.sessionEndTime[index] > 0) {
+                this.liveSpeaker.push(this.data[index])
+              } else {
+              }
+              this.data[index].startRemainingTime = this.sessionStartTime[index]
+              this.data[index].endRemaningTime = this.sessionEndTime[index]
             })
+            this.changeDetector.detectChanges()
+          })
         }
-      }
-      )
+      })
     }
   }
 

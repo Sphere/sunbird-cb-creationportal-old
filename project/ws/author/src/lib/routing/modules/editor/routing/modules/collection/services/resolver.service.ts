@@ -107,7 +107,7 @@ export class CollectionResolverService {
       const node = flatNodeMap.get(currId) as IContentNode
       if ((rightPermission && node.editable) || !rightPermission) {
         const children = node.children || []
-        children.map(v => recursiveFunction(v.id))
+        children.forEach(v => recursiveFunction(v.id))
       }
     }
     recursiveFunction(id)

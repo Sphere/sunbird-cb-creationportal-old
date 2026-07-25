@@ -33,7 +33,7 @@ export class FeatureUsageComponent implements OnInit {
   timeSpentData: NSAnalyticsData.ITimeSpentResponse | null = null
   assessmentData: NSAnalyticsData.IAssessmentResponse | null = null
 
-  constructor(private analyticsSrv: AnalyticsService) { }
+  constructor(private analyticsSrv: AnalyticsService) {}
   ngOnInit() {
     this.timeSpentFetchStatus = 'fetching'
     this.nsoFetchStatus = 'fetching'
@@ -47,11 +47,12 @@ export class FeatureUsageComponent implements OnInit {
       },
       () => {
         this.nsoFetchStatus = 'error'
-      })
+      },
+    )
     this.analyticsSrv.assessments(this.startDate, this.endDate, this.contentType, this.isCompleted).subscribe(
       (assessmentResponse: NSAnalyticsData.IAssessmentResponse) => {
         this.assessmentData = assessmentResponse
-        this.assessmentData.assessment.map((cur: any) => {
+        this.assessmentData.assessment.forEach((cur: any) => {
           if (cur.assessment_score >= 60) {
             this.assessmentComplete += 1
           }
@@ -60,12 +61,13 @@ export class FeatureUsageComponent implements OnInit {
       },
       () => {
         this.assessmentFetchStatus = 'error'
-      })
+      },
+    )
     this.analyticsSrv.fetchAssessments(this.startDate, this.endDate).subscribe(
       (assessmentsData: NSCompetency.IAchievementsRes) => {
         this.assessments = assessmentsData
         if (this.assessments.assessments) {
-          this.assessments.assessments.map((cur: any) => {
+          this.assessments.assessments.forEach((cur: any) => {
             if (cur.assessment_score >= 60) {
               this.assessmentComplete += 1
             }
@@ -85,7 +87,8 @@ export class FeatureUsageComponent implements OnInit {
       },
       () => {
         this.userProgressFetchStatus = 'error'
-      })
+      },
+    )
     this.analyticsSrv.timeSpent(this.startDate, this.endDate, this.contentType, this.isCompleted).subscribe(
       (timeSpentResponse: NSAnalyticsData.ITimeSpentResponse) => {
         this.timeSpentData = timeSpentResponse
@@ -94,7 +97,7 @@ export class FeatureUsageComponent implements OnInit {
       },
       () => {
         this.timeSpentFetchStatus = 'error'
-      })
+      },
+    )
   }
-
 }

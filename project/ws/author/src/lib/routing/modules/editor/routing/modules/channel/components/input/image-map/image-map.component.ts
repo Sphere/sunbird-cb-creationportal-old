@@ -1,4 +1,15 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core'
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core'
 
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 
@@ -20,7 +31,6 @@ import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 
 import { FILE_MAX_SIZE } from './../../../../../../../../../constants/upload'
-
 
 @Component({
   standalone: false,
@@ -59,14 +69,14 @@ export class ImageMapComponent implements OnInit, AfterViewInit {
     private snackBar: MatSnackBar,
     public formBuilder: FormBuilder,
     private loader: LoaderService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.initializeForm()
 
     if (this.content.map && this.content.map.length) {
       this.enableMouseClick = false
-      this.content.map.map(v => {
+      this.content.map.forEach(v => {
         this.addImageMapToForm(v)
       })
     }
@@ -119,9 +129,9 @@ export class ImageMapComponent implements OnInit, AfterViewInit {
 
   selectionChange(event: any, index: number) {
     if (event.value === 'anchor') {
-      (this.paths.at(index).get('target') as AbstractControl).setValue('_self')
+      ;(this.paths.at(index).get('target') as AbstractControl).setValue('_self')
     } else if (event.value === 'url') {
-      (this.paths.at(index).get('target') as AbstractControl).setValue('_blank')
+      ;(this.paths.at(index).get('target') as AbstractControl).setValue('_blank')
     }
   }
 
@@ -176,55 +186,48 @@ export class ImageMapComponent implements OnInit, AfterViewInit {
 
     formdata.append('content', file, fileName)
     this.loader.changeLoad.next(true)
-    this.uploadService
-      .upload(formdata, { contentId: this.identifier, contentType: CONTENT_BASE_WEBHOST_ASSETS })
-      .subscribe(
-        data => {
-          if (data.code) {
-            // if (this.paths.length > 0) {
-            //   this.clearImagMapForm()
-            // }
-            if (!this.imageAvailable) {
-              this.initializeForm()
-              this.addImageMapForm()
-            }
-
-            this.mapName = fileName.replace(/\.[^/.]+$/, '')
-            this.form.controls.imageSrc.setValue(
-              `${AUTHORING_CONTENT_BASE}${encodeURIComponent(
-                `/${data.artifactURL
-                  .split('/')
-                  .slice(3)
-                  .join('/')}`,
-              )}`,
-            )
-            this.form.controls.mapName.setValue(this.mapName)
-
-            if (!this.imageAvailable) {
-              this.initializeCanvas()
-              this.imageAvailable = false
-            } else {
-              this.initializeCanvas(true)
-              this.selectedRadio = 0
-            }
-            this.snackBar.openFromComponent(NotificationComponent, {
-              data: {
-                type: Notify.UPLOAD_SUCCESS,
-              },
-              duration: NOTIFICATION_TIME * 1000,
-            })
+    this.uploadService.upload(formdata, { contentId: this.identifier, contentType: CONTENT_BASE_WEBHOST_ASSETS }).subscribe(
+      data => {
+        if (data.code) {
+          // if (this.paths.length > 0) {
+          //   this.clearImagMapForm()
+          // }
+          if (!this.imageAvailable) {
+            this.initializeForm()
+            this.addImageMapForm()
           }
-        },
-        () => {
-          this.loader.changeLoad.next(false)
+
+          this.mapName = fileName.replace(/\.[^/.]+$/, '')
+          this.form.controls.imageSrc.setValue(
+            `${AUTHORING_CONTENT_BASE}${encodeURIComponent(`/${data.artifactURL.split('/').slice(3).join('/')}`)}`,
+          )
+          this.form.controls.mapName.setValue(this.mapName)
+
+          if (!this.imageAvailable) {
+            this.initializeCanvas()
+            this.imageAvailable = false
+          } else {
+            this.initializeCanvas(true)
+            this.selectedRadio = 0
+          }
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
-              type: Notify.UPLOAD_FAIL,
+              type: Notify.UPLOAD_SUCCESS,
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-        },
-      )
+        }
+      },
+      () => {
+        this.loader.changeLoad.next(false)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.UPLOAD_FAIL,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      },
+    )
   }
 
   removeButtonClick(index: number) {
@@ -235,9 +238,7 @@ export class ImageMapComponent implements OnInit, AfterViewInit {
       this.addImageMapForm()
     }
 
-    this.canvas.nativeElement
-      .getContext('2d')
-      .clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height)
+    this.canvas.nativeElement.getContext('2d').clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height)
     this.drawAll(this.canvas.nativeElement.getContext('2d'))
     this.selectedRadio = 0
     this.drawOutsideBorder(this.selectedRadio)
@@ -272,7 +273,7 @@ export class ImageMapComponent implements OnInit, AfterViewInit {
           duration: NOTIFICATION_TIME * 1000,
         })
       }
-    },         100)
+    }, 100)
   }
 
   mouseDownEvent(event: any) {
@@ -332,7 +333,7 @@ export class ImageMapComponent implements OnInit, AfterViewInit {
       setTimeout(() => {
         const focusTitle = this.title.filter((_, index: number) => index === this.selectedRadio)
         focusTitle[0].nativeElement.focus()
-      },         400)
+      }, 400)
       this.addCoordsToForm(event.clientX - canvasLeft, event.clientY - canvasTop, x, y)
       // } else {
       //   this.handleMouseUp(event)
@@ -349,9 +350,7 @@ export class ImageMapComponent implements OnInit, AfterViewInit {
         const y = this.startY1 - this.canvas.nativeElement.getBoundingClientRect().top
         const w = event.clientX - this.canvas.nativeElement.getBoundingClientRect().left - x
         const h = event.clientY - this.canvas.nativeElement.getBoundingClientRect().top - y
-        this.canvas.nativeElement
-          .getContext('2d')
-          .clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height)
+        this.canvas.nativeElement.getContext('2d').clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height)
         this.drawAll(this.canvas.nativeElement.getContext('2d'))
         this.canvas.nativeElement.getContext('2d').globalAlpha = 1
         this.canvas.nativeElement.getContext('2d').fillStyle = 'black'

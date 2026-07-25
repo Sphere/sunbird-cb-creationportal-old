@@ -6,14 +6,7 @@ import { ChannelStoreService } from './../../../services/store.service'
 
 import { ChannelResolverService } from './../../../services/resolver.service'
 
-import {
-  Component,
-  OnInit,
-  Input,
-  OnChanges,
-  ViewChild,
-  ElementRef,
-} from '@angular/core'
+import { Component, OnInit, Input, OnChanges, ViewChild, ElementRef } from '@angular/core'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatDialog } from '@angular/material/dialog'
@@ -23,7 +16,6 @@ import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-renderer',
@@ -31,7 +23,6 @@ import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
   styleUrls: ['./renderer.component.scss'],
 })
 export class RendererComponent implements OnInit, OnChanges {
-
   @Input() id = ''
   @Input() isSubmitPressed = false
   event = false
@@ -53,16 +44,14 @@ export class RendererComponent implements OnInit, OnChanges {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private renderService: ChannelResolverService,
-  ) { }
+  ) {}
 
   ngOnInit() {
-    this.store.update.subscribe(
-      (id: string) => {
-        if (id === this.id) {
-          this.initiate()
-        }
-      },
-    )
+    this.store.update.subscribe((id: string) => {
+      if (id === this.id) {
+        this.initiate()
+      }
+    })
   }
 
   ngOnChanges() {
@@ -72,7 +61,7 @@ export class RendererComponent implements OnInit, OnChanges {
   loadSelectorWidget() {
     if (this.widgetData.widgetSubType === 'selectorResponsive') {
       this.selectorWidget = []
-      this.widgetData.children.map(v => {
+      this.widgetData.children.forEach(v => {
         const childData = this.store.getUpdatedContent(v)
         this.selectorWidget.push(childData.addOnData)
       })
@@ -90,9 +79,8 @@ export class RendererComponent implements OnInit, OnChanges {
         noData: '',
         widgets: [],
       }
-      this.widgetData.children.map(
-        v => {
-          switch (this.store.getUpdatedContent(v).purpose) {
+      this.widgetData.children.forEach(v => {
+        switch (this.store.getUpdatedContent(v).purpose) {
           case 'noDataWidget':
             this.widgetMap.noData = v
             break
@@ -105,9 +93,8 @@ export class RendererComponent implements OnInit, OnChanges {
           default:
             this.widgetMap.widgets.push(v)
             break
-          }
-        },
-      )
+        }
+      })
     }
   }
 
@@ -170,11 +157,9 @@ export class RendererComponent implements OnInit, OnChanges {
     const data = ev.dataTransfer.getData('text/plain')
     this.store.addWidget(this.id, data)
     if (data !== 'strip') {
-      setTimeout(
-        () => {
-          this.triggerEdit()
-        },
-        10)
+      setTimeout(() => {
+        this.triggerEdit()
+      }, 10)
     }
   }
 
@@ -196,10 +181,7 @@ export class RendererComponent implements OnInit, OnChanges {
       node.parent = this.widgetData.parent
       node.rowNo = this.widgetData.rowNo
       node.purpose = this.widgetData.purpose
-      this.store.insertNewNode(
-        node,
-        this.store.getUpdatedContent(this.widgetData.parent).children.indexOf(this.id) + 1,
-      )
+      this.store.insertNewNode(node, this.store.getUpdatedContent(this.widgetData.parent).children.indexOf(this.id) + 1)
     } else {
       node.parent = this.id
       this.store.insertNewNode(node)
@@ -207,22 +189,16 @@ export class RendererComponent implements OnInit, OnChanges {
     this.loadSelectorWidget()
     this.loadContentStripWidget()
     if (this.widgetData.widgetSubType === 'selectorResponsive') {
-      setTimeout(
-        () => {
-          this.currentIndex = this.widgetData.children.length - 1
-        },
-        100,
-      )
+      setTimeout(() => {
+        this.currentIndex = this.widgetData.children.length - 1
+      }, 100)
     } else if (
       this.widgetData.widgetSubType === 'contentStripMultiple' ||
       (this.widgetData.widgetSubType === '' && this.widgetData.purpose === 'holder')
     ) {
-      setTimeout(
-        () => {
-          this.showData = purpose === 'noDataWidget' ? 'noData' : purpose === 'errorWidget' ? 'error' : 'data'
-        },
-        100,
-      )
+      setTimeout(() => {
+        this.showData = purpose === 'noDataWidget' ? 'noData' : purpose === 'errorWidget' ? 'error' : 'data'
+      }, 100)
     }
   }
 

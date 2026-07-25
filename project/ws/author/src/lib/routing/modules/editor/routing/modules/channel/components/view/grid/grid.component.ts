@@ -8,7 +8,6 @@ import { ChannelStoreService } from './../../../services/store.service'
 
 import { responsiveSuffix, sizeSuffix } from '@ws-widget/collection/src/public-api'
 
-
 interface IAuthorGrid {
   id: string
   className: string
@@ -21,9 +20,7 @@ interface IAuthorGrid {
   templateUrl: './grid.component.html',
   styleUrls: ['./grid.component.scss'],
 })
-
 export class GridComponent implements OnInit, OnChanges {
-
   @Input() id = ''
   hover!: boolean[]
   @Input() isSubmitPressed = false
@@ -33,20 +30,18 @@ export class GridComponent implements OnInit, OnChanges {
   constructor(
     private store: ChannelStoreService,
     private renderService: ChannelResolverService,
-  ) { }
+  ) {}
 
   ngOnChanges() {
     this.initiate()
   }
 
   ngOnInit() {
-    this.store.update.subscribe(
-      (id: string) => {
-        if (id === this.id) {
-          this.initiate()
-        }
-      },
-    )
+    this.store.update.subscribe((id: string) => {
+      if (id === this.id) {
+        this.initiate()
+      }
+    })
   }
 
   initiate() {
@@ -57,13 +52,12 @@ export class GridComponent implements OnInit, OnChanges {
       this.containerClass = `-mx-${this.widget.data.gutter}`
     }
     const gutterAdjustment = this.widget.data.gutter !== null ? `p-${this.widget.data.gutter}` : ''
-    this.widget.children.map(row => {
+    this.widget.children.forEach(row => {
       const child = this.store.getUpdatedContent(row)
       const data: IAuthorGrid = {
         id: child.id,
         className: Object.entries(child.dimensions as Record<tDimensions, tSize>).reduce(
-          (agg, [k, v]) =>
-            `${agg} ${(responsiveSuffix as { [id: string]: string })[k]}:${sizeSuffix[v]}`,
+          (agg, [k, v]) => `${agg} ${(responsiveSuffix as { [id: string]: string })[k]}:${sizeSuffix[v]}`,
           `${child.className} w-full ${gutterAdjustment}`,
         ),
         styles: child.styles || {},
@@ -91,10 +85,6 @@ export class GridComponent implements OnInit, OnChanges {
         index = index + this.processedWidgets[i].length
       }
     }
-    this.store.insertNewNode(
-      node,
-      rowNo ? index : undefined,
-      rowNo ? true : false,
-    )
+    this.store.insertNewNode(node, rowNo ? index : undefined, rowNo ? true : false)
   }
 }

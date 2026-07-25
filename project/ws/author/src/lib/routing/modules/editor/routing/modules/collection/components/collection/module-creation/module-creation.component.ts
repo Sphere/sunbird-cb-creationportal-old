@@ -4118,7 +4118,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
 
         const meta = <any>{}
 
-        Object.keys(currentMeta).map(v => {
+        Object.keys(currentMeta).forEach(v => {
           if (
             v !== 'versionKey' &&
             v !== 'visibility' &&
@@ -5004,7 +5004,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     const originalMeta = this.contentService.getOriginalMeta(this.currentContent)
     const currentMeta = this.fileUploadForm.value
     const meta: any = {}
-    Object.keys(currentMeta).map(v => {
+    Object.keys(currentMeta).forEach(v => {
       if (
         v !== 'versionKey' &&
         JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !== JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])

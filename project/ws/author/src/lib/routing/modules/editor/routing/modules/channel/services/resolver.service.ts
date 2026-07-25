@@ -6,20 +6,17 @@ import { NsWidgetResolver } from '@ws-widget/resolver'
 
 import { IWidgetAuthor, tDimensions, tSize } from '../interface/widget'
 
-
 @Injectable()
 export class ChannelResolverService {
   private currentIndex = 0
-  constructor() { }
+  constructor() {}
 
   private getUniqueId(): string {
     this.currentIndex += 1
     return (new Date().getTime() + this.currentIndex).toString()
   }
 
-  renderFromJSON(
-    data: NsWidgetResolver.IRenderConfigWithAnyData,
-  ): { [key: string]: IWidgetAuthor } {
+  renderFromJSON(data: NsWidgetResolver.IRenderConfigWithAnyData): { [key: string]: IWidgetAuthor } {
     const returnData = {} as any
     const recursiveFunc = (widget: NsWidgetResolver.IRenderConfigWithAnyData): string => {
       const id = this.getUniqueId()
@@ -110,8 +107,7 @@ export class ChannelResolverService {
           break
 
         case 'contentStripMultiple':
-          const contentStripWidget: NsContentStripMultiple.IContentStripMultiple = (widget as any)
-            .widgetData
+          const contentStripWidget: NsContentStripMultiple.IContentStripMultiple = (widget as any).widgetData
           returnWidget.data = {
             loader: contentStripWidget.loader || false,
             isChannelStrip: true,
@@ -198,10 +194,7 @@ export class ChannelResolverService {
     return returnData
   }
 
-  renderToJSON(
-    data: { [key: string]: IWidgetAuthor },
-    parent?: string,
-  ): NsWidgetResolver.IRenderConfigWithAnyData {
+  renderToJSON(data: { [key: string]: IWidgetAuthor }, parent?: string): NsWidgetResolver.IRenderConfigWithAnyData {
     const recursiveFunc = (id: string): NsWidgetResolver.IRenderConfigWithAnyData => {
       const returnWidget: any = {
         widgetSubType: data[id].widgetSubType,
@@ -213,12 +206,12 @@ export class ChannelResolverService {
 
       switch (data[id].widgetSubType) {
         case 'gridLayout':
-          (returnWidget as NsWidgetResolver.IWidgetData<IGridLayoutDataMain>).widgetData = {
+          ;(returnWidget as NsWidgetResolver.IWidgetData<IGridLayoutDataMain>).widgetData = {
             gutter: data[id].data.gutter,
             fromBasicEditor: data[id].data.fromBasicEditor,
             widgets: [] as any,
           }
-          data[id].children.map(v => {
+          data[id].children.forEach(v => {
             if (returnWidget.widgetData.widgets[data[v].rowNo]) {
               returnWidget.widgetData.widgets[data[v].rowNo].push({
                 dimensions: data[v].dimensions,
@@ -240,12 +233,14 @@ export class ChannelResolverService {
           break
 
         case 'linearLayout':
-          (returnWidget as NsWidgetResolver.IWidgetData<{
-            widgets: NsWidgetResolver.IRenderConfigWithAnyData[]
-          }>).widgetData = {
+          ;(
+            returnWidget as NsWidgetResolver.IWidgetData<{
+              widgets: NsWidgetResolver.IRenderConfigWithAnyData[]
+            }>
+          ).widgetData = {
             widgets: [] as any,
           }
-          data[id].children.map(v => {
+          data[id].children.forEach(v => {
             returnWidget.widgetData.widgets.push({
               widget: recursiveFunc(v),
             })
@@ -253,10 +248,10 @@ export class ChannelResolverService {
           break
 
         case 'tabLayout':
-          (returnWidget as NsWidgetResolver.IWidgetData<NsWidgetLayoutTab.ILayout>).widgetData = {
+          ;(returnWidget as NsWidgetResolver.IWidgetData<NsWidgetLayoutTab.ILayout>).widgetData = {
             tabs: [] as any,
           }
-          data[id].children.map(v => {
+          data[id].children.forEach(v => {
             returnWidget.widgetData.tabs.push({
               tabKey: data[v].addOnData.tabKey,
               tabTitle: data[v].addOnData.tabTitle,
@@ -266,15 +261,13 @@ export class ChannelResolverService {
           break
 
         case 'selectorResponsive':
-          (returnWidget as NsWidgetResolver.IWidgetData<ISelectorResponsive | null>).widgetData = {
+          ;(returnWidget as NsWidgetResolver.IWidgetData<ISelectorResponsive | null>).widgetData = {
             selectFrom: [] as any,
             type: data[id].data.type,
             subType: data[id].data.subType,
           }
-          data[id].children.map(v => {
-            (returnWidget as NsWidgetResolver.IWidgetData<
-              ISelectorResponsive
-            >).widgetData.selectFrom.push({
+          data[id].children.forEach(v => {
+            ;(returnWidget as NsWidgetResolver.IWidgetData<ISelectorResponsive>).widgetData.selectFrom.push({
               minWidth: data[v].addOnData.minWidth,
               maxWidth: data[v].addOnData.maxWidth,
               widget: recursiveFunc(v),
@@ -283,9 +276,7 @@ export class ChannelResolverService {
           break
 
         case 'galleryView':
-          (returnWidget as NsWidgetResolver.IWidgetData<
-            NsGalleryView.IWidgetGalleryView
-          >).widgetData = {
+          ;(returnWidget as NsWidgetResolver.IWidgetData<NsGalleryView.IWidgetGalleryView>).widgetData = {
             designVal: data[id].data.designVal,
             configs: data[id].data.configs,
             cardMenu: [] as any,
@@ -295,10 +286,8 @@ export class ChannelResolverService {
             type: data[id].data.type,
             subType: data[id].data.subType,
           }
-          data[id].children.map(v => {
-            (returnWidget as NsWidgetResolver.IWidgetData<
-              NsGalleryView.IWidgetGalleryView
-            >).widgetData.cardMenu.push({
+          data[id].children.forEach(v => {
+            ;(returnWidget as NsWidgetResolver.IWidgetData<NsGalleryView.IWidgetGalleryView>).widgetData.cardMenu.push({
               widget: recursiveFunc(v),
               cardData: data[v].addOnData as any,
             })
@@ -306,9 +295,7 @@ export class ChannelResolverService {
           break
 
         case 'contentStripMultiple':
-          (returnWidget as NsWidgetResolver.IWidgetData<
-            NsContentStripMultiple.IContentStripMultiple
-          >).widgetData = {
+          ;(returnWidget as NsWidgetResolver.IWidgetData<NsContentStripMultiple.IContentStripMultiple>).widgetData = {
             noDataWidget: undefined,
             loader: data[id].data.loader,
             errorWidget: undefined,
@@ -325,13 +312,13 @@ export class ChannelResolverService {
           }
           data[id].children
             .filter(v => data[v].purpose !== '')
-            .map(v => {
+            .forEach(v => {
               const child: NsContentStripMultiple.IContentStripUnit = {
                 ...(data[v].data as any),
                 preWidgets: [] as any,
                 postWidgets: [] as any,
               }
-              data[v].children.map(childWidget => {
+              data[v].children.forEach(childWidget => {
                 switch (data[childWidget].purpose) {
                   case 'noDataWidget':
                     child.noDataWidget = recursiveFunc(childWidget)
@@ -340,10 +327,10 @@ export class ChannelResolverService {
                     child.errorWidget = recursiveFunc(childWidget)
                     break
                   case 'preWidget':
-                    (child.preWidgets || []).push(recursiveFunc(childWidget))
+                    ;(child.preWidgets || []).push(recursiveFunc(childWidget))
                     break
                   case 'postWidget':
-                    (child.postWidgets || []).push(recursiveFunc(childWidget))
+                    ;(child.postWidgets || []).push(recursiveFunc(childWidget))
                     break
                   case 'info':
                     child.info = {
@@ -363,14 +350,10 @@ export class ChannelResolverService {
       }
       return returnWidget
     }
-    return parent
-      ? recursiveFunc(parent)
-      : recursiveFunc(Object.keys(data).find(v => !data[v].parent) as string)
+    return parent ? recursiveFunc(parent) : recursiveFunc(Object.keys(data).find(v => !data[v].parent) as string)
   }
 
-  private basicConversionToIWidgetAuthor(
-    widget: NsWidgetResolver.IRenderConfigWithAnyData,
-  ): IWidgetAuthor {
+  private basicConversionToIWidgetAuthor(widget: NsWidgetResolver.IRenderConfigWithAnyData): IWidgetAuthor {
     return {
       addOnData: {},
       widgetType: widget.widgetType || '',

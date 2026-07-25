@@ -56,7 +56,7 @@ export class ContentStripHolderComponent implements OnInit, OnChanges {
       postWidgets: [] as string[],
     }
     this.widget = this.store.getUpdatedContent(this.id)
-    this.widget.children.map(v => {
+    this.widget.children.forEach(v => {
       switch (this.store.getUpdatedContent(v).purpose) {
         case 'info':
           this.widgetMap.info = v

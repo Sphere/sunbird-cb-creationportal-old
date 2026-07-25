@@ -4,27 +4,14 @@ declare const zip: any
 
 import { ValueService } from '@ws-widget/utils/src/public-api'
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
-  TemplateRef,
-  OnChanges,
-} from '@angular/core'
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild, TemplateRef, OnChanges } from '@angular/core'
 
 import { FormBuilder, FormGroup } from '@angular/forms'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatDialog } from '@angular/material/dialog'
 
-import {
-  CONTENT_BASE_STATIC,
-  CONTENT_BASE_STREAM,
-  CONTENT_BASE_WEBHOST,
-} from '@ws/author/src/lib/constants/apiEndpoints'
+import { CONTENT_BASE_STATIC, CONTENT_BASE_STREAM, CONTENT_BASE_WEBHOST } from '@ws/author/src/lib/constants/apiEndpoints'
 
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
 
@@ -63,7 +50,6 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
 import { CollectionStoreService } from '../../../collection/services/store.service'
 
 import { NSApiRequest } from '../../../../../../../../interface/apiRequest'
-
 
 @Component({
   standalone: false,
@@ -121,7 +107,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
     private profanityService: ProfanityService,
     private editorService: EditorService,
     private storeService: CollectionStoreService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.filetype = this.storeService.uploadFileTypeValue
@@ -191,10 +177,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
   }
   triggerDataChange() {
     const updatedMeta = this.contentService.getUpdatedMeta(this.currentContent)
-    if (
-      !this.isCollectionEditor ||
-      (this.isCollectionEditor && updatedMeta.category === 'Resource')
-    ) {
+    if (!this.isCollectionEditor || (this.isCollectionEditor && updatedMeta.category === 'Resource')) {
       this.assignData(updatedMeta)
     }
   }
@@ -210,7 +193,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.canUpdate = false
     this.fileUploadForm.controls.artifactUrl.setValue(meta.artifactUrl || '')
     this.fileUploadForm.controls.mimeType.setValue(meta.mimeType || 'application/pdf')
-    this.mimeType = (meta.mimeType) ? meta.mimeType : ''
+    this.mimeType = meta.mimeType ? meta.mimeType : ''
     // this.fileUploadForm.controls.isIframeSupported.setValue(meta.isIframeSupported || 'Yes')
     // this.fileUploadForm.controls.isInIntranet.setValue(meta.isInIntranet || false)
     this.fileUploadForm.controls.isExternal.setValue(meta.isExternal || false)
@@ -251,7 +234,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
       default:
         this.acceptType = '.mp3,.mp4,.pdf,.zip,.m4v'
     }
-
   }
 
   createForm() {
@@ -323,7 +305,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
             this.fileUploadCondition.preview &&
             this.fileUploadCondition.externalReference
           ) {
-
             this.assignFileValues(file, fileName)
           }
         })
@@ -360,15 +341,15 @@ export class FileUploadComponent implements OnInit, OnChanges {
     this.file = file
     this.mimeType = fileName.toLowerCase().endsWith('.pdf')
       ? 'application/pdf'
-      : (fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v'))
+      : fileName.toLowerCase().endsWith('.mp4') || fileName.toLowerCase().endsWith('.m4v')
         ? 'video/mp4'
         : fileName.toLowerCase().endsWith('.zip')
           ? 'application/vnd.ekstep.html-archive'
           : 'audio/mpeg'
 
     if (
-      (currentContentData.status === 'Live' || currentContentData.prevStatus === 'Live')
-      && this.mimeType !== currentContentData.mimeType
+      (currentContentData.status === 'Live' || currentContentData.prevStatus === 'Live') &&
+      this.mimeType !== currentContentData.mimeType
     ) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -387,7 +368,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
         this.extractFile()
       }
     }
-
   }
 
   // From IGOT
@@ -509,8 +489,10 @@ export class FileUploadComponent implements OnInit, OnChanges {
         delete (requestBody as any).request.content.category
       }
 
-      const contenUpdateRes: any =
-        await this.editorService.updateContentV3(requestBody, this.contentService.currentContent).toPromise().catch(_error => { })
+      const contenUpdateRes: any = await this.editorService
+        .updateContentV3(requestBody, this.contentService.currentContent)
+        .toPromise()
+        .catch(_error => {})
       if (contenUpdateRes && contenUpdateRes.params && contenUpdateRes.params.status === 'successful') {
         // const updateHierarchyReq: NSApiRequest.IContentUpdateV3 = {
         //   request: {
@@ -522,7 +504,10 @@ export class FileUploadComponent implements OnInit, OnChanges {
         // }
         // const updateHierarchyRes: any = await this.editorService.updateContentV4(updateHierarchyReq).toPromise().catch(_error => { })
         // if (updateHierarchyRes && updateHierarchyRes.params && updateHierarchyRes.params.status === 'successful') {
-        const hierarchyData = await this.editorService.readcontentV3(this.contentService.parentContent).toPromise().catch(_error => { })
+        const hierarchyData = await this.editorService
+          .readcontentV3(this.contentService.parentContent)
+          .toPromise()
+          .catch(_error => {})
         if (hierarchyData) {
           this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
           this.upload()
@@ -638,9 +623,9 @@ export class FileUploadComponent implements OnInit, OnChanges {
   generateUrl(oldUrl: any) {
     // @ts-ignore: Unreachable code error
     // tslint:disable-next-line:no-console
-    console.log(window["env"]["azureBucket"])
+    console.log(window['env']['azureBucket'])
     // @ts-ignore: Unreachable code error
-    this.bucket = window["env"]["azureBucket"]
+    this.bucket = window['env']['azureBucket']
     if (oldUrl.includes(this.bucket)) {
       return oldUrl
     }
@@ -664,11 +649,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
 
   upload() {
     const formdata = new FormData()
-    formdata.append(
-      'content',
-      this.file as Blob,
-      (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''),
-    )
+    formdata.append('content', this.file as Blob, (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''))
     this.loaderService.changeLoad.next(true)
     this.uploadService
       .upload(
@@ -759,8 +740,9 @@ export class FileUploadComponent implements OnInit, OnChanges {
           this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
           if (this.mimeType === 'application/vnd.ekstep.html-archive' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
             this.fileUploadForm.controls.isExternal.setValue(false)
-            this.fileUploadForm.controls['streamingUrl'].setValue(v ?
-              this.generateStreamUrl((this.fileUploadCondition.url) ? this.fileUploadCondition.url : '') : '')
+            this.fileUploadForm.controls['streamingUrl'].setValue(
+              v ? this.generateStreamUrl(this.fileUploadCondition.url ? this.fileUploadCondition.url : '') : '',
+            )
             this.fileUploadForm.controls['entryPoint'].setValue(this.entryPoint ? this.entryPoint : '')
           }
 
@@ -814,24 +796,19 @@ export class FileUploadComponent implements OnInit, OnChanges {
   }
 
   profanityCheckAPICall(url: string) {
-    this.profanityService.startProfanity(this.currentContent, url, (this.file ? this.file.name : this.currentContent)).subscribe()
+    this.profanityService.startProfanity(this.currentContent, url, this.file ? this.file.name : this.currentContent).subscribe()
   }
 
   storeData() {
     const originalMeta = this.contentService.getOriginalMeta(this.currentContent)
     const currentMeta = this.fileUploadForm.value
     const meta: any = {}
-    Object.keys(currentMeta).map(v => {
+    Object.keys(currentMeta).forEach(v => {
       if (
         v !== 'versionKey' &&
-        JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !==
-        JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])
+        JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !== JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])
       ) {
-        if (
-          currentMeta[v] ||
-          (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
-            currentMeta[v] === false)
-        ) {
+        if (currentMeta[v] || (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' && currentMeta[v] === false)) {
           meta[v] = currentMeta[v]
         } else {
           meta[v] = JSON.parse(
@@ -851,9 +828,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
   }
 
   getDuration() {
-    const content = document.createElement(
-      this.mimeType === 'video/mp4' ? 'video' : 'audio',
-    )
+    const content = document.createElement(this.mimeType === 'video/mp4' ? 'video' : 'audio')
     content.preload = 'metadata'
     this.enableUpload = false
     content.onloadedmetadata = () => {
@@ -889,7 +864,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
   generateStreamUrl(fileName: string) {
     // return `${environment.karmYogi}${environment.scromContentEndpoint}${this.currentContent}-snapshot/${fileName}`
     return `${environment.azureHost}/${environment.azureBucket}/html/${this.currentContent}-snapshot/${fileName}`
-
   }
 
   processAndShowResult() {
@@ -903,12 +877,9 @@ export class FileUploadComponent implements OnInit, OnChanges {
         const error = document.getElementById('errorFiles')
         if (error) {
           for (let i = 0; i < error.children.length; i += 1) {
-            error.children[i].innerHTML = error.children[i].innerHTML.replace(
-              /[^A-Za-z0-9./]/g,
-              match => {
-                return `<i style=background-color:red;font-weight:bold>${match}</i>`
-              },
-            )
+            error.children[i].innerHTML = error.children[i].innerHTML.replace(/[^A-Za-z0-9./]/g, match => {
+              return `<i style=background-color:red;font-weight:bold>${match}</i>`
+            })
           }
         }
       })

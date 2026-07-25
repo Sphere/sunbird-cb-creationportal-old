@@ -6,7 +6,6 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
 
 import { jsPlumb, OnConnectionBindInfo } from 'jsplumb'
 
-
 @Component({
   standalone: false,
   selector: 'viewer-question',
@@ -14,7 +13,6 @@ import { jsPlumb, OnConnectionBindInfo } from 'jsplumb'
   styleUrls: ['./question.component.scss'],
 })
 export class QuestionComponent implements OnInit, AfterViewInit {
-
   @Input() artifactUrl = ''
   @Input() questionNumber = 0
   @Input() total = 0
@@ -35,7 +33,6 @@ export class QuestionComponent implements OnInit, AfterViewInit {
   @Input() markedQuestions: Set<string> = new Set()
   @Output() itemSelected = new EventEmitter<string | Object>()
   @Input()
-
   quizAnswerHash: { [questionId: string]: string[] } = {}
   title = 'match'
   jsPlumbInstance: any
@@ -47,7 +44,7 @@ export class QuestionComponent implements OnInit, AfterViewInit {
   constructor(
     private domSanitizer: DomSanitizer,
     private elementRef: ElementRef,
-  ) { }
+  ) {}
 
   ngOnInit() {
     // const res: string[] = this.question.question.match(/<img[^>]+src="([^">]+)"/g) || ['']
@@ -63,7 +60,7 @@ export class QuestionComponent implements OnInit, AfterViewInit {
     //     this.question.question = this.question.question.replace(toBeReplaced, `src="${newUrl}"`)
     //   }
     // }
-    console.log("this.question.question 2", this.question.question)
+    console.log('this.question.question 2', this.question.question)
 
     if (this.question.questionType === 'fitb') {
       const iterationNumber = (this.question.question.match(/<input/g) || []).length
@@ -82,7 +79,7 @@ export class QuestionComponent implements OnInit, AfterViewInit {
       this.safeQuestion = this.domSanitizer.bypassSecurityTrustHtml(this.question.question)
     }
     if (this.question.questionType === 'mtf') {
-      this.question.options.map(option => (option.matchForView = option.match))
+      this.question.options.forEach(option => (option.matchForView = option.match))
       const array = this.question.options.map(elem => elem.match)
       const arr = this.shuffle(array)
       for (let i = 0; i < this.question.options.length; i += 1) {
@@ -123,14 +120,15 @@ export class QuestionComponent implements OnInit, AfterViewInit {
           this.setBorderColorById(i.newSourceId, '')
           this.setBorderColorById(i.originalTargetId, '')
           this.resetColor()
-        })
+        },
+      )
       // get the list of ".smallWindow" elements.
       const questionSelector = `.question${this.question.questionId}`
       const answerSelector = `.answer${this.question.questionId}`
       const questions = this.jsPlumbInstance.getSelector(questionSelector)
       const answers = this.jsPlumbInstance.getSelector(answerSelector)
       this.jsPlumbInstance.batch(() => {
-        this.jsPlumbInstance.makeSource((questions as unknown as string), {
+        this.jsPlumbInstance.makeSource(questions as unknown as string, {
           maxConnections: 1,
           connector: connectorType,
           overlay: 'Arrow',
@@ -380,5 +378,4 @@ export class QuestionComponent implements OnInit, AfterViewInit {
         .setAttribute('style', 'border-style: none none solid none; border-width: 1px; padding: 8px 12px;')
     }
   }
-
 }

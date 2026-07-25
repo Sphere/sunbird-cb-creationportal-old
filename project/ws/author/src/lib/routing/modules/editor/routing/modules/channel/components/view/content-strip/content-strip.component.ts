@@ -6,7 +6,6 @@ import { ChannelStoreService } from './../../../services/store.service'
 
 import { ChannelResolverService } from './../../../services/resolver.service'
 
-
 interface IContentStripWidgetMap {
   error: string
   noData: string
@@ -18,9 +17,7 @@ interface IContentStripWidgetMap {
   templateUrl: './content-strip.component.html',
   styleUrls: ['./content-strip.component.scss'],
 })
-
 export class ContentStripComponent implements OnInit, OnChanges {
-
   @Input() id = ''
   @Input() isSubmitPressed = false
   @Input() showData: 'data' | 'error' | 'loader' | 'noData' = 'data'
@@ -30,20 +27,18 @@ export class ContentStripComponent implements OnInit, OnChanges {
   constructor(
     private renderService: ChannelResolverService,
     private store: ChannelStoreService,
-  ) { }
+  ) {}
 
   ngOnChanges() {
     this.initiate()
   }
 
   ngOnInit() {
-    this.store.update.subscribe(
-      (id: string) => {
-        if (id === this.id) {
-          this.initiate()
-        }
-      },
-    )
+    this.store.update.subscribe((id: string) => {
+      if (id === this.id) {
+        this.initiate()
+      }
+    })
   }
 
   initiate() {
@@ -53,9 +48,8 @@ export class ContentStripComponent implements OnInit, OnChanges {
       widgets: [],
     }
     this.widget = this.store.getUpdatedContent(this.id)
-    this.widget.children.map(
-      v => {
-        switch (this.store.getUpdatedContent(v).purpose) {
+    this.widget.children.forEach(v => {
+      switch (this.store.getUpdatedContent(v).purpose) {
         case 'noDataWidget':
           this.widgetMap.noData = v
           break
@@ -65,9 +59,8 @@ export class ContentStripComponent implements OnInit, OnChanges {
         default:
           this.widgetMap.widgets.push(v)
           break
-        }
-      },
-    )
+      }
+    })
     if (!this.widgetMap.widgets.length) {
       const data = this.renderService.renderFromJSON({} as any)
       const node = data[Object.keys(data)[0]]
@@ -76,16 +69,13 @@ export class ContentStripComponent implements OnInit, OnChanges {
       this.widget.children.push(node.id)
       this.store.updateContent(node.id, node, false)
       this.store.updateContent(this.id, this.widget, false)
-      setTimeout(
-        () => {
-          this.store.triggerEdit(node.id)
-        },
-        10)
+      setTimeout(() => {
+        this.store.triggerEdit(node.id)
+      }, 10)
     }
   }
 
   triggerEdit(id: string) {
     this.store.triggerEdit(id)
   }
-
 }

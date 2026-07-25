@@ -30,7 +30,6 @@ import { ITimeSpent, NSLearningGraph } from '../../models/learning.models'
 
 // import { NSAnalyticsData } from '../../../analytics/models/analytics.model'
 
-
 @Component({
   standalone: false,
   selector: 'ws-app-learning-time',
@@ -69,15 +68,9 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
   monthNov: ElementRef<HTMLInputElement> | null = null
   @ViewChild('monthDec', { static: true })
   monthDec: ElementRef<HTMLInputElement> | null = null
-  @ViewChild('labelUserOverPeriod', { static: true }) labelUserOverPeriod: ElementRef<
-    HTMLInputElement
-  > | null = null
-  @ViewChild('labelUserAvg', { static: true }) labelUserAvg: ElementRef<
-    HTMLInputElement
-  > | null = null
-  @ViewChild('labelOrgAvg', { static: true }) labelOrgAvg: ElementRef<
-    HTMLInputElement
-  > | null = null
+  @ViewChild('labelUserOverPeriod', { static: true }) labelUserOverPeriod: ElementRef<HTMLInputElement> | null = null
+  @ViewChild('labelUserAvg', { static: true }) labelUserAvg: ElementRef<HTMLInputElement> | null = null
+  @ViewChild('labelOrgAvg', { static: true }) labelOrgAvg: ElementRef<HTMLInputElement> | null = null
   @ViewChild('labelX', { static: true }) labelX: ElementRef<HTMLInputElement> | null = null
   @ViewChild('labelY', { static: true }) labelY: ElementRef<HTMLInputElement> | null = null
   legendPosition: 'left' | 'right' | 'top' | 'bottom' = 'bottom'
@@ -104,9 +97,7 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
   userAvg = 0
   apiFetchStatus: TFetchStatus = 'none'
   startDate = '2018-04-01'
-  endDate = `${new Date().getFullYear()}-${`0${new Date().getMonth() + 1}`.slice(
-    -2,
-  )}-${`0${new Date().getDate()}`.slice(-2)}`
+  endDate = `${new Date().getFullYear()}-${`0${new Date().getMonth() + 1}`.slice(-2)}-${`0${new Date().getDate()}`.slice(-2)}`
   paramSubscription: Subscription | null = null
   learningTimeData: NSProfileData.ITimeSpentResponse | null = null
   userPointsEarned = 0
@@ -179,8 +170,7 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
   bubbleData: NSProfileData.IBubbleChart[] = []
   prefChangeSubscription: Subscription | null = null
   enabledTab = this.route.snapshot.data.pageData.data.enabledTabs.learning
-  chartsList = this.route.snapshot.data.pageData.data.enabledTabs.learning.subTabs.learningTime
-    .charts
+  chartsList = this.route.snapshot.data.pageData.data.enabledTabs.learning.subTabs.learningTime.charts
   constructor(
     private router: Router,
     private _formBuilder: FormBuilder,
@@ -249,28 +239,24 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     })
     if (this.chartsList.calendarChart) {
-      this.profileSvc
-        .timeSpent(this.startDate, this.endDate, this.contentType, this.isCompleted)
-        .subscribe(
-          (timeSpentTrack: NSProfileData.ITimeSpentResponse) => {
-            this.learningTimeData = timeSpentTrack
-            if (this.learningTimeData) {
-              this.apiFetchStatus = 'done'
-              this.userPointsEarned = this.learningTimeData.points_and_ranks.user_points_earned
-              this.orgWidePointsPercent = Math.round(
-                this.learningTimeData.timespent_user_vs_org_wide.usage_percent,
-              )
-              this.totalLearningHours = Math.round(this.learningTimeData.time_spent_by_user)
-              // this.trackWiseDataFetch(this.learningTimeData.track_wise_user_timespent)
-              this.getMonths(this.learningTimeData)
-              this.piChartDataFetch(this.learningTimeData)
-              this.specialDatesSet()
-            }
-          },
-          () => {
-            this.apiFetchStatus = 'error'
-          },
-        )
+      this.profileSvc.timeSpent(this.startDate, this.endDate, this.contentType, this.isCompleted).subscribe(
+        (timeSpentTrack: NSProfileData.ITimeSpentResponse) => {
+          this.learningTimeData = timeSpentTrack
+          if (this.learningTimeData) {
+            this.apiFetchStatus = 'done'
+            this.userPointsEarned = this.learningTimeData.points_and_ranks.user_points_earned
+            this.orgWidePointsPercent = Math.round(this.learningTimeData.timespent_user_vs_org_wide.usage_percent)
+            this.totalLearningHours = Math.round(this.learningTimeData.time_spent_by_user)
+            // this.trackWiseDataFetch(this.learningTimeData.track_wise_user_timespent)
+            this.getMonths(this.learningTimeData)
+            this.piChartDataFetch(this.learningTimeData)
+            this.specialDatesSet()
+          }
+        },
+        () => {
+          this.apiFetchStatus = 'error'
+        },
+      )
     }
   }
 
@@ -403,12 +389,12 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
         Nov: 11,
         Dec: 12,
       }
-      keys.map((k: any) => {
+      keys.forEach((k: any) => {
         if (this.trackWiseData) {
           this.trackWiseData[k].sort((a, b) => {
             return a.timespent_in_mins > b.timespent_in_mins ? -1 : 1
           })
-          this.trackWiseData[k].map((r, i) => {
+          this.trackWiseData[k].forEach((r, i) => {
             if (i < 3) {
               // this.bubbleChartData.push([
               //   ' ',
@@ -424,8 +410,8 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
                   r.timespent_in_mins / 10 <= 3
                     ? 3
                     : r.timespent_in_mins / 10 > 3 && r.timespent_in_mins / 10 <= 30
-                    ? r.timespent_in_mins / 10
-                    : 30,
+                      ? r.timespent_in_mins / 10
+                      : 30,
                 actual: r.timespent_in_mins,
                 text: r.track,
               })
@@ -589,7 +575,7 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
     const clickedDate = this.timeEvent.getTime() + 330 * 60000
     if (this.learningTimeData) {
       // type void is not assignable to type boolean error
-      this.learningTimeData.date_wise.reverse().find((cur: NSProfileData.IProfileData) => {
+      this.learningTimeData.date_wise.reverse().forEach((cur: NSProfileData.IProfileData) => {
         if (clickedDate === cur.key) {
           this.timeSpent = cur.value
           return
@@ -707,29 +693,21 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
       canvas.id = 'userStatChartId'
       this.chartContainer.nativeElement.appendChild(canvas)
       const data = {
-        labels: this.timeSpentData.org.map(
-          u => `${this.monthArray[new Date(u.day).getMonth()]} ${new Date(u.day).getDate()}`,
-        ),
+        labels: this.timeSpentData.org.map(u => `${this.monthArray[new Date(u.day).getMonth()]} ${new Date(u.day).getDate()}`),
         datasets: [
           {
             label: this.labelUserAvg.nativeElement.value,
             data: this.timeSpentData.user.map(u => Number((u.duration / 60).toFixed(1))),
-            borderColor: this.configSvc.activeThemeObject
-              ? this.configSvc.activeThemeObject.color.primary
-              : '',
+            borderColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
             fill: false,
             backgroundColor: Array(this.timeSpentData.user.length).fill(
-              this.configSvc.activeThemeObject
-                ? this.configSvc.activeThemeObject.color.primary
-                : '',
+              this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
             ),
           },
           {
             label: this.labelOrgAvg.nativeElement.value,
             data: this.timeSpentData.org.map(u => Number((u.duration / 60).toFixed(1))),
-            borderColor: this.configSvc.activeThemeObject
-              ? this.configSvc.activeThemeObject.color.accent
-              : '',
+            borderColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.accent : '',
             fill: false,
             backgroundColor: Array(this.timeSpentData.org.length).fill(
               this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.accent : '',
@@ -737,13 +715,9 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
           },
           {
             label: this.labelUserOverPeriod.nativeElement.value,
-            data: Array(this.timeSpentData.user.length).fill(
-              Number((this.timeSpentData.userAvg / 60).toFixed(1)),
-            ),
+            data: Array(this.timeSpentData.user.length).fill(Number((this.timeSpentData.userAvg / 60).toFixed(1))),
             borderColor: Array(this.timeSpentData.user.length).fill(
-              this.configSvc.activeThemeObject
-                ? this.configSvc.activeThemeObject.color.primary
-                : '',
+              this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
             ),
             type: 'line',
             lineTension: 1,
@@ -756,9 +730,7 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
           display: true,
           position: this.legendPosition,
           labels: {
-            fontColor: this.configSvc.activeThemeObject
-              ? this.configSvc.activeThemeObject.color.primary
-              : '',
+            fontColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
             boxWidth: 10,
           },
         },
@@ -801,9 +773,7 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
           display: true,
           position: this.legendPosition,
           labels: {
-            fontColor: this.configSvc.activeThemeObject
-              ? this.configSvc.activeThemeObject.color.primary
-              : '',
+            fontColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
             boxWidth: 10,
           },
         },
@@ -858,38 +828,23 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateChart() {
     const barThickness = 24
-    if (
-      this.timeSpentData &&
-      this.labelUserAvg &&
-      this.labelOrgAvg &&
-      this.labelUserOverPeriod &&
-      this.labelX &&
-      this.labelY
-    ) {
+    if (this.timeSpentData && this.labelUserAvg && this.labelOrgAvg && this.labelUserOverPeriod && this.labelX && this.labelY) {
       const newData = {
-        labels: this.timeSpentData.org.map(
-          u => `${this.monthArray[new Date(u.day).getMonth()]} ${new Date(u.day).getDate()}`,
-        ),
+        labels: this.timeSpentData.org.map(u => `${this.monthArray[new Date(u.day).getMonth()]} ${new Date(u.day).getDate()}`),
         datasets: [
           {
             label: this.labelUserAvg.nativeElement.value,
             data: this.timeSpentData.user.map(u => Number((u.duration / 60).toFixed(1))),
-            borderColor: this.configSvc.activeThemeObject
-              ? this.configSvc.activeThemeObject.color.primary
-              : '',
+            borderColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
             fill: false,
             backgroundColor: Array(this.timeSpentData.user.length).fill(
-              this.configSvc.activeThemeObject
-                ? this.configSvc.activeThemeObject.color.primary
-                : '',
+              this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
             ),
           },
           {
             label: this.labelOrgAvg.nativeElement.value,
             data: this.timeSpentData.org.map(u => Number((u.duration / 60).toFixed(1))),
-            borderColor: this.configSvc.activeThemeObject
-              ? this.configSvc.activeThemeObject.color.accent
-              : '',
+            borderColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.accent : '',
             fill: false,
             backgroundColor: Array(this.timeSpentData.org.length).fill(
               this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.accent : '',
@@ -897,13 +852,9 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
           },
           {
             label: this.labelUserOverPeriod.nativeElement.value,
-            data: Array(this.timeSpentData.user.length).fill(
-              Number((this.timeSpentData.userAvg / 60).toFixed(1)),
-            ),
+            data: Array(this.timeSpentData.user.length).fill(Number((this.timeSpentData.userAvg / 60).toFixed(1))),
             borderColor: Array(this.timeSpentData.user.length).fill(
-              this.configSvc.activeThemeObject
-                ? this.configSvc.activeThemeObject.color.primary
-                : '',
+              this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
             ),
             type: 'line',
             lineTension: 0.5,
@@ -916,9 +867,7 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
           display: true,
           position: this.legendPosition,
           labels: {
-            fontColor: this.configSvc.activeThemeObject
-              ? this.configSvc.activeThemeObject.color.primary
-              : '',
+            fontColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
             boxWidth: 10,
           },
         },
@@ -961,9 +910,7 @@ export class LearningTimeComponent implements OnInit, AfterViewInit, OnDestroy {
           display: true,
           position: this.legendPosition,
           labels: {
-            fontColor: this.configSvc.activeThemeObject
-              ? this.configSvc.activeThemeObject.color.primary
-              : '',
+            fontColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
             boxWidth: 10,
           },
         },

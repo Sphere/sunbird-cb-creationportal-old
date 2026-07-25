@@ -23,8 +23,7 @@ export class BubbleChartComponent implements OnInit, AfterViewInit, OnDestroy {
   yearStart!: string
   yearEnd!: string
   options: any
-  constructor() {
-  }
+  constructor() {}
 
   ngOnInit() {
     this.popData = {
@@ -153,16 +152,16 @@ export class BubbleChartComponent implements OnInit, AfterViewInit, OnDestroy {
     const currentMonth = today.getMonth()
     const currentYear = today.getFullYear()
     const firstHalf = month.slice(0, currentMonth + 1)
-    const secondHalf = month.slice((currentMonth - 1), 12)
+    const secondHalf = month.slice(currentMonth - 1, 12)
     const currentMonthArray: string[] = []
     const previousMonthArray: string[] = []
 
-    firstHalf.map((mon: string) => {
+    firstHalf.forEach((mon: string) => {
       // tslint:disable-next-line:no-parameter-reassignment
       mon = `${mon}_${currentYear}`
       currentMonthArray.push(mon)
     })
-    secondHalf.map((mon: string) => {
+    secondHalf.forEach((mon: string) => {
       // tslint:disable-next-line:no-parameter-reassignment
       mon = `${mon}_${currentYear - 1}`
       previousMonthArray.push(mon)
@@ -202,10 +201,11 @@ export class BubbleChartComponent implements OnInit, AfterViewInit, OnDestroy {
                 // },
 
                 callback(value) {
-                  return (
-                    `${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                    [(value as number) > 12 ? +(value as number) - 13 : +(value as number) - 1]}${((value as number) > 12 ? yearEnd : yearStart)}`
-                  )
+                  return `${
+                    ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][
+                      (value as number) > 12 ? +(value as number) - 13 : +(value as number) - 1
+                    ]
+                  }${(value as number) > 12 ? yearEnd : yearStart}`
                 },
 
                 source: 'labels',

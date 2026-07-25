@@ -18,7 +18,6 @@ import { WIDGET_LIBRARY } from './../constants/widet'
 
 import { ChannelResolverService } from './resolver.service'
 
-
 @Injectable()
 export class ChannelStoreService {
   originalContent: { [key: string]: { [key: string]: IWidgetAuthor } } = {} as any
@@ -29,7 +28,7 @@ export class ChannelStoreService {
     private contentService: EditorContentService,
     public matDialog: MatDialog,
     private resolver: ChannelResolverService,
-  ) { }
+  ) {}
 
   getUpdatedContent(id = ''): IWidgetAuthor {
     let contentId = id
@@ -41,8 +40,7 @@ export class ChannelStoreService {
     return JSON.parse(
       JSON.stringify({
         ...this.originalContent[this.contentService.currentContent][contentId],
-        ...(this.updatedContent[this.contentService.currentContent] &&
-          this.updatedContent[this.contentService.currentContent][contentId]
+        ...(this.updatedContent[this.contentService.currentContent] && this.updatedContent[this.contentService.currentContent][contentId]
           ? this.updatedContent[this.contentService.currentContent][contentId]
           : {}),
       }),
@@ -52,9 +50,9 @@ export class ChannelStoreService {
   getUpdatedJSON(): { [key: string]: IWidgetAuthor } {
     return this.updatedContent[this.contentService.currentContent]
       ? {
-        ...this.originalContent[this.contentService.currentContent],
-        ...this.updatedContent[this.contentService.currentContent],
-      }
+          ...this.originalContent[this.contentService.currentContent],
+          ...this.updatedContent[this.contentService.currentContent],
+        }
       : this.originalContent[this.contentService.currentContent]
   }
 
@@ -84,7 +82,7 @@ export class ChannelStoreService {
   isValid(): boolean {
     const data = this.getUpdatedJSON()
     let returnValue = true
-    Object.keys(data).map(v => {
+    Object.keys(data).forEach(v => {
       if (!data[v].isValid) {
         returnValue = false
       }
@@ -171,13 +169,10 @@ export class ChannelStoreService {
     const recursiveDelete = (contentId: string) => {
       const content = this.getUpdatedContent(contentId)
       if (content.children && content.children.length) {
-        content.children.map(v => recursiveDelete(v))
+        content.children.forEach(v => recursiveDelete(v))
       }
       delete this.originalContent[this.contentService.currentContent][contentId]
-      if (
-        this.updatedContent[this.contentService.currentContent] &&
-        this.updatedContent[this.contentService.currentContent][contentId]
-      ) {
+      if (this.updatedContent[this.contentService.currentContent] && this.updatedContent[this.contentService.currentContent][contentId]) {
         delete this.updatedContent[this.contentService.currentContent][contentId]
       }
     }
@@ -187,7 +182,7 @@ export class ChannelStoreService {
     recursiveDelete(id)
     if (parent.widgetSubType === 'gridLayout') {
       const childNodes: IWidgetAuthor[] = []
-      parent.children.map(v => {
+      parent.children.forEach(v => {
         const child = this.getUpdatedContent(v)
         if (child.rowNo === node.rowNo && v !== node.id) {
           childNodes.push(child)
@@ -210,14 +205,9 @@ export class ChannelStoreService {
       //     )
       //   })
       // }
-      const elderSibling =
-        childIndex > 0
-          ? this.getUpdatedContent(parent.children[childIndex - 1]).rowNo === node.rowNo
-          : false
+      const elderSibling = childIndex > 0 ? this.getUpdatedContent(parent.children[childIndex - 1]).rowNo === node.rowNo : false
       const youngerSibling =
-        childIndex < parent.children.length - 1
-          ? this.getUpdatedContent(parent.children[childIndex + 1]).rowNo === node.rowNo
-          : false
+        childIndex < parent.children.length - 1 ? this.getUpdatedContent(parent.children[childIndex + 1]).rowNo === node.rowNo : false
       if (!elderSibling && !youngerSibling) {
         for (let i = childIndex + 1; i < parent.children.length; i = i + 1) {
           const child = this.getUpdatedContent(parent.children[i])
@@ -266,16 +256,11 @@ export class ChannelStoreService {
     }
   }
 
-  insertNewNode(
-    data: IWidgetAuthor,
-    index: number | null = null,
-    isRow = false,
-    changeSize = false,
-  ) {
+  insertNewNode(data: IWidgetAuthor, index: number | null = null, isRow = false, changeSize = false) {
     const parent = this.getUpdatedContent(data.parent)
     if (parent.widgetSubType === 'gridLayout' && !isRow) {
       const childNodes: IWidgetAuthor[] = []
-      parent.children.map(v => {
+      parent.children.forEach(v => {
         const child = this.getUpdatedContent(v)
         if (child.rowNo === data.rowNo) {
           childNodes.push(child)
@@ -283,7 +268,7 @@ export class ChannelStoreService {
       })
       if (changeSize) {
         const size: any = Math.round(12 / (childNodes.length + 1)) || 1
-        childNodes.map(v => {
+        childNodes.forEach(v => {
           this.updateContent(
             v.id,
             {
@@ -303,7 +288,7 @@ export class ChannelStoreService {
         } as any
       }
     } else if (parent.widgetSubType === 'gridLayout' && isRow) {
-      parent.children.map(v => {
+      parent.children.forEach(v => {
         const child = this.getUpdatedContent(v)
         if (child.rowNo >= data.rowNo) {
           child.rowNo = child.rowNo + 1
@@ -328,7 +313,7 @@ export class ChannelStoreService {
       const rowIndex = parent.children.indexOf(id)
       let startPosition = -1
       let childIndex = 0
-      parent.children.map((v, i) => {
+      parent.children.forEach((v, i) => {
         if (v === id) {
           childIndex = totalLength
         }
@@ -366,7 +351,7 @@ export class ChannelStoreService {
     } else if (typeof id === 'number') {
       let maxIndex = 0
       const childArray: string[][] = []
-      parent.children.map(v => {
+      parent.children.forEach(v => {
         const child = this.getUpdatedContent(v)
         if (child.rowNo > maxIndex) {
           maxIndex = child.rowNo

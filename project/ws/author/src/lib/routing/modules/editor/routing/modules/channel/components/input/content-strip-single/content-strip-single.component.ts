@@ -33,7 +33,6 @@ import { Observable, of } from 'rxjs'
 
 import { InterestService } from './../../../../../../../../../../../../app/src/lib/routes/profile/routes/interest/services/interest.service'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-content-strip-single',
@@ -72,7 +71,7 @@ export class ContentStripSingleComponent implements OnInit {
     private loader: LoaderService,
     private uploadService: UploadService,
     private matDialog: MatDialog,
-  ) { }
+  ) {}
 
   getPath(...keys: any[]): AbstractControl {
     let path: AbstractControl | undefined
@@ -130,31 +129,26 @@ export class ContentStripSingleComponent implements OnInit {
     this.language = []
     if (this.content.request) {
       if (this.content.request.ids && this.content.request.ids.length) {
-        this.content.request.ids.map(v =>
-          (this.pickerContentData.preselected as Set<string>).add(v),
-        )
+        this.content.request.ids.forEach(v => (this.pickerContentData.preselected as Set<string>).add(v))
         this.requestType = 'ids'
       } else if (this.content.request.searchV6) {
         this.language = this.content.request.searchV6.locale || []
         try {
-          this.keywords = (this.content.request.searchV6.filters as any)[0].andFilters[0]
-            .keywords || []
+          this.keywords = (this.content.request.searchV6.filters as any)[0].andFilters[0].keywords || []
         } catch (_ex) {
           this.keywords = []
         }
         try {
-          this.filterBy =
-            Object.keys((this.content.request.searchV6.sort as any)[0])[0] || 'viewCount'
+          this.filterBy = Object.keys((this.content.request.searchV6.sort as any)[0])[0] || 'viewCount'
         } catch (_ex) {
           this.filterBy = 'viewCount'
         }
         try {
-          this.collectionId = (this.content.request.searchV6.filters as any)[0].andFilters[0]
-            .collectionsId || []
+          this.collectionId = (this.content.request.searchV6.filters as any)[0].andFilters[0].collectionsId || []
         } catch (_ex) {
           this.collectionId = []
         }
-        this.collectionId.map(v => (this.pickerContentData.preselected as Set<string>).add(v))
+        this.collectionId.forEach(v => (this.pickerContentData.preselected as Set<string>).add(v))
         this.requestType = this.content.searchV6Type === 'Collections' ? 'Collections' : 'KB'
       } else if (this.content.request.search) {
         this.requestType = 'search'
@@ -178,18 +172,12 @@ export class ContentStripSingleComponent implements OnInit {
         api: [this.content.request ? this.content.request.api || null : null],
         search: [this.content.request ? this.content.request.search || null : null],
         manualData: this.formBuilder.array([]),
-        searchRegionRecommendation: [
-          this.content.request ? this.content.request.searchRegionRecommendation || null : null,
-        ],
+        searchRegionRecommendation: [this.content.request ? this.content.request.searchRegionRecommendation || null : null],
       }),
     })
 
-    if (
-      this.content.request &&
-      this.content.request.manualData &&
-      this.content.request.manualData.length
-    ) {
-      this.content.request.manualData.map(v => {
+    if (this.content.request && this.content.request.manualData && this.content.request.manualData.length) {
+      this.content.request.manualData.forEach(v => {
         this.addManualDataForm(v)
       })
     }
@@ -220,8 +208,7 @@ export class ContentStripSingleComponent implements OnInit {
           this.content.searchV6Type = null
         }
         this.content = value
-        this.content.searchV6Type =
-          this.requestType === 'Collections' || this.requestType === 'KB' ? this.requestType : null
+        this.content.searchV6Type = this.requestType === 'Collections' || this.requestType === 'KB' ? this.requestType : null
         this.data.emit({
           content: value,
           isValid: this.form.valid,
@@ -285,18 +272,14 @@ export class ContentStripSingleComponent implements OnInit {
     if (goThrough) {
       if (this.requestType === 'KB' || this.requestType === 'Collections') {
         try {
-          this.filterBy =
-            Object.keys((this.getPath('request', 'searchV6').value.sort as any)[0])[0] || 'viewCount'
-          const ids: string[] = (this.getPath('request', 'searchV6').value.filters as any)[0]
-            .andFilters[0].collectionsId
-          ids.map(v => (this.pickerContentData.preselected as Set<string>).add(v))
+          this.filterBy = Object.keys((this.getPath('request', 'searchV6').value.sort as any)[0])[0] || 'viewCount'
+          const ids: string[] = (this.getPath('request', 'searchV6').value.filters as any)[0].andFilters[0].collectionsId
+          ids.forEach(v => (this.pickerContentData.preselected as Set<string>).add(v))
         } catch (_ex) {
           this.filterBy = 'viewCount'
         }
       } else if (this.requestType === 'ids') {
-        this.getPath('request', 'ids').value.map((v: string) =>
-          (this.pickerContentData.preselected as Set<string>).add(v),
-        )
+        this.getPath('request', 'ids').value.map((v: string) => (this.pickerContentData.preselected as Set<string>).add(v))
       }
     }
   }
@@ -328,8 +311,7 @@ export class ContentStripSingleComponent implements OnInit {
     this.getPath('request', 'ids').setValue(lexIDs)
   }
 
-  onSearchV6Change(event?: { content: Partial<NsContent.IContent>; checked: boolean },
-                   ids?: string[], fromAuthChips = false) {
+  onSearchV6Change(event?: { content: Partial<NsContent.IContent>; checked: boolean }, ids?: string[], fromAuthChips = false) {
     const searchV6 = JSON.parse(JSON.stringify(SEARCHV6))
     searchV6.locale = [...this.language]
     searchV6.sort = [
@@ -358,16 +340,24 @@ export class ContentStripSingleComponent implements OnInit {
     }
     if (!this.collectionId.length) {
       const searchBody = this.getPath('request', 'searchV6').value
-      if (searchBody && searchBody.filters && searchBody.filters[0] && searchBody.filters[0].andFilters &&
-        searchBody.filters[0].andFilters[0] && searchBody.filters[0].andFilters[0].collectionsId &&
+      if (
+        searchBody &&
+        searchBody.filters &&
+        searchBody.filters[0] &&
+        searchBody.filters[0].andFilters &&
+        searchBody.filters[0].andFilters[0] &&
+        searchBody.filters[0].andFilters[0].collectionsId &&
         searchBody.filters[0].andFilters[0].collectionsId.length
       ) {
         searchV6.filters[0].andFilters[0].collectionsId = [searchBody.filters[0].andFilters[0].collectionsId[0]]
       } else {
-        if (searchV6 && searchV6.filters &&
+        if (
+          searchV6 &&
+          searchV6.filters &&
           searchV6.filters[0].andFilters &&
           searchV6.filters[0].andFilters[0] &&
-          searchV6.filters[0].andFilters[0].collectionsId) {
+          searchV6.filters[0].andFilters[0].collectionsId
+        ) {
           delete searchV6.filters[0].andFilters[0].collectionsId
         }
       }
@@ -375,16 +365,17 @@ export class ContentStripSingleComponent implements OnInit {
     if (this.keywords && this.keywords.length) {
       searchV6.filters[0].andFilters[0].keywords = this.keywords || []
     } else {
-      if (searchV6 && searchV6.filters &&
+      if (
+        searchV6 &&
+        searchV6.filters &&
         searchV6.filters[0].andFilters &&
         searchV6.filters[0].andFilters[0] &&
-        searchV6.filters[0].andFilters[0].keywords) {
+        searchV6.filters[0].andFilters[0].keywords
+      ) {
         delete searchV6.filters[0].andFilters[0].keywords
       }
     }
-    if (searchV6 && searchV6.filters &&
-      searchV6.filters[0].andFilters &&
-      !Object.keys(searchV6.filters[0].andFilters).length) {
+    if (searchV6 && searchV6.filters && searchV6.filters[0].andFilters && !Object.keys(searchV6.filters[0].andFilters).length) {
       delete searchV6.filters[0].andFilters
     }
     this.pickerContentData = { ...this.pickerContentData }
@@ -420,37 +411,30 @@ export class ContentStripSingleComponent implements OnInit {
 
     formdata.append('content', file, fileName)
     this.loader.changeLoad.next(true)
-    this.uploadService
-      .upload(formdata, { contentId: this.identifier, contentType: CONTENT_BASE_WEBHOST_ASSETS })
-      .subscribe(
-        data => {
-          if (data.code) {
-            this.loader.changeLoad.next(false)
-            this.form.controls.image.setValue(
-              `${AUTHORING_CONTENT_BASE}${encodeURIComponent(
-                `/${data.artifactURL
-                  .split('/')
-                  .slice(3)
-                  .join('/')}`,
-              )}`,
-            )
-            this.snackBar.openFromComponent(NotificationComponent, {
-              data: {
-                type: Notify.UPLOAD_SUCCESS,
-              },
-              duration: NOTIFICATION_TIME * 1000,
-            })
-          }
-        },
-        () => {
+    this.uploadService.upload(formdata, { contentId: this.identifier, contentType: CONTENT_BASE_WEBHOST_ASSETS }).subscribe(
+      data => {
+        if (data.code) {
           this.loader.changeLoad.next(false)
+          this.form.controls.image.setValue(
+            `${AUTHORING_CONTENT_BASE}${encodeURIComponent(`/${data.artifactURL.split('/').slice(3).join('/')}`)}`,
+          )
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
-              type: Notify.UPLOAD_FAIL,
+              type: Notify.UPLOAD_SUCCESS,
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-        },
-      )
+        }
+      },
+      () => {
+        this.loader.changeLoad.next(false)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.UPLOAD_FAIL,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      },
+    )
   }
 }

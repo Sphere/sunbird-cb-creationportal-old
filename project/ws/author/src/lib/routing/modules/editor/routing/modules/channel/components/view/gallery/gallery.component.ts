@@ -6,7 +6,6 @@ import { ChannelStoreService } from './../../../services/store.service'
 
 import { ChannelResolverService } from './../../../services/resolver.service'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-gallery',
@@ -14,7 +13,6 @@ import { ChannelResolverService } from './../../../services/resolver.service'
   styleUrls: ['./gallery.component.scss'],
 })
 export class GalleryComponent implements OnInit, OnChanges {
-
   @Input() id = ''
   @Input() isSubmitPressed = false
   widget!: IWidgetAuthor
@@ -31,20 +29,18 @@ export class GalleryComponent implements OnInit, OnChanges {
   constructor(
     private store: ChannelStoreService,
     private renderService: ChannelResolverService,
-  ) { }
+  ) {}
 
   ngOnChanges() {
     this.initiate()
   }
 
   ngOnInit() {
-    this.store.update.subscribe(
-      (id: string) => {
-        if (id === this.id) {
-          this.initiate()
-        }
-      },
-    )
+    this.store.update.subscribe((id: string) => {
+      if (id === this.id) {
+        this.initiate()
+      }
+    })
   }
 
   initiate() {
@@ -54,9 +50,9 @@ export class GalleryComponent implements OnInit, OnChanges {
       this.defaultVal = this.widget.data.designVal
     }
     if (this.widget && this.widget.children.length && this.defaultVal === 'set1') {
-      this.currentWidget = (!this.currentWidget || this.widget.children.indexOf(this.currentWidget) < 0) ?
-        this.widget.children[0] : this.currentWidget
-      this.widget.children.map(v => {
+      this.currentWidget =
+        !this.currentWidget || this.widget.children.indexOf(this.currentWidget) < 0 ? this.widget.children[0] : this.currentWidget
+      this.widget.children.forEach(v => {
         const data = this.store.getUpdatedContent(v)
         this.widgetDatas.push({
           id: v,

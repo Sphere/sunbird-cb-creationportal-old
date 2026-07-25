@@ -141,7 +141,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
       })
     }
     this.allLanguages = this.authInitService.ordinals.subTitles
-    Object.keys(this.contentService.originalContent).map(v => this.contents.push(this.contentService.originalContent[v]))
+    Object.keys(this.contentService.originalContent).forEach(v => this.contents.push(this.contentService.originalContent[v]))
     this.loaderService.changeLoadState(true)
   }
 

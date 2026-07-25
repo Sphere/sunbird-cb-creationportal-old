@@ -34,7 +34,6 @@ import { AccessControlService } from '@ws/author/src/lib/modules/shared/services
 
 import { environment } from '../../../../../../../../../../../../src/environments/environment'
 
-
 interface IProcessedError {
   id: string | number
   name: string
@@ -78,7 +77,7 @@ export class CollectionStoreService {
     private router: Router,
     private accessService: AccessControlService,
     private configSvc: ConfigurationsService,
-  ) { }
+  ) {}
 
   treeStructureChange = new BehaviorSubject<IContentNode | null>(null)
   selectedNodeChange = new BehaviorSubject<number | null>(null)
@@ -101,17 +100,12 @@ export class CollectionStoreService {
       !this.resolver.hasAccess(
         this.contentService.getUpdatedMeta(dropNode.identifier),
         dropNode.parentId
-          ? this.contentService.getUpdatedMeta(
-            (this.flatNodeMap.get(dropNode.parentId) as IContentNode).identifier,
-          )
+          ? this.contentService.getUpdatedMeta((this.flatNodeMap.get(dropNode.parentId) as IContentNode).identifier)
           : undefined,
       )
     ) {
       allow = false
-    } else if (
-      this.authInitService.collectionConfig.maxDepth <=
-      dropNode.level + DEPTH_RUE[dragNode.category]
-    ) {
+    } else if (this.authInitService.collectionConfig.maxDepth <= dropNode.level + DEPTH_RUE[dragNode.category]) {
       allow = false
     }
     return allow
@@ -192,7 +186,6 @@ export class CollectionStoreService {
     dropLocation: 'above' | 'below' = 'below',
     emitChange = true,
   ) {
-
     const oldParentNode = dragNode.parentId ? this.flatNodeMap.get(dragNode.parentId) : undefined
     const newParentNode = this.flatNodeMap.get(dropNode.id) as IContentNode
     const oldParentChildList = oldParentNode ? (oldParentNode.children as IContentNode[]) : []
@@ -206,8 +199,7 @@ export class CollectionStoreService {
     const childNode = this.flatNodeMap.get(dragNode.id) as IContentNode
     childNode.parentId = dropNode.id
     if (adjacentId) {
-      const dropPosition =
-        (dropNode.children || []).indexOf(adjacentId) + (dropLocation === 'above' ? -1 : 1)
+      const dropPosition = (dropNode.children || []).indexOf(adjacentId) + (dropLocation === 'above' ? -1 : 1)
       const children = newParentNode.children as IContentNode[]
       children.splice(dropPosition, 0, childNode)
     } else {
@@ -256,7 +248,7 @@ export class CollectionStoreService {
 
     if (newParentChildList.length > 0) {
       newParentChildList.forEach(element => {
-        if (element.children && element.children.length > 0 && !(Object.keys(this.changedHierarchy).includes(element.identifier))) {
+        if (element.children && element.children.length > 0 && !Object.keys(this.changedHierarchy).includes(element.identifier)) {
           this.changedHierarchy[element.identifier] = {
             root: this.parentNode.includes(element.identifier),
             // contentType: element.contentType,
@@ -314,22 +306,10 @@ export class CollectionStoreService {
     try {
       const contents = await this.editorService.readMultipleContent(ids).toPromise()
       const contentDataMap = new Map<string, NSContent.IContentMeta>()
-      contents.map((v, index) => {
+      contents.forEach((v, index) => {
         this.contentService.setOriginalMeta(v)
-        const treeStructure = this.resolver.buildTreeAndMap(
-          v,
-          contentDataMap,
-          this.flatNodeMap,
-          this.uniqueIdMap,
-          this.lexIdMap,
-        )
-        this.dragAndDrop(
-          treeStructure,
-          dropNode,
-          adjacentId,
-          dropLocation,
-          index === ids.length - 1,
-        )
+        const treeStructure = this.resolver.buildTreeAndMap(v, contentDataMap, this.flatNodeMap, this.uniqueIdMap, this.lexIdMap)
+        this.dragAndDrop(treeStructure, dropNode, adjacentId, dropLocation, index === ids.length - 1)
       })
       return true
     } catch (ex) {
@@ -369,11 +349,10 @@ export class CollectionStoreService {
     dropLocation: 'above' | 'below' = 'below',
     topicObj?: any,
     fileType?: string,
-    sendContent?: boolean
+    sendContent?: boolean,
     // ): Promise<boolean> {
   ): Promise<any> {
     try {
-
       let cType = type.type === 'collection' ? type.type : type
       // For Link
       if (type === 'web') {
@@ -403,7 +382,7 @@ export class CollectionStoreService {
       if (cType === 'upload') {
         mimeTypeData = this.setUploadContentAcceptType()
       }
-      console.log("topicObj", topicObj)
+      console.log('topicObj', topicObj)
       const requestBody = {
         name: type.type === 'collection' ? 'Module Name' : topicObj.topicName,
         description: topicDescription,
@@ -443,8 +422,7 @@ export class CollectionStoreService {
       // const content = await this.editorService.createAndReadContent(requestBody).toPromise()
 
       if (meta.primaryCategory === 'Course Unit') {
-        content = await this.editorService.createAndReadModule(this.getModuleRequest(requestBody),
-          parentData.identifier).toPromise()
+        content = await this.editorService.createAndReadModule(this.getModuleRequest(requestBody), parentData.identifier).toPromise()
         this.createdModuleUpdate = true
       } else {
         content = await this.editorService.createAndReadContentV2(requestBody).toPromise()
@@ -458,13 +436,7 @@ export class CollectionStoreService {
         this.contentService.setOriginalMeta(content)
 
         const contentDataMap = new Map<string, NSContent.IContentMeta>()
-        const treeStructure = this.resolver.buildTreeAndMap(
-          content,
-          contentDataMap,
-          this.flatNodeMap,
-          this.uniqueIdMap,
-          this.lexIdMap,
-        )
+        const treeStructure = this.resolver.buildTreeAndMap(content, contentDataMap, this.flatNodeMap, this.uniqueIdMap, this.lexIdMap)
         this.dragAndDrop(treeStructure, dropNode, adjacentId, dropLocation)
       }
       if (newChildUpdateCall) {
@@ -506,7 +478,7 @@ export class CollectionStoreService {
         if (element.primaryCategory === 'Course Unit') {
           nodesModify[element.identifier] = {
             isNew: false,
-            root: (element.identifier === parentData.identifier) ? true : false,
+            root: element.identifier === parentData.identifier ? true : false,
           }
         }
         if (element.children && element.children.length > 0) {
@@ -514,7 +486,7 @@ export class CollectionStoreService {
             if (subEle.primaryCategory === 'Course Unit') {
               nodesModify[subEle.identifier] = {
                 isNew: false,
-                root: (subEle.identifier === parentData.identifier) ? true : false,
+                root: subEle.identifier === parentData.identifier ? true : false,
               }
             }
           })
@@ -536,18 +508,18 @@ export class CollectionStoreService {
         code: randomNumber,
         contentType: meta.contentType,
         createdBy: this.accessService.userId,
-        createdFor: [(this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId) ? this.configSvc.userProfile.rootOrgId : ''],
+        createdFor: [this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId ? this.configSvc.userProfile.rootOrgId : ''],
         creator: this.accessService.userName,
         description: meta.description,
         framework: environment.framework,
         mimeType: meta.mimeType,
         name: meta.name,
         organisation: [
-          (this.configSvc.userProfile && this.configSvc.userProfile.departmentName) ? this.configSvc.userProfile.departmentName : '',
+          this.configSvc.userProfile && this.configSvc.userProfile.departmentName ? this.configSvc.userProfile.departmentName : '',
         ],
         isExternal: meta.mimeType === 'application/html',
         primaryCategory: meta.primaryCategory,
-        license: (meta.license) ? meta.license : 'CC BY 4.0',
+        license: meta.license ? meta.license : 'CC BY 4.0',
         ownershipType: ['createdFor'],
         // purpose: (purpose) ? purpose : '',
         purpose: '',
@@ -573,7 +545,7 @@ export class CollectionStoreService {
           // isNew: false,
           children: [],
           name: element.name,
-          root: (element.identifier === parentData.identifier) ? true : false,
+          root: element.identifier === parentData.identifier ? true : false,
         }
       }
       if (element.children && element.children.length > 0) {
@@ -583,7 +555,7 @@ export class CollectionStoreService {
               // isNew: false,
               children: [],
               name: subEle.name,
-              root: (subEle.identifier === parentData.identifier) ? true : false,
+              root: subEle.identifier === parentData.identifier ? true : false,
             }
           }
         })
@@ -733,7 +705,7 @@ export class CollectionStoreService {
       }
       if (children.length > 0) {
         children.forEach(element => {
-          if (element.children && element.children.length > 0 && !(Object.keys(this.changedHierarchy).includes(element.identifier))) {
+          if (element.children && element.children.length > 0 && !Object.keys(this.changedHierarchy).includes(element.identifier)) {
             this.changedHierarchy[element.identifier] = {
               root: this.parentNode.includes(element.identifier),
               contentType: element.contentType,
@@ -778,24 +750,19 @@ export class CollectionStoreService {
         const lexId = this.uniqueIdMap.get(v) as string
         if (single) {
           // tslint:disable-next-line: ter-computed-property-spacing
-          let meta = this.contentService.getUpdatedMeta(lexId)[
-            field as keyof NSContent.IContentMeta
-            // tslint:disable-next-line: ter-computed-property-spacing
-          ]
+          let meta =
+            this.contentService.getUpdatedMeta(lexId)[
+              field as keyof NSContent.IContentMeta
+              // tslint:disable-next-line: ter-computed-property-spacing
+            ]
           if (meta) {
             meta.push(value)
           } else {
             meta = [value]
           }
-          this.contentService.setUpdatedMeta(
-            ({ field: meta } as unknown) as NSContent.IContentMeta,
-            lexId,
-          )
+          this.contentService.setUpdatedMeta({ field: meta } as unknown as NSContent.IContentMeta, lexId)
         } else {
-          this.contentService.setUpdatedMeta(
-            ({ field: value } as unknown) as NSContent.IContentMeta,
-            lexId,
-          )
+          this.contentService.setUpdatedMeta({ field: value } as unknown as NSContent.IContentMeta, lexId)
         }
       })
     return true
@@ -806,86 +773,92 @@ export class CollectionStoreService {
     const errorIds = new Set<number>()
     this.checkValidation(errorIds, returnValue, courseData)
     this.checkValidations(errorIds, returnValue, courseData)
-    console.log("id", id)
+    console.log('id', id)
     // const hierarchy = this.resolver.getFlatHierarchy(id, this.flatNodeMap)
     // this.metaValidationCheck(hierarchy, errorIds, returnValue)
     // this.hierarchyStructureCheck(hierarchy, errorIds, returnValue)
     this.onInvalidNodeChange.next(Array.from(errorIds))
     return returnValue.size ? Array.from(returnValue.values()) : null
   }
-  checkValidation(errorId: Set<number>,
-    errorMap: Map<number, IProcessedError>, courseData: any) {
+  checkValidation(errorId: Set<number>, errorMap: Map<number, IProcessedError>, courseData: any) {
     console.log('courseData', courseData)
     let errorMsg: string[] = []
     if (courseData) {
       if (!courseData.children || courseData.children.length < 2) {
         if (!courseData.children || courseData.children.length < 2) {
-          console.log("lenght check", courseData)
-          errorMsg.push(
-            `Minimum 2 children is required. But ` + courseData.children.length + ` present`,
-          )
+          console.log('lenght check', courseData)
+          errorMsg.push(`Minimum 2 children is required. But ` + courseData.children.length + ` present`)
           this.populateErrorMsg(courseData.identifier, errorMsg, courseData, errorId, errorMap)
           errorMsg = []
         }
-        console.log("lenght check", courseData)
-        if ((!courseData.publisherDetails) || (courseData.publisherDetails && courseData.publisherDetails.length === 0 && courseData.parent === undefined && courseData.contentType === 'Course')) {
+        console.log('lenght check', courseData)
+        if (
+          !courseData.publisherDetails ||
+          (courseData.publisherDetails &&
+            courseData.publisherDetails.length === 0 &&
+            courseData.parent === undefined &&
+            courseData.contentType === 'Course')
+        ) {
           errorMsg.push('Publisher details cannot be empty')
         }
-        if ((!courseData.reviewer) || (courseData.reviewer && courseData.reviewer.length === 0 && courseData.parent === undefined && courseData.contentType === 'Course')) {
+        if (
+          !courseData.reviewer ||
+          (courseData.reviewer &&
+            courseData.reviewer.length === 0 &&
+            courseData.parent === undefined &&
+            courseData.contentType === 'Course')
+        ) {
           errorMsg.push('Reviewer details cannot be empty')
         }
         this.populateErrorMsg(courseData.identifier, errorMsg, courseData, errorId, errorMap)
         errorMsg = []
       }
       courseData.children.forEach((element: any) => {
-        console.log("moduleChildren", element)
+        console.log('moduleChildren', element)
 
-        if (element.contentType === "CourseUnit" && !element.children) {
-          console.log("yes here")
-          errorMsg.push(
-            `Minimum 1 children is required. But nothing presents`,
-          )
+        if (element.contentType === 'CourseUnit' && !element.children) {
+          console.log('yes here')
+          errorMsg.push(`Minimum 1 children is required. But nothing presents`)
           this.populateErrorMsg(element.identifier, errorMsg, element, errorId, errorMap)
           errorMsg = []
         }
-
-
       })
       this.populateErrorMsg(courseData.identifier, errorMsg, courseData, errorId, errorMap)
     }
-
   }
-  checkValidations(
-    errorId: Set<number>,
-    errorMap: Map<number, IProcessedError>, courseData: any) {
+  checkValidations(errorId: Set<number>, errorMap: Map<number, IProcessedError>, courseData: any) {
     console.log('courseData', courseData)
     let errorMsg: string[] = []
     if (courseData) {
       courseData.children.forEach((element: any) => {
-        if (element.contentType === "Resource") {
+        if (element.contentType === 'Resource') {
           if (element.name === '') {
             errorMsg.push('Title cannot be empty')
           }
-          if ((element.mimeType === 'text/x-url' || element.mimeType === 'application/pdf' || element.mimeType === 'audio/mpeg' || element.mimeType === 'video/mp4' || element.mimeType === 'application/vnd.ekstep.html-archive' || element.mimeType === 'application/json') && !element.artifactUrl && element.artifactUrl == undefined || element.artifactUrl === '') {
+          if (
+            ((element.mimeType === 'text/x-url' ||
+              element.mimeType === 'application/pdf' ||
+              element.mimeType === 'audio/mpeg' ||
+              element.mimeType === 'video/mp4' ||
+              element.mimeType === 'application/vnd.ekstep.html-archive' ||
+              element.mimeType === 'application/json') &&
+              !element.artifactUrl &&
+              element.artifactUrl == undefined) ||
+            element.artifactUrl === ''
+          ) {
             if (element.mimeType === 'text/x-url') {
               errorMsg.push('Link cannot be empty')
-            }
-            else if (element.mimeType === 'application/pdf') {
+            } else if (element.mimeType === 'application/pdf') {
               errorMsg.push('PDF cannot be empty')
-            }
-            else if (element.mimeType === 'audio/mpeg') {
+            } else if (element.mimeType === 'audio/mpeg') {
               errorMsg.push('Audio File cannot be empty')
-            }
-            else if (element.mimeType === 'video/mp4') {
+            } else if (element.mimeType === 'video/mp4') {
               errorMsg.push('Video File cannot be empty')
-            }
-            else if (element.mimeType === 'application/vnd.ekstep.html-archive') {
+            } else if (element.mimeType === 'application/vnd.ekstep.html-archive') {
               errorMsg.push('Zip File cannot be empty')
-            }
-            else if (element.mimeType === 'application/json') {
+            } else if (element.mimeType === 'application/json') {
               errorMsg.push('Assessment/Quiz cannot be empty')
-            }
-            else {
+            } else {
               errorMsg.push('File cannot be empty')
             }
           }
@@ -895,31 +868,35 @@ export class CollectionStoreService {
 
         if (element.children && element.children.length > 0) {
           element.children.forEach((ele: any) => {
-            console.log("childrens", ele)
-            if (ele.contentType === "Resource") {
+            console.log('childrens', ele)
+            if (ele.contentType === 'Resource') {
               if (ele.name === '') {
                 errorMsg.push('Title cannot be empty')
               }
-              if ((ele.mimeType === 'text/x-url' || ele.mimeType === 'application/pdf' || ele.mimeType === 'audio/mpeg' || ele.mimeType === 'video/mp4' || ele.mimeType === 'application/vnd.ekstep.html-archive' || ele.mimeType === 'application/json') && !ele.artifactUrl && ele.artifactUrl == undefined || ele.artifactUrl === '') {
+              if (
+                ((ele.mimeType === 'text/x-url' ||
+                  ele.mimeType === 'application/pdf' ||
+                  ele.mimeType === 'audio/mpeg' ||
+                  ele.mimeType === 'video/mp4' ||
+                  ele.mimeType === 'application/vnd.ekstep.html-archive' ||
+                  ele.mimeType === 'application/json') &&
+                  !ele.artifactUrl &&
+                  ele.artifactUrl == undefined) ||
+                ele.artifactUrl === ''
+              ) {
                 if (ele.mimeType === 'text/x-url') {
                   errorMsg.push('Link cannot be emptys')
-                }
-                else if (ele.mimeType === 'application/pdf') {
+                } else if (ele.mimeType === 'application/pdf') {
                   errorMsg.push('PDF cannot be empty')
-                }
-                else if (ele.mimeType === 'audio/mpeg') {
+                } else if (ele.mimeType === 'audio/mpeg') {
                   errorMsg.push('Audio File cannot be empty')
-                }
-                else if (ele.mimeType === 'video/mp4') {
+                } else if (ele.mimeType === 'video/mp4') {
                   errorMsg.push('Video File cannot be empty')
-                }
-                else if (ele.mimeType === 'application/vnd.ekstep.html-archive') {
+                } else if (ele.mimeType === 'application/vnd.ekstep.html-archive') {
                   errorMsg.push('Zip File cannot be empty')
-                }
-                else if (ele.mimeType === 'application/json') {
+                } else if (ele.mimeType === 'application/json') {
                   errorMsg.push('Assessment/Quiz cannot be empty')
-                }
-                else {
+                } else {
                   errorMsg.push('File cannot be empty')
                 }
               }
@@ -928,16 +905,10 @@ export class CollectionStoreService {
             errorMsg = []
           })
         }
-
       })
     }
-
   }
-  hierarchyStructureCheck(
-    ids: number[],
-    errorId: Set<number>,
-    errorMap: Map<number, IProcessedError>,
-  ) {
+  hierarchyStructureCheck(ids: number[], errorId: Set<number>, errorMap: Map<number, IProcessedError>) {
     ids.forEach(v => {
       const contentNode = this.flatNodeMap.get(v) as IContentNode
       const category = contentNode.category as any
@@ -951,14 +922,9 @@ export class CollectionStoreService {
         currentLevel = currentLevel + 1
         currNode = this.flatNodeMap.get(currNode.parentId) as IContentNode
       }
-      const excessLevel =
-        DEPTH_RUE[contentNode.category] +
-        currentLevel -
-        this.authInitService.collectionConfig.maxDepth
+      const excessLevel = DEPTH_RUE[contentNode.category] + currentLevel - this.authInitService.collectionConfig.maxDepth
       if (excessLevel > 0) {
-        errorMsg.push(
-          `Breached maximum level of depth allowed. It should be ${excessLevel} level above`,
-        )
+        errorMsg.push(`Breached maximum level of depth allowed. It should be ${excessLevel} level above`)
       }
 
       if (childConfig) {
@@ -974,8 +940,7 @@ export class CollectionStoreService {
           //       if (!data.children || data.children.length == 0) {
           //         debugger
           errorMsg.push(
-            `Minimum ${childConfig.minChildren} children is required. But ${children.length ? children.length : 'nothing'
-            } present`,
+            `Minimum ${childConfig.minChildren} children is required. But ${children.length ? children.length : 'nothing'} present`,
           )
           //       }
           //     }
@@ -983,9 +948,7 @@ export class CollectionStoreService {
           // })
         }
         if (childConfig.maxChildren && children.length > childConfig.maxChildren) {
-          errorMsg.push(
-            `Maximum ${childConfig.minChildren} children is allowed. But ${children.length} present`,
-          )
+          errorMsg.push(`Maximum ${childConfig.minChildren} children is allowed. But ${children.length} present`)
         }
         children.forEach((child: IContentNode, position: number) => {
           const childContent = this.contentService.getUpdatedMeta(child.identifier)
@@ -1058,8 +1021,7 @@ export class CollectionStoreService {
     if (condition.fit) {
       condition.fit.forEach((subCondition: any, majorIndex: number) => {
         Object.keys(subCondition).forEach((v: any, index: number) => {
-          returnValue = `${returnValue}${majorIndex > 0 ? ' or ' : ''}${index > 0 ? ' ' : ''
-            }${v} in ${subCondition[v].join(' or ')}`
+          returnValue = `${returnValue}${majorIndex > 0 ? ' or ' : ''}${index > 0 ? ' ' : ''}${v} in ${subCondition[v].join(' or ')}`
         })
       })
     }
@@ -1098,27 +1060,31 @@ export class CollectionStoreService {
       //   errorMsg.push('Course provider/source cannot be empty')
       // }
       // tslint:disable-next-line:no-console
-      console.log("artifactUrl: ", content.mimeType, content.artifactUrl)
-      if ((content.mimeType === 'text/x-url' || content.mimeType === 'application/pdf' || content.mimeType === 'audio/mpeg' || content.mimeType === 'video/mp4' || content.mimeType === 'application/vnd.ekstep.html-archive' || content.mimeType === 'application/json') && !content.artifactUrl && content.artifactUrl == undefined || content.artifactUrl === '') {
+      console.log('artifactUrl: ', content.mimeType, content.artifactUrl)
+      if (
+        ((content.mimeType === 'text/x-url' ||
+          content.mimeType === 'application/pdf' ||
+          content.mimeType === 'audio/mpeg' ||
+          content.mimeType === 'video/mp4' ||
+          content.mimeType === 'application/vnd.ekstep.html-archive' ||
+          content.mimeType === 'application/json') &&
+          !content.artifactUrl &&
+          content.artifactUrl == undefined) ||
+        content.artifactUrl === ''
+      ) {
         if (content.mimeType === 'text/x-url') {
           errorMsg.push('Link cannot be empty')
-        }
-        else if (content.mimeType === 'application/pdf') {
+        } else if (content.mimeType === 'application/pdf') {
           errorMsg.push('PDF cannot be empty')
-        }
-        else if (content.mimeType === 'audio/mpeg') {
+        } else if (content.mimeType === 'audio/mpeg') {
           errorMsg.push('Audio File cannot be empty')
-        }
-        else if (content.mimeType === 'video/mp4') {
+        } else if (content.mimeType === 'video/mp4') {
           errorMsg.push('Video File cannot be empty')
-        }
-        else if (content.mimeType === 'application/vnd.ekstep.html-archive') {
+        } else if (content.mimeType === 'application/vnd.ekstep.html-archive') {
           errorMsg.push('Zip File cannot be empty')
-        }
-        else if (content.mimeType === 'application/json') {
+        } else if (content.mimeType === 'application/json') {
           errorMsg.push('Assessment/Quiz cannot be empty')
-        }
-        else {
+        } else {
           errorMsg.push('File cannot be empty')
         }
       }
@@ -1127,7 +1093,12 @@ export class CollectionStoreService {
       //   errorMsg.push('Course artifactUrl entered is not valid')
       // }
       // tslint:disable-next-line:max-line-length
-      if (content.publisherDetails && content.publisherDetails.length === 0 && content.parent === undefined && content.contentType === 'Course') {
+      if (
+        content.publisherDetails &&
+        content.publisherDetails.length === 0 &&
+        content.parent === undefined &&
+        content.contentType === 'Course'
+      ) {
         errorMsg.push('Publisher details cannot be empty')
       }
       if (content.trackContacts && content.trackContacts.length === 0 && content.parent === undefined && content.contentType === 'Course') {
@@ -1141,10 +1112,7 @@ export class CollectionStoreService {
       if (content.category === 'Resource') {
         if (content.mimeType === 'application/html' && !content.artifactUrl && !content.body) {
           errorMsg.push('Provide URL or populate "Body" field')
-        } else if (
-          ['application/pdf', 'application/x-mpegURL'].includes(content.mimeType) &&
-          !content.artifactUrl
-        ) {
+        } else if (['application/pdf', 'application/x-mpegURL'].includes(content.mimeType) && !content.artifactUrl) {
           errorMsg.push('Upload file')
         }
       }
@@ -1163,9 +1131,7 @@ export class CollectionStoreService {
       errorId.add(id)
       if (errorMap.has(id)) {
         // tslint:disable-next-line: semicolon    // tslint:disable-next-line: whitespace
-        ; (errorMap.get(id) as IProcessedError).message = (errorMap.get(
-          id,
-        ) as IProcessedError).message.concat(errorMsg)
+        ;(errorMap.get(id) as IProcessedError).message = (errorMap.get(id) as IProcessedError).message.concat(errorMsg)
       } else {
         errorMap.set(id, {
           id,
@@ -1208,25 +1174,25 @@ export class CollectionStoreService {
       root: this.parentNode.includes(newParentNode.identifier),
       contentType: newParentNode.category,
       // @ts-ignore: Unreachable code error
-      children: (newParentNode.children) ? newParentNode.children.map(v => {
-
-        const child = v.identifier
-        if (v.primaryCategory) {
-          this.hierarchyTree[v.identifier] = {
-            root: false,
-            contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
-            primaryCategory: v.contentType === 'Resource' ? undefined : 'Course Unit',
-            name: v.contentType === 'Resource' ? v.name : undefined,
-            children: [],
-          }
-        }
-        return child
-      }) : [],
+      children: newParentNode.children
+        ? newParentNode.children.map(v => {
+            const child = v.identifier
+            if (v.primaryCategory) {
+              this.hierarchyTree[v.identifier] = {
+                root: false,
+                contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
+                primaryCategory: v.contentType === 'Resource' ? undefined : 'Course Unit',
+                name: v.contentType === 'Resource' ? v.name : undefined,
+                children: [],
+              }
+            }
+            return child
+          })
+        : [],
     }
     if (newParentNode.children && newParentNode.children.length > 0) {
       // @ts-ignore: Unreachable code error
       newParentNode.children.forEach(element => {
-
         if (element.children && element.children.length > 0) {
           this.hierarchyTree[element.identifier] = {
             root: this.parentNode.includes(element.identifier),
@@ -1251,7 +1217,6 @@ export class CollectionStoreService {
           }
           // @ts-ignore: Unreachable code error
           element.children.forEach(subElement => {
-
             if (subElement.children && subElement.children.length > 0) {
               this.hierarchyTree[subElement.identifier] = {
                 root: this.parentNode.includes(subElement.identifier),
@@ -1259,7 +1224,6 @@ export class CollectionStoreService {
                 primaryCategory: subElement.contentType === 'Resource' ? undefined : 'Course Unit',
                 // @ts-ignore: Unreachable code error
                 children: subElement.children.map(v => {
-
                   const child = v.identifier
                   if (v.primaryCategory) {
                     this.hierarchyTree[v.identifier] = {
@@ -1293,19 +1257,21 @@ export class CollectionStoreService {
       root: this.parentNode.includes(newParentNode.identifier),
       contentType: newParentNode.category,
       // @ts-ignore: Unreachable code error
-      children: (newParentNode.children) ? newParentNode.children.map(v => {
-        const child = v.identifier
-        if (v.primaryCategory) {
-          this.hierarchyTree[v.identifier] = {
-            root: false,
-            contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
-            primaryCategory: v.contentType === 'Resource' ? undefined : 'Course Unit',
-            name: v.contentType === 'Resource' ? v.name : undefined,
-            children: [],
-          }
-        }
-        return child
-      }) : [],
+      children: newParentNode.children
+        ? newParentNode.children.map(v => {
+            const child = v.identifier
+            if (v.primaryCategory) {
+              this.hierarchyTree[v.identifier] = {
+                root: false,
+                contentType: v.contentType === 'Resource' ? undefined : 'CourseUnit',
+                primaryCategory: v.contentType === 'Resource' ? undefined : 'Course Unit',
+                name: v.contentType === 'Resource' ? v.name : undefined,
+                children: [],
+              }
+            }
+            return child
+          })
+        : [],
     }
     if (newParentNode.children && newParentNode.children.length > 0) {
       // @ts-ignore: Unreachable code error
@@ -1382,5 +1348,4 @@ export class CollectionStoreService {
       }
     }
   }
-
 }

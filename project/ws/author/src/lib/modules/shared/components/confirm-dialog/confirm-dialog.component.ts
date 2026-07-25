@@ -22,7 +22,6 @@ import { NOTIFICATION_TIME } from '../../../../constants/constant'
 
 import { MatSnackBarRef } from '@angular/material/snack-bar'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-confirm-dialog',
@@ -32,13 +31,11 @@ import { MatSnackBarRef } from '@angular/material/snack-bar'
 })
 export class ConfirmDialogComponent implements OnInit {
   @Output() value = new EventEmitter<any>()
-  @Output() onFormChange = new EventEmitter();
-  @Output() onFormQuestion = new EventEmitter();
+  @Output() onFormChange = new EventEmitter()
+  @Output() onFormQuestion = new EventEmitter()
   quizForm!: FormGroup
   questionForm!: FormGroup
-  smallScreen: Observable<boolean> = this.breakpointObserver
-    .observe('(max-width:600px)')
-    .pipe(map((res: BreakpointState) => res.matches))
+  smallScreen: Observable<boolean> = this.breakpointObserver.observe('(max-width:600px)').pipe(map((res: BreakpointState) => res.matches))
   isSmallScreen = false
   activeIndexSubscription?: Subscription
   contentLoaded!: boolean
@@ -54,30 +51,24 @@ export class ConfirmDialogComponent implements OnInit {
     private quizStoreSvc: QuizStoreService,
     private snackBar: MatSnackBar,
     private formBuilder: FormBuilder,
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     if (this.data.type === 'editAssessment') {
       if (this.data.data.questionType == 'mcq-sca') {
-        this.smallScreen.subscribe(v => this.isSmallScreen = v)
+        this.smallScreen.subscribe(v => (this.isSmallScreen = v))
         this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
           this.contentLoaded = false
           this.index = index
           const val = this.quizStoreSvc.getQuiz(index)
-          this.selectedQuiz =
-            val && (val.questionType === 'mcq-sca' || val.questionType === 'mcq-mca')
-              ? new McqQuiz(val)
-              : undefined
+          this.selectedQuiz = val && (val.questionType === 'mcq-sca' || val.questionType === 'mcq-mca') ? new McqQuiz(val) : undefined
           if (val && (val.questionType === 'mcq-sca' || val.questionType === 'mcq-mca')) {
             this.setUp()
             this.contentLoaded = true
           }
         })
       } else if (this.data.data.questionType == 'fitb') {
-
       } else if (this.data.data.questionType == 'mtf') {
-
       }
     }
   }
@@ -114,10 +105,10 @@ export class ConfirmDialogComponent implements OnInit {
     const newData = this.quizStoreSvc.getQuiz(this.index)
     if (newData && newData.isInValid) {
       // this.quizForm.markAllAsTouched()
-      Object.keys(this.quizForm.controls).map(v => {
+      Object.keys(this.quizForm.controls).forEach(v => {
         const optionsArr = this.quizForm.controls[v] as FormArray
-        optionsArr.controls.map((d: any) => {
-          Object.keys(d.controls).map(e => {
+        optionsArr.controls.forEach((d: any) => {
+          Object.keys(d.controls).forEach(e => {
             if (e === 'text') {
               d.controls[e].markAsDirty()
               d.controls[e].markAsTouched()
@@ -182,11 +173,7 @@ export class ConfirmDialogComponent implements OnInit {
 
   onSelected($event: any) {
     this.selectedCount = $event.checked ? this.selectedCount + 1 : this.selectedCount - 1
-    if (
-      this.selectedQuiz &&
-      this.selectedQuiz.options &&
-      this.selectedCount === this.selectedQuiz.options.length
-    ) {
+    if (this.selectedQuiz && this.selectedQuiz.options && this.selectedCount === this.selectedQuiz.options.length) {
       this.snackbarRef = this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.MCQ_ALL_OPTIONS_CORRECT,
