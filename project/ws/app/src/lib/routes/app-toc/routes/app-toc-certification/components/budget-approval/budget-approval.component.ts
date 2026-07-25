@@ -1,29 +1,17 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
 
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  AbstractControl,
-  ValidationErrors,
-} from '@angular/forms'
+import { FormGroup, FormControl, Validators, AbstractControl, ValidationErrors } from '@angular/forms'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable, timer, throwError, of, noop, Subscription } from 'rxjs'
 
 import { map, switchMap, catchError } from 'rxjs/operators'
 
-
 import { NsContent } from '@ws-widget/collection'
 
 import { TFetchStatus, TSendStatus } from '@ws-widget/utils'
 
-
-import {
-  ICertificationCurrency,
-  IBudgetApprovalRequest,
-  ICertificationUserPrivileges,
-} from '../../models/certification.model'
+import { ICertificationCurrency, IBudgetApprovalRequest, ICertificationUserPrivileges } from '../../models/certification.model'
 
 import { CertificationApiService } from '../../apis/certification-api.service'
 
@@ -32,7 +20,6 @@ import { Router, ActivatedRoute } from '@angular/router'
 import { CertificationService } from '../../services/certification.service'
 
 import { SnackbarComponent } from '../snackbar/snackbar.component'
-
 
 @Component({
   standalone: false,
@@ -76,16 +63,8 @@ export class BudgetApprovalComponent implements OnInit, OnDestroy {
 
     this.budgetForm = new FormGroup({
       currency: new FormControl('', Validators.required),
-      amount: new FormControl('', [
-        Validators.required,
-        Validators.min(0),
-        Validators.max(99999999),
-      ]),
-      approverEmail: new FormControl(
-        '',
-        [Validators.required],
-        [this.validateApproverEmail.bind(this)],
-      ),
+      amount: new FormControl('', [Validators.required, Validators.min(0), Validators.max(99999999)]),
+      approverEmail: new FormControl('', [Validators.required], [this.validateApproverEmail.bind(this)]),
     })
   }
 
@@ -125,29 +104,25 @@ export class BudgetApprovalComponent implements OnInit, OnDestroy {
       }
 
       this.requestSendStatus = 'sending'
-      this.certificationApi
-        .sendBudgetApprovalRequest(this.content.identifier, budgetRequest)
-        .subscribe(
-          res => {
-            this.snackbar.openFromComponent(SnackbarComponent, {
-              data: {
-                action: 'cert_budget_send',
-                code: res.res_code,
-              },
-            })
+      this.certificationApi.sendBudgetApprovalRequest(this.content.identifier, budgetRequest).subscribe(
+        res => {
+          this.snackbar.openFromComponent(SnackbarComponent, {
+            data: {
+              action: 'cert_budget_send',
+              code: res.res_code,
+            },
+          })
 
-            this.requestSendStatus = 'done'
-            if (res.res_code === 1) {
-              this.router.navigate([
-                `/app/toc/${this.content ? this.content.identifier : ''}/certification`,
-              ])
-            }
-          },
-          () => {
-            this.requestSendStatus = 'error'
-            this.snackbar.openFromComponent(SnackbarComponent)
-          },
-        )
+          this.requestSendStatus = 'done'
+          if (res.res_code === 1) {
+            this.router.navigate([`/app/toc/${this.content ? this.content.identifier : ''}/certification`])
+          }
+        },
+        () => {
+          this.requestSendStatus = 'error'
+          this.snackbar.openFromComponent(SnackbarComponent)
+        },
+      )
     }
   }
 
@@ -170,23 +145,18 @@ export class BudgetApprovalComponent implements OnInit, OnDestroy {
       map(() => control.value),
       switchMap((value: string) => {
         if (!value) {
-          return throwError(() => { invalidEmail: true })
+          return throwError(() => ({ invalidEmail: true }))
         }
 
         const trimmedEmail = value.split('@')[0]
 
-        if (
-          this.certPrivileges &&
-          trimmedEmail.toLowerCase() === this.certPrivileges.manager.toLowerCase()
-        ) {
+        if (this.certPrivileges && trimmedEmail.toLowerCase() === this.certPrivileges.manager.toLowerCase()) {
           return of(null)
         }
 
         return this.certificationApi.getCertificationUserPrivileges(trimmedEmail)
       }),
-      map(result =>
-        result === null ? null : result.canApproveBudgetRequest ? null : { invalidEmail: true },
-      ),
+      map(result => (result === null ? null : result.canApproveBudgetRequest ? null : { invalidEmail: true })),
       catchError(() => of({ invalidEmail: true })),
     )
   }
@@ -203,16 +173,12 @@ export class BudgetApprovalComponent implements OnInit, OnDestroy {
   }
 
   private subscribeToContentResolve() {
-    this.contentMetaSub = this.certificationSvc
-      .getContentMeta(this.route.parent)
-      .subscribe(content => {
-        this.content = content
+    this.contentMetaSub = this.certificationSvc.getContentMeta(this.route.parent).subscribe(content => {
+      this.content = content
 
-        if (!(this.content.verifiers && this.content.verifiers.length)) {
-          this.budgetForm.controls.approverEmail.setAsyncValidators(
-            this.validateApproverEmail.bind(this),
-          )
-        }
-      },         noop)
+      if (!(this.content.verifiers && this.content.verifiers.length)) {
+        this.budgetForm.controls.approverEmail.setAsyncValidators(this.validateApproverEmail.bind(this))
+      }
+    }, noop)
   }
 }

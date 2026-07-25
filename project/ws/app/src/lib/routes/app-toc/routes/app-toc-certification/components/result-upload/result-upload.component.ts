@@ -2,39 +2,26 @@ import { Component, OnInit, Input, ViewChild, ElementRef, OnDestroy } from '@ang
 
 import { ActivatedRoute, Router } from '@angular/router'
 
-import {
-  FormGroup,
-  Validators,
-  FormControl,
-  AbstractControl,
-  ValidationErrors,
-} from '@angular/forms'
+import { FormGroup, Validators, FormControl, AbstractControl, ValidationErrors } from '@angular/forms'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable, timer, throwError, of, Subscription } from 'rxjs'
 
 import { map, switchMap, catchError } from 'rxjs/operators'
 
-
 import { NsContent } from '@ws-widget/collection'
 
 import { TFetchStatus, TSendStatus } from '@ws-widget/utils'
 
-
 import { ICertificationMeta, ICertificationUserPrivileges } from '../../models/certification.model'
 
-import {
-  CERT_FILE_TYPES,
-  MAX_FILE_SIZE_BYTES,
-  CERT_GRADE_TYPES,
-} from '../../constants/certification-constants'
+import { CERT_FILE_TYPES, MAX_FILE_SIZE_BYTES, CERT_GRADE_TYPES } from '../../constants/certification-constants'
 
 import { CertificationApiService } from '../../apis/certification-api.service'
 
 import { CertificationService } from '../../services/certification.service'
 
 import { SnackbarComponent } from '../snackbar/snackbar.component'
-
 
 @Component({
   standalone: false,
@@ -92,10 +79,7 @@ export class ResultUploadComponent implements OnInit, OnDestroy {
       result: new FormControl(null, [Validators.required, this.validateResult.bind(this)]),
       examDate: new FormControl(null, [Validators.required]),
       verifierEmail: new FormControl(null, [Validators.required]),
-      file: new FormControl('', [
-        this.validateFileType.bind(this),
-        this.validateFileSize.bind(this),
-      ]),
+      file: new FormControl('', [this.validateFileType.bind(this), this.validateFileSize.bind(this)]),
       fileName: new FormControl(),
     })
 
@@ -147,9 +131,7 @@ export class ResultUploadComponent implements OnInit, OnDestroy {
         })
 
         if (res.res_code === 1) {
-          this.router.navigate([
-            `/app/toc/${this.content ? this.content.identifier : ''}/certification`,
-          ])
+          this.router.navigate([`/app/toc/${this.content ? this.content.identifier : ''}/certification`])
           return
         }
       },
@@ -164,10 +146,7 @@ export class ResultUploadComponent implements OnInit, OnDestroy {
     this.proofDeleteStatus = 'sending'
 
     this.certificationApi
-      .deleteExternalProof(
-        this.content.identifier,
-        this.certification.verification_request.document[0].document_url,
-      )
+      .deleteExternalProof(this.content.identifier, this.certification.verification_request.document[0].document_url)
       .subscribe(
         res => {
           this.snackbar.openFromComponent(SnackbarComponent, {
@@ -180,9 +159,7 @@ export class ResultUploadComponent implements OnInit, OnDestroy {
           this.proofDeleteStatus = 'done'
 
           if (res.res_code === 1) {
-            this.router.navigate([
-              `/app/toc/${this.content ? this.content.identifier : ''}/certification`,
-            ])
+            this.router.navigate([`/app/toc/${this.content ? this.content.identifier : ''}/certification`])
           }
         },
         () => {
@@ -195,30 +172,26 @@ export class ResultUploadComponent implements OnInit, OnDestroy {
   submitProof() {
     this.proofSubmitStatus = 'sending'
 
-    this.certificationSvc
-      .submitVerificationRequest(this.content.identifier, this.resultForm)
-      .subscribe(
-        res => {
-          this.snackbar.openFromComponent(SnackbarComponent, {
-            data: {
-              action: 'cert_result_submit',
-              code: res.res_code,
-            },
-          })
+    this.certificationSvc.submitVerificationRequest(this.content.identifier, this.resultForm).subscribe(
+      res => {
+        this.snackbar.openFromComponent(SnackbarComponent, {
+          data: {
+            action: 'cert_result_submit',
+            code: res.res_code,
+          },
+        })
 
-          this.proofSubmitStatus = 'done'
+        this.proofSubmitStatus = 'done'
 
-          if (res.res_code === 1) {
-            this.router.navigate([
-              `/app/toc/${this.content ? this.content.identifier : ''}/certification`,
-            ])
-          }
-        },
-        () => {
-          this.snackbar.openFromComponent(SnackbarComponent)
-          this.proofSubmitStatus = 'error'
-        },
-      )
+        if (res.res_code === 1) {
+          this.router.navigate([`/app/toc/${this.content ? this.content.identifier : ''}/certification`])
+        }
+      },
+      () => {
+        this.snackbar.openFromComponent(SnackbarComponent)
+        this.proofSubmitStatus = 'error'
+      },
+    )
   }
 
   private getUserManager() {
@@ -243,7 +216,7 @@ export class ResultUploadComponent implements OnInit, OnDestroy {
       map(() => control.value),
       switchMap((value: string) => {
         if (!value) {
-          return throwError(() => { invalidEmail: true })
+          return throwError(() => ({ invalidEmail: true }))
         }
 
         const trimmedEmail = value.split('@')[0]
@@ -254,17 +227,14 @@ export class ResultUploadComponent implements OnInit, OnDestroy {
 
         return this.certificationApi.getCertificationUserPrivileges(trimmedEmail)
       }),
-      map(result =>
-        result === null ? null : result.canVerifyResult ? null : { invalidEmail: true },
-      ),
+      map(result => (result === null ? null : result.canVerifyResult ? null : { invalidEmail: true })),
       catchError(() => of({ invalidEmail: true })),
     )
   }
 
   private validateResult(control: AbstractControl): ValidationErrors | null {
     try {
-      const resultType: 'score' | 'grade' | 'percentage' | 'other' = this.resultForm.value
-        .resultType
+      const resultType: 'score' | 'grade' | 'percentage' | 'other' = this.resultForm.value.resultType
 
       if (!resultType) {
         return { noResultType: true }
@@ -347,23 +317,21 @@ export class ResultUploadComponent implements OnInit, OnDestroy {
 
   private subscribeToCertificationResolve() {
     this.fetchStatus = 'fetching'
-    this.certificationMetaSub = this.certificationSvc
-      .getCertificationMeta(this.route.parent)
-      .subscribe(
-        certificationData => {
-          this.certification = certificationData
-          if (!this.certification.verification_request.status) {
-            this.resultForm.controls.file.setValidators(Validators.required)
-          }
+    this.certificationMetaSub = this.certificationSvc.getCertificationMeta(this.route.parent).subscribe(
+      certificationData => {
+        this.certification = certificationData
+        if (!this.certification.verification_request.status) {
+          this.resultForm.controls.file.setValidators(Validators.required)
+        }
 
-          this.initForm()
+        this.initForm()
 
-          this.fetchStatus = 'done'
-        },
-        () => {
-          this.fetchStatus = 'error'
-        },
-      )
+        this.fetchStatus = 'done'
+      },
+      () => {
+        this.fetchStatus = 'error'
+      },
+    )
   }
 
   private subscribeToContentResolve() {
@@ -372,9 +340,7 @@ export class ResultUploadComponent implements OnInit, OnDestroy {
         this.content = content
 
         if (!(this.content.verifiers && this.content.verifiers.length)) {
-          this.resultForm.controls.verifierEmail.setAsyncValidators(
-            this.validateVerifierEmail.bind(this),
-          )
+          this.resultForm.controls.verifierEmail.setAsyncValidators(this.validateVerifierEmail.bind(this))
         }
 
         this.contentFetchStatus = 'done'
@@ -394,8 +360,7 @@ export class ResultUploadComponent implements OnInit, OnDestroy {
         result: request.result || null,
         examDate: request.exam_date || null,
         verifierEmail: request.verifierEmail || null,
-        fileName:
-          request.document && request.document.length ? request.document[0].document_name : '',
+        fileName: request.document && request.document.length ? request.document[0].document_name : '',
       })
     }
   }

@@ -6,7 +6,6 @@ import { IWidgetAuthor } from './../../../interface/widget'
 
 import { ChannelStoreService } from './../../../services/store.service'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-content-strip-holder',
@@ -14,7 +13,6 @@ import { ChannelStoreService } from './../../../services/store.service'
   styleUrls: ['./content-strip-holder.component.scss'],
 })
 export class ContentStripHolderComponent implements OnInit, OnChanges {
-
   @Input() id = ''
   @Input() isSubmitPressed = false
   @Input() showData = 'data'
@@ -31,16 +29,14 @@ export class ContentStripHolderComponent implements OnInit, OnChanges {
     private store: ChannelStoreService,
     private contentStripSvc: ContentStripMultipleService,
     private contentSvc: WidgetContentService,
-  ) { }
+  ) {}
 
   ngOnInit() {
-    this.store.update.subscribe(
-      (id: string) => {
-        if (id === this.id) {
-          this.initiate()
-        }
-      },
-    )
+    this.store.update.subscribe((id: string) => {
+      if (id === this.id) {
+        this.initiate()
+      }
+    })
   }
 
   ngOnChanges() {
@@ -60,9 +56,8 @@ export class ContentStripHolderComponent implements OnInit, OnChanges {
       postWidgets: [] as string[],
     }
     this.widget = this.store.getUpdatedContent(this.id)
-    this.widget.children.map(
-      v => {
-        switch (this.store.getUpdatedContent(v).purpose) {
+    this.widget.children.map(v => {
+      switch (this.store.getUpdatedContent(v).purpose) {
         case 'info':
           this.widgetMap.info = v
           break
@@ -78,26 +73,17 @@ export class ContentStripHolderComponent implements OnInit, OnChanges {
         case 'postWidget':
           this.widgetMap.postWidgets.push(v)
           break
-        }
-      },
-    )
+      }
+    })
     if (this.widgetMap.info) {
       this.stripInfo = this.store.getUpdatedContent(this.widgetMap.info)
       this.showInfo = this.stripInfo.addOnData.visibilityMode === 'visible'
     } else {
       this.stripInfo = undefined as any
     }
-    if (this.widget.data.request && this.widget.data.request.api &&
-      Object.keys(this.widget.data.request.api).length) {
+    if (this.widget.data.request && this.widget.data.request.api && Object.keys(this.widget.data.request.api).length) {
       this.fetchFromApi()
-    } else if (this.widget.data.request && this.widget.data.request.search &&
-      Object.keys(this.widget.data.request.search).length) {
-      this.fetchFromSearch()
-    } else if (this.widget.data.request && this.widget.data.request.search &&
-      Object.keys(this.widget.data.request.search).length) {
-      this.fetchFromSearch()
-    } else if (this.widget.data.request && this.widget.data.request.search &&
-      Object.keys(this.widget.data.request.search).length) {
+    } else if (this.widget.data.request && this.widget.data.request.search && Object.keys(this.widget.data.request.search).length) {
       this.fetchFromSearch()
     } else if (this.widget.data.request && this.widget.data.request.ids && this.widget.data.request.ids.length) {
       this.fetchFromIds()
@@ -120,9 +106,7 @@ export class ContentStripHolderComponent implements OnInit, OnChanges {
   fetchFromSearch() {
     this.contentSvc.search(this.widget.data.request.search).subscribe(
       results => {
-        this.viewMore = Boolean(
-          results.result.length && this.widget.data.stripConfig && this.widget.data.stripConfig.postCardForSearch,
-        )
+        this.viewMore = Boolean(results.result.length && this.widget.data.stripConfig && this.widget.data.stripConfig.postCardForSearch)
         this.transformContentsToWidgets(results.result)
       },
       () => {
@@ -143,8 +127,11 @@ export class ContentStripHolderComponent implements OnInit, OnChanges {
   }
 
   fetchFromSearchRegionRecommendation() {
-    if (this.widget.data.request && this.widget.data.request.searchRegionRecommendation
-      && Object.keys(this.widget.data.request.searchRegionRecommendation).length) {
+    if (
+      this.widget.data.request &&
+      this.widget.data.request.searchRegionRecommendation &&
+      Object.keys(this.widget.data.request.searchRegionRecommendation).length
+    ) {
       this.contentSvc.searchRegionRecommendation(this.widget.data.request.searchRegionRecommendation).subscribe(
         results => {
           this.transformContentsToWidgets(results.contents)
@@ -159,9 +146,7 @@ export class ContentStripHolderComponent implements OnInit, OnChanges {
     if (this.widget.data.request && this.widget.data.request.searchV6 && Object.keys(this.widget.data.request.searchV6).length) {
       this.contentSvc.searchV6(this.widget.data.request.searchV6).subscribe(
         results => {
-          this.viewMore = Boolean(
-            results.result.length && this.widget.data.stripConfig && this.widget.data.stripConfig.postCardForSearch,
-          )
+          this.viewMore = Boolean(results.result.length && this.widget.data.stripConfig && this.widget.data.stripConfig.postCardForSearch)
           // this.viewMore = showViewMore
           //   ? {
           //     path: '/app/search/learning',
@@ -182,9 +167,7 @@ export class ContentStripHolderComponent implements OnInit, OnChanges {
     }
   }
 
-  private transformContentsToWidgets(
-    contents: NsContent.IContent[],
-  ) {
+  private transformContentsToWidgets(contents: NsContent.IContent[]) {
     this.widgetDatas = (contents || []).map((content, idx) => ({
       widgetType: 'card',
       widgetSubType: 'cardContent',
@@ -202,5 +185,4 @@ export class ContentStripHolderComponent implements OnInit, OnChanges {
   triggerEdit(id: string) {
     this.store.triggerEdit(id)
   }
-
 }

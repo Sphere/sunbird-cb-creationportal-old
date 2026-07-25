@@ -1,23 +1,15 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core'
 
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  AbstractControl,
-  ValidationErrors,
-} from '@angular/forms'
+import { FormGroup, FormControl, Validators, AbstractControl, ValidationErrors } from '@angular/forms'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable, of, timer, throwError, noop, Subscription } from 'rxjs'
 
 import { finalize, startWith, map, switchMap, catchError } from 'rxjs/operators'
 
-
 import { NsContent } from '@ws-widget/collection'
 
 import { TFetchStatus, TSendStatus } from '@ws-widget/utils'
-
 
 import {
   ICertificationMeta,
@@ -36,7 +28,6 @@ import { CertificationService } from '../../services/certification.service'
 import { Router, ActivatedRoute } from '@angular/router'
 
 import { SnackbarComponent } from '../snackbar/snackbar.component'
-
 
 @Component({
   standalone: false,
@@ -232,23 +223,18 @@ export class AtDeskSlotBookingComponent implements OnInit, OnDestroy {
       map(() => control.value),
       switchMap((value: string) => {
         if (!value) {
-          return throwError(() => { invalidEmail: true })
+          return throwError(() => ({ invalidEmail: true }))
         }
 
         const trimmedEmail = value.split('@')[0]
 
-        if (
-          this.userPrivileges &&
-          trimmedEmail.toLowerCase() === this.userPrivileges.manager.toLowerCase()
-        ) {
+        if (this.userPrivileges && trimmedEmail.toLowerCase() === this.userPrivileges.manager.toLowerCase()) {
           return of(null)
         }
 
         return this.certificationApi.getCertificationUserPrivileges(trimmedEmail)
       }),
-      map(privileges =>
-        privileges === null ? null : privileges.canProctorAtDesk ? null : { invalidEmail: true },
-      ),
+      map(privileges => (privileges === null ? null : privileges.canProctorAtDesk ? null : { invalidEmail: true })),
       catchError(() => of({ invalidEmail: true })),
     )
   }
@@ -261,7 +247,7 @@ export class AtDeskSlotBookingComponent implements OnInit, OnDestroy {
         proctorEmail: this.userPrivileges.manager,
       })
       this.managerFetchStatus = 'done'
-    },                                                        noop)
+    }, noop)
   }
 
   private filterCountries(value: string): ICertificationCountry[] {
@@ -270,9 +256,7 @@ export class AtDeskSlotBookingComponent implements OnInit, OnDestroy {
     }
 
     const filterValue = value.toLowerCase()
-    return this.countries.filter(country =>
-      country.country_name.toLowerCase().includes(filterValue),
-    )
+    return this.countries.filter(country => country.country_name.toLowerCase().includes(filterValue))
   }
 
   private getStringifiedDates(dateObj: ICertificationDate) {
@@ -285,18 +269,14 @@ export class AtDeskSlotBookingComponent implements OnInit, OnDestroy {
   }
 
   private subscribeToCertificationResolve() {
-    this.certificationMetaSub = this.certificationSvc
-      .getCertificationMeta(this.route.parent)
-      .subscribe(certificationData => {
-        this.certification = certificationData
-      },         noop)
+    this.certificationMetaSub = this.certificationSvc.getCertificationMeta(this.route.parent).subscribe(certificationData => {
+      this.certification = certificationData
+    }, noop)
   }
 
   private subscribeToContentResolve() {
-    this.contentMetaSub = this.certificationSvc
-      .getContentMeta(this.route.parent)
-      .subscribe(content => {
-        this.content = content
-      },         noop)
+    this.contentMetaSub = this.certificationSvc.getContentMeta(this.route.parent).subscribe(content => {
+      this.content = content
+    }, noop)
   }
 }

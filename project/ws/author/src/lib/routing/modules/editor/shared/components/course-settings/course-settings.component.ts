@@ -1190,7 +1190,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     return null // Return null if value is not found
   }
   getValuesForKeys(keysToFind: any) {
-    keysToFind
     const values: any = []
     keysToFind.forEach((key: any) => {
       key = key.split(':')[0]

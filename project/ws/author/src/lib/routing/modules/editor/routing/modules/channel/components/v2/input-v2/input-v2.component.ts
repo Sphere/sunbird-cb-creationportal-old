@@ -14,7 +14,6 @@ import { NotificationComponent } from '@ws/author/src/lib/modules/shared/compone
 
 import { COLUMN_WIDTH } from '../../input/image-v2/image-v2.constant'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-input-v2',
@@ -65,7 +64,6 @@ export class InputV2Component implements OnInit {
   }
 
   ngOnInit() {
-
     this.commonProp = {
       ...(this.widget.widgetHostStyle || {}),
     }
@@ -75,12 +73,8 @@ export class InputV2Component implements OnInit {
     // if (!this.commonProp.width) {
     //   this.commonProp.width = `${this.size * 331}px`
     // }
-    this.heightProp = this.commonProp.height ?
-      this.commonProp.height === '472px' ?
-        'standard' : 'custom' : 'auto'
-    this.widthProp = this.commonProp.width ?
-      this.commonProp.width === `${this.size * 331}px` ?
-        'standard' : 'custom' : 'auto'
+    this.heightProp = this.commonProp.height ? (this.commonProp.height === '472px' ? 'standard' : 'custom') : 'auto'
+    this.widthProp = this.commonProp.width ? (this.commonProp.width === `${this.size * 331}px` ? 'standard' : 'custom') : 'auto'
     this.assignCssProp()
     this.checkWidgetType(this.widget, undefined, true)
   }
@@ -115,7 +109,7 @@ export class InputV2Component implements OnInit {
     const childrenStyle: any = {}
     if (Object.keys(style).length) {
       Object.keys(style).forEach(v => {
-        if ((v === 'height') || (v === 'width')) {
+        if (v === 'height' || v === 'width') {
           parentStyle[v] = style[v]
         } else {
           childrenStyle[v] = style[v]
@@ -162,8 +156,7 @@ export class InputV2Component implements OnInit {
     if (key === 'height') {
       this.height = this.heightProp === 'auto' ? null : this.heightProp === 'standard' ? 472 : 0
     } else {
-      this.width = this.widthProp === 'auto' ? null : this.widthProp === 'standard' ?
-        this.size * 331 : 0
+      this.width = this.widthProp === 'auto' ? null : this.widthProp === 'standard' ? this.size * 331 : 0
     }
   }
 
@@ -179,7 +172,8 @@ export class InputV2Component implements OnInit {
     if (this.commonProp['margin-left']) {
       this.marginLeftUnit = this.commonProp['margin-left'].replace(/[0-9]/g, '')
       this.marginLeft = this.commonProp['margin-left'].replace(/[^0-9]/g, '')
-    } if (this.commonProp['margin-right']) {
+    }
+    if (this.commonProp['margin-right']) {
       this.marginRightUnit = this.commonProp['margin-right'].replace(/[0-9]/g, '')
       this.marginRight = this.commonProp['margin-right'].replace(/[^0-9]/g, '')
     }
@@ -194,7 +188,8 @@ export class InputV2Component implements OnInit {
     if (this.commonProp['padding-left']) {
       this.paddingLeftUnit = this.commonProp['padding-left'].replace(/[0-9]/g, '')
       this.paddingLeft = this.commonProp['padding-left'].replace(/[^0-9]/g, '')
-    } if (this.commonProp['padding-right']) {
+    }
+    if (this.commonProp['padding-right']) {
       this.paddingRightUnit = this.commonProp['padding-right'].replace(/[0-9]/g, '')
       this.paddingRight = this.commonProp['padding-right'].replace(/[^0-9]/g, '')
     }
@@ -267,45 +262,46 @@ export class InputV2Component implements OnInit {
     read = false,
   ): NsWidgetResolver.IRenderConfigWithAnyData {
     switch (widgetData.widgetSubType) {
-    case 'selectorResponsive':
-      if (widgetData.widgetData.selectFrom) {
-        for (let index = 0; index < widgetData.widgetData.selectFrom.length; index = index + 1) {
-          if (widgetData.widgetData.selectFrom[index].widget.widgetSubType) {
-            widgetData.widgetData.selectFrom[index].widget = this.checkWidgetType(
+      case 'selectorResponsive':
+        if (widgetData.widgetData.selectFrom) {
+          for (let index = 0; index < widgetData.widgetData.selectFrom.length; index = index + 1) {
+            if (widgetData.widgetData.selectFrom[index].widget.widgetSubType) {
+              widgetData.widgetData.selectFrom[index].widget = this.checkWidgetType(
                 widgetData.widgetData.selectFrom[index].widget,
                 style,
-                read)
+                read,
+              )
+            }
           }
         }
-      }
-      return widgetData
-    case 'pageEmbedded':
-    case 'galleryView':
-    case 'elementHtml':
-    case 'pageEmbedded':
-      this.isMarginAvailable = true
-      return this.setMarginContainerStyle(widgetData, style, read)
-    case 'sliderBanners':
-    case 'contentStripMultiple':
-    case 'contentStripSingle':
-    case 'imageMapResponsive':
-    case 'cardBreadcrumb':
-    case 'playerVideo':
-      this.isMarginAvailable = false
-      return widgetData
-    default:
-      return widgetData
+        return widgetData
+      case 'pageEmbedded':
+      case 'galleryView':
+      case 'elementHtml':
+        this.isMarginAvailable = true
+        return this.setMarginContainerStyle(widgetData, style, read)
+      case 'sliderBanners':
+      case 'contentStripMultiple':
+      case 'contentStripSingle':
+      case 'imageMapResponsive':
+      case 'cardBreadcrumb':
+      case 'playerVideo':
+        this.isMarginAvailable = false
+        return widgetData
+      default:
+        return widgetData
     }
   }
 
   setMarginContainerStyle(
     widget: NsWidgetResolver.IRenderConfigWithAnyData,
     style?: any,
-    read = false): NsWidgetResolver.IRenderConfigWithAnyData {
+    read = false,
+  ): NsWidgetResolver.IRenderConfigWithAnyData {
     let stylePresent: any = {}
     if (widget && widget.widgetData && !read) {
       widget.widgetData.containerStyle = {
-        ...widget.widgetData.containerStyle || {},
+        ...(widget.widgetData.containerStyle || {}),
         ...style,
       }
     }
@@ -320,11 +316,12 @@ export class InputV2Component implements OnInit {
   setMarginHostStyle(
     widget: NsWidgetResolver.IRenderConfigWithAnyData,
     style?: any,
-    read = false): NsWidgetResolver.IRenderConfigWithAnyData {
+    read = false,
+  ): NsWidgetResolver.IRenderConfigWithAnyData {
     let stylePresent: any = {}
     if (widget && widget.widgetData && !read) {
       widget.widgetHostStyle = {
-        ...widget.widgetHostStyle || {},
+        ...(widget.widgetHostStyle || {}),
         ...style,
       }
     }
@@ -341,7 +338,7 @@ export class InputV2Component implements OnInit {
         if (v === 'height') {
           this.height = style[v].match(/\d+/)[0]
           this.heightUnit = style[v].split(/\d+/)[1]
-        } else if (v === 'height') {
+        } else if (v === 'width') {
           this.width = style[v].match(/\d+/)[0]
           this.widthUnit = style[v].split(/\d+/)[1]
         } else if (v === 'margin-right') {
