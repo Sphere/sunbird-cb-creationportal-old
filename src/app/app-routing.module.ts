@@ -157,11 +157,6 @@ const routes: Routes = [
     },
   },
   {
-    path: 'app/events',
-    loadChildren: () => import('./routes/route-app-event.module').then(m => m.AppEventsModule),
-    canActivate: [GeneralGuard],
-  },
-  {
     path: 'app/search',
     loadChildren: () => import('./routes/route-search-app.module').then(u => u.RouteSearchAppModule),
     data: {
