@@ -21,7 +21,6 @@ import { SearchServService } from '../../services/search-serv.service'
   encapsulation: ViewEncapsulation.None,
 })
 export class HomeComponent implements OnInit {
-
   query: FormControl = new FormControl('')
   pageNavbar: Partial<NsPage.INavBackground> = this.configSvc.pageNavBar
   autoCompleteResults: ISearchAutoComplete[] = []
@@ -38,12 +37,8 @@ export class HomeComponent implements OnInit {
     private searchSvc: SearchServService,
   ) {
     const isAutoCompleteAllowed = this.route.snapshot.data.pageData.data.search.isAutoCompleteAllowed
-    if (typeof isAutoCompleteAllowed === 'undefined' ||
-      (typeof isAutoCompleteAllowed === 'boolean' && isAutoCompleteAllowed)) {
-      this.query.valueChanges.pipe(
-        debounceTime(200),
-        distinctUntilChanged(),
-      ).subscribe(q => {
+    if (typeof isAutoCompleteAllowed === 'undefined' || (typeof isAutoCompleteAllowed === 'boolean' && isAutoCompleteAllowed)) {
+      this.query.valueChanges.pipe(debounceTime(200), distinctUntilChanged()).subscribe(q => {
         this.searchQuery.q = q
         this.getAutoCompleteResults()
       })
@@ -51,33 +46,41 @@ export class HomeComponent implements OnInit {
   }
 
   search(query?: string) {
-    this.router.navigate(['/app/search/home'], {
-      queryParams: { lang: this.searchQuery.l, q: query || this.searchQuery.q },
-    }).then(() => {
-      this.router.navigate(['/app/search/learning'], {
-        queryParams: {
-          q: query || this.searchQuery.q,
-          lang: this.searchQuery.l,
-        },
+    this.router
+      .navigate(['/app/search/home'], {
+        queryParams: { lang: this.searchQuery.l, q: query || this.searchQuery.q },
       })
-    })
+      .then(() => {
+        this.router.navigate(['/app/search/learning'], {
+          queryParams: {
+            q: query || this.searchQuery.q,
+            lang: this.searchQuery.l,
+          },
+        })
+      })
   }
 
   searchWithFilter(filter: any): void {
-    const objType = filter.contentType ? { contentType: [filter.contentType] } :
-      filter.resourceType ? { resourceType: [filter.resourceType] } : filter.combinedType === 'learningContent' ?
-        { contentType: ['Collection', 'Learning Path', 'Course'] } : ''
-    this.router.navigate(['/app/search/home'], {
-      queryParams: { lang: this.searchQuery.l, q: this.searchQuery.q },
-    }).then(() => {
-      this.router.navigate(['/app/search/learning'], {
-        queryParams: {
-          q: this.searchQuery.q,
-          lang: this.searchQuery.l,
-          f: JSON.stringify(objType),
-        },
+    const objType = filter.contentType
+      ? { contentType: [filter.contentType] }
+      : filter.resourceType
+        ? { resourceType: [filter.resourceType] }
+        : filter.combinedType === 'learningContent'
+          ? { contentType: ['Collection', 'Learning Path', 'Course'] }
+          : ''
+    this.router
+      .navigate(['/app/search/home'], {
+        queryParams: { lang: this.searchQuery.l, q: this.searchQuery.q },
       })
-    })
+      .then(() => {
+        this.router.navigate(['/app/search/learning'], {
+          queryParams: {
+            q: this.searchQuery.q,
+            lang: this.searchQuery.l,
+            f: JSON.stringify(objType),
+          },
+        })
+      })
   }
 
   getActivateLocale(): string {
@@ -102,21 +105,24 @@ export class HomeComponent implements OnInit {
   }
 
   getAutoCompleteResults(): void {
-    this.searchSvc.searchAutoComplete(this.searchQuery).then((results: ISearchAutoComplete[]) => {
-      this.autoCompleteResults = results
-    }).catch(() => {
-
-    })
+    this.searchSvc
+      .searchAutoComplete(this.searchQuery)
+      .then((results: ISearchAutoComplete[]) => {
+        this.autoCompleteResults = results
+      })
+      .catch(() => {})
   }
 
   searchLanguage(lang: string): void {
-    this.router.navigate([], {
-      queryParams: { lang, q: this.searchQuery.q },
-      queryParamsHandling: 'merge',
-      relativeTo: this.route.parent,
-    }).then(() => {
-      this.getAutoCompleteResults()
-    })
+    this.router
+      .navigate([], {
+        queryParams: { lang, q: this.searchQuery.q },
+        queryParamsHandling: 'merge',
+        relativeTo: this.route.parent,
+      })
+      .then(() => {
+        this.getAutoCompleteResults()
+      })
   }
 
   ngOnInit() {
@@ -132,19 +138,15 @@ export class HomeComponent implements OnInit {
       } else {
         this.searchQuery.l = this.getActivateLocale()
       }
-      this.languageSearch = this.route.snapshot.data.pageData.data.search.languageSearch.map(
-        (u: string) => u.toLowerCase(),
-      )
-      this.languageSearch = this.languageSearch.sort()
+      this.languageSearch = this.route.snapshot.data.pageData.data.search.languageSearch.map((u: string) => u.toLowerCase())
+      this.languageSearch = this.languageSearch.sort((a, b) => a.localeCompare(b))
       this.swapRemove(this.languageSearch, this.languageSearch.indexOf('all'), 0)
       if (this.preferredLanguages && this.preferredLanguages.split(',').length > 1) {
-      this.languageSearch.splice(1, 0, this.preferredLanguages)
+        this.languageSearch.splice(1, 0, this.preferredLanguages)
       }
     })
     this.searchSvc.getSearchConfig().then(res => {
       this.suggestedFilters = res.search && res.search.suggestedFilters
-
     })
   }
-
 }

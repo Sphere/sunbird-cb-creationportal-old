@@ -13,7 +13,6 @@ import { AuthMicrosoftService } from './auth-microsoft.service'
 
 import { ConfigurationsService } from './configurations.service'
 
-
 interface IParsedToken {
   email?: string
   encEmail?: string
@@ -37,11 +36,7 @@ export class AuthKeycloakService {
   ) {
     this.loginChangeSubject.subscribe((isLoggedIn: boolean) => {
       this.configSvc.isAuthenticated = isLoggedIn
-      if (
-        isLoggedIn &&
-        this.configSvc.instanceConfig &&
-        Boolean(this.configSvc.instanceConfig.disablePidCheck)
-      ) {
+      if (isLoggedIn && this.configSvc.instanceConfig && Boolean(this.configSvc.instanceConfig.disablePidCheck)) {
         this.configSvc.userProfile = {
           email: this.userEmail,
           userName: this.userName,
@@ -70,7 +65,7 @@ export class AuthKeycloakService {
   get userId(): string | undefined {
     const kc = this.keycloakSvc.getKeycloakInstance()
     if (!kc) {
-      return
+      return undefined
     }
     return (kc.tokenParsed && kc.tokenParsed.sub) || (kc.idTokenParsed && kc.idTokenParsed.sub)
   }
@@ -91,14 +86,10 @@ export class AuthKeycloakService {
 
   get userName(): string | undefined {
     const kc = this.keycloakSvc.getKeycloakInstance()
-    return (
-      (kc.tokenParsed && (kc.tokenParsed as IParsedToken).name) ||
-      (kc.idTokenParsed && (kc.idTokenParsed as IParsedToken).name)
-    )
+    return (kc.tokenParsed && (kc.tokenParsed as IParsedToken).name) || (kc.idTokenParsed && (kc.idTokenParsed as IParsedToken).name)
   }
 
   async initAuth(): Promise<boolean> {
-
     if (!this.configSvc.instanceConfig) {
       return false
     }
@@ -128,19 +119,14 @@ export class AuthKeycloakService {
     }
   }
 
-  login(
-    idpHint: 'E' | 'N' | 'S' = 'E',
-    redirectUrl: string = this.defaultRedirectUrl,
-  ): Promise<void> {
+  login(idpHint: 'E' | 'N' | 'S' = 'E', redirectUrl: string = this.defaultRedirectUrl): Promise<void> {
     return this.keycloakSvc.login({
       idpHint,
       redirectUri: redirectUrl,
     })
   }
 
-  register(
-    redirectUrl: string = this.defaultRedirectUrl,
-  ): Promise<void> {
+  register(redirectUrl: string = this.defaultRedirectUrl): Promise<void> {
     return this.keycloakSvc.register({
       redirectUri: redirectUrl,
     })
@@ -237,16 +223,11 @@ export class AuthKeycloakService {
       const lastSaved = storage.getItem(storageKey)
       if (lastSaved) {
         const processed = JSON.parse(lastSaved)
-        if (
-          'idToken' in processed &&
-          'refreshToken' in processed &&
-          'timeSkew' in processed &&
-          'token' in processed
-        ) {
+        if ('idToken' in processed && 'refreshToken' in processed && 'timeSkew' in processed && 'token' in processed) {
           return processed
         }
       }
-    } catch (e) { }
+    } catch (e) {}
     return {}
   }
 
