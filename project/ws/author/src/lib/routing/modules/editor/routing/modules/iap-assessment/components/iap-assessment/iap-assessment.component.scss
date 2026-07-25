@@ -14,28 +14,27 @@ $badge-padding: 12px;
 .w80 {
   width: 80%;
 }
-.w30{
+.w30 {
   width: 30%;
 }
-.list-item{
-  display:flex;
-  width:100%;
-  *{
+.list-item {
+  display: flex;
+  width: 100%;
+  * {
     width: 50%;
   }
 }
 
-.group-btn{
+.group-btn {
   position: relative;
   top: 22px;
   left: 21px;
   height: 46px;
 }
-.group-del-btn{
+.group-del-btn {
   position: relative;
   top: 29px;
   left: 32px;
-  height: 46px;
   font-size: 32px;
   width: 32px;
   height: 32px;
@@ -44,13 +43,13 @@ $badge-padding: 12px;
   margin-top: 5px;
   margin-left: 16px;
 }
-.divider{
+.divider {
   width: 80% !important;
   margin: 0px 10%;
 }
 .icon-container1 {
   width: $medium-badge-size;
-  height:$medium-badge-size;
+  height: $medium-badge-size;
   margin-bottom: 8px;
   border-radius: 50%;
   display: flex;
@@ -64,27 +63,27 @@ $badge-padding: 12px;
     opacity: 1;
   }
 }
-.animated{
+.animated {
   transition-duration: 1000ms;
 }
-.expanded{
-  height:auto !important;
+.expanded {
+  height: auto !important;
   padding-bottom: 8px;
 }
 .mat-radio-button ~ .mat-radio-button,
 .mat-mdc-radio-button ~ .mat-mdc-radio-button {
   margin-left: 16px;
 }
-.radio-buttons{
+.radio-buttons {
   float: left;
   margin: 16px;
   font-size: 16px;
 }
-.padding-top-30px{
+.padding-top-30px {
   padding-top: 30px;
-  margin-left:16px;
+  margin-left: 16px;
 }
-.section-title-questions{
+.section-title-questions {
   float: right;
   margin: 16px;
   margin-top: 12px;
@@ -92,7 +91,6 @@ $badge-padding: 12px;
 .entity-container {
   display: flex;
   padding: 16px 16px $size-s 16px;
-
 }
 .required {
   &::after {
@@ -100,38 +98,38 @@ $badge-padding: 12px;
     content: ' *';
   }
 }
-.container{
+.container {
   padding: 32px;
 }
 
-.w100{
-  width:100%;
+.w100 {
+  width: 100%;
 }
-.w50{
+.w50 {
   width: 50%;
 }
-.w60{
+.w60 {
   width: 60%;
 }
-.flex-container{
+.flex-container {
   display: flex;
   flex-flow: row wrap;
 }
 
-.fs16{
+.fs16 {
   font-size: 16px;
 }
 
-.word-break{
+.word-break {
   word-break: break-word;
   white-space: unset !important;
 }
 .mat-card,
-.mat-mdc-card{
- //width: 40%;
- margin: 16px;
- height: 190px;
-animation: 0.5s ease-out 0s 1 slideInFromLeft;
+.mat-mdc-card {
+  //width: 40%;
+  margin: 16px;
+  height: 190px;
+  animation: 0.5s ease-out 0s 1 slideInFromLeft;
 }
 .truncate-cell {
   max-width: 250px; /* feel free to include any other value */
@@ -140,7 +138,7 @@ animation: 0.5s ease-out 0s 1 slideInFromLeft;
   text-overflow: ellipsis;
   width: 250px;
 }
-.section-card{
+.section-card {
   width: 40% !important;
 }
 .truncate-cell-section {
@@ -156,37 +154,37 @@ animation: 0.5s ease-out 0s 1 slideInFromLeft;
   text-overflow: ellipsis;
 }
 
-.heightAuto{
-  height: auto
+.heightAuto {
+  height: auto;
 }
-.noOfQuestions{
+.noOfQuestions {
   margin-top: 6px;
   margin-left: 115px;
 }
 :host ::ng-deep .search {
-    .mat-form-field-wrapper,
-    .mat-mdc-text-field-wrapper{
-        padding-bottom: 0px !important;
-    }
-    .mat-form-field-infix,
-    .mat-mdc-form-field-infix {
-        border-top-width: 2px !important;
-    }
+  .mat-form-field-wrapper,
+  .mat-mdc-text-field-wrapper {
+    padding-bottom: 0px !important;
+  }
+  .mat-form-field-infix,
+  .mat-mdc-form-field-infix {
+    border-top-width: 2px !important;
+  }
 }
 
 .search-border {
-    border-radius: .75rem;
-    border-color: #cecece;
+  border-radius: 0.75rem;
+  border-color: #cecece;
 }
 .pointer {
-    cursor: pointer;
+  cursor: pointer;
 }
 
-.search{
-    width: 100%;
-    //max-width: 500px;
-    box-sizing: border-box;
-    max-height: 40px;
+.search {
+  width: 100%;
+  //max-width: 500px;
+  box-sizing: border-box;
+  max-height: 40px;
 }
 @keyframes slideInFromLeft {
   0% {
@@ -196,7 +194,7 @@ animation: 0.5s ease-out 0s 1 slideInFromLeft;
     transform: translateX(0);
   }
 }
-.search-icon{
+.search-icon {
   font-size: 24px !important;
   vertical-align: middle;
 }
@@ -209,20 +207,18 @@ animation: 0.5s ease-out 0s 1 slideInFromLeft;
 .example-radio-button {
   margin: 5px;
 }
-.section-title{
+.section-title {
   font-size: 18px;
   font-weight: bold;
   width: 80%;
 }
 
-
-.section-description{
+.section-description {
   width: 70%;
   margin: 8px 16px;
   font-size: 16px;
   word-break: break-word;
 }
-
 
 .cursor-disable {
   cursor: not-allowed;
@@ -238,7 +234,7 @@ animation: 0.5s ease-out 0s 1 slideInFromLeft;
   @media only screen and (max-width: 930px) {
     // margin-top: 24px;
     margin-left: 80px;
-    .icon-container{
+    .icon-container {
       flex-direction: row;
     }
   }
@@ -275,7 +271,6 @@ animation: 0.5s ease-out 0s 1 slideInFromLeft;
   opacity: 1;
 }
 
-
 .text-white {
   color: #fff;
 }
@@ -306,7 +301,6 @@ ul li {
   position: fixed;
   top: 15px;
   left: 15px;
-  z-index: 1;
   font-size: 30px;
   cursor: pointer;
   z-index: 1001;
@@ -320,7 +314,6 @@ ul li {
   font-size: 16px;
   z-index: 1001;
 }
-
 
 .buttons {
   display: flex;
@@ -359,22 +352,22 @@ ul li {
   justify-content: center;
 }
 
-.button-grid{
+.button-grid {
   display: grid;
   width: 160px;
   grid-template-columns: 0.2fr 0.95fr;
 }
 
-.button-text{
-      align-self: center;
-    padding-top: 17px;
-    padding-left: 4px;
+.button-text {
+  align-self: center;
+  padding-top: 17px;
+  padding-left: 4px;
 }
 
-.margin-right-xxs{
+.margin-right-xxs {
   margin-right: 4px;
 }
-.margin-left15{
+.margin-left15 {
   margin-left: 15rem;
 }
 
@@ -397,7 +390,7 @@ table {
 td {
   text-align: center;
 }
-td:first-child{
+td:first-child {
   text-align: left;
 }
 th.mat-header-cell,
@@ -408,25 +401,24 @@ th.mat-header-cell:first-child,
 th.mat-mdc-header-cell:first-child {
   text-align: left !important;
 }
-.arrow-icon{
+.arrow-icon {
   position: absolute;
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
 }
 
-.loader{
+.loader {
   position: relative;
   top: 70%;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   margin-top: 40px;
 }
-.icon-hover:hover{
+.icon-hover:hover {
   transform: scale(1.5);
-  transition: 0.3s
+  transition: 0.3s;
 }
-
 
 //table row expansion
 tr.example-detail-row {
@@ -447,21 +439,21 @@ tr.example-element-row:not(.example-expanded-row):active {
 
 .example-element-detail {
   overflow: hidden;
-  .question-stmt{
-    display:flex;
+  .question-stmt {
+    display: flex;
     padding: 1%;
-    width:100%;
+    width: 100%;
   }
-  .options-cont{
+  .options-cont {
     margin-left: 5%;
-    .option{
-      display:flex;
-      width:100%;
+    .option {
+      display: flex;
+      width: 100%;
     }
   }
 }
 
-.dialog-height{
+.dialog-height {
   max-height: 80vh;
   min-height: 20vh;
 }
