@@ -1,6 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core'
 
-
 interface IDateRange {
   fromDate: Date
   toDate: Date
@@ -39,7 +38,7 @@ export class PipeConciseDateRangePipe implements PipeTransform {
         return conciseRange
       }
 
-      if (fromDateObj.year !== fromDateObj.year) {
+      if (fromDateObj.year !== toDateObj.year) {
         prefix = `${fromDateObj.day} ${fromDateObj.month} ${fromDateObj.year}`
         suffix = `${toDateObj.day} ${toDateObj.month} ${toDateObj.year}`
         conciseRange = `${prefix} - ${suffix}`

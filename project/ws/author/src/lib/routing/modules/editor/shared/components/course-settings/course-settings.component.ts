@@ -1968,7 +1968,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
       gatingEnabled: new FormControl(''),
       issueCertification: !this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
       // competencies_v1: this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
-      competencies_v1: this.isSelfAssessment ? new FormControl('') : new FormControl(''),
+      competencies_v1: new FormControl(''),
       lang: '',
       // proficiency: new FormControl('', [Validators.required]),
       creatorDetails: [],

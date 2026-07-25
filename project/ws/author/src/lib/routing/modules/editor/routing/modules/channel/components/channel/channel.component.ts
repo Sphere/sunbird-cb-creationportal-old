@@ -8,10 +8,7 @@ import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { ActivatedRoute, Router } from '@angular/router'
 
-import {
-  AUTHORING_CONTENT_BASE,
-  CONTENT_BASE_WEBHOST,
-} from '@ws/author/src/lib/constants/apiEndpoints'
+import { AUTHORING_CONTENT_BASE, CONTENT_BASE_WEBHOST } from '@ws/author/src/lib/constants/apiEndpoints'
 
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
 
@@ -48,7 +45,6 @@ import { UploadService } from './../../../../../shared/services/upload.service'
 import { ChannelResolverService } from './../../services/resolver.service'
 
 import { ChannelStoreService } from './../../services/store.service'
-
 
 @Component({
   standalone: false,
@@ -89,7 +85,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
     private accessService: AccessControlService,
     private authInitService: AuthInitService,
     @Inject(APP_BASE_HREF) private baseHref: string,
-  ) { }
+  ) {}
 
   ngOnDestroy() {
     this.changeDetector.detach()
@@ -108,9 +104,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
         data.contents.map((v: { content: NSContent.IContentMeta; data: any }) => {
           if (v.data) {
             this.isNew[v.content.identifier] = false
-            const jsonData = JSON.parse(
-              JSON.stringify(v.data).replace(this.downloadRegex, this.regexDownloadReplace),
-            )
+            const jsonData = JSON.parse(JSON.stringify(v.data).replace(this.downloadRegex, this.regexDownloadReplace))
             // tslint:disable-next-line: ter-computed-property-spacing
             this.storeService.originalContent[
               v.content.identifier
@@ -147,9 +141,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
       })
     }
     this.allLanguages = this.authInitService.ordinals.subTitles
-    Object.keys(this.contentService.originalContent).map(v =>
-      this.contents.push(this.contentService.originalContent[v]),
-    )
+    Object.keys(this.contentService.originalContent).map(v => this.contents.push(this.contentService.originalContent[v]))
     this.loaderService.changeLoadState(true)
   }
 
@@ -249,10 +241,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
 
   save() {
     const updatedContent = this.contentService.upDatedContent[this.currentContent] || {}
-    if (
-      Object.keys(updatedContent).length ||
-      Object.keys(this.storeService.updatedContent[this.currentContent] || {}).length
-    ) {
+    if (Object.keys(updatedContent).length || Object.keys(this.storeService.updatedContent[this.currentContent] || {}).length) {
       this.isChanged = true
       this.loaderService.changeLoad.next(true)
       this.wrapperForTriggerSave(updatedContent, this.currentContent).subscribe(
@@ -268,10 +257,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
         error => {
           if (error.status === 409) {
             const errorMap = new Map<string, NSContent.IContentMeta>()
-            errorMap.set(
-              this.currentContent,
-              this.contentService.getUpdatedMeta(this.currentContent),
-            )
+            errorMap.set(this.currentContent, this.contentService.getUpdatedMeta(this.currentContent))
             this.dialog.open(ErrorParserComponent, {
               width: '80vw',
               height: '90vh',
@@ -327,11 +313,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
     const needSave =
       Object.keys(this.contentService.upDatedContent[this.currentContent] || {}).length ||
       Object.keys(this.storeService.updatedContent[this.currentContent] || {}).length
-    if (
-      !needSave &&
-      this.contentService.getUpdatedMeta(this.currentContent).status === 'Live' &&
-      !this.isChanged
-    ) {
+    if (!needSave && this.contentService.getUpdatedMeta(this.currentContent).status === 'Live' && !this.isChanged) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.UP_TO_DATE,
@@ -359,7 +341,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
         comment: commentsForm.controls.comments.value,
         operation:
           commentsForm.controls.action.value === 'accept' ||
-            ['Draft', 'Live'].includes(this.contentService.originalContent[this.currentContent].status)
+          ['Draft', 'Live'].includes(this.contentService.originalContent[this.currentContent].status)
             ? 1
             : -1,
       }
@@ -367,12 +349,10 @@ export class ChannelComponent implements OnInit, OnDestroy {
       const needSave =
         Object.keys(this.contentService.upDatedContent[this.currentContent] || {}).length ||
         Object.keys(this.storeService.updatedContent[this.currentContent] || {}).length
-      const saveCall = (needSave
-        ? this.wrapperForTriggerSave(
-          this.contentService.upDatedContent[this.currentContent] || {},
-          this.currentContent,
-        )
-        : of({} as any)
+      const saveCall = (
+        needSave
+          ? this.wrapperForTriggerSave(this.contentService.upDatedContent[this.currentContent] || {}, this.currentContent)
+          : of({} as any)
       ).pipe(mergeMap(() => this.editorService.forwardBackward(body, this.currentContent, currentContentStatus)))
       this.loaderService.changeLoad.next(true)
       saveCall.subscribe(
@@ -389,10 +369,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
         error => {
           if (error.status === 409) {
             const errorMap = new Map<string, NSContent.IContentMeta>()
-            errorMap.set(
-              this.currentContent,
-              this.contentService.getUpdatedMeta(this.currentContent),
-            )
+            errorMap.set(this.currentContent, this.contentService.getUpdatedMeta(this.currentContent))
             this.dialog.open(ErrorParserComponent, {
               width: '80vw',
               height: '90vh',
@@ -417,8 +394,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
   preview() {
     const updatedContent = this.contentService.upDatedContent[this.currentContent] || {}
     const saveCall =
-      Object.keys(updatedContent).length ||
-        Object.keys(this.storeService.updatedContent[this.currentContent] || {}).length
+      Object.keys(updatedContent).length || Object.keys(this.storeService.updatedContent[this.currentContent] || {}).length
         ? this.wrapperForTriggerSave(updatedContent, this.currentContent)
         : of({} as any)
     this.loaderService.changeLoad.next(true)
@@ -462,19 +438,11 @@ export class ChannelComponent implements OnInit, OnDestroy {
   }
 
   wrapperForTriggerSave(meta: NSContent.IContentMeta, id: string) {
-    return (Object.keys(this.storeService.updatedContent[this.currentContent] || {}).length
-      ? this.triggerFileSave()
-      : of({} as any)
-    ).pipe(
+    return (Object.keys(this.storeService.updatedContent[this.currentContent] || {}).length ? this.triggerFileSave() : of({} as any)).pipe(
       mergeMap(v => {
         if (v.artifactURL) {
           meta.artifactUrl = v.artifactURL
-          meta.lastUpdatedOn = `${new Date()
-            .toISOString()
-            .replace(/-/g, '')
-            .replace(/:/g, '')
-            .split('.')[0]
-            }+0000`
+          meta.lastUpdatedOn = `${new Date().toISOString().replace(/-/g, '').replace(/:/g, '').split('.')[0]}+0000`
         }
         return this.triggerSave(meta, id)
       }),
@@ -492,9 +460,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
         },
       },
     }
-    return this.editorService
-      .updateContent(requestBody)
-      .pipe(tap(() => this.contentService.resetOriginalMeta(meta, id)))
+    return this.editorService.updateContent(requestBody).pipe(tap(() => this.contentService.resetOriginalMeta(meta, id)))
   }
 
   getMessage(type: 'success' | 'failure') {
@@ -657,11 +623,8 @@ export class ChannelComponent implements OnInit, OnDestroy {
   triggerFileSave() {
     const originRegex = new RegExp(`${window.location.origin}${this.baseHref}`, 'gm')
     let modified = JSON.parse(
-      JSON.stringify(this.storeService.getUpdatedJSON())
-        .replace(this.uploadRegex, this.regexUploadReplace)
-        .replace(originRegex, './'),
+      JSON.stringify(this.storeService.getUpdatedJSON()).replace(this.uploadRegex, this.regexUploadReplace).replace(originRegex, './'),
     )
-    modified = modified
     const originalJson = {
       contentType: 'Page',
       pageLayout: this.channelResolver.renderToJSON(modified),
@@ -682,9 +645,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
 
   fromTemplate(json: any) {
     this.isNew[this.currentContent] = false
-    const modifiedJSON = JSON.parse(
-      JSON.stringify(json).replace(this.downloadRegex, this.regexDownloadReplace),
-    )
+    const modifiedJSON = JSON.parse(JSON.stringify(json).replace(this.downloadRegex, this.regexDownloadReplace))
     if (json) {
       const renderedData = this.channelResolver.renderFromJSON(modifiedJSON)
       this.storeService.updatedContent[this.currentContent] = renderedData

@@ -19,7 +19,6 @@ import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 
 import { IAudioObj } from '../../interface/page-interface'
 
-
 export interface IUsersData {
   name?: string
   id: string
@@ -32,9 +31,7 @@ export interface IUsersData {
   templateUrl: './upload-audio.component.html',
   styleUrls: ['./upload-audio.component.scss'],
 })
-
 export class UploadAudioComponent implements OnInit {
-
   fileSelected = null
   uploadedAudio: IAudioObj = {
     title: '',
@@ -92,16 +89,11 @@ export class UploadAudioComponent implements OnInit {
 
   upload() {
     const formdata = new FormData()
-    formdata.append(
-      'content',
-      this.file as Blob,
-      (this.file as File).name.replace(/[^A-Za-z0-9.]/g, ''),
-    )
+    formdata.append('content', this.file as Blob, (this.file as File).name.replace(/[^A-Za-z0-9.]/g, ''))
     this.loaderService.changeLoad.next(true)
     this.isUploading = true
     this.uploadService
-      .upload(
-        formdata, {
+      .upload(formdata, {
         contentId: this.data.id,
         contentType: CONTENT_BASE_WEBHOST_ASSETS,
       })
@@ -134,9 +126,9 @@ export class UploadAudioComponent implements OnInit {
             })
             this.uploadedAudio.title = v.result.artifactUrl.slice(v.result.artifactUrl.lastIndexOf('/') + 1, v.result.artifactUrl.length)
             this.uploadedAudio.label = this.allLanguages.filter(e => e.srclang === this.uploadedAudio.srclang)[0].label
-            const splitUrl = (v.result.artifactUrl || v.result.artifactUrl).split('/')
+            const splitUrl = v.result.artifactUrl.split('/')
             const hostURL = `${splitUrl[0]}//${splitUrl[2]}`
-            this.uploadedAudio.URL = (v.result.artifactUrl || v.result.artifactUrl).replace(hostURL, '')
+            this.uploadedAudio.URL = v.result.artifactUrl.replace(hostURL, '')
             this.dialogRef.close(this.uploadedAudio)
           }
         },
@@ -152,5 +144,4 @@ export class UploadAudioComponent implements OnInit {
         },
       )
   }
-
 }

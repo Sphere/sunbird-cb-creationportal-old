@@ -880,7 +880,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     }
     //for self assessment
     if (this.courseCompetency) {
-      this.passPercentage = this.passPercentage
       isAssessment = true
     }
 
@@ -1109,7 +1108,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     }
     //for self assessment
     if (this.courseCompetency) {
-      this.passPercentage = this.passPercentage
       isAssessment = true
     }
 

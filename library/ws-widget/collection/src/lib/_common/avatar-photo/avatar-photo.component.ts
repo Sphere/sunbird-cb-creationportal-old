@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core'
 
-
 @Component({
   standalone: false,
   selector: 'ws-widget-avatar-photo',
@@ -8,7 +7,6 @@ import { Component, OnInit, Input } from '@angular/core'
   styleUrls: ['./avatar-photo.component.scss'],
 })
 export class AvatarPhotoComponent implements OnInit {
-
   @Input()
   public photoUrl!: string
 
@@ -54,7 +52,6 @@ export class AvatarPhotoComponent implements OnInit {
         this.circleColor = this.randomcolors[randomIndex1]
       }
     }
-
   }
 
   private createInititals(): void {
@@ -69,12 +66,10 @@ export class AvatarPhotoComponent implements OnInit {
           continue
         }
 
-        if (this.name.charAt(i) === this.name.charAt(i)) {
-          initials += this.name.charAt(i)
+        initials += this.name.charAt(i)
 
-          if (initials.length === 2) {
-            break
-          }
+        if (initials.length === 2) {
+          break
         }
       }
     }
