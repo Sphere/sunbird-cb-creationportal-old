@@ -148,8 +148,6 @@
 }
 
 .flat-no-data-found {
-  display: flex;
-  flex-direction: column;
   justify-content: center;
   z-index: 10;
   display: flex;
@@ -454,8 +452,6 @@ ws-auth-content-card-v2 {
   border-radius: 0;
 }
 .flat-no-data-found {
-  display: flex;
-  flex-direction: column;
   justify-content: center;
   z-index: 10;
   display: flex;
@@ -618,10 +614,8 @@ ws-auth-content-card-v2 {
 .ai-title {
   color: #808080;
   font-weight: 500 !important;
-  font-weight: 500 !important;
   font-family: Roboto, sans-serif;
   font-size: 15px;
-  font-weight: 400;
   padding-left: 3px;
   margin-left: 8px !important;
 }
