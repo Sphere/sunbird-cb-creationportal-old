@@ -24,7 +24,7 @@ export class SubapplicationRespondService {
   // Target origin of the embedded sub-application, captured from the origin of
   // the sub-app's own 'LOADED' message so responses (which carry the auth token)
   // are delivered only back to that origin instead of being broadcast with '*'.
-  private contentTargetOrigin = '*'
+  private contentTargetOrigin = window.location.origin
   loaded = false
   constructor(
     private configSvc: ConfigurationsService,
@@ -40,7 +40,7 @@ export class SubapplicationRespondService {
       this.changeContextrespond()
     })
   }
-  loadedRespond(contentWindow: any, applicationName: string, id?: string, targetOrigin: string = '*') {
+  loadedRespond(contentWindow: any, applicationName: string, id?: string, targetOrigin: string = window.location.origin) {
     this.contentTargetOrigin = targetOrigin
     if (id && this.activatedRoute.snapshot.queryParams.viewMode && this.activatedRoute.snapshot.queryParams.viewMode === 'RESUME') {
       this.continueLearningData = null
