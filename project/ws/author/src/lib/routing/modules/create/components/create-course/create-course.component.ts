@@ -253,79 +253,83 @@ export class CreateCourseComponent implements OnInit {
           }),
         )
         .subscribe({
-          next: async () => {
-            const competencies_obj = [
-              {
-                competencyName: this.courseData.courseName,
-                competencyId: this.courseData.proficiency.entityId.toString(),
-              },
-            ]
-            const link =
-              'https://sunbirdcontent.s3-ap-south-1.amazonaws.com/content/do_1139718921061744641126/artifact/do_1139718921061744641126_1705553236239_justwhiteplainwhitewhitewallpaperpreview1705553235473.jpg'
-
-            const updateContentReq: any = {
-              request: {
-                content: {
-                  competency: true,
-                  competencies_v1: competencies_obj,
-                  lang: this.courseData.lang || 'en',
-                  versionKey: this.identifier.versionKey,
-                  appIcon: link,
-                  thumbnail: link,
+          next: () => {
+            void (async () => {
+              const competencies_obj = [
+                {
+                  competencyName: this.courseData.courseName,
+                  competencyId: this.courseData.proficiency.entityId.toString(),
                 },
-              },
-            }
-            const updateResult = await lastValueFrom(
-              this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier),
-            ).catch((_error: any) => undefined)
+              ]
+              const link =
+                'https://sunbirdcontent.s3-ap-south-1.amazonaws.com/content/do_1139718921061744641126/artifact/do_1139718921061744641126_1705553236239_justwhiteplainwhitewhitewallpaperpreview1705553235473.jpg'
 
-            if (updateResult !== undefined) {
-              this.snackBar.openFromComponent(NotificationComponent, {
-                data: { type: Notify.CONTENT_SELF_ASSESSMENT_SUCCESS },
-                duration: NOTIFICATION_TIME * 3000,
-              })
-
-              // Map new API levels (levelNumber/levelName) to shape setContentType expects
-              const levels: any[] = (competency.levels || []).map((l: any) => ({
-                level: l.levelNumber,
-                name: l.levelName,
-                description: l.description || '',
-              }))
-
-              this.editorStore.parentContent = this.identifier.identifier
-              this.editorService.readcontentV3(this.editorStore.parentContent).subscribe({
-                next: async (parentData: any) => {
-                  this.courseData = parentData
-                  this.getChildrenCount()
-
-                  const contentDataMap = new Map<string, NSContent.IContentMeta>()
-                  this.storeService.parentNode.push(parentData.identifier)
-                  this.resolverService.buildTreeAndMap(
-                    parentData,
-                    contentDataMap,
-                    this.storeService.flatNodeMap,
-                    this.storeService.uniqueIdMap,
-                    this.storeService.lexIdMap,
-                  )
-                  this.currentContent = this.identifier.identifier
-                  this.currentCourseId = this.identifier.identifier
-                  contentDataMap.forEach(content => this.editorStore.setOriginalMeta(content))
-                  const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
-                  this.storeService.currentParentNode = currentNode
-                  this.storeService.currentSelectedNode = currentNode
-
-                  if (levels.length > 0) {
-                    this.loaderService.changeLoad.next(true)
-                    for (const level of levels) {
-                      this.courseData = await this.editorService.readcontentV3(this.editorStore.parentContent).toPromise()
-                      this.editorStore.setOriginalMeta(parentData)
-                      await this.setContentType('assessment', level, '')
-                    }
-                  }
-                  this.router.navigateByUrl(`/author/editor/${this.editorStore.parentContent}/collection`, { state: this.courseData })
+              const updateContentReq: any = {
+                request: {
+                  content: {
+                    competency: true,
+                    competencies_v1: competencies_obj,
+                    lang: this.courseData.lang || 'en',
+                    versionKey: this.identifier.versionKey,
+                    appIcon: link,
+                    thumbnail: link,
+                  },
                 },
-              })
-            }
+              }
+              const updateResult = await lastValueFrom(
+                this.editorService.updateNewContentV3(updateContentReq, this.identifier.identifier),
+              ).catch((_error: any) => undefined)
+
+              if (updateResult !== undefined) {
+                this.snackBar.openFromComponent(NotificationComponent, {
+                  data: { type: Notify.CONTENT_SELF_ASSESSMENT_SUCCESS },
+                  duration: NOTIFICATION_TIME * 3000,
+                })
+
+                // Map new API levels (levelNumber/levelName) to shape setContentType expects
+                const levels: any[] = (competency.levels || []).map((l: any) => ({
+                  level: l.levelNumber,
+                  name: l.levelName,
+                  description: l.description || '',
+                }))
+
+                this.editorStore.parentContent = this.identifier.identifier
+                this.editorService.readcontentV3(this.editorStore.parentContent).subscribe({
+                  next: (parentData: any) => {
+                    void (async () => {
+                      this.courseData = parentData
+                      this.getChildrenCount()
+
+                      const contentDataMap = new Map<string, NSContent.IContentMeta>()
+                      this.storeService.parentNode.push(parentData.identifier)
+                      this.resolverService.buildTreeAndMap(
+                        parentData,
+                        contentDataMap,
+                        this.storeService.flatNodeMap,
+                        this.storeService.uniqueIdMap,
+                        this.storeService.lexIdMap,
+                      )
+                      this.currentContent = this.identifier.identifier
+                      this.currentCourseId = this.identifier.identifier
+                      contentDataMap.forEach(content => this.editorStore.setOriginalMeta(content))
+                      const currentNode = (this.storeService.lexIdMap.get(this.currentContent) as number[])[0]
+                      this.storeService.currentParentNode = currentNode
+                      this.storeService.currentSelectedNode = currentNode
+
+                      if (levels.length > 0) {
+                        this.loaderService.changeLoad.next(true)
+                        for (const level of levels) {
+                          this.courseData = await this.editorService.readcontentV3(this.editorStore.parentContent).toPromise()
+                          this.editorStore.setOriginalMeta(parentData)
+                          await this.setContentType('assessment', level, '')
+                        }
+                      }
+                      this.router.navigateByUrl(`/author/editor/${this.editorStore.parentContent}/collection`, { state: this.courseData })
+                    })()
+                  },
+                })
+              }
+            })()
           },
           error: (error: any) => {
             if (error.status === 409) {
