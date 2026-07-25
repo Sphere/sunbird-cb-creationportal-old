@@ -6,7 +6,6 @@ import { LoggerService } from '@ws-widget/utils'
 
 import { NsContent } from '../../../../../../../library/ws-widget/collection/src/public-api'
 
-
 @Component({
   standalone: false,
   selector: 'viewer-plugin-iap',
@@ -21,10 +20,9 @@ export class IapComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit
   constructor(
     private domSanitizer: DomSanitizer,
     private logger: LoggerService,
-  ) { }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
   ngAfterViewInit() {
     window.addEventListener('message', this.onWindowMessage)
   }
@@ -82,7 +80,13 @@ export class IapComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit
       proctoring: event,
     }
     if (iframeElem) {
-      iframeElem.postMessage(dataToSend, '*')
+      // Target the exact origin of the assessment iframe (derived from its
+      // artifact URL, same- or cross-origin) instead of broadcasting with '*'.
+      const targetOrigin =
+        this.iapContent && this.iapContent.artifactUrl
+          ? new URL(this.iapContent.artifactUrl, window.location.origin).origin
+          : window.location.origin
+      iframeElem.postMessage(dataToSend, targetOrigin)
     }
     // //console.log('event at posting:', event);
     if (event === 'esc' || event === 'fullScreen') {

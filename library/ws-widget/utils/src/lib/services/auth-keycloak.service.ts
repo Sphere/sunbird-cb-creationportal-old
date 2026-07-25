@@ -202,7 +202,7 @@ export class AuthKeycloakService {
             id: event.data && event.data.data && event.data.data.id,
           },
         }
-        contentWindow.postMessage(response, '*')
+        contentWindow.postMessage(response, event.origin)
       })
   }
 

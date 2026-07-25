@@ -19,11 +19,9 @@ import { MobileAppsService } from '../../../../../../../src/app/services/mobile-
 
 import { SCORMAdapterService } from 'project/ws/viewer/src/lib/plugins/html/SCORMAdapter/scormAdapter'
 
-
 // import { Interval, Observable, Subscription } from 'rxjs'
 
 //import { ViewerUtilService } from '../../../../../../../project/ws/viewer/src/lib/viewer-util.service'
-
 
 @Component({
   standalone: false,
@@ -32,10 +30,9 @@ import { SCORMAdapterService } from 'project/ws/viewer/src/lib/plugins/html/SCOR
   styleUrls: ['./html.component.scss'],
 })
 export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
-
   // private mobileOpenInNewTab!: any
   @ViewChild('iframeElem', { static: false }) iframeElem!: ElementRef<HTMLIFrameElement>
-  @ViewChild('mobileOpenInNewTab', { read: ElementRef, static: false }) mobileOpenInNewTab !: ElementRef<HTMLAnchorElement>
+  @ViewChild('mobileOpenInNewTab', { read: ElementRef, static: false }) mobileOpenInNewTab!: ElementRef<HTMLAnchorElement>
   @Input() htmlContent: NsContent.IContent | null = null
   iframeUrl: SafeResourceUrl | null = null
 
@@ -59,10 +56,8 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
       //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier
       // const batchId = this.activatedRoute.snapshot.queryParams.batchId ?
       //   this.activatedRoute.snapshot.queryParams.batchId : this.htmlContent.identifier
-
       // this.telemetrySvc.start('youtube', 'youtube-start', this.activatedRoute.snapshot.queryParams.collectionId ?
       //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier)
-
       // setTimeout(() => {
       //   const data2 = {
       //     current: 10,
@@ -76,7 +71,6 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
       //     result["type"] = 'youtube'
       //     this.contentSvc.changeMessage(result)
       //   })
-
       // }, 50)
       // const data1: any = {
       //   courseID: this.activatedRoute.snapshot.queryParams.collectionId ?
@@ -109,9 +103,8 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     //private viewerSvc: ViewerUtilService,
     private activatedRoute: ActivatedRoute,
     private telemetrySvc: TelemetryService,
-
   ) {
-    (window as any).API = this.scormAdapterService
+    ;(window as any).API = this.scormAdapterService
     // if (window.addEventListener) {
     window.addEventListener('message', this.boundReceiveMessage)
   }
@@ -124,17 +117,15 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     //   // this.scormAdapterService.loadData()
     //   this.scormAdapterService.loadDataV2()
     // }
-
   }
-  ngAfterViewInit() {
-  }
+  ngAfterViewInit() {}
 
   ngOnDestroy() {
     window.removeEventListener('message', this.boundReceiveMessage)
     // Release the global SCORM adapter reference set in the constructor (only if it
     // still points at this instance's service) so the component can be GC'd.
     if ((window as any).API === this.scormAdapterService) {
-      (window as any).API = undefined
+      ;(window as any).API = undefined
     }
   }
 
@@ -158,7 +149,6 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
       //     //  this.contentSvc.changeMessage(result)
       //   })
       // }, 50)
-
       // const data1: any = {
       //   courseID: this.activatedRoute.snapshot.queryParams.collectionId ?
       //     this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier,
@@ -168,7 +158,6 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
       // }
       // this.telemetrySvc.end('docs.google', 'docs.google-close', this.activatedRoute.snapshot.queryParams.collectionId ?
       //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier, data1)
-
       //this.contentSvc.changeMessage('docs.google')
     }
   }
@@ -186,13 +175,17 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     }
 
     if (this.urlContains.includes('docs.google') && this.htmlContent !== null) {
-      this.telemetrySvc.start('docs.google', 'docs.google-start', this.activatedRoute.snapshot.queryParams.collectionId ?
-        this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier)
+      this.telemetrySvc.start(
+        'docs.google',
+        'docs.google-start',
+        this.activatedRoute.snapshot.queryParams.collectionId
+          ? this.activatedRoute.snapshot.queryParams.collectionId
+          : this.htmlContent.identifier,
+      )
       this.executeForms()
     }
 
     if (this.htmlContent && this.htmlContent.identifier && this.htmlContent.mimeType === 'application/vnd.ekstep.html-archive') {
-
       // this.telemetrySvc.start('scorm', 'scorm-start', this.activatedRoute.snapshot.queryParams.collectionId ?
       //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier)
 
@@ -215,12 +208,9 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     this.progress = 100
     this.pageFetchStatus = 'fetching'
     this.showIframeSupportWarning = false
-    this.intranetUrlPatterns = this.configSvc.instanceConfig
-      ? this.configSvc.instanceConfig.intranetIframeUrls
-      : []
+    this.intranetUrlPatterns = this.configSvc.instanceConfig ? this.configSvc.instanceConfig.intranetIframeUrls : []
 
-    let iframeSupport: boolean | string | null =
-      this.htmlContent && this.htmlContent.isIframeSupported
+    let iframeSupport: boolean | string | null = this.htmlContent && this.htmlContent.isIframeSupported
 
     if (this.htmlContent && this.htmlContent.artifactUrl) {
       if (this.htmlContent.artifactUrl.startsWith('http://') && this.htmlContent.isExternal) {
@@ -232,18 +222,12 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
         this.iframeSupport = iframeSupport
         if (iframeSupport === 'Yes' && this.htmlContent.mimeType !== 'application/vnd.ekstep.html-archive') {
           this.showIframeSupportWarning = true
-          setTimeout(
-            () => {
-              this.openInNewTab()
-            },
-            3000,
-          )
-          setInterval(
-            () => {
-              this.progress -= 1
-            },
-            30,
-          )
+          setTimeout(() => {
+            this.openInNewTab()
+          }, 3000)
+          setInterval(() => {
+            this.progress -= 1
+          }, 30)
         } else if (iframeSupport === 'Maybe') {
           this.showIframeSupportWarning = true
         } else {
@@ -253,16 +237,13 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
             //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier
             // const batchId = this.activatedRoute.snapshot.queryParams.batchId ?
             //   this.activatedRoute.snapshot.queryParams.batchId : this.htmlContent.identifier
-
             // this.telemetrySvc.start('html/x-url', 'html/x-url-start', this.activatedRoute.snapshot.queryParams.collectionId ?
             //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier)
-
             // const data1 = {
             //   current: 1,
             //   max_size: 1,
             //   mime_type: this.htmlContent.mimeType,
             // }
-
             // setTimeout(() => {
             //   if (this.htmlContent) {
             //     this.viewerSvc
@@ -275,7 +256,6 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
             //     //this.contentSvc.changeMessage('html')
             //   }
             // }, 50)
-
             // const data2: any = {
             //   courseID: this.activatedRoute.snapshot.queryParams.collectionId ?
             //     this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier,
@@ -285,7 +265,6 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
             // }
             // this.telemetrySvc.end('html/x-url', 'html/x-url-close', this.activatedRoute.snapshot.queryParams.collectionId ?
             //   this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier, data2)
-
           }
         }
       }
@@ -302,14 +281,11 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
       this.showIsLoadingMessage = false
 
       if (this.htmlContent.isIframeSupported !== 'No') {
-        setTimeout(
-          () => {
-            if (this.pageFetchStatus === 'fetching' && !this.urlContains.includes('docs.google')) {
-              this.showIsLoadingMessage = true
-            }
-          },
-          3000,
-        )
+        setTimeout(() => {
+          if (this.pageFetchStatus === 'fetching' && !this.urlContains.includes('docs.google')) {
+            this.showIsLoadingMessage = true
+          }
+        }, 3000)
       }
 
       if (this.htmlContent.mimeType === 'application/vnd.ekstep.html-archive') {
@@ -387,13 +363,10 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
         //     this.activatedRoute.snapshot.queryParams.collectionId : this.htmlContent.identifier, data2)
 
         // }
-
       } else {
         this.mimeType = this.htmlContent.mimeType
-        this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(
-          this.htmlContent.artifactUrl)
+        this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.htmlContent.artifactUrl)
       }
-
     } else if (this.htmlContent && this.htmlContent.artifactUrl === '') {
       this.iframeUrl = null
       this.pageFetchStatus = 'artifactUrlMissing'
@@ -410,9 +383,9 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
   // }
 
   backToDetailsPage() {
-    this.router.navigate(
-      [`/app/toc/${this.htmlContent ? this.htmlContent.identifier : ''}/overview`],
-      { queryParams: { primaryCategory: this.htmlContent ? this.htmlContent.primaryCategory : '' } })
+    this.router.navigate([`/app/toc/${this.htmlContent ? this.htmlContent.identifier : ''}/overview`], {
+      queryParams: { primaryCategory: this.htmlContent ? this.htmlContent.primaryCategory : '' },
+    })
   }
 
   raiseTelemetry(data: any) {
@@ -448,12 +421,9 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     if (this.htmlContent) {
       if (this.mobAppSvc && this.mobAppSvc.isMobile) {
         // window.open(this.htmlContent.artifactUrl)
-        setTimeout(
-          () => {
-            this.mobileOpenInNewTab.nativeElement.click()
-          },
-          0,
-        )
+        setTimeout(() => {
+          this.mobileOpenInNewTab.nativeElement.click()
+        }, 0)
       } else {
         const width = window.outerWidth
         const height = window.outerHeight
@@ -496,12 +466,12 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
       console.log('[SCORM] Iframe loaded successfully')
 
       // Monitor for JavaScript errors in the iframe
-      iframe.contentWindow.addEventListener('error', (error) => {
+      iframe.contentWindow.addEventListener('error', error => {
         console.error('[SCORM] JavaScript error in iframe:', error)
       })
 
       // Monitor for unhandled promise rejections
-      iframe.contentWindow.addEventListener('unhandledrejection', (event) => {
+      iframe.contentWindow.addEventListener('unhandledrejection', event => {
         console.error('[SCORM] Unhandled promise rejection in iframe:', event.reason)
       })
 
@@ -509,12 +479,12 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
         iframe.onload(event)
       }
 
-      iframe.onload = (data => {
-        console.log("data: " + data)
+      iframe.onload = data => {
+        console.log('data: ' + data)
         if (data.target) {
           this.pageFetchStatus = 'done'
         }
-      })
+      }
       this.showIsLoadingMessage = false
       console.log('[SCORM] After iframe load - showIsLoadingMessage:', this.showIsLoadingMessage)
     }
@@ -575,9 +545,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
       const methodName = request.method
       const args = request.args || []
 
-      if ((this.scormAdapterService as any)[methodName] &&
-        typeof (this.scormAdapterService as any)[methodName] === 'function') {
-
+      if ((this.scormAdapterService as any)[methodName] && typeof (this.scormAdapterService as any)[methodName] === 'function') {
         const result = (this.scormAdapterService as any)[methodName](...args)
 
         // Send response back to iframe
@@ -585,9 +553,9 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
           const response = {
             type: 'SCORM_API_RESPONSE',
             id: request.id,
-            result: result
+            result: result,
           }
-          this.iframeElem.nativeElement.contentWindow.postMessage(response, '*')
+          this.iframeElem.nativeElement.contentWindow.postMessage(response, window.location.origin)
           console.log('[SCORM Component] Sent response:', response)
         }
       } else {
@@ -598,4 +566,3 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     }
   }
 }
-

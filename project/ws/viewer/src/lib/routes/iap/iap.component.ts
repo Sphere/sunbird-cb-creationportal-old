@@ -14,7 +14,6 @@ import { filter } from 'rxjs/operators'
 
 import { ViewerUtilService } from '../../viewer-util.service'
 
-
 @Component({
   standalone: false,
   selector: 'viewer-iap',
@@ -30,21 +29,20 @@ export class IapComponent implements OnInit, OnDestroy {
   iapData: NsContent.IContent | null = null
   oldData: NsContent.IContent | null = null
   alreadyRaised = false
-  discussionForumWidget: NsWidgetResolver.IRenderConfigWithTypedData<
-    NsDiscussionForum.IDiscussionForumInput
-  > | null = null
+  discussionForumWidget: NsWidgetResolver.IRenderConfigWithTypedData<NsDiscussionForum.IDiscussionForumInput> | null = null
   constructor(
     private activatedRoute: ActivatedRoute,
     private contentSvc: WidgetContentService,
     private eventSvc: EventService,
     private viewerSvc: ViewerUtilService,
     private respondSvc: SubapplicationRespondService,
-  ) { }
+  ) {}
   ngOnInit() {
     if (this.activatedRoute.snapshot.queryParamMap.get('preview')) {
       this.isPreviewMode = true
-      this.routeDataSubscription = this.viewerSvc.getContent(this.activatedRoute.snapshot.paramMap.get('resourceId') || '').subscribe(
-        async data => {
+      this.routeDataSubscription = this.viewerSvc
+        .getContent(this.activatedRoute.snapshot.paramMap.get('resourceId') || '')
+        .subscribe(async data => {
           this.iapData = data
           if (this.iapData) {
             this.formDiscussionForumWidget(this.iapData)
@@ -56,8 +54,7 @@ export class IapComponent implements OnInit, OnDestroy {
             await this.setS3Cookie(this.iapData.identifier)
           }
           this.isFetchingDataComplete = true
-        },
-      )
+        })
     } else {
       this.routeDataSubscription = this.activatedRoute.data.subscribe(
         async data => {
@@ -90,11 +87,7 @@ export class IapComponent implements OnInit, OnDestroy {
                 if (event.data.requestId && event.data.subApplicationName === 'IAP' && this.iapData) {
                   switch (event.data.requestId) {
                     case 'LOADED':
-                      this.respondSvc.loadedRespond(
-                        contentWindow,
-                        event.data.subApplicationName,
-                        this.iapData.identifier,
-                      )
+                      this.respondSvc.loadedRespond(contentWindow, event.data.subApplicationName, this.iapData.identifier, event.origin)
                       break
                     default:
                       break
@@ -104,19 +97,17 @@ export class IapComponent implements OnInit, OnDestroy {
           }
           this.isFetchingDataComplete = true
         },
-        () => {
-        },
+        () => {},
       )
     }
   }
 
   async ngOnDestroy() {
-    if (this.activatedRoute.snapshot.queryParams.collectionId &&
-      this.activatedRoute.snapshot.queryParams.collectionType
-      && this.iapData) {
-      await this.contentSvc.continueLearning(this.iapData.identifier,
-                                             this.activatedRoute.snapshot.queryParams.collectionId,
-                                             this.activatedRoute.snapshot.queryParams.collectionType,
+    if (this.activatedRoute.snapshot.queryParams.collectionId && this.activatedRoute.snapshot.queryParams.collectionType && this.iapData) {
+      await this.contentSvc.continueLearning(
+        this.iapData.identifier,
+        this.activatedRoute.snapshot.queryParams.collectionId,
+        this.activatedRoute.snapshot.queryParams.collectionType,
       )
     } else if (this.iapData) {
       await this.contentSvc.continueLearning(this.iapData.identifier)
