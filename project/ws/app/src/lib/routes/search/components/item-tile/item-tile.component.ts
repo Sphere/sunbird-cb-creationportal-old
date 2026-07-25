@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router'
 
 // import { IKhubItemTile } from '../../../infy/routes/knowledge-hub/models/knowledgeHub.model'
 
-
 @Component({
   standalone: false,
   selector: 'ws-app-item-tile',
@@ -15,20 +14,20 @@ export class ItemTileComponent implements OnInit {
   @Input() data: any
   ref = 'home'
   topics: string[] = []
-  constructor(private activated: ActivatedRoute, private route: Router) { }
+  constructor(
+    private activated: ActivatedRoute,
+    private route: Router,
+  ) {}
 
-  ngOnInit() { }
+  ngOnInit() {}
   isString(input: any) {
     return typeof input === 'string'
   }
-  goToView() {
+  async goToView() {
     try {
-      this.route.navigate(
-        [`/app/infy/khub/view/${this.data.category}/${this.data.itemId}/${this.data.source}`],
-        {
-          relativeTo: this.activated.parent,
-        },
-      )
+      await this.route.navigate([`/app/infy/khub/view/${this.data.category}/${this.data.itemId}/${this.data.source}`], {
+        relativeTo: this.activated.parent,
+      })
     } catch (e) {
       throw e
     }

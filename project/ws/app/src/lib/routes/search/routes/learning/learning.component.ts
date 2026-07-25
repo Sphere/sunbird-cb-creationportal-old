@@ -441,9 +441,9 @@ export class LearningComponent implements OnInit, OnDestroy {
   contentTrackBy(item: NsContent.IContent) {
     return item.identifier
   }
-  sortOrder(type: string) {
+  async sortOrder(type: string) {
     try {
-      this.router.navigate([], {
+      await this.router.navigate([], {
         queryParams: { sort: type },
         queryParamsHandling: 'merge',
         relativeTo: this.activated.parent,
@@ -470,17 +470,14 @@ export class LearningComponent implements OnInit, OnDestroy {
     }
   }
 
-  searchLanguage(type: string) {
+  async searchLanguage(type: string) {
     try {
-      this.router
-        .navigate([], {
-          queryParams: { lang: type },
-          queryParamsHandling: 'merge',
-          relativeTo: this.activated.parent,
-        })
-        .then(() => {
-          this.expandToPrefLang = false
-        })
+      await this.router.navigate([], {
+        queryParams: { lang: type },
+        queryParamsHandling: 'merge',
+        relativeTo: this.activated.parent,
+      })
+      this.expandToPrefLang = false
     } catch (e) {
       throw e
     }
