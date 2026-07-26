@@ -9,8 +9,6 @@ import { AuthorCardModule } from './author-card/author-card.module'
 
 import { AuthorCardComponent } from './author-card/author-card.component'
 
-import { AvatarPhotoModule } from './_common/avatar-photo/avatar-photo.module'
-
 import { BtnAppsModule } from './btn-apps/btn-apps.module'
 
 import { BtnCallComponent } from './btn-call/btn-call.component'
@@ -32,10 +30,6 @@ import { BtnContentShareModule } from './btn-content-share/btn-content-share.mod
 import { BtnContentDownloadComponent } from './btn-content-download/btn-content-download.component'
 
 import { BtnContentDownloadModule } from './btn-content-download/btn-content-download.module'
-
-import { BtnGoalsComponent } from './btn-goals/btn-goals.component'
-
-import { BtnGoalsModule } from './btn-goals/btn-goals.module'
 
 import { BtnFeatureComponent } from './btn-feature/btn-feature.component'
 
@@ -139,8 +133,6 @@ import { SelectorResponsiveComponent } from './selector-responsive/selector-resp
 
 import { SelectorResponsiveModule } from './selector-responsive/selector-responsive.module'
 
-import { TreeCatalogModule } from './tree-catalog/tree-catalog.module'
-
 // import { CardNetworkHomeComponent } from './card-network-home/card-network-home.component'
 
 // import { CardHomeDiscussComponent } from './card-home-discuss/card-home-discuss.component'
@@ -173,13 +165,11 @@ import { DiscussionForumComponent } from './discussion-forum/components/discussi
 
 export const WIDGET_REGISTERED_MODULES = [
   AuthorCardModule,
-  AvatarPhotoModule,
   BtnAppsModule,
   BtnCallModule,
   BtnCatalogModule,
 
   BtnContentDownloadModule,
-  BtnGoalsModule,
   BtnContentLikeModule,
   BtnContentShareModule,
   BtnFullscreenModule,
@@ -207,7 +197,6 @@ export const WIDGET_REGISTERED_MODULES = [
   PlayerVideoModule,
   PlayerWebPagesModule,
   PlayerYoutubeModule,
-  TreeCatalogModule,
   PageModule,
   SelectorResponsiveModule,
   GridLayoutModule,
@@ -249,11 +238,6 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentLike,
     component: BtnContentLikeComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.goals,
-    component: BtnGoalsComponent,
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,

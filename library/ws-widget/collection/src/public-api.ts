@@ -9,8 +9,6 @@ export * from './lib/author-card/author-card.module'
 
 export * from './lib/author-card/author-card.model'
 
-export * from './lib/_common/avatar-photo/avatar-photo.module'
-
 export * from './lib/btn-apps/btn-apps.module'
 
 export * from './lib/btn-call/btn-call.module'
@@ -44,12 +42,6 @@ export * from './lib/btn-playlist/btn-playlist.service'
 export * from './lib/btn-settings/btn-settings.service'
 
 export * from './lib/card-table/card-table.module'
-
-export * from './lib/btn-goals/btn-goals.model'
-
-export * from './lib/btn-goals/btn-goals.module'
-
-export * from './lib/btn-goals/btn-goals.service'
 
 // widget models
 export * from './lib/card-breadcrumb/card-breadcrumb.model'
@@ -156,8 +148,6 @@ export * from './lib/selector-responsive/selector-responsive.model'
 
 export * from './lib/selector-responsive/selector-responsive.module'
 
-export * from './lib/tree-catalog/tree-catalog.module'
-
 export * from './lib/tree-catalog/tree-catalog.service'
 
 export * from './lib/_common/content-progress/content-progress.module'
@@ -190,8 +180,6 @@ export * from './lib/_common/user-autocomplete/user-autocomplete.service'
 
 export * from './lib/_common/user-image/user-image.module'
 
-export * from './lib/_common/avatar-photo/avatar-photo.module'
-
 // constants
 export * from './lib/_constants/widget-content.constants'
 
@@ -218,3 +206,4 @@ export * from './lib/graph-general/graph-general.service'
 export * from './lib/btn-profile/btn-profile.module'
 
 export * from './lib/activity-strip-multiple/activity-strip-multiple.module'
+export * from './lib/btn-goals/btn-goals.model'

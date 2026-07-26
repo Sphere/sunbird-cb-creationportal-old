@@ -68,7 +68,6 @@ import {
 import {
   BtnCallModule,
   BtnContentDownloadModule,
-  BtnGoalsModule,
   BtnContentShareModule,
   BtnContentLikeModule,
   // BtnContentShareModule,
@@ -178,7 +177,6 @@ import { AppTocCertificateModalComponent } from './components/app-toc-certificat
     PipeContentRouteModule,
     BtnCallModule,
     BtnContentDownloadModule,
-    BtnGoalsModule,
     BtnContentShareModule,
     BtnContentLikeModule,
     // BtnContentFeedbackModule,
