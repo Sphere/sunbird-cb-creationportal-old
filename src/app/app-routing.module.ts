@@ -74,10 +74,6 @@ const routes: Routes = [
     canActivate: [GeneralGuard],
   },
   {
-    path: 'app/setup',
-    loadChildren: () => import('./routes/route-app-setup.module').then(u => u.RouteAppSetupModule),
-  },
-  {
     path: 'app/features',
     component: FeaturesComponent,
     data: {

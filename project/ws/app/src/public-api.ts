@@ -3,7 +3,6 @@
  */
 
 // module exports
-export * from './lib/routes/app-setup/app-setup.module'
 
 export * from './lib/routes/app-toc/app-toc.module'
 
