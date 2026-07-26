@@ -47,8 +47,6 @@ import {
 
 // import { TrainingService } from '../infy/routes/training/services/training.service'
 
-import { BlogsCardComponent } from './components/blogs-card/blogs-card.component'
-
 import { FilterDisplayComponent } from './components/filter-display/filter-display.component'
 
 import { LearningCardComponent } from './components/learning-card/learning-card.component'
@@ -67,8 +65,6 @@ import { SearchRootComponent } from './routes/search-root/search-root.component'
 
 import { SearchRoutingModule } from './search-routing.module'
 
-import { PeopleComponent } from './routes/people/people.component'
-
 import { SearchInputHomeComponent } from './components/search-input-home/search-input-home.component'
 
 @NgModule({
@@ -77,13 +73,11 @@ import { SearchInputHomeComponent } from './components/search-input-home/search-
     SearchInputComponent,
     SearchInputHomeComponent,
     LearningComponent,
-    BlogsCardComponent,
     FilterDisplayComponent,
     KnowledgeComponent,
     LearningCardComponent,
     // ProjectComponent,
     HomeComponent,
-    PeopleComponent,
   ],
   imports: [
     CommonModule,
