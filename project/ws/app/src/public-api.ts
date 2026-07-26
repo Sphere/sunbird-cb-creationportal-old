@@ -6,14 +6,6 @@
 
 export * from './lib/routes/app-toc/app-toc.module'
 
-export * from './lib/routes/frac/frac.module'
-
-export * from './lib/routes/info/info.module'
-
-export * from './lib/routes/my-dashboard/my-dashboard.module'
-
-export * from './lib/routes/notification-v2/notification-v2.module'
-
 export * from './lib/routes/notification/notification.module'
 
 export * from './lib/routes/profile/profile.module'

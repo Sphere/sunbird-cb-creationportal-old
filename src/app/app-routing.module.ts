@@ -69,11 +69,6 @@ const routes: Routes = [
     canActivate: [GeneralGuard],
   },
   {
-    path: 'app/frac',
-    loadChildren: () => import('./routes/route-frac.module').then(u => u.RouteFracModule),
-    canActivate: [GeneralGuard],
-  },
-  {
     path: 'app/features',
     component: FeaturesComponent,
     data: {
@@ -91,11 +86,6 @@ const routes: Routes = [
     canActivate: [GeneralGuard],
   },
   {
-    path: 'app/info',
-    loadChildren: () => import('./routes/route-info-app.module').then(u => u.RouteInfoAppModule),
-    canActivate: [GeneralGuard],
-  },
-  {
     path: 'app/invalid-user',
     component: InvalidUserComponent,
     data: {
@@ -105,28 +95,6 @@ const routes: Routes = [
     resolve: {
       pageData: PageResolve,
     },
-  },
-  {
-    path: 'app/my-dashboard',
-    loadChildren: () => import('./routes/route-my-dashboard.module').then(u => u.RouteMyDashboardModule),
-    // canActivate: [GeneralGuard, LearningGuard],
-  },
-  {
-    path: 'app/notifications',
-    loadChildren: () => import('./routes/route-notification-app.module').then(u => u.RouteNotificationAppModule),
-    data: {
-      // requiredRoles: [
-      //   'content-creator',
-      //   'ka-creator',
-      //   'kb-creator',
-      //   'channel-creator',
-      //   'reviewer',
-      //   'publisher',
-      //   'editor',
-      //   'admin',
-      // ],
-    },
-    canActivate: [GeneralGuard],
   },
   {
     path: 'app/profile',
