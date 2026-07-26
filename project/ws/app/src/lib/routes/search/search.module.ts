@@ -51,11 +51,7 @@ import { BlogsCardComponent } from './components/blogs-card/blogs-card.component
 
 import { FilterDisplayComponent } from './components/filter-display/filter-display.component'
 
-import { ItemTileComponent } from './components/item-tile/item-tile.component'
-
 import { LearningCardComponent } from './components/learning-card/learning-card.component'
-
-import { QandaCardComponent } from './components/qanda-card/qanda-card.component'
 
 import { SearchInputComponent } from './components/search-input/search-input.component'
 
@@ -68,8 +64,6 @@ import { LearningComponent } from './routes/learning/learning.component'
 // import { ProjectComponent } from './routes/project/project.component'
 
 import { SearchRootComponent } from './routes/search-root/search-root.component'
-
-import { SocialComponent } from './routes/social/social.component'
 
 import { SearchRoutingModule } from './search-routing.module'
 
@@ -85,12 +79,9 @@ import { SearchInputHomeComponent } from './components/search-input-home/search-
     LearningComponent,
     BlogsCardComponent,
     FilterDisplayComponent,
-    ItemTileComponent,
     KnowledgeComponent,
     LearningCardComponent,
     // ProjectComponent,
-    QandaCardComponent,
-    SocialComponent,
     HomeComponent,
     PeopleComponent,
   ],
@@ -134,7 +125,7 @@ import { SearchInputHomeComponent } from './components/search-input-home/search-
     MatDividerModule,
     UserAutocompleteModule,
   ],
-  exports: [ItemTileComponent, SearchInputComponent, SearchInputHomeComponent],
+  exports: [SearchInputComponent, SearchInputHomeComponent],
   // providers: [TrainingApiService, TrainingService],
 })
 export class SearchModule {}

@@ -8,8 +8,6 @@ import { LearningComponent } from './routes/learning/learning.component'
 
 import { KnowledgeComponent } from './routes/knowledge/knowledge.component'
 
-import { SocialComponent } from './routes/social/social.component'
-
 import { HomeComponent } from './routes/home/home.component'
 
 import { PeopleComponent } from './routes/people/people.component'
@@ -17,7 +15,6 @@ import { PeopleComponent } from './routes/people/people.component'
 import { PageResolve } from '@ws-widget/utils'
 
 import { GeneralGuard } from 'src/app/guards/general.guard'
-
 
 const routes: Routes = [
   {
@@ -83,10 +80,6 @@ const routes: Routes = [
   //   path: 'project',
   //   component: ProjectComponent,
   // },
-  {
-    path: 'social',
-    component: SocialComponent,
-  },
 ]
 
 @NgModule({
@@ -112,4 +105,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
 })
-export class SearchRoutingModule { }
+export class SearchRoutingModule {}
