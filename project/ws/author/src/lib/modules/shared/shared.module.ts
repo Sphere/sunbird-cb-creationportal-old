@@ -65,8 +65,6 @@ import { CertificateDialogComponent } from './components/certificate-upload-dial
 
 import { CommentsViewComponent } from './components/comments-view/comments-view.component'
 
-import { CommentsComponent } from './components/comments/comments.component'
-
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component'
 
 import { ErrorParserComponent } from './components/error-parser/error-parser.component'
@@ -116,7 +114,6 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
 @NgModule({
   declarations: [
     RelativeUrlPipe,
-    CommentsComponent,
     NotificationComponent,
     CommentsDialogComponent,
     CommentsViewComponent,
@@ -193,7 +190,6 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     MatButtonToggleModule,
     RelativeUrlPipe,
     MatTooltipModule,
-    CommentsComponent,
     MatAutocompleteModule,
     MatDialogModule,
     MatTooltipModule,

@@ -94,8 +94,6 @@ export * from './lib/left-menu/left-menu.module'
 
 export * from './lib/card-table/card-table.model'
 
-export * from './lib/discussion-forum/actionBtn/btn-social-delete/btn-social-delete.module'
-
 export * from './lib/discussion-forum/actionBtn/btn-social-like/btn-social-like.module'
 
 export * from './lib/discussion-forum/actionBtn/btn-social-vote/btn-social-vote.module'

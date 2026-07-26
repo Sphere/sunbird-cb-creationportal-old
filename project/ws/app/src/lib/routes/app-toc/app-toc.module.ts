@@ -113,10 +113,6 @@ import { LicenseComponent } from './components/license/license.component'
 
 import { AssessmentDetailComponent } from './components/assessment-detail/assessment-detail.component'
 
-import { AppTocDesktopModalComponent } from './components/app-toc-desktop-modal/app-toc-desktop-modal.component'
-
-import { AppTocCertificateModalComponent } from './components/app-toc-certificate-modal/app-toc-certificate-modal.component'
-
 @NgModule({
   declarations: [
     AppTocAnalyticsComponent,
@@ -137,8 +133,6 @@ import { AppTocCertificateModalComponent } from './components/app-toc-certificat
     TimeDifferencePipe,
     MomentDatePipe,
     AssessmentDetailComponent,
-    AppTocDesktopModalComponent,
-    AppTocCertificateModalComponent,
   ],
   imports: [
     CommonModule,

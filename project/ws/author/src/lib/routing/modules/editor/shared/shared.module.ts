@@ -25,8 +25,6 @@ import { EditMetaComponent } from './components/edit-meta/edit-meta.component'
 
 import { PlainCKEditorComponent } from './components/plain-ckeditor/plain-ckeditor.component'
 
-import { QuillComponent } from './components/rich-text-editor/quill.component'
-
 import { DragDropDirective } from './directives/drag-drop.directive'
 
 import { UploadService } from './services/upload.service'
@@ -39,7 +37,6 @@ import { ContentQualityService } from './services/content-quality.service'
 
 @NgModule({
   declarations: [
-    QuillComponent,
     PlainCKEditorComponent,
     EditMetaComponent,
     DragDropDirective,
@@ -60,7 +57,6 @@ import { ContentQualityService } from './services/content-quality.service'
     CatalogSelectModule,
   ],
   exports: [
-    QuillComponent,
     PlainCKEditorComponent,
     EditMetaComponent,
     DragDropDirective,

@@ -26,8 +26,6 @@ import { AuthTableOfContentsComponent } from './components/auth-table-of-content
 
 import { AuthTableTreeLabelComponent } from './components/auth-table-tree-label/auth-table-tree-label.component'
 
-import { CollectionComponent } from './components/collection/collection.component'
-
 import { CourseCollectionComponent } from './components/course-collection/course-collection.component'
 
 import { AuthTocComponent } from './components/auth-toc/auth-toc.component'
@@ -46,7 +44,6 @@ import { FormatDurationPipe } from '@ws/author/src/lib/modules/shared/pipes/seco
 
 import { MimeTypePipe } from '@ws/author/src/lib/modules/shared/pipes/mime-type.pipe'
 
-
 import { MatToolbarModule } from '@angular/material/toolbar'
 import { MatIconModule } from '@angular/material/icon'
 import { MatButtonModule } from '@angular/material/button'
@@ -55,14 +52,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatRadioModule } from '@angular/material/radio'
 import { MatTableModule } from '@angular/material/table'
-import { ResourceModuleComponent } from './components/collection/resource-module/resource-module.component'
 
 import { ModuleCreationComponent } from './components/collection/module-creation/module-creation.component'
 
-
 @NgModule({
   declarations: [
-    CollectionComponent,
     AuthTableOfContentsComponent,
     AuthEditorOptionsComponent,
     AuthTableTreeLabelComponent,
@@ -70,11 +64,10 @@ import { ModuleCreationComponent } from './components/collection/module-creation
     CourseCollectionComponent,
     AuthTocComponent,
     CourseHeaderComponent,
-    ResourceModuleComponent,
     ModuleCreationComponent,
     ContentQualityComponent,
     FormatDurationPipe,
-    MimeTypePipe
+    MimeTypePipe,
   ],
   imports: [
     CommonModule,
@@ -96,7 +89,7 @@ import { ModuleCreationComponent } from './components/collection/module-creation
     MatCheckboxModule,
     MatProgressBarModule,
     MatRadioModule,
-    MatTableModule
+    MatTableModule,
   ],
 })
-export class CollectionModule { }
+export class CollectionModule {}

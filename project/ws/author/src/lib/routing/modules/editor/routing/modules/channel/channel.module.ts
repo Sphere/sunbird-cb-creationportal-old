@@ -27,8 +27,6 @@ import { BreadcrumComponent } from './components/input/breadcrum/breadcrum.compo
 
 import { ChipsComponent } from './components/input/chips/chips.component'
 
-import { ContentStripInputComponent } from './components/input/content-strip-input/content-strip-input.component'
-
 import { ContentStripMultipleComponent } from './components/input/content-strip-multiple/content-strip-multiple.component'
 
 import { EmbedComponent } from './components/input/embed/embed.component'
@@ -79,8 +77,6 @@ import { HtmlV2Component } from './components/input/html-v2/html-v2.component'
 
 import { ContentStripSingleComponent } from './components/input/content-strip-single/content-strip-single.component'
 
-import { ImageGalleryComponent } from './components/input/image-gallery/image-gallery.component'
-
 import { SelectorResponsiveV2Component } from './components/input/selector-responsive-v2/selector-responsive-v2.component'
 
 import { GalleryV2Component } from './components/input/gallery-v2/gallery-v2.component'
@@ -111,7 +107,6 @@ import { DraggableModule } from '../../../../../../directives/draggable/draggabl
     AudioVideoComponent,
     HtmlComponent,
     EmbedComponent,
-    ContentStripInputComponent,
     ImageMapComponent,
     SliderComponent,
     GalleryWidgetComponent,
@@ -125,7 +120,6 @@ import { DraggableModule } from '../../../../../../directives/draggable/draggabl
     InputV2Component,
     HtmlV2Component,
     ContentStripSingleComponent,
-    ImageGalleryComponent,
     SelectorResponsiveV2Component,
     GalleryV2Component,
     MediaWrapperComponent,
