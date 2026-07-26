@@ -41,13 +41,7 @@ export * from './lib/btn-playlist/btn-playlist.model'
 
 export * from './lib/btn-playlist/btn-playlist.service'
 
-export * from './lib/btn-preview/btn-preview.module'
-
 export * from './lib/btn-settings/btn-settings.service'
-
-export * from './lib/_common/app-tour-dialog/app-tour-dialog.module'
-
-export * from './lib/_common/app-tour-dialog/app-tour-dialog.component'
 
 export * from './lib/card-table/card-table.module'
 
@@ -89,8 +83,6 @@ export * from './lib/error-resolver/error-resolver.module'
 export * from './lib/graph-general/graph-general-color-palette'
 
 export * from './lib/graph-general/graph-general.model'
-
-export * from './lib/graph-general/graph-general.module'
 
 export * from './lib/graph-general/graph-general.service'
 
@@ -160,10 +152,6 @@ export * from './lib/player-youtube/player-youtube.module'
 
 export * from './lib/registration.config'
 
-export * from './lib/release-notes/release-notes.module'
-
-export * from './lib/release-notes/release-notes.model'
-
 export * from './lib/selector-responsive/selector-responsive.model'
 
 export * from './lib/selector-responsive/selector-responsive.module'
@@ -171,8 +159,6 @@ export * from './lib/selector-responsive/selector-responsive.module'
 export * from './lib/tree-catalog/tree-catalog.module'
 
 export * from './lib/tree-catalog/tree-catalog.service'
-
-export * from './lib/_common/completion-spinner/completion-spinner.module'
 
 export * from './lib/_common/content-progress/content-progress.module'
 
@@ -230,15 +216,5 @@ export * from './lib/graph-general/graph-general.service'
 
 // Modules required by Ivy — must be explicitly exported (were missing from public-api)
 export * from './lib/btn-profile/btn-profile.module'
-
-export * from './lib/content-strip-new-multiple/content-strip-new-multiple.module'
-
-export * from './lib/content-strip-vertical/content-strip-vertical.module'
-
-export * from './lib/profile-v2/profile-academics/profile-academics.module'
-
-export * from './lib/profile-v2/profile-career/profile-career.module'
-
-export * from './lib/profile-v2/profile-competencies/profile-competencies.module'
 
 export * from './lib/activity-strip-multiple/activity-strip-multiple.module'
