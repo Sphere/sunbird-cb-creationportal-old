@@ -41,11 +41,7 @@ import { AppTocOverviewComponent } from './components/app-toc-overview/app-toc-o
 
 import { AppTocBannerComponent } from './components/app-toc-banner/app-toc-banner.component'
 
-import { AppTocCohortsComponent } from './components/app-toc-cohorts/app-toc-cohorts.component'
-
 import { AppTocContentCardComponent } from './components/app-toc-content-card/app-toc-content-card.component'
-
-import { AppTocDiscussionComponent } from './components/app-toc-discussion/app-toc-discussion.component'
 
 // services
 import { AppTocResolverService } from './resolvers/app-toc-resolver.service'
@@ -94,14 +90,6 @@ import {
 
 import { AppTocDialogIntroVideoComponent } from './components/app-toc-dialog-intro-video/app-toc-dialog-intro-video.component'
 
-import { CertificationMetaResolver } from './routes/app-toc-certification/resolvers/certification-meta.resolver'
-
-import { ContentCertificationResolver } from './routes/app-toc-certification/resolvers/content-certification.resolver'
-
-import { CertificationApiService } from './routes/app-toc-certification/apis/certification-api.service'
-
-import { AppTocCertificationModule } from './routes/app-toc-certification/app-toc-certification.module'
-
 // import { TrainingService } from '../infy/routes/training/services/training.service'
 
 import { AppTocOverviewDirective } from './routes/app-toc-overview/app-toc-overview.directive'
@@ -110,15 +98,7 @@ import { AppTocOverviewComponent as AppTocOverviewRootComponent } from './routes
 
 import { AppTocHomeDirective } from './routes/app-toc-home/app-toc-home.directive'
 
-import { AppTocCohortsDirective } from './routes/app-toc-cohorts/app-toc-cohorts.directive'
-
-import { AppTocCohortsComponent as AppTocCohortsRootComponent } from './routes/app-toc-cohorts/app-toc-cohorts.component'
-
 import { FormsModule } from '@angular/forms'
-
-import { AppTocAnalyticsTilesComponent } from './components/app-toc-analytics-tiles/app-toc-analytics-tiles.component'
-
-import { KnowledgeArtifactDetailsComponent } from './components/knowledge-artifact-details/knowledge-artifact-details.component'
 
 import { EditorService } from '../../../../../author/src/lib/routing/modules/editor/services/editor.service'
 
@@ -134,8 +114,6 @@ import { LicenseComponent } from './components/license/license.component'
 
 import { AssessmentDetailComponent } from './components/assessment-detail/assessment-detail.component'
 
-import { AppLearnerBannerComponent } from './components/app-learner-banner/app-learner-banner.component'
-
 import { AppTocDesktopModalComponent } from './components/app-toc-desktop-modal/app-toc-desktop-modal.component'
 
 import { AppTocCertificateModalComponent } from './components/app-toc-certificate-modal/app-toc-certificate-modal.component'
@@ -147,19 +125,12 @@ import { AppTocCertificateModalComponent } from './components/app-toc-certificat
     AppTocHomeComponent,
     AppTocOverviewComponent,
     AppTocBannerComponent,
-    AppLearnerBannerComponent,
-    AppTocCohortsComponent,
     AppTocContentCardComponent,
-    AppTocDiscussionComponent,
     AppTocDialogIntroVideoComponent,
     AppTocOverviewDirective,
     AppTocOverviewRootComponent,
     AppTocHomeDirective,
     AppTocHomeRootComponent,
-    AppTocCohortsDirective,
-    AppTocCohortsRootComponent,
-    KnowledgeArtifactDetailsComponent,
-    AppTocAnalyticsTilesComponent,
     AppTocSinglePageComponent,
     AppTocSinglePageRootComponent,
     AppTocSinglePageDirective,
@@ -219,7 +190,6 @@ import { AppTocCertificateModalComponent } from './components/app-toc-certificat
     WidgetResolverModule,
     ContentProgressModule,
     // BtnKbModule,
-    AppTocCertificationModule,
     // MarkAsCompleteModule,
     // PlayerBriefModule,
     MatProgressSpinnerModule,
@@ -233,13 +203,10 @@ import { AppTocCertificateModalComponent } from './components/app-toc-certificat
     PipeContentRoutePipe,
     // TrainingApiService,
     // TrainingService,
-    CertificationApiService,
-    CertificationMetaResolver,
-    ContentCertificationResolver,
     EditorService,
     ApiService,
     AccessControlService,
   ],
-  exports: [AppTocDiscussionComponent, AssessmentDetailComponent],
+  exports: [AssessmentDetailComponent],
 })
 export class AppTocModule {}
