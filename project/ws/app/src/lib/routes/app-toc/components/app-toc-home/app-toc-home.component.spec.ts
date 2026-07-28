@@ -430,14 +430,18 @@ describe('AppTocHomeComponent', () => {
       expect(build().enableAnalytics).toBe(false)
     })
 
-    it('handleScroll pins the menu past its offset', () => {
+    // jsdom keeps window.pageYOffset at 0 and it is not redefinable, so both
+    // branches are driven by moving the menu offset relative to that scroll.
+    it('pins the menu once the page has scrolled past it', () => {
       const component = build()
       component.elementPosition = 50
-      const setScroll = (y: number) => Object.defineProperty(window, 'pageYOffset', { value: y, configurable: true })
-      setScroll(200)
       component.handleScroll()
       expect(component.sticky).toBe(true)
-      setScroll(0)
+    })
+
+    it('leaves the menu unpinned while it is still below the fold', () => {
+      const component = build()
+      component.elementPosition = 500
       component.handleScroll()
       expect(component.sticky).toBe(false)
     })
