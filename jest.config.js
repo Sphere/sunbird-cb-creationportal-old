@@ -134,8 +134,11 @@ module.exports = {
     // node_modules path (resolves at build time, but not through jest's resolver).
     // Redirect any such specifier back to the real package.
     '^.*/node_modules/@angular/router$': '@angular/router',
-    // Baseurl-style absolute imports rooted at the app source (tsconfig baseUrl),
-    // e.g. 'src/app/...'. Keep this last so the explicit aliases above win.
+    // Baseurl-style absolute imports rooted at the repo (tsconfig baseUrl), e.g.
+    // 'src/app/...', 'project/ws/...', 'library/ws-widget/...'. Keep these last so
+    // the explicit aliases above win on collision.
     '^src/(.*)$': '<rootDir>/src/$1',
+    '^project/(.*)$': '<rootDir>/project/$1',
+    '^library/(.*)$': '<rootDir>/library/$1',
   },
 }

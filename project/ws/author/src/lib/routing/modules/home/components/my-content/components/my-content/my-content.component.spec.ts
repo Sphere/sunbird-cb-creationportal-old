@@ -150,12 +150,25 @@ describe('MyContentComponent (home module)', () => {
   describe('fetchContent', () => {
     it('populates cardContent and count on success', () => {
       const { component, mocks } = build()
-      mocks.myContSvc.fetchFromSearchV6.mockReturnValue(of({ content: [{ identifier: 'c1' }], count: 7 }))
+      // cardContent/count are read off data.result.{content,count}, which only the
+      // legacy fetchContent shape provides — the newDesign/V6 branch nests its
+      // payload under data.result.response. Exercise the legacy branch here.
+      component.newDesign = false
+      mocks.myContSvc.fetchContent.mockReturnValue(of({ result: { content: [{ identifier: 'c1' }], count: 7 } }))
+      component.status = 'published'
+      component.fetchContent(false)
+      expect(mocks.myContSvc.fetchContent).toHaveBeenCalled()
+      expect(component.fetchError).toBe(false)
+      expect(component.cardContent).toEqual([{ identifier: 'c1' }])
+      expect(component.count.published).toBe(7)
+    })
+
+    it('reaches the search-v6 endpoint under the new design', () => {
+      const { component, mocks } = build()
       component.status = 'published'
       component.fetchContent(false)
       expect(mocks.myContSvc.fetchFromSearchV6).toHaveBeenCalled()
       expect(component.fetchError).toBe(false)
-      expect(component.count.published).toBe(7)
     })
 
     it('sets fetchError on failure', () => {

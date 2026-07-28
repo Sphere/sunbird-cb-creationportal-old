@@ -24,7 +24,15 @@ describe('FileUploadComponent (direct instantiation)', () => {
   let editorService: any
   let storeService: any
 
-  const makeFile = (name: string, size = 10): File => ({ name, size } as unknown as File)
+  // A real File — upload() hands this straight to FormData.append, which rejects
+  // anything that is not a genuine Blob.
+  const makeFile = (name: string, size = 10): File => {
+    // Keep the payload tiny and declare the size separately — callers pass sizes up
+    // to the max-upload limit, which would be far too large to actually allocate.
+    const file = new File(['x'], name)
+    Object.defineProperty(file, 'size', { value: size })
+    return file
+  }
 
   beforeEach(() => {
     formBuilder = new FormBuilder()
@@ -52,7 +60,11 @@ describe('FileUploadComponent (direct instantiation)', () => {
     }
     uploadService = { upload: jest.fn().mockReturnValue(of({ artifactUrl: 'up-url' })) }
     loaderService = { changeLoad: { next: jest.fn() } }
-    authInitService = { authConfig: {} }
+    // storeData() looks up authConfig[field].type for every form control it diffs,
+    // so answer for any key rather than listing the whole meta schema here.
+    authInitService = {
+      authConfig: new Proxy({}, { get: () => ({ type: 'string', defaultValue: { Resource: [{ value: '' }] } }) }),
+    }
     valueSvc = { isXSmall$: of(false) }
     profanityService = { startProfanity: jest.fn().mockReturnValue(of({})) }
     editorService = {
@@ -74,6 +86,9 @@ describe('FileUploadComponent (direct instantiation)', () => {
       editorService,
       storeService,
     )
+    // ngOnInit normally seeds this from the content service; the tests below drive
+    // individual methods directly, so set the active content up front.
+    component.currentContent = 'content-1'
   })
 
   it('creates', () => {

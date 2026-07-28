@@ -243,8 +243,20 @@ describe('MyContentComponent (my-content module)', () => {
 
     it('filters out prevStatus Review items for draft status', () => {
       const { component, mocks } = build()
-      mocks.myContSvc.fetchFromSearchV6.mockReturnValue(
-        of({ content: [{ identifier: 'keep', prevStatus: 'Draft' }, { identifier: 'drop', prevStatus: 'Review' }], count: 2 }),
+      // The prevStatus filter reads data.result.content, which only the legacy
+      // fetchContent shape provides — the newDesign/V6 branch maps its payload
+      // under data.result.response instead. Exercise the legacy branch here.
+      component.newDesign = false
+      mocks.myContSvc.fetchContent.mockReturnValue(
+        of({
+          result: {
+            content: [
+              { identifier: 'keep', prevStatus: 'Draft' },
+              { identifier: 'drop', prevStatus: 'Review' },
+            ],
+            count: 2,
+          },
+        }),
       )
       component.status = 'draft'
       component.fetchContent(false)
