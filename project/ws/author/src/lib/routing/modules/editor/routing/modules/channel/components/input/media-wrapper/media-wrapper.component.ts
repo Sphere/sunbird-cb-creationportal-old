@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angular/core'
 
-import { IWidgetWrapperMedia } from '@ws-widget/collection/src/lib/video-wrapper/video-wrapper.model'
+import type { IWidgetWrapperMedia } from '@ws-widget/collection/src/lib/video-wrapper/video-wrapper.model'
 
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
 
@@ -20,11 +20,9 @@ export class MediaWrapperComponent implements OnInit, OnChanges {
   inputType: 'upload' | 'id' | 'external' = 'upload'
   backUpType: 'upload' | 'id' | 'external' = 'upload'
 
-  constructor(private matDialog: MatDialog) { }
+  constructor(private matDialog: MatDialog) {}
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
 
   ngOnChanges() {
     if (this.content.externalData && this.content.externalData.iframeSrc) {
@@ -38,7 +36,6 @@ export class MediaWrapperComponent implements OnInit, OnChanges {
   }
 
   onSelectionChange() {
-
     const dialogRef = this.matDialog.open(ConfirmDialogComponent, {
       width: '350px',
       data: 'dialog',
