@@ -31,14 +31,14 @@ module.exports = {
   coveragePathIgnorePatterns: ['/node_modules/', '/dist/', '/out-tsc/'],
   // Coverage ratchet: a floor set just below the current measured baseline so the
   // build fails if coverage regresses. Raise these numbers as new suites land —
-  // never lower them. Current baseline (2026-07, SonarQube A-grade wave 3):
-  // stmts 47.69 / br 39.17 / fn 42.64 / ln 47.56.
+  // never lower them. Current baseline (2026-07, wave 4 — crossed 60% statements):
+  // stmts 60.47 / br 51.45 / fn 54.81 / ln 60.40.
   coverageThreshold: {
     global: {
-      statements: 47.6,
-      branches: 39,
-      functions: 42.5,
-      lines: 47.4,
+      statements: 60.4,
+      branches: 51.3,
+      functions: 54.7,
+      lines: 60.3,
     },
   },
   moduleNameMapper: {
