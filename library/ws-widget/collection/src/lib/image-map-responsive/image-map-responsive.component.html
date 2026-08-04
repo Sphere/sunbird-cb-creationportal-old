@@ -1,5 +1,5 @@
 <div *ngIf="widgetData" [ngClass]="widgetData?.containerClass" [ngStyle]="widgetData?.containerStyle">
-  <img i18n-alt alt="Interactive image map" #map class="w-full h-full" [src]="widgetData?.imageSrc" useMap="#{{ widgetData?.mapName }}" />
+  <img i18n-alt alt="Interactive map" #map class="w-full h-full" [src]="widgetData?.imageSrc" useMap="#{{ widgetData?.mapName }}" />
   <map [name]="widgetData?.mapName" *ngIf="!widgetData.externalData">
     <area
       *ngFor="let area of widgetData?.map; index as i"

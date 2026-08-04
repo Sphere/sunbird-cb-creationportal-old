@@ -15,11 +15,11 @@
         [attr.tabindex]="0"
       >
         <img class="upload-icon" src="cbp-assets/icons/fluent_certificate-24-filled.svg" alt="Upload icon" />
-        <button alt="" class="upload-btn" style="cursor: pointer"><img src="cbp-assets/icons/charm_upload.svg" /> Upload File</button>
+        <button class="upload-btn" style="cursor: pointer"><img alt="" src="cbp-assets/icons/charm_upload.svg" /> Upload File</button>
         <input type="file" (change)="onFileSelected($event)" #uploadThumbnail style="display: none" accept="image/svg+xml" />
       </div>
       <div class="preview-block">
-        <span alt="" *ngIf="!svgContent" class="flex preview-text"><img src="cbp-assets/icons/akar-icons_eye.svg" />Preview</span>
+        <span *ngIf="!svgContent" class="flex preview-text"><img alt="" src="cbp-assets/icons/akar-icons_eye.svg" />Preview</span>
         <span *ngIf="!svgContent" class="preview-center">Upload your certificate to see the preview</span>
         <div *ngIf="svgContent">
           <object class="svg-image" type="image/svg+xml" [attr.data]="svgContent"></object>
