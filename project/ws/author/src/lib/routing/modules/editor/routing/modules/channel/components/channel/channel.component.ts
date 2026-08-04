@@ -46,6 +46,7 @@ import { ChannelResolverService } from './../../services/resolver.service'
 
 import { ChannelStoreService } from './../../services/store.service'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-channel',
@@ -54,6 +55,9 @@ import { ChannelStoreService } from './../../services/store.service'
   providers: [ChannelStoreService],
 })
 export class ChannelComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   contents: NSContent.IContentMeta[] = []
   currentContent = ''
   mode: 'Basic' | 'Advanced' = 'Basic'

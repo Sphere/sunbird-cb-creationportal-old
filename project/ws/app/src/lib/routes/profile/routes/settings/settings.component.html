@@ -70,7 +70,12 @@
 
           <mat-divider></mat-divider>
 
-          <div class="flex flex-middle py-4 cursor-pointer" (click)="showContentLang = !showContentLang">
+          <div
+            class="flex flex-middle py-4 cursor-pointer"
+            (click)="showContentLang = !showContentLang"
+            (keydown)="isActivationKey($event) && (showContentLang = !showContentLang)"
+            [attr.tabindex]="0"
+          >
             <mat-icon *ngIf="showContentLang">keyboard_arrow_down</mat-icon>
             <mat-icon *ngIf="!showContentLang">chevron_right</mat-icon>
 
@@ -245,7 +250,14 @@
           </div>
 
           <ul *ngIf="themes.length && themes.length > 1" class="flex flex-between flex-wrapped padding-remove">
-            <li *ngFor="let themeObj of themes" class="theme-section" matRipple (click)="changeTheme(themeObj.themeClass)">
+            <li
+              *ngFor="let themeObj of themes"
+              class="theme-section"
+              matRipple
+              (click)="changeTheme(themeObj.themeClass)"
+              (keydown)="isActivationKey($event) && changeTheme(themeObj.themeClass)"
+              [attr.tabindex]="0"
+            >
               <div class="flex flex-around margin-bottom-m theme-pad" [style.color]="themeObj.themeName">
                 <div class="btn-circle mat-elevation-z5" [style.backgroundColor]="themeObj.color.primary"></div>
                 <div class="btn-circle mat-elevation-z5" [style.backgroundColor]="themeObj.color.accent"></div>

@@ -17,11 +17,7 @@ import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 
 import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
 
-import {
-  IAuthoringPagination,
-  IFilterMenuNode,
-  IMenuFlatNode,
-} from '@ws/author/src/lib/interface/authored'
+import { IAuthoringPagination, IFilterMenuNode, IMenuFlatNode } from '@ws/author/src/lib/interface/authored'
 
 import { NSContent } from '@ws/author/src/lib/interface/content'
 
@@ -45,8 +41,7 @@ import { MyContentService } from '../../services/my-content.service'
 
 import { map } from 'rxjs/operators'
 
-import { ConfigurationsService, PipeDurationTransformPipe, ValueService } from '@ws-widget/utils'
-
+import { ConfigurationsService, PipeDurationTransformPipe, ValueService, isActivationKey } from '@ws-widget/utils'
 
 /* tslint:disable */
 import _ from 'lodash'
@@ -60,9 +55,7 @@ import { PipeContentTypePipe } from '../../../../../../../../../../../../library
 const defaultFilter = [
   {
     key: 'contentType',
-    value: [
-      'Collection', 'Course', 'Learning Path',
-    ],
+    value: ['Collection', 'Course', 'Learning Path'],
   },
 ]
 @Component({
@@ -73,6 +66,9 @@ const defaultFilter = [
   providers: [PipeDurationTransformPipe],
 })
 export class MyContentComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   filterPath = '/author/cbp/me'
   public sideNavBarOpened = false
   public sideNavBarOpenedMain = true
@@ -106,9 +102,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
   departmentData: any
   currentAction: 'author' | 'reviewer' | 'expiry' | 'deleted' = 'author'
   count: any = {}
-  @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<
-    any
-  >
+  @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<any>
   isLtMedium$ = this.valueSvc.isLtMedium$
   private defaultSideNavBarOpenedSubscription: any
   mode$ = this.isLtMedium$.pipe(map(isMedium => (isMedium ? 'over' : 'side')))
@@ -145,7 +139,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // private durationPipe: PipeDurationTransformPipe,
     private valueSvc: ValueService,
     private configService: ConfigurationsService,
-
   ) {
     this.courseTaken = {
       mandatoryCourseCompleted: true,
@@ -169,10 +162,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       node => node.expandable,
       node => node.values,
     )
-    this.dataSource = new MatTreeFlatDataSource(
-      this.filterMenuTreeControl,
-      this.filterMenuTreeFlattener,
-    )
+    this.dataSource = new MatTreeFlatDataSource(this.filterMenuTreeControl, this.filterMenuTreeFlattener)
     this.dataSource.data = this.filterMenuItems
     this.userId = this.accessService.userId
 
@@ -200,7 +190,10 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.tableData = {
       columns: [
         {
-          displayName: 'Course Name', key: 'name', isList: false, prop: '',
+          displayName: 'Course Name',
+          key: 'name',
+          isList: false,
+          prop: '',
           link: { path: '/author/content-detail/', dParams: 'identifier' },
           defaultValue: 'Untitled Content',
           image: 'appIcon',
@@ -361,10 +354,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
           'status',
           'authoringDisabled',
         ],
-        facets: [
-          'primaryCategory',
-          'mimeType',
-        ],
+        facets: ['primaryCategory', 'mimeType'],
         // pageNo: loadMoreFlag ? this.pagination.offset : 0,
         // sort: [{ lastUpdatedOn: 'desc' }],
         // pageSize: this.pagination.limit,
@@ -415,31 +405,26 @@ export class MyContentComponent implements OnInit, OnDestroy {
     const observable =
       this.status === 'expiry' || this.newDesign
         ? this.myContSvc.fetchFromSearchV6(searchV6Data, this.isAdmin).pipe(
-          map((v: any) => {
-            return {
-              result: {
-                response: v,
-              },
-            }
-          }),
-        )
+            map((v: any) => {
+              return {
+                result: {
+                  response: v,
+                },
+              }
+            }),
+          )
         : this.myContSvc.fetchContent(requestData)
     this.loadService.changeLoad.next(true)
     observable.subscribe(
       data => {
         this.loadService.changeLoad.next(false)
         if (changeFilter) {
-          this.filterMenuItems =
-            data && data.result && data.result.facets
-              ? data.result.facets
-              : this.filterMenuItems
+          this.filterMenuItems = data && data.result && data.result.facets ? data.result.facets : this.filterMenuItems
           this.dataSource.data = this.filterMenuItems
         }
         this.cardContent =
           loadMoreFlag && !this.queryFilter
-            ? (this.cardContent || []).concat(
-              data && data.result ? data.result.content : [],
-            )
+            ? (this.cardContent || []).concat(data && data.result ? data.result.content : [])
             : data && data.result.content
               ? data.result.content
               : []
@@ -448,10 +433,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         // if (index >= 0) {
         this.count[this.status] = this.totalContent
         // }
-        this.showLoadMore =
-          this.pagination.offset * this.pagination.limit + this.pagination.limit < this.totalContent
-            ? true
-            : false
+        this.showLoadMore = this.pagination.offset * this.pagination.limit + this.pagination.limit < this.totalContent ? true : false
         this.fetchError = false
       },
       () => {
@@ -483,15 +465,11 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.pagination.offset = 0
     this.sideNavBarOpened = false
     const filterIndex = this.filters.findIndex(v => v.displayName === node.displayName)
-    const filterMenuItemsIndex = this.filterMenuItems.findIndex((obj: any) =>
-      obj.values.some((val: any) => val.name === node.type)
-    )
+    const filterMenuItemsIndex = this.filterMenuItems.findIndex((obj: any) => obj.values.some((val: any) => val.name === node.type))
     const ind = this.finalFilters.indexOf(this.filterMenuItems[filterMenuItemsIndex].name)
     if (filterIndex === -1 && node.checked) {
       this.filters.push(node)
-      this.filterMenuItems[filterMenuItemsIndex].values.find(
-        (v: any) => v.name === node.displayName ,
-      ).checked = true
+      this.filterMenuItems[filterMenuItemsIndex].values.find((v: any) => v.name === node.displayName).checked = true
 
       if (ind === -1) {
         this.finalFilters.push({
@@ -506,9 +484,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         // })
       }
     } else {
-      this.filterMenuItems[filterMenuItemsIndex].values.find(
-        (v: any) => v.name === node.displayName,
-      ).checked = false
+      this.filterMenuItems[filterMenuItemsIndex].values.find((v: any) => v.name === node.displayName).checked = false
       this.filters.splice(filterIndex, 1)
       this.finalFilters.splice(ind, 1)
     }
@@ -518,40 +494,36 @@ export class MyContentComponent implements OnInit, OnDestroy {
 
   deleteContent(request: NSContent.IContentMeta) {
     this.loadService.changeLoad.next(true)
-    this.myContSvc
-      .deleteContent(request.identifier, request.contentType === 'Knowledge Board')
-      .subscribe(
-        () => {
-          this.loadService.changeLoad.next(false)
-          this.snackBar.openFromComponent(NotificationComponent, {
+    this.myContSvc.deleteContent(request.identifier, request.contentType === 'Knowledge Board').subscribe(
+      () => {
+        this.loadService.changeLoad.next(false)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.SUCCESS,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+        this.cardContent = (this.cardContent || []).filter(v => v.identifier !== request.identifier)
+      },
+      error => {
+        if (error.status === 409) {
+          this.dialog.open(ErrorParserComponent, {
+            width: '80vw',
+            height: '90vh',
             data: {
-              type: Notify.SUCCESS,
+              errorFromBackendData: error.error,
             },
-            duration: NOTIFICATION_TIME * 1000,
           })
-          this.cardContent = (this.cardContent || []).filter(
-            v => v.identifier !== request.identifier,
-          )
-        },
-        error => {
-          if (error.status === 409) {
-            this.dialog.open(ErrorParserComponent, {
-              width: '80vw',
-              height: '90vh',
-              data: {
-                errorFromBackendData: error.error,
-              },
-            })
-          }
-          this.loadService.changeLoad.next(false)
-          this.snackBar.openFromComponent(NotificationComponent, {
-            data: {
-              type: Notify.CONTENT_FAIL,
-            },
-            duration: NOTIFICATION_TIME * 1000,
-          })
-        },
-      )
+        }
+        this.loadService.changeLoad.next(false)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.CONTENT_FAIL,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      },
+    )
   }
 
   restoreContent(request: NSContent.IContentMeta) {
@@ -667,10 +639,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
           this.deleteContent(content.data)
         } else if (content.type === 'restoreDeleted') {
           this.restoreContent(content.data)
-        } else if (
-          content.type === 'unpublish' ||
-          (content.type === 'moveToDraft' && content.data.status === 'Unpublished')
-        ) {
+        } else if (content.type === 'unpublish' || (content.type === 'moveToDraft' && content.data.status === 'Unpublished')) {
           this.unPublishOrDraft(content.data)
         } else {
           this.forwardBackward(content)
@@ -752,9 +721,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-          this.cardContent = (this.cardContent || []).filter(
-            v => v.identifier !== content.data.identifier,
-          )
+          this.cardContent = (this.cardContent || []).filter(v => v.identifier !== content.data.identifier)
         },
         error => {
           if (error.status === 409) {
@@ -791,9 +758,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(`/author/editor/${event.data.identifier}`)
         break
       case 'remove':
-        this.cardContent = (this.cardContent || []).filter(
-          v => v.identifier !== event.data.identifier,
-        )
+        this.cardContent = (this.cardContent || []).filter(v => v.identifier !== event.data.identifier)
         break
       case 'moveToInReview':
       case 'moveToDraft':

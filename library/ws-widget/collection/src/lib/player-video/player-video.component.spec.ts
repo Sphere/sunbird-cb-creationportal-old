@@ -113,7 +113,7 @@ describe('PlayerVideoComponent', () => {
       contentSvc.readcontentV3 = jest.fn(() => of({}))
       const c = build({ url: 'x.mp4', isVideojs: true })
       const spy = jest.spyOn(c as any, 'initializePlayer').mockImplementation(() => undefined)
-      await c.ngAfterViewInit()
+      await (c as any).afterViewInitAsync()
       expect(contentSvc.readcontentV3).toHaveBeenCalled()
       expect(spy).toHaveBeenCalled()
     })
@@ -121,14 +121,14 @@ describe('PlayerVideoComponent', () => {
     it('initialises the native player when not videojs', async () => {
       const c = build({ url: 'x.mp4', isVideojs: false })
       const spy = jest.spyOn(c as any, 'initializeVPlayer').mockImplementation(() => undefined)
-      await c.ngAfterViewInit()
+      await (c as any).afterViewInitAsync()
       expect(spy).toHaveBeenCalled()
     })
 
     it('wires the time-update listener when a video tag is present', async () => {
       const c = build({})
       c.videoTag = { nativeElement: { id: 'v1' } } as any
-      await c.ngAfterViewInit()
+      await (c as any).afterViewInitAsync()
       expect(videoJsFactory).toHaveBeenCalled()
       expect(c.videoStates.v1).toBeDefined()
     })

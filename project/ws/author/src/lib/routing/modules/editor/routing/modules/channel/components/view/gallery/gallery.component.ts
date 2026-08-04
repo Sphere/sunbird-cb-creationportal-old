@@ -6,6 +6,7 @@ import { ChannelStoreService } from './../../../services/store.service'
 
 import { ChannelResolverService } from './../../../services/resolver.service'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-gallery',
@@ -13,6 +14,9 @@ import { ChannelResolverService } from './../../../services/resolver.service'
   styleUrls: ['./gallery.component.scss'],
 })
 export class GalleryComponent implements OnInit, OnChanges {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() id = ''
   @Input() isSubmitPressed = false
   widget!: IWidgetAuthor

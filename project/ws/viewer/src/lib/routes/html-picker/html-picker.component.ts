@@ -12,7 +12,6 @@ import { EventService, WsEvents } from '@ws-widget/utils'
 
 import { ViewerUtilService } from '../../viewer-util.service'
 
-
 @Component({
   standalone: false,
   selector: 'viewer-html-picker',
@@ -46,10 +45,7 @@ export class HtmlPickerComponent implements OnInit, OnDestroy {
         if (this.htmlPickerData && this.htmlPickerData.artifactUrl.indexOf('content-store') >= 0) {
           await this.setS3Cookie(this.htmlPickerData.identifier)
         }
-        if (
-          this.htmlPickerData &&
-          this.htmlPickerData.mimeType === NsContent.EMimeTypes.HTML_PICKER
-        ) {
+        if (this.htmlPickerData && this.htmlPickerData.mimeType === NsContent.EMimeTypes.HTML_PICKER) {
           this.htmlPickerManifest = await this.transformHandsOn(this.htmlPickerData)
         }
         if (this.htmlPickerData && this.htmlPickerManifest) {
@@ -65,17 +61,26 @@ export class HtmlPickerComponent implements OnInit, OnDestroy {
     )
   }
 
-   async ngOnDestroy() {
-     if (this.activatedRoute.snapshot.queryParams.collectionId &&
-       this.activatedRoute.snapshot.queryParams.collectionType
-       && this.htmlPickerData) {
-       await this.contentSvc.continueLearning(this.htmlPickerData.identifier,
-                                              this.activatedRoute.snapshot.queryParams.collectionId,
-                                              this.activatedRoute.snapshot.queryParams.collectionType,
-       )
-       } else if (this.htmlPickerData) {
-       await this.contentSvc.continueLearning(this.htmlPickerData.identifier)
-       }
+  ngOnDestroy(): void {
+    // Angular does not await lifecycle hooks; run the async work
+    // fire-and-forget, exactly as `async ngOnDestroy()` already did.
+    void this.onDestroyAsync()
+  }
+
+  private async onDestroyAsync(): Promise<void> {
+    if (
+      this.activatedRoute.snapshot.queryParams.collectionId &&
+      this.activatedRoute.snapshot.queryParams.collectionType &&
+      this.htmlPickerData
+    ) {
+      await this.contentSvc.continueLearning(
+        this.htmlPickerData.identifier,
+        this.activatedRoute.snapshot.queryParams.collectionId,
+        this.activatedRoute.snapshot.queryParams.collectionType,
+      )
+    } else if (this.htmlPickerData) {
+      await this.contentSvc.continueLearning(this.htmlPickerData.identifier)
+    }
     if (this.routeDataSubscription) {
       this.routeDataSubscription.unsubscribe()
     }
@@ -87,9 +92,7 @@ export class HtmlPickerComponent implements OnInit, OnDestroy {
   private async transformHandsOn(_content: NsContent.IContent) {
     let manifestFile = ''
     if (this.htmlPickerData && this.htmlPickerData.artifactUrl) {
-      const artifactUrl = this.forPreview
-        ? this.viewSvc.getAuthoringUrl(this.htmlPickerData.artifactUrl)
-        : this.htmlPickerData.artifactUrl
+      const artifactUrl = this.forPreview ? this.viewSvc.getAuthoringUrl(this.htmlPickerData.artifactUrl) : this.htmlPickerData.artifactUrl
       manifestFile = await this.http
         .get<any>(artifactUrl)
         .toPromise()

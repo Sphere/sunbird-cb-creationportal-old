@@ -5,10 +5,7 @@ import { NsGalleryView } from '@ws-widget/collection/src/public-api'
 
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
-import {
-  AUTHORING_CONTENT_BASE,
-  CONTENT_BASE_WEBHOST_ASSETS,
-} from '@ws/author/src/lib/constants/apiEndpoints'
+import { AUTHORING_CONTENT_BASE, CONTENT_BASE_WEBHOST_ASSETS } from '@ws/author/src/lib/constants/apiEndpoints'
 
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
 
@@ -24,7 +21,7 @@ import { WIDGET_LIBRARY } from '../../../constants/widet'
 
 import { FILE_MAX_SIZE } from './../../../../../../../../../constants/upload'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-gallery-v2',
@@ -32,6 +29,9 @@ import { FILE_MAX_SIZE } from './../../../../../../../../../constants/upload'
   styleUrls: ['./gallery-v2.component.scss'],
 })
 export class GalleryV2Component implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Output() data = new EventEmitter<{
     content: NsGalleryView.IWidgetGalleryView
     isValid: boolean
@@ -142,36 +142,32 @@ export class GalleryV2Component implements OnInit {
 
     formdata.append('content', file, fileName)
     this.loader.changeLoad.next(true)
-    this.uploadService
-      .upload(formdata, { contentId: this.identifier, contentType: CONTENT_BASE_WEBHOST_ASSETS })
-      .subscribe(
-        data => {
-          if (data.code) {
-            this.loader.changeLoad.next(false)
-            this.metaUpdate(
-              'thumbnail',
-              `${AUTHORING_CONTENT_BASE}${encodeURIComponent(
-                `/${data.artifactURL.split('/').slice(3).join('/')}`,
-              )}`,
-            )
-            this.snackBar.openFromComponent(NotificationComponent, {
-              data: {
-                type: Notify.UPLOAD_SUCCESS,
-              },
-              duration: NOTIFICATION_TIME * 1000,
-            })
-          }
-        },
-        () => {
+    this.uploadService.upload(formdata, { contentId: this.identifier, contentType: CONTENT_BASE_WEBHOST_ASSETS }).subscribe(
+      data => {
+        if (data.code) {
           this.loader.changeLoad.next(false)
+          this.metaUpdate(
+            'thumbnail',
+            `${AUTHORING_CONTENT_BASE}${encodeURIComponent(`/${data.artifactURL.split('/').slice(3).join('/')}`)}`,
+          )
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
-              type: Notify.UPLOAD_FAIL,
+              type: Notify.UPLOAD_SUCCESS,
             },
             duration: NOTIFICATION_TIME * 1000,
           })
-        },
-      )
+        }
+      },
+      () => {
+        this.loader.changeLoad.next(false)
+        this.snackBar.openFromComponent(NotificationComponent, {
+          data: {
+            type: Notify.UPLOAD_FAIL,
+          },
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      },
+    )
   }
 
   generateWidget(): NsWidgetResolver.IRenderConfigWithAnyData {
@@ -190,9 +186,7 @@ export class GalleryV2Component implements OnInit {
   }
 
   getEmptyData(type: string): any {
-    const data = JSON.parse(
-      JSON.stringify(WIDGET_LIBRARY[`solo_${type}` as keyof typeof WIDGET_LIBRARY]),
-    )
+    const data = JSON.parse(JSON.stringify(WIDGET_LIBRARY[`solo_${type}` as keyof typeof WIDGET_LIBRARY]))
     return data
   }
 }

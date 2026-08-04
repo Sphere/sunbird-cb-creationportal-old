@@ -32,7 +32,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
 
-import { ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService, isActivationKey } from '@ws-widget/utils'
 
 import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
 
@@ -106,6 +106,9 @@ import _ from 'lodash'
   styleUrls: ['./edit-meta.component.scss'],
 })
 export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   contentMeta!: NSContent.IContentMeta
   @Output() data = new EventEmitter<string>()
   @Output() courseEditFormSubmit = new EventEmitter<boolean>()

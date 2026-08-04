@@ -46,6 +46,7 @@
                 matTooltip="Click to copy the private url"
                 class="em-sn-copy-icon"
                 (click)="copyData('previewUrl')"
+                (keydown)="isActivationKey($event) && copyData('previewUrl')"
                 >file_copy
               </mat-icon>
             </mat-hint>
@@ -154,6 +155,7 @@
             class="em-sn-copy-icon"
             *ngIf="contentForm.controls.keywords.value && contentForm.controls.keywords.value.length"
             (click)="copyData('keyword')"
+            (keydown)="isActivationKey($event) && copyData('keyword')"
             >file_copy
           </mat-icon>
         </p>
@@ -488,6 +490,8 @@
                   *ngIf="!contentForm.controls.appIcon.value"
                   class="em-dropzone"
                   (click)="uploadThumbnail.click()"
+                  (keydown)="isActivationKey($event) && uploadThumbnail.click()"
+                  [attr.tabindex]="0"
                   (dragover)="$event.preventDefault()"
                   (drop)="$event.preventDefault(); uploadAppIcon($event.dataTransfer.files[0])"
                 >

@@ -20,6 +20,7 @@ import { InterestService } from './../../../../../../../../../../../../app/src/l
 
 import { SEARCHV6 } from './content-strip-v2.constant'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-content-strip-v2',
@@ -27,6 +28,9 @@ import { SEARCHV6 } from './content-strip-v2.constant'
   styleUrls: ['./content-strip-v2.component.scss'],
 })
 export class ContentStripV2Component implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Output() data = new EventEmitter<{
     content: NsContentStripMultiple.IContentStripMultiple
     isValid: boolean

@@ -14,6 +14,7 @@ import { NotificationComponent } from '@ws/author/src/lib/modules/shared/compone
 
 import { COLUMN_WIDTH } from '../../input/image-v2/image-v2.constant'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-input-v2',
@@ -21,6 +22,9 @@ import { COLUMN_WIDTH } from '../../input/image-v2/image-v2.constant'
   styleUrls: ['./input-v2.component.scss'],
 })
 export class InputV2Component implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   isSubmitPressed = false
   identifier: string
   widget!: NsWidgetResolver.IRenderConfigWithAnyData

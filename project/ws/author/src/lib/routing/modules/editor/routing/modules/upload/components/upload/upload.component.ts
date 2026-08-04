@@ -42,6 +42,7 @@ import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
 
 import { NotificationService } from '@ws/author/src/lib/services/notification.service'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-upload',
@@ -49,6 +50,9 @@ import { NotificationService } from '@ws/author/src/lib/services/notification.se
   styleUrls: ['./upload.component.scss'],
 })
 export class UploadComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   contents: NSContent.IContentMeta[] = []
   currentContent = ''
   currentStep = 2

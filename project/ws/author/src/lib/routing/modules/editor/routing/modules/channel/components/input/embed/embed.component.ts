@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 interface IEmbedWidget {
   title: string
   iframeSrc: string
@@ -16,14 +16,16 @@ interface IEmbedWidget {
   styleUrls: ['./embed.component.scss'],
 })
 export class EmbedComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
 
   showInfo = ''
   @Input() isSubmitPressed = false
   @Input() editorType: 'advanced' | 'basic' = 'advanced'
   @Input() content!: IEmbedWidget
   @Input() forVideo = false
-  @Output() data = new EventEmitter<{ content: IEmbedWidget, isValid: boolean }>()
-  constructor() { }
+  @Output() data = new EventEmitter<{ content: IEmbedWidget; isValid: boolean }>()
+  constructor() {}
 
   ngOnInit() {
     if (!this.content.iframeId) {
@@ -44,5 +46,4 @@ export class EmbedComponent implements OnInit {
       isValid: this.content.iframeSrc ? true : false,
     })
   }
-
 }

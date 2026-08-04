@@ -5,6 +5,7 @@ import { EditorContentService } from './../../../../../services/editor-content.s
 import { ChannelStoreService } from './../../services/store.service'
 
 import { MatDrawer } from '@angular/material/sidenav'
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-page-editor',
@@ -12,6 +13,9 @@ import { MatDrawer } from '@angular/material/sidenav'
   styleUrls: ['./page-editor.component.scss'],
 })
 export class PageEditorComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() isSubmitPressed = false
   parentId = ''
   @Input() canShowMode = false
@@ -19,7 +23,10 @@ export class PageEditorComponent implements OnInit {
   @Output() data = new EventEmitter<string>()
   @ViewChild(MatDrawer, { static: false }) drawer!: MatDrawer
 
-  constructor(private store: ChannelStoreService, private contentService: EditorContentService) { }
+  constructor(
+    private store: ChannelStoreService,
+    private contentService: EditorContentService,
+  ) {}
 
   ngOnInit() {
     this.contentService.changeActiveCont.subscribe(() => this.getParent())

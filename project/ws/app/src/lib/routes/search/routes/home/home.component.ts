@@ -4,7 +4,7 @@ import { FormControl } from '@angular/forms'
 
 import { ActivatedRoute, Router } from '@angular/router'
 
-import { ConfigurationsService, NsPage } from '@ws-widget/utils'
+import { ConfigurationsService, NsPage, isActivationKey } from '@ws-widget/utils'
 
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 
@@ -21,6 +21,9 @@ import { SearchServService } from '../../services/search-serv.service'
   encapsulation: ViewEncapsulation.None,
 })
 export class HomeComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   query: FormControl = new FormControl('')
   pageNavbar: Partial<NsPage.INavBackground> = this.configSvc.pageNavBar
   autoCompleteResults: ISearchAutoComplete[] = []

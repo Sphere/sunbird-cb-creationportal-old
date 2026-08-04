@@ -1,12 +1,5 @@
-<div style="
-  height: 100vh;
-  top: 0px;
-  left: 0px;
-  position: fixed;
-  right: 0px;
-  bottom: 0px;
-  z-index: 1000">
-  <mat-toolbar style="display: flex; justify-content: center; height: auto;">
+<div style="height: 100vh; top: 0px; left: 0px; position: fixed; right: 0px; bottom: 0px; z-index: 1000">
+  <mat-toolbar style="display: flex; justify-content: center; height: auto">
     <mat-label class="padding-s font-size-m" i18n>Device Type</mat-label>
     <mat-form-field class="font-size-m">
       <mat-select [(value)]="selected">
@@ -16,9 +9,15 @@
       </mat-select>
     </mat-form-field>
   </mat-toolbar>
-  <div style="display: flex; justify-content: center; overflow: hidden; padding: 8px;" class="mat-toolbar">
-    <iframe style="overflow: auto;" class="iframe" [src]="iframeUrl | pipeSafeSanitizer: 'resourceUrl'"
-      [width]="selected.width">
+  <div style="display: flex; justify-content: center; overflow: hidden; padding: 8px" class="mat-toolbar">
+    <iframe
+      style="overflow: auto"
+      class="iframe"
+      i18n-title
+      title="Content preview"
+      [src]="iframeUrl | pipeSafeSanitizer: 'resourceUrl'"
+      [width]="selected.width"
+    >
     </iframe>
   </div>
 </div>

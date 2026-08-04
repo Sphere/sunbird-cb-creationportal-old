@@ -70,6 +70,8 @@
                 <div>
                   <div
                     (click)="editContent(module)"
+                    (keydown)="isActivationKey($event) && editContent(module)"
+                    [attr.tabindex]="0"
                     class="left-block-container main"
                     *ngIf="module.primaryCategory === 'Course Unit'"
                     [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
@@ -88,6 +90,8 @@
                     <div *ngIf="editItem !== module.identifier" class="hide-resource">
                       <svg
                         (click)="toggleChildren(module)"
+                        (keydown)="isActivationKey($event) && toggleChildren(module)"
+                        [attr.tabindex]="0"
                         xmlns="http://www.w3.org/2000/svg"
                         width="11"
                         height="7"
@@ -142,6 +146,8 @@
                   <div class="children" *ngIf="module?.children?.length > 0 && showChildrenMap[module.identifier]">
                     <div
                       (click)="editContent(resource)"
+                      (keydown)="isActivationKey($event) && editContent(resource)"
+                      [attr.tabindex]="0"
                       *ngFor="let resource of module.children; index as l; trackBy: trackByIdentifier"
                       class="resource-1"
                       style="cursor: pointer"
@@ -208,6 +214,8 @@
                   </button>
                   <div
                     (click)="editContent(module)"
+                    (keydown)="isActivationKey($event) && editContent(module)"
+                    [attr.tabindex]="0"
                     *ngIf="module.primaryCategory !== 'Course Unit'"
                     class="heading-resource resource-2"
                     [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
@@ -279,7 +287,13 @@
                 cdkDropList
                 (cdkDropListDropped)="drop($event)"
               >
-                <div (click)="editContent(module)" class="module-container" *ngFor="let module of moduleNames; trackBy: trackByIdentifier">
+                <div
+                  (click)="editContent(module)"
+                  (keydown)="isActivationKey($event) && editContent(module)"
+                  [attr.tabindex]="0"
+                  class="module-container"
+                  *ngFor="let module of moduleNames; trackBy: trackByIdentifier"
+                >
                   <div class="mod-heading">
                     <h2 class="module-text" style="margin: 0px !important">
                       {{
@@ -294,6 +308,8 @@
                   <div *ngIf="isOnClickOfResourceTypeEnabled">
                     <div
                       (click)="editContent(resource)"
+                      (keydown)="isActivationKey($event) && editContent(resource)"
+                      [attr.tabindex]="0"
                       *ngFor="let resource of resourceNames; trackBy: trackByIdentifier"
                       class="heading-resource resource-3"
                     >
@@ -306,6 +322,7 @@
                         cdkDragBoundary=".model-left-create-content div-3"
                         cdkDragLockAxis="y"
                         (click)="dragDrop(resource, resource.identifier, 'resource')"
+                        (keydown)="isActivationKey($event) && dragDrop(resource, resource.identifier, 'resource')"
                         >none</mat-icon
                       >
                       <span class="resourse-text" style="white-space: normal">{{ resource.name }}</span>
@@ -331,6 +348,8 @@
                 <div>
                   <div
                     (click)="editContent(module)"
+                    (keydown)="isActivationKey($event) && editContent(module)"
+                    [attr.tabindex]="0"
                     class="left-block-container"
                     *ngIf="module.primaryCategory === 'Course Unit'"
                     [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
@@ -346,6 +365,8 @@
                   <div *ngIf="module?.children?.length > 0">
                     <div
                       (click)="editContent(resource)"
+                      (keydown)="isActivationKey($event) && editContent(resource)"
+                      [attr.tabindex]="0"
                       *ngFor="let resource of module.children; index as l; trackBy: trackByIdentifier"
                       class="resource-1"
                       style="cursor: pointer"
@@ -367,6 +388,8 @@
                   </div>
                   <div
                     (click)="editContent(module)"
+                    (keydown)="isActivationKey($event) && editContent(module)"
+                    [attr.tabindex]="0"
                     *ngIf="module.primaryCategory !== 'Course Unit'"
                     class="heading-resource resource-2"
                     [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
@@ -421,7 +444,13 @@
                 cdkDropList
                 (cdkDropListDropped)="drop($event)"
               >
-                <div (click)="editContent(module)" class="module-container" *ngFor="let module of moduleNames; trackBy: trackByIdentifier">
+                <div
+                  (click)="editContent(module)"
+                  (keydown)="isActivationKey($event) && editContent(module)"
+                  [attr.tabindex]="0"
+                  class="module-container"
+                  *ngFor="let module of moduleNames; trackBy: trackByIdentifier"
+                >
                   <div class="mod-heading">
                     <h2 class="module-text" style="margin: 0px !important">
                       {{
@@ -436,6 +465,8 @@
                   <div *ngIf="isOnClickOfResourceTypeEnabled">
                     <div
                       (click)="editContent(resource)"
+                      (keydown)="isActivationKey($event) && editContent(resource)"
+                      [attr.tabindex]="0"
                       *ngFor="let resource of resourceNames; trackBy: trackByIdentifier"
                       class="heading-resource resource-3"
                     >
@@ -448,6 +479,7 @@
                         cdkDragBoundary=".model-left-create-content div-3"
                         cdkDragLockAxis="y"
                         (click)="dragDrop(resource, resource.identifier, 'resource')"
+                        (keydown)="isActivationKey($event) && dragDrop(resource, resource.identifier, 'resource')"
                         >none</mat-icon
                       >
                       <span class="resourse-text" style="white-space: normal">{{ resource.name }}</span>
@@ -711,7 +743,12 @@
             <div class="module-txt-block margin-top-s" *ngIf="isPdfOrAudioOrVedioEnabled && content?.mimeType !== 'application/json'">
               <!-- No file yet — upload card -->
               <ng-container *ngIf="uploadFileName == '' && !uploadVideoUrl">
-                <div class="mc-upload-card" (click)="pdfFile.click()">
+                <div
+                  class="mc-upload-card"
+                  (click)="pdfFile.click()"
+                  (keydown)="isActivationKey($event) && pdfFile.click()"
+                  [attr.tabindex]="0"
+                >
                   <input
                     #pdfFile
                     (change)="uploadPdf($event.target.files[0]); pdfFile.value = null"
@@ -826,7 +863,12 @@
                 style="display: none"
                 [accept]="imageTypes.toString()"
               />
-              <div class="mc-thumbnail-upload" (click)="uploadThumbnail.click()">
+              <div
+                class="mc-thumbnail-upload"
+                (click)="uploadThumbnail.click()"
+                (keydown)="isActivationKey($event) && uploadThumbnail.click()"
+                [attr.tabindex]="0"
+              >
                 <ng-container *ngIf="thumbnail">
                   <img alt="Module thumbnail" class="mc-thumbnail-preview" [src]="thumbnail" (error)="changeToDefaultImg($event)" />
                   <button
@@ -1142,7 +1184,12 @@
                 <!-- No file yet — upload card -->
                 <div class="module-txt-block margin-top-s">
                   <ng-container *ngIf="uploadFileName == '' && !uploadVideoUrl">
-                    <div class="mc-upload-card" (click)="pdfFile2.click()">
+                    <div
+                      class="mc-upload-card"
+                      (click)="pdfFile2.click()"
+                      (keydown)="isActivationKey($event) && pdfFile2.click()"
+                      [attr.tabindex]="0"
+                    >
                       <input
                         #pdfFile2
                         (change)="uploadPdf($event.target.files[0]); pdfFile2.value = null"
@@ -1314,6 +1361,7 @@
                     class="mc-format-item"
                     *ngFor="let list of contentList; trackBy: trackByIndex"
                     (click)="createResourseContent(list.name, list.type)"
+                    (keydown)="isActivationKey($event) && createResourseContent(list.name, list.type)"
                     role="button"
                     tabindex="0"
                   >
@@ -1331,6 +1379,7 @@
                   class="mc-assess-item"
                   *ngFor="let list of accessList; trackBy: trackByIndex"
                   (click)="createResourseContent(list.name, list.type)"
+                  (keydown)="isActivationKey($event) && createResourseContent(list.name, list.type)"
                   role="button"
                   tabindex="0"
                 >
@@ -1392,7 +1441,8 @@
                   class="tab"
                   [ngClass]="{ 'active-tab': i === activeTabIndex }"
                   (click)="setActiveTab(i)"
-                  (keydown)="handleKeyDown($event, i)"
+                  (keydown)="isActivationKey($event) && setActiveTab(i)"
+                  [attr.tabindex]="0"
                 >
                   Question {{ i + 1 }}
                   <img
@@ -1400,7 +1450,8 @@
                     class="ml-2"
                     loading="lazy"
                     (click)="deleteQuestion(i)"
-                    (keydown)="deleteQuestion(activeTabIndex)"
+                    (keydown)="isActivationKey($event) && deleteQuestion(i)"
+                    [attr.tabindex]="0"
                     src="cbp-assets/icons/bin.svg"
                     alt="delete-icon"
                   />
@@ -1490,6 +1541,7 @@
                           name="isCorrect-{{ i }}-{{ j }}"
                           [checked]="option.isCorrect"
                           (click)="setCorrectOption(i, j, k)"
+                          (keydown)="isActivationKey($event) && setCorrectOption(i, j, k)"
                           class="radio-button"
                         />
                         <input
@@ -1505,6 +1557,8 @@
                         <img
                           loading="lazy"
                           (click)="deleteOption(i, j, k)"
+                          (keydown)="isActivationKey($event) && deleteOption(i, j, k)"
+                          [attr.tabindex]="0"
                           src="cbp-assets/icons/fluent_delete-24-regular.svg"
                           alt="delete-icon"
                           class="option-delete-icon"
@@ -1575,7 +1629,7 @@
               <div style="position: relative">
                 <h3 class="mat-h3 font-weight-bold margin-remove-bottom" i18n>Guidelines for zip file upload</h3>
                 <button class="close-button primary-button" (click)="closeDialog()">
-                  <mat-icon aria-label="Next" role="button">close</mat-icon>
+                  <mat-icon aria-label="Next">close</mat-icon>
                 </button>
               </div>
               <div style="max-height: 400px">
@@ -1685,7 +1739,7 @@
               <div style="position: relative">
                 <h3 class="mat-h3 font-weight-bold margin-remove-bottom" i18n>Select the entry file</h3>
                 <button class="close-button primary-button" (click)="closeDialog()">
-                  <mat-icon aria-label="Next" role="button">close</mat-icon>
+                  <mat-icon aria-label="Next">close</mat-icon>
                 </button>
               </div>
               <div class="mt-4">
@@ -1726,7 +1780,7 @@
                   Following files or folders have special characters in their names
                 </h3>
                 <button class="close-button primary-button" (click)="closeDialog()">
-                  <mat-icon aria-label="Next" role="button">close</mat-icon>
+                  <mat-icon aria-label="Next">close</mat-icon>
                 </button>
               </div>
               <div style="max-height: 400px" class="mat-form-field mt-4" id="errorFiles">

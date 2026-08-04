@@ -16,7 +16,6 @@ import { NsAnalytics, NsCourseAnalytics } from '../../interface/app-toc-analytic
 
 import { MyTocService } from '../../services/my-toc.service'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-content-insights',
@@ -42,13 +41,11 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
   barChartOnExpandData: IGraphWidget = {} as IGraphWidget
   uniqueUsersDescription = 'How many unique users have visited the contents of this page?'
   hits = 0
-  hitsDescription =
-    'How many views were recorded for the contents of this page? A view is recorded every time a user accesses a content'
+  hitsDescription = 'How many views were recorded for the contents of this page? A view is recorded every time a user accesses a content'
   avgTimeSpent = 0.0
   dailyDate = ''
   months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  timeSpentDescription =
-    'How much time was spent per user on the contents of this page in average in minutes?'
+  timeSpentDescription = 'How much time was spent per user on the contents of this page in average in minutes?'
   barChartDeptData: IGraphWidget = {} as IGraphWidget
   barChartCountryData: IGraphWidget = {} as IGraphWidget
   pieChartDeviceData: IGraphWidget = {} as IGraphWidget
@@ -312,11 +309,10 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
     private tocSharedSvc: MyTocService,
   ) {
     if (this.tocSharedSvc) {
-
     }
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     this.prefChangeSubscription = this.configSvc.prefChangeNotifier.subscribe(() => {
       this.populateChartData()
     })
@@ -388,58 +384,51 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
       // Onsite-Offshore PieChart Data
       const pieChartData: number[] = []
       const pieChartLabel: string[] = []
-      this.analyticsData.participants.onsiteOffshoreIndicator.forEach(
-        (onsiteOffshore: NsAnalytics.IOnsiteOffshoreObj) => {
-          if (onsiteOffshore.key !== 'NA') {
-            pieChartData.push(onsiteOffshore.count)
-            pieChartLabel.push(onsiteOffshore.key)
-          }
-          this.onsiteOffshoreData = {
-            widgetType: ROOT_WIDGET_CONFIG.graph._type,
-            widgetSubType: ROOT_WIDGET_CONFIG.graph.graphGeneral,
-            widgetData: {
-              graphId: 'onsiteOffshoreChart',
-              graphType: 'pie',
-              graphHeight: '250px',
-              graphWidth: '90%',
-              graphLegend: true,
-              graphLegendPosition: 'top',
-              graphLegendFontSize: 11,
-              graphTicksFontSize: 11,
-              graphGridLinesDisplay: false,
-              graphIsCustomizableColor: this.isCustomizableColor,
-              graphIsCustomizableType: this.isCustomizableType,
-              graphDefaultPalette: 'default',
-              graphData: {
-                labels: pieChartLabel,
-                datasets: [
-                  {
-                    label: '',
-                    data: pieChartData,
-                    backgroundColor: [
-                      this.configSvc.activeThemeObject
-                        ? this.configSvc.activeThemeObject.color.primary
-                        : '',
-                      this.configSvc.activeThemeObject
-                        ? this.configSvc.activeThemeObject.color.accent
-                        : '',
-                    ],
-                    borderWidth: 1,
-                  },
-                ],
-              },
+      this.analyticsData.participants.onsiteOffshoreIndicator.forEach((onsiteOffshore: NsAnalytics.IOnsiteOffshoreObj) => {
+        if (onsiteOffshore.key !== 'NA') {
+          pieChartData.push(onsiteOffshore.count)
+          pieChartLabel.push(onsiteOffshore.key)
+        }
+        this.onsiteOffshoreData = {
+          widgetType: ROOT_WIDGET_CONFIG.graph._type,
+          widgetSubType: ROOT_WIDGET_CONFIG.graph.graphGeneral,
+          widgetData: {
+            graphId: 'onsiteOffshoreChart',
+            graphType: 'pie',
+            graphHeight: '250px',
+            graphWidth: '90%',
+            graphLegend: true,
+            graphLegendPosition: 'top',
+            graphLegendFontSize: 11,
+            graphTicksFontSize: 11,
+            graphGridLinesDisplay: false,
+            graphIsCustomizableColor: this.isCustomizableColor,
+            graphIsCustomizableType: this.isCustomizableType,
+            graphDefaultPalette: 'default',
+            graphData: {
+              labels: pieChartLabel,
+              datasets: [
+                {
+                  label: '',
+                  data: pieChartData,
+                  backgroundColor: [
+                    this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
+                    this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.accent : '',
+                  ],
+                  borderWidth: 1,
+                },
+              ],
             },
-          }
-        },
-      )
+          },
+        }
+      })
 
       // Participants by Unit BarChart Data
       const barChartUnitLabel: string[] = []
       const offshoreUnitData: number[] = []
       const onsiteUnitData: number[] = []
       this.analyticsData.participants.ibu = this.analyticsData.participants.ibu.sort(
-        (a: NsAnalytics.IParticipantObj, b: NsAnalytics.IParticipantObj) =>
-          a.count > b.count ? -1 : a.count < b.count ? 1 : 0,
+        (a: NsAnalytics.IParticipantObj, b: NsAnalytics.IParticipantObj) => (a.count > b.count ? -1 : a.count < b.count ? 1 : 0),
       )
       this.analyticsData.participants.ibu.forEach((unit: NsAnalytics.IParticipantObj) => {
         if (barChartUnitLabel.length < 20) {
@@ -477,17 +466,13 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
             datasets: [
               {
                 label: 'Offshore',
-                backgroundColor: this.configSvc.activeThemeObject
-                  ? this.configSvc.activeThemeObject.color.primary
-                  : '',
+                backgroundColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
                 borderWidth: 1,
                 data: offshoreUnitData,
               },
               {
                 label: 'Onsite',
-                backgroundColor: this.configSvc.activeThemeObject
-                  ? this.configSvc.activeThemeObject.color.accent
-                  : '',
+                backgroundColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.accent : '',
                 borderWidth: 1,
                 data: onsiteUnitData,
               },
@@ -501,8 +486,7 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
       const offshorePuData: number[] = []
       const onsitePuData: number[] = []
       this.analyticsData.participants.pu = this.analyticsData.participants.pu.sort(
-        (a: NsAnalytics.IParticipantObj, b: NsAnalytics.IParticipantObj) =>
-          a.count > b.count ? -1 : a.count < b.count ? 1 : 0,
+        (a: NsAnalytics.IParticipantObj, b: NsAnalytics.IParticipantObj) => (a.count > b.count ? -1 : a.count < b.count ? 1 : 0),
       )
       this.analyticsData.participants.pu.forEach((pu: NsAnalytics.IParticipantObj) => {
         if (barChartPULabel.length < 20) {
@@ -540,17 +524,13 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
             datasets: [
               {
                 label: 'Offshore',
-                backgroundColor: this.configSvc.activeThemeObject
-                  ? this.configSvc.activeThemeObject.color.primary
-                  : '',
+                backgroundColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
                 borderWidth: 1,
                 data: offshorePuData,
               },
               {
                 label: 'Onsite',
-                backgroundColor: this.configSvc.activeThemeObject
-                  ? this.configSvc.activeThemeObject.color.accent
-                  : '',
+                backgroundColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.accent : '',
                 borderWidth: 1,
                 data: onsitePuData,
               },
@@ -564,8 +544,7 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
       const offshoreJLData: number[] = []
       const onsiteJLData: number[] = []
       this.analyticsData.participants.jl = this.analyticsData.participants.jl.sort(
-        (a: NsAnalytics.IParticipantObj, b: NsAnalytics.IParticipantObj) =>
-          a.count > b.count ? -1 : a.count < b.count ? 1 : 0,
+        (a: NsAnalytics.IParticipantObj, b: NsAnalytics.IParticipantObj) => (a.count > b.count ? -1 : a.count < b.count ? 1 : 0),
       )
       this.analyticsData.participants.jl.forEach((jl: NsAnalytics.IParticipantObj) => {
         if (barChartJLLabel.length < 20) {
@@ -603,17 +582,13 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
             datasets: [
               {
                 label: 'Offshore',
-                backgroundColor: this.configSvc.activeThemeObject
-                  ? this.configSvc.activeThemeObject.color.primary
-                  : '',
+                backgroundColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
                 borderWidth: 1,
                 data: offshoreJLData,
               },
               {
                 label: 'Onsite',
-                backgroundColor: this.configSvc.activeThemeObject
-                  ? this.configSvc.activeThemeObject.color.accent
-                  : '',
+                backgroundColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.accent : '',
                 borderWidth: 1,
                 data: onsiteJLData,
               },
@@ -627,8 +602,7 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
       const offshoreLocationData: number[] = []
       const onsiteLocationData: number[] = []
       this.analyticsData.participants.location = this.analyticsData.participants.location.sort(
-        (a: NsAnalytics.IParticipantObj, b: NsAnalytics.IParticipantObj) =>
-          a.count > b.count ? -1 : a.count < b.count ? 1 : 0,
+        (a: NsAnalytics.IParticipantObj, b: NsAnalytics.IParticipantObj) => (a.count > b.count ? -1 : a.count < b.count ? 1 : 0),
       )
       this.analyticsData.participants.location.forEach((location: NsAnalytics.IParticipantObj) => {
         if (barChartLocationLabel.length < 20) {
@@ -666,17 +640,13 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
             datasets: [
               {
                 label: 'Offshore',
-                backgroundColor: this.configSvc.activeThemeObject
-                  ? this.configSvc.activeThemeObject.color.primary
-                  : '',
+                backgroundColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
                 borderWidth: 1,
                 data: offshoreLocationData,
               },
               {
                 label: 'Onsite',
-                backgroundColor: this.configSvc.activeThemeObject
-                  ? this.configSvc.activeThemeObject.color.accent
-                  : '',
+                backgroundColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.accent : '',
                 borderWidth: 1,
                 data: onsiteLocationData,
               },
@@ -690,8 +660,7 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
       const offshoreAccountData: number[] = []
       const onsiteAccountData: number[] = []
       this.analyticsData.participants.account = this.analyticsData.participants.account.sort(
-        (a: NsAnalytics.IParticipantObj, b: NsAnalytics.IParticipantObj) =>
-          a.count > b.count ? -1 : a.count < b.count ? 1 : 0,
+        (a: NsAnalytics.IParticipantObj, b: NsAnalytics.IParticipantObj) => (a.count > b.count ? -1 : a.count < b.count ? 1 : 0),
       )
       this.analyticsData.participants.account.forEach((account: NsAnalytics.IParticipantObj) => {
         if (barChartAccountLabel.length < 20) {
@@ -729,17 +698,13 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
             datasets: [
               {
                 label: 'Offshore',
-                backgroundColor: this.configSvc.activeThemeObject
-                  ? this.configSvc.activeThemeObject.color.primary
-                  : '',
+                backgroundColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
                 borderWidth: 1,
                 data: offshoreAccountData,
               },
               {
                 label: 'Onsite',
-                backgroundColor: this.configSvc.activeThemeObject
-                  ? this.configSvc.activeThemeObject.color.accent
-                  : '',
+                backgroundColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.accent : '',
                 borderWidth: 1,
                 data: onsiteAccountData,
               },
@@ -1010,9 +975,8 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
       // hits by Dept BarChart Data
       const barChartDeptHitsLabel: string[] = []
       const deptHitsData: number[] = []
-      this.analyticsDataClient.department = this.analyticsDataClient.department.sort(
-        (a: any, b: any) =>
-          a.total_hits > b.total_hits ? -1 : a.total_hits < b.total_hits ? 1 : 0,
+      this.analyticsDataClient.department = this.analyticsDataClient.department.sort((a: any, b: any) =>
+        a.total_hits > b.total_hits ? -1 : a.total_hits < b.total_hits ? 1 : 0,
       )
       this.analyticsDataClient.department.forEach((deptHits: NsCourseAnalytics.IChartData) => {
         if (barChartDeptHitsLabel.length < 20) {
@@ -1171,17 +1135,13 @@ export class ContentInsightsComponent implements OnInit, OnDestroy {
           datasets: [
             {
               label: 'Offshore',
-              backgroundColor: this.configSvc.activeThemeObject
-                ? this.configSvc.activeThemeObject.color.primary
-                : '',
+              backgroundColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.primary : '',
               borderWidth: 1,
               data: offshoreOnExpandData,
             },
             {
               label: 'Onsite',
-              backgroundColor: this.configSvc.activeThemeObject
-                ? this.configSvc.activeThemeObject.color.accent
-                : '',
+              backgroundColor: this.configSvc.activeThemeObject ? this.configSvc.activeThemeObject.color.accent : '',
               borderWidth: 1,
               data: onsiteOnExpandData,
             },

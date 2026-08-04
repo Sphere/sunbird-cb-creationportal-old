@@ -27,7 +27,7 @@
     </mat-list-item>
   </mat-list>
   <div class="flex" *ngIf="false">
-    <span role="button" matRipple class="margin-left-xs mt-2 width-9-10">
+    <span matRipple class="margin-left-xs mt-2 width-9-10">
       <h2 class="text-truncate margin-remove">Course Content</h2>
     </span>
     <!--     <button class="width-9-10" mat-icon-button (click)="minimizenav()">
@@ -53,7 +53,6 @@
             </ws-widget-display-content-type-icon> -->
             <div class="mt-1 mb-2">
               <span
-                role="button"
                 [ngClass]="{ 'content-active': pathSet.has(node.identifier) }"
                 matRipple
                 matTreeNodeToggle

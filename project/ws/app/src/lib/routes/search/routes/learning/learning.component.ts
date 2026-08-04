@@ -6,7 +6,7 @@ import { NsContent, NsError, NSSearch, ROOT_WIDGET_CONFIG } from '@ws-widget/col
 
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
-import { ConfigurationsService, ValueService, UtilityService } from '@ws-widget/utils'
+import { ConfigurationsService, ValueService, UtilityService, isActivationKey } from '@ws-widget/utils'
 
 import { Subscription } from 'rxjs'
 
@@ -30,6 +30,9 @@ interface IThing {
   styleUrls: ['./learning.component.scss'],
 })
 export class LearningComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @ViewChild(FilterDisplayComponent, { static: false })
   appFilterDisplay: FilterDisplayComponent | null = null
 

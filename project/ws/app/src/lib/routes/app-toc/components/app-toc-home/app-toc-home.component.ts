@@ -6,7 +6,7 @@ import { NsContent, WidgetContentService, ContentProgressService } from '@ws-wid
 
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
-import { ConfigurationsService, LoggerService, NsPage } from '@ws-widget/utils'
+import { ConfigurationsService, LoggerService, NsPage, isActivationKey } from '@ws-widget/utils'
 
 import { Subscription, Observable } from 'rxjs'
 
@@ -36,6 +36,9 @@ export enum ErrorType {
   styleUrls: ['./app-toc-home.component.scss'],
 })
 export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   banners: NsAppToc.ITocBanner | null = null
   content: any | null = null
   hasPublishAccess: any = false

@@ -19,6 +19,7 @@ import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 
 import { IAudioObj } from '../../interface/page-interface'
 
+import { isActivationKey } from '@ws-widget/utils'
 export interface IUsersData {
   name?: string
   id: string
@@ -32,6 +33,9 @@ export interface IUsersData {
   styleUrls: ['./upload-audio.component.scss'],
 })
 export class UploadAudioComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   fileSelected = null
   uploadedAudio: IAudioObj = {
     title: '',

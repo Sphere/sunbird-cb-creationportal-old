@@ -134,7 +134,7 @@ describe('DndQuizComponent', () => {
     it('should call continueLearning with only the identifier when no collection params', async () => {
       const c = build()
       c.dndQuizData = content()
-      await c.ngOnDestroy()
+      await (c as any).onDestroyAsync()
       expect(contentSvc.continueLearning).toHaveBeenCalledWith('c1')
       expect(eventSvc.dispatchEvent).toHaveBeenCalled()
     })
@@ -146,14 +146,14 @@ describe('DndQuizComponent', () => {
         collectionId: 'col1',
         collectionType: 'Course',
       }
-      await c.ngOnDestroy()
+      await (c as any).onDestroyAsync()
       expect(contentSvc.continueLearning).toHaveBeenCalledWith('c1', 'col1', 'Course')
     })
 
     it('should not raise an event or call continueLearning when there is no content', async () => {
       const c = build()
       c.dndQuizData = null
-      await c.ngOnDestroy()
+      await (c as any).onDestroyAsync()
       expect(contentSvc.continueLearning).not.toHaveBeenCalled()
     })
 
@@ -164,9 +164,18 @@ describe('DndQuizComponent', () => {
       const smallSub = c['isSmallSubscription']
       const routeSpy = jest.spyOn(routeSub as any, 'unsubscribe')
       const smallSpy = jest.spyOn(smallSub as any, 'unsubscribe')
-      await c.ngOnDestroy()
+      await (c as any).onDestroyAsync()
       expect(routeSpy).toHaveBeenCalled()
       expect(smallSpy).toHaveBeenCalled()
+    })
+  })
+
+  describe('ngOnDestroy delegation', () => {
+    it('fires the async teardown and returns void, since Angular never awaits lifecycle hooks', () => {
+      const c = build()
+      const spy = jest.spyOn(c as any, 'onDestroyAsync').mockResolvedValue(undefined as never)
+      expect(c.ngOnDestroy()).toBeUndefined()
+      expect(spy).toHaveBeenCalledTimes(1)
     })
   })
 })

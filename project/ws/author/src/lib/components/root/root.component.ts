@@ -16,7 +16,6 @@ import { NotificationComponent } from '@ws/author/src/lib/modules/shared/compone
 
 import { NOTIFICATION_TIME } from '@ws/author/src/lib/constants/constant'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-root-root',
@@ -36,9 +35,15 @@ export class AuthRootComponent implements OnInit, OnDestroy {
     private loader: LoaderService,
     private changeDetector: ChangeDetectorRef,
     private snackBar: MatSnackBar,
-  ) { }
+  ) {}
 
-  async ngOnInit() {
+  ngOnInit(): void {
+    // Angular does not await lifecycle hooks; run the async work
+    // fire-and-forget, exactly as `async ngOnInit()` already did.
+    void this.initialiseAsync()
+  }
+
+  private async initialiseAsync(): Promise<void> {
     if (window.innerWidth < 1163 && !this.isWidthMessageShown) {
       this.isWidthMessageShown = true
       this.snackBar.openFromComponent(NotificationComponent, {
@@ -48,17 +53,13 @@ export class AuthRootComponent implements OnInit, OnDestroy {
         duration: NOTIFICATION_TIME * 1000,
       })
     }
-    this.loaderSubscription = this.loader.changeLoad.subscribe(
-      data => {
-        this.isLoading = data
-        this.changeDetector.detectChanges()
-      },
-    )
+    this.loaderSubscription = this.loader.changeLoad.subscribe(data => {
+      this.isLoading = data
+      this.changeDetector.detectChanges()
+    })
     const instanceConfig = await this.configSvc.instanceConfig
     if (instanceConfig) {
-      this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        instanceConfig.logos.app,
-      )
+      this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(instanceConfig.logos.app)
     }
   }
 
@@ -81,5 +82,4 @@ export class AuthRootComponent implements OnInit, OnDestroy {
       })
     }
   }
-
 }

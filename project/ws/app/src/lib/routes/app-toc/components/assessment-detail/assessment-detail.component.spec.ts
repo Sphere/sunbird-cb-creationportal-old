@@ -34,7 +34,7 @@ describe('AssessmentDetailComponent', () => {
     http.get.mockReturnValue({ toPromise: () => Promise.resolve(quizJSON) })
     c.content = { artifactUrl: 'https://cdn/quiz.json' }
 
-    await c.ngOnInit()
+    await (c as any).initialiseAsync()
 
     expect(http.get).toHaveBeenCalledWith('https://cdn/quiz.json')
     expect(c.assesmentdata).toEqual(quizJSON)
@@ -44,7 +44,7 @@ describe('AssessmentDetailComponent', () => {
     const c = build()
     c.content = { name: 'no-artifact' }
 
-    await c.ngOnInit()
+    await (c as any).initialiseAsync()
 
     expect(http.get).not.toHaveBeenCalled()
     expect(c.assesmentdata).toBeUndefined()
@@ -55,7 +55,7 @@ describe('AssessmentDetailComponent', () => {
     http.get.mockReturnValue({ toPromise: () => Promise.reject(new Error('MANIFEST_FETCH_FAILED')) })
     c.content = { artifactUrl: 'https://cdn/broken.json' }
 
-    await expect(c.ngOnInit()).resolves.toBeUndefined()
+    await expect((c as any).initialiseAsync()).resolves.toBeUndefined()
     expect(c.assesmentdata).toBeUndefined()
   })
 

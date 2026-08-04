@@ -182,7 +182,7 @@ describe('HtmlPickerComponent', () => {
       const unsubscribe = jest.fn()
       ;(component as any).routeDataSubscription = { unsubscribe }
 
-      await component.ngOnDestroy()
+      await (component as any).onDestroyAsync()
 
       expect(contentSvc.continueLearning).toHaveBeenCalledWith('do_1', 'coll_1', 'playlist')
       expect(unsubscribe).toHaveBeenCalled()
@@ -192,14 +192,23 @@ describe('HtmlPickerComponent', () => {
     it('continues learning without a collection context', async () => {
       component.htmlPickerData = content()
 
-      await component.ngOnDestroy()
+      await (component as any).onDestroyAsync()
 
       expect(contentSvc.continueLearning).toHaveBeenCalledWith('do_1')
     })
 
     it('is safe with no data and no subscription', async () => {
-      await expect(component.ngOnDestroy()).resolves.toBeUndefined()
+      await expect((component as any).onDestroyAsync()).resolves.toBeUndefined()
       expect(contentSvc.continueLearning).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('ngOnDestroy delegation', () => {
+    it('fires the async teardown and returns void, since Angular never awaits lifecycle hooks', () => {
+      const c = build()
+      const spy = jest.spyOn(c as any, 'onDestroyAsync').mockResolvedValue(undefined as never)
+      expect(c.ngOnDestroy()).toBeUndefined()
+      expect(spy).toHaveBeenCalledTimes(1)
     })
   })
 })

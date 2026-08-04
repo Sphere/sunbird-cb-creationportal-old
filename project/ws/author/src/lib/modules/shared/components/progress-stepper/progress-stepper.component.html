@@ -7,6 +7,8 @@
     <ng-container *ngFor="let step of steps; let i = index">
       <div
         (click)="navigate(step.key)"
+        (keydown)="isActivationKey($event) && navigate(step.key)"
+        [attr.tabindex]="0"
         class="step"
         [class.completed]="step.completed"
         [class.active]="step.activeStep"

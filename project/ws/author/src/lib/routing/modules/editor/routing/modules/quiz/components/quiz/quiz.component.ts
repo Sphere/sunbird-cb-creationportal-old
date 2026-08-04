@@ -86,6 +86,7 @@ import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image
 
 import * as XLSX from 'xlsx'
 
+import { isActivationKey } from '@ws-widget/utils'
 interface QuizOption {
   text: string
   optionId: string
@@ -107,6 +108,9 @@ interface QuizQuestion {
   providers: [QuizResolverService, QuizStoreService],
 })
 export class QuizComponent implements OnInit, OnChanges, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   selectedQuizIndex!: number
   allContents: NSContent.IContentMeta[] = []
   contentLoaded = false

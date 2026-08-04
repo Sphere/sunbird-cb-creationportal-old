@@ -44,6 +44,7 @@ import { UrlUploadComponent } from './../url-upload/url-upload.component'
 
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-curate',
@@ -51,6 +52,9 @@ import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
   styleUrls: ['./curate.component.scss'],
 })
 export class CurateComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   contents: NSContent.IContentMeta[] = []
   currentContent = ''
   currentStep = 2

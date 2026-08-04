@@ -1,25 +1,13 @@
 <form [formGroup]="form">
   <mat-label class="required" i18n>Image</mat-label>
   <br />
-  <button
-    class="button-design"
-    type="button"
-    mat-raised-button
-    color="primary"
-    (click)="imageFile.click()"
-  >
+  <button class="button-design" type="button" mat-raised-button color="primary" (click)="imageFile.click()">
     <ng-container *ngIf="!form.controls.imageSrc.value" i18n>Choose Image</ng-container>
     <ng-container *ngIf="form.controls.imageSrc.value" i18n>Change Image</ng-container>
-    <input
-      type="file"
-      (change)="upload($event.target.files[0]); imageFile.value = null"
-      class="hidden"
-      #imageFile
-      accept="image/*"
-    />
+    <input type="file" (change)="upload($event.target.files[0]); imageFile.value = null" class="hidden" #imageFile accept="image/*" />
   </button>
   <br />
-  <div *ngIf="form.controls.imageSrc.value" class="image-map" style="position: relative;">
+  <div *ngIf="form.controls.imageSrc.value" class="image-map" style="position: relative">
     <img #image class="img" [src]="form.controls.imageSrc.value" />
     <canvas
       #canvas
@@ -29,6 +17,8 @@
       (mousedown)="mouseDownEvent($event)"
       (mouseup)="mouseUpEvent($event)"
       (mouseout)="mouseOutEvent($event)"
+      (blur)="mouseOutEvent($event)"
+      [attr.tabindex]="0"
       (mousemove)="mouseMoveEvent($event)"
       (contextmenu)="onRightClick($event)"
     ></canvas>
@@ -47,8 +37,7 @@
       <div formArrayName="map" *ngFor="let image of paths.controls; let i = index">
         <div class="row-wise top-bar-design" [formGroupName]="i">
           <div class="width-2 my-8">
-            <mat-radio-button class="example-radio-button" name="imageMapCard" [value]="i" [id]="i">
-            </mat-radio-button>
+            <mat-radio-button class="example-radio-button" name="imageMapCard" [value]="i" [id]="i"> </mat-radio-button>
           </div>
           <div class="width-20">
             <mat-form-field class="w-full" appearance="outline">
@@ -61,9 +50,7 @@
                 formControlName="title"
                 #title
               />
-              <mat-error *ngIf="!title.value" i18n>
-                The above field is required
-              </mat-error>
+              <mat-error *ngIf="!title.value" i18n> The above field is required </mat-error>
             </mat-form-field>
           </div>
           <div class="width-20">
@@ -84,12 +71,7 @@
               <mat-label i18n>URL Type</mat-label>
               <mat-select
                 #urlType
-                [value]="
-                  (anchorId && anchorId.value) ||
-                  (paths.at(i).controls.link && !paths.at(i).controls.link.value)
-                    ? 'anchor'
-                    : 'url'
-                "
+                [value]="(anchorId && anchorId.value) || (paths.at(i).controls.link && !paths.at(i).controls.link.value) ? 'anchor' : 'url'"
                 (selectionChange)="selectionChange($event, i)"
               >
                 <mat-option value="anchor">Same Page Link</mat-option>
@@ -105,13 +87,7 @@
               *ngIf="!urlType || (urlType && urlType.value === 'anchor')"
             >
               <mat-label i18n>Provide Anchor Id</mat-label>
-              <input
-                matInput
-                i18n-placeholder
-                (change)="setLinkValue(i, anchorId.value)"
-                placeholder="Provide Anchor Id"
-                #anchorId
-              />
+              <input matInput i18n-placeholder (change)="setLinkValue(i, anchorId.value)" placeholder="Provide Anchor Id" #anchorId />
             </mat-form-field>
             <mat-form-field
               class="w-full"
@@ -120,13 +96,7 @@
               *ngIf="urlType && urlType.value !== 'anchor'"
             >
               <mat-label i18n>Provide URL</mat-label>
-              <input
-                matInput
-                i18n-placeholder
-                placeholder="Provide URL"
-                formControlName="link"
-                #link1
-              />
+              <input matInput i18n-placeholder placeholder="Provide URL" formControlName="link" #link1 />
             </mat-form-field>
           </div>
 
@@ -150,13 +120,7 @@
   </mat-radio-group>
 </form>
 <br />
-<button
-  type="button"
-  mat-raised-button
-  *ngIf="form.controls.imageSrc.value"
-  (click)="addImageMapForm()"
-  color="primary"
->
+<button type="button" mat-raised-button *ngIf="form.controls.imageSrc.value" (click)="addImageMapForm()" color="primary">
   <mat-icon>add box</mat-icon>
   <ng-container i18n>Add A New Area</ng-container>
 </button>

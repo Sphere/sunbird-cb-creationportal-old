@@ -65,6 +65,7 @@ import { PlainCKEditorComponent } from '../../../../../shared/components/plain-c
 
 import { NotificationService } from '@ws/author/src/lib/services/notification.service'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-web-module-editor',
@@ -72,6 +73,9 @@ import { NotificationService } from '@ws/author/src/lib/services/notification.se
   styleUrls: ['./web-module-editor.component.scss'],
 })
 export class WebModuleEditorComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   userData: { [key: string]: WebModuleData } = {}
   currentId = ''
   selectedPage = 0

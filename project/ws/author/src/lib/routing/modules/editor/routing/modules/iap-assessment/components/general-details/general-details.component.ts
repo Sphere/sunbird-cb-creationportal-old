@@ -35,6 +35,7 @@ import { ViewQuestionDialogComponent } from '../view-question-dialog/view-questi
 
 import { CONTENT_BASE_WEBHOST_ASSETS } from '../../../../../../../../constants/apiEndpoints'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-general-details',
@@ -43,6 +44,9 @@ import { CONTENT_BASE_WEBHOST_ASSETS } from '../../../../../../../../constants/a
   animations: [trigger('detailExpand', [transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)'))])],
 })
 export class GeneralDetailsComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<any>
   @Output() data = new EventEmitter<string>()
   @Output() id = new EventEmitter<string>()

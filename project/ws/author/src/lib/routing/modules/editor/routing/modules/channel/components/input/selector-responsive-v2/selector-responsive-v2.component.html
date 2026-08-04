@@ -3,9 +3,11 @@
     class="margin-top-xs font-weight-500 margin-top-s cursor-pointer padding-left-right"
     *ngFor="let tab of content.selectFrom || []; let i = index"
     [ngClass]="{
-      'ws-mat-primary-border-bottom-bolder': i === index
+      'ws-mat-primary-border-bottom-bolder': i === index,
     }"
     (click)="i !== index ? onIndexChange(i) : $event.preventDefault()"
+    (keydown)="isActivationKey($event) && (i !== index ? onIndexChange(i) : $event.preventDefault())"
+    [attr.tabindex]="0"
   >
     <ng-container [ngSwitch]="getType(i, true)">
       <ng-container *ngSwitchCase="'mob'" i18n>Mobile</ng-container>
@@ -21,13 +23,11 @@
     (click)="addStrip()"
     class="margin-left-xs small-button padding-remove ws-mat-primary-background mat-elevation-z6 margin-left-s"
   >
-    <mat-icon class="text-white small-icon" i18n-matTooltip matTooltip="Add an another series">
-      add</mat-icon
-    >
+    <mat-icon class="text-white small-icon" i18n-matTooltip matTooltip="Add an another series"> add</mat-icon>
   </button>
 </div>
 
-<div *ngIf="size > 1" class="mb-5" style="position: relative;">
+<div *ngIf="size > 1" class="mb-5" style="position: relative">
   <!-- <mat-form-field class="mr-20" *ngIf="!isCommon">
     <mat-label i18n>Select Screen Type</mat-label>
     <mat-select
@@ -66,7 +66,7 @@
     >Make it common for all screens</mat-checkbox
   > -->
   <button
-    style="position: absolute; top:-30px; right: 0px"
+    style="position: absolute; top: -30px; right: 0px"
     type="button"
     mat-flat-button
     i18n-matTooltip
@@ -102,7 +102,5 @@
       [content]="currentStrip.widget.widgetData"
     ></ws-auth-image-v2>
   </ng-container>
-  <ng-container *ngSwitchDefault i18n>
-    Switch to Advanced editor to edit this content
-  </ng-container>
+  <ng-container *ngSwitchDefault i18n> Switch to Advanced editor to edit this content </ng-container>
 </ng-container>

@@ -10,6 +10,7 @@ import { IapAssessmentService } from '../../services/iap-assessment.service'
 
 import { IQuestionDetailsContent } from '../iap-assessment/iap-assessment.component'
 
+import { isActivationKey } from '@ws-widget/utils'
 // IQuestionDetailsContent
 
 @Component({
@@ -19,12 +20,15 @@ import { IQuestionDetailsContent } from '../iap-assessment/iap-assessment.compon
   styleUrls: ['./section-dialog.component.scss'],
 })
 export class SectionDialogComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   constructor(
     public iapService: IapAssessmentService,
     public dialogRef: MatDialogRef<SectionDialogComponent>,
     private snackbar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: any,
-  ) { }
+  ) {}
   loaderFlag = false
   questionDetails = {
     myQuestion: 'public',
@@ -71,7 +75,6 @@ export class SectionDialogComponent implements OnInit {
         this.objectiveQuestionsData = response.objectiveQuestionsData
       })
     })
-
   }
   removeGroup(group: any) {
     const details = {

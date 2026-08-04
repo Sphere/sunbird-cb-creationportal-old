@@ -15,6 +15,7 @@ import { LoaderService } from 'project/ws/author/src/lib/services/loader.service
 import { SuccessDialogComponent } from '../success-dialog/success-dialog.component'
 
 import { MatDialog } from '@angular/material/dialog'
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-root-certificate-upload-dialog',
@@ -22,6 +23,9 @@ import { MatDialog } from '@angular/material/dialog'
   styleUrls: ['./certificate-upload-dialog.component.scss'],
 })
 export class CertificateDialogComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Output() action = new EventEmitter<{ action: string }>()
   svgContent!: any
   newRecipientName: string = ''
@@ -34,9 +38,7 @@ export class CertificateDialogComponent implements OnInit {
     private editorService: EditorService,
     private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data?: NSContent.IContentMeta,
-
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     console.log(this.data)
@@ -49,7 +51,7 @@ export class CertificateDialogComponent implements OnInit {
       reader.onload = (e: any) => {
         const svgContent = e.target.result
         this.svgContent = this.sanitizer.bypassSecurityTrustResourceUrl(svgContent) as SafeResourceUrl
-        const base64Data = e.target.result.split(",")[1]
+        const base64Data = e.target.result.split(',')[1]
         let svgContents = atob(base64Data)
         this.extractSvgAttributes(svgContents)
       }
@@ -77,31 +79,31 @@ export class CertificateDialogComponent implements OnInit {
       // let newSvgContent = svgContent.replace(/<tspan[^>]*>(.*?)<\/tspan>/, `<tspan x="600" y="440">Likhith</tspan>`).replace(/<tspan[^>]*>(.*?)<\/tspan>/, `<tspan x="620" y="800">10-08-2023</tspan>`)
 
       // @ts-ignore: Unreachable code error
-      let bucket = window["env"]["sitePath"]
+      let bucket = window['env']['sitePath']
 
       const newQrCodeImage = bucket + '/cbp-assets/images/qrCode.png'
 
       // Create a DOMParser
       const parser = new DOMParser()
-      const svgDoc = parser.parseFromString(svgContent, "image/svg+xml")
+      const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml')
 
       // Update or add recipient name
       let recipientText = svgDoc.querySelector('text[id="${recipientName}"] tspan')
       if (recipientText) {
         recipientText.textContent = this.newRecipientName
       } else {
-        const newTextElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "text")
-        newTextElement.setAttribute("id", "recipientName")
-        newTextElement.setAttribute("fill", "black")
-        newTextElement.setAttribute("xml:space", "preserve")
-        newTextElement.setAttribute("style", "white-space: pre")
-        newTextElement.setAttribute("font-family", "Roboto")
-        newTextElement.setAttribute("font-size", "48")
-        newTextElement.setAttribute("letter-spacing", "0em")
+        const newTextElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'text')
+        newTextElement.setAttribute('id', 'recipientName')
+        newTextElement.setAttribute('fill', 'black')
+        newTextElement.setAttribute('xml:space', 'preserve')
+        newTextElement.setAttribute('style', 'white-space: pre')
+        newTextElement.setAttribute('font-family', 'Roboto')
+        newTextElement.setAttribute('font-size', '48')
+        newTextElement.setAttribute('letter-spacing', '0em')
 
-        const tspanElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "tspan")
-        tspanElement.setAttribute("x", "600")
-        tspanElement.setAttribute("y", "440")
+        const tspanElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'tspan')
+        tspanElement.setAttribute('x', '600')
+        tspanElement.setAttribute('y', '440')
         tspanElement.textContent = this.newRecipientName
 
         newTextElement.appendChild(tspanElement)
@@ -111,16 +113,16 @@ export class CertificateDialogComponent implements OnInit {
       // Update or add QR code image
       let qrCodeImageElement = svgDoc.querySelector('image[id="QrCode"]')
       if (qrCodeImageElement) {
-        qrCodeImageElement.setAttribute("xlink:href", newQrCodeImage)
+        qrCodeImageElement.setAttribute('xlink:href', newQrCodeImage)
       } else {
-        const newImageElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "image")
-        newImageElement.setAttribute("id", "QrCode")
-        newImageElement.setAttribute("class", "qr-code")
-        newImageElement.setAttribute("x", "600")
-        newImageElement.setAttribute("y", "620")
-        newImageElement.setAttribute("width", "150")
-        newImageElement.setAttribute("height", "150")
-        newImageElement.setAttribute("xlink:href", newQrCodeImage)
+        const newImageElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'image')
+        newImageElement.setAttribute('id', 'QrCode')
+        newImageElement.setAttribute('class', 'qr-code')
+        newImageElement.setAttribute('x', '600')
+        newImageElement.setAttribute('y', '620')
+        newImageElement.setAttribute('width', '150')
+        newImageElement.setAttribute('height', '150')
+        newImageElement.setAttribute('xlink:href', newQrCodeImage)
 
         svgDoc.documentElement.appendChild(newImageElement)
       }
@@ -130,18 +132,18 @@ export class CertificateDialogComponent implements OnInit {
       if (rmNumbers) {
         rmNumbers.textContent = rmNumber
       } else {
-        const rmNumbersTextElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "text")
-        rmNumbersTextElement.setAttribute("id", "rmNumber")
-        rmNumbersTextElement.setAttribute("fill", "black")
-        rmNumbersTextElement.setAttribute("xml:space", "preserve")
-        rmNumbersTextElement.setAttribute("style", "white-space: pre")
-        rmNumbersTextElement.setAttribute("font-family", "Roboto")
-        rmNumbersTextElement.setAttribute("font-size", "20")
-        rmNumbersTextElement.setAttribute("letter-spacing", "0em")
+        const rmNumbersTextElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'text')
+        rmNumbersTextElement.setAttribute('id', 'rmNumber')
+        rmNumbersTextElement.setAttribute('fill', 'black')
+        rmNumbersTextElement.setAttribute('xml:space', 'preserve')
+        rmNumbersTextElement.setAttribute('style', 'white-space: pre')
+        rmNumbersTextElement.setAttribute('font-family', 'Roboto')
+        rmNumbersTextElement.setAttribute('font-size', '20')
+        rmNumbersTextElement.setAttribute('letter-spacing', '0em')
 
-        const tspanElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "tspan")
-        tspanElement.setAttribute("x", "600")
-        tspanElement.setAttribute("y", "460")
+        const tspanElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'tspan')
+        tspanElement.setAttribute('x', '600')
+        tspanElement.setAttribute('y', '460')
         tspanElement.textContent = rmNumber
 
         rmNumbersTextElement.appendChild(tspanElement)
@@ -153,18 +155,18 @@ export class CertificateDialogComponent implements OnInit {
       if (issuedDateText) {
         issuedDateText.textContent = newIssuedDate
       } else {
-        const newTextElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "text")
-        newTextElement.setAttribute("id", "issuedDate")
-        newTextElement.setAttribute("fill", "black")
-        newTextElement.setAttribute("xml:space", "preserve")
-        newTextElement.setAttribute("style", "white-space: pre")
-        newTextElement.setAttribute("font-family", "Roboto")
-        newTextElement.setAttribute("font-size", "20")
-        newTextElement.setAttribute("letter-spacing", "0em")
+        const newTextElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'text')
+        newTextElement.setAttribute('id', 'issuedDate')
+        newTextElement.setAttribute('fill', 'black')
+        newTextElement.setAttribute('xml:space', 'preserve')
+        newTextElement.setAttribute('style', 'white-space: pre')
+        newTextElement.setAttribute('font-family', 'Roboto')
+        newTextElement.setAttribute('font-size', '20')
+        newTextElement.setAttribute('letter-spacing', '0em')
 
-        const tspanElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "tspan")
-        tspanElement.setAttribute("x", "620")
-        tspanElement.setAttribute("y", "800")
+        const tspanElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'tspan')
+        tspanElement.setAttribute('x', '620')
+        tspanElement.setAttribute('y', '800')
         tspanElement.textContent = newIssuedDate
 
         newTextElement.appendChild(tspanElement)
@@ -175,17 +177,17 @@ export class CertificateDialogComponent implements OnInit {
       if (maxScoreText) {
         maxScoreText.textContent = maxScore
       } else {
-        const maxScoreTextElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "text")
-        maxScoreTextElement.setAttribute("id", "maxScore")
-        maxScoreTextElement.setAttribute("fill", "black")
-        maxScoreTextElement.setAttribute("xml:space", "preserve")
-        maxScoreTextElement.setAttribute("style", "white-space: pre")
-        maxScoreTextElement.setAttribute("font-family", "Roboto")
-        maxScoreTextElement.setAttribute("font-size", "20")
-        maxScoreTextElement.setAttribute("letter-spacing", "0em")
-        const tspanElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "tspan")
-        tspanElement.setAttribute("x", "640")
-        tspanElement.setAttribute("y", "780")
+        const maxScoreTextElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'text')
+        maxScoreTextElement.setAttribute('id', 'maxScore')
+        maxScoreTextElement.setAttribute('fill', 'black')
+        maxScoreTextElement.setAttribute('xml:space', 'preserve')
+        maxScoreTextElement.setAttribute('style', 'white-space: pre')
+        maxScoreTextElement.setAttribute('font-family', 'Roboto')
+        maxScoreTextElement.setAttribute('font-size', '20')
+        maxScoreTextElement.setAttribute('letter-spacing', '0em')
+        const tspanElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'tspan')
+        tspanElement.setAttribute('x', '640')
+        tspanElement.setAttribute('y', '780')
         tspanElement.textContent = maxScore
         maxScoreTextElement.appendChild(tspanElement)
         svgDoc.documentElement.appendChild(maxScoreTextElement)
@@ -195,17 +197,17 @@ export class CertificateDialogComponent implements OnInit {
       if (courseNameText) {
         courseNameText.textContent = courseName
       } else {
-        const courseNameTextElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "text")
-        courseNameTextElement.setAttribute("id", "courseName")
-        courseNameTextElement.setAttribute("fill", "black")
-        courseNameTextElement.setAttribute("xml:space", "preserve")
-        courseNameTextElement.setAttribute("style", "white-space: pre")
-        courseNameTextElement.setAttribute("font-family", "Roboto")
-        courseNameTextElement.setAttribute("font-size", "24")
-        courseNameTextElement.setAttribute("letter-spacing", "0em")
-        const tspanElement = svgDoc.createElementNS("http://www.w3.org/2000/svg", "tspan")
-        tspanElement.setAttribute("x", "600")
-        tspanElement.setAttribute("y", "500")
+        const courseNameTextElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'text')
+        courseNameTextElement.setAttribute('id', 'courseName')
+        courseNameTextElement.setAttribute('fill', 'black')
+        courseNameTextElement.setAttribute('xml:space', 'preserve')
+        courseNameTextElement.setAttribute('style', 'white-space: pre')
+        courseNameTextElement.setAttribute('font-family', 'Roboto')
+        courseNameTextElement.setAttribute('font-size', '24')
+        courseNameTextElement.setAttribute('letter-spacing', '0em')
+        const tspanElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'tspan')
+        tspanElement.setAttribute('x', '600')
+        tspanElement.setAttribute('y', '500')
         tspanElement.textContent = courseName
         courseNameTextElement.appendChild(tspanElement)
         svgDoc.documentElement.appendChild(courseNameTextElement)
@@ -214,7 +216,7 @@ export class CertificateDialogComponent implements OnInit {
       // Serialize the modified SVG back to a string
       const modifiedSvgString = new XMLSerializer().serializeToString(svgDoc)
 
-      console.log("modifiedSvgString", modifiedSvgString)
+      console.log('modifiedSvgString', modifiedSvgString)
 
       // const lasts = svgContent
       //   .replace(/\$\{recipientName\}/g, newRecipientName)
@@ -232,83 +234,90 @@ export class CertificateDialogComponent implements OnInit {
   createTemplate() {
     this.loader.changeLoad.next(true)
     const formdata = new FormData()
-    formdata.append(
-      'content',
-      this.file as Blob,
-      (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''),
-    )
+    formdata.append('content', this.file as Blob, (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''))
     const request: any = {
-      "name": 'Sunbird rc certificate test',
+      name: 'Sunbird rc certificate test',
     }
-    this.editorService.createTemplate(request).subscribe((res: any) => {
-      console.log(res)
-      if (res.params.status === 'successful') {
-        this.uploadService.upload(formdata, {
-          contentId: res.result.identifier,
-          contentType: '/artifacts',
-        }).subscribe(
-          (data: any) => {
-            console.log(data)
-            if (data.status === "successful") {
-              // @ts-ignore: Unreachable code error
-              if (this.data["batches"]) {
-                let obj = {
-                  request: {
-                    batch: {
-                      // @ts-ignore: Unreachable code error
-                      "batchId": this.data["batches"][0].batchId,
-                      // @ts-ignore: Unreachable code error
-                      "courseId": this.data.identifier,
-                      "template": {
-                        "template": data.artifactUrl,
-                        "previewUrl": data.artifactURL,
-                        "identifier": data.identifier,
-                        "criteria": {
-                          "enrollment": {
-                            "status": 2
+    this.editorService.createTemplate(request).subscribe(
+      (res: any) => {
+        console.log(res)
+        if (res.params.status === 'successful') {
+          this.uploadService
+            .upload(formdata, {
+              contentId: res.result.identifier,
+              contentType: '/artifacts',
+            })
+            .subscribe((data: any) => {
+              console.log(data)
+              if (data.status === 'successful') {
+                // @ts-ignore: Unreachable code error
+                if (this.data['batches']) {
+                  let obj = {
+                    request: {
+                      batch: {
+                        // @ts-ignore: Unreachable code error
+                        batchId: this.data['batches'][0].batchId,
+                        // @ts-ignore: Unreachable code error
+                        courseId: this.data.identifier,
+                        template: {
+                          template: data.artifactUrl,
+                          previewUrl: data.artifactURL,
+                          identifier: data.identifier,
+                          criteria: {
+                            enrollment: {
+                              status: 2,
+                            },
                           },
+                          name: 'Completion Certificate',
+                          issuer: {
+                            name: 'in',
+                            url: 'https://sphere.aastrika.org/',
+                          },
+                          signatoryList: [
+                            {
+                              image: 'https://www.aastrika.org/wp-content/uploads/2022/12/aastrika-foundation-logo-header.svg',
+                              name: 'aastrika-foundation',
+                              id: 'in',
+                              designation: 'Home',
+                            },
+                          ],
                         },
-                        "name": "Completion Certificate",
-                        "issuer": {
-                          "name": "in",
-                          "url": "https://sphere.aastrika.org/"
+                      },
+                    },
+                  }
+                  this.uploadService.templateToBatch(obj).subscribe((res1: any) => {
+                    console.log(res1)
+                    if (res.params.status === 'successful') {
+                      this.loader.changeLoad.next(false)
+                      this.dialogRef.close()
+                      this.dialog.open(SuccessDialogComponent, {
+                        width: '450px',
+                        height: '300x',
+                        data: {
+                          message: 'Course Certificate successfully attached',
+                          icon: 'check_circle',
+                          color: '#2CB93A',
+                          backgroundColor: '#FFFFFF',
+                          padding: '6px 11px 10px 6px !important',
+                          id: '',
+                          cert_upload: 'Yes',
                         },
-                        "signatoryList": [
-                          {
-                            "image": "https://www.aastrika.org/wp-content/uploads/2022/12/aastrika-foundation-logo-header.svg",
-                            "name": "aastrika-foundation",
-                            "id": "in",
-                            "designation": "Home"
-                          }
-                        ]
-                      }
+                      })
                     }
-                  }
+                  })
+                } else {
+                  this.loader.changeLoad.next(false)
+                  //add error notification about batch not present
                 }
-                this.uploadService.templateToBatch(obj).subscribe((res1: any) => {
-                  console.log(res1)
-                  if (res.params.status === 'successful') {
-                    this.loader.changeLoad.next(false)
-                    this.dialogRef.close()
-                    this.dialog.open(SuccessDialogComponent, {
-                      width: '450px',
-                      height: '300x',
-                      data: { 'message': 'Course Certificate successfully attached', 'icon': 'check_circle', 'color': '#2CB93A', 'backgroundColor': '#FFFFFF', 'padding': '6px 11px 10px 6px !important', 'id': '', 'cert_upload': 'Yes' },
-                    })
-                  }
-                })
-              } else {
-                this.loader.changeLoad.next(false)
-                //add error notification about batch not present
               }
-
-            }
-          })
-      }
-    }, error => {
-      if (error) {
-        console.log(error)
-      }
-    })
+            })
+        }
+      },
+      error => {
+        if (error) {
+          console.log(error)
+        }
+      },
+    )
   }
 }

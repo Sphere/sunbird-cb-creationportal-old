@@ -73,7 +73,13 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  async ngOnInit() {
+  ngOnInit(): void {
+    // Angular does not await lifecycle hooks; run the async work
+    // fire-and-forget, exactly as `async ngOnInit()` already did.
+    void this.initialiseAsync()
+  }
+
+  private async initialiseAsync(): Promise<void> {
     this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
     let hasAccess = false
     this.routerSubscription = await this.router.data.subscribe(data => {

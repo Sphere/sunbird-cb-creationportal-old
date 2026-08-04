@@ -47,6 +47,7 @@ import { IAssessmentDetails } from '../../interface/iap-assessment.interface'
 
 import { IapAssessmentService } from '../../services/iap-assessment.service'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-root-iap-assessment',
@@ -54,6 +55,9 @@ import { IapAssessmentService } from '../../services/iap-assessment.service'
   styleUrls: ['./iap-assessment.component.scss'],
 })
 export class IapAssessmentComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   constructor(
     private accessService: AccessControlService,
     private authInitService: AuthInitService,

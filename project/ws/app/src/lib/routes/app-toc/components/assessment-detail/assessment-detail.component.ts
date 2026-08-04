@@ -4,7 +4,6 @@ import { NSQuiz } from '../../../../../../../viewer/src/lib/plugins/quiz/quiz.mo
 
 import { HttpClient } from '@angular/common/http'
 
-
 @Component({
   standalone: false,
   selector: 'ws-app-assessment-detail',
@@ -12,7 +11,6 @@ import { HttpClient } from '@angular/common/http'
   styleUrls: ['./assessment-detail.component.scss'],
 })
 export class AssessmentDetailComponent implements OnInit {
-
   @Input() forPreview = false
   @Input() resourceLink: any
   @Input() content: any
@@ -36,18 +34,18 @@ export class AssessmentDetailComponent implements OnInit {
     passPercentage: 60,
   }
 
-  constructor(
-    private http: HttpClient,
-  ) {
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    // Angular does not await lifecycle hooks; run the async work
+    // fire-and-forget, exactly as `async ngOnInit()` already did.
+    void this.initialiseAsync()
   }
 
-  async ngOnInit() {
+  private async initialiseAsync(): Promise<void> {
     this.assesmentdata = await this.transformQuiz(this.content)
 
-
-
-    console.log("this.content", this.content, this.assesmentdata)
-
+    console.log('this.content', this.content, this.assesmentdata)
   }
   /* api call to get info of quiz or assessment */
   private async transformQuiz(content: any): Promise<any> {

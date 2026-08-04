@@ -67,7 +67,12 @@
               <label>
                 <div class="margin-top-xs flex flex-middle">
                   <b i18n>Allow proctoring in the assessment?</b>
-                  <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showinfo('proctor')">info </mat-icon>
+                  <mat-icon
+                    class="ws-mat-primary-text margin-left-xs pointer"
+                    (click)="showinfo('proctor')"
+                    (keydown)="isActivationKey($event) && showinfo('proctor')"
+                    >info
+                  </mat-icon>
                 </div>
                 <span i18n *ngIf="showInfo"
                   >Turn on remote proctoring which will disable and monitor activities like print screen, navigating out of the test window,
@@ -174,6 +179,8 @@
             [@detailExpand]="section.showOptions ? 'expanded' : 'collapsed'"
             class="entity-container cursor-pointer"
             (click)="openOptions(section)"
+            (keydown)="isActivationKey($event) && openOptions(section)"
+            [attr.tabindex]="0"
           >
             <div class="icon-container1 ws-mat-primary-background-op30">
               <mat-icon class="ws-mat-primary-text">widgets</mat-icon>
@@ -195,6 +202,8 @@
               <div
                 class="flex flex-middle margin-left-l cursor-pointer margin-bottom-s padding-top-s"
                 (click)="cardActions(option.name, section)"
+                (keydown)="isActivationKey($event) && cardActions(option.name, section)"
+                [attr.tabindex]="0"
               >
                 <mat-icon class="ws-mat-primary-text">{{ option.icon }}</mat-icon>
                 <p class="margin-left-m margin-remove-bottom">{{ option.name }}</p>
@@ -248,7 +257,12 @@
             </mat-form-field>
           </form>
         </div>
-        <div (click)="searchQuestions()" class="flex items-center justify-center w-16 pointer">
+        <div
+          (click)="searchQuestions()"
+          (keydown)="isActivationKey($event) && searchQuestions()"
+          [attr.tabindex]="0"
+          class="flex items-center justify-center w-16 pointer"
+        >
           <mat-icon>search</mat-icon>
         </div>
       </div>
@@ -307,6 +321,7 @@
                   *ngIf="!element.contestAdded && !element.loader"
                   matTooltip="Add Question"
                   (click)="add(element)"
+                  (keydown)="isActivationKey($event) && add(element)"
                   color="primary"
                   >add_circle</mat-icon
                 >
@@ -315,6 +330,7 @@
                   *ngIf="element.contestAdded && !element.loader"
                   matTooltip="Remove Question"
                   (click)="remove(element)"
+                  (keydown)="isActivationKey($event) && remove(element)"
                   color="warn"
                   >remove_circle</mat-icon
                 >
@@ -329,6 +345,7 @@
                   class="cursor-pointer icon-hover"
                   matTooltip="View Question"
                   (click)="openViewQuestionDialog(element)"
+                  (keydown)="isActivationKey($event) && openViewQuestionDialog(element)"
                   color="primary"
                   >zoom_out_map</mat-icon
                 >

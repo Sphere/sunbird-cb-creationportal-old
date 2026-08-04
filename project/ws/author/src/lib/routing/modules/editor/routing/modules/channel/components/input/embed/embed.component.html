@@ -1,26 +1,45 @@
 <div>
-  <p><b *ngIf="!forVideo" class="required" i18n>Enter Iframe URL</b>
+  <p>
+    <b *ngIf="!forVideo" class="required" i18n>Enter Iframe URL</b>
     <b *ngIf="forVideo" class="required" i18n>Enter Video URL</b>
   </p>
   <mat-form-field appearance="outline" class="child">
-    <input required matInput name="iframe" #iframe (change)="update('iframeSrc', iframe.value)" i18n-placeholder
-      placeholder="Enter URL" [value]="content.iframeSrc || ''" />
-    <mat-error *ngIf="!iframe.value">
-      The Above field is reqiured
-    </mat-error>
+    <input
+      required
+      matInput
+      name="iframe"
+      #iframe
+      (change)="update('iframeSrc', iframe.value)"
+      i18n-placeholder
+      placeholder="Enter URL"
+      [value]="content.iframeSrc || ''"
+    />
+    <mat-error *ngIf="!iframe.value"> The Above field is reqiured </mat-error>
   </mat-form-field>
 </div>
 <div *ngIf="!forVideo">
   <p><b i18n>Enter Title</b></p>
   <mat-form-field appearance="outline" class="child">
-    <input required matInput name="title" #title (change)="update('title', title.value)" i18n-placeholder
-      placeholder="Enter title" [value]="content.title || ''" />
+    <input
+      required
+      matInput
+      name="title"
+      #title
+      (change)="update('title', title.value)"
+      i18n-placeholder
+      placeholder="Enter title"
+      [value]="content.title || ''"
+    />
   </mat-form-field>
 </div>
 <h3 *ngIf="editorType === 'advanced'">
   <div class="margin-top-xs flex flex-middle">
     <ng-container i18n>CSS Class for Widget</ng-container>
-    <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo = 'gridClass'">info
+    <mat-icon
+      class="ws-mat-primary-text margin-left-xs pointer"
+      (click)="showInfo = 'gridClass'"
+      (keydown)="isActivationKey($event) && (showInfo = 'gridClass')"
+      >info
     </mat-icon>
   </div>
   <span *ngIf="showInfo === 'gridClass'">
@@ -29,12 +48,19 @@
     <ng-container i18n> to see its documentation</ng-container>
   </span>
 </h3>
-<ws-auth-chips *ngIf="editorType === 'advanced'" [content]="content.containerClass"
-  (data)="update('containerClass', $event)"></ws-auth-chips>
+<ws-auth-chips
+  *ngIf="editorType === 'advanced'"
+  [content]="content.containerClass"
+  (data)="update('containerClass', $event)"
+></ws-auth-chips>
 <h3 *ngIf="editorType === 'advanced'">
   <div class="margin-top-xs flex flex-middle">
     <ng-container i18n>CSS Style for Widget</ng-container>
-    <mat-icon class="ws-mat-primary-text margin-left-xs pointer" (click)="showInfo = 'gridCss'">info
+    <mat-icon
+      class="ws-mat-primary-text margin-left-xs pointer"
+      (click)="showInfo = 'gridCss'"
+      (keydown)="isActivationKey($event) && (showInfo = 'gridCss')"
+      >info
     </mat-icon>
   </div>
   <span *ngIf="showInfo === 'gridCss'">
@@ -42,6 +68,10 @@
     {{ '{' }} "background-color" : "blue" {{ '}' }}
   </span>
 </h3>
-<ws-auth-ace-editor *ngIf="editorType === 'advanced'" [mode]="'json'" [content]="content.containerStyle || {}"
-  (data)="update('containerStyle', $event)">
+<ws-auth-ace-editor
+  *ngIf="editorType === 'advanced'"
+  [mode]="'json'"
+  [content]="content.containerStyle || {}"
+  (data)="update('containerStyle', $event)"
+>
 </ws-auth-ace-editor>

@@ -26,7 +26,7 @@ import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 
 import { ISortEvent } from '../../../../../../../../../directives/draggable/sortable-list.directive'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-chips',
@@ -34,6 +34,9 @@ import { ISortEvent } from '../../../../../../../../../directives/draggable/sort
   styleUrls: ['./chips.component.scss'],
 })
 export class ChipsComponent implements OnInit, OnDestroy, AfterViewInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @ViewChild('copyText', { static: true }) copyText!: ElementRef<any>
   @ViewChild('class', { static: true }) class!: ElementRef
   @ViewChild('collection', { static: true }) collection!: ElementRef
@@ -53,7 +56,10 @@ export class ChipsComponent implements OnInit, OnDestroy, AfterViewInit {
   addOnBlur = true
   readonly separatorKeysCodes: number[] = [ENTER, COMMA]
 
-  constructor(private snackBar: MatSnackBar, private cdk: ChangeDetectorRef) {}
+  constructor(
+    private snackBar: MatSnackBar,
+    private cdk: ChangeDetectorRef,
+  ) {}
 
   ngOnInit() {}
 

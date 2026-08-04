@@ -26,6 +26,8 @@
           : widgetData?.intranetMode === 'greyOut' && showIntranetContent,
     }"
     (click)="(showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
+    (keydown)="isActivationKey($event) && (showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
+    [attr.tabindex]="0"
   >
     <div
       class="display-contents"
@@ -123,6 +125,7 @@
           : widgetData?.intranetMode === 'greyOut' && showIntranetContent,
     }"
     (click)="(showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
+    (keydown)="isActivationKey($event) && (showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
   >
     <div
       class="display-contents"
@@ -281,6 +284,7 @@
           : widgetData?.intranetMode === 'greyOut' && showIntranetContent,
     }"
     (click)="(showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
+    (keydown)="isActivationKey($event) && (showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
   >
     <!-- <ws-widget-content-progress
       class="progress-bar"
@@ -444,6 +448,7 @@
           : widgetData?.intranetMode === 'greyOut' && showIntranetContent,
     }"
     (click)="(showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
+    (keydown)="isActivationKey($event) && (showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
   >
     <div
       class="display-contents"
@@ -621,6 +626,7 @@
           : widgetData?.intranetMode === 'greyOut' && showIntranetContent,
     }"
     (click)="(showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
+    (keydown)="isActivationKey($event) && (showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
   >
     <div
       class="display-contents"
@@ -730,6 +736,7 @@
           : widgetData?.intranetMode === 'greyOut' && showIntranetContent,
     }"
     (click)="(showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
+    (keydown)="isActivationKey($event) && (showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
   >
     <div
       class="display-contents"
@@ -927,6 +934,7 @@
           : widgetData?.intranetMode === 'greyOut' && showIntranetContent,
     }"
     (click)="(showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
+    (keydown)="isActivationKey($event) && (showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
   >
     <div
       class="display-contents"
@@ -1018,6 +1026,7 @@
           : widgetData?.intranetMode === 'greyOut' && showIntranetContent,
     }"
     (click)="(showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
+    (keydown)="isActivationKey($event) && (showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
   >
     <div
       class="display-contents"

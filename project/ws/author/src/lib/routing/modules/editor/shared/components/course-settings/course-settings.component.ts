@@ -235,7 +235,13 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     })
   }
 
-  async ngAfterViewInit() {
+  ngAfterViewInit(): void {
+    // Angular does not await lifecycle hooks; run the async work
+    // fire-and-forget, exactly as `async ngAfterViewInit()` already did.
+    void this.afterViewInitAsync()
+  }
+
+  private async afterViewInitAsync(): Promise<void> {
     this.editorService.readcontentV3(this.contentService.parentUpdatedMeta().identifier).subscribe(async (data: any) => {
       this.courseData = await data
 

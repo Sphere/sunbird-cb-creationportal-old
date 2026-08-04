@@ -47,20 +47,20 @@ must be assessed against how its target frame is created.
 
 **Safe / mechanical (recommended first — ~193):**
 
-| Rule               | Count | What it is                          | Fix                            |
-| ------------------ | ----- | ----------------------------------- | ------------------------------ |
-| `css:S4649`        | 86    | duplicate CSS selectors/blocks      | remove duplicate               |
-| `css:S4656`        | 42    | duplicate CSS properties            | remove duplicate               |
-| `css:S4657`        | 19    | invalid CSS property values         | correct/remove                 |
-| `css:S4653`        | 13    | unknown CSS properties              | correct/remove                 |
-| `css:S4670`        | 1     | `@import` after rules               | reorder                        |
-| `typescript:S3923` | 8     | all branches of if/switch identical | collapse / fix intended branch |
-| `typescript:S1862` | 5     | duplicate conditions in if-chain    | fix intended condition         |
-| `typescript:S1656` | 5     | self-assignment (`x = x`)           | remove / assign intended value |
-| `typescript:S1764` | 4     | identical operands (`a === a`)      | fix intended operand           |
-| `typescript:S905`  | 5     | statements with no effect           | remove / complete              |
-| `typescript:S4158` | 1     | always-empty collection use         | fix                            |
-| `typescript:S5842` | 1     | regex issue                         | fix                            |
+| Rule               | Count | What it is                                  | Fix                            |
+| ------------------ | ----- | ------------------------------------------- | ------------------------------ |
+| `css:S4649`        | 86    | `font`/`font-family` with no generic family | append `sans-serif` etc.       |
+| `css:S4656`        | 42    | duplicate CSS properties                    | remove duplicate               |
+| `css:S4657`        | 19    | invalid CSS property values                 | correct/remove                 |
+| `css:S4653`        | 13    | unknown CSS properties                      | correct/remove                 |
+| `css:S4670`        | 1     | `@import` after rules                       | reorder                        |
+| `typescript:S3923` | 8     | all branches of if/switch identical         | collapse / fix intended branch |
+| `typescript:S1862` | 5     | duplicate conditions in if-chain            | fix intended condition         |
+| `typescript:S1656` | 5     | self-assignment (`x = x`)                   | remove / assign intended value |
+| `typescript:S1764` | 4     | identical operands (`a === a`)              | fix intended operand           |
+| `typescript:S905`  | 5     | statements with no effect                   | remove / complete              |
+| `typescript:S4158` | 1     | always-empty collection use                 | fix                            |
+| `typescript:S5842` | 1     | regex issue                                 | fix                            |
 
 **Needs per-site review (~117):**
 

@@ -51,6 +51,7 @@ import { CollectionStoreService } from '../../../collection/services/store.servi
 
 import { NSApiRequest } from '../../../../../../../../interface/apiRequest'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-file-upload',
@@ -58,6 +59,9 @@ import { NSApiRequest } from '../../../../../../../../interface/apiRequest'
   styleUrls: ['./file-upload.component.scss'],
 })
 export class FileUploadComponent implements OnInit, OnChanges {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @ViewChild('guideline', { static: false }) guideline!: TemplateRef<HTMLElement>
   @ViewChild('errorFile', { static: false }) errorFile!: TemplateRef<HTMLElement>
   @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>

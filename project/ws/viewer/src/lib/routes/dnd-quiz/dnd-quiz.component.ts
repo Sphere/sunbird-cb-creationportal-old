@@ -12,7 +12,6 @@ import { ActivatedRoute } from '@angular/router'
 
 import { ViewerUtilService } from '../../viewer-util.service'
 
-
 @Component({
   standalone: false,
   selector: 'viewer-dnd-quiz',
@@ -71,13 +70,22 @@ export class DndQuizComponent implements OnInit, OnDestroy {
     )
   }
 
-  async ngOnDestroy() {
-    if (this.activatedRoute.snapshot.queryParams.collectionId &&
-      this.activatedRoute.snapshot.queryParams.collectionType
-      && this.dndQuizData) {
-      await this.contentSvc.continueLearning(this.dndQuizData.identifier,
-                                             this.activatedRoute.snapshot.queryParams.collectionId,
-                                             this.activatedRoute.snapshot.queryParams.collectionType,
+  ngOnDestroy(): void {
+    // Angular does not await lifecycle hooks; run the async work
+    // fire-and-forget, exactly as `async ngOnDestroy()` already did.
+    void this.onDestroyAsync()
+  }
+
+  private async onDestroyAsync(): Promise<void> {
+    if (
+      this.activatedRoute.snapshot.queryParams.collectionId &&
+      this.activatedRoute.snapshot.queryParams.collectionType &&
+      this.dndQuizData
+    ) {
+      await this.contentSvc.continueLearning(
+        this.dndQuizData.identifier,
+        this.activatedRoute.snapshot.queryParams.collectionId,
+        this.activatedRoute.snapshot.queryParams.collectionType,
       )
     } else if (this.dndQuizData) {
       await this.contentSvc.continueLearning(this.dndQuizData.identifier)
@@ -96,9 +104,7 @@ export class DndQuizComponent implements OnInit, OnDestroy {
   private async transformClassDiagram(_content: NsContent.IContent) {
     let manifestFile = ''
     if (this.dndQuizData && this.dndQuizData.artifactUrl) {
-      const artifactUrl = this.forPreview
-        ? this.viewSvc.getAuthoringUrl(this.dndQuizData.artifactUrl)
-        : this.dndQuizData.artifactUrl
+      const artifactUrl = this.forPreview ? this.viewSvc.getAuthoringUrl(this.dndQuizData.artifactUrl) : this.dndQuizData.artifactUrl
       manifestFile = await this.http
         .get<any>(artifactUrl)
         .toPromise()

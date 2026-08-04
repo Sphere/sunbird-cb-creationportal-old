@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 
 import { NsContent } from '@ws-widget/collection'
 
-import { ConfigurationsService, EventService } from '@ws-widget/utils'
+import { ConfigurationsService, EventService, isActivationKey } from '@ws-widget/utils'
 
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
 
@@ -13,6 +13,9 @@ import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
   styleUrls: ['./learning-card.component.scss'],
 })
 export class LearningCardComponent implements OnInit, OnChanges {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input()
   displayType: 'basic' | 'advanced' = 'basic'
   @Input()
@@ -25,14 +28,13 @@ export class LearningCardComponent implements OnInit, OnChanges {
     private events: EventService,
     private configSvc: ConfigurationsService,
     private domSanitizer: DomSanitizer,
-  ) { }
+  ) {}
 
   ngOnInit() {
     const instanceConfig = this.configSvc.instanceConfig
     if (instanceConfig) {
       this.defaultThumbnail = instanceConfig.logos.defaultContent
     }
-
   }
   ngOnChanges(changes: SimpleChanges) {
     for (const prop in changes) {
@@ -44,13 +46,8 @@ export class LearningCardComponent implements OnInit, OnChanges {
   }
 
   raiseTelemetry() {
-    this.events.raiseInteractTelemetry(
-      'click',
-      'cardSearch',
-      {
-        contentId: this.content.identifier,
-
-      },
-    )
+    this.events.raiseInteractTelemetry('click', 'cardSearch', {
+      contentId: this.content.identifier,
+    })
   }
 }

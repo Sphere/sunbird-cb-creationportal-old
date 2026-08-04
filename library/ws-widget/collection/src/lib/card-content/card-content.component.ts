@@ -3,7 +3,7 @@ import { AfterViewInit, Component, HostBinding, Input, OnDestroy, OnInit } from 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
 
-import { ConfigurationsService, EventService, UtilityService, NsInstanceConfig } from '@ws-widget/utils'
+import { ConfigurationsService, EventService, UtilityService, NsInstanceConfig, isActivationKey } from '@ws-widget/utils'
 
 import { Subscription } from 'rxjs'
 
@@ -15,15 +15,19 @@ import { NsContent } from '../_services/widget-content.model'
 
 import { NsCardContent } from './card-content.model'
 
-
 @Component({
   standalone: false,
   selector: 'ws-widget-card-content',
   templateUrl: './card-content.component.html',
   styleUrls: ['./card-content.component.scss'],
 })
-export class CardContentComponent extends WidgetBaseComponent
-  implements OnInit, OnDestroy, AfterViewInit, NsWidgetResolver.IWidgetData<NsCardContent.ICard> {
+export class CardContentComponent
+  extends WidgetBaseComponent
+  implements OnInit, OnDestroy, AfterViewInit, NsWidgetResolver.IWidgetData<NsCardContent.ICard>
+{
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() widgetData!: NsCardContent.ICard
   @HostBinding('id')
   public id = `ws-card_${Math.random()}`
@@ -85,8 +89,7 @@ export class CardContentComponent extends WidgetBaseComponent
       this.showIsMode = this.isLatest(this.convertToISODate(this.widgetData.content.addedOn))
     }
     if (this.widgetData.contentTags) {
-      this.showContentTag =
-        this.checkCriteria() && this.checkContentTypeCriteria() && this.checkMimeTypeCriteria()
+      this.showContentTag = this.checkCriteria() && this.checkContentTypeCriteria() && this.checkMimeTypeCriteria()
     }
   }
 
@@ -96,38 +99,24 @@ export class CardContentComponent extends WidgetBaseComponent
       this.widgetData.contentTags.excludeContentType &&
       this.widgetData.contentTags.excludeContentType.length
     ) {
-      return !this.widgetData.contentTags.excludeContentType.includes(
-        this.widgetData.content.contentType,
-      )
+      return !this.widgetData.contentTags.excludeContentType.includes(this.widgetData.content.contentType)
     }
     return true
   }
 
   checkMimeTypeCriteria() {
-    if (
-      this.widgetData.contentTags &&
-      this.widgetData.contentTags.excludeMimeType &&
-      this.widgetData.contentTags.excludeMimeType.length
-    ) {
+    if (this.widgetData.contentTags && this.widgetData.contentTags.excludeMimeType && this.widgetData.contentTags.excludeMimeType.length) {
       return !this.widgetData.contentTags.excludeMimeType.includes(this.widgetData.content.mimeType)
     }
     return true
   }
 
   checkCriteria() {
-    if (
-      this.widgetData.contentTags &&
-      this.widgetData.contentTags.criteriaField &&
-      this.widgetData.contentTags.daysSpan
-    ) {
+    if (this.widgetData.contentTags && this.widgetData.contentTags.criteriaField && this.widgetData.contentTags.daysSpan) {
       const dateOffset = 24 * 60 * 60 * 1000 * this.widgetData.contentTags.daysSpan
       const lastDay = new Date()
       lastDay.setTime(lastDay.getTime() - dateOffset)
-      if (
-        this.convertToISODate(
-          this.widgetData.content[this.widgetData.contentTags.criteriaField],
-        ).getTime() >= lastDay.getTime()
-      ) {
+      if (this.convertToISODate(this.widgetData.content[this.widgetData.contentTags.criteriaField]).getTime() >= lastDay.getTime()) {
         return true
       }
       return false
@@ -202,11 +191,7 @@ export class CardContentComponent extends WidgetBaseComponent
   }
 
   private modifySensibleContentRating() {
-    if (
-      this.widgetData.content &&
-      this.widgetData.content.averageRating &&
-      typeof this.widgetData.content.averageRating !== 'number'
-    ) {
+    if (this.widgetData.content && this.widgetData.content.averageRating && typeof this.widgetData.content.averageRating !== 'number') {
       // tslint:disable-next-line: ter-computed-property-spacing
       this.widgetData.content.averageRating = (this.widgetData.content.averageRating as any)[
         this.configSvc.rootOrg || ''
@@ -239,10 +224,7 @@ export class CardContentComponent extends WidgetBaseComponent
   // }
 
   get isKnowledgeBoard() {
-    return (
-      (this.widgetData.content && this.widgetData.content.contentType) ===
-      NsContent.EContentTypes.KNOWLEDGE_BOARD
-    )
+    return (this.widgetData.content && this.widgetData.content.contentType) === NsContent.EContentTypes.KNOWLEDGE_BOARD
   }
 
   raiseTelemetry() {
@@ -254,10 +236,7 @@ export class CardContentComponent extends WidgetBaseComponent
   }
 
   get isGreyedImage() {
-    if (
-      (this.widgetData.content && this.widgetData.content.status === 'Deleted') ||
-      this.widgetData.content.status === 'Expired'
-    ) {
+    if ((this.widgetData.content && this.widgetData.content.status === 'Deleted') || this.widgetData.content.status === 'Expired') {
       return true
     }
     return false
@@ -314,5 +293,5 @@ export class CardContentComponent extends WidgetBaseComponent
     return false
   }
 
-  openComment() { }
+  openComment() {}
 }

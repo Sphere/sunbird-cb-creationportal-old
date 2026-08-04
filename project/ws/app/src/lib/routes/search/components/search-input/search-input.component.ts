@@ -25,6 +25,7 @@ import { ISearchAutoComplete } from '../../models/search.model'
 
 import { SearchServService } from '../../services/search-serv.service'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-app-search-input',
@@ -34,6 +35,9 @@ import { SearchServService } from '../../services/search-serv.service'
   encapsulation: ViewEncapsulation.None,
 })
 export class SearchInputComponent implements OnInit, OnChanges {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() placeHolder = ''
   @Input() ref = ''
   @Output() closed: EventEmitter<boolean> = new EventEmitter()

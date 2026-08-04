@@ -215,7 +215,13 @@ export class HtmlComponent implements OnInit, OnDestroy {
     })
   }
 
-  async ngOnDestroy() {
+  ngOnDestroy(): void {
+    // Angular does not await lifecycle hooks; run the async work
+    // fire-and-forget, exactly as `async ngOnDestroy()` already did.
+    void this.onDestroyAsync()
+  }
+
+  private async onDestroyAsync(): Promise<void> {
     if (this.htmlData) {
       if (!this.subApp || this.activatedRoute.snapshot.queryParams.collectionId) {
         await this.saveContinueLearning(this.htmlData)

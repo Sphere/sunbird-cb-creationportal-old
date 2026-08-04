@@ -2,10 +2,9 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 
 import { NsContent, viewerRouteGenerator } from '@ws-widget/collection'
 
-import { ConfigurationsService, ResourceDownloadService } from '@ws-widget/utils'
+import { ConfigurationsService, ResourceDownloadService, isActivationKey } from '@ws-widget/utils'
 
 import { NsAppToc } from '../../models/app-toc.model'
-
 
 @Component({
   standalone: false,
@@ -14,6 +13,9 @@ import { NsAppToc } from '../../models/app-toc.model'
   styleUrls: ['./app-toc-content-card.component.scss'],
 })
 export class AppTocContentCardComponent implements OnInit, OnChanges {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() content: NsContent.IContent | null = null
   @Input() expandAll = false
   @Input() rootId!: string
@@ -41,7 +43,7 @@ export class AppTocContentCardComponent implements OnInit, OnChanges {
   constructor(
     private configSvc: ConfigurationsService,
     private resourceDownloadSvc: ResourceDownloadService,
-  ) { }
+  ) {}
 
   // True only for the creator of THIS content (owner) — not reviewers/publishers,
   // and not other creators. Matches the resource's createdBy to the logged-in user.
@@ -94,21 +96,13 @@ export class AppTocContentCardComponent implements OnInit, OnChanges {
   }
   get isResource(): boolean {
     if (this.content) {
-      return (
-        this.content.contentType === 'Resource' || this.content.contentType === 'Knowledge Artifact'
-      )
+      return this.content.contentType === 'Resource' || this.content.contentType === 'Knowledge Artifact'
     }
     return false
   }
   get resourceLink(): { url: string; queryParams: { [key: string]: any } } {
     if (this.content) {
-      return viewerRouteGenerator(
-        this.content.identifier,
-        this.content.mimeType,
-        this.rootId,
-        this.rootContentType,
-        this.forPreview,
-      )
+      return viewerRouteGenerator(this.content.identifier, this.content.mimeType, this.rootId, this.rootContentType, this.forPreview)
     }
     return { url: '', queryParams: {} }
   }

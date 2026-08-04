@@ -29,6 +29,7 @@ import { QuizService } from './quiz.service'
 
 import { EventService } from '../../../../../../../library/ws-widget/utils/src/public-api'
 
+import { isActivationKey } from '@ws-widget/utils'
 export type FetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
 
 @Component({
@@ -38,6 +39,9 @@ export type FetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
   styleUrls: ['./quiz.component.scss'],
 })
 export class QuizComponent implements OnInit, OnChanges, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() identifier = ''
   @Input() artifactUrl = ''
   @Input() name = ''
@@ -95,7 +99,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     private quizSvc: QuizService,
   ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     if (this.quizJson && this.quizJson.timeLimit) {
       this.timeLeft = this.quizJson.timeLimit
     }

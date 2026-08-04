@@ -1,6 +1,9 @@
-<mat-toolbar [color]="primaryNavbarBackground?.color" [ngStyle]="primaryNavbarBackground?.styles"
-  class="mat-elevation-z3 custom mobile" *ngIf="!isModelHeaderView">
-
+<mat-toolbar
+  [color]="primaryNavbarBackground?.color"
+  [ngStyle]="primaryNavbarBackground?.styles"
+  class="mat-elevation-z3 custom mobile"
+  *ngIf="!isModelHeaderView"
+>
   <ng-container *ngIf="courseNameHeader">
     <!-- <a routerLink="/page/home" i18n-matTooltip matTooltip="Home" class="logo-dim"> -->
     <a routerLink="/author/cbp/me" i18n-matTooltip matTooltip="Home" class="logo-dim">
@@ -14,35 +17,38 @@
     <!-- <mat-icon i18n-matTooltip matTooltip="Course Settings" class="margin-right-l cursor-pointer white-icon"
       (click)="showCourseSettings()">
       settings</mat-icon> -->
-    <div *ngIf="this.backNav" style="display: flex; flex-direction: row;">
-      <mat-icon style="color: #FAFAFA; margin-top: 4px;" class="cursor-pointer margin-left-m"
-        (click)="backNavigation()">arrow_back</mat-icon>
-      <span *ngIf="!isEditMetaPage" style="font-size: 16px;" class="mt-name margin-left-s white-icon">{{ backNavLabel }}</span>
-      <span *ngIf="isEditMetaPage" style="font-size: 16px;" class="mt-name margin-left-s white-icon">Back to
-        dashboard</span>
+    <div *ngIf="this.backNav" style="display: flex; flex-direction: row">
+      <mat-icon
+        style="color: #fafafa; margin-top: 4px"
+        class="cursor-pointer margin-left-m"
+        (click)="backNavigation()"
+        (keydown)="isActivationKey($event) && backNavigation()"
+        >arrow_back</mat-icon
+      >
+      <span *ngIf="!isEditMetaPage" style="font-size: 16px" class="mt-name margin-left-s white-icon">{{ backNavLabel }}</span>
+      <span *ngIf="isEditMetaPage" style="font-size: 16px" class="mt-name margin-left-s white-icon">Back to dashboard</span>
     </div>
-
 
     <div *ngFor="let button of requiredConfig || []" class="button-grid">
       <button type="button" class="header-action-btn" (click)="action.next(button.event)">
         {{ button.title }}
       </button>
-
     </div>
-
 
     <!-- <button  mat-raised-button i18n class="header-btn text-white ws-mat-primary-background mat-button-base" (click)="headerService.saveCourseContent()">
           Save</button> -->
-
   </ng-container>
 
   <span class="header-spacer"></span>
-
 </mat-toolbar>
 
 <!--Model Header-->
-<mat-toolbar [color]="primaryNavbarBackground?.color" [ngStyle]="primaryNavbarBackground?.styles"
-  class="mat-elevation-z3 custom mobile" *ngIf="isModelHeaderView">
+<mat-toolbar
+  [color]="primaryNavbarBackground?.color"
+  [ngStyle]="primaryNavbarBackground?.styles"
+  class="mat-elevation-z3 custom mobile"
+  *ngIf="isModelHeaderView"
+>
   <a routerLink="/author/cbp/me" i18n-matTooltip matTooltip="Home" class="logo-dim">
     <img [src]="appIcon" alt="Application Logo" class="app-logo" />
   </a>

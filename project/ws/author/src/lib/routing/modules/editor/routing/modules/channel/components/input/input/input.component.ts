@@ -19,7 +19,7 @@ import { FILE_MAX_SIZE } from './../../../../../../../../../constants/upload'
 
 import { IWidgetAuthor } from './../../../interface/widget'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-input',
@@ -27,6 +27,9 @@ import { IWidgetAuthor } from './../../../interface/widget'
   styleUrls: ['./input.component.scss'],
 })
 export class InputComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   widget: IWidgetAuthor
   parentType: string
   isSubmitPressed = false
@@ -40,7 +43,7 @@ export class InputComponent implements OnInit {
     private loader: LoaderService,
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<InputComponent>,
-    @Inject(MAT_DIALOG_DATA) data: { widget: IWidgetAuthor, parentType: string, identifier: string },
+    @Inject(MAT_DIALOG_DATA) data: { widget: IWidgetAuthor; parentType: string; identifier: string },
   ) {
     this.widget = data.widget
     this.parentType = data.parentType
@@ -79,7 +82,7 @@ export class InputComponent implements OnInit {
     this.dialogRef.close({ data: this.widget })
   }
 
-  update(data: { content: IWidgetAuthor, isValid: boolean }) {
+  update(data: { content: IWidgetAuthor; isValid: boolean }) {
     if (data && data.content && JSON.stringify(data.content) !== JSON.stringify(this.widget.data)) {
       this.widget.data = JSON.parse(JSON.stringify(data.content))
     }
@@ -111,15 +114,13 @@ export class InputComponent implements OnInit {
 
     formdata.append('content', file, fileName)
     this.loader.changeLoad.next(true)
-    this.uploadService.upload(
-      formdata,
-      { contentId: this.identifier, contentType: CONTENT_BASE_WEBHOST_ASSETS },
-    ).subscribe(
+    this.uploadService.upload(formdata, { contentId: this.identifier, contentType: CONTENT_BASE_WEBHOST_ASSETS }).subscribe(
       data => {
         if (data.code) {
           this.loader.changeLoad.next(false)
           this.widget.addOnData.thumbnail = `${AUTHORING_CONTENT_BASE}${encodeURIComponent(
-            `/${data.artifactURL.split('/').slice(3).join('/')}`)}`
+            `/${data.artifactURL.split('/').slice(3).join('/')}`,
+          )}`
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
               type: Notify.UPLOAD_SUCCESS,

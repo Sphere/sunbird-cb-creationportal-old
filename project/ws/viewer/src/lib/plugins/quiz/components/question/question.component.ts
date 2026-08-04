@@ -6,6 +6,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
 
 import { jsPlumb, OnConnectionBindInfo } from 'jsplumb'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'viewer-question',
@@ -13,6 +14,9 @@ import { jsPlumb, OnConnectionBindInfo } from 'jsplumb'
   styleUrls: ['./question.component.scss'],
 })
 export class QuestionComponent implements OnInit, AfterViewInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() artifactUrl = ''
   @Input() questionNumber = 0
   @Input() total = 0

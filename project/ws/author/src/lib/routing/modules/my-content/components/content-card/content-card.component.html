@@ -263,6 +263,8 @@
 </mat-menu>
 <mat-menu #ordinalsLangMenu="matMenu">
   <a mat-menu-item *ngFor="let lang of filteredSubTitles">
-    <span (click)="create(lang.srclang)">{{ lang.label }}</span>
+    <span (click)="create(lang.srclang)" (keydown)="isActivationKey($event) && create(lang.srclang)" [attr.tabindex]="0">{{
+      lang.label
+    }}</span>
   </a>
 </mat-menu>

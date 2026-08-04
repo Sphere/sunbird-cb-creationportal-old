@@ -1,19 +1,10 @@
-import {
-  Component,
-  OnInit,
-  Input,
-  ViewChild,
-  ElementRef,
-  OnChanges,
-  OnDestroy,
-  SimpleChanges,
-} from '@angular/core'
+import { Component, OnInit, Input, ViewChild, ElementRef, OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 
 import { Subscription, fromEvent } from 'rxjs'
 
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser'
 
-import { ValueService, ConfigurationsService } from '@ws-widget/utils'
+import { ValueService, ConfigurationsService, isActivationKey } from '@ws-widget/utils'
 
 import { WidgetContentService, NsContent } from '@ws-widget/collection'
 
@@ -30,6 +21,9 @@ import { ActivatedRoute } from '@angular/router'
   styleUrls: ['./web-module.component.scss'],
 })
 export class WebModuleComponent implements OnInit, OnChanges, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() collectionId = ''
   @Input() widgetData: any
   @Input() webModuleManifest: any
@@ -83,8 +77,7 @@ export class WebModuleComponent implements OnInit, OnChanges, OnDestroy {
     })
     if (this.configurationSvc.activeFontObject && this.configurationSvc.activeFontObject.baseFontSize) {
       this.currentFontSize = this.configurationSvc.activeFontObject.baseFontSize
-      this.defaultFontSize = +this.currentFontSize.slice(0, - 2)
-
+      this.defaultFontSize = +this.currentFontSize.slice(0, -2)
     }
     this.loadWebModule()
     this.configurationSvc.prefChangeNotifier.subscribe(() => {
@@ -126,8 +119,10 @@ export class WebModuleComponent implements OnInit, OnChanges, OnDestroy {
 
   saveContinueLearning(id: string) {
     if (this.widgetData.mimeType === (NsContent.EMimeTypes.WEB_MODULE || NsContent.EMimeTypes.WEB_MODULE_EXERCISE)) {
-      if (this.activatedRoute.snapshot.queryParams.collectionType &&
-        this.activatedRoute.snapshot.queryParams.collectionType.toLowerCase() === 'playlist') {
+      if (
+        this.activatedRoute.snapshot.queryParams.collectionType &&
+        this.activatedRoute.snapshot.queryParams.collectionType.toLowerCase() === 'playlist'
+      ) {
         const reqBody = {
           contextPathId: this.collectionId ? this.collectionId : id,
           resourceId: id,
@@ -205,9 +200,7 @@ export class WebModuleComponent implements OnInit, OnChanges, OnDestroy {
       }
       this.iframeLoadingInProgress = true
     } else if (this.iframeUrl === null) {
-      this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        this.urlPrefix + this.slides[0].URL,
-      )
+      this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.urlPrefix + this.slides[0].URL)
       if (this.slides[this.currentSlideNumber - 1].audio) {
         this.setAudio(this.slides[0].audio as any)
       }
@@ -229,7 +222,7 @@ export class WebModuleComponent implements OnInit, OnChanges, OnDestroy {
     if (Array.isArray(audios) && audios.length && audios[0].URL) {
       this.slideAudioUrl = this.domSanitizer.bypassSecurityTrustUrl(this.urlPrefix + audios[0].URL)
     } else {
-      this.slideAudioUrl = (null as unknown) as SafeResourceUrl
+      this.slideAudioUrl = null as unknown as SafeResourceUrl
     }
   }
 
@@ -253,14 +246,11 @@ export class WebModuleComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   raiseScrollTelemetry() {
-    this.scrollTimeInterval = setInterval(
-      () => {
-        if (this.isScrolled) {
-          this.raiseTelemetry('pageScroll', 'scroll')
-        }
-      },
-      2 * 60000,
-    )
+    this.scrollTimeInterval = setInterval(() => {
+      if (this.isScrolled) {
+        this.raiseTelemetry('pageScroll', 'scroll')
+      }
+    }, 2 * 60000)
   }
 
   async modifyIframeDom(iframe: HTMLIFrameElement) {
@@ -281,15 +271,14 @@ export class WebModuleComponent implements OnInit, OnChanges, OnDestroy {
     if (!iframeDocument) {
       return
     }
-    fromEvent(iframeDocument, 'scroll')
-      .subscribe(() => {
-        this.isScrolled = true
-        if (this.isScrolled && this.firstScroll) {
-          this.raiseTelemetry('pageScroll', 'scroll')
-          this.raiseScrollTelemetry()
-        }
-        this.firstScroll = false
-      })
+    fromEvent(iframeDocument, 'scroll').subscribe(() => {
+      this.isScrolled = true
+      if (this.isScrolled && this.firstScroll) {
+        this.raiseTelemetry('pageScroll', 'scroll')
+        this.raiseScrollTelemetry()
+      }
+      this.firstScroll = false
+    })
 
     docFrag = iframeDocument.createDocumentFragment()
     fontRoboto = iframeDocument.createElement('link')
@@ -489,13 +478,10 @@ export class WebModuleComponent implements OnInit, OnChanges, OnDestroy {
     docFrag.appendChild(executeJS as any)
     docFrag.appendChild(stylePart as any)
     iframeDocument.head.appendChild(docFrag as any)
-    setTimeout(
-      () => {
-        this.iframeLoadingInProgress = false
-        this.setTheme()
-      },
-      1000,
-    )
+    setTimeout(() => {
+      this.iframeLoadingInProgress = false
+      this.setTheme()
+    }, 1000)
   }
 
   setTheme() {
@@ -506,7 +492,6 @@ export class WebModuleComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.modifyIframeStyle('backgroundColor', backgroundColor)
     this.modifyIframeStyle('color', color)
-
   }
 
   modifyIframeStyle(styleProp: string, styleValue: any) {
@@ -538,5 +523,4 @@ export class WebModuleComponent implements OnInit, OnChanges, OnDestroy {
       ('0' + parseInt(color[2], 10).toString(16)).slice(-2)
     )
   }
-
 }

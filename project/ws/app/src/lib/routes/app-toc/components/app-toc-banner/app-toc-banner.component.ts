@@ -5,16 +5,9 @@ import { DomSanitizer, SafeStyle } from '@angular/platform-browser'
 
 import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router'
 
-import {
-  ContentProgressService,
-  NsContent,
-  NsGoal,
-  NsPlaylist,
-  viewerRouteGenerator,
-  WidgetContentService,
-} from '@ws-widget/collection'
+import { ContentProgressService, NsContent, NsGoal, NsPlaylist, viewerRouteGenerator, WidgetContentService } from '@ws-widget/collection'
 
-import { ConfigurationsService, TFetchStatus, ResourceDownloadService } from '@ws-widget/utils'
+import { ConfigurationsService, TFetchStatus, ResourceDownloadService, isActivationKey } from '@ws-widget/utils'
 
 import { UtilityService } from '@ws-widget/utils/src/lib/services/utility.service'
 
@@ -32,7 +25,6 @@ import { AppTocDialogIntroVideoComponent } from '../app-toc-dialog-intro-video/a
 
 import { MobileAppsService } from 'src/app/services/mobile-apps.service'
 
-
 @Component({
   standalone: false,
   selector: 'ws-app-toc-banner',
@@ -41,6 +33,9 @@ import { MobileAppsService } from 'src/app/services/mobile-apps.service'
   providers: [AccessControlService],
 })
 export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() banners: NsAppToc.ITocBanner | null = null
   @Input() content: NsContent.IContent | null = null
   @Input() resumeData: NsContent.IContinueLearningData | null = null
@@ -63,12 +58,8 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   btnPlaylistConfig: NsPlaylist.IBtnPlaylist | null = null
   btnGoalsConfig: NsGoal.IBtnGoal | null = null
   isRegistrationSupported = false
-  checkRegistrationSources: Set<string> = new Set([
-    'SkillSoft Digitalization',
-    'SkillSoft Leadership',
-    'Pluralsight',
-  ])
-  roles: string[] = ['reviewer', 'publisher', 'creator'];
+  checkRegistrationSources: Set<string> = new Set(['SkillSoft Digitalization', 'SkillSoft Leadership', 'Pluralsight'])
+  roles: string[] = ['reviewer', 'publisher', 'creator']
   isUserRegistered = false
   actionBtnStatus = 'wait'
   showIntranetMessage = false
@@ -81,7 +72,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   tocConfig: any = null
   defaultSLogo = ''
   cohortResults: {
-    [key: string]: { hasError: boolean; contents: NsCohorts.ICohortsContent[], count: Number }
+    [key: string]: { hasError: boolean; contents: NsCohorts.ICohortsContent[]; count: Number }
   } = {}
   cohortTypesEnum = NsCohorts.ECohortTypes
   isReviewer: boolean = false
@@ -105,7 +96,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     private authAccessService: AccessControlService,
     private cdr: ChangeDetectorRef,
     public resourceDownloadSvc: ResourceDownloadService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     if (this.authAccessService.hasRole(['content_reviewer'])) {
@@ -169,9 +160,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     })
     if (this.configSvc.restrictedFeatures) {
       this.isRegistrationSupported = this.configSvc.restrictedFeatures.has('registrationExternal')
-      this.showIntranetMessage = !this.configSvc.restrictedFeatures.has(
-        'showIntranetMessageDesktop',
-      )
+      this.showIntranetMessage = !this.configSvc.restrictedFeatures.has('showIntranetMessageDesktop')
     }
 
     if (this.authAccessService.hasAccess(this.content as any) && !this.isInIFrame) {
@@ -226,10 +215,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
       return false
     }
     if (this.content) {
-      return (
-        this.content.contentType === NsContent.EContentTypes.COURSE &&
-        this.content.learningMode === 'Instructor-Led'
-      )
+      return this.content.contentType === NsContent.EContentTypes.COURSE && this.content.learningMode === 'Instructor-Led'
     }
     return false
   }
@@ -281,32 +267,24 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   // }
 
   get showActionButtons() {
-    return (
-      this.actionBtnStatus !== 'wait' &&
-      this.content &&
-      this.content.status !== 'Deleted' &&
-      this.content.status !== 'Expired'
-    )
+    return this.actionBtnStatus !== 'wait' && this.content && this.content.status !== 'Deleted' && this.content.status !== 'Expired'
   }
 
   get showButtonContainer() {
     return (
       this.actionBtnStatus === 'grant' &&
       !(this.isMobile && this.content && this.content.isInIntranet) &&
-      !(
-        this.content &&
-        this.content.contentType === 'Course' &&
-        this.content.children.length === 0 &&
-        !this.content.artifactUrl
-      ) &&
+      !(this.content && this.content.contentType === 'Course' && this.content.children.length === 0 && !this.content.artifactUrl) &&
       !(this.content && this.content.contentType === 'Resource' && !this.content.artifactUrl)
     )
   }
 
   get isResource() {
     if (this.content) {
-      const isResource = this.content.contentType === NsContent.EContentTypes.KNOWLEDGE_ARTIFACT ||
-        this.content.contentType === NsContent.EContentTypes.RESOURCE || !this.content.children.length
+      const isResource =
+        this.content.contentType === NsContent.EContentTypes.KNOWLEDGE_ARTIFACT ||
+        this.content.contentType === NsContent.EContentTypes.RESOURCE ||
+        !this.content.children.length
       if (isResource) {
         this.mobileAppsSvc.sendViewerData(this.content)
       }
@@ -327,11 +305,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   private modifySensibleContentRating() {
-    if (
-      this.content &&
-      this.content.averageRating &&
-      typeof this.content.averageRating !== 'number'
-    ) {
+    if (this.content && this.content.averageRating && typeof this.content.averageRating !== 'number') {
       this.content.averageRating = (this.content.averageRating as any)[this.configSvc.rootOrg || '']
     }
     if (this.content && this.content.totalRating && typeof this.content.totalRating !== 'number') {
@@ -354,12 +328,8 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
       // ).subscribe(data => {
       //   console.log("DATA: ", data)
       // })
-      this.isPracticeVisible = Boolean(
-        this.tocSvc.filterToc(this.content, NsContent.EFilterCategory.PRACTICE),
-      )
-      this.isAssessVisible = Boolean(
-        this.tocSvc.filterToc(this.content, NsContent.EFilterCategory.ASSESS),
-      )
+      this.isPracticeVisible = Boolean(this.tocSvc.filterToc(this.content, NsContent.EFilterCategory.PRACTICE))
+      this.isAssessVisible = Boolean(this.tocSvc.filterToc(this.content, NsContent.EFilterCategory.ASSESS))
       const firstPlayableContent = this.contentSvc.getFirstChildInHierarchy(this.content)
       this.firstResourceLink = viewerRouteGenerator(
         firstPlayableContent.identifier,
@@ -379,9 +349,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   }
   private updateBannerUrl() {
     if (this.banners) {
-      this.bannerUrl = this.sanitizer.bypassSecurityTrustStyle(
-        `url(${this.banners[this.routePath]})`,
-      )
+      this.bannerUrl = this.sanitizer.bypassSecurityTrustStyle(`url(${this.banners[this.routePath]})`)
     }
   }
   playIntroVideo() {
@@ -436,11 +404,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
 
   private checkRegistrationStatus() {
     const source = (this.content && this.content.sourceShortName) || ''
-    if (
-      !this.forPreview &&
-      !this.isRegistrationSupported &&
-      this.checkRegistrationSources.has(source)
-    ) {
+    if (!this.forPreview && !this.isRegistrationSupported && this.checkRegistrationSources.has(source)) {
       this.contentSvc
         .getRegistrationStatus(source)
         .then(res => {
@@ -453,7 +417,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
             }
           }
         })
-        .catch(_err => { })
+        .catch(_err => {})
     } else {
       this.actionBtnStatus = 'grant'
     }
@@ -480,7 +444,9 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
 
   // Download every resource in the course as one zip (named after the course).
   async downloadAllResources(event?: MouseEvent): Promise<void> {
-    if (event) { event.stopPropagation() }
+    if (event) {
+      event.stopPropagation()
+    }
     if (this.isDownloadingResources || !this.resourceDownloadSvc.hasDownloadableResources(this.content as any)) {
       return
     }
@@ -556,5 +522,4 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   showOrgprofile(orgId: string) {
     this.router.navigate(['/app/org-details'], { queryParams: { orgId } })
   }
-
 }

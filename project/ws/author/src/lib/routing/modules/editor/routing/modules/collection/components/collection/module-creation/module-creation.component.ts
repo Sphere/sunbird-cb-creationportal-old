@@ -115,6 +115,7 @@ import moment from 'moment'
 
 import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-author-module-creation',
@@ -123,6 +124,9 @@ import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
   providers: [CollectionStoreService, CollectionResolverService, QuizResolverService],
 })
 export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @ViewChild('guideline', { static: false }) guideline!: TemplateRef<HTMLElement>
   @ViewChild('errorFile', { static: false }) errorFile!: TemplateRef<HTMLElement>
   @ViewChild('selectFile', { static: false }) selectFile!: TemplateRef<HTMLElement>

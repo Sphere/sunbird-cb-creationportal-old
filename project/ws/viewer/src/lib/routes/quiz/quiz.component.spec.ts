@@ -160,7 +160,7 @@ describe('QuizComponent', () => {
       component.quizData = { identifier: 'do_1', artifactUrl: 'http://x' } as any
       activatedRoute.snapshot.queryParams = { collectionId: 'c1', collectionType: 'course' }
 
-      await component.ngOnDestroy()
+      await (component as any).onDestroyAsync()
 
       expect(contentSvc.continueLearning).toHaveBeenCalledWith('do_1', 'c1', 'course')
       expect(eventSvc.dispatchEvent).toHaveBeenCalled()
@@ -170,7 +170,7 @@ describe('QuizComponent', () => {
       component.forPreview = false
       component.quizData = { identifier: 'do_2', artifactUrl: 'http://x' } as any
 
-      await component.ngOnDestroy()
+      await (component as any).onDestroyAsync()
 
       expect(contentSvc.continueLearning).toHaveBeenCalledWith('do_2')
     })
@@ -180,10 +180,19 @@ describe('QuizComponent', () => {
       ;(component as any).dataSubscription = { unsubscribe }
       component.quizData = null
 
-      await component.ngOnDestroy()
+      await (component as any).onDestroyAsync()
 
       expect(unsubscribe).toHaveBeenCalled()
       expect(contentSvc.continueLearning).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('ngOnDestroy delegation', () => {
+    it('fires the async teardown and returns void, since Angular never awaits lifecycle hooks', () => {
+      const c = build()
+      const spy = jest.spyOn(c as any, 'onDestroyAsync').mockResolvedValue(undefined as never)
+      expect(c.ngOnDestroy()).toBeUndefined()
+      expect(spy).toHaveBeenCalledTimes(1)
     })
   })
 })

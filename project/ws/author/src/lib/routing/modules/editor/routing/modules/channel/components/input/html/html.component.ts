@@ -19,7 +19,7 @@ import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 
 import mustache from 'mustache'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-html',
@@ -27,27 +27,28 @@ import mustache from 'mustache'
   styleUrls: ['./html.component.scss'],
 })
 export class HtmlComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
 
   showInfo = ''
   @Input() isSubmitPressed = false
   @Input() content!: IWidgetElementHtml
   @Input() identifier = ''
   location = CONTENT_BASE_WEBHOST_ASSETS
-  @Output() data = new EventEmitter<{ content: IWidgetElementHtml, isValid: boolean }>()
+  @Output() data = new EventEmitter<{ content: IWidgetElementHtml; isValid: boolean }>()
   dataType!: 'html' | 'template' | 'templateUrl'
 
   constructor(
     private snackBar: MatSnackBar,
     private uploadService: UploadService,
     private loader: LoaderService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     if (this.content.html) {
       this.dataType = 'html'
     } else if (this.content.template) {
-      this.content.html = mustache.render(this.content.template || '', this.content.templateData || {})
-        .replace(/&#x2F;/g, '/')
+      this.content.html = mustache.render(this.content.template || '', this.content.templateData || {}).replace(/&#x2F;/g, '/')
       this.dataType = 'html'
     } else if (this.content.templateUrl) {
       this.dataType = 'templateUrl'
@@ -76,9 +77,7 @@ export class HtmlComponent implements OnInit {
   upload(file: File, type: 'html' | 'json') {
     const formdata = new FormData()
     const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
-    if ((!(fileName.toLowerCase().endsWith('.html')) && type === 'html') ||
-      ((!fileName.toLowerCase().endsWith('.json')) && type === 'json')
-    ) {
+    if ((!fileName.toLowerCase().endsWith('.html') && type === 'html') || (!fileName.toLowerCase().endsWith('.json') && type === 'json')) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.INVALID_FORMAT,
@@ -100,16 +99,21 @@ export class HtmlComponent implements OnInit {
 
     formdata.append('content', file, fileName)
     this.loader.changeLoad.next(true)
-    this.uploadService.upload(formdata,
-      // tslint:disable-next-line:align
-      { contentId: this.identifier, contentType: CONTENT_BASE_WEBHOST_ASSETS }).subscribe(
+    this.uploadService
+      .upload(
+        formdata,
+        // tslint:disable-next-line:align
+        { contentId: this.identifier, contentType: CONTENT_BASE_WEBHOST_ASSETS },
+      )
+      .subscribe(
         data => {
           if (data.code) {
             this.loader.changeLoad.next(false)
             const url = `${AUTHORING_CONTENT_BASE}${encodeURIComponent(data.artifactURL || data.authArtifactUrl)}`
             if (type === 'json') {
               this.update('templateDataUrl', url)
-            } {
+            }
+            {
               this.update('templateUrl', url)
             }
             this.snackBar.openFromComponent(NotificationComponent, {
@@ -129,7 +133,6 @@ export class HtmlComponent implements OnInit {
             duration: NOTIFICATION_TIME * 1000,
           })
         },
-    )
+      )
   }
-
 }

@@ -150,7 +150,7 @@ describe('IapComponent', () => {
     it('calls continueLearning without collection and raises an Unloaded event', async () => {
       const component = build()
       component.iapData = content()
-      await component.ngOnDestroy()
+      await (component as any).onDestroyAsync()
       expect(contentSvc.continueLearning).toHaveBeenCalledWith('res1')
       expect(eventSvc.dispatchEvent).toHaveBeenCalled()
     })
@@ -159,7 +159,7 @@ describe('IapComponent', () => {
       activatedRoute.snapshot.queryParams = { collectionId: 'c1', collectionType: 'Course' }
       const component = build()
       component.iapData = content()
-      await component.ngOnDestroy()
+      await (component as any).onDestroyAsync()
       expect(contentSvc.continueLearning).toHaveBeenCalledWith('res1', 'c1', 'Course')
     })
 
@@ -172,7 +172,7 @@ describe('IapComponent', () => {
       const respSpy = jest.spyOn(respSub, 'unsubscribe')
       ;(component as any).routeDataSubscription = routeSub
       ;(component as any).responseSubscription = respSub
-      await component.ngOnDestroy()
+      await (component as any).onDestroyAsync()
       expect(routeSpy).toHaveBeenCalled()
       expect(respSpy).toHaveBeenCalled()
       expect(respondSvc.unsubscribeResponse).toHaveBeenCalled()
@@ -181,9 +181,18 @@ describe('IapComponent', () => {
     it('does nothing telemetry-wise when there is no content', async () => {
       const component = build()
       component.iapData = null
-      await component.ngOnDestroy()
+      await (component as any).onDestroyAsync()
       expect(contentSvc.continueLearning).not.toHaveBeenCalled()
       expect(eventSvc.dispatchEvent).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('ngOnDestroy delegation', () => {
+    it('fires the async teardown and returns void, since Angular never awaits lifecycle hooks', () => {
+      const c = build()
+      const spy = jest.spyOn(c as any, 'onDestroyAsync').mockResolvedValue(undefined as never)
+      expect(c.ngOnDestroy()).toBeUndefined()
+      expect(spy).toHaveBeenCalledTimes(1)
     })
   })
 })

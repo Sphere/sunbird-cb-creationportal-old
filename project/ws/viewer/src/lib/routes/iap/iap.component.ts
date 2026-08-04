@@ -102,7 +102,13 @@ export class IapComponent implements OnInit, OnDestroy {
     }
   }
 
-  async ngOnDestroy() {
+  ngOnDestroy(): void {
+    // Angular does not await lifecycle hooks; run the async work
+    // fire-and-forget, exactly as `async ngOnDestroy()` already did.
+    void this.onDestroyAsync()
+  }
+
+  private async onDestroyAsync(): Promise<void> {
     if (this.activatedRoute.snapshot.queryParams.collectionId && this.activatedRoute.snapshot.queryParams.collectionType && this.iapData) {
       await this.contentSvc.continueLearning(
         this.iapData.identifier,

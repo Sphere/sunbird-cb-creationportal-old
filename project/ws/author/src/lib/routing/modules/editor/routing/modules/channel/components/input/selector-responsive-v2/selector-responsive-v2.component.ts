@@ -10,7 +10,7 @@ import { WIDGET_LIBRARY } from '../../../constants/widet'
 
 import { ImageMapComponent } from './../image-map/image-map.component'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-selector-responsive-v2',
@@ -18,6 +18,9 @@ import { ImageMapComponent } from './../image-map/image-map.component'
   styleUrls: ['./selector-responsive-v2.component.scss'],
 })
 export class SelectorResponsiveV2Component implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Output() data = new EventEmitter<{
     content: ISelectorResponsive
     isValid: boolean
@@ -34,7 +37,7 @@ export class SelectorResponsiveV2Component implements OnInit {
   // isCommon = true
   currentStrip!: ISelectorResponsiveUnit
 
-  constructor(public dialog: MatDialog) { }
+  constructor(public dialog: MatDialog) {}
 
   ngOnInit() {
     this.currentStrip = this.content.selectFrom[this.index]
@@ -63,7 +66,7 @@ export class SelectorResponsiveV2Component implements OnInit {
           this.imageMapComponent.ngOnInit()
           setTimeout(() => this.imageMapComponent.ngAfterViewInit(), 100)
         }
-      },         10)
+      }, 10)
     }
   }
 
@@ -183,9 +186,7 @@ export class SelectorResponsiveV2Component implements OnInit {
   }
 
   getEmptyData(type: string): any {
-    const data = JSON.parse(
-      JSON.stringify(WIDGET_LIBRARY[`solo_${type}` as keyof typeof WIDGET_LIBRARY]),
-    )
+    const data = JSON.parse(JSON.stringify(WIDGET_LIBRARY[`solo_${type}` as keyof typeof WIDGET_LIBRARY]))
     return data
   }
 }

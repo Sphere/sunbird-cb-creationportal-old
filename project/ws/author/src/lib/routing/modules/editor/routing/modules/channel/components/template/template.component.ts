@@ -14,15 +14,16 @@ import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core'
 
 import { template1Data, template2Data } from './template.constant'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-template',
   templateUrl: './template.component.html',
   styleUrls: ['./template.component.scss'],
 })
-
 export class TemplateComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
 
   selectedIndex = 0
   totalContent = 0
@@ -40,14 +41,13 @@ export class TemplateComponent implements OnInit {
     private loader: LoaderService,
     private accessService: AccessControlService,
     private sanitizer: DomSanitizer,
-  ) { }
+  ) {}
 
   send(index: number) {
     this.data.emit(index === 1 ? null : index === 2 ? template1Data : template2Data)
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onIndexChange(index: number) {
     this.selectedIndex = index
@@ -61,8 +61,7 @@ export class TemplateComponent implements OnInit {
       this.currentIndex = this.currentIndex + 1
     }
     const searchBody = {
-      request:
-      {
+      request: {
         query: this.query,
         filters: {
           status: ['Live'],
@@ -79,10 +78,7 @@ export class TemplateComponent implements OnInit {
     this.loader.changeLoad.next(true)
     this.editorService.searchContent(searchBody).subscribe(
       data => {
-        if (
-          data && data.result && data.result.response &&
-          data.result.response.result && data.result.response.result.length
-        ) {
+        if (data && data.result && data.result.response && data.result.response.result && data.result.response.result.length) {
           this.contents.push(...(data.result.response.result || []))
         }
         this.totalContent = data.result.response.totalHits
@@ -100,15 +96,10 @@ export class TemplateComponent implements OnInit {
 
   fetchJson(url: string, id: string) {
     this.loader.changeLoad.next(true)
-    forkJoin([
-      this.editorService.copy(this.currentContent, url),
-      this.editorService.readJSON(url),
-    ]).subscribe(
+    forkJoin([this.editorService.copy(this.currentContent, url), this.editorService.readJSON(url)]).subscribe(
       ([_msg, data]) => {
         const regex = new RegExp(id, 'gm')
-        this.data.emit(
-          JSON.parse(JSON.stringify(data).replace(regex, this.currentContent.replace('.img', ''))).pageLayout,
-        )
+        this.data.emit(JSON.parse(JSON.stringify(data).replace(regex, this.currentContent.replace('.img', ''))).pageLayout)
         this.loader.changeLoad.next(false)
       },
       () => {
@@ -121,5 +112,4 @@ export class TemplateComponent implements OnInit {
   generateBackGroundImage(url: string) {
     return this.sanitizer.bypassSecurityTrustStyle(`url(/apis/authContent/${encodeURIComponent(url)})`)
   }
-
 }

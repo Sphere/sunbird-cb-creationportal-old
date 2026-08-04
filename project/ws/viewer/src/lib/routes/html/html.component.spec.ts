@@ -296,7 +296,7 @@ describe('HtmlComponent', () => {
       ;(component as any).responseSubscription = { unsubscribe }
       ;(component as any).viewerDataSubscription = { unsubscribe }
 
-      await component.ngOnDestroy()
+      await (component as any).onDestroyAsync()
 
       expect(contentSvc.saveContinueLearning).toHaveBeenCalled()
       expect(eventSvc.dispatchEvent).toHaveBeenCalled()
@@ -305,7 +305,16 @@ describe('HtmlComponent', () => {
     })
 
     it('is safe with no data and no subscriptions', async () => {
-      await expect(component.ngOnDestroy()).resolves.toBeUndefined()
+      await expect((component as any).onDestroyAsync()).resolves.toBeUndefined()
+    })
+  })
+
+  describe('ngOnDestroy delegation', () => {
+    it('fires the async teardown and returns void, since Angular never awaits lifecycle hooks', () => {
+      const c = build()
+      const spy = jest.spyOn(c as any, 'onDestroyAsync').mockResolvedValue(undefined as never)
+      expect(c.ngOnDestroy()).toBeUndefined()
+      expect(spy).toHaveBeenCalledTimes(1)
     })
   })
 })
