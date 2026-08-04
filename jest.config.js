@@ -31,14 +31,19 @@ module.exports = {
   coveragePathIgnorePatterns: ['/node_modules/', '/dist/', '/out-tsc/'],
   // Coverage ratchet: a floor set just below the current measured baseline so the
   // build fails if coverage regresses. Raise these numbers as new suites land —
-  // never lower them. Current baseline (2026-07, wave 4 — crossed 60% statements):
-  // stmts 60.47 / br 51.45 / fn 54.81 / ln 60.40.
+  // never lower them. Current baseline (2026-08, waves 13-17):
+  // stmts 85.60 / br 74.60 / fn 84.16 / ln 85.56.
+  //
+  // Note on the headline number: module-creation.component.ts alone holds ~1,670
+  // uncovered statements (29% of everything still uncovered) — it is a 5,396-line
+  // component whose bulk sits in ~15 large async methods. Excluding that one file,
+  // the rest of the codebase is at 89.96% statements.
   coverageThreshold: {
     global: {
-      statements: 80.2,
-      branches: 69.4,
-      functions: 78.8,
-      lines: 80.2,
+      statements: 85.5,
+      branches: 74.5,
+      functions: 84.1,
+      lines: 85.5,
     },
   },
   moduleNameMapper: {
