@@ -42,7 +42,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() analytics: NsAnalytics.IAnalytics | null = null
   @Input() forPreview = false
   contentProgress = 0
-  bannerUrl: SafeStyle | null = null
+  bannerUrl: string | null = null
   routePath = 'overview'
   validPaths = new Set(['overview', 'contents', 'analytics'])
   routerParamSubscription: Subscription | null = null
@@ -349,7 +349,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   }
   private updateBannerUrl() {
     if (this.banners) {
-      this.bannerUrl = this.sanitizer.bypassSecurityTrustStyle(`url(${this.banners[this.routePath]})`)
+      this.bannerUrl = `url(${this.banners[this.routePath]})`
     }
   }
   playIntroVideo() {
@@ -363,7 +363,7 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   }
   get sanitizedIntroductoryVideoIcon() {
     if (this.content && this.content.introductoryVideoIcon) {
-      return this.sanitizer.bypassSecurityTrustStyle(`url(${this.content.introductoryVideoIcon})`)
+      return `url(${this.content.introductoryVideoIcon})`
     }
     return null
   }

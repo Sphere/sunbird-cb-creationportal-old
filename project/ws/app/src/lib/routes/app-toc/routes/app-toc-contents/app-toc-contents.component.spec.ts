@@ -214,8 +214,8 @@ describe('AppTocContentsComponent', () => {
   })
 
   describe('sanitizedBackgroundImage', () => {
-    it('wraps the url in a trusted css value', () => {
-      expect(component.sanitizedBackgroundImage('pic.png')).toBe('safe:url(pic.png)')
+    it('builds the background css value', () => {
+      expect(component.sanitizedBackgroundImage('pic.png')).toBe('url(pic.png)')
     })
   })
 

@@ -101,8 +101,9 @@ describe('AppNavBarComponent', () => {
     it('trusts the instance logos and takes the nav configuration', () => {
       component.ngOnInit()
 
-      expect(component.appIcon).toBe('safe:app.svg')
-      expect(component.appBottomIcon).toBe('safe:bottom.svg')
+      // bound straight to <img [src]>: Angular's URL sanitizer already allows these
+      expect(component.appIcon).toBe('app.svg')
+      expect(component.appBottomIcon).toBe('bottom.svg')
       expect(component.instanceVal).toBe('acme')
       expect(component.primaryNavbarBackground).toEqual({ color: 'primary' })
       expect(component.pageNavbar).toEqual({ color: 'page' })

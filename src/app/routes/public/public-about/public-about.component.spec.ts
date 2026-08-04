@@ -85,10 +85,10 @@ describe('PublicAboutComponent', () => {
       const component = buildComponent()
       component.ngOnInit()
 
-      expect(domSanitizer.bypassSecurityTrustStyle).toHaveBeenCalledWith("url('header.png')")
-      expect(domSanitizer.bypassSecurityTrustStyle).toHaveBeenCalledWith("url('footer.png')")
-      expect(component.headerBanner).toBe("safe-style:url('header.png')")
-      expect(component.footerBanner).toBe("safe-style:url('footer.png')")
+      // No sanitizer bypass: Angular does not sanitize the STYLE context, so the
+      // css value is bound directly (see the removal of bypassSecurityTrustStyle).
+      expect(component.headerBanner).toBe("url('header.png')")
+      expect(component.footerBanner).toBe("url('footer.png')")
     })
   })
 

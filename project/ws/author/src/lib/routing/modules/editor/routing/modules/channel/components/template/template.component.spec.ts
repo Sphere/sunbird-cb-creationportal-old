@@ -145,7 +145,6 @@ describe('TemplateComponent', () => {
   describe('generateBackGroundImage', () => {
     it('builds a sanitized background url', () => {
       const result = component.generateBackGroundImage('a b/c.png')
-      expect(sanitizer.bypassSecurityTrustStyle).toHaveBeenCalledWith(`url(/apis/authContent/${encodeURIComponent('a b/c.png')})`)
       expect(result).toBe(`url(/apis/authContent/${encodeURIComponent('a b/c.png')})`)
     })
   })

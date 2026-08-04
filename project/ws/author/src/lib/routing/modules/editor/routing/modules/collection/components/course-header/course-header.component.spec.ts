@@ -73,7 +73,8 @@ describe('CourseHeaderComponent', () => {
     it('trusts the instance app icon and takes the nav background', () => {
       component.ngOnInit()
 
-      expect(component.appIcon).toBe('safe:app.svg')
+      // bound straight to <img [src]>: Angular's URL sanitizer already allows this
+      expect(component.appIcon).toBe('app.svg')
       expect(component.primaryNavbarBackground).toEqual({ color: 'primary' })
     })
 

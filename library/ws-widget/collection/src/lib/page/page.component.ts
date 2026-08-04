@@ -60,7 +60,7 @@ export class PageComponent
   ngOnInit() {
     if (this.configSvc.instanceConfig) {
       if (this.configSvc.instanceConfig.logos.navbarLogo) {
-        this.navbarIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(this.configSvc.instanceConfig.logos.navbarLogo)
+        this.navbarIcon = this.configSvc.instanceConfig.logos.navbarLogo
       }
       if (this.configSvc.restrictedFeatures) {
         this.isHlpMenuXs = this.configSvc.restrictedFeatures.has('helpMenuXs')

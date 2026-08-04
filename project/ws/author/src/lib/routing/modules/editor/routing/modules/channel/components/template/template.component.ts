@@ -110,6 +110,6 @@ export class TemplateComponent implements OnInit {
   }
 
   generateBackGroundImage(url: string) {
-    return this.sanitizer.bypassSecurityTrustStyle(`url(/apis/authContent/${encodeURIComponent(url)})`)
+    return `url(/apis/authContent/${encodeURIComponent(url)})`
   }
 }

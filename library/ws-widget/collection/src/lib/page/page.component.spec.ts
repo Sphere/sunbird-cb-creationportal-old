@@ -85,10 +85,12 @@ describe('PageComponent', () => {
   })
 
   describe('ngOnInit', () => {
-    it('trusts the navbar logo', () => {
+    it('binds the navbar logo url', () => {
       component.ngOnInit()
 
-      expect(component.navbarIcon).toBe('safe:nav.svg')
+      // Bound directly: an <img [src]> goes through Angular's URL sanitizer,
+      // which already allows ordinary urls, so no bypass is needed.
+      expect(component.navbarIcon).toBe('nav.svg')
     })
 
     it('leaves the logo unset when the instance has none', () => {

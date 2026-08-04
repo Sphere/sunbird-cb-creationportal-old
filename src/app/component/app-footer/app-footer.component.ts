@@ -4,7 +4,6 @@ import { SafeUrl, DomSanitizer } from '@angular/platform-browser'
 
 import { ConfigurationsService, ValueService } from '@ws-widget/utils'
 
-
 @Component({
   standalone: false,
   selector: 'ws-app-footer',
@@ -12,10 +11,9 @@ import { ConfigurationsService, ValueService } from '@ws-widget/utils'
   styleUrls: ['./app-footer.component.scss'],
 })
 export class AppFooterComponent {
-
   isXSmall = false
   termsOfUser = true
-  appIcon: SafeUrl | null = null
+  appIcon: string | null = null
   isMedium = false
   currentYear = new Date().getFullYear()
 
@@ -36,10 +34,7 @@ export class AppFooterComponent {
       this.isMedium = isMedium
     })
     if (this.configSvc.instanceConfig) {
-      this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        this.configSvc.instanceConfig.logos.app,
-      )
+      this.appIcon = this.configSvc.instanceConfig.logos.app
     }
   }
-
 }

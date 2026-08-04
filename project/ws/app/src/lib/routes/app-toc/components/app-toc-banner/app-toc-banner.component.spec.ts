@@ -217,7 +217,8 @@ describe('AppTocBannerComponent', () => {
       component.ngOnInit()
       routerEvents.next(new NavigationEnd(1, '/app/toc/do_1/contents', '/app/toc/do_1/contents'))
       expect(component.routePath).toBe('contents')
-      expect(component.bannerUrl).toBe('safe:url(contents.png)')
+      // bound directly: Angular does not sanitize the STYLE context
+      expect(component.bannerUrl).toBe('url(contents.png)')
     })
 
     it('ignores router events that are not navigation ends', () => {
@@ -478,9 +479,9 @@ describe('AppTocBannerComponent', () => {
       expect(component.isHeaderHidden).toBe(true)
     })
 
-    it('sanitizedIntroductoryVideoIcon wraps the icon URL', () => {
+    it('sanitizedIntroductoryVideoIcon builds the css url', () => {
       component.content = content({ introductoryVideoIcon: 'icon.png' })
-      expect(component.sanitizedIntroductoryVideoIcon).toBe('safe:url(icon.png)')
+      expect(component.sanitizedIntroductoryVideoIcon).toBe('url(icon.png)')
     })
 
     it('sanitizedIntroductoryVideoIcon is null without an icon', () => {

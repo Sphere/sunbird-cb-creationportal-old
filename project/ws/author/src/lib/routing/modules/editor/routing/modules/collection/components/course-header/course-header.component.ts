@@ -26,7 +26,7 @@ export class CourseHeaderComponent implements OnInit {
   /** Enter/Space keyboard equivalent for (click) handlers. */
   readonly isActivationKey = isActivationKey
 
-  appIcon: SafeUrl | null = null
+  appIcon: string | null = null
   courseNameHeader: any
   primaryNavbarBackground: Partial<NsPage.INavBackground> | null = null
   @Input() buttonConfig: IActionButtonConfig | null = null
@@ -91,7 +91,7 @@ export class CourseHeaderComponent implements OnInit {
       this.isEditMetaPage = false
     }
     if (this.configSvc.instanceConfig) {
-      this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(this.configSvc.instanceConfig.logos.app)
+      this.appIcon = this.configSvc.instanceConfig.logos.app
       this.primaryNavbarBackground = this.configSvc.primaryNavBar
     }
 

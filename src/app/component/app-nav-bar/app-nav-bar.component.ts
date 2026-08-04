@@ -31,7 +31,7 @@ export class AppNavBarComponent implements OnInit, OnChanges {
   }
   instanceVal = ''
   btnAppsConfig!: NsWidgetResolver.IRenderConfigWithTypedData<IBtnAppsConfig>
-  appIcon: SafeUrl | null = null
+  appIcon: string | null = null
   appBottomIcon?: SafeUrl
   primaryNavbarBackground: Partial<NsPage.INavBackground> | null = null
   primaryNavbarConfig: NsInstanceConfig.IPrimaryNavbarConfig | null = null
@@ -81,10 +81,10 @@ export class AppNavBarComponent implements OnInit, OnChanges {
     })
 
     if (this.configSvc.instanceConfig) {
-      this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(this.configSvc.instanceConfig.logos.app)
+      this.appIcon = this.configSvc.instanceConfig.logos.app
       this.instanceVal = this.configSvc.rootOrg || ''
       if (this.configSvc.instanceConfig.logos.appBottomNav) {
-        this.appBottomIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(this.configSvc.instanceConfig.logos.appBottomNav)
+        this.appBottomIcon = this.configSvc.instanceConfig.logos.appBottomNav
       }
       this.primaryNavbarBackground = this.configSvc.primaryNavBar
       this.pageNavbar = this.configSvc.pageNavBar
