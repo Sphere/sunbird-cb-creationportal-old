@@ -27,7 +27,7 @@ import _ from 'lodash'
 
 import { NSContent } from '../../../../../../project/ws/author/src/lib/interface/content'
 
-import { isActivationKey } from '@ws-widget/utils'
+import { isActivationKey, nextWidgetId } from '@ws-widget/utils'
 /* tslint:enable */
 @Component({
   standalone: false,
@@ -44,7 +44,7 @@ export class CardTableComponent
 
   @Input() widgetData!: ITable
   @HostBinding('id')
-  public id = `ws-card_${Math.random()}`
+  public id = nextWidgetId('ws-card_')
   @HostBinding('class') class = 'flex-1'
 
   @Input() data?: []
@@ -64,11 +64,11 @@ export class CardTableComponent
     }
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator
-  constructor() // private events: EventService,
-  // private configSvc: ConfigurationsService,
-  // private utilitySvc: UtilityService,
-  // private snackBar: MatSnackBar,
-  {
+  constructor() {
+    // private events: EventService,
+    // private configSvc: ConfigurationsService,
+    // private utilitySvc: UtilityService,
+    // private snackBar: MatSnackBar,
     super()
     this.actionsClick = new EventEmitter()
     this.clicked = new EventEmitter()

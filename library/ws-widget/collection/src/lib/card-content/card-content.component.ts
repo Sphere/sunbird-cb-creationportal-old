@@ -3,7 +3,7 @@ import { AfterViewInit, Component, HostBinding, Input, OnDestroy, OnInit } from 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
 
-import { ConfigurationsService, EventService, UtilityService, NsInstanceConfig, isActivationKey } from '@ws-widget/utils'
+import { ConfigurationsService, EventService, UtilityService, NsInstanceConfig, isActivationKey, nextWidgetId } from '@ws-widget/utils'
 
 import { Subscription } from 'rxjs'
 
@@ -30,7 +30,7 @@ export class CardContentComponent
 
   @Input() widgetData!: NsCardContent.ICard
   @HostBinding('id')
-  public id = `ws-card_${Math.random()}`
+  public id = nextWidgetId('ws-card_')
   defaultThumbnail = ''
   defaultSLogo = ''
   showFlip = false

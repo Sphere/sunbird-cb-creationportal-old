@@ -1,7 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core'
 
-import { DomSanitizer } from '@angular/platform-browser'
-
 import { ConfigurationsService } from '../../../../../utils/src/public-api'
 
 @Component({
@@ -16,10 +14,7 @@ export class BtnLinkedinShareComponent implements OnInit {
   @Input() shareType: string | null = null
   isSocialMediaLinkedinShareEnabled = false
   userId: string | undefined
-  constructor(
-    private sanitizer: DomSanitizer,
-    private configSvc: ConfigurationsService,
-  ) {}
+  constructor(private configSvc: ConfigurationsService) {}
 
   ngOnInit() {
     if (this.configSvc.restrictedFeatures) {
@@ -34,10 +29,6 @@ export class BtnLinkedinShareComponent implements OnInit {
   get shareUrl(): string {
     const url = `https://sphere.aastrika.org/share/${this.shareType}/${this.userId}/${this.contentId}`
     return `https://www.linkedin.com/shareArticle?mini=true&url=${url}&source=LinkedIn`
-  }
-
-  get sanitizeFbUrl() {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(this.shareUrl)
   }
 
   /**

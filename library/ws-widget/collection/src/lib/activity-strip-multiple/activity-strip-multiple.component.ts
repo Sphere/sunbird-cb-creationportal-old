@@ -19,6 +19,7 @@ import {
   // ConfigurationsService,
   UtilityService,
   isActivationKey,
+  nextWidgetId,
 } from '@ws-widget/utils'
 
 import { Subscription } from 'rxjs'
@@ -63,7 +64,7 @@ export class ActivityStripMultipleComponent
 
   @Input() widgetData!: NsNetworkStripNewMultiple.INetworkStripMultiple
   @HostBinding('id')
-  public id = `activity-multiple_${Math.random()}`
+  public id = nextWidgetId('activity-multiple_')
   @ViewChild('userManual', { static: true }) userManual!: TemplateRef<any>
   stripsResultDataMap: { [key: string]: IStripUnitContentData } = {}
   stripsKeyOrder: string[] = []

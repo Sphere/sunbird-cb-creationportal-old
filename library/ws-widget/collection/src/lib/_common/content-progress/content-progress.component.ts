@@ -2,7 +2,7 @@ import { Component, HostBinding, Input, OnChanges } from '@angular/core'
 
 import { ContentProgressService } from './content-progress.service'
 
-
+import { nextWidgetId } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-widget-content-progress',
@@ -15,7 +15,7 @@ import { ContentProgressService } from './content-progress.service'
     // Sets the minimum and maximum values for the progressbar role.
     'aria-valuemin': '0',
     'aria-valuemax': '100',
-    'title': 'progres',
+    title: 'progres',
     // Binding that updates the current value of the progressbar.
     '[attr.aria-valuenow]': 'progress',
   },
@@ -36,7 +36,7 @@ export class ContentProgressComponent implements OnChanges {
 
   rendom = Math.random()
   @HostBinding('id')
-  public id = `progress_${Math.random()}`
+  public id = nextWidgetId('progress_')
   constructor(private progressSvc: ContentProgressService) {
     if (this.contentId) {
       this.id = this.contentId

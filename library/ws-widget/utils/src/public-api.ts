@@ -35,6 +35,8 @@ export * from './lib/helpers/functions/getStringifiedQueryParams'
 
 export * from './lib/helpers/functions/isActivationKey'
 
+export * from './lib/helpers/functions/nextWidgetId'
+
 // helpers
 export * from './lib/helpers/horizontal-scroller/horizontal-scroller.module'
 

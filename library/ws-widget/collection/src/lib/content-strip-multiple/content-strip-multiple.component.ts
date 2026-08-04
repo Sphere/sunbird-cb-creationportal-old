@@ -10,7 +10,15 @@ import { WidgetContentService } from '../_services/widget-content.service'
 
 import { NsContent } from '../_services/widget-content.model'
 
-import { TFetchStatus, LoggerService, EventService, ConfigurationsService, UtilityService, isActivationKey } from '@ws-widget/utils'
+import {
+  TFetchStatus,
+  LoggerService,
+  EventService,
+  ConfigurationsService,
+  UtilityService,
+  isActivationKey,
+  nextWidgetId,
+} from '@ws-widget/utils'
 
 import { Subscription } from 'rxjs'
 
@@ -53,7 +61,7 @@ export class ContentStripMultipleComponent
 
   @Input() widgetData!: NsContentStripMultiple.IContentStripMultiple
   @HostBinding('id')
-  public id = `ws-strip-miltiple_${Math.random()}`
+  public id = nextWidgetId('ws-strip-miltiple_')
   stripsResultDataMap: { [key: string]: IStripUnitContentData } = {}
   stripsKeyOrder: string[] = []
   showAccordionData = true
