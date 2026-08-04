@@ -10,15 +10,16 @@ import { WidgetBaseComponent, NsWidgetResolver } from '../../../../resolver/src/
 
 import { IWidgetImageMap, IWidgetMapMeta, IWidgetScale, IWidgetMapCoords } from './image-map-responsive.model'
 
-
 @Component({
   standalone: false,
   selector: 'ws-widget-image-map-responsive',
   templateUrl: './image-map-responsive.component.html',
   styleUrls: ['./image-map-responsive.component.scss'],
 })
-export class ImageMapResponsiveComponent extends WidgetBaseComponent
-  implements OnInit, AfterViewInit, OnDestroy, NsWidgetResolver.IWidgetData<IWidgetImageMap> {
+export class ImageMapResponsiveComponent
+  extends WidgetBaseComponent
+  implements OnInit, AfterViewInit, OnDestroy, NsWidgetResolver.IWidgetData<IWidgetImageMap>
+{
   scale: IWidgetScale = {
     height: 1,
     width: 1,
@@ -67,27 +68,35 @@ export class ImageMapResponsiveComponent extends WidgetBaseComponent
 
   ngOnInit() {
     if (this.widgetData.externalData) {
-      const regex = new RegExp('<map(.*?)>((.|\n)*?)<\/map>', 'gm')
-      this.htmlContent =
-        this.domSanitizer.bypassSecurityTrustHtml((regex.exec(this.widgetData.externalData as string) as any)[2])
+      // The <map> body legitimately contains '>' (the <area> tags), so a negated
+      // class cannot be used here and the lazy quantifier stays ambiguous. This is
+      // accepted: the regex runs client-side over content the user is already
+      // viewing, so pathological input can only slow that user's own tab — there is
+      // no server-side or cross-user denial of service. Group 2 is the map body.
+      const regex = /<map(.*?)>([\s\S]*?)<\/map>/gm
+      this.htmlContent = this.domSanitizer.bypassSecurityTrustHtml((regex.exec(this.widgetData.externalData as string) as any)[2])
     } else {
       this.getInitialCoords()
     }
   }
 
   ngAfterViewInit() {
-    setTimeout(
-      () => {
-        if (!this.widgetData.externalData) {
-          this.interval = setInterval(() => { this.updateCoords() }, 100)
-        }
-      },
-      500)
-    this.resizeObserver = fromEvent(window, 'resize').pipe(debounceTime(500)).subscribe(() => {
+    setTimeout(() => {
       if (!this.widgetData.externalData) {
-        this.interval = setInterval(() => { this.updateCoords() }, 100)
+        this.interval = setInterval(() => {
+          this.updateCoords()
+        }, 100)
       }
-    })
+    }, 500)
+    this.resizeObserver = fromEvent(window, 'resize')
+      .pipe(debounceTime(500))
+      .subscribe(() => {
+        if (!this.widgetData.externalData) {
+          this.interval = setInterval(() => {
+            this.updateCoords()
+          }, 100)
+        }
+      })
   }
 
   ngOnDestroy() {
@@ -95,5 +104,4 @@ export class ImageMapResponsiveComponent extends WidgetBaseComponent
       this.resizeObserver.unsubscribe()
     }
   }
-
 }

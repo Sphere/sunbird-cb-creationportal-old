@@ -9,6 +9,8 @@
       *ngIf="currentOrgData?.sourceName === 'Indian Nursing Council'"
     >
       <img
+        i18n-alt
+        alt="Indian Nursing Council"
         src="../../../cbp-assets/logos/inc-logo.png"
         class="inc-logo"
         (click)="goToLink('https://indiannursingcouncil.org/')"
@@ -20,9 +22,9 @@
   </div>
   <div class="banner-container" *ngIf="currentOrgData?.sourceName !== 'Indian Nursing Council'">
     <div class="default-banner">
-      <img src="/cbp-assets/images/Frame.svg" class="default-banner-img" *ngIf="!currentOrgData.bgImage" />
+      <img alt="" src="/cbp-assets/images/Frame.svg" class="default-banner-img" *ngIf="!currentOrgData.bgImage" />
     </div>
-    <img [src]="currentOrgData.bgImage" class="banner" *ngIf="currentOrgData.bgImage" />
+    <img i18n-alt alt="Organisation banner" [src]="currentOrgData.bgImage" class="banner" *ngIf="currentOrgData.bgImage" />
     <!-- <img [src]="currentOrgData?.logo" class="logo" /> -->
     <div class="flex-auto mr-4">
       <div class="image-outer">
@@ -39,7 +41,7 @@
       <div class="org-details">Nationwide Quality Of Care Network</div>
     </div> -->
     <div class="org-details-block" *ngIf="courseCount && courseCount.length">
-      <img src="/cbp-assets/icons/material-symbols_book-outline.svg" />
+      <img alt="" src="/cbp-assets/icons/material-symbols_book-outline.svg" />
       <div class="org-details">
         {{ courseCount === 1 ? '1 Course offered' : courseCount.length + ' Courses offered' }}
       </div>

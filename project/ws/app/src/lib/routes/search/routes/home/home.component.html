@@ -70,8 +70,14 @@
       <button mat-menu-item (click)="searchLanguage(lang)">
         <span class="flex items-center w-full">
           <span class="mr-2 flex items-center">
-            <img *ngIf="lang.split(',').length > 1" [ngStyle]="{ height: '17px', width: '17px' }" src="/assets/common/flags/pref.png" />
             <img
+              alt=""
+              *ngIf="lang.split(',').length > 1"
+              [ngStyle]="{ height: '17px', width: '17px' }"
+              src="/assets/common/flags/pref.png"
+            />
+            <img
+              alt=""
               *ngIf="lang.split(',').length === 1"
               [ngStyle]="{
                 height: lang === 'all' ? '17px' : '14px',

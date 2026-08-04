@@ -11,7 +11,6 @@
       <img
         mat-card-image
         class="card-img mat-lite-background"
-        role="link"
         [src]="data.appIcon"
         (error)="changeToDefaultImg($event)"
         [alt]="data.name"
@@ -85,7 +84,7 @@
       "
       [queryParamsHandling]="data.contentType === 'Knowledge Board' ? 'preserve' : ''"
     >
-      <img class="" role="link" [src]="data.appIcon" (error)="changeToDefaultImg($event)" [alt]="data.name" />
+      <img class="" [src]="data.appIcon" (error)="changeToDefaultImg($event)" [alt]="data.name" />
     </a>
   </div>
   <!--<div class="item1" *ngIf="pageName">

@@ -8,7 +8,7 @@
   </button>
   <br />
   <div *ngIf="form.controls.imageSrc.value" class="image-map" style="position: relative">
-    <img #image class="img" [src]="form.controls.imageSrc.value" />
+    <img i18n-alt alt="Image map preview" #image class="img" [src]="form.controls.imageSrc.value" />
     <canvas
       #canvas
       class="canvas"

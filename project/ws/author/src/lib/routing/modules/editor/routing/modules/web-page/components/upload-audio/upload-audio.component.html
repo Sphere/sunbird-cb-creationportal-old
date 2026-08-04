@@ -10,9 +10,9 @@
   </div>
   <div class="flex justify-between items-center" mat-dialog-content>
     <div class="flex flex-col pr-6 w-2/5">
-      <label>
+      <span>
         <b i18n>Language</b>
-      </label>
+      </span>
       <mat-form-field class="margin-top-xs w-full" appearance="outline">
         <mat-select [(ngModel)]="uploadedAudio.srclang" required="true">
           <mat-option *ngFor="let lang of allLanguages" [value]="lang.srclang">

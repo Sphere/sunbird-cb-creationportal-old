@@ -39,7 +39,6 @@
         (click)="getResults()"
         *ngIf="searchRequestStatus != 'done'"
         [hidden]="searchRequestStatus === 'fetching'"
-        accesskey="+"
       >
         <mat-icon>add</mat-icon>
         <ng-container i18n="search: more results">View More</ng-container>

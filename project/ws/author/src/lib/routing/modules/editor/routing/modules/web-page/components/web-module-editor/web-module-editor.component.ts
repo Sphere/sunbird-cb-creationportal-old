@@ -424,7 +424,10 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
       }
     })
     const changedPages = this.userData[this.currentId].pages.filter(e => e.isBdchanged)
-    const getUrlReg = new RegExp(/<img\s+[^>]*?src=("|')([^"']+)\1/)
+    // \s (not \s+) so the following [^>]*? is not ambiguous with it; [^>]*? still
+    // absorbs any further whitespace, so the matched set is unchanged.
+    // (["']) rather than ("|') — a character class instead of an alternation.
+    const getUrlReg = /<img\s[^>]*?src=(["'])([^"']+)\1/
     const res = changedPages.length
       ? changedPages.map(e => {
           if (!this.imagesUrlbase && e.body.match(getUrlReg)) {

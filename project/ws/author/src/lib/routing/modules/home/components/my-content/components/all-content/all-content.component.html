@@ -55,7 +55,7 @@
             matTreeNodePadding
           >
             <div class="grid">
-              <h5 class="font-size-m margin-top-xs margin-remove-bottom hand" tabindex="0" matTreeNodeToggle>
+              <h5 class="font-size-m margin-top-xs margin-remove-bottom hand" [attr.tabindex]="0" matTreeNodeToggle>
                 {{ node.displayName }}
               </h5>
               <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.displayName">
@@ -186,17 +186,10 @@
               </mat-form-field>
             </div>
           </div>
-          <div class="flex margin-left-xs" tabindex="0">
+          <div class="flex margin-left-xs">
             <h4 *ngIf="filterMenuItems.length" class="ws-mat-primary-text font-size-m font-weight-bold">
               <span i18n> Apply Filters</span>
-              <a
-                href="javascript:void(0)"
-                role="link"
-                mat-icon-button
-                color="primary"
-                class="text-middle"
-                (click)="sideNavBarOpened = true"
-              >
+              <a href="javascript:void(0)" mat-icon-button color="primary" class="text-middle" (click)="sideNavBarOpened = true">
                 <mat-icon>filter_list</mat-icon>
               </a>
             </h4>

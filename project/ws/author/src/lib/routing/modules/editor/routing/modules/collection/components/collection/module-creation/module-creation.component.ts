@@ -2720,7 +2720,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.content.isCorrectAnswerPopUp = false
     }
     this.moduleName = content.name
-    this.topicDescription = content.instructions ? content.instructions.replace(/<(.|\n)*?>/g, '') : ''
+    // [^>]* cannot match the closing '>', so there is exactly one way to match any
+    // prefix: no backtracking, linear runtime. Same result as the previous
+    // /<(.|\n)*?>/g, which stopped at the first '>' too.
+    this.topicDescription = content.instructions ? content.instructions.replace(/<[^>]*>/g, '') : ''
     this.thumbnail = content.thumbnail
     this.setDuration(content.duration)
     this.isNewTab = content.isIframeSupported == 'Yes' ? true : false

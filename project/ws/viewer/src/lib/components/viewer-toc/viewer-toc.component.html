@@ -5,7 +5,7 @@
     <span class="spacer"></span>
     <div class="margin-right-m">
       <mat-slide-toggle [checked]="tocMode === 'FLAT'" (change)="changeTocMode()"
-        ><span i18n accesskey="T">
+        ><span i18n>
           <mat-icon>view_list</mat-icon>
         </span></mat-slide-toggle
       >
@@ -166,22 +166,22 @@
       <div *ngIf="content?.mimeType !== 'Assessment'" class="flex">
         <div [ngSwitch]="content.mimeType">
           <div class="flex items-center" *ngSwitchCase="'application/pdf'">
-            <img src="cbp-assets/icons/pdf-icon.png" />
+            <img alt="" src="cbp-assets/icons/pdf-icon.png" />
             <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
             <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
           </div>
           <div class="flex items-center" *ngSwitchCase="'audio/mpeg'">
-            <img src="cbp-assets/icons/video-icon.png" />
+            <img alt="" src="cbp-assets/icons/video-icon.png" />
             <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
             <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
           </div>
           <div class="flex items-center" *ngSwitchCase="'video/mp4'">
-            <img src="cbp-assets/icons/video-icon.png" />
+            <img alt="" src="cbp-assets/icons/video-icon.png" />
             <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
             <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
           </div>
           <div class="flex items-center" *ngSwitchCase="'application/vnd.ekstep.html-archive'">
-            <img src="cbp-assets/icons/video-icon.png" />
+            <img alt="" src="cbp-assets/icons/video-icon.png" />
             <span style="margin-left: 10px; margin-right: 10px" *ngIf="content?.duration > 0">{{
               content?.duration | pipeDurationTransform: 'hms'
             }}</span>
@@ -197,7 +197,7 @@
             </button>
           </div>
           <div class="flex items-center" *ngSwitchCase="'text/x-url'">
-            <img style="width: 14px; height: 17px" src="cbp-assets/icons/link-icon.png" />
+            <img alt="" style="width: 14px; height: 17px" src="cbp-assets/icons/link-icon.png" />
             <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
             <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
           </div>
@@ -205,7 +205,7 @@
         <div *ngIf="isGetingEnabled && content?.mimeType !== 'application/json'" class="align-rt progrss-box">
           <!-- <img [src]="redTickIcon" class="image" name="redtick-icon" /> -->
           <ng-container>
-            <img src="cbp-assets/icons/lock.png" />
+            <img alt="" src="cbp-assets/icons/lock.png" />
           </ng-container>
         </div>
       </div>

@@ -11,9 +11,7 @@
   </div>
   <mat-dialog-content class="nic-content">
     <div class="nic-warn-body">
-      <p class="nic-warn-text" i18n>
-        This image will appear stretched as it is not the proper dimension. Do you want to continue?
-      </p>
+      <p class="nic-warn-text" i18n>This image will appear stretched as it is not the proper dimension. Do you want to continue?</p>
       <div class="nic-dim-row">
         <div class="nic-dim-item">
           <span class="nic-dim-label" i18n>Required</span>
@@ -27,12 +25,8 @@
     </div>
   </mat-dialog-content>
   <mat-dialog-actions class="nic-actions">
-    <button mat-stroked-button class="nic-btn-cancel" type="button" (click)="close()" i18n>
-      No, Cancel
-    </button>
-    <button mat-flat-button class="nic-btn-apply" type="button" (click)="continueToImageCrop()" i18n>
-      Yes, Continue
-    </button>
+    <button mat-stroked-button class="nic-btn-cancel" type="button" (click)="close()" i18n>No, Cancel</button>
+    <button mat-flat-button class="nic-btn-apply" type="button" (click)="continueToImageCrop()" i18n>Yes, Continue</button>
   </mat-dialog-actions>
 </ng-container>
 
@@ -52,12 +46,22 @@
   </div>
   <mat-dialog-content class="nic-content" *ngIf="isRoundCrop">
     <div class="nic-crop-wrapper">
-      <image-cropper #imageCropper class="nic-cropper" [imageFile]="imageFile"
-        [maintainAspectRatio]="true" [aspectRatio]="250 / 250" [resizeToWidth]="100"
-        [roundCropper]="isRoundCrop" [resizeToHeight]="120" [cropperMinWidth]="500"
-        [format]="'jpeg'" [output]="'base64'"
-        [transform]="transform" [canvasRotation]="canvasRotation"
-        (imageCropped)="imageCropped($event)">
+      <image-cropper
+        #imageCropper
+        class="nic-cropper"
+        [imageFile]="imageFile"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="250 / 250"
+        [resizeToWidth]="100"
+        [roundCropper]="isRoundCrop"
+        [resizeToHeight]="120"
+        [cropperMinWidth]="500"
+        [format]="'jpeg'"
+        [output]="'base64'"
+        [transform]="transform"
+        [canvasRotation]="canvasRotation"
+        (imageCropped)="imageCropped($event)"
+      >
       </image-cropper>
     </div>
     <div class="nic-controls" *ngIf="!isXSmall">
@@ -76,18 +80,13 @@
     </div>
   </mat-dialog-content>
   <mat-dialog-actions class="nic-actions">
-    <button mat-stroked-button class="nic-btn-cancel" type="button" (click)="close()" i18n>
-      Cancel
-    </button>
-    <button mat-flat-button class="nic-btn-apply" type="button" (click)="croppingImage()" i18n>
-      Apply
-    </button>
+    <button mat-stroked-button class="nic-btn-cancel" type="button" (click)="close()" i18n>Cancel</button>
+    <button mat-flat-button class="nic-btn-apply" type="button" (click)="croppingImage()" i18n>Apply</button>
   </mat-dialog-actions>
 </ng-container>
 
 <!-- ══ Thumbnail Crop Flow ════════════════════════════════════════════════ -->
 <ng-container *ngIf="!isNotOfRequiredSize && !isRoundCrop">
-
   <!-- Header -->
   <div class="nic-header">
     <div class="nic-header-inner">
@@ -105,15 +104,22 @@
   <!-- Body -->
   <mat-dialog-content class="nic-content">
     <div class="nic-body">
-
       <!-- Left: cropper + controls -->
       <div class="nic-left">
-        <image-cropper #imageCropper class="nic-cropper" [imageFile]="imageFile"
-          [maintainAspectRatio]="true" [aspectRatio]="opWidth / opHeight"
-          [roundCropper]="isRoundCrop" [cropperMinWidth]="opWidth" [format]="'jpeg'"
+        <image-cropper
+          #imageCropper
+          class="nic-cropper"
+          [imageFile]="imageFile"
+          [maintainAspectRatio]="true"
+          [aspectRatio]="opWidth / opHeight"
+          [roundCropper]="isRoundCrop"
+          [cropperMinWidth]="opWidth"
+          [format]="'jpeg'"
           [output]="'base64'"
-          [transform]="transform" [canvasRotation]="canvasRotation"
-          (imageCropped)="imageCropped($event)">
+          [transform]="transform"
+          [canvasRotation]="canvasRotation"
+          (imageCropped)="imageCropped($event)"
+        >
         </image-cropper>
 
         <!-- Rotate / Flip controls -->
@@ -149,24 +155,24 @@
           <span class="nic-preview-label" i18n>Preview</span>
         </div>
         <div class="nic-preview-frame">
-          <img [src]="imageFileBase64" width="256" height="150"
-            style="width:100%; height:100%; object-fit:cover; display:block; border-radius:6px;"
-            (error)="changeToDefaultImg($event)" />
+          <img
+            i18n-alt
+            alt="Image preview"
+            [src]="imageFileBase64"
+            width="256"
+            height="150"
+            style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 6px"
+            (error)="changeToDefaultImg($event)"
+          />
         </div>
         <p class="nic-preview-hint" i18n>760 × 400 px · final output</p>
       </div>
-
     </div>
   </mat-dialog-content>
 
   <!-- Footer actions -->
   <mat-dialog-actions class="nic-actions">
-    <button mat-stroked-button class="nic-btn-cancel" type="button" (click)="close()" i18n>
-      Cancel
-    </button>
-    <button mat-flat-button class="nic-btn-apply" type="button" (click)="croppingImage()" i18n>
-      Apply & Save
-    </button>
+    <button mat-stroked-button class="nic-btn-cancel" type="button" (click)="close()" i18n>Cancel</button>
+    <button mat-flat-button class="nic-btn-apply" type="button" (click)="croppingImage()" i18n>Apply & Save</button>
   </mat-dialog-actions>
-
 </ng-container>

@@ -64,7 +64,7 @@
               </mat-form-field>
             </div>
             <div class="w50 disable">
-              <label>
+              <span>
                 <div class="margin-top-xs flex flex-middle">
                   <b i18n>Allow proctoring in the assessment?</b>
                   <mat-icon
@@ -79,7 +79,7 @@
                   tab switches, copying the test content etc. Some of these actions cannot be blocked due to browser and OS restrictions but
                   all will be monitored and saved.</span
                 >
-              </label>
+              </span>
               <mat-form-field appearance="outline" class="margin-top-xs w60">
                 <mat-select (selectionChange)="proctor($event.value)" formControlName="proctor" placeholder="e.g. Yes">
                   <mat-option value="true" i18n>Yes</mat-option>

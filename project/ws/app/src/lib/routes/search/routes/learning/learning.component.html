@@ -74,7 +74,7 @@
       </button>
     </div>
     <div class="margin-bottom-m">
-      <mat-chip-set aria-label="Filter selection" role="none" *ngIf="filtersResponse">
+      <mat-chip-set aria-label="Filter selection" role="presentation" *ngIf="filtersResponse">
         <span *ngFor="let filter of filtersResponse">
           <span *ngFor="let content of filter?.content">
             <span *ngIf="content?.checked">
@@ -128,7 +128,6 @@
         (click)="getResults()"
         *ngIf="searchRequestStatus != 'done'"
         [hidden]="searchRequestStatus === 'fetching'"
-        accesskey="+"
       >
         <mat-icon>add</mat-icon>
         <ng-container i18n="search: more results">View More</ng-container>

@@ -17,7 +17,6 @@
     class="new-margin"
     #rootTrigger="matMenuTrigger"
     [matMenuTriggerFor]="settingsMenu"
-    role="link"
   >
     <span class="flex flex-column flex-middle"> </span>
   </a>
@@ -58,7 +57,7 @@
     <span i18n>Explore all features</span>
   </a> -->
 
-  <a href="javascript:void(0)" mat-menu-item role="link" (click)="logout()" class="log-o">
+  <a href="javascript:void(0)" mat-menu-item (click)="logout()" class="log-o">
     <mat-icon>power_settings_new</mat-icon>&nbsp;
     <span i18n>Logout</span>
   </a>
