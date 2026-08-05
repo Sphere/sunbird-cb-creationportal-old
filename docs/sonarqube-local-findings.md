@@ -5,14 +5,29 @@ Phase-0 scoping (`src/app`, `project/ws`, `library/ws-widget`; vendored/build/e2
 Coverage fed from `coverage/lcov.info`. Full per-issue list (file:line:rule) is in
 [`sonarqube-local-issues.csv`](./sonarqube-local-issues.csv).
 
-> ⚠️ **Do NOT add `**/\*.html`to`sonar.exclusions`.** An earlier local setup did this to dodge a
-SonarJS bridge failure, and it silently hid **268 templates and 228 real bugs**, producing a
-false Reliability **A** locally while a clean server reported **C**. The bridge failure was not
-caused by the HTML sensor at all (that sensor completes in ~12s); it was Windows `MAX_PATH`—
-long paths are disabled, and the SonarJS bridge bundle extracts past 260 characters under the
-default`.scannerwork`. The real fix is a short working directory:
-`-Dsonar.working.directory=C:\sw`. The committed `sonar-project.properties` correctly does not
-> exclude HTML; keep it that way so local, CI and SonarCloud agree.
+## ⚠️ Do not exclude HTML from the scan
+
+An earlier local setup added the glob `**/*.html` to `sonar.exclusions` to dodge a SonarJS bridge
+failure. That silently hid 268 templates and 228 real bugs, producing a false Reliability **A**
+locally while a clean server reported **C**.
+
+It also treated the wrong cause. The HTML sensor is not what fails; it completes in about 12
+seconds. The failure is Windows `MAX_PATH`: long-path support is disabled on these machines and
+the SonarJS bridge bundle extracts past 260 characters underneath the default `.scannerwork`
+directory. It presents as `Failed to start the bridge server (300s timeout)` plus a missing file
+inside `bridge-bundle/`, and the missing file differs between runs, which makes it look like a
+corrupt download rather than a path-length limit.
+
+The fix is a short working directory: `-Dsonar.working.directory=C:\sw`
+
+The committed `sonar-project.properties` never excluded HTML, so CI and SonarCloud were always
+correct. Keep it that way so local, CI and SonarCloud agree.
+
+## Status
+
+The tables below are the **original July baseline** and are kept for history. Every issue listed
+has since been fixed: the current scan reports 0 bugs, 0 vulnerabilities, 0 reliability issues and
+all four axes at **A** in both the legacy and Clean Code (MQR) rating models.
 
 ## Measured ratings (project `cbp-local`)
 
