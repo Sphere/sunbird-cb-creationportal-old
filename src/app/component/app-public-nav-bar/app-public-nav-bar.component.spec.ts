@@ -33,8 +33,10 @@ describe('AppPublicNavBarComponent', () => {
     const comp = build()
     comp.ngOnInit()
 
-    expect(domSanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith('https://cdn/transparent.png')
-    expect(comp.appIcon).toBe('safe:https://cdn/transparent.png')
+    // No sanitizer bypass: the value is bound to <img [src]>, which Angular
+    // already sanitises as SecurityContext.URL (http/https/relative allowed).
+    expect(domSanitizer.bypassSecurityTrustResourceUrl).not.toHaveBeenCalled()
+    expect(comp.appIcon).toBe('https://cdn/transparent.png')
     expect(comp.appName).toBe('Creation Portal')
     expect(comp.navBar).toEqual({ background: 'primary' })
   })

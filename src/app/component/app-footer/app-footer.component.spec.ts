@@ -47,10 +47,12 @@ describe('AppFooterComponent', () => {
     expect(build().isMedium).toBe(true)
   })
 
-  it('sanitises the app logo when an instance config is present', () => {
+  it('takes the app logo from the instance config', () => {
     configSvc.instanceConfig = { logos: { app: 'https://cdn/logo.png' } }
     const comp = build()
-    expect(domSanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith('https://cdn/logo.png')
-    expect(comp.appIcon).toBe('safe:https://cdn/logo.png')
+    // No sanitizer bypass: the value is bound to <img [src]>, which Angular
+    // already sanitises as SecurityContext.URL (http/https/relative allowed).
+    expect(domSanitizer.bypassSecurityTrustResourceUrl).not.toHaveBeenCalled()
+    expect(comp.appIcon).toBe('https://cdn/logo.png')
   })
 })
