@@ -1,7 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core'
 
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
-
 import { ActivatedRoute, Router } from '@angular/router'
 
 import { ConfigurationsService, NsPage, ValueService, isActivationKey } from '@ws-widget/utils'
@@ -34,7 +32,7 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
   private viewerDataServiceSubscription: Subscription | null = null
   private paramSubscription: Subscription | null = null
   private viewerDataServiceResourceSubscription: Subscription | null = null
-  appIcon: SafeUrl | null = null
+  appIcon: string | null = null
   isTypeOfCollection = false
   collectionType: string | null = null
   prevResourceUrl: string | null = null
@@ -53,7 +51,6 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
   isCreator = false
   constructor(
     private activatedRoute: ActivatedRoute,
-    private domSanitizer: DomSanitizer,
     // private logger: LoggerService,
     private configSvc: ConfigurationsService,
     private viewerDataSvc: ViewerDataService,
@@ -80,10 +77,12 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     // this.logo = false
     // }
     if (this.configSvc.instanceConfig) {
-      this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        `/assets/instances/eagle/app_logos/aastar-logo.svg`,
-        // this.configSvc.instanceConfig.logos.app,
-      )
+      // A compile-time literal path to a bundled asset, bound to <img [src]>.
+      // Angular sanitizes that as SecurityContext.URL, which already permits
+      // relative paths, so no bypass is needed — and using one only disabled
+      // that sanitization.
+      // this.configSvc.instanceConfig.logos.app,
+      this.appIcon = '/assets/instances/eagle/app_logos/aastar-logo.svg'
     }
     this.viewerDataServiceSubscription = this.viewerDataSvc.tocChangeSubject.subscribe(data => {
       this.prevResourceUrl = data.prevResource

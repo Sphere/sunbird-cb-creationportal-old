@@ -4,7 +4,6 @@ import { ViewerTopBarComponent } from './viewer-top-bar.component'
 describe('ViewerTopBarComponent', () => {
   let component: ViewerTopBarComponent
   let activatedRoute: any
-  let domSanitizer: any
   let configSvc: any
   let viewerDataSvc: any
   let valueSvc: any
@@ -24,7 +23,7 @@ describe('ViewerTopBarComponent', () => {
 
   const build = (queryParams: any = {}) => {
     activatedRoute.snapshot = { queryParams }
-    return new ViewerTopBarComponent(activatedRoute, domSanitizer, configSvc, viewerDataSvc, valueSvc, router, accessService, dialog)
+    return new ViewerTopBarComponent(activatedRoute, configSvc, viewerDataSvc, valueSvc, router, accessService, dialog)
   }
 
   beforeEach(() => {
@@ -35,7 +34,6 @@ describe('ViewerTopBarComponent', () => {
     afterClosed$ = new Subject<any>()
 
     activatedRoute = { snapshot: { queryParams: {} }, queryParamMap: queryParams$ }
-    domSanitizer = { bypassSecurityTrustResourceUrl: jest.fn((u: string) => `safe:${u}`) }
     configSvc = {
       pageNavBar: { background: 'primary' },
       instanceConfig: { logos: { app: 'app.svg' } },
@@ -127,10 +125,12 @@ describe('ViewerTopBarComponent', () => {
       expect(c.isPublisher).toBe(false)
     })
 
-    it('trusts the instance app icon', () => {
+    it('sets the app icon path', () => {
       component.ngOnInit()
 
-      expect(component.appIcon).toBe('safe:/assets/instances/eagle/app_logos/aastar-logo.svg')
+      // Bound straight to <img [src]>: Angular's URL sanitizer already allows a
+      // relative asset path, so there is no bypass to assert.
+      expect(component.appIcon).toBe('/assets/instances/eagle/app_logos/aastar-logo.svg')
     })
 
     it('leaves the icon unset without an instance config', () => {
