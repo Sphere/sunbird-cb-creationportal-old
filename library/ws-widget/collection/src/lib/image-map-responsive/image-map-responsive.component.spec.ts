@@ -1,7 +1,6 @@
 import { ImageMapResponsiveComponent } from './image-map-responsive.component'
 
 describe('ImageMapResponsiveComponent', () => {
-  let domSanitizer: any
   let component: ImageMapResponsiveComponent
 
   const baseWidgetData = () => ({
@@ -16,8 +15,7 @@ describe('ImageMapResponsiveComponent', () => {
   })
 
   beforeEach(() => {
-    domSanitizer = { bypassSecurityTrustHtml: jest.fn((v: string) => `safe:${v}`) }
-    component = new ImageMapResponsiveComponent(domSanitizer)
+    component = new ImageMapResponsiveComponent()
     component.widgetData = baseWidgetData() as any
   })
 
@@ -63,7 +61,7 @@ describe('ImageMapResponsiveComponent', () => {
       expect(component.coords).toHaveLength(2)
     })
 
-    it('extracts and sanitizes the inner map html from external data', () => {
+    it('extracts the inner map html from external data', () => {
       component.widgetData = {
         ...baseWidgetData(),
         externalData: '<map name="m"><area shape="rect" coords="1,2,3,4"/></map>',
@@ -71,8 +69,42 @@ describe('ImageMapResponsiveComponent', () => {
 
       component.ngOnInit()
 
-      expect(domSanitizer.bypassSecurityTrustHtml).toHaveBeenCalledWith('<area shape="rect" coords="1,2,3,4"/>')
-      expect(component.htmlContent).toBe('safe:<area shape="rect" coords="1,2,3,4"/>')
+      // Bound straight to [innerHTML]: Angular sanitizes it, and <area> with
+      // shape/coords/href survives that sanitization intact. No bypass needed.
+      expect(component.htmlContent).toBe('<area shape="rect" coords="1,2,3,4"/>')
+    })
+
+    it('keeps every attribute an image map needs', () => {
+      const areas =
+        '<area shape="rect" coords="0,0,82,126" href="/page1" alt="Room 1" target="_blank">' +
+        '<area shape="circle" coords="90,58,3" href="https://x.test/a" alt="Room 2">' +
+        '<area shape="poly" coords="1,2,3,4,5,6" href="/p3">'
+      component.widgetData = { ...baseWidgetData(), externalData: `<map name="m">${areas}</map>` } as any
+
+      component.ngOnInit()
+
+      expect(component.htmlContent).toBe(areas)
+    })
+
+    it('passes hostile markup through unchanged so Angular can strip it', () => {
+      // The component must NOT mark this trusted. Angular's [innerHTML]
+      // sanitizer removes <script>, neutralises javascript: urls and drops
+      // inline handlers — which is only possible because we no longer bypass it.
+      const hostile = '<area shape="rect" coords="1,2,3,4"><script>alert(1)</script>'
+      component.widgetData = { ...baseWidgetData(), externalData: `<map name="m">${hostile}</map>` } as any
+
+      component.ngOnInit()
+
+      expect(typeof component.htmlContent).toBe('string')
+      // A SafeValue object would bypass sanitization; a plain string cannot.
+      expect(component.htmlContent).toBe(hostile)
+    })
+
+    it('does not throw when external data has no <map> block', () => {
+      component.widgetData = { ...baseWidgetData(), externalData: '<div>no map here</div>' } as any
+
+      expect(() => component.ngOnInit()).not.toThrow()
+      expect(component.htmlContent).toBe('')
     })
   })
 
