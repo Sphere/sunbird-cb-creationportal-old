@@ -44,7 +44,7 @@ import { HttpClient } from '@angular/common/http'
 
 import { AUTHORING_BASE } from '@ws/author/src/lib/constants/apiEndpoints'
 
-import { isActivationKey } from '@ws-widget/utils'
+import { isActivationKey, randomInt } from '@ws-widget/utils'
 declare const CKEDITOR: any
 
 // Inline 16x16 SVG icons (base64 data URIs) for the custom insert-toolbar buttons.
@@ -505,7 +505,7 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
             let randomNumber = ''
             // tslint:disable-next-line: no-increment-decrement
             for (let i = 0; i < 16; i++) {
-              randomNumber += Math.floor(Math.random() * 10)
+              randomNumber += randomInt(10)
             }
             const requestBody: any = {
               request: {

@@ -34,7 +34,6 @@ export class ContentProgressComponent implements OnChanges {
   @Input()
   className = ''
 
-  rendom = Math.random()
   @HostBinding('id')
   public id = nextWidgetId('progress_')
   constructor(private progressSvc: ContentProgressService) {

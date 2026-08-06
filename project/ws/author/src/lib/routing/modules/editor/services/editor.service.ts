@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core'
 
 import { NsAutoComplete, UserAutocompleteService } from '@ws-widget/collection'
 
-import { ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService, randomInt } from '@ws-widget/utils'
 
 import {
   AUTHORING_CONTENT_BASE,
@@ -118,7 +118,7 @@ export class EditorService {
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {
-      randomNumber += Math.floor(Math.random() * 10)
+      randomNumber += randomInt(10)
     }
     const requestBody: any = {
       request: {
@@ -157,7 +157,7 @@ export class EditorService {
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {
-      randomNumber += Math.floor(Math.random() * 10)
+      randomNumber += randomInt(10)
     }
     const requestBody: NSApiRequest.ICreateMetaRequestV2 = {
       request: {

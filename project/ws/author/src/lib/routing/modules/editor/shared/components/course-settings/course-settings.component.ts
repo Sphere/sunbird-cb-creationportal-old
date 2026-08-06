@@ -26,7 +26,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
 
-import { ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService, randomInt } from '@ws-widget/utils'
 
 import { ImageCropComponent } from '@ws-widget/utils/src/public-api'
 
@@ -1553,7 +1553,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
           let randomNumber = ''
           // tslint:disable-next-line: no-increment-decrement
           for (let i = 0; i < 16; i++) {
-            randomNumber += Math.floor(Math.random() * 10)
+            randomNumber += randomInt(10)
           }
           const requestBody: NSApiRequest.ICreateImageMetaRequestV2 = {
             request: {

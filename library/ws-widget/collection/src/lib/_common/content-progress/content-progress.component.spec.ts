@@ -19,7 +19,6 @@ describe('ContentProgressComponent', () => {
     expect(component.progress).toBe(0)
     expect(component.forPreview).toBe(false)
     expect(component.className).toBe('')
-    expect(typeof component.rendom).toBe('number')
     expect(component.id).toContain('progress_')
   })
 

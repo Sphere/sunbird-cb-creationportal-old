@@ -37,6 +37,8 @@ export * from './lib/helpers/functions/isActivationKey'
 
 export * from './lib/helpers/functions/nextWidgetId'
 
+export * from './lib/helpers/functions/secureRandom'
+
 // helpers
 export * from './lib/helpers/horizontal-scroller/horizontal-scroller.module'
 

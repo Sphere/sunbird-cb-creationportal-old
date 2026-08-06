@@ -61,6 +61,7 @@ import moment from 'moment'
 
 import { ContentProgressService } from '@ws-widget/collection'
 
+import { randomInt } from '@ws-widget/utils'
 @Component({
   standalone: false,
   // tslint:disable-next-line:component-selector
@@ -532,7 +533,7 @@ export class CreateCourseComponent implements OnInit {
           let randomNumber = ''
           // tslint:disable-next-line: no-increment-decrement
           for (let i = 0; i < 16; i++) {
-            randomNumber += Math.floor(Math.random() * 10)
+            randomNumber += randomInt(10)
           }
           const requestBody: NSApiRequest.ICreateImageMetaRequestV2 = {
             request: {

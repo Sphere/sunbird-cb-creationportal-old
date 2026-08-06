@@ -22,6 +22,7 @@ import { environment } from '../../../../../../../../../../src/environments/envi
 
 import { HttpClient } from '@angular/common/http'
 
+import { randomInt } from '@ws-widget/utils'
 const API_END_POINTS = {
   CREATE_FORUM: `/apis/proxies/v8/discussion/forum/v3/create`,
 }
@@ -32,12 +33,9 @@ export class CreateService {
     private configSvc: ConfigurationsService,
     private accessService: AccessControlService,
     private http: HttpClient,
-  ) { }
+  ) {}
 
-  create(meta: {
-    mimeType: string; contentType: string; locale: string,
-    name?: string, description?: string
-  }): Observable<string> {
+  create(meta: { mimeType: string; contentType: string; locale: string; name?: string; description?: string }): Observable<string> {
     const requestBody: NSApiRequest.ICreateMetaRequest = {
       content: {
         ...meta,
@@ -77,8 +75,13 @@ export class CreateService {
   }
 
   createV2(meta: {
-    mimeType: string; contentType: string; locale: string, name: any,
-    primaryCategory: string, purpose?: string, isAssessment?: boolean
+    mimeType: string
+    contentType: string
+    locale: string
+    name: any
+    primaryCategory: string
+    purpose?: string
+    isAssessment?: boolean
   }): Observable<string> {
     // let description: string = meta.name.courseSummary.trim()
     let instructions: string = meta.name.courseDescription.trim()
@@ -86,7 +89,7 @@ export class CreateService {
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {
-      randomNumber += Math.floor(Math.random() * 10)
+      randomNumber += randomInt(10)
     }
     const requestBody: NSApiRequest.ICreateMetaRequestV2 = {
       request: {
@@ -95,17 +98,17 @@ export class CreateService {
           code: randomNumber,
           contentType: meta.contentType,
           createdBy: this.accessService.userId,
-          createdFor: [(this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId) ? this.configSvc.userProfile.rootOrgId : ''],
+          createdFor: [this.configSvc.userProfile && this.configSvc.userProfile.rootOrgId ? this.configSvc.userProfile.rootOrgId : ''],
           creator: this.accessService.userName,
           // description: description,
           framework: environment.framework,
           mimeType: meta.mimeType,
           name: courseName,
           instructions: instructions,
-          purpose: (meta.name.courseIntroduction) ? meta.name.courseIntroduction : '',
+          purpose: meta.name.courseIntroduction ? meta.name.courseIntroduction : '',
           // organisation: [environment.organisation],
           organisation: [
-            (this.configSvc.userProfile && this.configSvc.userProfile.departmentName) ? this.configSvc.userProfile.departmentName : '',
+            this.configSvc.userProfile && this.configSvc.userProfile.departmentName ? this.configSvc.userProfile.departmentName : '',
           ],
           isExternal: meta.mimeType === 'text/x-url',
           primaryCategory: meta.primaryCategory,
@@ -114,16 +117,11 @@ export class CreateService {
         },
       },
     }
-    return this.http
-      .post<NSApiRequest.ICreateMetaRequest>(
-        `${AUTHORING_BASE}content/v3/create`,
-        requestBody,
-      )
-      .pipe(
-        map((data: any) => {
-          return data.result
-        }),
-      )
+    return this.http.post<NSApiRequest.ICreateMetaRequest>(`${AUTHORING_BASE}content/v3/create`, requestBody).pipe(
+      map((data: any) => {
+        return data.result
+      }),
+    )
   }
   createForum(req: any) {
     return this.http.post(API_END_POINTS.CREATE_FORUM, req)

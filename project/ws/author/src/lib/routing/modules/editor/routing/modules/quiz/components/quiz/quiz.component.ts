@@ -86,7 +86,7 @@ import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image
 
 import * as XLSX from 'xlsx'
 
-import { isActivationKey } from '@ws-widget/utils'
+import { isActivationKey, randomInt } from '@ws-widget/utils'
 interface QuizOption {
   text: string
   optionId: string
@@ -1143,7 +1143,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {
       // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex)
+      randomIndex = randomInt(currentIndex)
       currentIndex -= 1
 
       // And swap it with the current element.

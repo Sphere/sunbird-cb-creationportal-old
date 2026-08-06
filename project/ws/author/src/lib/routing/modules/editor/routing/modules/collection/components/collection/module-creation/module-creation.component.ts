@@ -115,7 +115,7 @@ import moment from 'moment'
 
 import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
 
-import { isActivationKey } from '@ws-widget/utils'
+import { isActivationKey, randomInt } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-author-module-creation',
@@ -883,7 +883,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     this.videoQuestions[questionIndex].question[subQuestionIndex].options[optionIndex].answerInfo = ''
   }
   generateOptionId(): number {
-    return Math.floor(Math.random() * 1000000)
+    return randomInt(1000000)
   }
   setActiveTab(index: number) {
     this.activeTabIndex = index
@@ -2968,7 +2968,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           let randomNumber = ''
           // tslint:disable-next-line: no-increment-decrement
           for (let i = 0; i < 16; i++) {
-            randomNumber += Math.floor(Math.random() * 10)
+            randomNumber += randomInt(10)
           }
 
           const requestBody: NSApiRequest.ICreateImageMetaRequestV2 = {
@@ -3980,7 +3980,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           let randomNumber = ''
           // tslint:disable-next-line: no-increment-decrement
           for (let i = 0; i < 16; i++) {
-            randomNumber += Math.floor(Math.random() * 10)
+            randomNumber += randomInt(10)
           }
 
           const requestBody: NSApiRequest.ICreateImageMetaRequestV2 = {

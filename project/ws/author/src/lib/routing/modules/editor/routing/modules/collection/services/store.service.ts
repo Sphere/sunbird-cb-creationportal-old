@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 
-import { LoggerService, ConfigurationsService } from '@ws-widget/utils'
+import { LoggerService, ConfigurationsService, randomInt } from '@ws-widget/utils'
 
 import { DEPTH_RUE } from '@ws/author/src/lib/constants/depth-rule'
 
@@ -465,7 +465,7 @@ export class CollectionStoreService {
     let randomNumber = ''
     // tslint:disable-next-line: no-increment-decrement
     for (let i = 0; i < 16; i++) {
-      randomNumber += Math.floor(Math.random() * 10)
+      randomNumber += randomInt(10)
     }
     if (parentData && parentData.children && parentData.children.length > 0) {
       nodesModify[parentData.identifier] = {

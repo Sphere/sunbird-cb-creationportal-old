@@ -6,7 +6,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
 
 import { jsPlumb, OnConnectionBindInfo } from 'jsplumb'
 
-import { isActivationKey } from '@ws-widget/utils'
+import { isActivationKey, randomInt } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'viewer-question',
@@ -260,7 +260,7 @@ export class QuestionComponent implements OnInit, AfterViewInit {
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {
       // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex)
+      randomIndex = randomInt(currentIndex)
       currentIndex -= 1
 
       // And swap it with the current element.
