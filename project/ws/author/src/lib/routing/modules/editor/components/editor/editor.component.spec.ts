@@ -162,12 +162,6 @@ describe('EditorComponent', () => {
       expect(route.navigate).toHaveBeenCalledWith(['upload'], { relativeTo: router })
     })
 
-    it('routes an iap assessment', async () => {
-      const c = build([{ content: content({ mimeType: 'application/iap-assessment' }), data: {} }])
-      await c.ngOnInit()
-      expect(route.navigate).toHaveBeenCalledWith(['iap-assessment'], { relativeTo: router })
-    })
-
     it('routes a quiz', async () => {
       const c = build([{ content: content({ mimeType: 'application/quiz', categoryType: 'Quiz' }), data: {} }])
       await c.ngOnInit()

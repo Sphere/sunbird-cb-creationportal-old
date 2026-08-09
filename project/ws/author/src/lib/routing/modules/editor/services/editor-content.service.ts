@@ -16,7 +16,7 @@ import { AuthInitService } from './../../../../services/init.service'
 
 import { EditorService } from './editor.service'
 
-import { IAssessmentDetails } from '../routing/modules/iap-assessment/interface/iap-assessment.interface'
+import { IAssessmentDetails } from '../../../../interface/iap-assessment.interface'
 
 // import { isArray } from 'lodash'
 

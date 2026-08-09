@@ -143,8 +143,6 @@ export class EditorComponent implements OnInit, OnDestroy {
           this.route.navigate(['upload'], { relativeTo: this.router })
         } else if (contents[0].content.mimeType === 'application/html' && !contents[0].content.isExternal) {
           this.route.navigate(['upload'], { relativeTo: this.router })
-        } else if (contents[0].content.mimeType === 'application/iap-assessment') {
-          this.route.navigate(['iap-assessment'], { relativeTo: this.router })
         } else if (contents[0].content.mimeType === 'application/quiz' && contents[0].content.categoryType === 'Quiz') {
           this.route.navigate(['quiz'], { relativeTo: this.router })
         } else if (contents[0].content.mimeType === 'application/quiz' && contents[0].content.categoryType === 'Assessment') {

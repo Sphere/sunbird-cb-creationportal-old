@@ -64,5 +64,4 @@ export interface IQuestionDetail {
   tagsList: string[]
   topicList: string[]
   searchQuery: string
-
 }
