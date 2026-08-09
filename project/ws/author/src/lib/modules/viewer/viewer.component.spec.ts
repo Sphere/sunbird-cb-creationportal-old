@@ -36,15 +36,6 @@ describe('ViewerComponent', () => {
       expect(c.iframeUrl).toBe('/viewer/pdf/id1?preview=true')
     })
 
-    it('builds the channel url when newDesign is on and route is channel', () => {
-      accessControlSvc.authoringConfig.newDesign = true
-      const c = build()
-      c.identifier = 'id1'
-      c.mimeTypeRoute = 'channel'
-      c.ngOnChanges()
-      expect(c.iframeUrl).toBe('author/viewer/channel/id1')
-    })
-
     it('builds the toc overview url when newDesign is on and route is not channel', () => {
       accessControlSvc.authoringConfig.newDesign = true
       const c = build()

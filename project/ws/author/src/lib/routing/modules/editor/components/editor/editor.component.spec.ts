@@ -144,12 +144,6 @@ describe('EditorComponent', () => {
       expect(route.navigate).toHaveBeenCalledWith(['collection'], { relativeTo: router })
     })
 
-    it('routes a channel content to the channel view', async () => {
-      const c = build([{ content: content({ contentType: 'Channel' }), data: {} }])
-      await c.ngOnInit()
-      expect(route.navigate).toHaveBeenCalledWith(['channel'], { relativeTo: router })
-    })
-
     it('routes a knowledge board', async () => {
       const c = build([{ content: content({ contentType: 'Knowledge Board' }), data: {} }])
       await c.ngOnInit()

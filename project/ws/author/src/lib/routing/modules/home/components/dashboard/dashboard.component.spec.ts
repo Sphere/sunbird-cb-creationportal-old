@@ -1,6 +1,6 @@
 import { of, throwError, Subject } from 'rxjs'
 import { DashboardComponent } from './dashboard.component'
-import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE, RESOURCE, KBOARD, CHANNEL } from '@ws/author/src/lib/constants/content-role'
+import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE, RESOURCE, KBOARD } from '@ws/author/src/lib/constants/content-role'
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent
@@ -64,14 +64,6 @@ describe('DashboardComponent', () => {
       expect(router.navigateByUrl).toHaveBeenCalledWith('/author/editor/do_123')
     })
 
-    it('should map channel content type/mime', () => {
-      component.contentClicked('channel')
-      expect(svc.create).toHaveBeenCalledWith({
-        contentType: 'Channel',
-        mimeType: 'application/channel',
-      })
-    })
-
     it('should map kboard content type/mime', () => {
       component.contentClicked('kboard')
       expect(svc.create).toHaveBeenCalledWith({
@@ -114,8 +106,6 @@ describe('DashboardComponent', () => {
       expect(accessService.hasRole).toHaveBeenCalledWith(RESOURCE)
       component.canShow('kboard', 'other')
       expect(accessService.hasRole).toHaveBeenCalledWith(KBOARD)
-      component.canShow('channel', 'other')
-      expect(accessService.hasRole).toHaveBeenCalledWith(CHANNEL)
     })
 
     it('should return false for an unknown non-access role', () => {

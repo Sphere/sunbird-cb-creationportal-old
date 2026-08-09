@@ -135,8 +135,6 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.contentService.parentContent = contents[0].content.identifier
         if (['Course', 'Collection', 'Learning Path'].indexOf(contents[0].content.contentType) > -1 && !contents[0].content.isExternal) {
           this.route.navigate(['collection'], { relativeTo: this.router })
-        } else if (contents[0].content.contentType === 'Channel') {
-          this.route.navigate(['channel'], { relativeTo: this.router })
         } else if (contents[0].content.contentType === 'Knowledge Board') {
           this.route.navigate(['knowledge-board'], { relativeTo: this.router })
         } else if (contents[0].content.contentType === 'Knowledge Artifact') {

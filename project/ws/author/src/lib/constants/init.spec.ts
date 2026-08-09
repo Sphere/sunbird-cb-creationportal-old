@@ -129,7 +129,7 @@ describe('AUTH_INIT', () => {
 
   it('exposes the three configuration sections', () => {
     expect(Object.keys(AUTH_INIT)).toEqual(['contentTypes', 'roles', 'form'])
-    expect(AUTH_INIT.contentTypes).toHaveLength(13)
+    expect(AUTH_INIT.contentTypes).toHaveLength(12)
     expect(Object.keys(AUTH_INIT.roles as any)).toHaveLength(5)
     expect(fieldNames).toHaveLength(83)
   })
