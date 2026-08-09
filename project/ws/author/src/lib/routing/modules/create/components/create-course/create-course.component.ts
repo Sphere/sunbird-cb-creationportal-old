@@ -316,8 +316,16 @@ export class CreateCourseComponent implements OnInit {
 
                   if (levels.length > 0) {
                     this.loaderService.changeLoad.next(true)
+                    // The hierarchy was read immediately above and nothing has changed it yet,
+                    // so the first level reuses that response instead of asking for it again.
+                    // Every later level does re-read, because the previous setContentType call
+                    // added an assessment to the hierarchy.
+                    let isFirstLevel = true
                     for (const level of levels) {
-                      this.courseData = await this.editorService.readcontentV3(this.editorStore.parentContent).toPromise()
+                      this.courseData = isFirstLevel
+                        ? parentData
+                        : await this.editorService.readcontentV3(this.editorStore.parentContent).toPromise()
+                      isFirstLevel = false
                       this.editorStore.setOriginalMeta(parentData)
                       await this.setContentType('assessment', level, '')
                     }

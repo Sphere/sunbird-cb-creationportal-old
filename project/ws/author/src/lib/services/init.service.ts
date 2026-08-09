@@ -14,7 +14,6 @@ import { Subject } from 'rxjs'
 
 import { NSIQuality } from '../routing/modules/editor/interface/content-quality'
 
-
 interface IPermission {
   conditions: IConditionsV2
   enabledByDefault: boolean
@@ -98,6 +97,27 @@ export class AuthInitService {
     actionName: string
   }[]
   permissionDetails!: { role: string; editContent: IPermission; editMeta: IPermission }[]
+
+  /**
+   * The default value declared for a field against a content type, or undefined if the
+   * table has no entry for it.
+   *
+   * Callers used to index straight through the table --
+   * `authConfig[field].defaultValue[contentType][0].value` -- so a content type with no
+   * row threw a TypeError. That exception was swallowed by a broad catch far upstream
+   * and shown to authors as "Please Save Parent first and refresh page.", which sent
+   * everyone looking in the wrong place. Returning undefined lets the caller leave the
+   * field alone instead of aborting the whole save.
+   *
+   * The value is cloned because callers assign it straight onto content metadata and
+   * would otherwise share the table's own objects. The clone stays a JSON round-trip
+   * rather than structuredClone: expiryDate holds Date objects, and the round-trip
+   * turns those into ISO strings, which is the shape every caller already handles.
+   */
+  defaultValueFor(field: keyof IFormMeta, contentType: string): any {
+    const rule = this.authConfig?.[field]?.defaultValue?.[contentType]?.[0]
+    return rule === undefined ? undefined : JSON.parse(JSON.stringify(rule.value))
+  }
 
   changeMessage(message: string) {
     this.messageSource.next(message)

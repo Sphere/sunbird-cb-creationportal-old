@@ -4137,14 +4137,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
             } else {
               if (this.initService.authConfig[v as keyof IFormMeta] && this.initService.authConfig[v as keyof IFormMeta].defaultValue) {
                 if (v !== 'isIframeSupported') {
-                  meta[v as keyof NSContent.IContentMeta] = JSON.parse(
-                    JSON.stringify(
-                      this.initService.authConfig[v as keyof IFormMeta].defaultValue[
-                        originalMeta.contentType
-                        // tslint:disable-next-line: ter-computed-property-spacing
-                      ][0].value,
-                    ),
-                  )
+                  meta[v as keyof NSContent.IContentMeta] = this.initService.defaultValueFor(v as keyof IFormMeta, originalMeta.contentType)
                 }
               }
             }
@@ -4160,7 +4153,13 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         this.contentService.setUpdatedMeta(meta, this.editorService.newCreatedLexid)
       }
     } catch (ex) {
-      this.snackBar.open('Please Save Parent first and refresh page.')
+      // Every table lookup in this block is guarded now, so reaching here means
+      // something genuinely unexpected failed. The old message named one
+      // hypothetical cause -- an unsaved parent -- and was shown for any error at
+      // all, which sent people looking in the wrong place. Surface the real one.
+      // tslint:disable-next-line:no-console
+      console.error('Failed to assemble content metadata', ex)
+      this.snackBar.open('Could not prepare the content details. Please refresh and try again.')
       if (ex) {
       }
     }
@@ -5015,14 +5014,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           }
         } else {
           if (v !== 'duration') {
-            meta[v] = JSON.parse(
-              JSON.stringify(
-                this.initService.authConfig[v as keyof IFormMeta].defaultValue[
-                  originalMeta.contentType
-                  // tslint:disable-next-line: ter-computed-property-spacing
-                ][0].value,
-              ),
-            )
+            meta[v] = this.initService.defaultValueFor(v as keyof IFormMeta, originalMeta.contentType)
           }
         }
       } else if (v === 'versionKey') {

@@ -819,16 +819,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
           if (v === 'expiryDate') {
             this.contentForm.controls[v].setValue(new Date(new Date().setMonth(new Date().getMonth() + 60)))
           } else {
-            this.contentForm.controls[v].setValue(
-              JSON.parse(
-                JSON.stringify(
-                  this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                    this.contentMeta.contentType
-                    // tslint:disable-next-line: ter-computed-property-spacing
-                  ][0].value,
-                ),
-              ),
-            )
+            this.contentForm.controls[v].setValue(this.authInitService.defaultValueFor(v as keyof IFormMeta, this.contentMeta.contentType))
           }
         }
 
@@ -1111,14 +1102,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
             ) {
               meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
             } else {
-              meta[v as keyof NSContent.IContentMeta] = JSON.parse(
-                JSON.stringify(
-                  this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                    originalMeta.contentType
-                    // tslint:disable-next-line: ter-computed-property-spacing
-                  ][0].value,
-                ),
-              )
+              meta[v as keyof NSContent.IContentMeta] = this.authInitService.defaultValueFor(v as keyof IFormMeta, originalMeta.contentType)
             }
           } else if (v === 'versionKey') {
             meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
@@ -1153,8 +1137,13 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
         }
       }
     } catch (ex) {
-      console.log('yes here', ex)
-      this.snackBar.open('Please Save Parent first and refresh page.')
+      // Every table lookup in this block is guarded now, so reaching here means
+      // something genuinely unexpected failed. The old message named one
+      // hypothetical cause -- an unsaved parent -- and was shown for any error at
+      // all, which sent people looking in the wrong place. Surface the real one.
+      // tslint:disable-next-line:no-console
+      console.error('Failed to assemble content metadata', ex)
+      this.snackBar.open('Could not prepare the content details. Please refresh and try again.')
       if (ex) {
         // this.saveParent = true
         // this.emitSaveData(true)

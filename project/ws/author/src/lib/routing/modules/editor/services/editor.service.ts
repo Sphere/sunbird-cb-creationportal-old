@@ -38,7 +38,7 @@ import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.servi
 
 import { EMPTY, Observable, of } from 'rxjs'
 
-import { map, mergeMap, catchError, share, retry } from 'rxjs/operators'
+import { map, mergeMap, catchError, share, retry, shareReplay } from 'rxjs/operators'
 
 import { CONTENT_READ_MULTIPLE_HIERARCHY } from './../../../../constants/apiEndpoints'
 
@@ -53,6 +53,13 @@ export class EditorService {
   accessPath: string[] = []
   newCreatedLexid!: string
   someDataObservable!: Observable<any>
+
+  /** In-flight content reads, keyed by id -- see checkReadAPI. */
+  private readonly contentReadById = new Map<string, Observable<any>>()
+
+  /** Competency reference data, cached per language -- see getAllEntities. */
+  private readonly allEntitiesByLanguage = new Map<string, Observable<any>>()
+
   resourseID!: any
   parentData: any
 
@@ -226,15 +233,50 @@ export class EditorService {
     return res
   }
 
+  /**
+   * Reads a content item in edit mode, reusing an in-flight request for the same id.
+   *
+   * The cache used to be a single field that ignored `id`: the first content read won,
+   * and every later call -- for any other content -- was handed that first item's data
+   * back. It suppressed a duplicate request by returning the wrong content. Keying by
+   * id keeps the de-duplication and drops the mix-up.
+   */
   checkReadAPI(id: string): Observable<any> {
-    if (this.someDataObservable) {
-      return this.someDataObservable
+    const inFlight = this.contentReadById.get(id)
+    if (inFlight) {
+      return inFlight
     }
-    this.someDataObservable = this.apiService.get<any>(`/apis/authApi/content/v3/read/${id}?mode=edit`).pipe(share())
-    return this.someDataObservable
+    const request = this.apiService.get<any>(`/apis/authApi/content/v3/read/${id}?mode=edit`).pipe(share())
+    this.contentReadById.set(id, request)
+    return request
   }
 
+  /** Forgets cached reads so the next call goes to the server, e.g. after a save. */
+  clearContentReadCache(id?: string): void {
+    if (id) {
+      this.contentReadById.delete(id)
+    } else {
+      this.contentReadById.clear()
+    }
+  }
+
+  /**
+   * The full competency list for a language.
+   *
+   * This is reference data that barely changes within a session, but it was fetched
+   * again by every screen that needed it -- create, edit-meta, course settings, the
+   * competency picker and my-content -- so walking the course flow issued the same
+   * POST four or five times. The request is now made once per language and shared.
+   *
+   * Each subscriber still gets its own copy of the response: callers assign
+   * `res.result.entity` straight onto component state, and handing them all the same
+   * object would let one screen's edits show up in another.
+   */
   getAllEntities(language: string = 'en'): any {
+    const cached = this.allEntitiesByLanguage.get(language)
+    if (cached) {
+      return cached.pipe(map(response => JSON.parse(JSON.stringify(response))))
+    }
     const body = {
       entityType: 'Competency',
       language,
@@ -242,8 +284,16 @@ export class EditorService {
       strict: 'false',
       field: ['code', 'name', 'levels'],
     }
-    return this.http.post<any>('/apis/proxies/v8/entity/v1/search', body)
+    const request = this.http.post<any>('/apis/proxies/v8/entity/v1/search', body).pipe(shareReplay({ bufferSize: 1, refCount: false }))
+    this.allEntitiesByLanguage.set(language, request)
+    return request.pipe(map(response => JSON.parse(JSON.stringify(response))))
   }
+
+  /** Drops the cached competency lists, e.g. after competencies are edited. */
+  clearEntitiesCache(): void {
+    this.allEntitiesByLanguage.clear()
+  }
+
   getEntities(id: any, language: string = 'en'): any {
     const body = {
       entityType: 'Competency',

@@ -27,7 +27,6 @@ import { URLCheckerClass } from './url-upload.helper'
 
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-url-upload',
@@ -54,30 +53,25 @@ export class UrlUploadComponent implements OnInit {
     private configSvc: ConfigurationsService,
     private initService: AuthInitService,
     private editorService: EditorService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.currentContent = this.contentService.currentContent
     this.contentService.changeActiveCont.subscribe(data => {
       this.setIframeVal = ''
       this.currentContent = data
-      this.editorService.checkReadAPI(data)
-        .subscribe(
-          (res: any) => {
-            if (res) {
-              this.triggerDataChange(res.result.content.isIframeSupported)
-            }
-          })
+      this.editorService.checkReadAPI(data).subscribe((res: any) => {
+        if (res) {
+          this.triggerDataChange(res.result.content.isIframeSupported)
+        }
+      })
     })
   }
 
   triggerDataChange(isIframeSupported: any) {
     const updatedMeta = this.contentService.getUpdatedMeta(this.currentContent)
     updatedMeta['isIframeSupported'] = isIframeSupported
-    if (
-      !this.isCollectionEditor ||
-      (this.isCollectionEditor && updatedMeta.category === 'Resource')
-    ) {
+    if (!this.isCollectionEditor || (this.isCollectionEditor && updatedMeta.category === 'Resource')) {
       this.assignData(updatedMeta)
     }
   }
@@ -170,26 +164,14 @@ export class UrlUploadComponent implements OnInit {
     // }
     Object.keys(currentMeta).map(v => {
       if (
-        JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !==
-        JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])
+        JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !== JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])
       ) {
-        if (
-          currentMeta[v] ||
-          (this.initService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
-            meta[v] === false)
-        ) {
+        if (currentMeta[v] || (this.initService.authConfig[v as keyof IFormMeta].type === 'boolean' && meta[v] === false)) {
           meta[v] = currentMeta[v]
           meta['versionKey'] = currentMeta['versionKey']
           meta['isIframeSupported'] = currentMeta['mimeType'] === 'text/x-url' ? currentMeta['isIframeSupported'] : undefined
         } else {
-          meta[v] = JSON.parse(
-            JSON.stringify(
-              this.initService.authConfig[v as keyof IFormMeta].defaultValue[
-                originalMeta.contentType
-                // tslint:disable-next-line: ter-computed-property-spacing
-              ][0].value,
-            ),
-          )
+          meta[v] = this.initService.defaultValueFor(v as keyof IFormMeta, originalMeta.contentType)
         }
       }
     })
@@ -199,19 +181,18 @@ export class UrlUploadComponent implements OnInit {
   isIframeSupportedClicked() {
     this.storeData()
     let requestBody: any
-            requestBody = {
-          request: {
-            content: {
-              isIframeSupported : this.urlUploadForm.controls.isIframeSupported.value,
-              versionKey : this.urlUploadForm.value.versionKey,
-            },
-          },
-        }
-        this.editorService.updateContentV3(requestBody, this.currentContent).subscribe((data: any) => {
-          // tslint:disable-next-line:no-console
-          console.log(data)
-        })
-
+    requestBody = {
+      request: {
+        content: {
+          isIframeSupported: this.urlUploadForm.controls.isIframeSupported.value,
+          versionKey: this.urlUploadForm.value.versionKey,
+        },
+      },
+    }
+    this.editorService.updateContentV3(requestBody, this.currentContent).subscribe((data: any) => {
+      // tslint:disable-next-line:no-console
+      console.log(data)
+    })
   }
 
   check() {
@@ -231,7 +212,6 @@ export class UrlUploadComponent implements OnInit {
           if (v.allowIframe && v.source === 'youtube') {
             // this.urlUploadForm.controls.isIframeSupported.setValue('Yes')
             // this.urlUploadForm.controls.isIframeSupported.setValue(this.setIframeVal)
-
           } else {
             // this.urlUploadForm.controls.isIframeSupported.setValue('No')
             this.urlUploadForm.controls.mimeType.setValue('application/html')
@@ -240,9 +220,7 @@ export class UrlUploadComponent implements OnInit {
           // if (v.allowReplace) {
           switch (v.source) {
             case 'youtube':
-              this.urlUploadForm.controls.artifactUrl.setValue(
-                URLCheckerClass.youTubeUrlChange(artifactUrl),
-              )
+              this.urlUploadForm.controls.artifactUrl.setValue(URLCheckerClass.youTubeUrlChange(artifactUrl))
               // disableIframe = false;
               // this.urlUploadForm.controls.mimeType.setValue('video/x-youtube')
               this.urlUploadForm.controls.mimeType.setValue('text/x-url')
