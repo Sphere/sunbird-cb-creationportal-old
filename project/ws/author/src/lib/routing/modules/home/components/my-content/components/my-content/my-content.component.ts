@@ -50,6 +50,8 @@ import { ILeftMenu, ITable } from '@ws-widget/collection'
 
 import { PipeContentTypePipe } from '../../../../../../../../../../../../library/ws-widget/utils/src/lib/pipes/pipe-content-type/pipe-content-type.pipe'
 
+import { MyContentListBaseComponent } from '../my-content-list-base.component'
+
 /* tslint:enable */
 
 const defaultFilter = [
@@ -65,55 +67,17 @@ const defaultFilter = [
   styleUrls: ['./my-content.component.scss'],
   providers: [PipeDurationTransformPipe],
 })
-export class MyContentComponent implements OnInit, OnDestroy {
+export class MyContentComponent extends MyContentListBaseComponent implements OnInit, OnDestroy {
   /** Enter/Space keyboard equivalent for (click) handlers. */
-  readonly isActivationKey = isActivationKey
 
   filterPath = '/author/cbp/me'
-  public sideNavBarOpened = false
-  public sideNavBarOpenedMain = true
-  newDesign = true
-  tableData!: ITable
   // currentFilter = 'publish'
-  filterMenuTreeControl: FlatTreeControl<IMenuFlatNode>
-  filterMenuTreeFlattener: any
-  public cardContent!: any[]
-  public filters: any[] = []
   // public status = 'draft'
-  public status = 'published'
-  public fetchError = false
-  contentType: string[] = []
-  complexityLevel: string[] = []
-  unit: string[] = []
-  finalFilters: any = defaultFilter
-  allLanguages: any[] = []
-  searchLanguage = ''
-  public pagination!: IAuthoringPagination
-  userId!: string
-  myRoles!: Set<string>
-  totalContent!: number
-  showLoadMore!: boolean
-  routerSubscription = <Subscription>{}
-  queryFilter = ''
-  ordinals: any
-  isAdmin = false
   isReviewer = false
   isPublisher = false
-  departmentData: any
-  currentAction: 'author' | 'reviewer' | 'expiry' | 'deleted' = 'author'
-  count: any = {}
   @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<any>
-  isLtMedium$ = this.valueSvc.isLtMedium$
-  private defaultSideNavBarOpenedSubscription: any
-  mode$ = this.isLtMedium$.pipe(map(isMedium => (isMedium ? 'over' : 'side')))
-  public screenSizeIsLtMedium = false
-  leftmenues!: ILeftMenu
-  public filterMenuItems: any = []
   /* tslint:disable */
   courseTaken = _.get(this.activatedRoute, 'snapshot.data.courseTaken.data')
-  resourses: any
-  dataSource: any
-  hasChild = (_: number, node: IMenuFlatNode) => node.expandable
 
   private _transformer = (node: IFilterMenuNode, level: number) => {
     return {
@@ -128,18 +92,18 @@ export class MyContentComponent implements OnInit, OnDestroy {
   /* tslint:enable */
 
   constructor(
-    private myContSvc: MyContentService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private loadService: LoaderService,
-    private accessService: AccessControlService,
-    private snackBar: MatSnackBar,
-    private dialog: MatDialog,
-    private authInitService: AuthInitService,
-    // private durationPipe: PipeDurationTransformPipe,
-    private valueSvc: ValueService,
-    private configService: ConfigurationsService,
+    protected myContSvc: MyContentService,
+    protected activatedRoute: ActivatedRoute,
+    protected router: Router,
+    protected loadService: LoaderService,
+    protected accessService: AccessControlService,
+    protected snackBar: MatSnackBar,
+    protected dialog: MatDialog,
+    protected authInitService: AuthInitService,
+    protected valueSvc: ValueService,
+    protected configService: ConfigurationsService,
   ) {
+    super(myContSvc, activatedRoute, router, loadService, accessService, snackBar, dialog, authInitService, valueSvc, configService)
     this.courseTaken = {
       mandatoryCourseCompleted: true,
     }
@@ -186,37 +150,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // }
   }
 
-  initCardTable() {
-    this.tableData = {
-      columns: [
-        {
-          displayName: 'Course Name',
-          key: 'name',
-          isList: false,
-          prop: '',
-          link: { path: '/author/content-detail/', dParams: 'identifier' },
-          defaultValue: 'Untitled Content',
-          image: 'appIcon',
-        },
-        { displayName: 'Kind', key: 'contentType', isList: false, prop: '', defaultValue: 'NA', pipe: PipeContentTypePipe },
-        // { displayName: 'Active users', key: 'uniqueUsersCount', isList: false, prop: '', defaultValue: 0 },
-        { displayName: 'Duration', key: 'duration', defaultValue: 0, pipe: PipeDurationTransformPipe },
-      ], //  :> this will load from json
-      actions: [], // :> this will load from json
-      needCheckBox: false,
-      needHash: false,
-      sortColumn: 'name',
-      sortState: 'asc',
-      actionsMenu: {
-        headIcon: 'apps',
-        menus: [
-          { name: 'Edit', action: 'edit', disabled: false, icon: 'edit' },
-          { name: 'Delete', action: 'delete', disabled: false, icon: 'delete' },
-        ],
-        rowIcon: 'more_vert',
-      },
-    }
-  }
   ngOnDestroy() {
     if (this.routerSubscription.unsubscribe) {
       this.routerSubscription.unsubscribe()
@@ -246,10 +179,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
     })
   }
 
-  createNewComponent() {
-    this.router.navigate(['author', 'editor', 'new', 'collection'])
-  }
-
   fetchStatus() {
     switch (this.status) {
       case 'draft':
@@ -274,36 +203,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
     return ['Draft']
   }
 
-  setAction() {
-    switch (this.status) {
-      case 'draft':
-      case 'rejected':
-      case 'inreview':
-      case 'review':
-      case 'published':
-      case 'publish':
-      case 'processing':
-      case 'unpublished':
-      case 'deleted':
-        this.currentAction = 'author'
-        break
-      case 'expiry':
-        this.currentAction = 'expiry'
-        break
-    }
-  }
-  actionClick(event: any) {
-    if (event) {
-      switch (event.action) {
-        case 'edit':
-        case 'delete':
-          this.action({ type: event.action, data: event.data })
-          break
-        default:
-          break
-      }
-    }
-  }
   fetchContent(loadMoreFlag: boolean, changeFilter = true) {
     const searchV6Data = this.myContSvc.getSearchBody(
       this.status,
@@ -454,12 +353,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
     }
     return []
   }
-  search() {
-    if (this.searchInputElem.nativeElement) {
-      this.queryFilter = this.searchInputElem.nativeElement.value.trim()
-    }
-    this.fetchContent(false, false)
-  }
 
   filterApplyEvent(node: any) {
     this.pagination.offset = 0
@@ -492,108 +385,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.fetchContent(false, false)
   }
 
-  deleteContent(request: NSContent.IContentMeta) {
-    this.loadService.changeLoad.next(true)
-    this.myContSvc.deleteContent(request.identifier, request.contentType === 'Knowledge Board').subscribe(
-      () => {
-        this.loadService.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.SUCCESS,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-        this.cardContent = (this.cardContent || []).filter(v => v.identifier !== request.identifier)
-      },
-      error => {
-        if (error.status === 409) {
-          this.dialog.open(ErrorParserComponent, {
-            width: '80vw',
-            height: '90vh',
-            data: {
-              errorFromBackendData: error.error,
-            },
-          })
-        }
-        this.loadService.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.CONTENT_FAIL,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-      },
-    )
-  }
-
-  restoreContent(request: NSContent.IContentMeta) {
-    this.loadService.changeLoad.next(true)
-    this.myContSvc.restoreContent(request.identifier).subscribe(
-      () => {
-        this.loadService.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.SUCCESS,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-        this.cardContent = (this.cardContent || []).filter(v => v.identifier !== request.identifier)
-      },
-      error => {
-        if (error.status === 409) {
-          this.dialog.open(ErrorParserComponent, {
-            width: '80vw',
-            height: '90vh',
-            data: {
-              errorFromBackendData: error.error,
-            },
-          })
-        }
-        this.loadService.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.CONTENT_FAIL,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-      },
-    )
-  }
-
-  createContent(request: NSContent.IContentMeta) {
-    this.loadService.changeLoad.next(true)
-    this.myContSvc.createInAnotherLanguage(request.identifier, request.locale).subscribe(
-      (id: string) => {
-        this.loadService.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.CONTENT_CREATE_SUCCESS,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-        this.router.navigateByUrl(`/author/editor/${id}`)
-      },
-      error => {
-        if (error.status === 409) {
-          this.dialog.open(ErrorParserComponent, {
-            width: '750px',
-            height: '450px',
-            data: {
-              errorFromBackendData: error.error,
-            },
-          })
-        }
-        this.loadService.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.CONTENT_FAIL,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-      },
-    )
-  }
-
   clearAllFilters() {
     this.finalFilters = defaultFilter
     this.searchInputElem.nativeElement.value = ''
@@ -602,147 +393,6 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.dataSource.data = this.filterMenuItems
     this.filters = []
     this.fetchContent(false)
-  }
-
-  loadMore() {
-    this.pagination.offset += 1
-    this.fetchContent(true, false)
-  }
-
-  confirmAction(content: any) {
-    let message = ''
-    if (content.type === 'delete') {
-      message = 'delete'
-    } else if (content.type === 'restoreDeleted') {
-      message = 'restoreDeleted'
-    } else if (content.type === 'unpublish') {
-      message = 'unpublish'
-    } else if (content.type === 'moveToDraft' || content.type === 'moveToInReview') {
-      if (content.data.mimeType.indexOf('collection') >= 0) {
-        message = 'retrieveParent'
-      } else {
-        message = 'retrieveChild'
-      }
-    } else {
-      this.forwardBackward(content)
-      return
-    }
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '600px',
-      height: '200px',
-      data: message,
-    })
-
-    dialogRef.afterClosed().subscribe((confirm: any) => {
-      if (confirm) {
-        if (content.type === 'delete') {
-          this.deleteContent(content.data)
-        } else if (content.type === 'restoreDeleted') {
-          this.restoreContent(content.data)
-        } else if (content.type === 'unpublish' || (content.type === 'moveToDraft' && content.data.status === 'Unpublished')) {
-          this.unPublishOrDraft(content.data)
-        } else {
-          this.forwardBackward(content)
-        }
-      }
-    })
-  }
-
-  unPublishOrDraft(request: NSContent.IContentMeta) {
-    this.loadService.changeLoad.next(true)
-    this.myContSvc.upPublishOrDraft(request.identifier, request.status !== 'Unpublished').subscribe(
-      () => {
-        this.loadService.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.SUCCESS,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-        this.cardContent = (this.cardContent || []).filter(v => v.identifier !== request.identifier)
-      },
-      error => {
-        if (error.status === 409) {
-          this.dialog.open(ErrorParserComponent, {
-            width: '750px',
-            height: '450px',
-            data: {
-              errorFromBackendData: error.error,
-            },
-          })
-        }
-        this.loadService.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.CONTENT_FAIL,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
-      },
-    )
-  }
-
-  forwardBackward(content: any) {
-    const dialogRef = this.dialog.open(CommentsDialogComponent, {
-      width: '750px',
-      height: '450px',
-      data: { ...content.data, status: 'Draft' },
-    })
-
-    dialogRef.afterClosed().subscribe((commentsForm: FormGroup) => {
-      if (commentsForm) {
-        this.finalCall(commentsForm, content)
-      }
-    })
-  }
-
-  finalCall(commentsForm: FormGroup, content: any) {
-    if (commentsForm) {
-      let operationValue: any
-      switch (content.type) {
-        case 'moveToDraft':
-          operationValue = 0
-          break
-        case 'moveToInReview':
-          operationValue = -1
-          break
-      }
-      const body: NSApiRequest.IForwardBackwardActionGeneral = {
-        comment: commentsForm.controls.comments.value,
-        operation: operationValue,
-      }
-      this.loadService.changeLoad.next(true)
-      this.myContSvc.forwardBackward(body, content.data.identifier, content.data.status).subscribe(
-        () => {
-          this.loadService.changeLoad.next(false)
-          this.snackBar.openFromComponent(NotificationComponent, {
-            data: {
-              type: Notify.SUCCESS,
-            },
-            duration: NOTIFICATION_TIME * 1000,
-          })
-          this.cardContent = (this.cardContent || []).filter(v => v.identifier !== content.data.identifier)
-        },
-        error => {
-          if (error.status === 409) {
-            this.dialog.open(ErrorParserComponent, {
-              width: '80vw',
-              height: '90vh',
-              data: {
-                errorFromBackendData: error.error,
-              },
-            })
-          }
-          this.loadService.changeLoad.next(false)
-          this.snackBar.openFromComponent(NotificationComponent, {
-            data: {
-              type: Notify.CONTENT_FAIL,
-            },
-            duration: NOTIFICATION_TIME * 1000,
-          })
-        },
-      )
-    }
   }
 
   action(event: { data: NSContent.IContentMeta; type: string }) {
@@ -770,23 +420,5 @@ export class MyContentComponent implements OnInit, OnDestroy {
       case 'expiryExtend':
         this.actionOnExpiry(event.data)
     }
-  }
-
-  actionOnExpiry(content: NSContent.IContentMeta) {
-    const dialogRef = this.dialog.open(AuthExpiryDateConfirmComponent, {
-      width: '750px',
-      height: '300px',
-      data: content,
-    })
-
-    dialogRef.afterClosed().subscribe((userAction?: { isExtend: boolean; expiryDate?: string }) => {
-      if (userAction) {
-        this.cardContent = (this.cardContent || []).filter(v => v.identifier !== content.identifier)
-      }
-    })
-  }
-
-  setCurrentLanguage(lang: string) {
-    this.searchLanguage = lang
   }
 }
