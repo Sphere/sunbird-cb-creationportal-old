@@ -159,11 +159,48 @@ describe('AUTH_INIT', () => {
       })
     })
 
-    // Pre-existing data defect, carried over verbatim from the hand-written table:
-    // 'Knowledge Board' lost its first six characters, so this condition can never
-    // match and `size` effectively has no default for that content type. Pinned here
-    // rather than silently corrected, because fixing it changes authoring behaviour.
-    expect(mismatched).toEqual(['size.Knowledge Board -> ["dge Board"]'])
+    expect(mismatched).toEqual([])
+  })
+
+  /**
+   * Two entries had been corrupted by what looks like a stray find/replace: `size` held
+   * the content type 'dge Board' instead of 'Knowledge Board', and `isInIntranet` spelled
+   * the condition key 'ontentType'. Both meant the rule could never match, so those
+   * content types silently had no default. This guards the whole table against the same
+   * class of damage rather than just the two known cases.
+   */
+  it('spells every condition key and content type correctly', () => {
+    const damaged: string[] = []
+
+    fieldNames.forEach(name => {
+      const dv = form[name].defaultValue || {}
+      Object.keys(dv).forEach(contentType => {
+        const rules = dv[contentType]
+        if (!Array.isArray(rules)) {
+          return
+        }
+        rules.forEach((rule: any) => {
+          const condition = rule?.condition
+          if (!condition) {
+            return
+          }
+          Object.keys(condition).forEach(key => {
+            if (key === 'contentType') {
+              const declared: string[] = condition[key] || []
+              declared.forEach(value => {
+                if (!CONTENT_TYPES.includes(value)) {
+                  damaged.push(`${name}.${contentType}: unknown content type ${value}`)
+                }
+              })
+            } else if (key.endsWith('ontentType')) {
+              damaged.push(`${name}.${contentType}: misspelled key '${key}'`)
+            }
+          })
+        })
+      })
+    })
+
+    expect(damaged).toEqual([])
   })
 
   /**

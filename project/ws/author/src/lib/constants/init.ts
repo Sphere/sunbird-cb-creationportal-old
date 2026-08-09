@@ -994,7 +994,7 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Board': [
           {
             condition: {
-              ontentType: ['Knowledge Board'],
+              contentType: ['Knowledge Board'],
             },
             value: false,
           },
@@ -1450,48 +1450,7 @@ export const AUTH_INIT: IInitialSetup = {
           },
         ],
       } as any,
-      defaultValue: {
-        Course: [
-          {
-            condition: {
-              contentType: ['Course'],
-            },
-            value: 0,
-          },
-        ],
-        Resource: [
-          {
-            condition: {
-              contentType: ['Resource'],
-            },
-            value: 0,
-          },
-        ],
-        'Knowledge Board': [
-          {
-            condition: {
-              contentType: ['dge Board'],
-            },
-            value: 0,
-          },
-        ],
-        'Knowledge Artifact': [
-          {
-            condition: {
-              contentType: ['Knowledge Artifact'],
-            },
-            value: 0,
-          },
-        ],
-        Channel: [
-          {
-            condition: {
-              contentType: ['Channel'],
-            },
-            value: 0,
-          },
-        ],
-      } as any,
+      defaultValue: sameForAll(() => 0),
       type: 'number',
     },
     skills: {
