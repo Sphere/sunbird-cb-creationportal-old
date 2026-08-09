@@ -99,17 +99,18 @@ import { isNumber } from 'lodash'
 
 import _ from 'lodash'
 
+import { EditMetaBaseComponent } from './edit-meta-base.component'
+
 @Component({
   standalone: false,
   selector: 'ws-auth-edit-meta',
   templateUrl: './edit-meta.component.html',
   styleUrls: ['./edit-meta.component.scss'],
 })
-export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
+export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   /** Enter/Space keyboard equivalent for (click) handlers. */
   readonly isActivationKey = isActivationKey
 
-  contentMeta!: NSContent.IContentMeta
   @Output() data = new EventEmitter<string>()
   @Output() courseEditFormSubmit = new EventEmitter<boolean>()
   // Emits the live validity of the course-details form so the parent stepper can
@@ -122,56 +123,13 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   @Input() type = ''
   clickedBtnNext: boolean = false
   saveTriggerSub?: Subscription
-  location = CONTENT_BASE_STATIC
   editMeta = 'true'
-  selectable = true
-  removable = true
-  addOnBlur = true
-  addConcepts = false
-  isFileUploaded = false
-  fileUploadForm!: FormGroup
-  creatorContactsCtrl!: FormControl
-  trackContactsCtrl!: FormControl
-  publisherDetailsCtrl!: FormControl
-  editorsCtrl!: FormControl
-  creatorDetailsCtrl!: FormControl
-  audienceCtrl!: FormControl
-  jobProfileCtrl!: FormControl
-  regionCtrl!: FormControl
-  accessPathsCtrl!: FormControl
-  keywordsCtrl!: FormControl
-  selectedSkills: string[] = []
-  canUpdate = true
-  ordinals!: any
-  resourceTypes: string[] = []
-  employeeList: any[] = []
-  audienceList: any[] = []
-  jobProfileList: any[] = []
-  regionList: any[] = []
-  accessPathList: any[] = []
-  infoType = ''
-  isSiemens = false
-  fetchTagsStatus: 'done' | 'fetching' | null = null
-  readonly separatorKeysCodes: number[] = [ENTER, COMMA]
-  selectedIndex = 0
   selfAssessmentSelected!: boolean
-  hours = 0
-  minutes = 1
-  seconds = 0
   @Input() parentContent: string | null = null
-  routerSubscription!: Subscription
-  imageTypes = IMAGE_SUPPORT_TYPES
-  canExpiry = true
-  showMoreGlance = false
-  complexityLevelList: string[] = []
-  isEditEnabled = false
-  public sideNavBarOpened = false
   gatingEnabled!: FormControl
   courseVisibility!: FormControl
   selfAssessment!: FormControl
   //issueCertification!: FormControl
-  bucket: string = ''
-  certificateList: any[] = ['Yes', 'No']
   languageList: any[] = [
     {
       name: 'English',
@@ -194,7 +152,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       value: 'or',
     },
   ]
-  isAddCerticate: boolean = false
   resourceDurat: any = []
   sumDuration: any
   proficiencyList: any
@@ -212,15 +169,8 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   @ViewChild('keywordsSearch', { static: true }) keywordsSearch!: ElementRef<any>
   languageListSubscription!: Subscription
 
-  timer: any
-
-  filteredOptions$: Observable<string[]> = of([])
-  saveParent: any
   languageList$!: Observable<any[]>
   //UI variables
-  moduleName: string = 'undefined title'
-  isSaveModuleFormEnable: boolean = false
-  moduleButtonName: string = 'Create'
   fieldActive!: boolean
   isFormValid!: boolean
   competencies: any
@@ -229,23 +179,35 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   // (seeded synchronously) never flash before the latest server data arrives.
   metaLoaded = false
   constructor(
-    // private storeService: CollectionStoreService,
-    private formBuilder: FormBuilder,
-    private uploadService: UploadService,
-    private snackBar: MatSnackBar,
+    protected formBuilder: FormBuilder,
+    protected uploadService: UploadService,
+    protected snackBar: MatSnackBar,
     public dialog: MatDialog,
-    private editorService: EditorService,
-    private contentService: EditorContentService,
-    private configSvc: ConfigurationsService,
-    private ref: ChangeDetectorRef,
-    // private interestSvc: InterestService,
-    private loader: LoaderService,
-    private authInitService: AuthInitService,
-    private accessService: AccessControlService,
-    // private apiService: ApiService,
-    private http: HttpClient,
-    private router: Router,
+    protected editorService: EditorService,
+    protected contentService: EditorContentService,
+    protected configSvc: ConfigurationsService,
+    protected ref: ChangeDetectorRef,
+    protected loader: LoaderService,
+    protected authInitService: AuthInitService,
+    protected accessService: AccessControlService,
+    protected http: HttpClient,
+    protected router: Router,
   ) {
+    super(
+      formBuilder,
+      uploadService,
+      snackBar,
+      dialog,
+      editorService,
+      contentService,
+      configSvc,
+      ref,
+      loader,
+      authInitService,
+      accessService,
+      http,
+      router,
+    )
     // this.authInitService.publishMessage.subscribe(
     //   (data: any) => {
     //     console.log("edit-meta", data)
@@ -266,7 +228,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       // tslint:disable-next-line: align
     }, 100)
   }
-  contentForm!: FormGroup
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['triggerNext']?.currentValue === true) {
@@ -675,29 +636,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
 
   // trackBy for the form option/chip lists so *ngFor reuses rows instead of
   // re-rendering the whole list on each change.
-  trackByIndex(index: number): number {
-    return index
-  }
-
-  changeCertificate(event: any): void {
-    if (event == 'Yes') {
-      this.isAddCerticate = true
-    } else {
-      this.isAddCerticate = false
-    }
-  }
-
-  optionSelected(keyword: string) {
-    this.keywordsCtrl.setValue(' ')
-    // this.keywordsSearch.nativeElement.blur()
-    if (keyword && keyword.length) {
-      const value = this.contentForm.controls.keywords.value || []
-      if (value.indexOf(keyword) === -1) {
-        value.push(keyword)
-        this.contentForm.controls.keywords.setValue(value)
-      }
-    }
-  }
 
   ngOnDestroy() {
     if (this.routerSubscription) {
@@ -758,66 +696,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     this.changeResourceType()
   }
 
-  filterOrdinals() {
-    this.complexityLevelList = []
-    this.ordinals.complexityLevel.map((v: any) => {
-      if (v.condition) {
-        let canAdd = false
-        // tslint:disable-next-line: whitespace
-        ;(v.condition.showFor || []).map((con: any) => {
-          let innerCondition = false
-          Object.keys(con).forEach(meta => {
-            if (
-              con[meta].indexOf(
-                (this.contentForm.controls[meta] && this.contentForm.controls[meta].value) ||
-                  this.contentMeta[meta as keyof NSContent.IContentMeta],
-              ) > -1
-            ) {
-              innerCondition = true
-            }
-          })
-          if (innerCondition) {
-            canAdd = true
-          }
-        })
-        if (canAdd) {
-          // tslint:disable-next-line: semicolon // tslint:disable-next-line: whitespace
-          ;(v.condition.nowShowFor || []).map((con: any) => {
-            let innerCondition = false
-            Object.keys(con).forEach(meta => {
-              if (
-                con[meta].indexOf(
-                  (this.contentForm.controls[meta] && this.contentForm.controls[meta].value) ||
-                    this.contentMeta[meta as keyof NSContent.IContentMeta],
-                ) < 0
-              ) {
-                innerCondition = true
-              }
-            })
-            if (innerCondition) {
-              canAdd = false
-            }
-          })
-        }
-        if (canAdd) {
-          this.complexityLevelList.push(v.value)
-        }
-      } else {
-        if (typeof v === 'string') {
-          this.complexityLevelList.push(v)
-        } else {
-          this.complexityLevelList.push(v.value)
-        }
-      }
-    })
-  }
-
-  assignExpiryDate() {
-    this.canExpiry = !this.canExpiry
-    this.contentForm.controls.expiryDate.setValue(
-      this.canExpiry ? new Date(new Date().setMonth(new Date().getMonth() + 6)) : '99991231T235959+0000',
-    )
-  }
   assignFields() {
     if (!this.contentForm) {
       this.createForm()
@@ -984,70 +862,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       this.addedCompetency = combinedArray
     })
   }
-  convertToISODate(date = ''): Date {
-    try {
-      return new Date(
-        `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}${date.substring(
-          8,
-          11,
-        )}:${date.substring(11, 13)}:${date.substring(13, 15)}.000Z`,
-      )
-    } catch (ex) {
-      return new Date(new Date().setMonth(new Date().getMonth() + 6))
-    }
-  }
-
-  changeMimeType() {
-    const artifactUrl = this.contentForm.controls.artifactUrl ? this.contentForm.controls.artifactUrl.value : ''
-    if (this.contentForm.controls.contentType.value === 'Course') {
-      this.contentForm.controls.mimeType.setValue('application/vnd.ekstep.content-collection')
-    } else {
-      this.contentForm.controls.mimeType.setValue('application/html')
-      if (
-        this.configSvc.instanceConfig &&
-        this.configSvc.instanceConfig.authoring &&
-        this.configSvc.instanceConfig.authoring.urlPatternMatching
-      ) {
-        this.configSvc.instanceConfig.authoring.urlPatternMatching.forEach(v => {
-          if (artifactUrl.match(v.pattern) && v.allowIframe && v.source === 'youtube') {
-            this.contentForm.controls.mimeType.setValue('video/x-youtube')
-          }
-        })
-      }
-    }
-  }
-
-  changeResourceType() {
-    if (this.contentForm.controls.contentType.value === 'Resource') {
-      this.resourceTypes = this.ordinals.resourceType || this.ordinals.categoryType || []
-    } else {
-      this.resourceTypes = this.ordinals['Offering Mode'] || this.ordinals.categoryType || []
-    }
-
-    if (this.resourceTypes.indexOf(this.contentForm.controls.categoryType.value) < 0) {
-      this.contentForm.controls.resourceType.setValue('')
-    }
-  }
-
-  private setDuration(seconds: any) {
-    const minutes = seconds > 59 ? Math.floor(seconds / 60) : 0
-    const second = seconds % 60
-    this.hours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
-    this.minutes = minutes ? minutes % 60 : 0
-    this.seconds = second || 0
-  }
-
-  timeToSeconds() {
-    let total = 0
-    total += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
-    total += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
-    total += this.hours ? this.hours * 60 * 60 : 0
-    this.contentForm.controls.duration.setValue(total)
-  }
-
-  showInfo(type: string) {
-    this.infoType = this.infoType === type ? '' : type
-  }
 
   storeData() {
     try {
@@ -1210,51 +1024,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     this.contentService.setUpdatedMeta({ [meta]: value } as any, this.contentMeta.identifier)
   }
 
-  formNext(index: number) {
-    this.selectedIndex = index
-  }
-
-  addKeyword(event: MatChipInputEvent): void {
-    const input = event.input
-    event.value
-      .split(/[,]+/)
-      .map((val: string) => val.trim())
-      .forEach((value: string) => this.optionSelected(value))
-    input.value = ''
-  }
-
-  addReferences(event: MatChipInputEvent): void {
-    const input = event.input
-    const value = event.value
-
-    // Add our fruit
-    if ((value || '').trim().length) {
-      const oldArray = this.contentForm.controls.references.value || []
-      oldArray.push({ title: '', url: value })
-      this.contentForm.controls.references.setValue(oldArray)
-    }
-
-    // Reset the input value
-    if (input) {
-      input.value = ''
-    }
-  }
-
-  removeKeyword(keyword: any): void {
-    const index = this.contentForm.controls.keywords.value.indexOf(keyword)
-    this.contentForm.controls.keywords.value.splice(index, 1)
-    this.contentForm.controls.keywords.setValue(this.contentForm.controls.keywords.value)
-  }
-
-  removeReferences(index: number): void {
-    this.contentForm.controls.references.value.splice(index, 1)
-    this.contentForm.controls.references.setValue(this.contentForm.controls.references.value)
-  }
-
-  compareSkillFn(value1: { identifier: string }, value2: { identifier: string }) {
-    return value1 && value2 ? value1.identifier === value2.identifier : value1 === value2
-  }
-
   addCreatorDetails(event: MatChipInputEvent): void {
     const input = event.input
     const value = (event.value || '').trim()
@@ -1268,12 +1037,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     }
   }
 
-  removeCreatorDetails(keyword: any): void {
-    const index = this.contentForm.controls.creatorDetails.value.indexOf(keyword)
-    this.contentForm.controls.creatorDetails.value.splice(index, 1)
-    this.contentForm.controls.creatorDetails.setValue(this.contentForm.controls.creatorDetails.value)
-  }
-
   addToFormControl(event: MatAutocompleteSelectedEvent, fieldName: string): void {
     const value = (event.option.value || '').trim()
     if (value && this.contentForm.controls[fieldName].value.indexOf(value) === -1) {
@@ -1283,16 +1046,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
 
     this[`${fieldName}View` as keyof EditMetaComponent].nativeElement.value = ''
     this[`${fieldName}Ctrl` as keyof EditMetaComponent].setValue(null)
-  }
-
-  removeFromFormControl(keyword: any, fieldName: string): void {
-    const index = this.contentForm.controls[fieldName].value.indexOf(keyword)
-    this.contentForm.controls[fieldName].value.splice(index, 1)
-    this.contentForm.controls[fieldName].setValue(this.contentForm.controls[fieldName].value)
-  }
-
-  conceptToggle() {
-    this.addConcepts = !this.addConcepts
   }
 
   // uploadAppIcon(file: File) {
@@ -1728,9 +1481,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       },
     })
   }
-  changeToDefaultImg($event: any) {
-    $event.target.src = this.configSvc.instanceConfig ? this.configSvc.instanceConfig.logos.defaultContent : ''
-  }
 
   generateUrl(oldUrl: any) {
     //const chunk = oldUrl.split('/')
@@ -1756,28 +1506,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     // console.log(newUrl)
     // return newUrl
     return oldUrl
-  }
-
-  showError(meta: string) {
-    if (
-      this.contentService.checkCondition(this.contentMeta.identifier, meta, 'required') &&
-      !this.contentService.isPresent(meta, this.contentMeta.identifier)
-    ) {
-      if (this.isSubmitPressed) {
-        return true
-      }
-      if (this.contentForm.controls[meta] && this.contentForm.controls[meta].touched) {
-        return true
-      }
-      return false
-    }
-    return false
-  }
-
-  removeEmployee(employee: NSContent.IAuthorDetails, field: string): void {
-    const index = this.contentForm.controls[field].value.indexOf(employee)
-    this.contentForm.controls[field].value.splice(index, 1)
-    this.contentForm.controls[field].setValue(this.contentForm.controls[field].value)
   }
 
   addEmployee(event: MatAutocompleteSelectedEvent, field: string) {
@@ -1834,46 +1562,11 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     }
   }
 
-  removeField(event: MatChipInputEvent) {
-    // Reset the input value
-    if (event.input) {
-      event.input.value = ''
-    }
-  }
-
   private fetchAudience() {
     if ((this.audienceCtrl.value || '').trim()) {
       this.audienceList = this.ordinals.audience.filter((v: any) => v.toLowerCase().indexOf(this.audienceCtrl.value.toLowerCase()) > -1)
     } else {
       this.audienceList = this.ordinals.audience.slice()
-    }
-  }
-
-  private fetchJobProfile() {
-    if ((this.jobProfileCtrl.value || '').trim()) {
-      this.jobProfileList = this.ordinals.jobProfile.filter(
-        (v: any) => v.toLowerCase().indexOf(this.jobProfileCtrl.value.toLowerCase()) > -1,
-      )
-    } else {
-      this.jobProfileList = this.ordinals.jobProfile.slice()
-    }
-  }
-
-  private fetchRegion() {
-    if ((this.regionCtrl.value || '').trim()) {
-      this.regionList = this.ordinals.region.filter((v: any) => v.toLowerCase().indexOf(this.regionCtrl.value.toLowerCase()) > -1)
-    } else {
-      this.regionList = []
-    }
-  }
-
-  private fetchAccessRestrictions() {
-    if (this.accessPathsCtrl.value.trim()) {
-      this.accessPathList = this.ordinals.accessPaths.filter(
-        (v: any) => v.toLowerCase().indexOf(this.accessPathsCtrl.value.toLowerCase()) === 0,
-      )
-    } else {
-      this.accessPathList = this.ordinals.accessPaths.slice()
     }
   }
 
@@ -1886,13 +1579,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
 
   get instructionsByteLength(): number {
     return utf8ByteLength(this.contentForm && this.contentForm.controls.instructions ? this.contentForm.controls.instructions.value : '')
-  }
-
-  checkCondition(meta: string, type: 'show' | 'required' | 'disabled'): boolean {
-    if (type === 'disabled' && !this.isEditEnabled) {
-      return true
-    }
-    return this.contentService.checkCondition(this.contentMeta.identifier, meta, type)
   }
 
   createForm() {
@@ -2042,24 +1728,6 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   setPurposeValue(sub: any) {
     this.contentForm.controls.purpose.setValue(sub.trim())
   }
-  openCatalogSelector() {
-    const oldCatalogs = this.addCommonToCatalog(this.contentForm.controls.catalogPaths.value)
-    const dialogRef = this.dialog.open(CatalogSelectComponent, {
-      width: '70%',
-      maxHeight: '90vh',
-
-      data: JSON.parse(JSON.stringify(oldCatalogs)),
-    })
-    dialogRef.afterClosed().subscribe((response: string[]) => {
-      // const catalogs = this.removeCommonFromCatalog(response)
-      this.contentForm.controls.catalogPaths.setValue(response)
-    })
-  }
-
-  removeSkill(skill: string) {
-    const index = this.selectedSkills.indexOf(skill)
-    this.selectedSkills.splice(index, 1)
-  }
 
   // removeCatalog(index: number) {
   //   const catalogs = this.contentForm.controls.catalogPaths.value
@@ -2079,75 +1747,7 @@ export class EditMetaComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   //   return newCatalog
   // }
 
-  copyData(type: 'keyword' | 'previewUrl') {
-    const parentId = this.contentService.parentUpdatedMeta().identifier
-    const selBox = document.createElement('textarea')
-    selBox.style.position = 'fixed'
-    selBox.style.left = '0'
-    selBox.style.top = '0'
-    selBox.style.opacity = '0'
-    if (type === 'keyword') {
-      selBox.value = this.contentForm.controls.keywords.value
-    } else if (type === 'previewUrl') {
-      // selBox.value =
-      //   // tslint:disable-next-line: max-line-length
-      //   `${window.location.origin}/viewer/${VIEWER_ROUTE_FROM_MIME(
-      //     this.contentForm.controls.mimeType.value,
-      //   )}/${this.contentMeta.identifier}?preview=true`
-
-      selBox.value =
-        // tslint:disable-next-line: max-line-length
-        `${window.location.origin}/author/viewer/${VIEWER_ROUTE_FROM_MIME(
-          this.contentForm.controls.mimeType.value,
-        )}/${this.contentMeta.identifier}?collectionId=${parentId}&collectionType=Course`
-    }
-    document.body.appendChild(selBox)
-    selBox.focus()
-    selBox.select()
-    document.execCommand('copy')
-    document.body.removeChild(selBox)
-    this.snackBar.openFromComponent(NotificationComponent, {
-      data: {
-        type: Notify.COPY,
-      },
-      duration: NOTIFICATION_TIME * 1000,
-    })
-  }
-
-  addCommonToCatalog(catalogs: string[]): string[] {
-    const newCatalog: any[] = []
-    catalogs.forEach(catalog => {
-      const prefix = 'Common>'
-      if (catalog.indexOf(prefix) > -1) {
-        newCatalog.push(catalog)
-      } else {
-        newCatalog.push(prefix.concat(catalog))
-      }
-    })
-    return newCatalog
-  }
-
-  updateReviewer() {
-    // this.contentForm.controls.trackContacts.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
-    // this.contentForm.controls.publisherDetails.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
-  }
-
-  public parseJsonData(s: string) {
-    try {
-      const parsedString = JSON.parse(s)
-      return parsedString
-    } catch {
-      return []
-    }
-  }
-
   onSubmit() {
     this.courseEditFormSubmit.emit(true)
-  }
-
-  moduleCreate(name: string) {
-    this.moduleName = name
-    this.isSaveModuleFormEnable = true
-    this.moduleButtonName = 'Save'
   }
 }
