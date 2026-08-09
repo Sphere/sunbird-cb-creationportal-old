@@ -834,36 +834,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         // window.location.reload()
       },
       (error: any) => {
-        if (error.status === 409) {
-          const errorMap = new Map<string, NSContent.IContentMeta>()
-          Object.keys(this.contentService.originalContent).forEach(v => errorMap.set(v, this.contentService.originalContent[v]))
-          const dialog = this.dialog.open(ErrorParserComponent, {
-            width: '80vw',
-            height: '90vh',
-            data: {
-              errorFromBackendData: error.error,
-              dataMapping: errorMap,
-            },
-          })
-          dialog.afterClosed().subscribe(v => {
-            if (v) {
-              if (typeof v === 'string') {
-                this.storeService.selectedNodeChange.next((this.storeService.lexIdMap.get(v) as number[])[0])
-                this.contentService.changeActiveCont.next(v)
-              } else {
-                this.storeService.selectedNodeChange.next(v)
-                this.contentService.changeActiveCont.next(this.storeService.uniqueIdMap.get(v) as string)
-              }
-            }
-          })
-        }
-        this.loaderService.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.SAVE_FAIL,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
+        this.handleSaveConflict(error, { width: '80vw', height: '90vh' })
       },
     )
   }
@@ -935,36 +906,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
           // window.location.reload()
         },
         (error: any) => {
-          if (error.status === 409) {
-            const errorMap = new Map<string, NSContent.IContentMeta>()
-            Object.keys(this.contentService.originalContent).forEach(v => errorMap.set(v, this.contentService.originalContent[v]))
-            const dialog = this.dialog.open(ErrorParserComponent, {
-              width: '80vw',
-              height: '90vh',
-              data: {
-                errorFromBackendData: error.error,
-                dataMapping: errorMap,
-              },
-            })
-            dialog.afterClosed().subscribe(v => {
-              if (v) {
-                if (typeof v === 'string') {
-                  this.storeService.selectedNodeChange.next((this.storeService.lexIdMap.get(v) as number[])[0])
-                  this.contentService.changeActiveCont.next(v)
-                } else {
-                  this.storeService.selectedNodeChange.next(v)
-                  this.contentService.changeActiveCont.next(this.storeService.uniqueIdMap.get(v) as string)
-                }
-              }
-            })
-          }
-          this.loaderService.changeLoad.next(false)
-          this.snackBar.openFromComponent(NotificationComponent, {
-            data: {
-              type: Notify.SAVE_FAIL,
-            },
-            duration: NOTIFICATION_TIME * 1000,
-          })
+          this.handleSaveConflict(error, { width: '80vw', height: '90vh' })
         },
       )
     } else {
@@ -2470,36 +2412,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(url)
       },
       error => {
-        if (error.status === 409) {
-          const errorMap = new Map<string, NSContent.IContentMeta>()
-          Object.keys(this.contentService.originalContent).forEach(v => errorMap.set(v, this.contentService.originalContent[v]))
-          const dialog = this.dialog.open(ErrorParserComponent, {
-            width: '750px',
-            height: '450px',
-            data: {
-              errorFromBackendData: error.error,
-              dataMapping: errorMap,
-            },
-          })
-          dialog.afterClosed().subscribe(v => {
-            if (v) {
-              if (typeof v === 'string') {
-                this.storeService.selectedNodeChange.next((this.storeService.lexIdMap.get(v) as number[])[0])
-                this.contentService.changeActiveCont.next(v)
-              } else {
-                this.storeService.selectedNodeChange.next(v)
-                this.contentService.changeActiveCont.next(this.storeService.uniqueIdMap.get(v) as string)
-              }
-            }
-          })
-        }
-        this.loaderService.changeLoad.next(false)
-        this.snackBar.openFromComponent(NotificationComponent, {
-          data: {
-            type: Notify.SAVE_FAIL,
-          },
-          duration: NOTIFICATION_TIME * 1000,
-        })
+        this.handleSaveConflict(error, { width: '750px', height: '450px' })
       },
     )
   }
@@ -3766,5 +3679,46 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
 
   courseEditFormSubmit(e: boolean) {
     this.isModelHeaderView = e
+  }
+
+  /**
+   * Shared failure path for every save on this screen.
+   *
+   * A 409 means the collection changed underneath the author, so the error parser
+   * dialog is opened and selecting an entry in it navigates to the offending node.
+   * Either way the loader is cleared and a save-failure notification is shown. The
+   * dialog size is the only thing the call sites ever varied.
+   */
+  private handleSaveConflict(error: any, dialogSize: { width: string; height: string }) {
+    if (error.status === 409) {
+      const errorMap = new Map<string, NSContent.IContentMeta>()
+      Object.keys(this.contentService.originalContent).forEach(v => errorMap.set(v, this.contentService.originalContent[v]))
+      const dialog = this.dialog.open(ErrorParserComponent, {
+        width: dialogSize.width,
+        height: dialogSize.height,
+        data: {
+          errorFromBackendData: error.error,
+          dataMapping: errorMap,
+        },
+      })
+      dialog.afterClosed().subscribe(v => {
+        if (v) {
+          if (typeof v === 'string') {
+            this.storeService.selectedNodeChange.next((this.storeService.lexIdMap.get(v) as number[])[0])
+            this.contentService.changeActiveCont.next(v)
+          } else {
+            this.storeService.selectedNodeChange.next(v)
+            this.contentService.changeActiveCont.next(this.storeService.uniqueIdMap.get(v) as string)
+          }
+        }
+      })
+    }
+    this.loaderService.changeLoad.next(false)
+    this.snackBar.openFromComponent(NotificationComponent, {
+      data: {
+        type: Notify.SAVE_FAIL,
+      },
+      duration: NOTIFICATION_TIME * 1000,
+    })
   }
 }
