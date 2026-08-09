@@ -155,4 +155,45 @@ describe('WIDGET_LIBRARY constant', () => {
       expect(WIDGET_LIBRARY.empty.widgetType).toBe('')
     })
   })
+
+  /**
+   * Repeated blocks are built by shared factories rather than written out per entry.
+   * `renderer-v2` reads entries straight out of this table without cloning, so the
+   * factories must hand back a fresh object each time — otherwise editing one widget's
+   * data would silently rewrite every widget that shares the preset.
+   */
+  describe('entry isolation', () => {
+    const library = WIDGET_LIBRARY as any
+
+    it('never shares a nested object between two entries', () => {
+      const seen = new Map<unknown, string>()
+      const shared: string[] = []
+
+      Object.keys(library).forEach(name => {
+        ;['data', 'widgetData', 'dimensions', 'widgetHostStyle'].forEach(field => {
+          const value = library[name][field]
+          if (value === null || typeof value !== 'object') {
+            return
+          }
+          const owner = seen.get(value)
+          if (owner) {
+            shared.push(`${name}.${field} is the same object as ${owner}.${field}`)
+          } else {
+            seen.set(value, name)
+          }
+        })
+      })
+
+      expect(shared).toEqual([])
+    })
+
+    it('mutating one entry leaves entries sharing the same preset untouched', () => {
+      expect(library.one_audio.data).not.toBe(library.two_audio.data)
+
+      library.one_audio.data.url = 'https://example.test/changed.mp3'
+
+      expect(library.two_audio.data.url).toBe('')
+      library.one_audio.data.url = ''
+    })
+  })
 })

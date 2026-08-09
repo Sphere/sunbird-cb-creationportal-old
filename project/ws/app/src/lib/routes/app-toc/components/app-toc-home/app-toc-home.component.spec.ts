@@ -418,18 +418,6 @@ describe('AppTocHomeComponent', () => {
       expect(component.checkJson('nope')).toBe(false)
     })
 
-    it('enableAnalytics follows the restricted-feature flag', () => {
-      const component = build()
-      expect(component.enableAnalytics).toBe(true)
-      configSvc.restrictedFeatures = new Set(['tocAnalytics'])
-      expect(component.enableAnalytics).toBe(false)
-    })
-
-    it('enableAnalytics is false with no feature set loaded', () => {
-      configSvc.restrictedFeatures = null
-      expect(build().enableAnalytics).toBe(false)
-    })
-
     // jsdom keeps window.pageYOffset at 0 and it is not redefinable, so both
     // branches are driven by moving the menu offset relative to that scroll.
     it('pins the menu once the page has scrolled past it', () => {

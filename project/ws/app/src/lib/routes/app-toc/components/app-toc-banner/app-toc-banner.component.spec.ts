@@ -52,7 +52,6 @@ describe('AppTocBannerComponent', () => {
       showStartButton: jest.fn().mockReturnValue(true),
       changeMessage: jest.fn(),
       subtitleOnBanners: true,
-      analyticsFetchStatus: 'done',
     }
     configSvc = {
       instanceConfig: { logos: { defaultSourceLogo: 'logo.png' } },
@@ -684,10 +683,9 @@ describe('AppTocBannerComponent', () => {
   })
 
   describe('ngOnDestroy', () => {
-    it('resets the analytics status and drops every subscription', () => {
+    it('drops every subscription', () => {
       component.ngOnInit()
       component.ngOnDestroy()
-      expect(tocSvc.analyticsFetchStatus).toBe('none')
       expect(component.routerParamSubscription!.closed).toBe(true)
       expect(component.routeSubscription!.closed).toBe(true)
       expect(component.routeDataSubscription!.closed).toBe(true)

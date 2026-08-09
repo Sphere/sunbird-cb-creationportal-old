@@ -15,9 +15,6 @@ describe('ProfileComponent', () => {
     learning: { displayName: 'Learning' },
     achievements: { displayName: 'Competency' },
     interests: { displayName: 'Interest' },
-    plans: { displayName: 'Plans' },
-    collaborators: { displayName: 'Collaborators' },
-    featureUsage: { displayName: 'Feature Usage' },
     settings: { displayName: 'Settings' },
   }
 
@@ -48,9 +45,6 @@ describe('ProfileComponent', () => {
       ['learning', 'Learning'],
       ['competency', 'Competency'],
       ['interest', 'Interest'],
-      ['plans', 'Plans'],
-      ['collaborators', 'Collaborators'],
-      ['feature-usage', 'Feature Usage'],
       ['settings', 'Settings'],
     ]
 

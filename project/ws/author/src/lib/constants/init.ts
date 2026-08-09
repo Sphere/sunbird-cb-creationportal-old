@@ -1,7 +1,148 @@
 import { IInitialSetup } from '../interface/initialSetup'
 
-import { IFormMeta } from '../interface/form'
+/**
+ * Every form field is configured per content type, and the great majority of those
+ * configurations are the same shape repeated verbatim. The helpers below build that
+ * shape so the table below states only what actually differs between fields.
+ *
+ * Each helper takes a *factory* rather than a value: the hand-written literals this
+ * replaces gave every content type its own instance, so a mutation to one could not
+ * leak into another. Building fresh values per content type preserves that.
+ */
+const CONTENT_TYPES = ['Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel']
 
+function perContentType(make: (contentType: string) => any): any {
+  const out: any = {}
+  CONTENT_TYPES.forEach(contentType => {
+    out[contentType] = make(contentType)
+  })
+  return out
+}
+
+/** A `defaultValue` map where every content type resolves to its own copy of the same value. */
+function sameForAll(make: () => any): any {
+  return perContentType(contentType => [{ condition: { contentType: [contentType] } as any, value: make() }])
+}
+
+/** An empty rule list for every content type. */
+function emptyForAll(): any {
+  return perContentType(() => [] as any)
+}
+
+/** The six rule maps in their canonical order, all unset. Spread first, then override. */
+function noRules(): any {
+  return {
+    mandatoryFor: {} as any,
+    notMandatoryFor: {} as any,
+    showFor: {} as any,
+    notDisabledFor: {} as any,
+    disabledFor: {} as any,
+    notShowFor: {} as any,
+  }
+}
+
+/** The original default expiry: six months from load. Kept as code so it stays relative. */
+function sixMonthsOut(): Date {
+  return new Date(new Date().setMonth(new Date().getMonth() + 6))
+}
+
+const FLOW_1 = {
+  internalFlow: {
+    common: ['Draft', 'InReview', 'Reviewed', 'Live'],
+    conditional: [
+      {
+        condition: {
+          mimeType: ['application/pdf', 'application/x-mpegURL', 'audio/mpeg'],
+        },
+        flow: ['Draft', 'Reviewed', 'Live'],
+      },
+      {
+        condition: {
+          mimeType: ['application/html'],
+        },
+        flow: ['Draft', 'Reviewed', 'Live'],
+      },
+    ],
+  },
+  externalFlow: {
+    common: ['Draft', 'InReview', 'Reviewed', 'Live'],
+    conditional: [
+      {
+        condition: {
+          mimeType: ['application/pdf', 'application/x-mpegURL', 'audio/mpeg'],
+        },
+        flow: ['Draft', 'Reviewed', 'Live'],
+      },
+      {
+        condition: {
+          mimeType: ['application/html'],
+        },
+        flow: ['Draft', 'Live'],
+      },
+    ],
+  },
+} as any
+
+const FLOW_2 = {
+  internalFlow: {
+    common: ['Draft', 'Reviewed', 'Live'],
+  },
+  externalFlow: {
+    common: ['Draft', 'Reviewed', 'Live'],
+  },
+} as any
+
+const FLOW_3 = {
+  internalFlow: {
+    common: ['Draft', 'Reviewed', 'Live'],
+  },
+  externalFlow: {
+    common: ['Draft', 'Live'],
+  },
+} as any
+
+const FLOW_4 = {
+  internalFlow: {
+    common: ['Draft', 'InReview', 'Reviewed', 'Live'],
+  },
+  externalFlow: {
+    common: ['Draft', 'InReview', 'Reviewed', 'Live'],
+  },
+} as any
+
+const FLOW_5 = {
+  internalFlow: {
+    common: ['Draft', 'InReview', 'Reviewed', 'Live'],
+    conditional: [
+      {
+        condition: {
+          isExternal: [true],
+        },
+        flow: ['Draft', 'Reviewed', 'Live'],
+      },
+    ],
+  },
+  externalFlow: {
+    common: ['Draft', 'InReview', 'Reviewed', 'Live'],
+    conditional: [
+      {
+        condition: {
+          isExternal: [true],
+        },
+        flow: ['Draft', 'Live'],
+      },
+    ],
+  },
+} as any
+
+const FLOW_6 = {
+  internalFlow: {
+    common: ['Draft', 'Reviewed', 'Live'],
+  },
+  externalFlow: {
+    common: ['Draft', 'InReview', 'Reviewed', 'Live'],
+  },
+} as any
 
 export const AUTH_INIT: IInitialSetup = {
   contentTypes: [
@@ -15,100 +156,13 @@ export const AUTH_INIT: IInitialSetup = {
       resourceType: '',
       hasEnabled: true,
       canShow: true,
-      allowedRoles: [
-        'author',
-        'creator',
-        'content-creator',
-        'editor',
-        'admin',
-        'content-admin',
-        'super-admin',
-      ],
-      flow: {
-        internalFlow: {
-          common: [
-            'Draft',
-            'InReview',
-            'Reviewed',
-            'Live',
-          ],
-          conditional: [
-            {
-              condition: {
-                mimeType: [
-                  'application/pdf',
-                  'application/x-mpegURL',
-                  'audio/mpeg',
-                ],
-              },
-              flow: [
-                'Draft',
-                'Reviewed',
-                'Live',
-              ],
-            },
-            {
-              condition: {
-                mimeType: [
-                  'application/html',
-                ],
-              },
-              flow: [
-                'Draft',
-                'Reviewed',
-                'Live',
-              ],
-            },
-          ],
-        },
-        externalFlow: {
-          common: [
-            'Draft',
-            'InReview',
-            'Reviewed',
-            'Live',
-          ],
-          conditional: [
-            {
-              condition: {
-                mimeType: [
-                  'application/pdf',
-                  'application/x-mpegURL',
-                  'audio/mpeg',
-                ],
-              },
-              flow: [
-                'Draft',
-                'Reviewed',
-                'Live',
-              ],
-            },
-            {
-              condition: {
-                mimeType: [
-                  'application/html',
-                ],
-              },
-              flow: [
-                'Draft',
-                'Live',
-              ],
-            },
-          ],
-        },
-      } as any,
+      allowedRoles: ['author', 'creator', 'content-creator', 'editor', 'admin', 'content-admin', 'super-admin'],
+      flow: FLOW_1,
       additionalMeta: {
         isExternal: false,
         isIframeSupported: 'Yes',
       } as any,
-      children: [
-        'url',
-        'pdf',
-        'video',
-        'audio',
-        'assessment',
-        'quiz',
-      ],
+      children: ['url', 'pdf', 'video', 'audio', 'assessment', 'quiz'],
     },
     {
       name: 'pdf',
@@ -120,31 +174,8 @@ export const AUTH_INIT: IInitialSetup = {
       resourceType: '',
       hasEnabled: true,
       canShow: true,
-      allowedRoles: [
-        'author',
-        'creator',
-        'content-creator',
-        'editor',
-        'admin',
-        'content-admin',
-        'super-admin',
-      ],
-      flow: {
-        internalFlow: {
-          common: [
-            'Draft',
-            'Reviewed',
-            'Live',
-          ],
-        },
-        externalFlow: {
-          common: [
-            'Draft',
-            'Reviewed',
-            'Live',
-          ],
-        },
-      } as any,
+      allowedRoles: ['author', 'creator', 'content-creator', 'editor', 'admin', 'content-admin', 'super-admin'],
+      flow: FLOW_2,
       additionalMeta: {
         isExternal: false,
         isIframeSupported: 'Yes',
@@ -161,31 +192,8 @@ export const AUTH_INIT: IInitialSetup = {
       resourceType: '',
       hasEnabled: true,
       canShow: true,
-      allowedRoles: [
-        'author',
-        'creator',
-        'content-creator',
-        'editor',
-        'admin',
-        'content-admin',
-        'super-admin',
-      ],
-      flow: {
-        internalFlow: {
-          common: [
-            'Draft',
-            'Reviewed',
-            'Live',
-          ],
-        },
-        externalFlow: {
-          common: [
-            'Draft',
-            'Reviewed',
-            'Live',
-          ],
-        },
-      },
+      allowedRoles: ['author', 'creator', 'content-creator', 'editor', 'admin', 'content-admin', 'super-admin'],
+      flow: FLOW_2,
       additionalMeta: {
         isExternal: false,
         isIframeSupported: 'Yes',
@@ -202,31 +210,8 @@ export const AUTH_INIT: IInitialSetup = {
       resourceType: '',
       hasEnabled: true,
       canShow: true,
-      allowedRoles: [
-        'author',
-        'creator',
-        'content-creator',
-        'editor',
-        'admin',
-        'content-admin',
-        'super-admin',
-      ],
-      flow: {
-        internalFlow: {
-          common: [
-            'Draft',
-            'Reviewed',
-            'Live',
-          ],
-        },
-        externalFlow: {
-          common: [
-            'Draft',
-            'Reviewed',
-            'Live',
-          ],
-        },
-      },
+      allowedRoles: ['author', 'creator', 'content-creator', 'editor', 'admin', 'content-admin', 'super-admin'],
+      flow: FLOW_2,
       additionalMeta: {
         isExternal: false,
         isIframeSupported: 'Yes',
@@ -243,30 +228,8 @@ export const AUTH_INIT: IInitialSetup = {
       resourceType: '',
       hasEnabled: true,
       canShow: true,
-      allowedRoles: [
-        'author',
-        'creator',
-        'content-creator',
-        'editor',
-        'admin',
-        'content-admin',
-        'super-admin',
-      ],
-      flow: {
-        internalFlow: {
-          common: [
-            'Draft',
-            'Reviewed',
-            'Live',
-          ],
-        },
-        externalFlow: {
-          common: [
-            'Draft',
-            'Live',
-          ],
-        },
-      },
+      allowedRoles: ['author', 'creator', 'content-creator', 'editor', 'admin', 'content-admin', 'super-admin'],
+      flow: FLOW_3,
       additionalMeta: {
         isExternal: true,
         isIframeSupported: 'No',
@@ -283,30 +246,8 @@ export const AUTH_INIT: IInitialSetup = {
       resourceType: 'Assessment',
       hasEnabled: true,
       canShow: true,
-      allowedRoles: [
-        'author',
-        'creator',
-        'content-creator',
-        'editor',
-        'admin',
-        'content-admin',
-        'super-admin',
-      ],
-      flow: {
-        internalFlow: {
-          common: [
-            'Draft',
-            'Reviewed',
-            'Live',
-          ],
-        },
-        externalFlow: {
-          common: [
-            'Draft',
-            'Live',
-          ],
-        },
-      },
+      allowedRoles: ['author', 'creator', 'content-creator', 'editor', 'admin', 'content-admin', 'super-admin'],
+      flow: FLOW_3,
       additionalMeta: {
         isExternal: false,
         isIframeSupported: 'Yes',
@@ -323,30 +264,8 @@ export const AUTH_INIT: IInitialSetup = {
       resourceType: 'Quiz',
       hasEnabled: true,
       canShow: true,
-      allowedRoles: [
-        'author',
-        'creator',
-        'content-creator',
-        'editor',
-        'admin',
-        'content-admin',
-        'super-admin',
-      ],
-      flow: {
-        internalFlow: {
-          common: [
-            'Draft',
-            'Reviewed',
-            'Live',
-          ],
-        },
-        externalFlow: {
-          common: [
-            'Draft',
-            'Live',
-          ],
-        },
-      },
+      allowedRoles: ['author', 'creator', 'content-creator', 'editor', 'admin', 'content-admin', 'super-admin'],
+      flow: FLOW_3,
       additionalMeta: {
         isExternal: false,
         isIframeSupported: 'Yes',
@@ -355,7 +274,7 @@ export const AUTH_INIT: IInitialSetup = {
     },
     {
       name: 'channel',
-      children: [],
+      children: [] as any,
       displayName: 'Channel',
       icon: 'chrome_reader_mode',
       additionalMessage: 'Create a Channel Page',
@@ -364,32 +283,8 @@ export const AUTH_INIT: IInitialSetup = {
       resourceType: '',
       hasEnabled: true,
       canShow: true,
-      allowedRoles: [
-        'author',
-        'channel-creator',
-        'editor',
-        'admin',
-        'content-admin',
-        'super-admin',
-      ],
-      flow: {
-        internalFlow: {
-          common: [
-            'Draft',
-            'InReview',
-            'Reviewed',
-            'Live',
-          ],
-        },
-        externalFlow: {
-          common: [
-            'Draft',
-            'InReview',
-            'Reviewed',
-            'Live',
-          ],
-        },
-      },
+      allowedRoles: ['author', 'channel-creator', 'editor', 'admin', 'content-admin', 'super-admin'],
+      flow: FLOW_4,
       additionalMeta: {
         isExternal: false,
         isIframeSupported: 'Yes',
@@ -397,7 +292,7 @@ export const AUTH_INIT: IInitialSetup = {
     },
     {
       name: 'kboard',
-      children: [],
+      children: [] as any,
       displayName: 'Knowledge Board',
       icon: 'folder',
       additionalMessage: 'Create a Knowledge Board',
@@ -406,30 +301,8 @@ export const AUTH_INIT: IInitialSetup = {
       resourceType: '',
       hasEnabled: true,
       canShow: true,
-      allowedRoles: [
-        'author',
-        'kb-curator',
-        'editor',
-        'admin',
-        'content-admin',
-        'super-admin',
-      ],
-      flow: {
-        internalFlow: {
-          common: [
-            'Draft',
-            'Reviewed',
-            'Live',
-          ],
-        },
-        externalFlow: {
-          common: [
-            'Draft',
-            'Reviewed',
-            'Live',
-          ],
-        },
-      },
+      allowedRoles: ['author', 'kb-curator', 'editor', 'admin', 'content-admin', 'super-admin'],
+      flow: FLOW_2,
       additionalMeta: {
         isExternal: false,
         isIframeSupported: 'Yes',
@@ -437,7 +310,7 @@ export const AUTH_INIT: IInitialSetup = {
     },
     {
       name: 'module',
-      children: [],
+      children: [] as any,
       displayName: 'Module',
       icon: 'folder',
       additionalMessage: 'Create a collection of Resources',
@@ -446,32 +319,8 @@ export const AUTH_INIT: IInitialSetup = {
       resourceType: '',
       hasEnabled: true,
       canShow: true,
-      allowedRoles: [
-        'author',
-        'kb-curator',
-        'editor',
-        'admin',
-        'content-admin',
-        'super-admin',
-      ],
-      flow: {
-        internalFlow: {
-          common: [
-            'Draft',
-            'InReview',
-            'Reviewed',
-            'Live',
-          ],
-        },
-        externalFlow: {
-          common: [
-            'Draft',
-            'InReview',
-            'Reviewed',
-            'Live',
-          ],
-        },
-      },
+      allowedRoles: ['author', 'kb-curator', 'editor', 'admin', 'content-admin', 'super-admin'],
+      flow: FLOW_4,
       additionalMeta: {
         isExternal: false,
         isIframeSupported: 'Yes',
@@ -479,10 +328,7 @@ export const AUTH_INIT: IInitialSetup = {
     },
     {
       name: 'course',
-      children: [
-        'internalCourse',
-        'externalCourse',
-      ],
+      children: ['internalCourse', 'externalCourse'],
       displayName: 'Course',
       icon: 'folder',
       additionalMessage: 'Create a collection of Modules',
@@ -491,59 +337,8 @@ export const AUTH_INIT: IInitialSetup = {
       resourceType: '',
       hasEnabled: true,
       canShow: true,
-      allowedRoles: [
-        'author',
-        'kb-curator',
-        'editor',
-        'admin',
-        'content-admin',
-        'super-admin',
-      ],
-      flow: {
-        internalFlow: {
-          common: [
-            'Draft',
-            'InReview',
-            'Reviewed',
-            'Live',
-          ],
-          conditional: [
-            {
-              condition: {
-                isExternal: [
-                  true,
-                ],
-              },
-              flow: [
-                'Draft',
-                'Reviewed',
-                'Live',
-              ],
-            },
-          ],
-        },
-        externalFlow: {
-          common: [
-            'Draft',
-            'InReview',
-            'Reviewed',
-            'Live',
-          ],
-          conditional: [
-            {
-              condition: {
-                isExternal: [
-                  true,
-                ],
-              },
-              flow: [
-                'Draft',
-                'Live',
-              ],
-            },
-          ],
-        },
-      } as any,
+      allowedRoles: ['author', 'kb-curator', 'editor', 'admin', 'content-admin', 'super-admin'],
+      flow: FLOW_5,
       additionalMeta: {
         isExternal: false,
         isIframeSupported: 'Yes',
@@ -551,7 +346,7 @@ export const AUTH_INIT: IInitialSetup = {
     },
     {
       name: 'interanlCourse',
-      children: [],
+      children: [] as any,
       displayName: 'Internal Course',
       icon: 'folder',
       additionalMessage: 'Create a collection of Modules',
@@ -560,32 +355,8 @@ export const AUTH_INIT: IInitialSetup = {
       resourceType: '',
       hasEnabled: true,
       canShow: true,
-      allowedRoles: [
-        'author',
-        'kb-curator',
-        'editor',
-        'admin',
-        'content-admin',
-        'super-admin',
-      ],
-      flow: {
-        internalFlow: {
-          common: [
-            'Draft',
-            'InReview',
-            'Reviewed',
-            'Live',
-          ],
-        },
-        externalFlow: {
-          common: [
-            'Draft',
-            'InReview',
-            'Reviewed',
-            'Live',
-          ],
-        },
-      },
+      allowedRoles: ['author', 'kb-curator', 'editor', 'admin', 'content-admin', 'super-admin'],
+      flow: FLOW_4,
       additionalMeta: {
         isExternal: false,
         isIframeSupported: 'Yes',
@@ -593,7 +364,7 @@ export const AUTH_INIT: IInitialSetup = {
     },
     {
       name: 'externalCourse',
-      children: [],
+      children: [] as any,
       displayName: 'External Course',
       icon: 'folder',
       additionalMessage: 'Create an external course by providing link',
@@ -602,31 +373,8 @@ export const AUTH_INIT: IInitialSetup = {
       resourceType: '',
       hasEnabled: true,
       canShow: true,
-      allowedRoles: [
-        'author',
-        'kb-curator',
-        'editor',
-        'admin',
-        'content-admin',
-        'super-admin',
-      ],
-      flow: {
-        internalFlow: {
-          common: [
-            'Draft',
-            'Reviewed',
-            'Live',
-          ],
-        },
-        externalFlow: {
-          common: [
-            'Draft',
-            'InReview',
-            'Reviewed',
-            'Live',
-          ],
-        },
-      },
+      allowedRoles: ['author', 'kb-curator', 'editor', 'admin', 'content-admin', 'super-admin'],
+      flow: FLOW_6,
       additionalMeta: {
         isExternal: true,
         isIframeSupported: 'No',
@@ -635,228 +383,90 @@ export const AUTH_INIT: IInitialSetup = {
   ],
   roles: {
     author: {
-      admin: {} as any,
+      admin: {},
       editor: {
         condition: {
           status: ['Draft'],
-        } as any,
+        },
       },
-      'content-admin': {} as any,
-      'super-admin': {} as any,
+      'content-admin': {},
+      'super-admin': {},
       'content-creator': {
         condition: {
           status: ['Draft'],
-        } as any,
+        },
         fields: ['creatorContacts'],
       },
     },
     review: {
-      admin: {} as any,
-      'content-admin': {} as any,
-      'super-admin': {} as any,
+      admin: {},
+      'content-admin': {},
+      'super-admin': {},
       reviewer: {
         condition: {
           status: ['InReview'],
-        } as any,
+        },
         fields: ['trackContacts'],
       },
     },
     publish: {
-      admin: {} as any,
-      'content-admin': {} as any,
-      'super-admin': {} as any,
+      admin: {},
+      'content-admin': {},
+      'super-admin': {},
       publisher: {
         condition: {
           status: ['Reviewed'],
-        } as any,
+        },
         fields: ['publisherDetails'],
       },
     },
     qualityReview: {
-      admin: {} as any,
-      'content-admin': {} as any,
-      'super-admin': {} as any,
+      admin: {},
+      'content-admin': {},
+      'super-admin': {},
       'quality-reviewer': {
         condition: {
           status: ['QualityReview'],
-        } as any,
+        },
         fields: ['publisherDetails'],
       },
     },
     view: {
-      admin: {} as any,
-      'content-admin': {} as any,
-      'super-admin': {} as any,
+      admin: {},
+      'content-admin': {},
+      'super-admin': {},
       'quality-reviewer': {
         condition: {
           status: ['QualityReview'],
-        } as any,
+        },
         fields: ['publisherDetails'],
       },
       reviewer: {
         condition: {
           status: ['InReview'],
-        } as any,
+        },
         fields: ['trackContacts'],
       },
       publisher: {
         condition: {
           status: ['Reviewed'],
-        } as any,
+        },
         fields: ['publisherDetails'],
       },
     },
   },
   form: {
-    accessibility: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
+    accessibility: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     accessPaths: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-
-        Channel: [] as any,
-      } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      ...noRules(),
+      showFor: emptyForAll(),
+      disabledFor: emptyForAll(),
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
-    appIcon: {
-      mandatoryFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
+    appIcon: { ...noRules(), mandatoryFor: emptyForAll(), showFor: emptyForAll(), defaultValue: sameForAll(() => ''), type: 'string' },
     artifactUrl: {
+      ...noRules(),
       mandatoryFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -866,57 +476,67 @@ export const AUTH_INIT: IInitialSetup = {
           {
             mimeType: ['application/html'],
             body: [true],
-          } as any,
+          },
         ],
         Course: [
-          { body: [true] } as any,
+          {
+            body: [true],
+          },
         ],
       } as any,
       showFor: {
         Resource: [
-          { mimeType: ['application/html'] } as any,
+          {
+            mimeType: ['application/html'],
+          },
         ],
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
       defaultValue: {
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: '',
+          },
+        ],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: '',
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: '',
+          },
+        ],
       } as any,
       type: 'string',
     },
     audience: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -924,52 +544,12 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      disabledFor: emptyForAll(),
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     rolesMapped: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -977,50 +557,12 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      disabledFor: emptyForAll(),
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     body: {
+      ...noRules(),
       mandatoryFor: {
         Course: [] as any,
         Resource: [] as any,
@@ -1030,313 +572,29 @@ export const AUTH_INIT: IInitialSetup = {
           {
             mimeType: ['application/html'],
             artifactUrl: [true],
-          } as any,
+          },
         ],
         Course: [
-          { artifactUrl: [true] } as any,
+          {
+            artifactUrl: [true],
+          },
         ],
       } as any,
       showFor: {
         Course: [] as any,
         Resource: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
-    catalogPaths: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {
-      } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
-    category: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {
-      } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
-    categoryType: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {
-      } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
-    certificationList: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
-    certificationUrl: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
-    clients: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
+    catalogPaths: { ...noRules(), showFor: emptyForAll(), defaultValue: sameForAll(() => [] as any), type: 'array' },
+    category: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
+    categoryType: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
+    certificationList: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
+    certificationUrl: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
+    clients: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     complexityLevel: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -1344,333 +602,66 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         'Knowledge Artifact': [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
-    comments: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
+    comments: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     contentLanguage: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
+      ...noRules(),
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: null as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: null as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: null as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: null as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: null as any,
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: null as any,
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: null as any,
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: null as any,
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: [] as any,
+          },
+        ],
       } as any,
       type: 'array',
     },
-    transcoding: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: null as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: null as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: null as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: null as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: null as any,
-        }],
-      } as any,
-      type: 'object',
-    },
-    concepts: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
-    contentIdAtSource: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
-    identifier: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
-    scoreType: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
+    transcoding: { ...noRules(), defaultValue: sameForAll(() => null as any), type: 'object' },
+    concepts: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
+    contentIdAtSource: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
+    identifier: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
+    scoreType: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
     contentType: {
+      ...noRules(),
       mandatoryFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -1678,7 +669,6 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notMandatoryFor: {} as any,
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -1686,461 +676,64 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         'Knowledge Board': [] as any,
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
-        Resource: [{ mimeType: ['application/pdf', 'audio/mpeg', 'application/x-mpegURL'] }],
+        Resource: [
+          {
+            mimeType: ['application/pdf', 'audio/mpeg', 'application/x-mpegURL'],
+          },
+        ],
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
-    creatorContacts: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
+    creatorContacts: { ...noRules(), showFor: emptyForAll(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     creatorDetails: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Course: [] as any,
         Resource: [] as any,
         'Knowledge Board': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
-    customClassifiers: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
-    description: {
-      mandatoryFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
-    dimension: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
+    customClassifiers: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
+    description: { ...noRules(), mandatoryFor: emptyForAll(), showFor: emptyForAll(), defaultValue: sameForAll(() => ''), type: 'string' },
+    dimension: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
     duration: {
+      ...noRules(),
       mandatoryFor: {
         Course: [] as any,
         Resource: [] as any,
       } as any,
-      notMandatoryFor: {} as any,
       showFor: {
         Course: [] as any,
         Resource: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: 0,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: 0,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: 0,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: 0,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: 0,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => 0),
       type: 'number',
     },
-    editors: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
-    equivalentCertifications: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
+    editors: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
+    equivalentCertifications: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     expiryDate: {
-      mandatoryFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: new Date(new Date().setMonth(new Date().getMonth() + 6)),
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: new Date(new Date().setMonth(new Date().getMonth() + 6)),
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: new Date(new Date().setMonth(new Date().getMonth() + 6)),
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: new Date(new Date().setMonth(new Date().getMonth() + 6)),
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      ...noRules(),
+      mandatoryFor: emptyForAll(),
+      showFor: emptyForAll(),
+      defaultValue: perContentType(contentType => [
+        {
+          condition: { contentType: [contentType] } as any,
+          // Channel alone had a plain empty default in the original table.
+          value: contentType === 'Channel' ? '' : sixMonthsOut(),
+        },
+      ]),
       type: 'string',
     },
     fileType: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -2148,48 +741,14 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         'Knowledge Artifact': [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     additionalDownloadLink: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -2197,48 +756,14 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         'Knowledge Artifact': [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     idealScreenSize: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -2246,53 +771,18 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         'Knowledge Artifact': [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     introductoryVideo: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -2300,54 +790,62 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notShowFor: {} as any,
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        } as any, {
-          condition: {
-            mimeType: ['application/html'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: '',
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: '',
+          },
+          {
+            condition: {
+              mimeType: ['application/html'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: '',
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: '',
+          },
+        ],
       } as any,
       type: 'string',
     },
     introductoryVideoIcon: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -2355,236 +853,270 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notShowFor: {} as any,
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        } as any, {
-          condition: {
-            mimeType: ['application/html'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: '',
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: '',
+          },
+          {
+            condition: {
+              mimeType: ['application/html'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: '',
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: '',
+          },
+        ],
       } as any,
       type: 'string',
     },
     isExternal: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
+      ...noRules(),
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: true,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: false,
-        } as any, {
-          condition: {
-            mimeType: ['application/html'],
-          } as any,
-          value: true,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: false,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: false,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: false,
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: true,
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: false,
+          },
+          {
+            condition: {
+              mimeType: ['application/html'],
+            },
+            value: true,
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: false,
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: false,
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: false,
+          },
+        ],
       } as any,
       type: 'boolean',
     },
     isRejected: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
+      ...noRules(),
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: true,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: false,
-        } as any, {
-          condition: {
-            mimeType: ['application/html'],
-          } as any,
-          value: true,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: false,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: false,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: false,
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: true,
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: false,
+          },
+          {
+            condition: {
+              mimeType: ['application/html'],
+            },
+            value: true,
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: false,
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: false,
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: false,
+          },
+        ],
       } as any,
       type: 'boolean',
     },
     isIframeSupported: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: 'Yes',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: 'Yes',
-        } as any, {
-          condition: {
-            mimeType: ['application/html'],
-          } as any,
-          value: 'No',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: 'Yes',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: 'Yes',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: 'Yes',
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: 'Yes',
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: 'Yes',
+          },
+          {
+            condition: {
+              mimeType: ['application/html'],
+            },
+            value: 'No',
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: 'Yes',
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: 'Yes',
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: 'Yes',
+          },
+        ],
       } as any,
       type: 'string',
     },
     isInIntranet: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
+      ...noRules(),
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: false,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: false,
-        } as any, {
-          condition: {
-            mimeType: ['application/html'],
-          } as any,
-          value: false,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            ontentType: ['Knowledge Board'],
-          } as any,
-          value: false,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: false,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: false,
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: false,
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: false,
+          },
+          {
+            condition: {
+              mimeType: ['application/html'],
+            },
+            value: false,
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              ontentType: ['Knowledge Board'],
+            },
+            value: false,
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: false,
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: false,
+          },
+        ],
       } as any,
       type: 'boolean',
     },
     kArtifacts: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -2592,7 +1124,6 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -2600,442 +1131,303 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     keywords: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
+      ...noRules(),
+      showFor: emptyForAll(),
       disabledFor: {
         'Knowledge Artifact': [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     learningMode: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        } as any, {
-          condition: {
-            mimeType: ['application/html'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: '',
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: '',
+          },
+          {
+            condition: {
+              mimeType: ['application/html'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: '',
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: '',
+          },
+        ],
       } as any,
       type: 'string',
     },
     learningObjective: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        } as any, {
-          condition: {
-            mimeType: ['application/html'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: '',
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: '',
+          },
+          {
+            condition: {
+              mimeType: ['application/html'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: '',
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: '',
+          },
+        ],
       } as any,
       type: 'string',
     },
     learningTrack: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        } as any, {
-          condition: {
-            mimeType: ['application/html'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: '',
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: '',
+          },
+          {
+            condition: {
+              mimeType: ['application/html'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: '',
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: '',
+          },
+        ],
       } as any,
       type: 'string',
     },
     locale: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        } as any, {
-          condition: {
-            mimeType: ['application/html'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: '',
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: '',
+          },
+          {
+            condition: {
+              mimeType: ['application/html'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: '',
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: '',
+          },
+        ],
       } as any,
       type: 'string',
     },
-    mimeType: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {
-      } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
-    name: {
-      mandatoryFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
+    mimeType: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
+    name: { ...noRules(), mandatoryFor: emptyForAll(), showFor: emptyForAll(), defaultValue: sameForAll(() => ''), type: 'string' },
     nodeType: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        } as any, {
-          condition: {
-            mimeType: ['application/html'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: '',
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: '',
+          },
+          {
+            condition: {
+              mimeType: ['application/html'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: '',
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: '',
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: '',
+          },
+        ],
       } as any,
       type: 'string',
     },
     org: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
+      ...noRules(),
+      showFor: emptyForAll(),
       disabledFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -3043,320 +1435,90 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     passPercentage: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
+      ...noRules(),
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: 0,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: 0,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: 0,
-        }],
-        'Knowledge Artifact': [{
-          con: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: 0,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: 0,
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: 0,
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: 0,
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: 0,
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            con: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: 0,
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: 0,
+          },
+        ],
       } as any,
       type: 'number',
     },
     plagScan: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     playgroundInstructions: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     playgroundResources: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      ...noRules(),
+      showFor: emptyForAll(),
+      disabledFor: emptyForAll(),
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
-    posterImage: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
+    posterImage: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
     preContents: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      ...noRules(),
+      showFor: emptyForAll(),
+      disabledFor: emptyForAll(),
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     preRequisites: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -3364,7 +1526,6 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -3372,44 +1533,11 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     projectCode: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -3417,7 +1545,6 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -3425,44 +1552,11 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     publicationId: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -3470,7 +1564,6 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -3478,144 +1571,35 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     postContents: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      ...noRules(),
+      showFor: emptyForAll(),
+      disabledFor: emptyForAll(),
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     publisherDetails: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         'Knowledge Board': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
       notShowFor: {
-        Resource: [{ mimeType: ['application/html'] }],
+        Resource: [
+          {
+            mimeType: ['application/html'],
+          },
+        ],
       } as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     references: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -3623,7 +1607,6 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -3631,313 +1614,91 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     region: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
+      ...noRules(),
+      showFor: emptyForAll(),
       disabledFor: {
         'Knowledge Artifact': [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
-    registrationInstructions: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
-    resourceCategory: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
+    registrationInstructions: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
+    resourceCategory: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     resourceType: {
+      ...noRules(),
       mandatoryFor: {
         Resource: [] as any,
         Course: [] as any,
         'Knowledge Artifact': [] as any,
       } as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
+      showFor: emptyForAll(),
       disabledFor: {
         'Knowledge Board': [] as any,
         Channel: [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
-    sampleCertificates: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
+    sampleCertificates: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     size: {
+      ...noRules(),
       mandatoryFor: {
-        Resource: [{ mimeType: ['application/pdf', 'application/x-mpegURL', 'audio/mpeg'] }],
+        Resource: [
+          {
+            mimeType: ['application/pdf', 'application/x-mpegURL', 'audio/mpeg'],
+          },
+        ],
       } as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: 0,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: 0,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['dge Board'],
-          } as any,
-          value: 0,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: 0,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: 0,
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: 0,
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: 0,
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['dge Board'],
+            },
+            value: 0,
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: 0,
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: 0,
+          },
+        ],
       } as any,
       type: 'number',
     },
     skills: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -3945,7 +1706,6 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -3953,360 +1713,98 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     sourceName: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
         Channel: [] as any,
         'Knowledge Board': [] as any,
         'Knowledge Artifact': [] as any,
-
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         'Knowledge Board': [] as any,
         'Knowledge Artifact': [] as any,
       } as any,
-      notShowFor: {} as any,
       defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: 'Learning World',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: 'Learning World',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: 'Learning World',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
+        Course: [
+          {
+            condition: {
+              contentType: ['Course'],
+            },
+            value: 'Learning World',
+          },
+        ],
+        Resource: [
+          {
+            condition: {
+              contentType: ['Resource'],
+            },
+            value: 'Learning World',
+          },
+        ],
+        'Knowledge Board': [
+          {
+            condition: {
+              contentType: ['Knowledge Board'],
+            },
+            value: 'Learning World',
+          },
+        ],
+        'Knowledge Artifact': [
+          {
+            condition: {
+              contentType: ['Knowledge Artifact'],
+            },
+            value: '',
+          },
+        ],
+        Channel: [
+          {
+            condition: {
+              contentType: ['Channel'],
+            },
+            value: '',
+          },
+        ],
       } as any,
       type: 'string',
     },
     exclusiveContent: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
         Channel: [] as any,
         'Knowledge Board': [] as any,
         'Knowledge Artifact': [] as any,
-
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         'Knowledge Board': [] as any,
         'Knowledge Artifact': [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: false,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: false,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: false,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: false,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: false,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => false),
       type: 'boolean',
     },
-    status: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
-    studyDuration: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: 0,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: 0,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: 0,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: 0,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: 0,
-        }],
-      } as any,
-      type: 'number',
-    },
-    studyMaterials: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
+    status: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
+    studyDuration: { ...noRules(), defaultValue: sameForAll(() => 0), type: 'number' },
+    studyMaterials: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     subTitle: {
+      ...noRules(),
       mandatoryFor: {
         Course: [] as any,
         Resource: [] as any,
       } as any,
-      notMandatoryFor: {} as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      showFor: emptyForAll(),
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
-    subTitles: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
-      type: 'array',
-    },
+    subTitles: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     systemRequirements: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -4314,7 +1812,6 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -4322,44 +1819,11 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     softwareRequirements: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -4367,7 +1831,6 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -4375,179 +1838,46 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
-    thumbnail: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
-      showFor: {} as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
-      type: 'string',
-    },
+    thumbnail: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
     trackContacts: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Channel: [] as any,
         Resource: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
       notShowFor: {
-        Resource: [{ mimeType: ['application/html'] }],
+        Resource: [
+          {
+            mimeType: ['application/html'],
+          },
+        ],
       } as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     verifiers: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         'Knowledge Board': [] as any,
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
       notShowFor: {
-        Resource: [{ mimeType: ['application/html'] }],
+        Resource: [
+          {
+            mimeType: ['application/html'],
+          },
+        ],
       } as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: [] as any,
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: [] as any,
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: [] as any,
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: [] as any,
-        }],
-      } as any,
+      defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     unit: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -4555,7 +1885,6 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
       disabledFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -4563,44 +1892,11 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: '',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: '',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: '',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: '',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     visibility: {
-      mandatoryFor: {} as any,
-      notMandatoryFor: {} as any,
+      ...noRules(),
       showFor: {
         Resource: [] as any,
         Course: [] as any,
@@ -4608,42 +1904,8 @@ export const AUTH_INIT: IInitialSetup = {
         'Knowledge Artifact': [] as any,
         Channel: [] as any,
       } as any,
-      notDisabledFor: {} as any,
-      disabledFor: {} as any,
-      notShowFor: {} as any,
-      defaultValue: {
-        Course: [{
-          condition: {
-            contentType: ['Course'],
-          } as any,
-          value: 'Private',
-        }],
-        Resource: [{
-          condition: {
-            contentType: ['Resource'],
-          } as any,
-          value: 'Private',
-        }],
-        'Knowledge Board': [{
-          condition: {
-            contentType: ['Knowledge Board'],
-          } as any,
-          value: 'Private',
-        }],
-        'Knowledge Artifact': [{
-          condition: {
-            contentType: ['Knowledge Artifact'],
-          } as any,
-          value: 'Private',
-        }],
-        Channel: [{
-          condition: {
-            contentType: ['Channel'],
-          } as any,
-          value: 'Private',
-        }],
-      } as any,
+      defaultValue: sameForAll(() => 'Private'),
       type: 'string',
     },
-  } as IFormMeta,
+  },
 }

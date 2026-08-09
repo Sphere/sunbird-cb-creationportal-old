@@ -15,8 +15,6 @@ import { AccessControlService } from '@ws/author'
 
 import { Subscription } from 'rxjs'
 
-import { NsAnalytics } from '../../models/app-toc-analytics.model'
-
 import { NsAppToc, NsCohorts } from '../../models/app-toc.model'
 
 import { AppTocService } from '../../services/app-toc.service'
@@ -39,12 +37,11 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() banners: NsAppToc.ITocBanner | null = null
   @Input() content: NsContent.IContent | null = null
   @Input() resumeData: NsContent.IContinueLearningData | null = null
-  @Input() analytics: NsAnalytics.IAnalytics | null = null
   @Input() forPreview = false
   contentProgress = 0
   bannerUrl: string | null = null
   routePath = 'overview'
-  validPaths = new Set(['overview', 'contents', 'analytics'])
+  validPaths = new Set(['overview', 'contents'])
   routerParamSubscription: Subscription | null = null
   routeSubscription: Subscription | null = null
   routeDataSubscription: Subscription | null = null
@@ -54,7 +51,6 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
   isPracticeVisible = false
   editButton = false
   reviewButton = false
-  analyticsDataClient: any = null
   btnPlaylistConfig: NsPlaylist.IBtnPlaylist | null = null
   btnGoalsConfig: NsGoal.IBtnGoal | null = null
   isRegistrationSupported = false
@@ -293,7 +289,6 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     return false
   }
   ngOnDestroy() {
-    this.tocSvc.analyticsFetchStatus = 'none'
     if (this.routerParamSubscription) {
       this.routerParamSubscription.unsubscribe()
     }

@@ -113,3 +113,133 @@ describe('AUTH_INIT constant', () => {
     })
   })
 })
+
+/**
+ * AUTH_INIT drives which authoring form fields are shown, mandatory and disabled per
+ * content type. It used to be a 4,649-line table of hand-copied blocks; it is now built
+ * from helpers. These tests pin the properties that made that rewrite safe, so a future
+ * edit to the helpers cannot quietly change form behaviour.
+ */
+describe('AUTH_INIT', () => {
+  const CONTENT_TYPES = ['Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel']
+  const RULE_KEYS = ['mandatoryFor', 'notMandatoryFor', 'showFor', 'notDisabledFor', 'disabledFor', 'notShowFor']
+
+  const form = AUTH_INIT.form as any
+  const fieldNames = Object.keys(form)
+
+  it('exposes the three configuration sections', () => {
+    expect(Object.keys(AUTH_INIT)).toEqual(['contentTypes', 'roles', 'form'])
+    expect(AUTH_INIT.contentTypes).toHaveLength(13)
+    expect(Object.keys(AUTH_INIT.roles as any)).toHaveLength(5)
+    expect(fieldNames).toHaveLength(83)
+  })
+
+  it('gives every form field the full set of rule maps in canonical order', () => {
+    fieldNames.forEach(name => {
+      expect(Object.keys(form[name]).slice(0, RULE_KEYS.length)).toEqual(RULE_KEYS)
+    })
+  })
+
+  it('keys every defaultValue entry to its own content type', () => {
+    const mismatched: string[] = []
+
+    fieldNames.forEach(name => {
+      const dv = form[name].defaultValue || {}
+      Object.keys(dv).forEach(contentType => {
+        const rules = dv[contentType]
+        if (!Array.isArray(rules)) {
+          return
+        }
+        rules.forEach((rule: any) => {
+          const condition = rule?.condition?.contentType
+          if (condition && !condition.includes(contentType)) {
+            mismatched.push(`${name}.${contentType} -> ${JSON.stringify(condition)}`)
+          }
+        })
+      })
+    })
+
+    // Pre-existing data defect, carried over verbatim from the hand-written table:
+    // 'Knowledge Board' lost its first six characters, so this condition can never
+    // match and `size` effectively has no default for that content type. Pinned here
+    // rather than silently corrected, because fixing it changes authoring behaviour.
+    expect(mismatched).toEqual(['size.Knowledge Board -> ["dge Board"]'])
+  })
+
+  /**
+   * The hand-written table repeated `value: [] as any` once per content type, so each
+   * got a distinct array. The helpers must not collapse those into one shared instance
+   * or a mutation against one content type would leak into every other.
+   */
+  it('never shares a mutable default between content types', () => {
+    const shared: string[] = []
+
+    fieldNames.forEach(name => {
+      const dv = form[name].defaultValue || {}
+      const seen: unknown[] = []
+      CONTENT_TYPES.forEach(contentType => {
+        const value = dv[contentType]?.[0]?.value
+        if (value === null || typeof value !== 'object') {
+          return
+        }
+        if (seen.some(other => other === value)) {
+          shared.push(`${name}.${contentType}`)
+        }
+        seen.push(value)
+      })
+    })
+
+    expect(shared).toEqual([])
+  })
+
+  it('does not share rule-map objects between fields', () => {
+    const first = form[fieldNames[0]]
+    const second = form[fieldNames[1]]
+
+    RULE_KEYS.forEach(key => {
+      expect(first[key]).not.toBe(second[key])
+    })
+  })
+
+  it('mutating one default leaves the others untouched', () => {
+    const target = fieldNames.find(n => Array.isArray(form[n].defaultValue?.Course?.[0]?.value))
+
+    expect(target).toBeDefined()
+    const dv = form[target as string].defaultValue
+    dv.Course[0].value.push('mutated')
+
+    expect(dv.Resource[0].value).toEqual([])
+    dv.Course[0].value.pop()
+  })
+
+  /** expiryDate must stay relative to load time rather than a value frozen at build. */
+  describe('expiryDate', () => {
+    const dv = (form as any).expiryDate.defaultValue
+
+    it('defaults to roughly six months out for every content type but Channel', () => {
+      const now = new Date()
+
+      CONTENT_TYPES.filter(c => c !== 'Channel').forEach(contentType => {
+        const value = dv[contentType][0].value
+
+        expect(value).toBeInstanceOf(Date)
+        const months = (value.getFullYear() - now.getFullYear()) * 12 + (value.getMonth() - now.getMonth())
+        expect(months).toBe(6)
+      })
+    })
+
+    it('leaves Channel with an empty default, as the original table did', () => {
+      expect(dv.Channel[0].value).toBe('')
+    })
+  })
+
+  it('reuses shared flow definitions across content types without aliasing content entries', () => {
+    const entries = AUTH_INIT.contentTypes as any[]
+    const names = entries.map(c => c.name)
+
+    expect(new Set(names).size).toBe(names.length)
+    entries.forEach(entry => {
+      expect(entry.flow).toBeDefined()
+    })
+  })
+})

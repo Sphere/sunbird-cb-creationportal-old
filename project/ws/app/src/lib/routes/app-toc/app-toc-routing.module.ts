@@ -4,11 +4,7 @@ import { RouterModule, Routes } from '@angular/router'
 
 import { PageResolve } from '@ws-widget/utils'
 
-import { GeneralGuard } from '../../../../../../../src/app/guards/general.guard'
-
 import { AppTocResolverService } from './resolvers/app-toc-resolver.service'
-
-import { AppTocAnalyticsComponent } from './routes/app-toc-analytics/app-toc-analytics.component'
 
 import { AppTocContentsComponent } from './routes/app-toc-contents/app-toc-contents.component'
 
@@ -34,20 +30,6 @@ const routes: Routes = [
     },
     runGuardsAndResolvers: 'paramsChange',
     children: [
-      {
-        path: 'analytics',
-        component: AppTocAnalyticsComponent,
-        data: {
-          pageType: 'feature',
-          pageKey: 'toc',
-          requiredFeatures: ['tocAnalytics'],
-        },
-        resolve: {
-          pageData: PageResolve,
-        },
-        canActivate: [GeneralGuard],
-        runGuardsAndResolvers: 'always',
-      },
       {
         path: 'contents',
         component: AppTocContentsComponent,

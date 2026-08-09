@@ -29,7 +29,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 // comps
-import { AppTocAnalyticsComponent } from './routes/app-toc-analytics/app-toc-analytics.component'
 
 import { AppTocContentsComponent } from './routes/app-toc-contents/app-toc-contents.component'
 
@@ -115,7 +114,6 @@ import { AssessmentDetailComponent } from './components/assessment-detail/assess
 
 @NgModule({
   declarations: [
-    AppTocAnalyticsComponent,
     AppTocContentsComponent,
     AppTocHomeComponent,
     AppTocOverviewComponent,

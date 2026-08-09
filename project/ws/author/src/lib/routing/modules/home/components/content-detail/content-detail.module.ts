@@ -20,8 +20,6 @@ import { WidgetResolverModule } from '@ws-widget/resolver'
 
 import { ContentDetailHomeComponent } from './components/content-detail-home/content-detail-home.component'
 
-import { ContentInsightsComponent } from './components/content-Insights/content-Insights.component'
-
 import { AppTocResolverService } from './resolvers/app-toc-resolver.service'
 
 import { AppTocService } from './services/app-toc.service'
@@ -33,7 +31,7 @@ import { ContentDiscussionComponent } from './components/content-discussion/cont
 import { LocalDataService } from './services/local-data.service'
 
 @NgModule({
-  declarations: [ContentDetailHomeComponent, ContentDetailComponent, ContentInsightsComponent, ContentDiscussionComponent],
+  declarations: [ContentDetailHomeComponent, ContentDetailComponent, ContentDiscussionComponent],
   imports: [
     CommonModule,
     SharedModule,

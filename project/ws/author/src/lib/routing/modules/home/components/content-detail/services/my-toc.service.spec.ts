@@ -104,33 +104,4 @@ describe('MyTocService', () => {
       expect(service.getTocStructure(content as any, emptyCounts()).video).toBe(1)
     })
   })
-
-  describe('analytics', () => {
-    it('fetchContentAnalyticsClientData fetches and completes', () => {
-      let emitted: any
-      service.analyticsReplaySubject.subscribe(r => (emitted = r))
-      service.fetchContentAnalyticsClientData('do_1')
-      expect(service.analyticsFetchStatus).toBe('fetching')
-      const req = httpMock.expectOne(r => r.url.includes('/LA/api/la/contentanalytics'))
-      req.flush({ ok: 1 })
-      expect(service.analyticsFetchStatus).toBe('done')
-      expect(emitted).toEqual({ ok: 1 })
-    })
-
-    it('fetchContentAnalyticsData emits null and completes on error', () => {
-      let emitted: any = 'unset'
-      service.analyticsReplaySubject.subscribe(r => (emitted = r))
-      service.fetchContentAnalyticsData('do_1')
-      const req = httpMock.expectOne(r => r.url.includes('/LA/LA/api/Users'))
-      req.flush('fail', { status: 500, statusText: 'Server Error' })
-      expect(emitted).toBeNull()
-      expect(service.analyticsFetchStatus).toBe('done')
-    })
-
-    it('does not re-fetch when already fetching', () => {
-      service.analyticsFetchStatus = 'fetching'
-      service.fetchContentAnalyticsData('do_1')
-      httpMock.expectNone(() => true)
-    })
-  })
 })

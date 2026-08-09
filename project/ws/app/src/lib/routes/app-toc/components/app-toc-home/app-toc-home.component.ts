@@ -50,7 +50,6 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
   sticky = false
   isInIframe = false
   forPreview = window.location.href.includes('/author/')
-  analytics = this.route.snapshot.data.pageData.data.analytics
   errorWidgetData: NsWidgetResolver.IRenderConfigWithTypedData<any> = {
     widgetType: 'errorResolver',
     widgetSubType: 'errorResolver',
@@ -321,13 +320,6 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
       return false
     }
     return true
-  }
-
-  get enableAnalytics(): boolean {
-    if (this.configSvc.restrictedFeatures) {
-      return !this.configSvc.restrictedFeatures.has('tocAnalytics')
-    }
-    return false
   }
 
   private initData(data: Data) {

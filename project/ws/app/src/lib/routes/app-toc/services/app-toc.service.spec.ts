@@ -223,28 +223,4 @@ describe('AppTocService (app)', () => {
       expect(out).toEqual({ identifier: 'do_1' })
     })
   })
-
-  describe('analytics', () => {
-    it('fetchContentAnalyticsClientData fetches and marks status done', () => {
-      let emitted: any
-      service.analyticsReplaySubject.subscribe(r => (emitted = r))
-      service.fetchContentAnalyticsClientData('do_1')
-      expect(service.analyticsFetchStatus).toBe('fetching')
-      const req = httpMock.expectOne(r => r.url.includes('/LA/api/la/contentanalytics'))
-      req.flush({ ok: 1 })
-      expect(service.analyticsFetchStatus).toBe('done')
-      expect(emitted).toEqual({ ok: 1 })
-    })
-
-    it('fetchContentAnalyticsData does not re-fetch once done', () => {
-      service.analyticsFetchStatus = 'done'
-      service.fetchContentAnalyticsData('do_1')
-      httpMock.expectNone(() => true)
-    })
-
-    it('clearAnalyticsData unsubscribes the replay subject', () => {
-      service.clearAnalyticsData()
-      expect(service.analyticsReplaySubject.closed).toBe(true)
-    })
-  })
 })

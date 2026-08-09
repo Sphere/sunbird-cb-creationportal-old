@@ -41,7 +41,8 @@ import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 export class MyContentService {
   constructor(
     private authInitService: AuthInitService,
-    private apiService: ApiService,
+    // protected so the my-content subclass, which adds one extra endpoint, can reuse it
+    protected apiService: ApiService,
     private accessService: AccessControlService,
     private configSvc: ConfigurationsService,
   ) {}

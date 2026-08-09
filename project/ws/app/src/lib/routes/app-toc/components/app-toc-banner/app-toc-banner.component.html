@@ -93,22 +93,6 @@
                   </div>
                 </div>
                 <div *ngSwitchCase="'contents'"></div>
-                <div class="banner-overview-container" [hidden]="!content?.subTitle && showSubtitleOnBanner" *ngSwitchCase="'analytics'">
-                  <h3 class="overview-description" *ngIf="!showSubtitleOnBanner" i18n-title title="Description">
-                    {{ content?.description | pipeLimitTo: 450 }}
-                  </h3>
-                  <div
-                    *ngIf="sanitizedIntroductoryVideoIcon"
-                    class="overview-intro ws-mat-primary-lite-background"
-                    [style.backgroundImage]="sanitizedIntroductoryVideoIcon"
-                    role="button"
-                    (click)="playIntroVideo()"
-                    (keydown)="isActivationKey($event) && playIntroVideo()"
-                    [attr.tabindex]="0"
-                  >
-                    <mat-icon class="overview-intro-overlay">play_arrow</mat-icon>
-                  </div>
-                </div>
                 <div class="metadata-row">
                   <div class="separate">
                     <div class="toc-banner-item" *ngIf="tocConfig?.atAGlance?.duration?.enabled && content?.duration">

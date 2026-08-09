@@ -6,12 +6,6 @@ import { PageResolve } from '@ws-widget/utils'
 
 import { ProfileComponent } from './profile.component'
 
-import { FeatureUsageComponent } from './routes/analytics/routes/feature-usage/feature-usage.component'
-
-import { LearningComponent } from './routes/analytics/routes/learning/learning.component'
-
-import { PlansComponent } from './routes/analytics/routes/plans/plans.component'
-
 import { AchievementsComponent } from './routes/competency/components/achievements/achievements.component'
 
 import { BadgesResolver2 } from './routes/badges/badges.resolver2'
@@ -85,18 +79,6 @@ const routes: Routes = [
     resolve: {
       pageData: PageResolve,
     },
-  },
-  {
-    path: 'plans',
-    component: PlansComponent,
-  },
-  {
-    path: 'collaborators',
-    component: LearningComponent,
-  },
-  {
-    path: 'feature-usage',
-    component: FeatureUsageComponent,
   },
   {
     path: 'settings',

@@ -20,8 +20,6 @@ import { ProfileRoutingModule } from './profile-routing.module'
 // comps
 import { ProfileComponent } from './profile.component'
 
-import { AnalyticsModule } from './routes/analytics/analytics.module'
-
 import { BadgesResolver2 } from './routes/badges/badges.resolver2'
 
 import { CompetencyModule } from './routes/competency/competency.module'
@@ -45,7 +43,6 @@ import { BadgesModule } from './routes/badges/badges.module'
     CompetencyModule,
     DashboardModule,
     SettingsModule,
-    AnalyticsModule,
     BtnPageBackModule,
     LogoutModule,
     RouterModule,
