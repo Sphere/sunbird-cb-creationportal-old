@@ -24,9 +24,22 @@ function sameForAll(make: () => any): any {
   return perContentType(contentType => [{ condition: { contentType: [contentType] } as any, value: make() }])
 }
 
-/** An empty rule list for every content type. */
-function emptyForAll(): any {
-  return perContentType(() => [] as any)
+/** An empty rule list for the named content types, in the order given. */
+function emptyFor(...contentTypes: string[]): any {
+  const out: any = {}
+  contentTypes.forEach(contentType => {
+    out[contentType] = [] as any
+  })
+  return out
+}
+
+/** A `defaultValue` map whose value differs per content type. */
+function valueFor(make: Record<string, () => any>): any {
+  const out: any = {}
+  Object.keys(make).forEach(contentType => {
+    out[contentType] = [{ condition: { contentType: [contentType] } as any, value: make[contentType]() }]
+  })
+  return out
 }
 
 /** The six rule maps in their canonical order, all unset. Spread first, then override. */
@@ -459,18 +472,21 @@ export const AUTH_INIT: IInitialSetup = {
     accessibility: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     accessPaths: {
       ...noRules(),
-      showFor: emptyForAll(),
-      disabledFor: emptyForAll(),
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
-    appIcon: { ...noRules(), mandatoryFor: emptyForAll(), showFor: emptyForAll(), defaultValue: sameForAll(() => ''), type: 'string' },
+    appIcon: {
+      ...noRules(),
+      mandatoryFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      defaultValue: sameForAll(() => ''),
+      type: 'string',
+    },
     artifactUrl: {
       ...noRules(),
-      mandatoryFor: {
-        Resource: [] as any,
-        Course: [] as any,
-      } as any,
+      mandatoryFor: emptyFor('Resource', 'Course'),
       notMandatoryFor: {
         Resource: [
           {
@@ -537,36 +553,21 @@ export const AUTH_INIT: IInitialSetup = {
     },
     audience: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: emptyForAll(),
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     rolesMapped: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: emptyForAll(),
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     body: {
       ...noRules(),
-      mandatoryFor: {
-        Course: [] as any,
-        Resource: [] as any,
-      } as any,
+      mandatoryFor: emptyFor('Course', 'Resource'),
       notMandatoryFor: {
         Resource: [
           {
@@ -580,14 +581,16 @@ export const AUTH_INIT: IInitialSetup = {
           },
         ],
       } as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-      } as any,
+      showFor: emptyFor('Course', 'Resource'),
       defaultValue: sameForAll(() => ''),
       type: 'string',
     },
-    catalogPaths: { ...noRules(), showFor: emptyForAll(), defaultValue: sameForAll(() => [] as any), type: 'array' },
+    catalogPaths: {
+      ...noRules(),
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      defaultValue: sameForAll(() => [] as any),
+      type: 'array',
+    },
     category: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
     categoryType: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
     certificationList: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
@@ -595,64 +598,21 @@ export const AUTH_INIT: IInitialSetup = {
     clients: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     complexityLevel: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: {
-        'Knowledge Artifact': [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Knowledge Artifact'),
       defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     comments: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     contentLanguage: {
       ...noRules(),
-      defaultValue: {
-        Course: [
-          {
-            condition: {
-              contentType: ['Course'],
-            },
-            value: null as any,
-          },
-        ],
-        Resource: [
-          {
-            condition: {
-              contentType: ['Resource'],
-            },
-            value: null as any,
-          },
-        ],
-        'Knowledge Board': [
-          {
-            condition: {
-              contentType: ['Knowledge Board'],
-            },
-            value: null as any,
-          },
-        ],
-        'Knowledge Artifact': [
-          {
-            condition: {
-              contentType: ['Knowledge Artifact'],
-            },
-            value: null as any,
-          },
-        ],
-        Channel: [
-          {
-            condition: {
-              contentType: ['Channel'],
-            },
-            value: [] as any,
-          },
-        ],
-      } as any,
+      defaultValue: valueFor({
+        Course: () => null as any,
+        Resource: () => null as any,
+        'Knowledge Board': () => null as any,
+        'Knowledge Artifact': () => null as any,
+        Channel: () => [] as any,
+      }),
       type: 'array',
     },
     transcoding: { ...noRules(), defaultValue: sameForAll(() => null as any), type: 'object' },
@@ -662,20 +622,8 @@ export const AUTH_INIT: IInitialSetup = {
     scoreType: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
     contentType: {
       ...noRules(),
-      mandatoryFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      mandatoryFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       disabledFor: {
         'Knowledge Board': [] as any,
         'Knowledge Artifact': [] as any,
@@ -689,31 +637,31 @@ export const AUTH_INIT: IInitialSetup = {
       defaultValue: sameForAll(() => ''),
       type: 'string',
     },
-    creatorContacts: { ...noRules(), showFor: emptyForAll(), defaultValue: sameForAll(() => [] as any), type: 'array' },
+    creatorContacts: {
+      ...noRules(),
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      defaultValue: sameForAll(() => [] as any),
+      type: 'array',
+    },
     creatorDetails: {
       ...noRules(),
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Channel'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     customClassifiers: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
-    description: { ...noRules(), mandatoryFor: emptyForAll(), showFor: emptyForAll(), defaultValue: sameForAll(() => ''), type: 'string' },
+    description: {
+      ...noRules(),
+      mandatoryFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      defaultValue: sameForAll(() => ''),
+      type: 'string',
+    },
     dimension: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
     duration: {
       ...noRules(),
-      mandatoryFor: {
-        Course: [] as any,
-        Resource: [] as any,
-      } as any,
-      showFor: {
-        Course: [] as any,
-        Resource: [] as any,
-      } as any,
+      mandatoryFor: emptyFor('Course', 'Resource'),
+      showFor: emptyFor('Course', 'Resource'),
       defaultValue: sameForAll(() => 0),
       type: 'number',
     },
@@ -721,8 +669,8 @@ export const AUTH_INIT: IInitialSetup = {
     equivalentCertifications: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     expiryDate: {
       ...noRules(),
-      mandatoryFor: emptyForAll(),
-      showFor: emptyForAll(),
+      mandatoryFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: perContentType(contentType => [
         {
           condition: { contentType: [contentType] } as any,
@@ -734,62 +682,29 @@ export const AUTH_INIT: IInitialSetup = {
     },
     fileType: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: {
-        'Knowledge Artifact': [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Knowledge Artifact'),
       defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     additionalDownloadLink: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: {
-        'Knowledge Artifact': [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Knowledge Artifact'),
       defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     idealScreenSize: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: {
-        'Knowledge Artifact': [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Knowledge Artifact'),
       defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     introductoryVideo: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-      } as any,
-      disabledFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course'),
+      disabledFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: {
         Course: [
           {
@@ -842,17 +757,8 @@ export const AUTH_INIT: IInitialSetup = {
     },
     introductoryVideoIcon: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-      } as any,
-      disabledFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course'),
+      disabledFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: {
         Course: [
           {
@@ -1009,10 +915,7 @@ export const AUTH_INIT: IInitialSetup = {
     },
     isIframeSupported: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course'),
       defaultValue: {
         Course: [
           {
@@ -1117,38 +1020,21 @@ export const AUTH_INIT: IInitialSetup = {
     },
     kArtifacts: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     keywords: {
       ...noRules(),
-      showFor: emptyForAll(),
-      disabledFor: {
-        'Knowledge Artifact': [] as any,
-      } as any,
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Knowledge Artifact'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     learningMode: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course'),
       defaultValue: {
         Course: [
           {
@@ -1201,10 +1087,7 @@ export const AUTH_INIT: IInitialSetup = {
     },
     learningObjective: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course'),
       defaultValue: {
         Course: [
           {
@@ -1257,10 +1140,7 @@ export const AUTH_INIT: IInitialSetup = {
     },
     learningTrack: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course'),
       defaultValue: {
         Course: [
           {
@@ -1313,10 +1193,7 @@ export const AUTH_INIT: IInitialSetup = {
     },
     locale: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course'),
       defaultValue: {
         Course: [
           {
@@ -1368,13 +1245,16 @@ export const AUTH_INIT: IInitialSetup = {
       type: 'string',
     },
     mimeType: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
-    name: { ...noRules(), mandatoryFor: emptyForAll(), showFor: emptyForAll(), defaultValue: sameForAll(() => ''), type: 'string' },
+    name: {
+      ...noRules(),
+      mandatoryFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      defaultValue: sameForAll(() => ''),
+      type: 'string',
+    },
     nodeType: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course'),
       defaultValue: {
         Course: [
           {
@@ -1427,14 +1307,8 @@ export const AUTH_INIT: IInitialSetup = {
     },
     org: {
       ...noRules(),
-      showFor: emptyForAll(),
-      disabledFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
@@ -1484,110 +1358,54 @@ export const AUTH_INIT: IInitialSetup = {
       } as any,
       type: 'number',
     },
-    plagScan: {
-      ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-      } as any,
-      defaultValue: sameForAll(() => ''),
-      type: 'string',
-    },
-    playgroundInstructions: {
-      ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-      } as any,
-      defaultValue: sameForAll(() => ''),
-      type: 'string',
-    },
+    plagScan: { ...noRules(), showFor: emptyFor('Resource', 'Course'), defaultValue: sameForAll(() => ''), type: 'string' },
+    playgroundInstructions: { ...noRules(), showFor: emptyFor('Resource', 'Course'), defaultValue: sameForAll(() => ''), type: 'string' },
     playgroundResources: {
       ...noRules(),
-      showFor: emptyForAll(),
-      disabledFor: emptyForAll(),
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     posterImage: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
     preContents: {
       ...noRules(),
-      showFor: emptyForAll(),
-      disabledFor: emptyForAll(),
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     preRequisites: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     projectCode: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     publicationId: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     postContents: {
       ...noRules(),
-      showFor: emptyForAll(),
-      disabledFor: emptyForAll(),
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     publisherDetails: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Knowledge Board', 'Channel'),
       notShowFor: {
         Resource: [
           {
@@ -1600,29 +1418,15 @@ export const AUTH_INIT: IInitialSetup = {
     },
     references: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     region: {
       ...noRules(),
-      showFor: emptyForAll(),
-      disabledFor: {
-        'Knowledge Artifact': [] as any,
-      } as any,
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Knowledge Artifact'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
@@ -1630,16 +1434,9 @@ export const AUTH_INIT: IInitialSetup = {
     resourceCategory: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     resourceType: {
       ...noRules(),
-      mandatoryFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Artifact': [] as any,
-      } as any,
-      showFor: emptyForAll(),
-      disabledFor: {
-        'Knowledge Board': [] as any,
-        Channel: [] as any,
-      } as any,
+      mandatoryFor: emptyFor('Resource', 'Course', 'Knowledge Artifact'),
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Knowledge Board', 'Channel'),
       defaultValue: sameForAll(() => ''),
       type: 'string',
     },
@@ -1699,93 +1496,28 @@ export const AUTH_INIT: IInitialSetup = {
     },
     skills: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     sourceName: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        Channel: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-      } as any,
-      disabledFor: {
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-      } as any,
-      defaultValue: {
-        Course: [
-          {
-            condition: {
-              contentType: ['Course'],
-            },
-            value: 'Learning World',
-          },
-        ],
-        Resource: [
-          {
-            condition: {
-              contentType: ['Resource'],
-            },
-            value: 'Learning World',
-          },
-        ],
-        'Knowledge Board': [
-          {
-            condition: {
-              contentType: ['Knowledge Board'],
-            },
-            value: 'Learning World',
-          },
-        ],
-        'Knowledge Artifact': [
-          {
-            condition: {
-              contentType: ['Knowledge Artifact'],
-            },
-            value: '',
-          },
-        ],
-        Channel: [
-          {
-            condition: {
-              contentType: ['Channel'],
-            },
-            value: '',
-          },
-        ],
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Channel', 'Knowledge Board', 'Knowledge Artifact'),
+      disabledFor: emptyFor('Knowledge Board', 'Knowledge Artifact'),
+      defaultValue: valueFor({
+        Course: () => 'Learning World',
+        Resource: () => 'Learning World',
+        'Knowledge Board': () => 'Learning World',
+        'Knowledge Artifact': () => '',
+        Channel: () => '',
+      }),
       type: 'string',
     },
     exclusiveContent: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        Channel: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-      } as any,
-      disabledFor: {
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Channel', 'Knowledge Board', 'Knowledge Artifact'),
+      disabledFor: emptyFor('Knowledge Board', 'Knowledge Artifact'),
       defaultValue: sameForAll(() => false),
       type: 'boolean',
     },
@@ -1794,60 +1526,30 @@ export const AUTH_INIT: IInitialSetup = {
     studyMaterials: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     subTitle: {
       ...noRules(),
-      mandatoryFor: {
-        Course: [] as any,
-        Resource: [] as any,
-      } as any,
-      showFor: emptyForAll(),
+      mandatoryFor: emptyFor('Course', 'Resource'),
+      showFor: emptyFor('Course', 'Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     subTitles: { ...noRules(), defaultValue: sameForAll(() => [] as any), type: 'array' },
     systemRequirements: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     softwareRequirements: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => [] as any),
       type: 'array',
     },
     thumbnail: { ...noRules(), defaultValue: sameForAll(() => ''), type: 'string' },
     trackContacts: {
       ...noRules(),
-      showFor: {
-        Channel: [] as any,
-        Resource: [] as any,
-      } as any,
+      showFor: emptyFor('Channel', 'Resource'),
       notShowFor: {
         Resource: [
           {
@@ -1860,12 +1562,7 @@ export const AUTH_INIT: IInitialSetup = {
     },
     verifiers: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       notShowFor: {
         Resource: [
           {
@@ -1878,32 +1575,14 @@ export const AUTH_INIT: IInitialSetup = {
     },
     unit: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
-      disabledFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
+      disabledFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => ''),
       type: 'string',
     },
     visibility: {
       ...noRules(),
-      showFor: {
-        Resource: [] as any,
-        Course: [] as any,
-        'Knowledge Board': [] as any,
-        'Knowledge Artifact': [] as any,
-        Channel: [] as any,
-      } as any,
+      showFor: emptyFor('Resource', 'Course', 'Knowledge Board', 'Knowledge Artifact', 'Channel'),
       defaultValue: sameForAll(() => 'Private'),
       type: 'string',
     },
