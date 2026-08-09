@@ -28,10 +28,6 @@ import { FeaturesComponent } from './routes/features/features.component'
 
 import { FeaturesModule } from './routes/features/features.module'
 
-import { MobileAppHomeComponent } from './routes/public/mobile-app/components/mobile-app-home.component'
-
-import { PublicAboutComponent } from './routes/public/public-about/public-about.component'
-
 import { PublicFaqComponent } from './routes/public/public-faq/public-faq.component'
 
 import { TncComponent } from './routes/tnc/tnc.component'
@@ -279,28 +275,6 @@ const routes: Routes = [
     },
     component: PageComponent,
     canActivate: [GeneralGuard],
-  },
-  {
-    path: 'public/about',
-    component: PublicAboutComponent,
-    data: {
-      pageType: 'feature',
-      pageKey: 'about',
-    },
-    resolve: {
-      pageData: PageResolve,
-    },
-  },
-  {
-    path: 'public/mobile-app',
-    component: MobileAppHomeComponent,
-    data: {
-      pageType: 'feature',
-      pageKey: 'mobile-app',
-    },
-    resolve: {
-      pageData: PageResolve,
-    },
   },
   {
     path: 'author/toc',
