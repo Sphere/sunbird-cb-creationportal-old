@@ -1,5 +1,5 @@
 import { EditorService } from './editor.service'
-import { of, throwError } from 'rxjs'
+import { of, Subject, throwError } from 'rxjs'
 
 describe('EditorService', () => {
   let apiService: any
@@ -80,16 +80,14 @@ describe('EditorService', () => {
   describe('createV2', () => {
     it('posts a v2 body and stores/returns the identifier', done => {
       http.post.mockReturnValue(of({ result: { identifier: 'v2-id' } }))
-      svc
-        .createV2({ contentType: 'Resource', mimeType: 'application/html', name: 'R', primaryCategory: 'X' } as any)
-        .subscribe(id => {
-          expect(id).toBe('v2-id')
-          expect(svc.resourseID).toBe('v2-id')
-          const body = http.post.mock.calls[0][1]
-          expect(body.request.content.isExternal).toBe(true)
-          expect(body.request.content.createdBy).toBe('user-1')
-          done()
-        })
+      svc.createV2({ contentType: 'Resource', mimeType: 'application/html', name: 'R', primaryCategory: 'X' } as any).subscribe(id => {
+        expect(id).toBe('v2-id')
+        expect(svc.resourseID).toBe('v2-id')
+        const body = http.post.mock.calls[0][1]
+        expect(body.request.content.isExternal).toBe(true)
+        expect(body.request.content.createdBy).toBe('user-1')
+        done()
+      })
     })
   })
 
@@ -137,11 +135,24 @@ describe('EditorService', () => {
       expect(apiService.get).toHaveBeenCalledWith(expect.stringContaining('id-4.img'))
     })
 
-    it('checkReadAPI caches the observable', () => {
-      const first = svc.checkReadAPI('id-5')
-      const second = svc.checkReadAPI('id-5')
-      expect(first).toBe(second)
+    it('checkReadAPI shares one request between overlapping callers', () => {
+      // It used to hold the response indefinitely in a single field that ignored the id,
+      // so the first content read was handed to every later caller. Sharing is now keyed
+      // by id and lasts only while the request is in flight -- content changes on save,
+      // so a response kept beyond its request would be stale. Covered in depth by
+      // editor.service.read-sharing.spec.ts.
+      // A Subject stands in for a request that is still open; the default of({}) mock
+      // completes synchronously, which would clear the entry before the second caller
+      // arrives -- correct behaviour, but it cannot demonstrate the sharing.
+      const pending = new Subject<any>()
+      apiService.get.mockReturnValue(pending)
+
+      svc.checkReadAPI('id-5').subscribe()
+      svc.checkReadAPI('id-5').subscribe()
       expect(apiService.get).toHaveBeenCalledTimes(1)
+
+      pending.next({ result: { content: { identifier: 'id-5' } } })
+      pending.complete()
     })
 
     it('readMultipleContent joins ids', () => {
@@ -169,9 +180,7 @@ describe('EditorService', () => {
 
   describe('module helpers', () => {
     it('createModule returns the non-do_ identifier', done => {
-      apiService.patch.mockReturnValue(
-        of({ result: { identifiers: { 'client_new': 'new-id', 'do_123': 'x' } } }),
-      )
+      apiService.patch.mockReturnValue(of({ result: { identifiers: { client_new: 'new-id', do_123: 'x' } } }))
       svc.createModule({}).subscribe(id => {
         expect(id).toBe('new-id')
         done()
@@ -179,9 +188,7 @@ describe('EditorService', () => {
     })
 
     it('getModuleContent picks the matching child by identifier', done => {
-      apiService.get.mockReturnValue(
-        of({ result: { content: { children: [{ identifier: 'm1' }, { identifier: 'm2' }] } } }),
-      )
+      apiService.get.mockReturnValue(of({ result: { content: { children: [{ identifier: 'm1' }, { identifier: 'm2' }] } } }))
       svc.getModuleContent('parent', 'm2').subscribe(child => {
         expect(child.identifier).toBe('m2')
         expect(svc.newCreatedLexid).toBe('m2')
@@ -191,9 +198,7 @@ describe('EditorService', () => {
 
     it('createAndReadModule chains create then read', done => {
       apiService.patch.mockReturnValue(of({ result: { identifiers: { c: 'm2' } } }))
-      apiService.get.mockReturnValue(
-        of({ result: { content: { children: [{ identifier: 'm2' }] } } }),
-      )
+      apiService.get.mockReturnValue(of({ result: { content: { children: [{ identifier: 'm2' }] } } }))
       svc.createAndReadModule({}, 'parent').subscribe(child => {
         expect(child.identifier).toBe('m2')
         done()
@@ -229,10 +234,7 @@ describe('EditorService', () => {
 
     it('updateContentForReviwer patches updateReviewStatus', () => {
       svc.updateContentForReviwer({}, 'id-11')
-      expect(apiService.patch).toHaveBeenCalledWith(
-        expect.stringContaining('updateReviewStatus/id-11'),
-        {},
-      )
+      expect(apiService.patch).toHaveBeenCalledWith(expect.stringContaining('updateReviewStatus/id-11'), {})
     })
   })
 
@@ -296,9 +298,7 @@ describe('EditorService', () => {
     })
 
     it('searchSkills maps skill results', done => {
-      apiService.get.mockReturnValue(
-        of([{ identifier: 'i', name: 'n', skill: 's', category: 'c' }]),
-      )
+      apiService.get.mockReturnValue(of([{ identifier: 'i', name: 'n', skill: 's', category: 'c' }]))
       svc.searchSkills('foo').subscribe(list => {
         expect(list[0].name).toBe('n')
         expect(apiService.get).toHaveBeenCalledWith(expect.stringContaining('search_text=foo'))
@@ -350,9 +350,7 @@ describe('EditorService', () => {
     })
 
     it('getAccessPath fetches and flattens access paths', done => {
-      apiService.get.mockReturnValue(
-        of({ special: [{ accessPaths: ['p1'] }, { accessPaths: ['p2'] }] }),
-      )
+      apiService.get.mockReturnValue(of({ special: [{ accessPaths: ['p1'] }, { accessPaths: ['p2'] }] }))
       svc.getAccessPath().subscribe(paths => {
         expect(paths).toEqual(['p1', 'p2'])
         done()

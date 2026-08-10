@@ -69,11 +69,20 @@ describe('WidgetContentService', () => {
     req.flush({})
   })
 
-  it('saveContinueLearning POSTs to the continue endpoint', () => {
-    service.saveContinueLearning({ resourceId: 'r' } as any).subscribe()
-    const req = httpMock.expectOne('/apis/protected/v8/user/history/continue')
-    expect(req.request.method).toBe('POST')
-    req.flush({})
+  it('saveContinueLearning makes no request', () => {
+    // Progress is not recorded here. The endpoint it used to POST to is not served by
+    // this backend and answered 500 on every content open, so the call was removed;
+    // the method stays because the players and viewers call it while content plays.
+    let emitted: any = 'not emitted'
+    service.saveContinueLearning({ resourceId: 'r' } as any).subscribe(v => (emitted = v))
+
+    httpMock.expectNone(() => true)
+    expect(emitted).toBeNull()
+  })
+
+  it('continueLearning resolves without making a request', async () => {
+    await expect(service.continueLearning('r', 'c', 'Course')).resolves.toBe(true)
+    httpMock.expectNone(() => true)
   })
 
   it('setS3Cookie swallows errors and emits true', done => {

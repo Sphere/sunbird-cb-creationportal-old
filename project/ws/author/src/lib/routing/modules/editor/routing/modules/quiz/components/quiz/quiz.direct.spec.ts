@@ -173,11 +173,14 @@ describe('QuizComponent (direct instantiation)', () => {
       expect(spy).not.toHaveBeenCalled()
     })
 
+    // isAssessment is the server's flag: true is an assessment, false is a quiz.
+    // This previously asserted the mapping the other way round, pinning the
+    // inversion that showed quizzes as assessments in the player and the TOC.
     it('switches the label between Quiz and Assessment', () => {
       isAssessmentOrQuizMessage.next(false)
-      expect(component.isQuiz).toBe('Assessment')
-      isAssessmentOrQuizMessage.next(true)
       expect(component.isQuiz).toBe('Quiz')
+      isAssessmentOrQuizMessage.next(true)
+      expect(component.isQuiz).toBe('Assessment')
     })
   })
 

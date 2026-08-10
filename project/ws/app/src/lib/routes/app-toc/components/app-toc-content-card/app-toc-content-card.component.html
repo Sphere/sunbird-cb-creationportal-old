@@ -131,7 +131,7 @@
         >
           <h2 class="margin-remove text-truncate">{{ content?.name }}</h2>
           <div class="collection-meta">
-            <span class="meta-type">{{ content?.displayContentType }}</span>
+            <span class="meta-type">{{ contentTypeLabel }}</span>
             <span class="meta-duration" *ngIf="content?.duration">
               <ng-container *ngIf="content?.displayContentType">&nbsp;·&nbsp;</ng-container>
               {{ content?.duration | pipeDurationTransform: 'hms' }}
@@ -226,6 +226,7 @@
         [expandAll]="expandAll"
         [rootId]="rootId"
         [rootContentType]="rootContentType"
+        [gatingEnabled]="gatingEnabled"
         *ngFor="let child of content?.children; trackBy: contentTrackBy"
       >
       </ws-app-toc-content-card>
@@ -277,6 +278,12 @@
           </div>
         </div>
       </a>
+    </div>
+    <!-- Gating lock. Sibling of .width-expand so it lands in .resource-container's
+         flex row and margin-left:auto can push it to the right edge, on every
+         resource type alike. Indicator only: the row stays clickable. -->
+    <div *ngIf="gatingEnabled" class="progrss-box">
+      <img alt="Gating enabled" title="Gating enabled" src="cbp-assets/icons/lock.png" />
     </div>
   </div>
 </ng-container>

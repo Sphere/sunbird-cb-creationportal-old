@@ -35,7 +35,6 @@ const API_END_POINTS = {
   CONTENT_SEARCH_V6: `${PROTECTED_SLAG_V8}/content/searchV6`,
   CONTENT_SEARCH_REGION_RECOMMENDATION: `${PROTECTED_SLAG_V8}/content/searchRegionRecommendation`,
   CONTENT_HISTORY: `${PROTECTED_SLAG_V8}/user/history`,
-  USER_CONTINUE_LEARNING: `${PROTECTED_SLAG_V8}/user/history/continue`,
   CONTENT_RATING: `${PROTECTED_SLAG_V8}/user/rating`,
   CONTENT_RATING_V2: `${PROTECTED_SLAG_V8}/user/rating/content/average-ratingInfo`,
   COLLECTION_HIERARCHY: (type: string, id: string) => `${PROTECTED_SLAG_V8}/content/collection/${type}/${id}`,
@@ -105,33 +104,31 @@ export class WidgetContentService {
     return this.http.get<NsContent.IContinueLearningData>(`${API_END_POINTS.CONTENT_HISTORY}/${contentId}`)
   }
 
-  async continueLearning(id: string, collectionId?: string, collectionType?: string): Promise<any> {
-    const reqBody =
-      collectionType && collectionType.toLowerCase() === 'playlist'
-        ? {
-            contextPathId: collectionId ? collectionId : id,
-            resourceId: id,
-            data: JSON.stringify({
-              timestamp: Date.now(),
-              contextFullPath: [collectionId, id],
-            }),
-            dateAccessed: Date.now(),
-            contextType: 'playlist',
-          }
-        : {
-            contextPathId: collectionId ? collectionId : id,
-            resourceId: id,
-            data: JSON.stringify({ timestamp: Date.now() }),
-            dateAccessed: Date.now(),
-          }
-    await this.saveContinueLearning(reqBody)
-      .toPromise()
-      .catch(() => undefined)
+  /**
+   * Continue-learning progress is not tracked in this application.
+   *
+   * This used to POST to /apis/protected/v8/user/history/continue, which the backend
+   * here does not serve -- every viewer that opened a resource fired it and got a 500.
+   * The failure was swallowed, so nothing surfaced, but the request went out on every
+   * open. The method is kept, and still resolves, because five viewer components await
+   * it as part of their open sequence.
+   */
+  async continueLearning(_id: string, _collectionId?: string, _collectionType?: string): Promise<any> {
     return true
   }
-  saveContinueLearning(content: NsContent.IViewerContinueLearningRequest): Observable<any> {
-    const url = API_END_POINTS.USER_CONTINUE_LEARNING
-    return this.http.post<any>(url, content)
+
+  /**
+   * Continue-learning progress is not recorded in this application.
+   *
+   * Kept because the players, the html and web-module viewers, videojs-util and the
+   * sub-application responder all call it while content plays -- often on a timer. It
+   * used to POST every one of those to /apis/protected/v8/user/history/continue, which
+   * this backend does not serve, so each one came back 500. The failures were swallowed
+   * by `.catch()`, which is why nothing was visible except the console noise and the
+   * wasted requests.
+   */
+  saveContinueLearning(_content: NsContent.IViewerContinueLearningRequest): Observable<any> {
+    return of(null)
   }
   fetchHierarchyContent(contentId: string): Observable<NsContent.IContent> {
     const url = `/apis/proxies/v8/action/content/v3/hierarchy/${contentId}?hierarchyType=detail&mode=edit`

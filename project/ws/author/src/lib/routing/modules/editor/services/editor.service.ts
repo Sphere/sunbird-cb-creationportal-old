@@ -38,7 +38,7 @@ import { ApiService } from '@ws/author/src/lib/modules/shared/services/api.servi
 
 import { EMPTY, Observable, of } from 'rxjs'
 
-import { map, mergeMap, catchError, share, retry } from 'rxjs/operators'
+import { map, mergeMap, catchError, retry, shareReplay, finalize } from 'rxjs/operators'
 
 import { CONTENT_READ_MULTIPLE_HIERARCHY } from './../../../../constants/apiEndpoints'
 
@@ -52,7 +52,17 @@ import { environment } from '../../../../../../../../../src/environments/environ
 export class EditorService {
   accessPath: string[] = []
   newCreatedLexid!: string
-  someDataObservable!: Observable<any>
+
+  /** In-flight hierarchy reads, keyed by id -- see readcontentV3. */
+  private readonly hierarchyReadById = new Map<string, Observable<any>>()
+
+  /** In-flight content reads, keyed by id -- see readContentEditMode. */
+  private readonly contentReadById = new Map<string, Observable<any>>()
+
+  /** How long the cbp-data.json config is reused before it is fetched again. */
+  private static readonly CBP_DATA_TTL_MS = 5 * 60 * 1000
+
+  private cbpDataCache?: { fetchedAt: number; data: Observable<any> }
   resourseID!: any
   parentData: any
 
@@ -205,33 +215,77 @@ export class EditorService {
     return this.apiService.get<NSContent.IContentMeta>(`${CONTENT_READ}${id}${this.accessService.orgRootOrgAsQuery}`)
   }
 
-  readContentV2(id: string): Observable<NSContent.IContentMeta> {
-    this.newCreatedLexid = id
-    return this.apiService.get<NSContent.IContentMeta>(`${AUTHORING_BASE}content/v3/read/${id}?mode=edit`).pipe(
-      map((data: any) => {
-        return data.result.content
-      }),
+  /**
+   * One shared request for `content/v3/read/{id}?mode=edit`.
+   *
+   * readContentV2 and checkReadAPI both hit this URL, and a single builder action
+   * reaches them several times at once -- adding an assessment read the course five
+   * times. Overlapping requests for the same id now share one call.
+   *
+   * Sharing is deliberately limited to requests that overlap: the entry is dropped once
+   * the last subscriber finishes, so a later read still goes to the server and sees
+   * whatever a save changed. Holding the response beyond that would hand back stale
+   * content, which is worse than the extra call.
+   */
+  private readContentEditMode(id: string): Observable<any> {
+    const inFlight = this.contentReadById.get(id)
+    if (inFlight) {
+      return inFlight
+    }
+    const request = this.apiService.get<any>(`${AUTHORING_BASE}content/v3/read/${id}?mode=edit`).pipe(
+      finalize(() => this.contentReadById.delete(id)),
+      shareReplay({ bufferSize: 1, refCount: true }),
     )
+    this.contentReadById.set(id, request)
+    return request
   }
 
+  readContentV2(id: string): Observable<NSContent.IContentMeta> {
+    this.newCreatedLexid = id
+    return this.readContentEditMode(id).pipe(map((data: any) => JSON.parse(JSON.stringify(data.result.content))))
+  }
+
+  /**
+   * Reads a content hierarchy in edit mode.
+   *
+   * Called from ~67 places, and a single click in the course builder often reaches
+   * several of them at once -- adding an assessment issued this request three times for
+   * the course and three more for the new resource. Requests for the same id that
+   * overlap in time now share one HTTP call.
+   *
+   * Only *concurrent* calls are shared: the entry is dropped once the last subscriber
+   * is done, so a later read still goes to the server and picks up anything a save
+   * changed in between. Each subscriber gets its own copy, because callers assign the
+   * result onto component state and some of them edit it.
+   */
   readcontentV3(id: string): Observable<NSContent.IContentMeta> {
-    return this.apiService.get<NSContent.IContentMeta>(`/apis/proxies/v8/action/content/v3/hierarchy/${id}?mode=edit`).pipe(
-      map((data: any) => {
-        return data.result.content
-      }),
+    const inFlight = this.hierarchyReadById.get(id)
+    if (inFlight) {
+      return inFlight.pipe(map(content => JSON.parse(JSON.stringify(content))))
+    }
+    const request = this.apiService.get<NSContent.IContentMeta>(`/apis/proxies/v8/action/content/v3/hierarchy/${id}?mode=edit`).pipe(
+      map((data: any) => data.result.content),
+      finalize(() => this.hierarchyReadById.delete(id)),
+      shareReplay({ bufferSize: 1, refCount: true }),
     )
+    this.hierarchyReadById.set(id, request)
+    return request.pipe(map(content => JSON.parse(JSON.stringify(content))))
   }
   contentRead(id: string): Observable<any> {
     const res = this.apiService.get<any>(`/apis/proxies/v8/action/content/v3/hierarchy/${id}.img`)
     return res
   }
 
+  /**
+   * Reads a content item in edit mode.
+   *
+   * The cache here used to be a single field that ignored `id`: the first read won and
+   * every later call -- for any other content -- was handed that first item's data back.
+   * It suppressed a duplicate request by returning the wrong content. Sharing is keyed
+   * by id now, through the same in-flight request readContentV2 uses.
+   */
   checkReadAPI(id: string): Observable<any> {
-    if (this.someDataObservable) {
-      return this.someDataObservable
-    }
-    this.someDataObservable = this.apiService.get<any>(`/apis/authApi/content/v3/read/${id}?mode=edit`).pipe(share())
-    return this.someDataObservable
+    return this.readContentEditMode(id).pipe(map((data: any) => JSON.parse(JSON.stringify(data))))
   }
 
   getAllEntities(language: string = 'en'): any {
@@ -318,11 +372,37 @@ export class EditorService {
     )
   }
 
+  /**
+   * Content update rejects a string `category` with
+   * "Metadata category should be a/an Array value".
+   *
+   * Content is created with `category: <contentType>` as a plain string and every save
+   * spreads the stored metadata straight back into the PATCH, so the string is echoed
+   * and the update fails -- most visibly on Add Assessment. Creation still accepts the
+   * string, so only the update payload is normalised here, and only when the field is
+   * actually present.
+   *
+   * The payload is copied rather than edited in place: callers pass metadata that is
+   * also held in component state.
+   */
+  private withCategoryAsArray(payload: any): any {
+    const content = payload?.request?.content
+    if (!content || !('category' in content)) {
+      return payload
+    }
+    const { category } = content
+    if (Array.isArray(category)) {
+      return payload
+    }
+    const normalised = category === null || category === undefined || category === '' ? [] : [category]
+    return { ...payload, request: { ...payload.request, content: { ...content, category: normalised } } }
+  }
+
   updateContentV3(meta: NSApiRequest.IContentUpdateV2, id: string): Observable<null> {
     return this.apiService.patch<null>(
       // `${AUTHORING_BASE}content/v3/update/${id}`,
       `/apis/proxies/v8/action/content/v3/update/${id}`,
-      meta,
+      this.withCategoryAsArray(meta),
     )
   }
 
@@ -330,7 +410,7 @@ export class EditorService {
     return this.http.patch<null>(
       // `${AUTHORING_BASE}content/v3/update/${id}`,
       `/apis/proxies/v8/action/content/v3/update/${id}`,
-      meta,
+      this.withCategoryAsArray(meta),
     )
   }
 
@@ -349,7 +429,7 @@ export class EditorService {
   // }
 
   updateContentWithFewFields(requestBody: any, identifier: string): Observable<any> {
-    return this.apiService.patch<any>(`/apis/proxies/v8/action/content/v3/update/${identifier}`, requestBody)
+    return this.apiService.patch<any>(`/apis/proxies/v8/action/content/v3/update/${identifier}`, this.withCategoryAsArray(requestBody))
   }
 
   updateContentForReviwer(requestBody: any, identifier: string): Observable<any> {
@@ -564,29 +644,43 @@ export class EditorService {
       }),
     )
   }
+  /**
+   * The shared cbp-data.json config blob.
+   *
+   * Three callers here each wanted a different field out of the same ~19 kB file, and
+   * two of them appended a `?v=<timestamp>` cache buster, so the browser could never
+   * reuse it -- opening the course builder downloaded the whole file several times.
+   *
+   * Unlike the content reads, this is deployment config rather than something a save
+   * changes, so it is held briefly. The cache buster is kept but is now computed once
+   * per fetch, so a config change is still picked up within the TTL rather than
+   * requiring a reload.
+   */
+  private cbpData(): Observable<any> {
+    const now = new Date().getTime()
+    const cached = this.cbpDataCache
+    if (cached && now - cached.fetchedAt < EditorService.CBP_DATA_TTL_MS) {
+      return cached.data.pipe(map(value => JSON.parse(JSON.stringify(value))))
+    }
+    const request = this.apiService
+      .get<any>(`https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json?v=${now}`)
+      .pipe(shareReplay({ bufferSize: 1, refCount: false }))
+    this.cbpDataCache = { fetchedAt: now, data: request }
+    return request.pipe(map(value => JSON.parse(JSON.stringify(value))))
+  }
+
+  /** Drops the cached config so the next read fetches it again. */
+  clearCbpDataCache(): void {
+    this.cbpDataCache = undefined
+  }
+
   rolesMapped(): Observable<any> {
-    return this.apiService.get<any>(`https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json`).pipe(
-      map((data: any) => {
-        return data.roles
-      }),
-    )
+    return this.cbpData().pipe(map((data: any) => data.roles))
   }
   sourceNames(): Observable<any> {
-    const cacheBuster = new Date().getTime()
-    return this.apiService.get<any>(`https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json?v=${cacheBuster}`).pipe(
-      map((data: any) => {
-        console.log('response sourceNames', data)
-        return data.sourceName
-      }),
-    )
+    return this.cbpData().pipe(map((data: any) => data.sourceName))
   }
   languageList(): Observable<any> {
-    const cacheBuster = new Date().getTime()
-    return this.apiService.get<any>(`https://aastar-assets.s3.ap-south-1.amazonaws.com/data/cbp-data.json?v=${cacheBuster}`).pipe(
-      map((data: any) => {
-        console.log('response languageList', data)
-        return data.languageList
-      }),
-    )
+    return this.cbpData().pipe(map((data: any) => data.languageList))
   }
 }

@@ -5,6 +5,7 @@
   [duration]="duration"
   [timeLimit]="quizJson?.timeLimit"
   [noOfQuestions]="quizJson?.questions?.length"
+  [isAssessment]="!!quizJson?.isAssessment"
   (userSelection)="overViewed($event)"
 ></viewer-overview>
 

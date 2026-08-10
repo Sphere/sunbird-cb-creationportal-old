@@ -17,10 +17,28 @@ export class AppTocContentCardComponent implements OnInit, OnChanges {
   readonly isActivationKey = isActivationKey
 
   @Input() content: NsContent.IContent | null = null
+
+  /**
+   * The type shown under the title.
+   *
+   * displayContentType reports both quizzes and assessments as ASSESSMENT, so the two
+   * were indistinguishable here. When the content carries isAssessment -- quiz content
+   * does -- that flag decides the wording; everything else keeps the server's value.
+   */
+  get contentTypeLabel(): string {
+    const displayType = this.content?.displayContentType as string | undefined
+    if (this.content && typeof this.content.isAssessment === 'boolean' && displayType === 'ASSESSMENT') {
+      return this.content.isAssessment ? 'Assessment' : 'Quiz'
+    }
+    return displayType || ''
+  }
   @Input() expandAll = false
   @Input() rootId!: string
   @Input() rootContentType!: string
   @Input() forPreview = false
+  /** Gating is a course-level setting, so it is passed down from the TOC
+   *  root rather than read off each child. Display only - it never gates a click. */
+  @Input() gatingEnabled = false
   hasContentStructure = false
   enumContentTypes = NsContent.EDisplayContentTypes
   contentStructure: NsAppToc.ITocStructure = {

@@ -40,6 +40,12 @@ import { AppTocOverviewComponent } from './components/app-toc-overview/app-toc-o
 
 import { AppTocBannerComponent } from './components/app-toc-banner/app-toc-banner.component'
 
+import { AppLearnerBannerComponent } from './components/app-learner-banner/app-learner-banner.component'
+
+import { AppTocDesktopModalComponent } from './components/app-toc-desktop-modal/app-toc-desktop-modal.component'
+
+import { AppTocCertificateModalComponent } from './components/app-toc-certificate-modal/app-toc-certificate-modal.component'
+
 import { AppTocContentCardComponent } from './components/app-toc-content-card/app-toc-content-card.component'
 
 // services
@@ -118,6 +124,9 @@ import { AssessmentDetailComponent } from './components/assessment-detail/assess
     AppTocHomeComponent,
     AppTocOverviewComponent,
     AppTocBannerComponent,
+    AppLearnerBannerComponent,
+    AppTocDesktopModalComponent,
+    AppTocCertificateModalComponent,
     AppTocContentCardComponent,
     AppTocDialogIntroVideoComponent,
     AppTocOverviewDirective,

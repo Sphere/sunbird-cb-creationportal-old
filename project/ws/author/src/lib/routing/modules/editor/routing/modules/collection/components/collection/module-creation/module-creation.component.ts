@@ -2899,6 +2899,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     obj['type'] = 'assessment'
     obj['name'] = 'assessment'
     obj['description'] = 'assessment'
+    // The quiz builder loads whatever identifier arrives here -- it has no creation path
+    // of its own. Without this the payload had no identifier, so the builder fell back
+    // to the id the editor last emitted, read the course hierarchy instead of the
+    // assessment, found a collection rather than the quiz JSON, and rendered nothing.
+    // This is the same id the update above is issued against.
+    obj['identifier'] = this.currentContent
     console.log('obj: ' + JSON.stringify(obj))
     if (this.resourceLinkForm.value.name) {
       const requestBody: any = {

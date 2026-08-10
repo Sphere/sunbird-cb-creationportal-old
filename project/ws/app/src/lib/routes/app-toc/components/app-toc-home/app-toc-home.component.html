@@ -102,6 +102,19 @@
   >
   </ws-app-toc-banner>
 
+  <!-- Shown in preview, where the authoring banner above is hidden. -->
+  <ws-app-learner-banner
+    *ngIf="changeText === 'preview'"
+    role="banner"
+    [proficiencyList]="proficiencyList"
+    [banners]="banners"
+    [forPreview]="forPreview"
+    [content]="content"
+    [resumeData]="resumeData"
+    [optmisticPercentage]="optmisticPercentage"
+  >
+  </ws-app-learner-banner>
+
   <ng-container>
     <div role="main" class="toc-body" *ngIf="!errorCode; else tocError">
       <nav mat-tab-nav-bar class="toc-links mat-app-background">
