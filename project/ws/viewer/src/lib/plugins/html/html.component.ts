@@ -11,7 +11,7 @@ import {
   //WidgetContentService
 } from '@ws-widget/collection'
 
-import { ConfigurationsService, EventService, TelemetryService } from '@ws-widget/utils'
+import { ConfigurationsService, EventService, TelemetryService, SafeContentService } from '@ws-widget/utils'
 
 import { TFetchStatus } from '@ws-widget/utils/src/public-api'
 
@@ -302,7 +302,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
         //         //   url = url + res['result']['content']['entryPoint']
 
         //         // }
-        //         this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
+        //         this.iframeUrl = SafeContentService.trustedResourceUrl(this.domSanitizer, url)
         //         console.log(this.iframeUrl)
         //       })
         //       .catch((err: any) => {
@@ -365,7 +365,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
         // }
       } else {
         this.mimeType = this.htmlContent.mimeType
-        this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.htmlContent.artifactUrl)
+        this.iframeUrl = SafeContentService.trustedResourceUrl(this.domSanitizer, this.htmlContent.artifactUrl)
       }
     } else if (this.htmlContent && this.htmlContent.artifactUrl === '') {
       this.iframeUrl = null
@@ -529,7 +529,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
       const entryPoint_processed = entryPoint || this.htmlContent.entryPoint || ''
       const newUrl = `/apis/proxies/v8/getContents${streamingUrl}${entryPoint_processed}`
       console.log('[SCORM] Using proxy URL:', newUrl, { streamingUrl, entryPoint: entryPoint_processed })
-      this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(newUrl)
+      this.iframeUrl = SafeContentService.trustedResourceUrl(this.domSanitizer, newUrl)
       this.showIsLoadingMessage = true
     } else {
       console.error('[SCORM] streamingUrl not available')

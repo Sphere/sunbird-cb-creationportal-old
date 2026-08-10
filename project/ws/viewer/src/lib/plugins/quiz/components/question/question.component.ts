@@ -6,7 +6,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
 
 import { jsPlumb, OnConnectionBindInfo } from 'jsplumb'
 
-import { isActivationKey, randomInt } from '@ws-widget/utils'
+import { isActivationKey, randomInt, SafeContentService } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'viewer-question',
@@ -80,7 +80,7 @@ export class QuestionComponent implements OnInit, AfterViewInit {
           border-width: 1px; padding: 8px 12px;" type="text" id="${this.question.questionId}${i}"`,
         )
       }
-      this.safeQuestion = this.domSanitizer.bypassSecurityTrustHtml(this.question.question)
+      this.safeQuestion = SafeContentService.trustedHtml(this.domSanitizer, this.question.question)
     }
     if (this.question.questionType === 'mtf') {
       this.question.options.forEach(option => (option.matchForView = option.match))

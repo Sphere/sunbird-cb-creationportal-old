@@ -15,7 +15,7 @@ import { LoaderService } from 'project/ws/author/src/lib/services/loader.service
 import { SuccessDialogComponent } from '../success-dialog/success-dialog.component'
 
 import { MatDialog } from '@angular/material/dialog'
-import { isActivationKey } from '@ws-widget/utils'
+import { isActivationKey, SafeContentService } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-root-certificate-upload-dialog',
@@ -50,7 +50,7 @@ export class CertificateDialogComponent implements OnInit {
       const reader = new FileReader()
       reader.onload = (e: any) => {
         const svgContent = e.target.result
-        this.svgContent = this.sanitizer.bypassSecurityTrustResourceUrl(svgContent) as SafeResourceUrl
+        this.svgContent = SafeContentService.trustedResourceUrl(this.sanitizer, svgContent) as SafeResourceUrl
         const base64Data = e.target.result.split(',')[1]
         let svgContents = atob(base64Data)
         this.extractSvgAttributes(svgContents)
@@ -228,7 +228,7 @@ export class CertificateDialogComponent implements OnInit {
       const base64EncodedSvg = btoa(modifiedSvgString)
       // Add data URI prefix
       const dataUri = `data:image/svg+xml;base64,${base64EncodedSvg}`
-      this.svgContent = this.sanitizer.bypassSecurityTrustResourceUrl(dataUri) as SafeResourceUrl
+      this.svgContent = SafeContentService.trustedResourceUrl(this.sanitizer, dataUri) as SafeResourceUrl
     }
   }
   createTemplate() {

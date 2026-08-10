@@ -2,7 +2,7 @@ import { Subscription } from 'rxjs'
 
 import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 
-import { ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService, SafeContentService } from '@ws-widget/utils'
 
 import { Component, OnInit, ViewEncapsulation, ChangeDetectorRef, HostListener, OnDestroy } from '@angular/core'
 
@@ -59,7 +59,7 @@ export class AuthRootComponent implements OnInit, OnDestroy {
     })
     const instanceConfig = await this.configSvc.instanceConfig
     if (instanceConfig) {
-      this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(instanceConfig.logos.app)
+      this.appIcon = SafeContentService.trustedResourceUrl(this.domSanitizer, instanceConfig.logos.app)
     }
   }
 

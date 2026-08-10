@@ -6,7 +6,7 @@ import { NsContent, WidgetContentService, ContentProgressService } from '@ws-wid
 
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
-import { ConfigurationsService, LoggerService, NsPage, isActivationKey } from '@ws-widget/utils'
+import { ConfigurationsService, LoggerService, NsPage, isActivationKey, SafeContentService } from '@ws-widget/utils'
 
 import { Subscription, Observable } from 'rxjs'
 
@@ -356,7 +356,8 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     if (this.content && this.content.identifier && !this.forPreview) {
       this.getContinueLearningData(this.content.identifier)
     }
-    this.body = this.domSanitizer.bypassSecurityTrustHtml(
+    this.body = SafeContentService.trustedHtml(
+      this.domSanitizer,
       this.content && this.content.body
         ? this.forPreview
           ? this.authAccessControlSvc.proxyToAuthoringUrl(this.content.body)

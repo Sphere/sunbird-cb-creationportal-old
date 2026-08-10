@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 
 import { NsContent } from '@ws-widget/collection'
 
-import { ConfigurationsService, EventService, isActivationKey } from '@ws-widget/utils'
+import { ConfigurationsService, EventService, isActivationKey, SafeContentService } from '@ws-widget/utils'
 
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
 
@@ -40,7 +40,7 @@ export class LearningCardComponent implements OnInit, OnChanges {
     for (const prop in changes) {
       if (prop === 'content' && this.content.description) {
         this.content.description = this.content.description.replace(/<br>/g, '')
-        this.description = this.domSanitizer.bypassSecurityTrustHtml(this.content.description)
+        this.description = SafeContentService.trustedHtml(this.domSanitizer, this.content.description)
       }
     }
   }

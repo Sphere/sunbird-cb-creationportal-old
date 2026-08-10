@@ -10,7 +10,7 @@ import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
 
 import { PipeLimitToPipe } from '@ws-widget/utils/src/lib/pipes/pipe-limit-to/pipe-limit-to.pipe'
 
-import { ValueService, ConfigurationsService } from '@ws-widget/utils'
+import { ValueService, ConfigurationsService, SafeContentService } from '@ws-widget/utils'
 
 import { PlayerStateService } from '../../player-state.service'
 
@@ -21,13 +21,10 @@ import { PlayerStateService } from '../../player-state.service'
   styleUrls: ['./html.component.scss'],
 })
 export class HtmlComponent implements OnInit, OnChanges {
-
   @Input() isNotEmbed = true
   @Input() isFetchingDataComplete = false
   @Input() htmlData: NsContent.IContent | null = null
-  @Input() discussionForumWidget: NsWidgetResolver.IRenderConfigWithTypedData<
-    NsDiscussionForum.IDiscussionForumInput
-  > | null = null
+  @Input() discussionForumWidget: NsWidgetResolver.IRenderConfigWithTypedData<NsDiscussionForum.IDiscussionForumInput> | null = null
   @Input() isPreviewMode = false
   @Input() forPreview = false
   isTypeOfCollection = false
@@ -47,10 +44,8 @@ export class HtmlComponent implements OnInit, OnChanges {
     private pipeLimitTo: PipeLimitToPipe,
     private valueSvc: ValueService,
     private configSvc: ConfigurationsService,
-    private viewerDataSvc: PlayerStateService
-  ) {
-
-  }
+    private viewerDataSvc: PlayerStateService,
+  ) {}
   // async setcookies() {
   //   if (this.htmlData && this.htmlData.artifactUrl && (this.htmlData.artifactUrl.indexOf('/content-store/') > -1)) {
   //     return await this.contentSvc.setS3Cookie(this.htmlData.identifier || '').toPromise()
@@ -60,8 +55,7 @@ export class HtmlComponent implements OnInit, OnChanges {
     // this.setcookies().then(() => {
     this.isTypeOfCollection = this.activatedRoute.snapshot.queryParams.collectionType ? true : false
     if (this.configSvc.restrictedFeatures) {
-      this.isRestricted =
-        !this.configSvc.restrictedFeatures.has('disscussionForum')
+      this.isRestricted = !this.configSvc.restrictedFeatures.has('disscussionForum')
     }
 
     this.viewerDataServiceSubscription = this.viewerDataSvc.playerState.subscribe(data => {
@@ -75,7 +69,6 @@ export class HtmlComponent implements OnInit, OnChanges {
     // }).catch((ex) => {
     //   console.warn("Please refresh Page", ex)
     // })
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -87,15 +80,12 @@ export class HtmlComponent implements OnInit, OnChanges {
           this.isScormContent = false
         }
         if (this.htmlData && this.htmlData.learningObjective) {
-          this.learningObjective = this.domSanitizer.bypassSecurityTrustHtml(
-            this.htmlData.learningObjective,
-          )
+          this.learningObjective = SafeContentService.trustedHtml(this.domSanitizer, this.htmlData.learningObjective)
         }
         if (this.htmlData && this.htmlData.description) {
           const description = this.pipeLimitTo.transform(this.htmlData.description, 450)
-          this.description = this.domSanitizer.bypassSecurityTrustHtml(description)
+          this.description = SafeContentService.trustedHtml(this.domSanitizer, description)
         }
-
       }
     }
   }

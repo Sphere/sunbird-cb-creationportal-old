@@ -111,6 +111,8 @@ export * from './lib/services/logger.service'
 
 export * from './lib/services/resource-download.service'
 
+export * from './lib/services/safe-content.service'
+
 export * from './lib/services/ms-office.model'
 
 export * from './lib/services/subapplication-respond.service'

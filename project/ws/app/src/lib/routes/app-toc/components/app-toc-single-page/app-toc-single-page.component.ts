@@ -8,7 +8,7 @@ import { ActivatedRoute, Data } from '@angular/router'
 
 import { NsContent } from '@ws-widget/collection'
 
-import { ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService, SafeContentService } from '@ws-widget/utils'
 
 import { Observable, Subscription } from 'rxjs'
 
@@ -130,7 +130,8 @@ export class AppTocSinglePageComponent implements OnInit, OnDestroy {
     const initData = this.tocSharedSvc.initData(data)
     this.content = initData.content
     this.setSocialMediaMetaTags(this.content)
-    this.body = this.domSanitizer.bypassSecurityTrustHtml(
+    this.body = SafeContentService.trustedHtml(
+      this.domSanitizer,
       this.content && this.content.body
         ? this.forPreview
           ? this.authAccessControlSvc.proxyToAuthoringUrl(this.content.body)

@@ -7,7 +7,7 @@ import { Router } from '@angular/router'
 
 import { NsContent, WidgetContentService, viewerRouteGenerator } from '@ws-widget/collection'
 
-import { TFetchStatus } from '@ws-widget/utils'
+import { TFetchStatus, SafeContentService } from '@ws-widget/utils'
 
 import { UtilityService } from '@ws-widget/utils/src/lib/services/utility.service'
 
@@ -338,13 +338,13 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
   }
   private updateBannerUrl() {
     if (this.banners) {
-      this.bannerUrl = this.sanitizer.bypassSecurityTrustStyle(`url(${this.banners[this.routePath]})`)
+      this.bannerUrl = SafeContentService.trustedStyle(this.sanitizer, `url(${this.banners[this.routePath]})`)
     }
   }
 
   get sanitizedIntroductoryVideoIcon() {
     if (this.content && this.content.introductoryVideoIcon) {
-      return this.sanitizer.bypassSecurityTrustStyle(`url(${this.content.introductoryVideoIcon})`)
+      return SafeContentService.trustedStyle(this.sanitizer, `url(${this.content.introductoryVideoIcon})`)
     }
     return null
   }

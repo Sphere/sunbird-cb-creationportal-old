@@ -11,6 +11,8 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
 
 import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
 
+import { SafeContentService } from '@ws-widget/utils'
+
 // import { WidgetContentService } from '@ws-widget/collection'
 
 @Component({
@@ -49,7 +51,7 @@ export class AppTocCertificateModalComponent implements OnInit {
         if (cert && cert[0] && cert[0].cert_templates != null) {
           const certificates: any = Object.values(cert[0]['cert_templates'])
           this.url = certificates[0].url
-          this.img = this.sanitizer.bypassSecurityTrustUrl(this.url)
+          this.img = SafeContentService.trustedUrl(this.sanitizer, this.url)
         }
         this.settled()
       },

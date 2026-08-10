@@ -2,7 +2,7 @@ import { AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit } from '@
 
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
 
-import { LoggerService } from '@ws-widget/utils'
+import { LoggerService, SafeContentService } from '@ws-widget/utils'
 
 import { NsContent } from '../../../../../../../library/ws-widget/collection/src/public-api'
 
@@ -45,7 +45,7 @@ export class IapComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit
   ngOnChanges() {
     // //console.log(this.iapContent)
     if (this.iapContent && this.iapContent.artifactUrl) {
-      this.iframeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.iapContent.artifactUrl)
+      this.iframeUrl = SafeContentService.trustedResourceUrl(this.domSanitizer, this.iapContent.artifactUrl)
     } else {
       this.iframeUrl = null
     }
