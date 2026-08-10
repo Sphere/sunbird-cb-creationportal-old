@@ -40,6 +40,11 @@ export class CompetencyPopupComponent implements OnInit {
   selectedSelfAssessment: any
   disableLevel = false
   searchComp: any = ''
+  /**
+   * Language chosen in the course form. Used in preference to the saved copy,
+   * because the author may have changed it without saving yet.
+   */
+  selectedLang = ''
 
   constructor(
     private loader: LoaderService,
@@ -49,7 +54,36 @@ export class CompetencyPopupComponent implements OnInit {
     private router: Router,
     @Inject(MAT_DIALOG_DATA) data: any,
   ) {
-    this.selectedSelfAssessment = data
+    // Callers may pass either the bare self-assessment flag (original contract)
+    // or an object that also carries the currently selected language.
+    if (data && typeof data === 'object') {
+      this.selectedSelfAssessment = data.selfAssessment
+      this.selectedLang = data.lang || ''
+    } else {
+      this.selectedSelfAssessment = data
+    }
+  }
+
+  /**
+   * The saved `lang` is not always an ISO code: content has been written with an
+   * array (`['English']`) and with display names, so normalise before asking the
+   * entity API, which matches on the code.
+   */
+  private static readonly LANG_CODES: { [name: string]: string } = {
+    english: 'en',
+    hindi: 'hi',
+    kannada: 'kn',
+    assamese: 'as',
+    odia: 'or',
+  }
+
+  private normaliseLang(value: any): string {
+    const raw = Array.isArray(value) ? value[0] : value
+    if (typeof raw !== 'string') {
+      return ''
+    }
+    const trimmed = raw.trim()
+    return CompetencyPopupComponent.LANG_CODES[trimmed.toLowerCase()] || trimmed
   }
 
   displayCompetency = (option: any): string => {
@@ -69,7 +103,10 @@ export class CompetencyPopupComponent implements OnInit {
     const id = this.router.url.split('/')[3]
     this.editorService.readcontentV3(id).subscribe((res: any) => {
       this.parentData = res
-      const lang = res?.lang || 'en'
+      // The form value wins: a newly picked language is not persisted until the
+      // course is saved, so the server copy would still report the old one and
+      // the competency list would come back in the wrong language.
+      const lang = this.normaliseLang(this.selectedLang) || this.normaliseLang(res?.lang) || 'en'
       this.editorService.getAllEntities(lang).subscribe((entRes: any) => {
         this.proficiencyList = entRes.result.entity
         this.searchComp = this.proficiencyList

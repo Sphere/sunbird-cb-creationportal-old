@@ -447,7 +447,13 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
     const dialogRef = this.dialog.open(CompetencyPopupComponent, {
       width: '40%',
       maxHeight: '90vh',
-      data: this.selectedSelfCompetency,
+      data: {
+        selfAssessment: this.selectedSelfCompetency,
+        // Pass the language currently selected in the form. Without this the
+        // popup falls back to the saved content, which is stale whenever the
+        // author picks a language and opens this dialog before saving.
+        lang: this.contentForm.controls.lang.value,
+      },
     })
     dialogRef.afterClosed().subscribe((response: boolean) => {
       // Only refresh (and show the loader) when a competency was actually added.
