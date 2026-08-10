@@ -151,9 +151,17 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
         }
       } else if (data === 'preview') {
         const lang = (this.content as any)?.lang || 'en'
-        this.editorService.getAllEntities(lang).subscribe((res: any) => {
-          this.proficiencyList = res.result.entity
-        })
+        // Enriches the competency dialog with codes and level names. It is optional
+        // -- the dialog falls back to what the content stores -- but the failure path
+        // was unhandled, which left the list undefined with nothing said about it.
+        this.editorService.getAllEntities(lang).subscribe(
+          (res: any) => {
+            this.proficiencyList = res?.result?.entity || []
+          },
+          () => {
+            this.proficiencyList = []
+          },
+        )
         this.changeText = 'preview'
         this.cdr.detectChanges()
       } else if (data === 'history') {

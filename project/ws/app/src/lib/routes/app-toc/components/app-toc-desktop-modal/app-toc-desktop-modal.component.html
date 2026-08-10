@@ -28,16 +28,19 @@
 
   <!-- COMPETENCY view -->
   <div class="modal-body" *ngIf="content.type === 'COMPETENCY'">
+    <!-- The name used to be printed only when lang was exactly 'en' or 'hi', so a
+         course in any other language rendered an empty row. Fall back to the name
+         resolved in the component, which prefers the entity list and then the name
+         stored on the content itself. -->
     <ng-container *ngFor="let list of addedCompetency">
       <div class="competency-item">
         <h3 class="competency-name">
-          <ng-container *ngIf="content.lang === 'en'">{{ list.competencyName }}</ng-container>
-          <ng-container *ngIf="content.lang === 'hi'">
-            {{ list['lang-hi-name'] ? list['lang-hi-name'] : list.competencyName }}
-          </ng-container>
+          {{ content.lang === 'hi' && list['lang-hi-name'] ? list['lang-hi-name'] : list.name }}
         </h3>
         <div class="competency-level" *ngFor="let level of list.levels">{{ level }}</div>
       </div>
     </ng-container>
+
+    <p class="competency-empty" *ngIf="!addedCompetency?.length" i18n>No competencies have been mapped to this course yet.</p>
   </div>
 </div>

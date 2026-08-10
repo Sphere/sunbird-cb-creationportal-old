@@ -34,7 +34,6 @@ export class AppTocCertificateModalComponent implements OnInit {
 
   ngOnInit() {
     this.loader.changeLoad.next(true)
-    console.log('this.content.identifier', this.content.content.identifier)
     const req = {
       request: {
         filters: {
@@ -44,20 +43,28 @@ export class AppTocCertificateModalComponent implements OnInit {
         sort_by: { createdDate: 'desc' },
       },
     }
-    this.editorService.getBatchforCert(req).subscribe((res: any) => {
-      console.log(res)
-      let cert = res
-      if (cert && cert[0] && cert[0].cert_templates != null) {
-        console.log('cert', cert[0].cert_templates, cert[0].cert_templates)
+    this.editorService.getBatchforCert(req).subscribe(
+      (res: any) => {
+        const cert = res
+        if (cert && cert[0] && cert[0].cert_templates != null) {
+          const certificates: any = Object.values(cert[0]['cert_templates'])
+          this.url = certificates[0].url
+          this.img = this.sanitizer.bypassSecurityTrustUrl(this.url)
+        }
+        this.settled()
+      },
+      // Without this the request could only ever succeed: a failure left both the
+      // dialog and the global loader spinning with nothing shown and no way back.
+      () => {
+        this.settled()
+      },
+    )
+  }
 
-        let certificates: any = Object.values(cert[0]['cert_templates'])
-        console.log('certificates[this.content.identifier].url', certificates[0].url)
-        this.url = certificates[0].url
-        // tslint:disable-next-line:no-this-assignment
-        this.img = this.sanitizer.bypassSecurityTrustUrl(this.url)
-      }
-      this.isLoading = false
-    })
+  /** Clears both the in-dialog spinner and the global loader, on either outcome. */
+  private settled() {
+    this.isLoading = false
+    this.loader.changeLoad.next(false)
   }
   async downloadCertificate() {
     this.isLoading = true

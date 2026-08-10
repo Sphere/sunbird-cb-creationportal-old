@@ -127,3 +127,11 @@
   line-height: 1.5;
   padding-left: 8px;
 }
+
+// Shown when a course maps no competency, so the dialog never opens empty.
+.competency-empty {
+  margin: 0;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  color: #64748b;
+}

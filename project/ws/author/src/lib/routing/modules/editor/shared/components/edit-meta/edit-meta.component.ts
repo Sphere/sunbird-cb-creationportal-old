@@ -452,7 +452,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
         // Pass the language currently selected in the form. Without this the
         // popup falls back to the saved content, which is stale whenever the
         // author picks a language and opens this dialog before saving.
-        lang: this.contentForm.controls.lang.value,
+        lang: this.contentForm?.controls?.lang?.value,
       },
     })
     dialogRef.afterClosed().subscribe((response: boolean) => {

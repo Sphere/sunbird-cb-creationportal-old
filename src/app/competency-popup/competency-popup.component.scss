@@ -300,3 +300,36 @@
     color: #475569 !important;
   }
 }
+
+// ── Replace warning ──────────────────────────────────────────────────────
+// Shown when the picked competency differs from the one already on the course.
+.cp-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 24px;
+  padding: 12px 16px;
+  border: 1px solid #fcd34d;
+  border-left: 3px solid #d97706;
+  border-radius: 8px;
+  background: #fffbeb;
+}
+
+.cp-warning-icon {
+  flex-shrink: 0;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #b45309;
+}
+
+.cp-warning-text {
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #78350f;
+
+  strong {
+    font-weight: 600;
+  }
+}

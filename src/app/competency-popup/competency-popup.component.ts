@@ -46,6 +46,13 @@ export class CompetencyPopupComponent implements OnInit {
    */
   selectedLang = ''
 
+  /**
+   * A course carries a single competency, at one or more levels. These hold the
+   * one already saved so the author can be warned before it is replaced.
+   */
+  existingCompetencyId = ''
+  existingCompetencyName = ''
+
   constructor(
     private loader: LoaderService,
     private snackBar: MatSnackBar,
@@ -86,6 +93,28 @@ export class CompetencyPopupComponent implements OnInit {
     return CompetencyPopupComponent.LANG_CODES[trimmed.toLowerCase()] || trimmed
   }
 
+  /**
+   * competencies_v1 comes back from the API as a JSON string, but is already an
+   * array once it has been written in memory. Tolerate both, and malformed data.
+   */
+  private parseCompetencies(raw: any): any[] {
+    try {
+      if (!raw) {
+        return []
+      }
+      return typeof raw === 'string' ? JSON.parse(raw) : Array.isArray(raw) ? raw : []
+    } catch {
+      return []
+    }
+  }
+
+  /** True once the author picks a competency other than the one already saved. */
+  get willReplaceExisting(): boolean {
+    return Boolean(
+      this.existingCompetencyId && this.proficiency?.entityId && String(this.proficiency.entityId) !== this.existingCompetencyId,
+    )
+  }
+
   displayCompetency = (option: any): string => {
     if (!option) {
       return ''
@@ -103,6 +132,9 @@ export class CompetencyPopupComponent implements OnInit {
     const id = this.router.url.split('/')[3]
     this.editorService.readcontentV3(id).subscribe((res: any) => {
       this.parentData = res
+      const [saved] = this.parseCompetencies(res?.competencies_v1)
+      this.existingCompetencyId = saved ? String(saved.competencyId) : ''
+      this.existingCompetencyName = saved ? saved.competencyName || '' : ''
       // The form value wins: a newly picked language is not persisted until the
       // course is saved, so the server copy would still report the old one and
       // the competency list would come back in the wrong language.
@@ -131,14 +163,7 @@ export class CompetencyPopupComponent implements OnInit {
     this.hasOneChecked = false
 
     if (!this.disableLevel && this.parentData?.competencies_v1 && event?.id) {
-      let existing: any[] = []
-      try {
-        const raw = this.parentData.competencies_v1
-        // API returns a JSON string; after an in-memory write it may be an array already
-        existing = typeof raw === 'string' ? JSON.parse(raw) : Array.isArray(raw) ? raw : []
-      } catch {
-        existing = []
-      }
+      const existing = this.parseCompetencies(this.parentData.competencies_v1)
 
       existing.forEach((comp: any) => {
         if (String(comp.competencyId) === String(event.entityId) && comp.level !== undefined) {
@@ -167,21 +192,13 @@ export class CompetencyPopupComponent implements OnInit {
     // Gather currently selected levels from levelList directly (avoids null selectLevel bug)
     const selectedLevels = this.disableLevel ? [] : this.levelList.filter(l => l.selected)
 
-    let arr1: string[] = this.parentData?.competencySearch ? [...this.parentData.competencySearch] : []
-    let arr2: any[] = []
-    try {
-      const raw = this.parentData?.competencies_v1
-      if (raw) {
-        arr2 = typeof raw === 'string' ? JSON.parse(raw) : Array.isArray(raw) ? raw : []
-      }
-    } catch {
-      arr2 = []
-    }
-
-    // Remove all existing entries for this competency so we can re-add cleanly (no duplicates)
+    // A course carries a single competency at one or more levels, so what is
+    // selected here is the whole set: it replaces anything already saved rather
+    // than being merged with it. Starting empty also drops the duplicate entries
+    // the old per-competency filter existed to avoid.
+    const arr1: string[] = []
+    const arr2: any[] = []
     const compIdStr = String(proficiency.entityId)
-    arr1 = arr1.filter((id: string) => !String(id).startsWith(compIdStr + '-') && String(id) !== compIdStr)
-    arr2 = arr2.filter((comp: any) => String(comp.competencyId) !== compIdStr)
 
     if (this.disableLevel) {
       arr2.push({

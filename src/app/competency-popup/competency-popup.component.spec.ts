@@ -287,7 +287,10 @@ describe('CompetencyPopupComponent', () => {
       })
     })
 
-    it('replaces the previous entries for the same competency', () => {
+    // A course maps one competency at any number of levels. This used to assert
+    // that a second competency (20) survived alongside the one being saved (10);
+    // it is now replaced outright, with the author warned in the dialog first.
+    it('replaces every saved competency, not just the entries for this one', () => {
       editorService.readcontentV3.mockReturnValue(
         of(
           parent({
@@ -304,11 +307,8 @@ describe('CompetencyPopupComponent', () => {
 
       component.addCompetency(entities[0], null, true)
 
-      expect(sentMeta().competencySearch).toEqual(['20-2', '10-4'])
-      expect(sentMeta().competencies_v1).toEqual([
-        { competencyId: '20', level: '2' },
-        { competencyName: 'Communication', competencyId: '10', level: '4' },
-      ])
+      expect(sentMeta().competencySearch).toEqual(['10-4'])
+      expect(sentMeta().competencies_v1).toEqual([{ competencyName: 'Communication', competencyId: '10', level: '4' }])
     })
 
     it('survives malformed stored competencies when saving', () => {
