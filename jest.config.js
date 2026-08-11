@@ -31,19 +31,18 @@ module.exports = {
   coveragePathIgnorePatterns: ['/node_modules/', '/dist/', '/out-tsc/'],
   // Coverage ratchet: a floor set just below the current measured baseline so the
   // build fails if coverage regresses. Raise these numbers as new suites land —
-  // never lower them. Current baseline (2026-08, waves 13-17):
-  // stmts 85.60 / br 74.60 / fn 84.16 / ln 85.56.
+  // never lower them.
   //
-  // Note on the headline number: module-creation.component.ts alone holds ~1,670
-  // uncovered statements (29% of everything still uncovered) — it is a 5,396-line
-  // component whose bulk sits in ~15 large async methods. Excluding that one file,
-  // the rest of the codebase is at 89.96% statements.
+  // Wave 18 took every metric past 85%. The branch number was the real work: the
+  // save/review/publish pipelines of module-creation and course-collection were
+  // almost entirely untested (25.6% and 44.3% of branches), and between them held
+  // ~1,300 of the ~4,500 uncovered branches in the repo. Both now sit above 90%.
   coverageThreshold: {
     global: {
-      statements: 85.5,
-      branches: 74.5,
-      functions: 84.1,
-      lines: 85.5,
+      statements: 85,
+      branches: 85,
+      functions: 85,
+      lines: 85,
     },
   },
   moduleNameMapper: {
