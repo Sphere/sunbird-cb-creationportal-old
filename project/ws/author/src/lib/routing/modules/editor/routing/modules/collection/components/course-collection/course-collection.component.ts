@@ -68,6 +68,10 @@ import { isNumber } from 'lodash'
 
 import { environment } from '../../../../../../../../../../../../../src/environments/environment'
 
+import { sendContentEmailNotification } from '../../services/content-email-notification'
+
+import { getStatusMessage } from '../../services/content-status-message'
+
 import { ConfigurationsService } from '../../../../../../../../../../../../../library/ws-widget/utils/src/public-api'
 
 /* tslint:disable */
@@ -3187,33 +3191,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       })
     })
   }
+  /**
+   * Which notification to show after an action, based on the state the content was
+   * in. Was 28 duplicated lines of paired switches; the table lives in the helper.
+   */
   getMessage(type: 'success' | 'failure') {
-    if (type === 'success') {
-      switch (this.contentService.originalContent[this.currentParentId].status) {
-        case 'Draft':
-        case 'Live':
-          return Notify.SEND_FOR_REVIEW_SUCCESS
-        case 'InReview':
-          return Notify.REVIEW_SUCCESS
-        case 'Reviewed':
-        case 'Review':
-          return Notify.PUBLISH_SUCCESS
-        default:
-          return ''
-      }
-    }
-    switch (this.contentService.originalContent[this.currentParentId].status) {
-      case 'Draft':
-      case 'Live':
-        return Notify.SEND_FOR_REVIEW_FAIL
-      case 'InReview':
-        return Notify.REVIEW_FAIL
-      case 'Reviewed':
-      case 'Review':
-        return Notify.PUBLISH_FAIL
-      default:
-        return ''
-    }
+    return getStatusMessage(this.contentService.originalContent[this.currentParentId].status, type)
   }
 
   async subAction(event: { type: string; identifier: string; nodeClicked?: boolean }) {
@@ -3600,72 +3583,22 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     return flag
   }
 
-  async sendEmailNotification(actionType: string) {
-    const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
-    // tslint:disable-next-line:no-console
-    console.log('originalData', originalData)
-    const emailReqPayload = {
-      contentState: actionType,
-      contentLink: `${environment.cbpPortal}author/editor/${originalData.identifier}/collection`,
-      contentName: this._configurationsService.userProfile ? this._configurationsService.userProfile.userName : '',
-      sender: this._configurationsService.userProfile ? this._configurationsService.userProfile.email : '',
-      recipientEmails: <any>[],
-    }
-    switch (actionType) {
-      case 'sendForReview':
-        let reviewerData: any[]
-        if (typeof originalData.reviewer === 'string') {
-          reviewerData = JSON.parse(originalData.reviewer)
-        } else {
-          reviewerData = originalData.reviewer
-        }
-        if (reviewerData && reviewerData.length > 0) {
-          reviewerData.forEach((element: any) => {
-            if (element.email) {
-              emailReqPayload.recipientEmails.push(element.email)
-            }
-          })
-        }
-        break
-      case 'sendForPublish':
-        let publisherData: any[]
-        if (typeof originalData.publisherDetails === 'string') {
-          publisherData = JSON.parse(originalData.publisherDetails)
-        } else {
-          publisherData = originalData.publisherDetails
-        }
-        if (publisherData && publisherData.length > 0) {
-          publisherData.forEach((element: any) => {
-            if (element.email) {
-              emailReqPayload.recipientEmails.push(element.email)
-            }
-          })
-        }
-        break
-      case 'reviewFailed':
-      case 'publishFailed':
-      case 'publishCompleted':
-        let creatorData: any[]
-        if (typeof originalData.creatorContacts === 'string') {
-          creatorData = JSON.parse(originalData.creatorContacts)
-        } else {
-          creatorData = originalData.creatorContacts
-        }
-        if (creatorData && creatorData.length > 0) {
-          creatorData.forEach((element: any) => {
-            if (element.email) {
-              emailReqPayload.recipientEmails.push(element.email)
-            }
-          })
-        }
-        break
-    }
-    if (emailReqPayload.recipientEmails && emailReqPayload.recipientEmails.length > 0) {
-      await this.editorService
-        .sendEmailNotificationAPI(emailReqPayload)
-        .toPromise()
-        .catch(_error => {})
-    }
+  /**
+   * Delegates to the shared helper; this was 65 duplicated lines.
+   * Kept as a method so existing callers and specs are unaffected.
+   */
+  // Deliberately not `async`: an async wrapper that returns a promise adopts it,
+  // costing two extra microtask ticks. Callers await this, and the save pipeline's
+  // timing is observable, so the promise is returned directly instead.
+  sendEmailNotification(actionType: string): Promise<void> {
+    return sendContentEmailNotification(
+      {
+        configurationsService: this._configurationsService,
+        contentService: this.contentService,
+        editorService: this.editorService,
+      },
+      actionType,
+    )
   }
 
   jsonVerify(s: string) {
