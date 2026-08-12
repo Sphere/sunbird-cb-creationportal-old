@@ -27,7 +27,7 @@ import {
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete'
 import { MatChipInputEvent } from '@angular/material/chips'
 
-import { MatDialog } from '@angular/material/dialog'
+import { MatDialog, MatDialogRef } from '@angular/material/dialog'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 
@@ -602,5 +602,98 @@ export abstract class EditMetaBaseComponent {
   updateReviewer() {
     // this.contentForm.controls.trackContacts.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
     // this.contentForm.controls.publisherDetails.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
+  }
+
+  /**
+   * Each subclass declares its own; the shared upload pipeline below calls them.
+   * They are abstract rather than shared because the two forms persist and rewrite
+   * urls differently.
+   */
+  abstract storeData(): void
+
+  abstract generateUrl(oldUrl: any): any
+
+  /**
+   * Creates the asset, uploads the cropped image, and writes the resulting url onto
+   * the appIcon and thumbnail controls.
+   *
+   * This ran to 130 byte-identical lines in both components. Only the part after the
+   * crop dialog closes is shared: the validation before it genuinely differs (edit-meta
+   * enforces a 760x400 minimum, course-settings does not) and so do the crop dialog
+   * component and its dimensions, so all of that stays with each subclass and the
+   * already-open dialogRef is passed in here.
+   */
+  protected uploadCroppedAsset(dialogRef: MatDialogRef<any>, fileName: string, formdata: FormData): void {
+    dialogRef.afterClosed().subscribe({
+      next: (result: File) => {
+        if (result) {
+          formdata.append('content', result, fileName)
+          this.loader.changeLoad.next(true)
+
+          let randomNumber = ''
+          // tslint:disable-next-line: no-increment-decrement
+          for (let i = 0; i < 16; i++) {
+            randomNumber += randomInt(10)
+          }
+          const requestBody: NSApiRequest.ICreateImageMetaRequestV2 = {
+            request: {
+              content: {
+                code: randomNumber,
+                contentType: 'Asset',
+                createdBy: this.accessService.userId,
+                creator: this.accessService.userName,
+                mimeType: 'image/jpeg',
+                mediaType: 'image',
+                name: fileName,
+                lang: ['English'],
+                license: 'CC BY 4.0',
+                primaryCategory: 'Asset',
+              },
+            },
+          }
+
+          this.http.post<NSApiRequest.ICreateMetaRequest>(`${AUTHORING_BASE}content/v3/create`, requestBody).subscribe((meta: any) => {
+            this.uploadService
+              .upload(formdata, {
+                contentId: meta.result.identifier,
+                contentType: CONTENT_BASE_STATIC,
+              })
+              .subscribe(
+                data => {
+                  if (data && data.name !== 'Error') {
+                    this.loader.changeLoad.next(false)
+                    // Suppress the form's own save while both urls are written, then
+                    // re-enable it, exactly as before.
+                    this.canUpdate = false
+                    this.contentForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
+                    this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
+                    this.canUpdate = true
+                    this.storeData()
+                    this.authInitService.uploadData('thumbnail')
+                    this.snackBar.openFromComponent(NotificationComponent, {
+                      data: {
+                        type: Notify.UPLOAD_SUCCESS,
+                      },
+                      duration: NOTIFICATION_TIME * 2000,
+                    })
+                  } else {
+                    this.loader.changeLoad.next(false)
+                    this.snackBar.open(data.message, undefined, { duration: 2000 })
+                  }
+                },
+                () => {
+                  this.loader.changeLoad.next(false)
+                  this.snackBar.openFromComponent(NotificationComponent, {
+                    data: {
+                      type: Notify.UPLOAD_FAIL,
+                    },
+                    duration: NOTIFICATION_TIME * 1000,
+                  })
+                },
+              )
+          })
+        }
+      },
+    })
   }
 }

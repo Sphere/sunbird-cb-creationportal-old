@@ -261,126 +261,12 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
         this.languageList = data
       }
     })
-    this.creatorContactsCtrl.valueChanges
-      .pipe(
-        debounceTime(500),
-        distinctUntilChanged(),
-        filter(val => typeof val === 'string'),
-        switchMap((value: string) => {
-          if (typeof value === 'string' && value) {
-            this.employeeList = <any[]>[]
-            this.fetchTagsStatus = 'fetching'
-            return this.editorService.fetchEmployeeList(value)
-          }
-          return of([])
-        }),
-      )
-      .subscribe(
-        users => {
-          this.employeeList = users || <string[]>[]
-          this.fetchTagsStatus = 'done'
-        },
-        () => {
-          this.fetchTagsStatus = 'done'
-        },
-      )
-
-    this.trackContactsCtrl.valueChanges
-      .pipe(
-        debounceTime(500),
-        distinctUntilChanged(),
-        filter(val => typeof val === 'string'),
-        switchMap((value: string) => {
-          if (typeof value === 'string' && value) {
-            this.employeeList = <any[]>[]
-            this.fetchTagsStatus = 'fetching'
-
-            return this.editorService.fetchEmployeeList(value, 'CONTENT_REVIEWER')
-          }
-          return of([])
-        }),
-      )
-      .subscribe(
-        users => {
-          this.employeeList = users || <string[]>[]
-          this.fetchTagsStatus = 'done'
-        },
-        () => {
-          this.fetchTagsStatus = 'done'
-        },
-      )
-
-    this.publisherDetailsCtrl.valueChanges
-      .pipe(
-        debounceTime(500),
-        distinctUntilChanged(),
-        filter(val => typeof val === 'string'),
-        switchMap((value: string) => {
-          if (typeof value === 'string' && value) {
-            this.employeeList = <any[]>[]
-            this.fetchTagsStatus = 'fetching'
-            return this.editorService.fetchEmployeeList(value, 'CONTENT_PUBLISHER')
-          }
-          return of([])
-        }),
-      )
-      .subscribe(
-        users => {
-          this.employeeList = users || <string[]>[]
-          this.fetchTagsStatus = 'done'
-        },
-        () => {
-          this.fetchTagsStatus = 'done'
-        },
-      )
-
-    this.editorsCtrl.valueChanges
-      .pipe(
-        debounceTime(500),
-        distinctUntilChanged(),
-        filter(val => typeof val === 'string'),
-        switchMap((value: string) => {
-          if (typeof value === 'string' && value) {
-            this.employeeList = <any[]>[]
-            this.fetchTagsStatus = 'fetching'
-            return this.editorService.fetchEmployeeList(value)
-          }
-          return of([])
-        }),
-      )
-      .subscribe(
-        users => {
-          this.employeeList = users || <string[]>[]
-          this.fetchTagsStatus = 'done'
-        },
-        () => {
-          this.fetchTagsStatus = 'done'
-        },
-      )
-
-    this.creatorDetailsCtrl.valueChanges
-      .pipe(
-        debounceTime(500),
-        distinctUntilChanged(),
-        filter(val => typeof val === 'string'),
-        switchMap((value: string) => {
-          if (typeof value === 'string' && value) {
-            this.employeeList = <any[]>[]
-            this.fetchTagsStatus = 'fetching'
-            return this.editorService.fetchEmployeeList(value, 'ANY_ROLE')
-          }
-          return of([])
-        }),
-      )
-      .subscribe(
-        users => {
-          this.employeeList = users || <string[]>[]
-          this.fetchTagsStatus = 'done'
-        },
-        () => {
-          this.fetchTagsStatus = 'done'
-        },
-      )
+    // Same autocomplete on every contact picker; only the role differs.
+    this.wireEmployeeLookup(this.creatorContactsCtrl)
+    this.wireEmployeeLookup(this.trackContactsCtrl, 'CONTENT_REVIEWER')
+    this.wireEmployeeLookup(this.publisherDetailsCtrl, 'CONTENT_PUBLISHER')
+    this.wireEmployeeLookup(this.editorsCtrl)
+    this.wireEmployeeLookup(this.creatorDetailsCtrl, 'ANY_ROLE')
 
     this.audienceCtrl.valueChanges.subscribe(() => this.fetchAudience())
 
@@ -1279,136 +1165,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
         imageFileName: fileName,
       },
     })
-    dialogRef.afterClosed().subscribe({
-      next: (result: File) => {
-        if (result) {
-          formdata.append('content', result, fileName)
-          this.loader.changeLoad.next(true)
-
-          let randomNumber = ''
-          // tslint:disable-next-line: no-increment-decrement
-          for (let i = 0; i < 16; i++) {
-            randomNumber += randomInt(10)
-          }
-          const requestBody: NSApiRequest.ICreateImageMetaRequestV2 = {
-            request: {
-              content: {
-                code: randomNumber,
-                contentType: 'Asset',
-                createdBy: this.accessService.userId,
-                creator: this.accessService.userName,
-                mimeType: 'image/jpeg',
-                mediaType: 'image',
-                name: fileName,
-                lang: ['English'],
-                license: 'CC BY 4.0',
-                primaryCategory: 'Asset',
-              },
-            },
-          }
-
-          this.http.post<NSApiRequest.ICreateMetaRequest>(`${AUTHORING_BASE}content/v3/create`, requestBody).subscribe((meta: any) => {
-            // return data.result.identifier
-            this.uploadService
-              .upload(formdata, {
-                contentId: meta.result.identifier,
-                contentType: CONTENT_BASE_STATIC,
-              })
-
-              .subscribe(
-                data => {
-                  if (data && data.name !== 'Error') {
-                    // const generateURL = this.generateUrl(data.artifactUrl)
-                    // const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
-                    //   request: {
-                    //     content: {
-                    //       // content_url: data.result.artifactUrl,
-                    //       // identifier: data.result.identifier,
-                    //       // node_id: data.result.node_id,
-                    //       thumbnail: generateURL,
-                    //       appIcon: generateURL,
-                    //       artifactUrl: generateURL,
-                    //       // versionKey: (new Date()).getTime().toString(),
-                    //       versionKey: meta.result.versionKey,
-                    //     },
-                    //   },
-                    // }
-
-                    // this.apiService
-                    //   .patch<NSApiRequest.ICreateMetaRequest>(
-                    //     `${AUTHORING_BASE}content/v3/update/${data.identifier}`,
-                    //     updateArtf,
-                    //   )
-                    // this.editorService.checkReadAPI(data.identifier)
-                    // .subscribe(
-                    //   (res: any) => {
-                    //     console.log(res)
-                    //     if (res) {
-                    //     }
-                    this.loader.changeLoad.next(false)
-                    this.canUpdate = false
-                    this.contentForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
-                    this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
-                    this.canUpdate = true
-                    // this.data.emit('save')
-                    this.storeData()
-                    this.authInitService.uploadData('thumbnail')
-                    // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-                    this.snackBar.openFromComponent(NotificationComponent, {
-                      data: {
-                        type: Notify.UPLOAD_SUCCESS,
-                      },
-                      duration: NOTIFICATION_TIME * 2000,
-                    })
-                    // })
-                  } else {
-                    this.loader.changeLoad.next(false)
-                    this.snackBar.open(data.message, undefined, { duration: 2000 })
-                  }
-                },
-                () => {
-                  this.loader.changeLoad.next(false)
-                  this.snackBar.openFromComponent(NotificationComponent, {
-                    data: {
-                      type: Notify.UPLOAD_FAIL,
-                    },
-                    duration: NOTIFICATION_TIME * 1000,
-                  })
-                },
-              )
-
-            // .subscribe(
-            //   data => {
-            //     if (data.result) {
-            //       this.loader.changeLoad.next(false)
-            //       this.canUpdate = false
-            //       this.contentForm.controls.appIcon.setValue(data.result.artifactUrl)
-            //       this.contentForm.controls.thumbnail.setValue(data.result.artifactUrl)
-            //       // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-            //       this.canUpdate = true
-            //       this.storeData()
-            //       this.snackBar.openFromComponent(NotificationComponent, {
-            //         data: {
-            //           type: Notify.UPLOAD_SUCCESS,
-            //         },
-            //         duration: NOTIFICATION_TIME * 1000,
-            //       })
-            //     }
-            //   },
-            //   () => {
-            //     this.loader.changeLoad.next(false)
-            //     this.snackBar.openFromComponent(NotificationComponent, {
-            //       data: {
-            //         type: Notify.UPLOAD_FAIL,
-            //       },
-            //       duration: NOTIFICATION_TIME * 1000,
-            //     })
-            //   },
-            // )
-          })
-        }
-      },
-    })
+    this.uploadCroppedAsset(dialogRef, fileName, formdata)
   }
   uploadSourceIcon(file: File) {
     const formdata = new FormData()
@@ -1755,5 +1512,39 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
 
   onSubmit() {
     this.courseEditFormSubmit.emit(true)
+  }
+
+  /**
+   * Wires the employee autocomplete for one contact picker.
+   *
+   * The five pickers on this form each had their own copy of this pipeline, byte
+   * identical apart from the role passed to fetchEmployeeList. Debounce, ignore
+   * non-string values, look the employee up, and clear the fetching flag on either
+   * outcome -- including the error path, which must not leave the spinner running.
+   */
+  private wireEmployeeLookup(control: FormControl, role?: string): void {
+    control.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        filter(val => typeof val === 'string'),
+        switchMap((value: string) => {
+          if (typeof value === 'string' && value) {
+            this.employeeList = <any[]>[]
+            this.fetchTagsStatus = 'fetching'
+            return role ? this.editorService.fetchEmployeeList(value, role) : this.editorService.fetchEmployeeList(value)
+          }
+          return of([])
+        }),
+      )
+      .subscribe(
+        users => {
+          this.employeeList = users || <string[]>[]
+          this.fetchTagsStatus = 'done'
+        },
+        () => {
+          this.fetchTagsStatus = 'done'
+        },
+      )
   }
 }

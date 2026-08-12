@@ -280,6 +280,21 @@ describe('CourseSettingsComponent (direct instantiation)', () => {
     expect(component.generateUrl('https://x/mybucket/file.png')).toBe('https://x/mybucket/file.png')
   })
 
+  // The caller assigns this straight to the appIcon and thumbnail controls, so
+  // returning undefined here blanked both fields for any image hosted outside the
+  // bucket. It used to fall off the end of the method.
+  it('generateUrl returns the original url when it does NOT contain the bucket', () => {
+    ;(window as any)['env'] = { azureBucket: 'mybucket' }
+    expect(component.generateUrl('https://cdn.example.com/other/file.png')).toBe('https://cdn.example.com/other/file.png')
+  })
+
+  it('generateUrl never returns undefined, whatever the url', () => {
+    ;(window as any)['env'] = { azureBucket: 'mybucket' }
+    for (const url of ['https://a/b.png', 'https://x/mybucket/c.png', '/relative/d.png']) {
+      expect(component.generateUrl(url)).toBeDefined()
+    }
+  })
+
   it('ngOnChanges on triggerNext emits a save and marks submit pressed', () => {
     const emit = jest.spyOn(component.data, 'emit')
     component.ngOnChanges({ triggerNext: { currentValue: true, previousValue: false, firstChange: false, isFirstChange: () => false } })
