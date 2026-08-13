@@ -23,7 +23,6 @@ describe('SafeContentService', () => {
     it.each([
       ['trustedHtml', 'bypassSecurityTrustHtml', 'html:<b>hi</b>'],
       ['trustedStyle', 'bypassSecurityTrustStyle', 'style:<b>hi</b>'],
-      ['trustedScript', 'bypassSecurityTrustScript', 'script:<b>hi</b>'],
       ['trustedUrl', 'bypassSecurityTrustUrl', 'url:<b>hi</b>'],
       ['trustedResourceUrl', 'bypassSecurityTrustResourceUrl', 'resource:<b>hi</b>'],
     ])('%s goes through %s', (method, bypass, expected) => {
@@ -84,12 +83,6 @@ describe('SafeContentService', () => {
       expect(sanitizer.bypassSecurityTrustUrl).toHaveBeenCalledWith(value)
     })
 
-    it('does not guard trustedScript, whose whole purpose is executable code', () => {
-      SafeContentService.trustedScript(sanitizer, 'javascript:alert(1)')
-
-      expect(sanitizer.bypassSecurityTrustScript).toHaveBeenCalledWith('javascript:alert(1)')
-    })
-
     it('passes a non-string through untouched', () => {
       SafeContentService.trustedHtml(sanitizer, undefined as any)
 
@@ -101,7 +94,6 @@ describe('SafeContentService', () => {
     it.each([
       ['html', 'bypassSecurityTrustHtml'],
       ['style', 'bypassSecurityTrustStyle'],
-      ['script', 'bypassSecurityTrustScript'],
       ['url', 'bypassSecurityTrustUrl'],
       ['resourceUrl', 'bypassSecurityTrustResourceUrl'],
     ])('routes %s', (type, bypass) => {
@@ -114,6 +106,13 @@ describe('SafeContentService', () => {
       SafeContentService.trust(sanitizer, 'v')
 
       expect(sanitizer.bypassSecurityTrustHtml).toHaveBeenCalledWith('v')
+    })
+
+    // Bypassing sanitization to inject executable script had no call site, so the
+    // door is closed rather than left open for a future caller to walk through.
+    it("no longer supports 'script'", () => {
+      expect(() => SafeContentService.trust(sanitizer, 'v', 'script')).toThrow('Invalid safe type specified: script')
+      expect(sanitizer.bypassSecurityTrustScript).not.toHaveBeenCalled()
     })
 
     it('rejects an unknown type', () => {
@@ -134,7 +133,6 @@ describe('SafeContentService', () => {
     it.each([
       ['trustedHtml', 'bypassSecurityTrustHtml'],
       ['trustedStyle', 'bypassSecurityTrustStyle'],
-      ['trustedScript', 'bypassSecurityTrustScript'],
       ['trustedUrl', 'bypassSecurityTrustUrl'],
       ['trustedResourceUrl', 'bypassSecurityTrustResourceUrl'],
     ])('%s uses the injected sanitizer', (method, bypass) => {

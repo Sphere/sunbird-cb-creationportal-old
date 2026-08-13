@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core'
 
-import { DomSanitizer, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl } from '@angular/platform-browser'
+import { DomSanitizer, SafeHtml, SafeResourceUrl, SafeStyle, SafeUrl } from '@angular/platform-browser'
 
 /**
  * The single place in the application where Angular's built-in sanitization is
@@ -62,11 +62,6 @@ export class SafeContentService {
     return sanitizer.bypassSecurityTrustStyle(SafeContentService.guard(value, 'style'))
   }
 
-  /** Trusts `value` as executable script. Nothing should need this. */
-  static trustedScript(sanitizer: DomSanitizer, value: string): SafeScript {
-    return sanitizer.bypassSecurityTrustScript(value)
-  }
-
   /** Trusts `value` as a link or media URL. */
   static trustedUrl(sanitizer: DomSanitizer, value: string): SafeUrl {
     return sanitizer.bypassSecurityTrustUrl(SafeContentService.guard(value, 'url'))
@@ -77,19 +72,20 @@ export class SafeContentService {
     return sanitizer.bypassSecurityTrustResourceUrl(SafeContentService.guard(value, 'resource url'))
   }
 
-  /** Type-keyed static form, used by the `pipeSafeSanitizer` pipe. */
-  static trust(
-    sanitizer: DomSanitizer,
-    value: string,
-    type: string = 'html',
-  ): SafeHtml | SafeStyle | SafeScript | SafeUrl | SafeResourceUrl {
+  /**
+   * Type-keyed static form, used by the `pipeSafeSanitizer` pipe.
+   *
+   * There is deliberately no 'script' case: bypassing sanitization to inject
+   * executable script had no call site anywhere in the application, and the pipe is
+   * only ever used with 'html' and 'resourceUrl'. Anything needing it should be
+   * reviewed on its own merits rather than finding the door already open.
+   */
+  static trust(sanitizer: DomSanitizer, value: string, type: string = 'html'): SafeHtml | SafeStyle | SafeUrl | SafeResourceUrl {
     switch (type) {
       case 'html':
         return SafeContentService.trustedHtml(sanitizer, value)
       case 'style':
         return SafeContentService.trustedStyle(sanitizer, value)
-      case 'script':
-        return SafeContentService.trustedScript(sanitizer, value)
       case 'url':
         return SafeContentService.trustedUrl(sanitizer, value)
       case 'resourceUrl':
@@ -107,10 +103,6 @@ export class SafeContentService {
     return SafeContentService.trustedStyle(this.sanitizer, value)
   }
 
-  trustedScript(value: string): SafeScript {
-    return SafeContentService.trustedScript(this.sanitizer, value)
-  }
-
   trustedUrl(value: string): SafeUrl {
     return SafeContentService.trustedUrl(this.sanitizer, value)
   }
@@ -123,7 +115,7 @@ export class SafeContentService {
    * Type-keyed entry point, for callers that pick the kind at runtime. Mirrors the
    * contract of the `pipeSafeSanitizer` pipe, which delegates here.
    */
-  trust(value: string, type: string = 'html'): SafeHtml | SafeStyle | SafeScript | SafeUrl | SafeResourceUrl {
+  trust(value: string, type: string = 'html'): SafeHtml | SafeStyle | SafeUrl | SafeResourceUrl {
     return SafeContentService.trust(this.sanitizer, value, type)
   }
 }

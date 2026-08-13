@@ -35,6 +35,8 @@ export * from './lib/helpers/functions/getStringifiedQueryParams'
 
 export * from './lib/helpers/functions/isActivationKey'
 
+export * from './lib/helpers/functions/stripHtmlTags'
+
 export * from './lib/helpers/functions/nextWidgetId'
 
 export * from './lib/helpers/functions/secureRandom'
