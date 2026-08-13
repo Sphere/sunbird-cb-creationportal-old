@@ -1,0 +1,72 @@
+name: Build & Sonar Analysis
+
+# Sonar analysis on every pull request, following the org-wide template in
+# sunbird-cb-orgportal (.github/workflows/build.yml). Two things are adapted to this
+# repository rather than copied:
+#
+#   * the test command. The template runs Karma (`--browsers=ChromeHeadless`); this
+#     project migrated to Jest, so that invocation would fail outright and produce no
+#     coverage. `npm test -- --coverage --ci` writes coverage/lcov.info, which
+#     sonar-project.properties reads via sonar.javascript.lcov.reportPaths.
+#   * Node 20, pinned. It matches the runtime in the Dockerfile and the version the Jest
+#     suite is validated against; jest-preset-angular is happiest there.
+#
+# Replaces the earlier workflow-dispatch-only sonarcloud.yml, which was parked because no
+# SONAR_TOKEN existed and it went red on every change.
+
+on:
+  push:
+    branches:
+      - main
+      - development
+      - stage
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# A new push to the same PR supersedes the in-flight run; a full analysis is slow and
+# there is no value in finishing an already-stale one.
+concurrency:
+  group: sonar-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sonarqube:
+    name: SonarQube
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Full history, not a shallow clone. Sonar needs blame data to tell new code
+          # from old; without it every line looks new and the new-code conditions on the
+          # quality gate become meaningless.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # package-lock.json is gitignored and there is a known jest 29 vs 30 peer
+      # conflict, so a plain `npm ci` cannot resolve. See CLAUDE.md.
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+
+      # Must run before the scan: the scanner reads coverage/lcov.info off disk.
+      # continue-on-error mirrors the template, so a failing suite still yields an
+      # analysis instead of no feedback at all. The real test gate is the separate
+      # Quality workflow, which fails the PR on tests or a coverage drop.
+      - name: Test with coverage
+        continue-on-error: true
+        run: npm test -- --coverage --ci
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          # Lets Sonar decorate the pull request with its findings.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

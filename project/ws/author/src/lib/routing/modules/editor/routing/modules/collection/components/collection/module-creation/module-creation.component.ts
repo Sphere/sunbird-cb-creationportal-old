@@ -119,7 +119,7 @@ import moment from 'moment'
 
 import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
 
-import { isActivationKey, randomInt } from '@ws-widget/utils'
+import { isActivationKey, randomInt, stripHtmlTags } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-author-module-creation',
@@ -2658,7 +2658,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     // [^>]* cannot match the closing '>', so there is exactly one way to match any
     // prefix: no backtracking, linear runtime. Same result as the previous
     // /<(.|\n)*?>/g, which stopped at the first '>' too.
-    this.topicDescription = content.instructions ? content.instructions.replace(/<[^>]*>/g, '') : ''
+    this.topicDescription = stripHtmlTags(content.instructions)
     this.thumbnail = content.thumbnail
     this.setDuration(content.duration)
     this.isNewTab = content.isIframeSupported == 'Yes' ? true : false

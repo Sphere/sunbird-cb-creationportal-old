@@ -86,7 +86,7 @@ import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image
 
 import * as XLSX from 'xlsx'
 
-import { isActivationKey, randomInt } from '@ws-widget/utils'
+import { isActivationKey, randomInt, stripHtmlTags } from '@ws-widget/utils'
 interface QuizOption {
   text: string
   optionId: string
@@ -739,7 +739,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       // const correctOptions = question.options.filter((option: any) => option.isCorrect) // Get correct options
 
       const row: any = {
-        Question: question.question.replace(/<[^>]*>/g, ''), // Remove HTML tags like <p>
+        Question: stripHtmlTags(question.question),
         // 'Multi Selection': correctOptions.length > 1 ? 'true' : 'FALSE', // Set multiSelection based on correct options
         'Option 1': question.options[0] ? question.options[0].text : '',
         'Option 2': question.options[1] ? question.options[1].text : '',
