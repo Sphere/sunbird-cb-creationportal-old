@@ -7,7 +7,7 @@ import { Router } from '@angular/router'
 
 import { NsContent, WidgetContentService, viewerRouteGenerator } from '@ws-widget/collection'
 
-import { TFetchStatus, SafeContentService } from '@ws-widget/utils'
+import { TFetchStatus, SafeContentService, isActivationKey } from '@ws-widget/utils'
 
 import { UtilityService } from '@ws-widget/utils/src/lib/services/utility.service'
 
@@ -43,6 +43,9 @@ import { AppTocCertificateModalComponent } from '../app-toc-certificate-modal/ap
   ],
 })
 export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
+  /** Enter/Space equivalent for the (click) handlers in the template. */
+  readonly isActivationKey = isActivationKey
+
   @Input() banners: NsAppToc.ITocBanner | null = null
   @Input() content: NsContent.IContent | null = null
   @Input() resumeData: NsContent.IContinueLearningData | null = null

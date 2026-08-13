@@ -15,7 +15,13 @@
 
   <div class="banner-source" *ngIf="content?.creator">
     <span i18n>By</span>:
-    <span class="blue-link cursor-pointer" (click)="showOrgprofile(content?.sourceName)">
+    <span
+      class="blue-link cursor-pointer"
+      role="button"
+      [attr.tabindex]="0"
+      (click)="showOrgprofile(content?.sourceName)"
+      (keydown)="isActivationKey($event) && showOrgprofile(content?.sourceName)"
+    >
       {{ content?.sourceName }}
     </span>
   </div>
