@@ -22,6 +22,8 @@ import {
   // NsUser,
   UserPreferenceService,
   SafeContentService,
+  getRolesFromProfile,
+  getUserIdFromProfile,
 } from '@ws-widget/utils'
 
 // import { map, retry } from 'rxjs/operators'
@@ -317,9 +319,9 @@ export class InitService {
           .pipe(map((res: any) => res.result.response))
           .toPromise()
 
-        // userPidProfile.roles = [...userPidProfile.roles, 'PUBLIC', 'EDITOR', 'CONTENT_CREATOR']
-        userPidProfile.roles = [...userPidProfile.roles]
-        // console.log('ROlesss  ', userPidProfile.roles)
+        // Sunbird Spark leaves the top-level `roles` array empty or absent and nests the real
+        // roles under organisations[]; normalise both shapes before anything reads them.
+        userPidProfile.roles = getRolesFromProfile(userPidProfile)
 
         if (userPidProfile && userPidProfile.roles && userPidProfile.roles.length > 0 && this.hasRole(userPidProfile.roles)) {
           // if (userPidProfile.result.response.organisations.length > 0) {
@@ -336,7 +338,9 @@ export class InitService {
             country: _.get(profileV2, 'personalDetails.countryCode') || null,
             email: _.get(profileV2, 'profileDetails.officialEmail') || userPidProfile.email,
             givenName: userPidProfile.firstName,
-            userId: userPidProfile.userId,
+            // IUserProfile.userId is a required string; Spark always supplies `id`, so the
+            // empty-string fallback only bites on a malformed response.
+            userId: getUserIdFromProfile(userPidProfile) || '',
             firstName: userPidProfile.firstName,
             lastName: userPidProfile.lastName,
             rootOrgId: userPidProfile.rootOrgId,
@@ -350,7 +354,7 @@ export class InitService {
             isManager: false,
           }
           this.configSvc.userProfileV2 = {
-            userId: _.get(profileV2, 'userId') || userPidProfile.userId,
+            userId: _.get(profileV2, 'userId') || getUserIdFromProfile(userPidProfile),
             email: _.get(profileV2, 'personalDetails.officialEmail') || userPidProfile.email,
             firstName: _.get(profileV2, 'personalDetails.firstname') || userPidProfile.firstName,
             surName: _.get(profileV2, 'personalDetails.surname') || userPidProfile.lastName,
