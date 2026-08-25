@@ -1,46 +1,30 @@
-name: Build & Sonar Analysis
-
+name: Build
 on:
   push:
     branches:
-      - main
       - master
-      - production
   pull_request:
     types: [opened, synchronize, reopened]
-
 jobs:
-  sonarcloud:
-    name: SonarCloud
+  sonarqube:
+    name: SonarQube
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      # Pinned because this project's Jest suite is validated on Node 20, which also
-      # matches the Dockerfile runtime. Without this the runner's default is used.
-      - uses: actions/setup-node@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-
+          cache: yarn
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Build
-        run: npm run build
-
-      # Jest, not Karma: this project migrated off Karma, so the template's
-      # `--browsers=ChromeHeadless` would fail and produce no coverage. --coverage
-      # writes coverage/lcov.info, which sonar-project.properties reads.
-      - name: Test with coverage
-        continue-on-error: true
-        run: npm test -- --coverage --ci
-
+        run: yarn install --frozen-lockfile
+      - name: Test and coverage
+        run: yarn run test-coverage
       - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@v3
+        uses: SonarSource/sonarqube-scan-action@v4
         env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
