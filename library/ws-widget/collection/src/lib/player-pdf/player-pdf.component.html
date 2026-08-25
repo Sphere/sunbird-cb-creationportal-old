@@ -1,34 +1,45 @@
 <section #fullScreenContainer class="pdf-container">
   <div class="pdf-nav-bar" *ngIf="widgetData?.hideControls">
-    <button class="pdf-nav-btn"
+    <button
+      class="pdf-nav-btn"
       [disabled]="currentPage.value < 2"
       (click)="loadPageNum(currentPage.value - 1)"
-      aria-label="previous page" i18n-aria-label>
+      aria-label="previous page"
+      i18n-aria-label
+    >
       <mat-icon>chevron_left</mat-icon>
     </button>
 
     <div class="pdf-page-control">
       <span class="pdf-page-label" *ngIf="!isSmallViewPort" i18n>Page</span>
-      <input type="number" class="pdf-page-input"
+      <input
+        type="number"
+        class="pdf-page-input"
         [formControl]="currentPage"
         min="1"
         [max]="totalPages"
         aria-label="Page Number"
-        i18n-aria-label>
+        i18n-aria-label
+      />
       <span class="pdf-page-sep" i18n>of {{ totalPages }}</span>
     </div>
 
-    <button class="pdf-nav-btn"
+    <button
+      class="pdf-nav-btn"
       [disabled]="currentPage.value >= totalPages"
       (click)="loadPageNum(currentPage.value + 1)"
-      aria-label="next page" i18n-aria-label>
+      aria-label="next page"
+      i18n-aria-label
+    >
       <mat-icon>chevron_right</mat-icon>
     </button>
 
     <ws-widget-btn-fullscreen
       (fsState)="fullScreenState($event)"
       (click)="refresh()"
-      [widgetData]="{ fsContainer: fullScreenContainer }">
+      (keydown)="isActivationKey($event) && refresh()"
+      [widgetData]="{ fsContainer: fullScreenContainer }"
+    >
     </ws-widget-btn-fullscreen>
   </div>
 
@@ -43,7 +54,8 @@
       enablePinchOnMobile="true"
       (pageChange)="loadPageNum($event)"
       (pagesLoaded)="documentLoded($event)"
-      [(sidebarVisible)]="sidebarOpen">
+      [(sidebarVisible)]="sidebarOpen"
+    >
     </ngx-extended-pdf-viewer>
   </ng-container>
 </section>

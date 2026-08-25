@@ -1,13 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core'
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core'
 
 import { FormControl } from '@angular/forms'
 
@@ -15,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router'
 
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
 
-import { EventService, WsEvents, UtilityService } from '@ws-widget/utils'
+import { EventService, WsEvents, UtilityService, isActivationKey } from '@ws-widget/utils'
 
 // import * as PDFJS from 'pdfjs-dist/webpack'
 
@@ -35,7 +26,6 @@ import { IWidgetsPlayerPdfData } from './player-pdf.model'
 
 import { pdfDefaultOptions } from 'ngx-extended-pdf-viewer'
 
-
 // const pdfjsViewer = require('pdfjs-dist/web/pdf_viewer')
 @Component({
   standalone: false,
@@ -43,8 +33,13 @@ import { pdfDefaultOptions } from 'ngx-extended-pdf-viewer'
   templateUrl: './player-pdf.component.html',
   styleUrls: ['./player-pdf.component.scss'],
 })
-export class PlayerPdfComponent extends WidgetBaseComponent
-  implements OnInit, AfterViewInit, OnDestroy, OnChanges, NsWidgetResolver.IWidgetData<any> {
+export class PlayerPdfComponent
+  extends WidgetBaseComponent
+  implements OnInit, AfterViewInit, OnDestroy, OnChanges, NsWidgetResolver.IWidgetData<any>
+{
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() widgetData!: IWidgetsPlayerPdfData
   @ViewChild('fullScreenContainer', { static: true })
   containerSection!: ElementRef<HTMLElement>
@@ -80,7 +75,7 @@ export class PlayerPdfComponent extends WidgetBaseComponent
   private runnerSubs: Subscription | null = null
   private routerSubs: Subscription | null = null
   public isInFullScreen = false
-  zoomType: string | null = null;
+  zoomType: string | null = null
   pdfHeight = 'calc(100vh - 224px)'
   pdfMobileHeight = '300px'
   pdfZoom = '28%'
@@ -93,8 +88,7 @@ export class PlayerPdfComponent extends WidgetBaseComponent
     private contentSvc: WidgetContentService,
     // private viewerSvc: ViewerUtilService,
     // private valueSvc: ValueService,
-    private utilitySvc: UtilityService
-
+    private utilitySvc: UtilityService,
   ) {
     super()
     pdfDefaultOptions.assetsFolder = 'bleeding-edge'
@@ -278,12 +272,12 @@ export class PlayerPdfComponent extends WidgetBaseComponent
   //   }
   // }
   saveContinueLearning(id: string) {
-    if (this.activatedRoute.snapshot.queryParams.collectionType &&
-      this.activatedRoute.snapshot.queryParams.collectionType.toLowerCase() === 'playlist') {
+    if (
+      this.activatedRoute.snapshot.queryParams.collectionType &&
+      this.activatedRoute.snapshot.queryParams.collectionType.toLowerCase() === 'playlist'
+    ) {
       const reqBody = {
-        contextPathId: this.activatedRoute.snapshot.queryParams.collectionId
-          ? this.activatedRoute.snapshot.queryParams.collectionId
-          : id,
+        contextPathId: this.activatedRoute.snapshot.queryParams.collectionId ? this.activatedRoute.snapshot.queryParams.collectionId : id,
         resourceId: id,
         contextType: 'playlist',
         dateAccessed: Date.now(),
@@ -293,15 +287,10 @@ export class PlayerPdfComponent extends WidgetBaseComponent
           contextFullPath: [this.activatedRoute.snapshot.queryParams.collectionId, id],
         }),
       }
-      this.contentSvc
-        .saveContinueLearning(reqBody)
-        .toPromise()
-        .catch()
+      this.contentSvc.saveContinueLearning(reqBody).toPromise().catch()
     } else {
       const reqBody = {
-        contextPathId: this.activatedRoute.snapshot.queryParams.collectionId
-          ? this.activatedRoute.snapshot.queryParams.collectionId
-          : id,
+        contextPathId: this.activatedRoute.snapshot.queryParams.collectionId ? this.activatedRoute.snapshot.queryParams.collectionId : id,
         resourceId: id,
         dateAccessed: Date.now(),
         data: JSON.stringify({
@@ -309,10 +298,7 @@ export class PlayerPdfComponent extends WidgetBaseComponent
           timestamp: Date.now(),
         }),
       }
-      this.contentSvc
-        .saveContinueLearning(reqBody)
-        .toPromise()
-        .catch()
+      this.contentSvc.saveContinueLearning(reqBody).toPromise().catch()
     }
   }
   fireRealTimeProgress(id: string) {
@@ -379,9 +365,7 @@ export class PlayerPdfComponent extends WidgetBaseComponent
     // this.zoom.enable()
     this.currentPage.enable()
     this.currentPage.setValue(
-      typeof this.widgetData.resumePage === 'number' &&
-        this.widgetData.resumePage >= 1 &&
-        this.widgetData.resumePage <= this.totalPages
+      typeof this.widgetData.resumePage === 'number' && this.widgetData.resumePage >= 1 && this.widgetData.resumePage <= this.totalPages
         ? this.widgetData.resumePage
         : 1,
     )

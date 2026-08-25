@@ -51,7 +51,7 @@ import { map } from 'rxjs/operators'
 
 import * as l from 'lodash'
 
-import { ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService, getRolesFromProfile, isActivationKey } from '@ws-widget/utils'
 
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 
@@ -62,6 +62,9 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
   styleUrls: ['./my-content.component.scss'],
 })
 export class MyContentComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   constructor(
     private myContSvc: MyContentService,
     private activatedRoute: ActivatedRoute,
@@ -249,7 +252,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // Track the queryParams subscription so ngOnDestroy actually tears it down.
     // (routerSubscription was an empty `{}` that never held this sub, so it leaked.)
     this.routerSubscription = this.activatedRoute.queryParams.subscribe(params => {
-      if (this.configService.unMappedUser.roles.length === 1 && this.configService.unMappedUser.roles[0] === 'PUBLIC') {
+      const profileRoles = getRolesFromProfile(this.configService.unMappedUser)
+      if (profileRoles.length === 1 && profileRoles[0] === 'PUBLIC') {
         this.status = 'draft'
         this.links = ['Draft']
         this.navigateContents('Draft')

@@ -33,48 +33,65 @@ export class AppTocDesktopModalComponent implements OnInit {
     this.router.navigate(['/app/org-details'], { queryParams: { orgId } })
   }
   competencyData(data: any) {
-    console.log('data', data)
-    let combinedMap = new Map<string, any>()
-    let competencies = JSON.parse(data.competency.competencies_v1)
+    const combinedMap = new Map<string, any>()
+    // The entity list only enriches what is shown -- the competency code and the
+    // names of its levels. It comes from a separate call that can fail or still be
+    // in flight, so treat it as optional: it used to be dereferenced directly, and
+    // a missing list threw out of ngOnInit and left the dialog blank.
+    const proficiencyList: any[] = Array.isArray(data?.proficiencyList) ? data.proficiencyList : []
+    const competencies = this.parseCompetencies(data?.competency?.competencies_v1)
 
-    if (!Array.isArray(competencies)) {
-      competencies = [competencies]
-    }
+    competencies.forEach((element: any) => {
+      const matchingValue = proficiencyList.find((value: any) => String(value.entityId) === String(element.competencyId))
+      const entityLevels: any[] = matchingValue?.levels || []
+      let levels: string[] = []
 
-    if (competencies && competencies.length > 0) {
-      competencies.forEach((element: any) => {
-        const matchingValue = data.proficiencyList.find((value: any) => String(value.entityId) === String(element.competencyId))
-
-        let levels: string[] = []
-
-        if (matchingValue?.levels?.length > 0) {
-          const entityLevels: any[] = matchingValue.levels
-          if (data.competency && data.competency.competency === true) {
-            levels = entityLevels.map((desc: any) => `Level ${desc.levelNumber} - ${desc.levelName}`)
-          } else {
-            const levelMatch = entityLevels.find((desc: any) => String(desc.levelNumber) === String(element.level))
-            if (levelMatch) {
-              levels = [`Level ${levelMatch.levelNumber} - ${levelMatch.levelName}`]
-            }
+      if (entityLevels.length > 0) {
+        if (data.competency && data.competency.competency === true) {
+          levels = entityLevels.map((desc: any) => `Level ${desc.levelNumber} - ${desc.levelName}`)
+        } else {
+          const levelMatch = entityLevels.find((desc: any) => String(desc.levelNumber) === String(element.level))
+          if (levelMatch) {
+            levels = [`Level ${levelMatch.levelNumber} - ${levelMatch.levelName}`]
           }
         }
+      }
 
-        if (combinedMap.has(element.competencyId)) {
-          const existing = combinedMap.get(element.competencyId)
-          existing.levels.push(...levels)
-          existing.levels = Array.from(new Set(existing.levels))
-        } else {
-          combinedMap.set(element.competencyId, {
-            ...element,
-            code: matchingValue?.code,
-            name: matchingValue?.name || element.competencyName,
-            levels,
-          })
-        }
-      })
-    }
+      // Without the entity list there is no level name, but the level number is on
+      // the content itself, so show that rather than nothing.
+      if (!levels.length && element.level !== undefined && element.level !== null && element.level !== '') {
+        levels = [`Level ${element.level}`]
+      }
+
+      const existing = combinedMap.get(element.competencyId)
+      if (existing) {
+        existing.levels = Array.from(new Set([...existing.levels, ...levels]))
+      } else {
+        combinedMap.set(element.competencyId, {
+          ...element,
+          code: matchingValue?.code,
+          name: matchingValue?.name || element.competencyName,
+          levels,
+        })
+      }
+    })
 
     this.addedCompetency = Array.from(combinedMap.values())
-    console.log('this.addedCompetency', this.addedCompetency)
+  }
+
+  /**
+   * competencies_v1 is a JSON string from the API but an array once written in
+   * memory, and can be absent on a course that maps none.
+   */
+  private parseCompetencies(raw: any): any[] {
+    try {
+      if (!raw) {
+        return []
+      }
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+      return Array.isArray(parsed) ? parsed : [parsed]
+    } catch {
+      return []
+    }
   }
 }

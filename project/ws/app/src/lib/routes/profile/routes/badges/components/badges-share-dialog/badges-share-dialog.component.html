@@ -16,15 +16,11 @@
   </div> -->
 
   <div *ngIf="isSocialMediaShareEnabled" class="pt-6">
-    <h2 class="mat-h2 margin-remove" i18n>
-      OR
-    </h2>
-  
+    <h2 class="mat-h2 margin-remove" i18n>OR</h2>
+
     <h3 class="mat-h3 margin-remove py-2" i18n>Share on Social Media</h3>
-  
+
     <div class="flex flex-wrap items-center">
-      <ws-widget-btn-facebook-share shareType="badge" [contentId]="badge.badge_id" class="pr-4 pb-3"></ws-widget-btn-facebook-share>
-      <ws-widget-btn-twitter-share  shareType="badge" [contentId]="badge.badge_id" class="pr-4 pb-3"></ws-widget-btn-twitter-share>
       <ws-widget-btn-linkedin-share shareType="badge" [contentId]="badge.badge_id" class="pr-4 pb-3"></ws-widget-btn-linkedin-share>
     </div>
   </div>

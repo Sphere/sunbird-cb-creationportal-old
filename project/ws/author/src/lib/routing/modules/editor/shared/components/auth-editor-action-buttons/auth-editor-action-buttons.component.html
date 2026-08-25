@@ -2,22 +2,24 @@
   <div
     class="button-grid margin-right-xxs cursor-pointer"
     (click)="showSettingButtons = !showSettingButtons"
+    (keydown)="isActivationKey($event) && (showSettingButtons = !showSettingButtons)"
+    [attr.tabindex]="0"
   >
     <button mat-icon-button class="padding-remove ws-mat-primary-background mat-elevation-z6">
       <mat-icon class="text-white" *ngIf="showSettingButtons">close</mat-icon>
       <mat-icon class="text-white" *ngIf="!showSettingButtons">more_vert</mat-icon>
     </button>
-    <p class="mat-h5 margin-remove button-text padding-remove-top" *ngIf="showSettingButtons" i18n>
-      Close
-    </p>
+    <p class="mat-h5 margin-remove button-text padding-remove-top" *ngIf="showSettingButtons" i18n>Close</p>
   </div>
   <ng-container *ngIf="showSettingButtons">
     <div
       *ngFor="let button of buttonConfig?.buttons || []"
       class="button-grid cursor-pointer"
       (click)="action.next(button.event)"
+      (keydown)="isActivationKey($event) && action.next(button.event)"
+      [attr.tabindex]="0"
     >
-      <button mat-icon-button class=" mat-elevation-z5 small-button padding-remove  margin-top-l">
+      <button mat-icon-button class="mat-elevation-z5 small-button padding-remove margin-top-l">
         <mat-icon class="text-white small-icon ws-mat-primary-text">{{ button.icon }}</mat-icon>
       </button>
       <p class="mat-h5 margin-remove button-text">

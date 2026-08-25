@@ -2,38 +2,59 @@
   <button (click)="showTocBanner()" mat-icon-button class="back-icon text-left" aria-label="Back to course details">
     <mat-icon>chevron_left</mat-icon>
   </button>
-  <h2 class="section-heading">Activity Log : <span class="section-heading__course">{{ content.name }}</span></h2>
+  <h2 class="section-heading">
+    Activity Log : <span class="section-heading__course">{{ content.name }}</span>
+  </h2>
 
   <ng-container *ngIf="commentsList?.length > 0">
     <div *ngFor="let comment of commentsList" class="activity-card">
-      <p class="activity-event"
-        *ngIf="(comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Sent for Review') || (comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Review')">
+      <p
+        class="activity-event"
+        *ngIf="
+          (comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Sent for Review') ||
+          (comment.role === 'creator' && comment.currentStatus === 'Draft' && comment.nextStatus === 'Review')
+        "
+      >
         <span>{{ content?.competency === false ? 'Course' : 'Self assessment' }}</span> sent to the reviewer
       </p>
-      <p class="activity-event"
-        *ngIf="comment.role === 'creator' && comment.currentStatus === 'course-created'">
+      <p class="activity-event" *ngIf="comment.role === 'creator' && comment.currentStatus === 'course-created'">
         {{ comment.comments }} by <span class="role-highlight">{{ comment.role }}</span>
       </p>
-      <p class="activity-event"
-        *ngIf="(comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Draft') || (comment.currentStatus === 'Sent for Publish' && comment.nextStatus === 'Draft') || (comment.currentStatus === 'Review' && comment.nextStatus === 'Draft') || (comment.currentStatus === 'Publish' && comment.nextStatus === 'Draft')">
+      <p
+        class="activity-event"
+        *ngIf="
+          (comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Draft') ||
+          (comment.currentStatus === 'Sent for Publish' && comment.nextStatus === 'Draft') ||
+          (comment.currentStatus === 'Review' && comment.nextStatus === 'Draft') ||
+          (comment.currentStatus === 'Publish' && comment.nextStatus === 'Draft')
+        "
+      >
         <span class="role-capitalize">{{ comment.role }}</span>
         sent the <span>{{ content?.competency === false ? 'course' : 'self assessment' }}</span> back to you
       </p>
-      <p class="activity-event"
-        *ngIf="(comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Sent for Publish') || (comment.currentStatus === 'Review' && comment.nextStatus === 'Review')">
+      <p
+        class="activity-event"
+        *ngIf="
+          (comment.currentStatus === 'Sent for Review' && comment.nextStatus === 'Sent for Publish') ||
+          (comment.currentStatus === 'Review' && comment.nextStatus === 'Review')
+        "
+      >
         <span class="role-capitalize">{{ comment.role }}</span>
         sent the <span>{{ content?.competency === false ? 'course' : 'self assessment' }}</span> to the Publisher
       </p>
-      <p class="activity-event"
-        *ngIf="comment.currentStatus === 'Sent for Publish' && comment.nextStatus === 'Course Published'">
+      <p class="activity-event" *ngIf="comment.currentStatus === 'Sent for Publish' && comment.nextStatus === 'Course Published'">
         Your <span>{{ content?.competency === false ? 'course' : 'self assessment' }}</span> is live now.
       </p>
 
       <div class="activity-meta-row">
         <span class="activity-time">{{ comment.createdDate | momentDate }}</span>
-        <span *ngIf="comment.currentStatus !== 'course-created'"
+        <span
+          *ngIf="comment.currentStatus !== 'course-created'"
           class="view-comment-link"
-          (click)="toggleComments(comment)">
+          (click)="toggleComments(comment)"
+          (keydown)="isActivationKey($event) && toggleComments(comment)"
+          [attr.tabindex]="0"
+        >
           {{ comment.readComments ? 'Hide' : 'View' }} comment
         </span>
       </div>
@@ -46,7 +67,9 @@
   <button (click)="showTocBanner()" mat-icon-button class="back-icon text-left" aria-label="Back to course details">
     <mat-icon>chevron_left</mat-icon>
   </button>
-  <h2 class="section-heading">Comments: <span class="section-heading__course">{{ content.name }}</span></h2>
+  <h2 class="section-heading">
+    Comments: <span class="section-heading__course">{{ content.name }}</span>
+  </h2>
 
   <ng-container *ngFor="let role of roles">
     <ng-container *ngIf="filteredComments[role].length > 0">
@@ -57,9 +80,9 @@
       <div *ngFor="let comment of filteredComments[role]">
         <div *ngIf="comment.currentStatus !== 'course-created'" class="display">
           <div class="in-line">
-            <img alt="" src="/cbp-assets/images/Ellipse130.svg" class="p-r-10">
+            <img alt="" src="/cbp-assets/images/Ellipse130.svg" class="p-r-10" />
             <span class="p-r-10 highlight">{{ comment.role }}</span>
-            <span class="time">{{ comment.createdDate | timeDifference : 'short' }}</span>
+            <span class="time">{{ comment.createdDate | timeDifference: 'short' }}</span>
           </div>
           <p class="commentBox">{{ comment.comments }}</p>
         </div>
@@ -68,25 +91,52 @@
   </ng-container>
 </div>
 
-<div [ngClass]="{'showData': changeText === 'comments' || changeText === 'history'}">
-  <ws-app-toc-banner *ngIf="changeText !== 'preview'" role="banner" [banners]="banners" [forPreview]="forPreview"
-    [content]="content" [analytics]="analytics" [resumeData]="resumeData">
+<div [ngClass]="{ showData: changeText === 'comments' || changeText === 'history' }">
+  <ws-app-toc-banner
+    *ngIf="changeText !== 'preview'"
+    role="banner"
+    [banners]="banners"
+    [forPreview]="forPreview"
+    [content]="content"
+    [resumeData]="resumeData"
+  >
   </ws-app-toc-banner>
-  <ws-app-learner-banner [proficiencyList]="proficiencyList" *ngIf="changeText === 'preview'" role="banner"
-    [banners]="banners" [forPreview]="forPreview" [content]="content" [resumeData]="resumeData"
-    [optmisticPercentage]="optmisticPercentage"> </ws-app-learner-banner>
+
+  <!-- Shown in preview, where the authoring banner above is hidden. -->
+  <ws-app-learner-banner
+    *ngIf="changeText === 'preview'"
+    role="banner"
+    [proficiencyList]="proficiencyList"
+    [banners]="banners"
+    [forPreview]="forPreview"
+    [content]="content"
+    [resumeData]="resumeData"
+    [optmisticPercentage]="optmisticPercentage"
+  >
+  </ws-app-learner-banner>
+
   <ng-container>
     <div role="main" class="toc-body" *ngIf="!errorCode; else tocError">
       <nav mat-tab-nav-bar class="toc-links mat-app-background">
         <a mat-tab-link [routerLink]="'./overview'" routerLinkActive="ws-mat-primary-text link-active" i18n>Overview</a>
-        <a mat-tab-link *ngIf="content?.resourceType === 'Certification'" [routerLink]="'./certification'"
-          routerLinkActive="ws-mat-primary-text link-active">
+        <a
+          mat-tab-link
+          *ngIf="content?.resourceType === 'Certification'"
+          [routerLink]="'./certification'"
+          routerLinkActive="ws-mat-primary-text link-active"
+        >
           <ng-container *ngIf="content?.isExternal === true" i18n>Certification</ng-container>
           <ng-container *ngIf="content?.isExternal === false" i18n>Take Certification</ng-container>
         </a>
 
-        <a *ngIf="content?.children?.length" mat-tab-link [routerLink]="'./contents'"
-          routerLinkActive="ws-mat-primary-text link-active" i18n>Chapters</a>
+        <a
+          *ngIf="content?.children?.length"
+          mat-tab-link
+          [routerLink]="'./contents'"
+          routerLinkActive="ws-mat-primary-text link-active"
+          i18n
+          >Chapters</a
+        >
       </nav>
       <router-outlet></router-outlet>
     </div>

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
 
 import { IAuthSteps } from '@ws/author/src/lib/interface/auth-stepper'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-editor-steps',
@@ -10,6 +10,9 @@ import { IAuthSteps } from '@ws/author/src/lib/interface/auth-stepper'
   styleUrls: ['./auth-editor-steps.component.scss'],
 })
 export class AuthEditorStepsComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() currentStep = 0
   @Input() steps: IAuthSteps[] | null = null
   @Output() change = new EventEmitter<number>()

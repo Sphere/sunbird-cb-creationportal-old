@@ -10,12 +10,10 @@ import { RouterModule } from '@angular/router'
 
 import { MatCardModule } from '@angular/material/card'
 import { MatIconModule } from '@angular/material/icon'
-import { AvatarPhotoModule } from '../_common/avatar-photo/avatar-photo.module'
-
 
 @NgModule({
   declarations: [AuthorCardComponent],
-  imports: [CommonModule, WidgetResolverModule, RouterModule, MatCardModule, MatIconModule, AvatarPhotoModule],
+  imports: [CommonModule, WidgetResolverModule, RouterModule, MatCardModule, MatIconModule],
   exports: [AuthorCardComponent],
 })
-export class AuthorCardModule { }
+export class AuthorCardModule {}

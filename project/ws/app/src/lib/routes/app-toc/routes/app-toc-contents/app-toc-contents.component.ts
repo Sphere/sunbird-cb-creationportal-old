@@ -16,7 +16,6 @@ import { ConfigurationsService } from '@ws-widget/utils'
 
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
-
 @Component({
   standalone: false,
   selector: 'ws-app-app-toc-contents',
@@ -43,7 +42,7 @@ export class AppTocContentsComponent implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private tocSvc: AppTocService,
     private configSvc: ConfigurationsService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.forPreview = window.location.href.includes('/author/')
@@ -93,10 +92,7 @@ export class AppTocContentsComponent implements OnInit, OnDestroy {
     })
   }
   private populateContentPlayWidget(content: NsContent.IContent) {
-    if (
-      content.contentType === NsContent.EContentTypes.RESOURCE ||
-      content.contentType === NsContent.EContentTypes.KNOWLEDGE_ARTIFACT
-    ) {
+    if (content.contentType === NsContent.EContentTypes.RESOURCE || content.contentType === NsContent.EContentTypes.KNOWLEDGE_ARTIFACT) {
       switch (content.mimeType) {
         case NsContent.EMimeTypes.M3U8:
         case NsContent.EMimeTypes.MP4:
@@ -141,8 +137,8 @@ export class AppTocContentsComponent implements OnInit, OnDestroy {
     }
     this.isPlayable = true
   }
-  sanitizedBackgroundImage(url: string): SafeStyle {
-    return this.sanitizer.bypassSecurityTrustStyle(`url(${url})`)
+  sanitizedBackgroundImage(url: string): string {
+    return `url(${url})`
   }
   resourceLink(resource: NsContent.IContent): { url: string; queryParams: { [key: string]: any } } {
     return viewerRouteGenerator(resource.identifier, resource.mimeType)

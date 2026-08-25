@@ -11,8 +11,9 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
 
 import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
 
-// import { WidgetContentService } from '@ws-widget/collection'
+import { SafeContentService } from '@ws-widget/utils'
 
+// import { WidgetContentService } from '@ws-widget/collection'
 
 @Component({
   standalone: false,
@@ -31,12 +32,10 @@ export class AppTocCertificateModalComponent implements OnInit {
     private editorService: EditorService,
     private loader: LoaderService,
     // private contentSvc: WidgetContentService,
-
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.loader.changeLoad.next(true)
-    console.log("this.content.identifier", this.content.content.identifier)
     const req = {
       request: {
         filters: {
@@ -46,30 +45,28 @@ export class AppTocCertificateModalComponent implements OnInit {
         sort_by: { createdDate: 'desc' },
       },
     }
-    this.editorService.getBatchforCert(req).subscribe((res: any) => {
-      console.log(res)
-      let cert = res
-      if (cert && cert[0] && cert[0].cert_templates != null) {
-        console.log("cert", cert[0].cert_templates, cert[0].cert_templates)
+    this.editorService.getBatchforCert(req).subscribe(
+      (res: any) => {
+        const cert = res
+        if (cert && cert[0] && cert[0].cert_templates != null) {
+          const certificates: any = Object.values(cert[0]['cert_templates'])
+          this.url = certificates[0].url
+          this.img = SafeContentService.trustedUrl(this.sanitizer, this.url)
+        }
+        this.settled()
+      },
+      // Without this the request could only ever succeed: a failure left both the
+      // dialog and the global loader spinning with nothing shown and no way back.
+      () => {
+        this.settled()
+      },
+    )
+  }
 
-
-        let certificates: any = Object.values(cert[0]['cert_templates'])
-        console.log("certificates[this.content.identifier].url", certificates[0].url)
-        this.url = certificates[0].url
-        // tslint:disable-next-line:no-this-assignment
-        this.img = this.sanitizer.bypassSecurityTrustUrl(this.url)
-
-      }
-      this.isLoading = false
-    })
-
-
-
-
-
-
-
-
+  /** Clears both the in-dialog spinner and the global loader, on either outcome. */
+  private settled() {
+    this.isLoading = false
+    this.loader.changeLoad.next(false)
   }
   async downloadCertificate() {
     this.isLoading = true
@@ -90,7 +87,6 @@ export class AppTocCertificateModalComponent implements OnInit {
 
       // Clean up the object URL after downloading
       URL.revokeObjectURL(blobUrl)
-
     } catch (error) {
       console.error('Error downloading the certificate:', error)
       alert('Failed to download the certificate. Please try again.')
@@ -99,8 +95,6 @@ export class AppTocCertificateModalComponent implements OnInit {
     }
   }
 
-
   //   })
   // }
-
 }

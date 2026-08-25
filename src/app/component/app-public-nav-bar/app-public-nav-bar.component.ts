@@ -4,7 +4,6 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
 
 import { ConfigurationsService, NsPage } from '@ws-widget/utils'
 
-
 @Component({
   standalone: false,
   selector: 'ws-app-public-nav-bar',
@@ -12,11 +11,14 @@ import { ConfigurationsService, NsPage } from '@ws-widget/utils'
   styleUrls: ['./app-public-nav-bar.component.scss'],
 })
 export class AppPublicNavBarComponent implements OnInit {
-  appIcon: SafeUrl | null = null
+  appIcon: string | null = null
   logo = ''
   appName = ''
   navBar: Partial<NsPage.INavBackground> | null = null
-  constructor(private domSanitizer: DomSanitizer, private configSvc: ConfigurationsService) { }
+  constructor(
+    private domSanitizer: DomSanitizer,
+    private configSvc: ConfigurationsService,
+  ) {}
 
   public get showPublicNavbar(): boolean {
     return true
@@ -24,9 +26,7 @@ export class AppPublicNavBarComponent implements OnInit {
 
   ngOnInit() {
     if (this.configSvc.instanceConfig) {
-      this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        this.configSvc.instanceConfig.logos.appTransparent,
-      )
+      this.appIcon = this.configSvc.instanceConfig.logos.appTransparent
       this.appName = this.configSvc.instanceConfig.details.appName
       this.navBar = this.configSvc.primaryNavBar
     }

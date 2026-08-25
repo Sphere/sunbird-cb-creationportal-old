@@ -8,7 +8,7 @@ import { ActivatedRoute, Data } from '@angular/router'
 
 import { NsContent } from '@ws-widget/collection'
 
-import { ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService, SafeContentService } from '@ws-widget/utils'
 
 import { Observable, Subscription } from 'rxjs'
 
@@ -21,7 +21,6 @@ import { Observable, Subscription } from 'rxjs'
 import { NsAppToc } from '../../models/app-toc.model'
 
 import { AppTocService } from '../../services/app-toc.service'
-
 
 @Component({
   standalone: false,
@@ -95,7 +94,8 @@ export class AppTocOverviewComponent implements OnInit, OnDestroy {
   private initData(data: Data) {
     const initData = this.tocSharedSvc.initData(data)
     this.content = initData.content
-    this.body = this.domSanitizer.bypassSecurityTrustHtml(
+    this.body = SafeContentService.trustedHtml(
+      this.domSanitizer,
       this.content && this.content.body
         ? this.forPreview
           ? this.authAccessControlSvc.proxyToAuthoringUrl(this.content.body)
@@ -113,16 +113,14 @@ export class AppTocOverviewComponent implements OnInit, OnDestroy {
       const contentParentReq: NsAppToc.IContentParentReq = {
         fields: ['contentType', 'name'],
       }
-      this.tocSharedSvc
-        .fetchContentParent(this.content.identifier, contentParentReq, this.forPreview)
-        .subscribe(
-          res => {
-            this.parseContentParent(res)
-          },
-          _err => {
-            this.contentParents = {}
-          },
-        )
+      this.tocSharedSvc.fetchContentParent(this.content.identifier, contentParentReq, this.forPreview).subscribe(
+        res => {
+          this.parseContentParent(res)
+        },
+        _err => {
+          this.contentParents = {}
+        },
+      )
     }
   }
 

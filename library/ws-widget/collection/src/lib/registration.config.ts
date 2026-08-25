@@ -4,16 +4,10 @@ import { NsWidgetResolver } from '@ws-widget/resolver'
 import { BtnAppsComponent } from './btn-apps/btn-apps.component'
 
 // Modules
-import { AtGlanceModule } from './at-glance/at-glance.module'
-
-import { AtGlanceComponent } from './at-glance/at-glance.component'
 
 import { AuthorCardModule } from './author-card/author-card.module'
 
 import { AuthorCardComponent } from './author-card/author-card.component'
-
-
-import { AvatarPhotoModule } from './_common/avatar-photo/avatar-photo.module'
 
 import { BtnAppsModule } from './btn-apps/btn-apps.module'
 
@@ -25,17 +19,9 @@ import { BtnCatalogComponent } from './btn-catalog/btn-catalog.component'
 
 import { BtnCatalogModule } from './btn-catalog/btn-catalog.module'
 
-import { BtnChannelAnalyticsComponent } from './btn-channel-analytics/btn-channel-analytics.component'
-
-import { BtnChannelAnalyticsModule } from './btn-channel-analytics/btn-channel-analytics.module'
-
 import { BtnContentLikeComponent } from './btn-content-like/btn-content-like.component'
 
 import { BtnContentLikeModule } from './btn-content-like/btn-content-like.module'
-
-import { BtnContentMailMeComponent } from './btn-content-mail-me/btn-content-mail-me.component'
-
-import { BtnContentMailMeModule } from './btn-content-mail-me/btn-content-mail-me.module'
 
 import { BtnContentShareComponent } from './btn-content-share/btn-content-share.component'
 
@@ -45,12 +31,6 @@ import { BtnContentDownloadComponent } from './btn-content-download/btn-content-
 
 import { BtnContentDownloadModule } from './btn-content-download/btn-content-download.module'
 
-
-import { BtnGoalsComponent } from './btn-goals/btn-goals.component'
-
-import { BtnGoalsModule } from './btn-goals/btn-goals.module'
-
-
 import { BtnFeatureComponent } from './btn-feature/btn-feature.component'
 
 import { BtnFeatureModule } from './btn-feature/btn-feature.module'
@@ -59,31 +39,15 @@ import { BtnFullscreenComponent } from './btn-fullscreen/btn-fullscreen.componen
 
 import { BtnFullscreenModule } from './btn-fullscreen/btn-fullscreen.module'
 
-import { BtnMailUserComponent } from './btn-mail-user/btn-mail-user.component'
-
-import { BtnMailUserModule } from './btn-mail-user/btn-mail-user.module'
-
 import { BtnPageBackComponent } from './btn-page-back/btn-page-back.component'
 
 import { BtnPageBackNavModule } from './btn-page-back-nav/btn-page-back-nav.module'
 
 import { BtnPageBackModule } from './btn-page-back/btn-page-back.module'
 
-import { BtnPlaylistComponent } from './btn-playlist/btn-playlist.component'
-
-import { BtnPlaylistModule } from './btn-playlist/btn-playlist.module'
-
-import { BtnPreviewComponent } from './btn-preview/btn-preview.component'
-
-import { BtnPreviewModule } from './btn-preview/btn-preview.module'
-
 import { BtnProfileComponent } from './btn-profile/btn-profile.component'
 
 import { BtnProfileModule } from './btn-profile/btn-profile.module'
-
-import { BtnSettingsComponent } from './btn-settings/btn-settings.component'
-
-import { BtnSettingsModule } from './btn-settings/btn-settings.module'
 
 import { CardBreadcrumbComponent } from './card-breadcrumb/card-breadcrumb.component'
 
@@ -109,35 +73,15 @@ import { ROOT_WIDGET_CONFIG } from './collection.config'
 
 import { ContentStripMultipleComponent } from './content-strip-multiple/content-strip-multiple.component'
 
-import { ContentStripNewMultipleComponent } from './content-strip-new-multiple/content-strip-new-multiple.component'
-
 import { ContentStripMultipleModule } from './content-strip-multiple/content-strip-multiple.module'
-
-import { ContentStripNewMultipleModule } from './content-strip-new-multiple/content-strip-new-multiple.module'
 
 import { ContentStripSingleComponent } from './content-strip-single/content-strip-single.component'
 
 import { ContentStripSingleModule } from './content-strip-single/content-strip-single.module'
 
-import { ElementHtmlComponent } from './element-html/element-html.component'
-
-import { ElementHtmlModule } from './element-html/element-html.module'
-
-import { EmbeddedPageComponent } from './embedded-page/embedded-page.component'
-
-import { EmbeddedPageModule } from './embedded-page/embedded-page.module'
-
 import { ErrorResolverComponent } from './error-resolver/error-resolver.component'
 
 import { ErrorResolverModule } from './error-resolver/error-resolver.module'
-
-import { GalleryViewComponent } from './gallery-view/gallery-view.component'
-
-import { GalleryViewModule } from './gallery-view/gallery-view.module'
-
-import { GraphGeneralComponent } from './graph-general/graph-general.component'
-
-import { GraphGeneralModule } from './graph-general/graph-general.module'
 
 import { GridLayoutComponent } from './grid-layout/grid-layout.component'
 
@@ -151,23 +95,7 @@ import { IntranetSelectorComponent } from './intranet-selector/intranet-selector
 
 import { IntranetSelectorModule } from './intranet-selector/intranet-selector.module'
 
-import { LayoutLinearComponent } from './layout-linear/layout-linear.component'
-
-import { LayoutLinearModule } from './layout-linear/layout-linear.module'
-
-import { LayoutTabComponent } from './layout-tab/layout-tab.component'
-
-import { LayoutTabModule } from './layout-tab/layout-tab.module'
-
-import { NewGridLayoutComponent } from './new-grid-layout/new-grid-layout.component'
-
-import { NewGridLayoutModule } from './new-grid-layout/new-grid-layout.module'
-
-import { NetworkStripMultipleModule } from './network-strip-multiple/network-strip-multiple.module'
-
 import { ActivityStripMultipleModule } from './activity-strip-multiple/activity-strip-multiple.module'
-
-import { NetworkStripMultipleComponent } from './network-strip-multiple/network-strip-multiple.component'
 
 import { ActivityStripMultipleComponent } from './activity-strip-multiple/activity-strip-multiple.component'
 
@@ -175,35 +103,7 @@ import { PageComponent } from './page/page.component'
 
 import { PageModule } from './page/page.module'
 
-import { ProfileAcademicsComponent } from './profile-v2/profile-academics/profile-academics.component'
-
-import { ProfileAcademicsModule } from './profile-v2/profile-academics/profile-academics.module'
-
-import { ProfileCareerComponent } from './profile-v2/profile-career/profile-career.component'
-
-import { ProfileCareerModule } from './profile-v2/profile-career/profile-career.module'
-
-import { ProfileCompetenciesComponent } from './profile-v2/profile-competencies/profile-competencies.component'
-
-import { ProfileCompetenciesModule } from './profile-v2/profile-competencies/profile-competencies.module'
-
-import { ProfileCretificationsComponent } from './profile-v2/profile-cretifications/profile-cretifications.component'
-
-import { ProfileCretificationsModule } from './profile-v2/profile-cretifications/profile-cretifications.module'
-
-import { ProfileDepartmentsComponent } from './profile-v2/profile-departments/profile-departments.component'
-
-import { ProfileDepartmentsModule } from './profile-v2/profile-departments/profile-departments.module'
-
-import { ProfileHobbiesModule } from './profile-v2/profile-hobbies/profile-hobbies.module'
-
-import { ProfileHobbiesComponent } from './profile-v2/profile-hobbies/profile-hobbies.component'
-
 import { PickerContentModule } from './picker-content/picker-content.module'
-
-import { PlayerAmpComponent } from './player-amp/player-amp.component'
-
-import { PlayerAmpModule } from './player-amp/player-amp.module'
 
 import { PlayerAudioComponent } from './player-audio/player-audio.component'
 
@@ -229,41 +129,15 @@ import { PlayerYoutubeComponent } from './player-youtube/player-youtube.componen
 
 import { PlayerYoutubeModule } from './player-youtube/player-youtube.module'
 
-import { ReleaseNotesComponent } from './release-notes/release-notes.component'
-
-import { ReleaseNotesModule } from './release-notes/release-notes.module'
-
 import { SelectorResponsiveComponent } from './selector-responsive/selector-responsive.component'
 
 import { SelectorResponsiveModule } from './selector-responsive/selector-responsive.module'
-
-import { SlidersMobComponent } from './sliders-mob/sliders-mob.component'
-
-import { SlidersMobModule } from './sliders-mob/sliders-mob.module'
-
-import { SlidersComponent } from './sliders/sliders.component'
-
-import { SlidersModule } from './sliders/sliders.module'
-
-import { TreeCatalogComponent } from './tree-catalog/tree-catalog.component'
-
-import { TreeCatalogModule } from './tree-catalog/tree-catalog.module'
-
-import { TreeComponent } from './tree/tree.component'
-
-import { TreeModule } from './tree/tree.module'
-
-
-import { ContentStripVerticalModule } from './content-strip-vertical/content-strip-vertical.module'
-
-import { ContentStripVerticalComponent } from './content-strip-vertical/content-strip-vertical.component'
 
 // import { CardNetworkHomeComponent } from './card-network-home/card-network-home.component'
 
 // import { CardHomeDiscussComponent } from './card-home-discuss/card-home-discuss.component'
 
 // import { CardBrowseCourseComponent } from './card-browse-course/card-browse-course.component'
-
 
 // import { CardNetworkHomeModule } from './card-network-home/card-network-home.module'
 
@@ -289,29 +163,19 @@ import { DiscussionForumComponent } from './discussion-forum/components/discussi
 
 // import { UserListDisplayComponent } from './ui-table/components/user-list-display/user-list-display.component'
 
-
 export const WIDGET_REGISTERED_MODULES = [
-  AtGlanceModule,
   AuthorCardModule,
-  AvatarPhotoModule,
   BtnAppsModule,
   BtnCallModule,
   BtnCatalogModule,
-  BtnChannelAnalyticsModule,
 
   BtnContentDownloadModule,
-  BtnGoalsModule,
   BtnContentLikeModule,
-  BtnContentMailMeModule,
   BtnContentShareModule,
   BtnFullscreenModule,
-  BtnMailUserModule,
   BtnPageBackNavModule,
   BtnPageBackModule,
-  BtnPlaylistModule,
-  BtnPreviewModule,
   BtnProfileModule,
-  BtnSettingsModule,
   CardBreadcrumbModule,
   CardContentModule,
   CardTableModule,
@@ -323,55 +187,28 @@ export const WIDGET_REGISTERED_MODULES = [
   // CardHomeDiscussModule,
   // UITableModule,
   ContentStripMultipleModule,
-  ContentStripNewMultipleModule,
   ContentStripSingleModule,
-  ContentStripVerticalModule,
   DiscussionForumModule,
-  GraphGeneralModule,
-  LayoutLinearModule,
-  LayoutTabModule,
   LeftMenuModule,
-  NewGridLayoutModule,
-  NetworkStripMultipleModule,
   PickerContentModule,
-  PlayerAmpModule,
   PlayerAudioModule,
   PlayerPdfModule,
   PlayerSlidesModule,
   PlayerVideoModule,
   PlayerWebPagesModule,
   PlayerYoutubeModule,
-  ReleaseNotesModule,
-  SlidersModule,
-  ElementHtmlModule,
-  TreeModule,
-  TreeCatalogModule,
   PageModule,
-  ProfileAcademicsModule,
-  ProfileCareerModule,
-  ProfileCompetenciesModule,
-  ProfileCretificationsModule,
-  ProfileDepartmentsModule,
-  ProfileHobbiesModule,
-  EmbeddedPageModule,
   SelectorResponsiveModule,
   GridLayoutModule,
   ErrorResolverModule,
   BtnFeatureModule,
-  GalleryViewModule,
   ImageMapResponsiveModule,
   IntranetSelectorModule,
-  SlidersMobModule,
 
   ActivityStripMultipleModule,
 ]
 
 export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] = [
-  {
-    widgetType: ROOT_WIDGET_CONFIG.atGlance._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.atGlance.default,
-    component: AtGlanceComponent,
-  },
   {
     widgetType: ROOT_WIDGET_CONFIG.authorCard._type,
     widgetSubType: ROOT_WIDGET_CONFIG.authorCard.default,
@@ -394,11 +231,6 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.channelAnalytics,
-    component: BtnChannelAnalyticsComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentDownload,
     component: BtnContentDownloadComponent,
   },
@@ -406,16 +238,6 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentLike,
     component: BtnContentLikeComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.goals,
-    component: BtnGoalsComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.contentMailMe,
-    component: BtnContentMailMeComponent,
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
@@ -434,33 +256,13 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.mailUser,
-    component: BtnMailUserComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.pageBack,
     component: BtnPageBackComponent,
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.playlist,
-    component: BtnPlaylistComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.preview,
-    component: BtnPreviewComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.newProfile,
     component: BtnProfileComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.actionButton.setting,
-    component: BtnSettingsComponent,
   },
 
   {
@@ -485,33 +287,8 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.contentStrip._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.contentStrip.multiStripNew,
-    component: ContentStripNewMultipleComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.contentStrip._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.contentStrip.verticalStrip,
-    component: ContentStripVerticalComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.contentStrip._type,
     widgetSubType: ROOT_WIDGET_CONFIG.contentStrip.singleStrip,
     component: ContentStripSingleComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.graph._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.graph.graphGeneral,
-    component: GraphGeneralComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.layout._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.layout.linear,
-    component: LayoutLinearComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.layout._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.layout.tab,
-    component: LayoutTabComponent,
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.menus._type,
@@ -519,19 +296,9 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     component: LeftMenuComponent,
   },
   {
-    widgetType: ROOT_WIDGET_CONFIG.networkStrip._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.networkStrip.multipleStrip,
-    component: NetworkStripMultipleComponent,
-  },
-  {
     widgetType: ROOT_WIDGET_CONFIG.activityStrip._type,
     widgetSubType: ROOT_WIDGET_CONFIG.activityStrip.multipleStrip,
     component: ActivityStripMultipleComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.player._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.player.amp,
-    component: PlayerAmpComponent,
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.player._type,
@@ -564,74 +331,9 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     component: PlayerYoutubeComponent,
   },
   {
-    widgetType: ROOT_WIDGET_CONFIG.releaseNotes._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.releaseNotes.user,
-    component: ReleaseNotesComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.slider._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.slider.carousel,
-    component: SlidersComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.slider._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.slider.mob,
-    component: SlidersMobComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.tree._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.tree.tree,
-    component: TreeComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.tree._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.tree.catalog,
-    component: TreeCatalogComponent,
-  },
-  {
     widgetType: ROOT_WIDGET_CONFIG.page._type,
     widgetSubType: ROOT_WIDGET_CONFIG.page.standard,
     component: PageComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.profileV2._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.profileV2.academics,
-    component: ProfileAcademicsComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.profileV2._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.profileV2.career,
-    component: ProfileCareerComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.profileV2._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.profileV2.competencies,
-    component: ProfileCompetenciesComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.profileV2._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.profileV2.certifications,
-    component: ProfileCretificationsComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.profileV2._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.profileV2.hobbies,
-    component: ProfileHobbiesComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.profileV2._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.profileV2.departments,
-    component: ProfileDepartmentsComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.page._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.page.embedded,
-    component: EmbeddedPageComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.element._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.element.html,
-    component: ElementHtmlComponent,
   },
 
   {
@@ -650,11 +352,6 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     component: GridLayoutComponent,
   },
   {
-    widgetType: ROOT_WIDGET_CONFIG.layout._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.layout.newgrid,
-    component: NewGridLayoutComponent,
-  },
-  {
     widgetType: ROOT_WIDGET_CONFIG.errorResolver._type,
     widgetSubType: ROOT_WIDGET_CONFIG.errorResolver.errorResolver,
     component: ErrorResolverComponent,
@@ -663,11 +360,6 @@ export const WIDGET_REGISTRATION_CONFIG: NsWidgetResolver.IRegistrationConfig[] 
     widgetType: ROOT_WIDGET_CONFIG.actionButton._type,
     widgetSubType: ROOT_WIDGET_CONFIG.actionButton.feature,
     component: BtnFeatureComponent,
-  },
-  {
-    widgetType: ROOT_WIDGET_CONFIG.gallery._type,
-    widgetSubType: ROOT_WIDGET_CONFIG.gallery.galleryView,
-    component: GalleryViewComponent,
   },
   {
     widgetType: ROOT_WIDGET_CONFIG.imageMap._type,

@@ -65,9 +65,6 @@ import { CertificateDialogComponent } from './components/certificate-upload-dial
 
 import { CommentsViewComponent } from './components/comments-view/comments-view.component'
 
-
-import { CommentsComponent } from './components/comments/comments.component'
-
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component'
 
 import { ErrorParserComponent } from './components/error-parser/error-parser.component'
@@ -88,8 +85,6 @@ import { StatusDisplayComponent } from './components/status-display/status-displ
 
 import { LastUpdateDisplayComponent } from './components/last-update-display/last-update-display.component'
 
-import { ExpiryDateDisplayComponent } from './components/expiry-date-display/expiry-date-display.component'
-
 import { DeleteDialogComponent } from './components/delete-dialog/delete-dialog.component'
 
 import { RestoreDialogComponent } from './components/restore-dialog/restore-dialog.component'
@@ -101,8 +96,6 @@ import { DraftDialogComponent } from './components/draft-dialog/draft-dialog.com
 import { ShowHideToolTipDirective } from './directives/show-hide-tool-tip.directive'
 
 import { StatusTrackComponent } from './components/status-track/status-track.component'
-
-import { FeedbackFormComponent } from './components/feedback-form/feedback-form.component'
 
 import { SuccessDialogComponent } from './components/success-dialog/success-dialog.component'
 
@@ -116,15 +109,11 @@ import { UserIndexConfirmComponent } from './components/user-index-confirm/user-
 
 import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image-upload-intro-popup.component'
 
-import { PageTrackComponent } from './components/page-track/page-track.component'
-
 import { ProgressStepperComponent } from './components/progress-stepper/progress-stepper.component'
-
 
 @NgModule({
   declarations: [
     RelativeUrlPipe,
-    CommentsComponent,
     NotificationComponent,
     CommentsDialogComponent,
     CommentsViewComponent,
@@ -136,22 +125,19 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     AuthExpiryDateConfirmComponent,
     StatusDisplayComponent,
     LastUpdateDisplayComponent,
-    ExpiryDateDisplayComponent,
     DeleteDialogComponent,
     RestoreDialogComponent,
     UnpublishDialogComponent,
     DraftDialogComponent,
     ShowHideToolTipDirective,
     StatusTrackComponent,
-    FeedbackFormComponent,
     SuccessDialogComponent,
     CompetencyPopupComponent,
     ImageUploadIntroPopupComponent,
     PlayerNavigationWidgetComponent,
     CertificateStatusDialogComponentDialogComponent,
     UserIndexConfirmComponent,
-    PageTrackComponent,
-    ProgressStepperComponent
+    ProgressStepperComponent,
   ],
   imports: [
     CommonModule,
@@ -204,7 +190,6 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     MatButtonToggleModule,
     RelativeUrlPipe,
     MatTooltipModule,
-    CommentsComponent,
     MatAutocompleteModule,
     MatDialogModule,
     MatTooltipModule,
@@ -246,13 +231,11 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     DraftDialogComponent,
     ShowHideToolTipDirective,
     StatusTrackComponent,
-    FeedbackFormComponent,
     SuccessDialogComponent,
     UserIndexConfirmComponent,
     PlayerNavigationWidgetComponent,
     CertificateStatusDialogComponentDialogComponent,
-    PageTrackComponent,
-    ProgressStepperComponent
+    ProgressStepperComponent,
   ],
   providers: [
     ApiService,
@@ -264,4 +247,4 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     { provide: MatDialogRef, useValue: {} },
   ],
 })
-export class SharedModule { }
+export class SharedModule {}

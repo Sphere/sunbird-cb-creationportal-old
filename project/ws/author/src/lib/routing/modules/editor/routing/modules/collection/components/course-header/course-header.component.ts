@@ -1,4 +1,3 @@
-
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
 
 import { ConfigurationsService, NsPage } from '@ws-widget/utils/src/public-api'
@@ -15,7 +14,7 @@ import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 
 import { Subscription } from 'rxjs'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   // tslint:disable-next-line:component-selector
@@ -24,26 +23,31 @@ import { Subscription } from 'rxjs'
   styleUrls: ['./course-header.component.scss'],
 })
 export class CourseHeaderComponent implements OnInit {
-  appIcon: SafeUrl | null = null
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
+  appIcon: string | null = null
   courseNameHeader: any
   primaryNavbarBackground: Partial<NsPage.INavBackground> | null = null
   @Input() buttonConfig: IActionButtonConfig | null = null
   @Output() action = new EventEmitter<string>()
   @Output() subAction = new EventEmitter<{ type: string; identifier: string; nodeClicked?: boolean }>()
-  @Input() isModelHeaderView: boolean = false;
-  @Input() backToDashboard: boolean = false;
-  @Input() clickedNext: boolean = false;
-  @Input() isSelfAssessment: boolean = false;
-
+  @Input() isModelHeaderView: boolean = false
+  @Input() backToDashboard: boolean = false
+  @Input() clickedNext: boolean = false
+  @Input() isSelfAssessment: boolean = false
 
   activeSubscription?: Subscription
-  isEditMetaPage: boolean = false;
+  isEditMetaPage: boolean = false
   requiredConfig: IActionButton[] = []
   backNav: boolean = false
-  constructor(private configSvc: ConfigurationsService, private domSanitizer: DomSanitizer,
+  constructor(
+    private configSvc: ConfigurationsService,
+    private domSanitizer: DomSanitizer,
     private headerService: HeaderServiceService,
     private initService: AuthInitService,
-    private store: CollectionStoreService) {
+    private store: CollectionStoreService,
+  ) {
     this.headerService.showCourseHeader.subscribe(data => {
       this.courseNameHeader = data
     })
@@ -54,7 +58,6 @@ export class CourseHeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-
     if (sessionStorage.getItem('isSettingsPageFromPreview')) {
       sessionStorage.removeItem('isSettingsPageFromPreview')
       this.isEditMetaPage = false
@@ -67,7 +70,7 @@ export class CourseHeaderComponent implements OnInit {
       this.isEditMetaPage = true
     }
 
-    this.activeSubscription = this.initService.isEditMetaPageClickedClickedMessage.subscribe((message) => {
+    this.activeSubscription = this.initService.isEditMetaPageClickedClickedMessage.subscribe(message => {
       if (sessionStorage.getItem('isSettingsPageFromPreview') && !this.clickedNext) {
         sessionStorage.removeItem('isSettingsPageFromPreview')
         this.isEditMetaPage = false
@@ -81,7 +84,6 @@ export class CourseHeaderComponent implements OnInit {
       }
       if (message === 'backFromSettings') {
         this.isEditMetaPage = true
-
       }
     })
     if (sessionStorage.getItem('isSettingsPageFromPreview')) {
@@ -89,9 +91,7 @@ export class CourseHeaderComponent implements OnInit {
       this.isEditMetaPage = false
     }
     if (this.configSvc.instanceConfig) {
-      this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        this.configSvc.instanceConfig.logos.app,
-      )
+      this.appIcon = this.configSvc.instanceConfig.logos.app
       this.primaryNavbarBackground = this.configSvc.primaryNavBar
     }
 

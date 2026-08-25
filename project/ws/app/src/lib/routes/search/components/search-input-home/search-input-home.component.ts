@@ -1,4 +1,15 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, ViewChild, ViewEncapsulation } from '@angular/core'
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChange,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core'
 
 import { FormControl } from '@angular/forms'
 
@@ -13,7 +24,6 @@ import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs/o
 import { ISearchAutoComplete } from '../../models/search.model'
 
 import { SearchServService } from '../../services/search-serv.service'
-
 
 @Component({
   standalone: false,
@@ -46,7 +56,6 @@ export class SearchInputHomeComponent implements OnInit, OnChanges {
     private searchServSvc: SearchServService,
     private configSvc: ConfigurationsService,
     private route: ActivatedRoute,
-
   ) {
     // if (!this.activated.snapshot.data.searchPageData) {
     //   // debugger;
@@ -62,12 +71,8 @@ export class SearchInputHomeComponent implements OnInit, OnChanges {
   autoFilter() {
     if (this.route.snapshot.data.searchPageData) {
       const isAutoCompleteAllowed = this.route.snapshot.data.searchPageData.data.search.isAutoCompleteAllowed
-      if (typeof isAutoCompleteAllowed === 'undefined' ||
-        (typeof isAutoCompleteAllowed === 'boolean' && isAutoCompleteAllowed)) {
-        this.queryControl.valueChanges.pipe(
-          debounceTime(200),
-          distinctUntilChanged(),
-        ).subscribe(q => {
+      if (typeof isAutoCompleteAllowed === 'undefined' || (typeof isAutoCompleteAllowed === 'boolean' && isAutoCompleteAllowed)) {
+        this.queryControl.valueChanges.pipe(debounceTime(200), distinctUntilChanged()).subscribe(q => {
           this.getSearchAutoCompleteResults(q)
         })
       }
@@ -89,18 +94,17 @@ export class SearchInputHomeComponent implements OnInit, OnChanges {
       } else {
         this.searchLocale = this.getActiveLocale()
       }
-      const isAutoCompleteAllowed = this.route.snapshot.data.searchPageData ?
-        this.route.snapshot.data.searchPageData.data.search.isAutoCompleteAllowed
+      const isAutoCompleteAllowed = this.route.snapshot.data.searchPageData
+        ? this.route.snapshot.data.searchPageData.data.search.isAutoCompleteAllowed
         : false
-      if (typeof isAutoCompleteAllowed === 'undefined' ||
-        (typeof isAutoCompleteAllowed === 'boolean' && isAutoCompleteAllowed)) {
+      if (typeof isAutoCompleteAllowed === 'undefined' || (typeof isAutoCompleteAllowed === 'boolean' && isAutoCompleteAllowed)) {
         this.getSearchAutoCompleteResults(this.queryControl.value)
       }
     })
-    this.languageSearch = this.route.snapshot.data.searchPageData && this.route.snapshot.data.searchPageData.data.search.languageSearch.map(
-      (u: string) => u.toLowerCase(),
-    )
-    this.languageSearch = this.languageSearch.sort()
+    this.languageSearch =
+      this.route.snapshot.data.searchPageData &&
+      this.route.snapshot.data.searchPageData.data.search.languageSearch.map((u: string) => u.toLowerCase())
+    this.languageSearch = this.languageSearch.sort((a, b) => a.localeCompare(b))
     this.swapRemove(this.languageSearch, this.languageSearch.indexOf('all'), 0)
     if (this.preferredLanguages && this.preferredLanguages.split(',').length > 1) {
       this.languageSearch.splice(1, 0, this.preferredLanguages)
@@ -109,11 +113,14 @@ export class SearchInputHomeComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     // if (!this.activated.snapshot.data.searchPageData) {
-      this.searchServSvc.getSearchConfig().then(data => {
+    this.searchServSvc
+      .getSearchConfig()
+      .then(data => {
         this.activated.snapshot.data = {
           searchPageData: { data },
         }
-      }).then(() => {
+      })
+      .then(() => {
         this.autoFilter()
         this.init()
       })
@@ -125,7 +132,7 @@ export class SearchInputHomeComponent implements OnInit, OnChanges {
   ngOnChanges() {
     for (const change in SimpleChange) {
       if (change === 'placeHolder') {
-        this.placeHolder = this.placeHolder
+        // placeHolder is bound via @Input(); no imperative action needed on change
       }
     }
   }
@@ -172,12 +179,15 @@ export class SearchInputHomeComponent implements OnInit, OnChanges {
 
   getSearchAutoCompleteResults(q: string) {
     if (this.searchLocale.split(',').length === 1) {
-      this.searchServSvc.searchAutoComplete({
-        q,
-        l: this.searchLocale,
-      }).then((result: ISearchAutoComplete[]) => {
-        this.autoCompleteResults = result
-      }).catch(() => { })
+      this.searchServSvc
+        .searchAutoComplete({
+          q,
+          l: this.searchLocale,
+        })
+        .then((result: ISearchAutoComplete[]) => {
+          this.autoCompleteResults = result
+        })
+        .catch(() => {})
     }
   }
 

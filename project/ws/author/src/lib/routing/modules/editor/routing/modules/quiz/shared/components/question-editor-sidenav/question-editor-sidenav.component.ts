@@ -13,17 +13,15 @@ import { MatSnackBarRef } from '@angular/material/snack-bar'
 
 import { QuizStoreService } from '../../../services/store.service'
 
-
 import { QUIZ_QUESTION_TYPE } from '../../../constants/quiz-constants'
 
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
 
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
 
-
 import { IQuizQuestionType } from '../../../interface/quiz-interface'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-question-editor-sidebar',
@@ -31,11 +29,13 @@ import { IQuizQuestionType } from '../../../interface/quiz-interface'
   styleUrls: ['./question-editor-sidenav.component.scss'],
 })
 export class QuestionEditorSidenavComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
 
   @Input() type = ''
   @Input() data: any[] = []
   @Input() showContent?: boolean
-  @Output() questionTypeChanged = new EventEmitter<string>(); // Emit the question type change
+  @Output() questionTypeChanged = new EventEmitter<string>() // Emit the question type change
   /**
    * reviwer and publisher cannot add or delete or edit quizs but can rearrange them
    */
@@ -49,16 +49,17 @@ export class QuestionEditorSidenavComponent implements OnInit, OnDestroy {
   entityMinMaxConfig: any
   activeIndexSubscription?: Subscription
   snackbarRef!: MatSnackBarRef<NotificationComponent>
-  questionType: IQuizQuestionType['fillInTheBlanks'] |
-    IQuizQuestionType['matchTheFollowing'] |
-    IQuizQuestionType['multipleChoiceQuestionSingleCorrectAnswer'] |
-    IQuizQuestionType['multipleChoiceQuestionMultipleCorrectAnswer'] = QUIZ_QUESTION_TYPE['multipleChoiceQuestionSingleCorrectAnswer']
+  questionType:
+    | IQuizQuestionType['fillInTheBlanks']
+    | IQuizQuestionType['matchTheFollowing']
+    | IQuizQuestionType['multipleChoiceQuestionSingleCorrectAnswer']
+    | IQuizQuestionType['multipleChoiceQuestionMultipleCorrectAnswer'] = QUIZ_QUESTION_TYPE['multipleChoiceQuestionSingleCorrectAnswer']
 
   constructor(
     private quizStoreSvc: QuizStoreService,
     private dialog: MatDialog,
     private breakpointObserver: BreakpointObserver,
-  ) { }
+  ) {}
 
   ngOnDestroy() {
     if (this.activeIndexSubscription) {
@@ -80,17 +81,17 @@ export class QuestionEditorSidenavComponent implements OnInit, OnDestroy {
   }
 
   /**
- * Adds an entity to the selected entity array
- */
+   * Adds an entity to the selected entity array
+   */
   addEntity() {
     this.questionTypeChanged.emit(this.questionType) // Emit the selected question type
     this.quizStoreSvc.addQuestion(this.questionType)
   }
 
   /**
- * Removes an entity in the selected entity array by index
- * @param index of data element in the array
- */
+   * Removes an entity in the selected entity array by index
+   * @param index of data element in the array
+   */
   removeEntity(index: number, event: Event) {
     event.stopPropagation()
     const confirmDelete = this.dialog.open(ConfirmDialogComponent, {
@@ -119,9 +120,9 @@ export class QuestionEditorSidenavComponent implements OnInit, OnDestroy {
   }
 
   /**
-  * Rearranges the elements into new position based on drag and drop event
-  * @param event CdkDragDrop which has the entity's previous index and current index placed at
-  */
+   * Rearranges the elements into new position based on drag and drop event
+   * @param event CdkDragDrop which has the entity's previous index and current index placed at
+   */
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.data, event.previousIndex, event.currentIndex)
     this.quizStoreSvc.hasChanged = true
@@ -129,5 +130,4 @@ export class QuestionEditorSidenavComponent implements OnInit, OnDestroy {
       this.selectEntity(event.currentIndex)
     }
   }
-
 }

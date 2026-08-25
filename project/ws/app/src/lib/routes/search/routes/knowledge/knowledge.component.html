@@ -1,10 +1,5 @@
 <mat-sidenav-container class="sidenav-container" autosize *ngIf="!error.load">
-  <mat-sidenav
-    #sideNavBar
-    class="sidenav"
-    [opened]="sideNavBarOpened"
-    [mode]="screenSizeIsLtMedium ? 'over' : 'side'"
-  >
+  <mat-sidenav #sideNavBar class="sidenav" [opened]="sideNavBarOpened" [mode]="screenSizeIsLtMedium ? 'over' : 'side'">
     <ws-app-filter-display
       *ngIf="knowledgeData?.length"
       [filtersResetAble]="filtersResetAble"
@@ -30,19 +25,13 @@
         <mat-icon>filter_list</mat-icon>
       </button>
       <span class="spacer"></span>
-      <button [disabled]="true" style="float: right;" mat-button [matMenuTriggerFor]="sortMenu">
+      <button [disabled]="true" style="float: right" mat-button [matMenuTriggerFor]="sortMenu">
         <span i18n="Sort menu item social">Sort by </span><span>{{ searchRequest.sort }}</span>
         <mat-icon>arrow_drop_down</mat-icon>
       </button>
     </div>
     <div *ngIf="knowledgeData?.length">
-      <div class="flex flex-wrapped flex-center">
-        <ws-app-item-tile
-          class="card-display"
-          *ngFor="let data of knowledgeData; index as i"
-          [data]="data"
-        ></ws-app-item-tile>
-      </div>
+      <div class="flex flex-wrapped flex-center"></div>
 
       <button
         mat-raised-button
@@ -50,16 +39,13 @@
         (click)="getResults()"
         *ngIf="searchRequestStatus != 'done'"
         [hidden]="searchRequestStatus === 'fetching'"
-        accesskey="+"
       >
         <mat-icon>add</mat-icon>
         <ng-container i18n="search: more results">View More</ng-container>
       </button>
       <div *ngIf="searchRequestStatus === 'fetching'" class="margin-top-m flex flex-center">
         <mat-spinner></mat-spinner>
-        <h2 class="h2-title">
-          Loading...
-        </h2>
+        <h2 class="h2-title">Loading...</h2>
       </div>
     </div>
   </mat-sidenav-content>
@@ -88,9 +74,7 @@
   </div>
 
   <div *ngIf="searchRequestStatus === 'error'" class="text-center margin-top-m">
-    <h2 class="h2-title" i18n="search result fetch error">
-      Some error occurred! Please retry
-    </h2>
+    <h2 class="h2-title" i18n="search result fetch error">Some error occurred! Please retry</h2>
   </div>
 </mat-sidenav-container>
 <div *ngIf="error.load">

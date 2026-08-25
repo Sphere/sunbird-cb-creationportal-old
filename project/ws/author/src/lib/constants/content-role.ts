@@ -5,4 +5,3 @@ export const EXTERNAL_CONTENT_REVIEWER_LIVE = ['external_content_reviewer_live']
 
 export const RESOURCE = ['content_creator', 'editor', 'admin']
 export const KBOARD = ['kb-creator', 'editor', 'admin']
-export const CHANNEL = ['channel-creator', 'editor', 'admin']

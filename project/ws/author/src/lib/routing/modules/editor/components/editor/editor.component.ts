@@ -27,7 +27,6 @@ import { ValueService } from '@ws-widget/utils'
 
 import { StatusTrackComponent } from '../../../../../modules/shared/components/status-track/status-track.component'
 
-
 @Component({
   standalone: false,
   selector: 'ws-auth-root-editor',
@@ -74,18 +73,20 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  async ngOnInit() {
+  ngOnInit(): void {
+    // Angular does not await lifecycle hooks; run the async work
+    // fire-and-forget, exactly as `async ngOnInit()` already did.
+    void this.initialiseAsync()
+  }
+
+  private async initialiseAsync(): Promise<void> {
     this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
     let hasAccess = false
     this.routerSubscription = await this.router.data.subscribe(data => {
       if (data.contents && data.contents.length) {
         const contents: { content: NSContent.IContentMeta; data: any }[] = data.contents
         hasAccess = this.contentService.hasAccess(contents[0].content)
-        if (
-          ['Deleted', 'Unpublished', 'Expired', 'MarkedForDeletion'].includes(
-            contents[0].content.status,
-          )
-        ) {
+        if (['Deleted', 'Unpublished', 'Expired', 'MarkedForDeletion'].includes(contents[0].content.status)) {
           this.snackBar.openFromComponent(NotificationComponent, {
             data: {
               type: Notify.DELETED,
@@ -105,7 +106,7 @@ export class EditorComponent implements OnInit, OnDestroy {
           this.route.navigateByUrl('/author/home')
           return
         }
-        contents.map(v => {
+        contents.forEach(v => {
           if (
             this.contentService.hasAccess(v.content) &&
             !v.content.isMetaEditingDisabled &&
@@ -132,39 +133,19 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.contentService.changeActiveCont.next(contents[0].content.identifier)
         this.contentService.currentContent = contents[0].content.identifier
         this.contentService.parentContent = contents[0].content.identifier
-        if (
-          ['Course', 'Collection', 'Learning Path'].indexOf(contents[0].content.contentType) > -1 &&
-          !contents[0].content.isExternal
-        ) {
+        if (['Course', 'Collection', 'Learning Path'].indexOf(contents[0].content.contentType) > -1 && !contents[0].content.isExternal) {
           this.route.navigate(['collection'], { relativeTo: this.router })
-        } else if (contents[0].content.contentType === 'Channel') {
-          this.route.navigate(['channel'], { relativeTo: this.router })
         } else if (contents[0].content.contentType === 'Knowledge Board') {
           this.route.navigate(['knowledge-board'], { relativeTo: this.router })
         } else if (contents[0].content.contentType === 'Knowledge Artifact') {
           this.route.navigate(['kartifact-pa'], { relativeTo: this.router })
-        } else if (
-          ['application/pdf', 'video/mp4', 'application/x-mpegURL', 'audio/mpeg'].indexOf(
-            contents[0].content.mimeType,
-          ) > -1
-        ) {
+        } else if (['application/pdf', 'video/mp4', 'application/x-mpegURL', 'audio/mpeg'].indexOf(contents[0].content.mimeType) > -1) {
           this.route.navigate(['upload'], { relativeTo: this.router })
-        } else if (
-          contents[0].content.mimeType === 'application/html' &&
-          !contents[0].content.isExternal
-        ) {
+        } else if (contents[0].content.mimeType === 'application/html' && !contents[0].content.isExternal) {
           this.route.navigate(['upload'], { relativeTo: this.router })
-        } else if (contents[0].content.mimeType === 'application/iap-assessment') {
-          this.route.navigate(['iap-assessment'], { relativeTo: this.router })
-        } else if (
-          contents[0].content.mimeType === 'application/quiz' &&
-          contents[0].content.categoryType === 'Quiz'
-        ) {
+        } else if (contents[0].content.mimeType === 'application/quiz' && contents[0].content.categoryType === 'Quiz') {
           this.route.navigate(['quiz'], { relativeTo: this.router })
-        } else if (
-          contents[0].content.mimeType === 'application/quiz' &&
-          contents[0].content.categoryType === 'Assessment'
-        ) {
+        } else if (contents[0].content.mimeType === 'application/quiz' && contents[0].content.categoryType === 'Assessment') {
           this.route.navigate(['assessment'], { relativeTo: this.router })
         } else if (contents[0].content.mimeType === 'application/web-module') {
           this.route.navigate(['web-module'], { relativeTo: this.router })

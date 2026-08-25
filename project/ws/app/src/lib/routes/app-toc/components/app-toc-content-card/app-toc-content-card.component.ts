@@ -2,10 +2,9 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 
 import { NsContent, viewerRouteGenerator } from '@ws-widget/collection'
 
-import { ConfigurationsService, ResourceDownloadService } from '@ws-widget/utils'
+import { ConfigurationsService, ResourceDownloadService, isActivationKey } from '@ws-widget/utils'
 
 import { NsAppToc } from '../../models/app-toc.model'
-
 
 @Component({
   standalone: false,
@@ -14,11 +13,32 @@ import { NsAppToc } from '../../models/app-toc.model'
   styleUrls: ['./app-toc-content-card.component.scss'],
 })
 export class AppTocContentCardComponent implements OnInit, OnChanges {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() content: NsContent.IContent | null = null
+
+  /**
+   * The type shown under the title.
+   *
+   * displayContentType reports both quizzes and assessments as ASSESSMENT, so the two
+   * were indistinguishable here. When the content carries isAssessment -- quiz content
+   * does -- that flag decides the wording; everything else keeps the server's value.
+   */
+  get contentTypeLabel(): string {
+    const displayType = this.content?.displayContentType as string | undefined
+    if (this.content && typeof this.content.isAssessment === 'boolean' && displayType === 'ASSESSMENT') {
+      return this.content.isAssessment ? 'Assessment' : 'Quiz'
+    }
+    return displayType || ''
+  }
   @Input() expandAll = false
   @Input() rootId!: string
   @Input() rootContentType!: string
   @Input() forPreview = false
+  /** Gating is a course-level setting, so it is passed down from the TOC
+   *  root rather than read off each child. Display only - it never gates a click. */
+  @Input() gatingEnabled = false
   hasContentStructure = false
   enumContentTypes = NsContent.EDisplayContentTypes
   contentStructure: NsAppToc.ITocStructure = {
@@ -41,7 +61,7 @@ export class AppTocContentCardComponent implements OnInit, OnChanges {
   constructor(
     private configSvc: ConfigurationsService,
     private resourceDownloadSvc: ResourceDownloadService,
-  ) { }
+  ) {}
 
   // True only for the creator of THIS content (owner) — not reviewers/publishers,
   // and not other creators. Matches the resource's createdBy to the logged-in user.
@@ -94,21 +114,13 @@ export class AppTocContentCardComponent implements OnInit, OnChanges {
   }
   get isResource(): boolean {
     if (this.content) {
-      return (
-        this.content.contentType === 'Resource' || this.content.contentType === 'Knowledge Artifact'
-      )
+      return this.content.contentType === 'Resource' || this.content.contentType === 'Knowledge Artifact'
     }
     return false
   }
   get resourceLink(): { url: string; queryParams: { [key: string]: any } } {
     if (this.content) {
-      return viewerRouteGenerator(
-        this.content.identifier,
-        this.content.mimeType,
-        this.rootId,
-        this.rootContentType,
-        this.forPreview,
-      )
+      return viewerRouteGenerator(this.content.identifier, this.content.mimeType, this.rootId, this.rootContentType, this.forPreview)
     }
     return { url: '', queryParams: {} }
   }

@@ -1,35 +1,44 @@
 <div class="quiz-cards" *ngIf="mediumScreen || showContent">
-
   <!-- ── Sticky header: label + type selector + add button ─────────────── -->
   <div class="qb-sidebar-header">
-
     <div *ngIf="type === 'assessment'">
       <!-- Title row -->
       <div class="qb-sidebar-title-row">
         <span class="qb-sidebar-label" i18n>QUESTIONS</span>
-        <button *ngIf="!mediumScreen" mat-icon-button class="qb-collapse-btn"
+        <button
+          *ngIf="!mediumScreen"
+          mat-icon-button
+          class="qb-collapse-btn"
           (click)="showContent = !showContent"
-          i18n-matTooltip matTooltipPosition="right" matTooltip="Minimize the side panel"
-          aria-label="Minimize side panel" i18n-aria-label>
+          i18n-matTooltip
+          matTooltipPosition="right"
+          matTooltip="Minimize the side panel"
+          aria-label="Minimize side panel"
+          i18n-aria-label
+        >
           <mat-icon>keyboard_arrow_left</mat-icon>
         </button>
       </div>
       <!-- Dropdown + Add row -->
       <div class="qb-type-row">
-        <mat-form-field class="qb-type-field" appearance="outline"
-          i18n-aria-label aria-label="Select question type">
+        <mat-form-field class="qb-type-field" appearance="outline" i18n-aria-label aria-label="Select question type">
           <mat-select [(ngModel)]="questionType" placeholder="Type">
             <mat-option value="mcq-sca" i18n="MCQ| acronym for multiple choice question">MCQ</mat-option>
             <mat-option value="fitb" i18n>Fill in the Blanks</mat-option>
             <mat-option value="mtf" i18n>Match the Following</mat-option>
           </mat-select>
         </mat-form-field>
-        <button mat-icon-button class="qb-add-btn"
+        <button
+          mat-icon-button
+          class="qb-add-btn"
           (click)="addEntity()"
-          i18n-matTooltip matTooltip="Add new question"
+          i18n-matTooltip
+          matTooltip="Add new question"
           [ngClass]="{ 'qb-add-btn--disabled': !canEdit }"
           [disabled]="!canEdit"
-          aria-label="add new question" i18n-aria-label>
+          aria-label="add new question"
+          i18n-aria-label
+        >
           <mat-icon>add</mat-icon>
         </button>
       </div>
@@ -38,26 +47,38 @@
     <div *ngIf="type === 'web-module'">
       <div class="qb-sidebar-title-row">
         <span class="qb-sidebar-label" i18n>PAGES</span>
-        <button *ngIf="!mediumScreen" mat-icon-button class="qb-collapse-btn"
+        <button
+          *ngIf="!mediumScreen"
+          mat-icon-button
+          class="qb-collapse-btn"
           (click)="showContent = !showContent"
-          i18n-matTooltip matTooltipPosition="right" matTooltip="Minimize the side panel"
-          aria-label="Minimize side panel" i18n-aria-label>
+          i18n-matTooltip
+          matTooltipPosition="right"
+          matTooltip="Minimize the side panel"
+          aria-label="Minimize side panel"
+          i18n-aria-label
+        >
           <mat-icon>keyboard_arrow_left</mat-icon>
         </button>
       </div>
       <div class="qb-type-row">
-        <button mat-icon-button class="qb-add-btn"
+        <button
+          mat-icon-button
+          class="qb-add-btn"
           (click)="addEntity()"
           [ngClass]="{ 'qb-add-btn--disabled': !canEdit }"
           [disabled]="!canEdit"
-          i18n-aria-label aria-label="add new page"
-          i18n-matTooltip matTooltip="Add new page">
+          i18n-aria-label
+          aria-label="add new page"
+          i18n-matTooltip
+          matTooltip="Add new page"
+        >
           <mat-icon>add</mat-icon>
         </button>
       </div>
     </div>
-
-  </div><!-- /.qb-sidebar-header -->
+  </div>
+  <!-- /.qb-sidebar-header -->
 
   <!-- ── Question / Page list ──────────────────────────────────────────── -->
   <div class="qb-item-list">
@@ -69,12 +90,13 @@
         cdkDrag
         cdkDragBoundary=".questionlist"
         (click)="selectEntity(i)"
+        (keydown)="isActivationKey($event) && selectEntity(i)"
         *ngFor="let quesObj of data; let i = index"
         [ngClass]="{
-          'qb-item-card--active':  i === selectedQuizIndex && !data[i].isInValid,
-          'qb-item-card--invalid': data[i].isInValid
-        }">
-
+          'qb-item-card--active': i === selectedQuizIndex && !data[i].isInValid,
+          'qb-item-card--invalid': data[i].isInValid,
+        }"
+      >
         <div class="qb-item-body" *ngIf="type === 'assessment'">
           <span class="qb-item-label">
             Q{{ i + 1 }}
@@ -82,49 +104,69 @@
             <ng-container *ngIf="quesObj.questionType === 'fitb'"> · FITB</ng-container>
             <ng-container *ngIf="quesObj.questionType === 'mtf'"> · MTF</ng-container>
           </span>
-          <button mat-icon-button class="qb-item-delete-btn"
+          <button
+            mat-icon-button
+            class="qb-item-delete-btn"
             (click)="removeEntity(i, $event)"
             [ngClass]="{ 'opacity-25 cursor-disable': !canEdit }"
             [disabled]="!canEdit"
-            i18n-matTooltip matTooltip="Delete this question"
-            aria-label="delete this question" i18n-aria-label>
+            i18n-matTooltip
+            matTooltip="Delete this question"
+            aria-label="delete this question"
+            i18n-aria-label
+          >
             <mat-icon>delete</mat-icon>
           </button>
         </div>
 
         <div class="qb-item-body" *ngIf="type === 'web-module'">
           <span class="qb-item-label">Page {{ i + 1 }}</span>
-          <button mat-icon-button class="qb-item-delete-btn"
+          <button
+            mat-icon-button
+            class="qb-item-delete-btn"
             (click)="removeEntity(i, $event)"
             [ngClass]="{ 'opacity-25 cursor-disable': !canEdit }"
             [disabled]="!canEdit"
-            i18n-matTooltip matTooltip="Delete this page"
-            aria-label="delete this page" i18n-aria-label>
+            i18n-matTooltip
+            matTooltip="Delete this page"
+            aria-label="delete this page"
+            i18n-aria-label
+          >
             <mat-icon>delete</mat-icon>
           </button>
         </div>
-
       </mat-card>
     </div>
-  </div><!-- /.qb-item-list -->
-
+  </div>
+  <!-- /.qb-item-list -->
 </div>
 
 <!-- ── Collapsed sidebar: expand button + numbered dots ─────────────────── -->
 <div class="flex flex-col w-full pt-4" *ngIf="!mediumScreen && !showContent">
   <div class="w-full">
-    <button class="float-right" (click)="showContent = !showContent" mat-icon-button
-      i18n-matTooltip matTooltip="Maximize the side panel" matTooltipPosition="right"
-      aria-label="Maximize the side panel">
+    <button
+      class="float-right"
+      (click)="showContent = !showContent"
+      mat-icon-button
+      i18n-matTooltip
+      matTooltip="Maximize the side panel"
+      matTooltipPosition="right"
+      aria-label="Maximize the side panel"
+    >
       <mat-icon>keyboard_arrow_right</mat-icon>
     </button>
   </div>
-  <button class="m-1 bordered" (click)="selectEntity(i)" id="{{ 'quiz-' + i }}"
+  <button
+    class="m-1 bordered"
+    (click)="selectEntity(i)"
+    id="{{ 'quiz-' + i }}"
     [ngClass]="{
       'ws-mat-primary-background mat-elevation-z6': i === selectedQuizIndex && !data[i].isInValid,
-      'invalidQues': data[i].isInValid
+      invalidQues: data[i].isInValid,
     }"
-    *ngFor="let quesObj of data; let i = index" mat-icon-button>
+    *ngFor="let quesObj of data; let i = index"
+    mat-icon-button
+  >
     {{ i + 1 }}
   </button>
 </div>

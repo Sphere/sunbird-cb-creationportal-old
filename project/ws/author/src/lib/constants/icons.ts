@@ -17,6 +17,5 @@ export const ICON_TYPE = {
   video: 'video_library',
   default: 'file_copy',
   emptyFile: 'insert_drive_file',
-  channel: 'chrome_reader_mode',
   kBoard: 'amp_stories',
 }

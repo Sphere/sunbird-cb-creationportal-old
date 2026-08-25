@@ -16,15 +16,11 @@ import { RouterModule } from '@angular/router'
 
 import { LogoutModule } from '@ws-widget/utils'
 
-import { AvatarPhotoModule } from '../_common/avatar-photo/avatar-photo.module'
-
 // import { TreeCatalogModule } from '../tree-catalog/tree-catalog.module'
-
 
 @NgModule({
   declarations: [BtnProfileComponent],
   imports: [
-    AvatarPhotoModule,
     CommonModule,
     LogoutModule,
     MatButtonModule,
@@ -35,7 +31,6 @@ import { AvatarPhotoModule } from '../_common/avatar-photo/avatar-photo.module'
     MatSlideToggleModule,
     RouterModule,
     WidgetResolverModule,
-
   ],
 })
-export class BtnProfileModule { }
+export class BtnProfileModule {}

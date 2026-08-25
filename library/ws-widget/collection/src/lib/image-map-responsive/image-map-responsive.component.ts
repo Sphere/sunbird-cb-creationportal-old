@@ -2,14 +2,11 @@ import { Component, OnInit, AfterViewInit, OnDestroy, Input, ViewChild, ElementR
 
 import { fromEvent, Subscription } from 'rxjs'
 
-import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
-
 import { debounceTime } from 'rxjs/operators'
 
 import { WidgetBaseComponent, NsWidgetResolver } from '../../../../resolver/src/public-api'
 
 import { IWidgetImageMap, IWidgetMapMeta, IWidgetScale, IWidgetMapCoords } from './image-map-responsive.model'
-
 
 @Component({
   standalone: false,
@@ -17,13 +14,26 @@ import { IWidgetImageMap, IWidgetMapMeta, IWidgetScale, IWidgetMapCoords } from 
   templateUrl: './image-map-responsive.component.html',
   styleUrls: ['./image-map-responsive.component.scss'],
 })
-export class ImageMapResponsiveComponent extends WidgetBaseComponent
-  implements OnInit, AfterViewInit, OnDestroy, NsWidgetResolver.IWidgetData<IWidgetImageMap> {
+export class ImageMapResponsiveComponent
+  extends WidgetBaseComponent
+  implements OnInit, AfterViewInit, OnDestroy, NsWidgetResolver.IWidgetData<IWidgetImageMap>
+{
   scale: IWidgetScale = {
     height: 1,
     width: 1,
   }
-  htmlContent!: SafeHtml
+  /**
+   * The `<map>` body, bound to `[innerHTML]` and sanitized by Angular.
+   *
+   * This used to be wrapped in `bypassSecurityTrustHtml`, which was both
+   * unnecessary and harmful: `<map>`, `<area>` and the `shape` / `coords` /
+   * `href` / `alt` / `target` attributes all survive Angular's HTML sanitizer
+   * untouched, so the image map renders identically — while `<script>`,
+   * `javascript:` URLs and inline event handlers are stripped. Since this value
+   * comes from authored content, the bypass was disabling XSS protection on
+   * author-supplied markup for no functional gain.
+   */
+  htmlContent = ''
   initialCoords!: IWidgetMapCoords[]
   coords!: IWidgetMapCoords[]
   isUpdateCoords = true
@@ -32,10 +42,6 @@ export class ImageMapResponsiveComponent extends WidgetBaseComponent
 
   @ViewChild('map', { static: false }) mapElem!: ElementRef
   @Input() widgetData!: IWidgetImageMap
-
-  constructor(private domSanitizer: DomSanitizer) {
-    super()
-  }
 
   updateCoords() {
     const currentWidth = this.mapElem.nativeElement.width
@@ -67,27 +73,39 @@ export class ImageMapResponsiveComponent extends WidgetBaseComponent
 
   ngOnInit() {
     if (this.widgetData.externalData) {
-      const regex = new RegExp('<map(.*?)>((.|\n)*?)<\/map>', 'gm')
-      this.htmlContent =
-        this.domSanitizer.bypassSecurityTrustHtml((regex.exec(this.widgetData.externalData as string) as any)[2])
+      // The <map> body legitimately contains '>' (the <area> tags), so a negated
+      // class cannot be used here and the lazy quantifier stays ambiguous. This is
+      // accepted: the regex runs client-side over content the user is already
+      // viewing, so pathological input can only slow that user's own tab — there is
+      // no server-side or cross-user denial of service. Group 2 is the map body.
+      const regex = /<map(.*?)>([\s\S]*?)<\/map>/gm
+      const match = regex.exec(this.widgetData.externalData as string)
+      // Guard the no-match case: the previous `(... as any)[2]` threw a
+      // TypeError on any externalData without a <map>…</map> block, taking the
+      // whole widget down. An empty body renders an empty map instead.
+      this.htmlContent = match ? match[2] : ''
     } else {
       this.getInitialCoords()
     }
   }
 
   ngAfterViewInit() {
-    setTimeout(
-      () => {
-        if (!this.widgetData.externalData) {
-          this.interval = setInterval(() => { this.updateCoords() }, 100)
-        }
-      },
-      500)
-    this.resizeObserver = fromEvent(window, 'resize').pipe(debounceTime(500)).subscribe(() => {
+    setTimeout(() => {
       if (!this.widgetData.externalData) {
-        this.interval = setInterval(() => { this.updateCoords() }, 100)
+        this.interval = setInterval(() => {
+          this.updateCoords()
+        }, 100)
       }
-    })
+    }, 500)
+    this.resizeObserver = fromEvent(window, 'resize')
+      .pipe(debounceTime(500))
+      .subscribe(() => {
+        if (!this.widgetData.externalData) {
+          this.interval = setInterval(() => {
+            this.updateCoords()
+          }, 100)
+        }
+      })
   }
 
   ngOnDestroy() {
@@ -95,5 +113,4 @@ export class ImageMapResponsiveComponent extends WidgetBaseComponent
       this.resizeObserver.unsubscribe()
     }
   }
-
 }

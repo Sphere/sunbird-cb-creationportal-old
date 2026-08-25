@@ -12,11 +12,8 @@ import _ from 'lodash'
 
 @Injectable()
 export class ProfanityService {
-
   accessPath: string[] = []
-  constructor(
-    private apiService: ApiService,
-  ) { }
+  constructor(private apiService: ApiService) {}
 
   startProfanity(content: string, url: string, fileName: string) {
     const finalUrl = url.replace('?type=main', '')
@@ -30,15 +27,13 @@ export class ProfanityService {
       pdfDownloadUrl: finalUrl,
       contentId: content,
     }
-    return this.apiService.post<any>(
-      `${VALIDATE_PDF_CONTENT}`, requestData
-    )
+    return this.apiService.post<any>(`${VALIDATE_PDF_CONTENT}`, requestData)
     // }
     // return {}
   }
 
   getFileName(url: string) {
-    const nameArr = (url.match(new RegExp('%2Fartifacts%2F' + '(.*)' + '?type=main')))
+    const nameArr = url.match(new RegExp('%2Fartifacts%2F' + '(.*)' + '\\?type=main'))
     if (nameArr && nameArr[0]) {
       let finalFileName = nameArr[0].replace('%2Fartifacts%2F', '')
       finalFileName = finalFileName.replace('?type=main', '')

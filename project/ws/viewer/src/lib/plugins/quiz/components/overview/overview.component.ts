@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
 
 import { NSQuiz } from '../../quiz.model'
 
-
 @Component({
   standalone: false,
   selector: 'viewer-overview',
@@ -15,12 +14,17 @@ export class OverviewComponent implements OnInit {
   @Input() duration = 0
   @Input() timeLimit = 0
   @Input() noOfQuestions = 0
+  /** true for an assessment, false for a quiz -- drives the wording on this screen. */
+  @Input() isAssessment = false
+
+  get startLabel(): string {
+    return this.isAssessment ? 'Start Assessment' : 'Start Quiz'
+  }
   @Output() userSelection = new EventEmitter<NSQuiz.TUserSelectionType>()
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   overviewed(event: NSQuiz.TUserSelectionType) {
     this.userSelection.emit(event)

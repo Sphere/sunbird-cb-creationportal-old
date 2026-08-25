@@ -29,7 +29,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 // comps
-import { AppTocAnalyticsComponent } from './routes/app-toc-analytics/app-toc-analytics.component'
 
 import { AppTocContentsComponent } from './routes/app-toc-contents/app-toc-contents.component'
 
@@ -41,12 +40,13 @@ import { AppTocOverviewComponent } from './components/app-toc-overview/app-toc-o
 
 import { AppTocBannerComponent } from './components/app-toc-banner/app-toc-banner.component'
 
-import { AppTocCohortsComponent } from './components/app-toc-cohorts/app-toc-cohorts.component'
+import { AppLearnerBannerComponent } from './components/app-learner-banner/app-learner-banner.component'
+
+import { AppTocDesktopModalComponent } from './components/app-toc-desktop-modal/app-toc-desktop-modal.component'
+
+import { AppTocCertificateModalComponent } from './components/app-toc-certificate-modal/app-toc-certificate-modal.component'
 
 import { AppTocContentCardComponent } from './components/app-toc-content-card/app-toc-content-card.component'
-
-import { AppTocDiscussionComponent } from './components/app-toc-discussion/app-toc-discussion.component'
-
 
 // services
 import { AppTocResolverService } from './resolvers/app-toc-resolver.service'
@@ -55,10 +55,8 @@ import { AppTocService } from './services/app-toc.service'
 
 // import { TrainingApiService } from '../infy/routes/training/apis/training-api.service'
 
-
 // custom modules
 import { WidgetResolverModule } from '@ws-widget/resolver'
-
 
 import {
   PipeDurationTransformModule,
@@ -69,27 +67,22 @@ import {
   DefaultThumbnailModule,
   PipeNameTransformModule,
   PipeCountTransformModule,
-  PipeAssessmentDurationTransformModule
+  PipeAssessmentDurationTransformModule,
 } from '@ws-widget/utils'
 
 import {
   BtnCallModule,
   BtnContentDownloadModule,
-  BtnGoalsModule,
   BtnContentShareModule,
   BtnContentLikeModule,
   // BtnContentShareModule,
   // BtnContentFeedbackModule,
-  BtnContentFeedbackV2Module,
   // BtnGoalsModule,
-  BtnMailUserModule,
   BtnPageBackModule,
   UserImageModule,
   DisplayContentTypeModule,
-  BtnPlaylistModule,
   DisplayContentTypeIconModule,
   ContentProgressModule,
-  UserContentRatingModule,
   PipeContentRouteModule,
   PipeContentRoutePipe,
   // BtnKbModule,
@@ -101,14 +94,6 @@ import {
 
 import { AppTocDialogIntroVideoComponent } from './components/app-toc-dialog-intro-video/app-toc-dialog-intro-video.component'
 
-import { CertificationMetaResolver } from './routes/app-toc-certification/resolvers/certification-meta.resolver'
-
-import { ContentCertificationResolver } from './routes/app-toc-certification/resolvers/content-certification.resolver'
-
-import { CertificationApiService } from './routes/app-toc-certification/apis/certification-api.service'
-
-import { AppTocCertificationModule } from './routes/app-toc-certification/app-toc-certification.module'
-
 // import { TrainingService } from '../infy/routes/training/services/training.service'
 
 import { AppTocOverviewDirective } from './routes/app-toc-overview/app-toc-overview.directive'
@@ -117,17 +102,7 @@ import { AppTocOverviewComponent as AppTocOverviewRootComponent } from './routes
 
 import { AppTocHomeDirective } from './routes/app-toc-home/app-toc-home.directive'
 
-import { AppTocCohortsDirective } from './routes/app-toc-cohorts/app-toc-cohorts.directive'
-
-import { AppTocCohortsComponent as AppTocCohortsRootComponent } from './routes/app-toc-cohorts/app-toc-cohorts.component'
-
 import { FormsModule } from '@angular/forms'
-
-import { AppTocAnalyticsTilesComponent } from './components/app-toc-analytics-tiles/app-toc-analytics-tiles.component'
-
-import { KnowledgeArtifactDetailsComponent } from './components/knowledge-artifact-details/knowledge-artifact-details.component'
-
-import { ProfileImageModule } from '../../../../../../../library/ws-widget/collection/src/lib/_common/profile-image/profile-image.module'
 
 import { EditorService } from '../../../../../author/src/lib/routing/modules/editor/services/editor.service'
 
@@ -143,32 +118,21 @@ import { LicenseComponent } from './components/license/license.component'
 
 import { AssessmentDetailComponent } from './components/assessment-detail/assessment-detail.component'
 
-import { AppLearnerBannerComponent } from './components/app-learner-banner/app-learner-banner.component'
-
-import { AppTocDesktopModalComponent } from './components/app-toc-desktop-modal/app-toc-desktop-modal.component'
-
-import { AppTocCertificateModalComponent } from './components/app-toc-certificate-modal/app-toc-certificate-modal.component'
-
 @NgModule({
   declarations: [
-    AppTocAnalyticsComponent,
     AppTocContentsComponent,
     AppTocHomeComponent,
     AppTocOverviewComponent,
     AppTocBannerComponent,
     AppLearnerBannerComponent,
-    AppTocCohortsComponent,
+    AppTocDesktopModalComponent,
+    AppTocCertificateModalComponent,
     AppTocContentCardComponent,
-    AppTocDiscussionComponent,
     AppTocDialogIntroVideoComponent,
     AppTocOverviewDirective,
     AppTocOverviewRootComponent,
     AppTocHomeDirective,
     AppTocHomeRootComponent,
-    AppTocCohortsDirective,
-    AppTocCohortsRootComponent,
-    KnowledgeArtifactDetailsComponent,
-    AppTocAnalyticsTilesComponent,
     AppTocSinglePageComponent,
     AppTocSinglePageRootComponent,
     AppTocSinglePageDirective,
@@ -176,8 +140,6 @@ import { AppTocCertificateModalComponent } from './components/app-toc-certificat
     TimeDifferencePipe,
     MomentDatePipe,
     AssessmentDetailComponent,
-    AppTocDesktopModalComponent,
-    AppTocCertificateModalComponent,
   ],
   imports: [
     CommonModule,
@@ -216,30 +178,23 @@ import { AppTocCertificateModalComponent } from './components/app-toc-certificat
     PipeContentRouteModule,
     BtnCallModule,
     BtnContentDownloadModule,
-    BtnGoalsModule,
     BtnContentShareModule,
     BtnContentLikeModule,
     // BtnContentFeedbackModule,
-    BtnContentFeedbackV2Module,
     // BtnGoalsModule,
-    BtnPlaylistModule,
-    BtnMailUserModule,
     BtnPageBackModule,
     HorizontalScrollerModule,
     UserImageModule,
     DefaultThumbnailModule,
     WidgetResolverModule,
     ContentProgressModule,
-    UserContentRatingModule,
     // BtnKbModule,
-    AppTocCertificationModule,
     // MarkAsCompleteModule,
     // PlayerBriefModule,
     MatProgressSpinnerModule,
     CardContentModule,
     // BtnContentShareModule,
     UserAutocompleteModule,
-    ProfileImageModule,
   ],
   providers: [
     AppTocResolverService,
@@ -247,13 +202,10 @@ import { AppTocCertificateModalComponent } from './components/app-toc-certificat
     PipeContentRoutePipe,
     // TrainingApiService,
     // TrainingService,
-    CertificationApiService,
-    CertificationMetaResolver,
-    ContentCertificationResolver,
     EditorService,
     ApiService,
     AccessControlService,
   ],
-  exports: [AppTocDiscussionComponent, AssessmentDetailComponent],
+  exports: [AssessmentDetailComponent],
 })
-export class AppTocModule { }
+export class AppTocModule {}

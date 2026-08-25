@@ -28,15 +28,7 @@ import { FeaturesComponent } from './routes/features/features.component'
 
 import { FeaturesModule } from './routes/features/features.module'
 
-import { MobileAppHomeComponent } from './routes/public/mobile-app/components/mobile-app-home.component'
-
-import { PublicAboutComponent } from './routes/public/public-about/public-about.component'
-
-import { PublicContactComponent } from './routes/public/public-contact/public-contact.component'
-
 import { PublicFaqComponent } from './routes/public/public-faq/public-faq.component'
-
-import { PublicReleaseComponent } from './routes/public/public-release/public-release.component'
 
 import { TncComponent } from './routes/tnc/tnc.component'
 
@@ -52,7 +44,6 @@ import { QualityJSONResolver } from '../../project/ws/author/src/lib/services/qu
 
 import { InitResolver } from '@ws/author/src/lib/services/init-resolve.service'
 
-
 // 💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥
 // Please declare routes in alphabetical order
 // 😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵😵
@@ -61,7 +52,6 @@ import { OrgComponent } from '../../project/ws/app/src/lib/routes/org/components
 import { OrgServiceService } from '../../project/ws/app/src/lib/routes/org/org-service.service'
 
 const routes: Routes = [
-
   {
     path: '',
     pathMatch: 'full',
@@ -73,27 +63,6 @@ const routes: Routes = [
     pathMatch: 'full',
     redirectTo: 'page/embed-behavioural-skills',
     canActivate: [GeneralGuard],
-  },
-  // {
-  //   path: 'app/home',
-  //   loadChildren: () => import('./routes/route-home.module').then(u => u.RouteHomeAppModule),
-  //   canActivate: [GeneralGuard],
-  //   data: {
-  //     pageType: 'feature',
-  //     pageKey: 'home',
-  //   },
-  //   resolve: {
-  //     pageData: PageResolve,
-  //   },
-  // },
-  {
-    path: 'app/frac',
-    loadChildren: () => import('./routes/route-frac.module').then(u => u.RouteFracModule),
-    canActivate: [GeneralGuard],
-  },
-  {
-    path: 'app/setup',
-    loadChildren: () => import('./routes/route-app-setup.module').then(u => u.RouteAppSetupModule),
   },
   {
     path: 'app/features',
@@ -113,11 +82,6 @@ const routes: Routes = [
     canActivate: [GeneralGuard],
   },
   {
-    path: 'app/info',
-    loadChildren: () => import('./routes/route-info-app.module').then(u => u.RouteInfoAppModule),
-    canActivate: [GeneralGuard],
-  },
-  {
     path: 'app/invalid-user',
     component: InvalidUserComponent,
     data: {
@@ -129,33 +93,8 @@ const routes: Routes = [
     },
   },
   {
-    path: 'app/my-dashboard',
-    loadChildren: () =>
-      import('./routes/route-my-dashboard.module').then(u => u.RouteMyDashboardModule),
-    // canActivate: [GeneralGuard, LearningGuard],
-  },
-  {
-    path: 'app/notifications',
-    loadChildren: () =>
-      import('./routes/route-notification-app.module').then(u => u.RouteNotificationAppModule),
-    data: {
-      // requiredRoles: [
-      //   'content-creator',
-      //   'ka-creator',
-      //   'kb-creator',
-      //   'channel-creator',
-      //   'reviewer',
-      //   'publisher',
-      //   'editor',
-      //   'admin',
-      // ],
-    },
-    canActivate: [GeneralGuard],
-  },
-  {
     path: 'app/profile',
-    loadChildren: () =>
-      import('./routes/route-profile-app.module').then(u => u.RouteProfileAppModule),
+    loadChildren: () => import('./routes/route-profile-app.module').then(u => u.RouteProfileAppModule),
     data: {
       // requiredRoles: [
       //   'content-creator',
@@ -177,28 +116,9 @@ const routes: Routes = [
       orgData: OrgServiceService,
     },
   },
-  // {
-  //   path: 'app/person-profile',
-  //   loadChildren: () =>
-  //     import('./routes/route-profile-v2.module').then(u => u.RouteProfileV2Module),
-  //   canActivate: [GeneralGuard],
-  //   data: {
-  //     pageType: 'feature',
-  //     pageKey: 'profile-v2',
-  //   },
-  //   resolve: {
-  //     pageData: PageResolve,
-  //   },
-  // },
-  {
-    path: 'app/events',
-    loadChildren: () => import('./routes/route-app-event.module').then(m => m.AppEventsModule),
-    canActivate: [GeneralGuard],
-  },
   {
     path: 'app/search',
-    loadChildren: () =>
-      import('./routes/route-search-app.module').then(u => u.RouteSearchAppModule),
+    loadChildren: () => import('./routes/route-search-app.module').then(u => u.RouteSearchAppModule),
     data: {
       pageType: 'feature',
       pageKey: 'search',
@@ -220,13 +140,11 @@ const routes: Routes = [
   },
   {
     path: 'app/signup',
-    loadChildren: () =>
-      import('./routes/signup/signup.module').then(u => u.SignupModule),
+    loadChildren: () => import('./routes/signup/signup.module').then(u => u.SignupModule),
   },
   {
     path: 'app/auto-signup/:id',
-    loadChildren: () =>
-      import('./routes/signup-auto/signup-auto.module').then(u => u.SignupAutoModule),
+    loadChildren: () => import('./routes/signup-auto/signup-auto.module').then(u => u.SignupAutoModule),
   },
   {
     path: 'app/tnc',
@@ -250,8 +168,7 @@ const routes: Routes = [
       // ],
     },
     canActivate: [GeneralGuard],
-    loadChildren: () =>
-      import('./routes/route-authoring-app.module').then(u => u.AuthoringAppModule),
+    loadChildren: () => import('./routes/route-authoring-app.module').then(u => u.AuthoringAppModule),
   },
   {
     path: 'error-access-forbidden',
@@ -358,50 +275,6 @@ const routes: Routes = [
     },
     component: PageComponent,
     canActivate: [GeneralGuard],
-  },
-  {
-    path: 'public/about',
-    component: PublicAboutComponent,
-    data: {
-      pageType: 'feature',
-      pageKey: 'about',
-    },
-    resolve: {
-      pageData: PageResolve,
-    },
-  },
-  {
-    path: 'public/contact',
-    component: PublicContactComponent,
-    data: {
-      pageType: 'feature',
-      pageKey: 'public-faq',
-    },
-    resolve: {
-      pageData: PageResolve,
-    },
-  },
-  {
-    path: 'public/mobile-app',
-    component: MobileAppHomeComponent,
-    data: {
-      pageType: 'feature',
-      pageKey: 'mobile-app',
-    },
-    resolve: {
-      pageData: PageResolve,
-    },
-  },
-  {
-    path: 'public/release',
-    component: PublicReleaseComponent,
-    data: {
-      pageType: 'feature',
-      pageKey: 'public-releases',
-    },
-    resolve: {
-      pageData: PageResolve,
-    },
   },
   {
     path: 'author/toc',
@@ -514,4 +387,4 @@ const routes: Routes = [
   exports: [RouterModule],
   providers: [ExploreDetailResolve, QualityJSONResolver],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

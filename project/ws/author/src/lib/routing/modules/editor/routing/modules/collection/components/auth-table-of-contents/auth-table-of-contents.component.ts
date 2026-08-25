@@ -32,6 +32,7 @@ import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/l
 
 import { map } from 'rxjs/operators'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-table-of-contents',
@@ -39,6 +40,9 @@ import { map } from 'rxjs/operators'
   styleUrls: ['./auth-table-of-contents.component.scss'],
 })
 export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Output() action = new EventEmitter<{ type: string; identifier: string }>()
   @Output() closeEvent = new EventEmitter<boolean>()
   treeControl!: FlatTreeControl<IContentTreeNode>
@@ -77,7 +81,7 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
     private loaderService: LoaderService,
     private authInitService: AuthInitService,
     private breakpointObserver: BreakpointObserver,
-  ) { }
+  ) {}
 
   private _transformer = (node: IContentNode, level: number): IContentTreeNode => {
     return {
@@ -219,15 +223,9 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
         const parentNode = this.getParentNode(node)
         this.isDropDisabled = !parentNode
           ? true
-          : !this.store.allowDrop(
-            this.dragContainer as IContentTreeNode,
-            parentNode as IContentTreeNode,
-          )
+          : !this.store.allowDrop(this.dragContainer as IContentTreeNode, parentNode as IContentTreeNode)
       } else {
-        this.isDropDisabled = !this.store.allowDrop(
-          this.dragContainer as IContentTreeNode,
-          this.dropContainer as IContentTreeNode,
-        )
+        this.isDropDisabled = !this.store.allowDrop(this.dragContainer as IContentTreeNode, this.dropContainer as IContentTreeNode)
       }
     }
   }
@@ -245,9 +243,7 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
     this.isDragging = false
     if (!this.isDropDisabled) {
       this.preserveExpandedNodes()
-      const isAdjacentDrop = ['above', 'below'].includes(
-        this.backUpInformation.draggingPosition as string,
-      )
+      const isAdjacentDrop = ['above', 'below'].includes(this.backUpInformation.draggingPosition as string)
       const dropContainer = isAdjacentDrop
         ? this.getParentNode(this.backUpInformation.dropContainer as IContentTreeNode)
         : this.backUpInformation.dropContainer
@@ -270,7 +266,7 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
         this.expandedNodes.add(v.id)
       }
     })
-       // this.store.expendedNode = this.expandedNodes
+    // this.store.expendedNode = this.expandedNodes
   }
 
   expandNodesById(ids?: number[]) {
@@ -352,12 +348,7 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
         const parentNode = (asSibling ? this.getParentNode(node) : node) as IContentTreeNode
         this.expandedNodes.add(parentNode.id)
         this.loaderService.changeLoad.next(true)
-        const isDone = await this.store.addChildOrSibling(
-          contents,
-          parentNode,
-          asSibling ? node.id : undefined,
-          'below',
-        )
+        const isDone = await this.store.addChildOrSibling(contents, parentNode, asSibling ? node.id : undefined, 'below')
         this.loaderService.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
@@ -374,12 +365,7 @@ export class AuthTableOfContentsComponent implements OnInit, OnDestroy {
     this.loaderService.changeLoad.next(true)
     this.preserveExpandedNodes()
     this.expandedNodes.add(parentNode.id)
-    const isDone = await this.store.createChildOrSibling(
-      type,
-      parentNode,
-      asSibling ? node.id : undefined,
-      'below',
-    )
+    const isDone = await this.store.createChildOrSibling(type, parentNode, asSibling ? node.id : undefined, 'below')
     this.snackBar.openFromComponent(NotificationComponent, {
       data: {
         type: isDone ? Notify.SUCCESS : Notify.FAIL,

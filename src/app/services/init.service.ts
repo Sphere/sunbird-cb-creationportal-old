@@ -11,12 +11,7 @@ import { DomSanitizer } from '@angular/platform-browser'
 
 import { BtnSettingsService } from '@ws-widget/collection'
 
-import {
-  hasPermissions,
-  hasUnitPermission,
-  NsWidgetResolver,
-  WidgetResolverService,
-} from '@ws-widget/resolver'
+import { hasPermissions, hasUnitPermission, NsWidgetResolver, WidgetResolverService } from '@ws-widget/resolver'
 
 import {
   AuthKeycloakService,
@@ -26,6 +21,9 @@ import {
   NsInstanceConfig,
   // NsUser,
   UserPreferenceService,
+  SafeContentService,
+  getRolesFromProfile,
+  getUserIdFromProfile,
 } from '@ws-widget/utils'
 
 // import { map, retry } from 'rxjs/operators'
@@ -89,30 +87,12 @@ export class InitService {
 
     // Register pin icon for use in Knowledge Board
     // Usage: <mat-icon svgIcon="pin"></mat-icon>
-    iconRegistry.addSvgIcon(
-      'pin',
-      domSanitizer.bypassSecurityTrustResourceUrl('cbp-assets/icons/pin.svg'),
-    )
-    iconRegistry.addSvgIcon(
-      'facebook',
-      domSanitizer.bypassSecurityTrustResourceUrl('cbp-assets/icons/facebook.svg'),
-    )
-    iconRegistry.addSvgIcon(
-      'linked-in',
-      domSanitizer.bypassSecurityTrustResourceUrl('cbp-assets/icons/linked-in.svg'),
-    )
-    iconRegistry.addSvgIcon(
-      'twitter',
-      domSanitizer.bypassSecurityTrustResourceUrl('cbp-assets/icons/twitter.svg'),
-    )
-    iconRegistry.addSvgIcon(
-      'goi',
-      domSanitizer.bypassSecurityTrustResourceUrl('cbp-assets/icons/jpal.svg'),
-    )
-    iconRegistry.addSvgIcon(
-      'hubs',
-      domSanitizer.bypassSecurityTrustResourceUrl('cbp-assets/icons/hubs.svg'),
-    )
+    iconRegistry.addSvgIcon('pin', SafeContentService.trustedResourceUrl(domSanitizer, 'cbp-assets/icons/pin.svg'))
+    iconRegistry.addSvgIcon('facebook', SafeContentService.trustedResourceUrl(domSanitizer, 'cbp-assets/icons/facebook.svg'))
+    iconRegistry.addSvgIcon('linked-in', SafeContentService.trustedResourceUrl(domSanitizer, 'cbp-assets/icons/linked-in.svg'))
+    iconRegistry.addSvgIcon('twitter', SafeContentService.trustedResourceUrl(domSanitizer, 'cbp-assets/icons/twitter.svg'))
+    iconRegistry.addSvgIcon('goi', SafeContentService.trustedResourceUrl(domSanitizer, 'cbp-assets/icons/jpal.svg'))
+    iconRegistry.addSvgIcon('hubs', SafeContentService.trustedResourceUrl(domSanitizer, 'cbp-assets/icons/hubs.svg'))
   }
 
   async init() {
@@ -134,7 +114,6 @@ export class InitService {
       this.logger.info('Not Authenticated')
       // window.location.reload() // can do this
       return false
-
     }
     try {
       // this.logger.info('User Authenticated', authenticated)
@@ -177,19 +156,14 @@ export class InitService {
       const appsConfig = await appsConfigPromise
       this.configSvc.appsConfig = this.processAppsConfig(appsConfig)
       if (this.configSvc.instanceConfig) {
-        this.configSvc.instanceConfig.featuredApps = this.configSvc.instanceConfig.featuredApps.filter(
-          id => appsConfig.features[id],
-        )
+        this.configSvc.instanceConfig.featuredApps = this.configSvc.instanceConfig.featuredApps.filter(id => appsConfig.features[id])
       }
 
       // Apply the settings using settingsService
       this.settingsSvc.initializePrefChanges(environment.production)
       this.userPreference.initialize()
     } catch (e) {
-      this.logger.warn(
-        'Initialization process encountered some error. Application may not work as expected',
-        e,
-      )
+      this.logger.warn('Initialization process encountered some error. Application may not work as expected', e)
       this.settingsSvc.initializePrefChanges(environment.production)
     }
     this.updateNavConfig()
@@ -251,15 +225,11 @@ export class InitService {
   }
 
   get locale(): string {
-    return this.baseHref && this.baseHref.replace(/\//g, '')
-      ? this.baseHref.replace(/\//g, '')
-      : 'en'
+    return this.baseHref && this.baseHref.replace(/\//g, '') ? this.baseHref.replace(/\//g, '') : 'en'
   }
 
   private async fetchAppsConfig(): Promise<NsAppsConfig.IAppsConfig> {
-    const appsConfig = await this.http
-      .get<NsAppsConfig.IAppsConfig>(`${this.baseUrl}/feature/apps.json`)
-      .toPromise()
+    const appsConfig = await this.http.get<NsAppsConfig.IAppsConfig>(`${this.baseUrl}/feature/apps.json`).toPromise()
     return appsConfig
   }
 
@@ -349,13 +319,11 @@ export class InitService {
           .pipe(map((res: any) => res.result.response))
           .toPromise()
 
-        // userPidProfile.roles = [...userPidProfile.roles, 'PUBLIC', 'EDITOR', 'CONTENT_CREATOR']
-        userPidProfile.roles = [...userPidProfile.roles]
-        // console.log('ROlesss  ', userPidProfile.roles)
+        // Sunbird Spark leaves the top-level `roles` array empty or absent and nests the real
+        // roles under organisations[]; normalise both shapes before anything reads them.
+        userPidProfile.roles = getRolesFromProfile(userPidProfile)
 
-        if (userPidProfile && userPidProfile.roles && userPidProfile.roles.length > 0 &&
-          this.hasRole(userPidProfile.roles)) {
-
+        if (userPidProfile && userPidProfile.roles && userPidProfile.roles.length > 0 && this.hasRole(userPidProfile.roles)) {
           // if (userPidProfile.result.response.organisations.length > 0) {
           //   const organisationData = userPidProfile.result.response.organisations
           //   userRoles = (organisationData[0].roles.length > 0) ? organisationData[0].roles : []
@@ -370,7 +338,9 @@ export class InitService {
             country: _.get(profileV2, 'personalDetails.countryCode') || null,
             email: _.get(profileV2, 'profileDetails.officialEmail') || userPidProfile.email,
             givenName: userPidProfile.firstName,
-            userId: userPidProfile.userId,
+            // IUserProfile.userId is a required string; Spark always supplies `id`, so the
+            // empty-string fallback only bites on a malformed response.
+            userId: getUserIdFromProfile(userPidProfile) || '',
             firstName: userPidProfile.firstName,
             lastName: userPidProfile.lastName,
             rootOrgId: userPidProfile.rootOrgId,
@@ -384,7 +354,7 @@ export class InitService {
             isManager: false,
           }
           this.configSvc.userProfileV2 = {
-            userId: _.get(profileV2, 'userId') || userPidProfile.userId,
+            userId: _.get(profileV2, 'userId') || getUserIdFromProfile(userPidProfile),
             email: _.get(profileV2, 'personalDetails.officialEmail') || userPidProfile.email,
             firstName: _.get(profileV2, 'personalDetails.firstname') || userPidProfile.firstName,
             surName: _.get(profileV2, 'personalDetails.surname') || userPidProfile.lastName,
@@ -509,9 +479,7 @@ export class InitService {
   // }
   private async fetchInstanceConfig(): Promise<NsInstanceConfig.IConfig> {
     // TODO: use the rootOrg and org to fetch the instance
-    const publicConfig = await this.http
-      .get<NsInstanceConfig.IConfig>(`${this.configSvc.sitePath}/site.config.json`)
-      .toPromise()
+    const publicConfig = await this.http.get<NsInstanceConfig.IConfig>(`${this.configSvc.sitePath}/site.config.json`).toPromise()
 
     publicConfig.rootOrg = 'aastrika'
     publicConfig.org = ['aastrika']
@@ -554,14 +522,10 @@ export class InitService {
 
   private async fetchFeaturesStatus(): Promise<Set<string>> {
     // TODO: use the rootOrg and org to fetch the features
-    const featureConfigs = await this.http
-      .get<IFeaturePermissionConfigs>(`${this.baseUrl}/features.config.json`)
-      .toPromise()
+    const featureConfigs = await this.http.get<IFeaturePermissionConfigs>(`${this.baseUrl}/features.config.json`).toPromise()
     this.configSvc.restrictedFeatures = new Set(
       Object.entries(featureConfigs)
-        .filter(
-          ([_k, v]) => !hasPermissions(v, this.configSvc.userRoles, this.configSvc.userGroups),
-        )
+        .filter(([_k, v]) => !hasPermissions(v, this.configSvc.userRoles, this.configSvc.userGroups))
         .map(([k]) => k),
     )
     return this.configSvc.restrictedFeatures
@@ -577,12 +541,7 @@ export class InitService {
     this.configSvc.restrictedWidgets = new Set(
       widgetConfigs
         .filter(u =>
-          hasPermissions(
-            u.widgetPermission,
-            this.configSvc.userRoles,
-            this.configSvc.userGroups,
-            this.configSvc.restrictedFeatures,
-          ),
+          hasPermissions(u.widgetPermission, this.configSvc.userRoles, this.configSvc.userGroups, this.configSvc.restrictedFeatures),
         )
         .map(u => WidgetResolverService.getWidgetKey(u)),
     )
@@ -591,15 +550,16 @@ export class InitService {
 
   private processAppsConfig(appsConfig: NsAppsConfig.IAppsConfig): NsAppsConfig.IAppsConfig {
     const tourGuide = appsConfig.tourGuide
-    const features: { [id: string]: NsAppsConfig.IFeature } = Object.values(
-      appsConfig.features,
-    ).reduce((map1: { [id: string]: NsAppsConfig.IFeature }, feature: NsAppsConfig.IFeature) => {
-      if (hasUnitPermission(feature.permission, this.configSvc.restrictedFeatures, true)) {
-        map1[feature.id] = feature
-      }
-      return map1
-      // tslint:disable-next-line: align
-    }, {})
+    const features: { [id: string]: NsAppsConfig.IFeature } = Object.values(appsConfig.features).reduce(
+      (map1: { [id: string]: NsAppsConfig.IFeature }, feature: NsAppsConfig.IFeature) => {
+        if (hasUnitPermission(feature.permission, this.configSvc.restrictedFeatures, true)) {
+          map1[feature.id] = feature
+        }
+        return map1
+        // tslint:disable-next-line: align
+      },
+      {},
+    )
     const groups = appsConfig.groups
       .map((group: NsAppsConfig.IGroup) => ({
         ...group,
@@ -631,34 +591,28 @@ export class InitService {
           const manifestElem = document.getElementById('id-app-description')
           if (manifestElem) {
             // tslint:disable-next-line: semicolon // tslint:disable-next-line: whitespace
-            ; (manifestElem as HTMLMetaElement).setAttribute(
-              'content',
-              this.configSvc.instanceConfig.indexHtmlMeta.description,
-            )
+            ;(manifestElem as HTMLMetaElement).setAttribute('content', this.configSvc.instanceConfig.indexHtmlMeta.description)
           }
         }
         if (this.configSvc.instanceConfig.indexHtmlMeta.webmanifest) {
           const manifestElem = document.getElementById('id-app-webmanifest')
           if (manifestElem) {
             // tslint:disable-next-line: semicolon // tslint:disable-next-line: whitespace
-            ; (manifestElem as HTMLLinkElement).setAttribute(
-              'href',
-              this.configSvc.instanceConfig.indexHtmlMeta.webmanifest,
-            )
+            ;(manifestElem as HTMLLinkElement).setAttribute('href', this.configSvc.instanceConfig.indexHtmlMeta.webmanifest)
           }
         }
         if (this.configSvc.instanceConfig.indexHtmlMeta.pngIcon) {
           const pngIconElem = document.getElementById('id-app-fav-icon')
           if (pngIconElem) {
             // tslint:disable-next-line: semicolon // tslint:disable-next-line: whitespace
-            ; (pngIconElem as HTMLLinkElement).href = this.configSvc.instanceConfig.indexHtmlMeta.pngIcon
+            ;(pngIconElem as HTMLLinkElement).href = this.configSvc.instanceConfig.indexHtmlMeta.pngIcon
           }
         }
         if (this.configSvc.instanceConfig.indexHtmlMeta.xIcon) {
           const xIconElem = document.getElementById('id-app-x-icon')
           if (xIconElem) {
             // tslint:disable-next-line: semicolon // tslint:disable-next-line: whitespace
-            ; (xIconElem as HTMLLinkElement).href = this.configSvc.instanceConfig.indexHtmlMeta.xIcon
+            ;(xIconElem as HTMLLinkElement).href = this.configSvc.instanceConfig.indexHtmlMeta.xIcon
           }
         }
       } catch (error) {
@@ -672,11 +626,10 @@ export class InitService {
     // const rolesForCBP = environment.portalRoles
     const rolesForCBP: any = ['PUBLIC', 'EDITOR', 'CONTENT_CREATOR']
     role.forEach(v => {
-      if ((rolesForCBP).includes(v)) {
+      if (rolesForCBP.includes(v)) {
         returnValue = true
       }
     })
     return returnValue
   }
-
 }

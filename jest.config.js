@@ -31,13 +31,18 @@ module.exports = {
   coveragePathIgnorePatterns: ['/node_modules/', '/dist/', '/out-tsc/'],
   // Coverage ratchet: a floor set just below the current measured baseline so the
   // build fails if coverage regresses. Raise these numbers as new suites land —
-  // never lower them. Current baseline (2026-06): stmts 8.5 / br 7.1 / fn 1.9 / ln 8.0.
+  // never lower them.
+  //
+  // Wave 18 took every metric past 85%. The branch number was the real work: the
+  // save/review/publish pipelines of module-creation and course-collection were
+  // almost entirely untested (25.6% and 44.3% of branches), and between them held
+  // ~1,300 of the ~4,500 uncovered branches in the repo. Both now sit above 90%.
   coverageThreshold: {
     global: {
-      statements: 8,
-      branches: 7,
-      functions: 1.5,
-      lines: 8,
+      statements: 85,
+      branches: 85,
+      functions: 85,
+      lines: 85,
     },
   },
   moduleNameMapper: {
@@ -133,8 +138,11 @@ module.exports = {
     // node_modules path (resolves at build time, but not through jest's resolver).
     // Redirect any such specifier back to the real package.
     '^.*/node_modules/@angular/router$': '@angular/router',
-    // Baseurl-style absolute imports rooted at the app source (tsconfig baseUrl),
-    // e.g. 'src/app/...'. Keep this last so the explicit aliases above win.
+    // Baseurl-style absolute imports rooted at the repo (tsconfig baseUrl), e.g.
+    // 'src/app/...', 'project/ws/...', 'library/ws-widget/...'. Keep these last so
+    // the explicit aliases above win on collision.
     '^src/(.*)$': '<rootDir>/src/$1',
+    '^project/(.*)$': '<rootDir>/project/$1',
+    '^library/(.*)$': '<rootDir>/library/$1',
   },
 }
