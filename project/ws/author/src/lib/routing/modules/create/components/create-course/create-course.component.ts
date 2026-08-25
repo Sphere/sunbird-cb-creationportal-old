@@ -1,4 +1,4 @@
-import { lastValueFrom } from 'rxjs'
+import { lastValueFrom, of } from 'rxjs'
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 
 import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core'
@@ -29,7 +29,7 @@ import { IprDialogComponent } from '@ws/author/src/lib/modules/shared/components
 
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 
-import { mergeMap } from 'rxjs/operators'
+import { catchError, mergeMap } from 'rxjs/operators'
 
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '../../../../../constants/upload'
 
@@ -250,7 +250,12 @@ export class CreateCourseComponent implements OnInit {
                 ],
               },
             }
-            return this.svc.createForum(request)
+            // The forum is ancillary to the course. Chained bare, a failure here errored the
+            // whole observable, so `next` never ran and the author was stranded on this page
+            // with the content already created -- no metadata step, no navigation. Seen on
+            // Sunbird Spark, where Kong has no route for discussion/forum/v3/create and
+            // returns 404. Swallow it and carry on, as the content update below already does.
+            return this.svc.createForum(request).pipe(catchError(() => of(null)))
           }),
         )
         .subscribe({
@@ -375,7 +380,12 @@ export class CreateCourseComponent implements OnInit {
                 ],
               },
             }
-            return this.svc.createForum(request)
+            // The forum is ancillary to the course. Chained bare, a failure here errored the
+            // whole observable, so `next` never ran and the author was stranded on this page
+            // with the content already created -- no metadata step, no navigation. Seen on
+            // Sunbird Spark, where Kong has no route for discussion/forum/v3/create and
+            // returns 404. Swallow it and carry on, as the content update below already does.
+            return this.svc.createForum(request).pipe(catchError(() => of(null)))
           }),
         )
         .subscribe(

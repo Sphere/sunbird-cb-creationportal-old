@@ -211,6 +211,28 @@ describe('CreateCourseComponent (content creation)', () => {
       expect(comment.role).toBe('creator')
       expect(comment.nextStatus).toBe('Draft')
     })
+
+    it('carries on when the forum creation fails', async () => {
+      // Sunbird Spark has no Kong route for the forum API, so this 404s. The forum is
+      // ancillary -- the author must still reach the editor for the new course.
+      const svc = {
+        createV2: jest.fn().mockReturnValue(of({ identifier: 'id1', versionKey: 'v1' })),
+        createForum: jest.fn().mockReturnValue(throwError(() => ({ status: 404 }))),
+      }
+      const editorService = {
+        getAllEntities: jest.fn().mockReturnValue(of({ result: { entity: [] } })),
+        updateNewContentV3: jest.fn().mockReturnValue(of({})),
+      }
+      const progressSvc = { addComment: jest.fn().mockReturnValue(of({})) }
+      const { component, mocks } = readyComponent(svc, { editorService, progressSvc })
+
+      component.contentClicked()
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(svc.createForum).toHaveBeenCalled()
+      expect(mocks.router.navigateByUrl).toHaveBeenCalledWith('/author/editor/id1')
+      expect(mocks.snackBar.openFromComponent.mock.calls[0][1].data.type).toBe('CONTENT_CREATE_SUCCESS')
+    })
   })
 
   describe('setContentType', () => {
