@@ -39,6 +39,14 @@ jobs:
         continue-on-error: true
         run: npm test -- --coverage --ci
 
+      # Our self-hosted SonarQube server 401s the scanner CLI's own JRE
+      # auto-provisioning request (see sonar-project.properties), so that's
+      # disabled and the scanner runs against this JDK instead.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@v3
         env:
