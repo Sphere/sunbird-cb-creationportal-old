@@ -1,5 +1,9 @@
 name: Build & Sonar Analysis
 
+# SonarQube Community Edition has no PR decoration / branch-analysis plugin,
+# so a PR is analyzed as a regular scan (no inline PR comments on
+# sonar.aastrika.org) — this still gives every PR into these branches a fresh
+# analysis run, and push keeps the branch's own dashboard current post-merge.
 on:
   push:
     branches:
@@ -7,6 +11,10 @@ on:
       - master
       - production
   pull_request:
+    branches:
+      - main
+      - master
+      - production
     types: [opened, synchronize, reopened]
 
 jobs:
