@@ -10,7 +10,7 @@
 #curate-container {
   overflow: auto;
 }
-.mobile-r{
+.mobile-r {
   display: flex;
   flex-direction: column;
   // @media only screen and (max-width:960px) {
@@ -87,7 +87,6 @@ ul li {
   position: fixed;
   top: 15px;
   left: 15px;
-  z-index: 1;
   font-size: 30px;
   cursor: pointer;
   z-index: 1001;
@@ -138,7 +137,7 @@ ul li {
     width: 125px;
   }
 }
-.margin-auto{
+.margin-auto {
   margin-left: auto;
   margin-right: auto;
   @media only screen and (max-width: 400px) {

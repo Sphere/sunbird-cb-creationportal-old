@@ -4,16 +4,8 @@ import { NgModule } from '@angular/core'
 
 import { MatCardModule } from '@angular/material/card'
 import { MatIconModule } from '@angular/material/icon'
-import { TourComponent } from './tour-guide.component'
-
 
 @NgModule({
-  declarations: [TourComponent],
-  imports: [
-    MatCardModule,
-    MatIconModule,
-    CommonModule,
-  ],
-  exports: [TourComponent],
+  imports: [MatCardModule, MatIconModule, CommonModule],
 })
-export class TourModule { }
+export class TourModule {}

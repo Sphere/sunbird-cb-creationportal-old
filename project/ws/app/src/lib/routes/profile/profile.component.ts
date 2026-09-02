@@ -9,7 +9,6 @@ import { Subscription } from 'rxjs'
 
 import { map } from 'rxjs/operators'
 
-
 @Component({
   standalone: false,
   selector: 'ws-app-profile',
@@ -44,12 +43,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.tabName = this.enabledTabs.achievements.displayName
     } else if (tab === 'interest') {
       this.tabName = this.enabledTabs.interests.displayName
-    } else if (tab === 'plans') {
-      this.tabName = this.enabledTabs.plans.displayName
-    } else if (tab === 'collaborators') {
-      this.tabName = this.enabledTabs.collaborators.displayName
-    } else if (tab === 'feature-usage') {
-      this.tabName = this.enabledTabs.featureUsage.displayName
     } else if (tab === 'settings') {
       this.tabName = this.enabledTabs.settings.displayName
     }

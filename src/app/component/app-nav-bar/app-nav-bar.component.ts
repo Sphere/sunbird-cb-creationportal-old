@@ -6,10 +6,9 @@ import { IBtnAppsConfig, CustomTourService } from '@ws-widget/collection'
 
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
-import { ConfigurationsService, NsInstanceConfig, NsPage } from '@ws-widget/utils'
+import { ConfigurationsService, NsInstanceConfig, NsPage, isActivationKey } from '@ws-widget/utils'
 
 import { Router, NavigationStart, NavigationEnd, Event } from '@angular/router'
-
 
 @Component({
   standalone: false,
@@ -18,6 +17,9 @@ import { Router, NavigationStart, NavigationEnd, Event } from '@angular/router'
   styleUrls: ['./app-nav-bar.component.scss'],
 })
 export class AppNavBarComponent implements OnInit, OnChanges {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() mode: 'top' | 'bottom' = 'top'
   // @Input()
   // @HostBinding('id')
@@ -29,7 +31,7 @@ export class AppNavBarComponent implements OnInit, OnChanges {
   }
   instanceVal = ''
   btnAppsConfig!: NsWidgetResolver.IRenderConfigWithTypedData<IBtnAppsConfig>
-  appIcon: SafeUrl | null = null
+  appIcon: string | null = null
   appBottomIcon?: SafeUrl
   primaryNavbarBackground: Partial<NsPage.INavBackground> | null = null
   primaryNavbarConfig: NsInstanceConfig.IPrimaryNavbarConfig | null = null
@@ -63,35 +65,26 @@ export class AppNavBarComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.router.events.subscribe((e: Event) => {
       if (e instanceof NavigationEnd) {
-        if ((e.url.includes('/app/setup') && this.configSvc.instanceConfig && !this.configSvc.instanceConfig.showNavBarInSetup)) {
+        if (e.url.includes('/app/setup') && this.configSvc.instanceConfig && !this.configSvc.instanceConfig.showNavBarInSetup) {
           this.showAppNavBar = false
         } else {
           this.showAppNavBar = true
         }
-
       }
       if (e instanceof NavigationEnd) {
-        if ((e.url.includes('/author/create'))) {
+        if (e.url.includes('/author/create')) {
           this.showStepper = true
         } else {
           this.showStepper = false
-
         }
-
       }
-
-
     })
 
     if (this.configSvc.instanceConfig) {
-      this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        this.configSvc.instanceConfig.logos.app,
-      )
+      this.appIcon = this.configSvc.instanceConfig.logos.app
       this.instanceVal = this.configSvc.rootOrg || ''
       if (this.configSvc.instanceConfig.logos.appBottomNav) {
-        this.appBottomIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
-          this.configSvc.instanceConfig.logos.appBottomNav,
-        )
+        this.appBottomIcon = this.configSvc.instanceConfig.logos.appBottomNav
       }
       this.primaryNavbarBackground = this.configSvc.primaryNavBar
       this.pageNavbar = this.configSvc.pageNavBar
@@ -101,10 +94,7 @@ export class AppNavBarComponent implements OnInit, OnChanges {
       this.featureApps = Object.keys(this.configSvc.appsConfig.features)
     }
     this.configSvc.tourGuideNotifier.subscribe(canShow => {
-      if (
-        this.configSvc.restrictedFeatures &&
-        !this.configSvc.restrictedFeatures.has('tourGuide')
-      ) {
+      if (this.configSvc.restrictedFeatures && !this.configSvc.restrictedFeatures.has('tourGuide')) {
         this.isTourGuideAvailable = canShow
         this.popupTour = this.tourService.createPopupTour()
       }
@@ -134,17 +124,14 @@ export class AppNavBarComponent implements OnInit, OnChanges {
   startTour() {
     this.tourService.startTour()
     this.tourService.isTourComplete.subscribe((result: boolean) => {
-      if ((result)) {
+      if (result) {
         this.tourService.startPopupTour()
         this.configSvc.completedTour = true
         this.configSvc.prefChangeNotifier.next({ completedTour: this.configSvc.completedTour })
         // this.tour = tour
-        setTimeout(
-          () => {
-            this.tourService.cancelPopupTour()
-          },
-          3000,
-        )
+        setTimeout(() => {
+          this.tourService.cancelPopupTour()
+        }, 3000)
       }
     })
   }
@@ -153,6 +140,5 @@ export class AppNavBarComponent implements OnInit, OnChanges {
       this.tourService.cancelPopupTour()
       this.isTourGuideClosed = false
     }
-
   }
 }

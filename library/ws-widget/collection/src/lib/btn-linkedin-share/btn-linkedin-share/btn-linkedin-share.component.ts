@@ -1,9 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core'
 
-import { DomSanitizer } from '@angular/platform-browser'
-
 import { ConfigurationsService } from '../../../../../utils/src/public-api'
-
 
 @Component({
   standalone: false,
@@ -17,23 +14,29 @@ export class BtnLinkedinShareComponent implements OnInit {
   @Input() shareType: string | null = null
   isSocialMediaLinkedinShareEnabled = false
   userId: string | undefined
-  constructor(private sanitizer: DomSanitizer, private configSvc: ConfigurationsService) { }
+  constructor(private configSvc: ConfigurationsService) {}
 
   ngOnInit() {
     if (this.configSvc.restrictedFeatures) {
-      this.isSocialMediaLinkedinShareEnabled = !this.configSvc.restrictedFeatures.has(
-        'socialMediaLinkedinShare',
-      )
+      this.isSocialMediaLinkedinShareEnabled = !this.configSvc.restrictedFeatures.has('socialMediaLinkedinShare')
     }
     if (this.configSvc.userProfile) {
       this.userId = this.configSvc.userProfile.userId
     }
   }
 
-  get sanitizeFbUrl() {
+  /** The LinkedIn share endpoint as a plain string. */
+  get shareUrl(): string {
     const url = `https://sphere.aastrika.org/share/${this.shareType}/${this.userId}/${this.contentId}`
-    return this.sanitizer.bypassSecurityTrustResourceUrl(
-      `https://www.linkedin.com/shareArticle?mini=true&url=${url}&source=LinkedIn`,
-    )
+    return `https://www.linkedin.com/shareArticle?mini=true&url=${url}&source=LinkedIn`
+  }
+
+  /**
+   * Opens the LinkedIn share dialog. Previously an <a> with an inline
+   * onclick="window.open(...); return false", which made it a button in all but
+   * name; the window features are kept identical so the popup is unchanged.
+   */
+  openShare(): void {
+    window.open(this.shareUrl, 'mywin', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0')
   }
 }

@@ -1,26 +1,8 @@
-import {
-  Component,
-  OnInit,
-  QueryList,
-  ElementRef,
-  ViewChildren,
-  Output,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-} from '@angular/core'
+import { Component, OnInit, QueryList, ElementRef, ViewChildren, Output, EventEmitter, Input, OnChanges, OnDestroy } from '@angular/core'
 
 import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
-import {
-  FormGroup,
-  FormBuilder,
-  Validators,
-  FormControl,
-  FormArray,
-  AbstractControl,
-} from '@angular/forms'
+import { FormGroup, FormBuilder, Validators, FormControl, FormArray, AbstractControl } from '@angular/forms'
 
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'
 
@@ -38,13 +20,11 @@ import { NotificationComponent } from '@ws/author/src/lib/modules/shared/compone
 
 import { MatchQuiz, MatchOption } from '../quiz-class'
 
-
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 
 import { OpenPlainCkEditorComponent } from '../../shared/components/open-plain-ck-editor/open-plain-ck-editor.component'
 
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout'
-
 
 @Component({
   standalone: false,
@@ -68,12 +48,8 @@ export class MatchTheFollowingComponent implements OnInit, OnChanges, OnDestroy 
   activeIndexSubscription?: Subscription
   @ViewChildren('colAName') colAInput!: QueryList<ElementRef>
   @ViewChildren('colBName') colBInput!: QueryList<ElementRef>
-  smallMobile: Observable<boolean> = this.breakpointObserver
-    .observe('(max-width:449px)')
-    .pipe(map((res: BreakpointState) => res.matches))
-  smallScreen: Observable<boolean> = this.breakpointObserver
-    .observe('(max-width:700px)')
-    .pipe(map((res: BreakpointState) => res.matches))
+  smallMobile: Observable<boolean> = this.breakpointObserver.observe('(max-width:449px)').pipe(map((res: BreakpointState) => res.matches))
+  smallScreen: Observable<boolean> = this.breakpointObserver.observe('(max-width:700px)').pipe(map((res: BreakpointState) => res.matches))
   isSmallScreenMobile = false
   isSmallScreen = false
 
@@ -83,7 +59,7 @@ export class MatchTheFollowingComponent implements OnInit, OnChanges, OnDestroy 
     private snackBar: MatSnackBar,
     private quizStoreSvc: QuizStoreService,
     private breakpointObserver: BreakpointObserver,
-  ) { }
+  ) {}
 
   ngOnDestroy() {
     if (this.activeIndexSubscription) {
@@ -92,8 +68,8 @@ export class MatchTheFollowingComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   ngOnInit() {
-    this.smallScreen.subscribe(v => this.isSmallScreen = v)
-    this.smallMobile.subscribe(v => this.isSmallScreenMobile = v)
+    this.smallScreen.subscribe(v => (this.isSmallScreen = v))
+    this.smallMobile.subscribe(v => (this.isSmallScreenMobile = v))
     this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
       this.contentLoaded = false
       const val = this.quizStoreSvc.getQuiz(index)
@@ -112,9 +88,7 @@ export class MatchTheFollowingComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   openCkEditor(index: number) {
-    const hint =
-      (((this.quizForm.controls.options as FormArray).at(index).get('hint') as FormControl) || {})
-        .value || ''
+    const hint = (((this.quizForm.controls.options as FormArray).at(index).get('hint') as FormControl) || {}).value || ''
     const dialogRef = this.dialog.open(OpenPlainCkEditorComponent, {
       width: '800px',
       data: {
@@ -128,7 +102,7 @@ export class MatchTheFollowingComponent implements OnInit, OnChanges, OnDestroy 
       if (res !== undefined) {
         const optionsArr = this.quizForm.controls['options'] as FormArray
         if (optionsArr && optionsArr.at(index) && optionsArr.at(index).get('hint')) {
-          (optionsArr.at(index).get('hint') as AbstractControl).setValue(res)
+          ;(optionsArr.at(index).get('hint') as AbstractControl).setValue(res)
         }
       }
     })
@@ -146,11 +120,7 @@ export class MatchTheFollowingComponent implements OnInit, OnChanges, OnDestroy 
     }
     this.createForm()
     for (let i = 0; i < this.matchOptions.minOptions; i = i + 1) {
-      if (
-        this.selectedQuiz &&
-        this.selectedQuiz.options &&
-        this.selectedQuiz.options.length < this.matchOptions.minOptions
-      ) {
+      if (this.selectedQuiz && this.selectedQuiz.options && this.selectedQuiz.options.length < this.matchOptions.minOptions) {
         this.addOption()
       }
     }
@@ -161,7 +131,7 @@ export class MatchTheFollowingComponent implements OnInit, OnChanges, OnDestroy 
     const optionsArr = this.quizForm.controls['options'].value
     moveItemInArray(optionsArr, event.previousIndex, event.currentIndex)
     for (let i = 0; i < optionsArr.length; i = i + 1) {
-      (this.quizForm.controls['options'] as FormArray).at(i).setValue(optionsArr[i])
+      ;(this.quizForm.controls['options'] as FormArray).at(i).setValue(optionsArr[i])
     }
   }
 
@@ -221,14 +191,14 @@ export class MatchTheFollowingComponent implements OnInit, OnChanges, OnDestroy 
       } else {
         this.colBInput.first.nativeElement.focus()
       }
-    },         100)
+    }, 100)
     this.canUpdate = false
   }
 
   updateContentService($event: any, optionIndex: number) {
     const optionsArr = this.quizForm.controls['options'] as FormArray
     if (optionsArr && optionsArr.at(optionIndex) && optionsArr.at(optionIndex).get('hint')) {
-      (optionsArr.at(optionIndex).get('hint') as AbstractControl).setValue($event)
+      ;(optionsArr.at(optionIndex).get('hint') as AbstractControl).setValue($event)
     }
   }
 
@@ -246,11 +216,11 @@ export class MatchTheFollowingComponent implements OnInit, OnChanges, OnDestroy 
   assignForm() {
     const newData = this.quizStoreSvc.getQuiz(this.selectedIndez)
     if (newData && newData.isInValid) {
-      Object.keys(this.quizForm.controls).map(v => {
+      Object.keys(this.quizForm.controls).forEach(v => {
         if (v === 'options') {
           const optionsArr = this.quizForm.controls[v] as FormArray
-          optionsArr.controls.map((d: any) => {
-            Object.keys(d.controls).map(e => {
+          optionsArr.controls.forEach((d: any) => {
+            Object.keys(d.controls).forEach(e => {
               if (e === 'text' || e === 'match') {
                 d.controls[e].markAsDirty()
                 d.controls[e].markAsTouched()
@@ -276,7 +246,7 @@ export class MatchTheFollowingComponent implements OnInit, OnChanges, OnDestroy 
     }
     this.quizForm.valueChanges.pipe(debounceTime(100)).subscribe(() => {
       const updatedValue = JSON.parse(JSON.stringify(this.quizForm.value))
-      updatedValue.options.map((op: any) => op.isCorrect = true)
+      updatedValue.options.map((op: any) => (op.isCorrect = true))
       this.value.emit(updatedValue)
     })
   }

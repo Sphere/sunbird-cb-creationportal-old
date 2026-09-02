@@ -18,6 +18,8 @@ import {
   // EventService,
   // ConfigurationsService,
   UtilityService,
+  isActivationKey,
+  nextWidgetId,
 } from '@ws-widget/utils'
 
 import { Subscription } from 'rxjs'
@@ -26,7 +28,6 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 // import { filter } from 'rxjs/operators'
 
 // import { SearchServService } from '@ws/app/src/lib/routes/search/services/search-serv.service'
-
 
 interface IStripUnitContentData {
   key: string
@@ -54,14 +55,16 @@ interface IStripUnitContentData {
   templateUrl: './activity-strip-multiple.component.html',
   styleUrls: ['./activity-strip-multiple.component.scss'],
 })
-export class ActivityStripMultipleComponent extends WidgetBaseComponent
-  implements
-  OnInit,
-  OnDestroy,
-  NsWidgetResolver.IWidgetData<NsNetworkStripNewMultiple.INetworkStripMultiple> {
+export class ActivityStripMultipleComponent
+  extends WidgetBaseComponent
+  implements OnInit, OnDestroy, NsWidgetResolver.IWidgetData<NsNetworkStripNewMultiple.INetworkStripMultiple>
+{
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() widgetData!: NsNetworkStripNewMultiple.INetworkStripMultiple
   @HostBinding('id')
-  public id = `activity-multiple_${Math.random()}`
+  public id = nextWidgetId('activity-multiple_')
   @ViewChild('userManual', { static: true }) userManual!: TemplateRef<any>
   stripsResultDataMap: { [key: string]: IStripUnitContentData } = {}
   stripsKeyOrder: string[] = []
@@ -159,10 +162,7 @@ export class ActivityStripMultipleComponent extends WidgetBaseComponent
   //   }
   // }
 
-  private fetchStripFromRequestData(
-    strip: NsNetworkStripNewMultiple.INetworkStripUnit,
-    calculateParentStatus = true,
-  ) {
+  private fetchStripFromRequestData(strip: NsNetworkStripNewMultiple.INetworkStripUnit, calculateParentStatus = true) {
     this.processStrip(strip, [], 'fetching', false, null)
     this.fetchNetworkUsers(strip, calculateParentStatus)
   }
@@ -174,24 +174,13 @@ export class ActivityStripMultipleComponent extends WidgetBaseComponent
     // { certificateCount: { unit: 'NUMBER', value: 1 } },
     // { contentCount: { unit: 'NUMBER', value: 70 } }]
     if (strip.request && strip.request.api && Object.keys(strip.request.api).length) {
-      this.contentStripSvc.fetchNetworkUsers(strip.request.api.queryParams, strip.request.api.path).subscribe(
-        _results => {
-          this.processStrip(
-            strip,
-            this.transformContentsToWidgets(_results, strip),
-            'done',
-            calculateParentStatus,
-            null,
-          )
-        }
-      )
+      this.contentStripSvc.fetchNetworkUsers(strip.request.api.queryParams, strip.request.api.path).subscribe(_results => {
+        this.processStrip(strip, this.transformContentsToWidgets(_results, strip), 'done', calculateParentStatus, null)
+      })
     }
   }
 
-  private transformContentsToWidgets(
-    contents: NsContent.IContent[],
-    strip: NsNetworkStripNewMultiple.INetworkStripUnit,
-  ) {
+  private transformContentsToWidgets(contents: NsContent.IContent[], strip: NsNetworkStripNewMultiple.INetworkStripUnit) {
     return (contents || []).map((content, idx) => ({
       widgetType: 'card',
       widgetSubType: 'cardActivity',
@@ -253,16 +242,16 @@ export class ActivityStripMultipleComponent extends WidgetBaseComponent
       widgets:
         fetchStatus === 'done'
           ? [
-            ...(strip.preWidgets || []).map(w => ({
-              ...w,
-              widgetHostClass: `mb-2 ${w.widgetHostClass}`,
-            })),
-            ...results,
-            ...(strip.postWidgets || []).map(w => ({
-              ...w,
-              widgetHostClass: `mb-2 ${w.widgetHostClass}`,
-            })),
-          ]
+              ...(strip.preWidgets || []).map(w => ({
+                ...w,
+                widgetHostClass: `mb-2 ${w.widgetHostClass}`,
+              })),
+              ...results,
+              ...(strip.postWidgets || []).map(w => ({
+                ...w,
+                widgetHostClass: `mb-2 ${w.widgetHostClass}`,
+              })),
+            ]
           : [],
       showOnNoData: Boolean(
         strip.noDataWidget &&
@@ -277,11 +266,7 @@ export class ActivityStripMultipleComponent extends WidgetBaseComponent
       ...this.stripsResultDataMap,
       [strip.key]: stripData,
     }
-    if (
-      calculateParentStatus &&
-      (fetchStatus === 'done' || fetchStatus === 'error') &&
-      stripData.widgets
-    ) {
+    if (calculateParentStatus && (fetchStatus === 'done' || fetchStatus === 'error') && stripData.widgets) {
       this.checkParentStatus(fetchStatus, stripData.widgets.length)
     }
     if (calculateParentStatus && !(results && results.length > 0)) {
@@ -304,8 +289,7 @@ export class ActivityStripMultipleComponent extends WidgetBaseComponent
       return
     }
     this.showParentLoader = settledCount !== totalCount
-    this.showParentNoData =
-      this.noDataCount > 0 && this.noDataCount + this.errorDataCount === totalCount
+    this.showParentNoData = this.noDataCount > 0 && this.noDataCount + this.errorDataCount === totalCount
     this.showParentError = this.errorDataCount === totalCount
   }
 
@@ -326,10 +310,7 @@ export class ActivityStripMultipleComponent extends WidgetBaseComponent
   }
 
   checkForEmptyWidget(strip: NsNetworkStripNewMultiple.INetworkStripUnit): boolean {
-    if (
-      strip.request &&
-      (strip.request.api && Object.keys(strip.request.api).length
-      )) {
+    if (strip.request && strip.request.api && Object.keys(strip.request.api).length) {
       return true
     }
     return false
@@ -337,8 +318,7 @@ export class ActivityStripMultipleComponent extends WidgetBaseComponent
 
   processContentLikes(results: NsWidgetResolver.IRenderConfigWithAnyData[]): Promise<any> {
     const contentIds = {
-      content_id:
-        results.map(result => result.widgetData && result.widgetData.content.identifier) || [],
+      content_id: results.map(result => result.widgetData && result.widgetData.content.identifier) || [],
     }
     return this.contentSvc
       .fetchContentLikes(contentIds)
@@ -348,7 +328,7 @@ export class ActivityStripMultipleComponent extends WidgetBaseComponent
           result.widgetData.likes = likes[result.widgetData.content.identifier] || 0
         })
       })
-      .catch(_err => { })
+      .catch(_err => {})
       .finally(() => Promise.resolve())
   }
 }

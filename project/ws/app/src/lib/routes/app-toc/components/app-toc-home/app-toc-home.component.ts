@@ -6,7 +6,7 @@ import { NsContent, WidgetContentService, ContentProgressService } from '@ws-wid
 
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
-import { ConfigurationsService, LoggerService, NsPage } from '@ws-widget/utils'
+import { ConfigurationsService, LoggerService, NsPage, isActivationKey, SafeContentService } from '@ws-widget/utils'
 
 import { Subscription, Observable } from 'rxjs'
 
@@ -36,6 +36,9 @@ export enum ErrorType {
   styleUrls: ['./app-toc-home.component.scss'],
 })
 export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   banners: NsAppToc.ITocBanner | null = null
   content: any | null = null
   hasPublishAccess: any = false
@@ -47,7 +50,6 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
   sticky = false
   isInIframe = false
   forPreview = window.location.href.includes('/author/')
-  analytics = this.route.snapshot.data.pageData.data.analytics
   errorWidgetData: NsWidgetResolver.IRenderConfigWithTypedData<any> = {
     widgetType: 'errorResolver',
     widgetSubType: 'errorResolver',
@@ -149,9 +151,17 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
         }
       } else if (data === 'preview') {
         const lang = (this.content as any)?.lang || 'en'
-        this.editorService.getAllEntities(lang).subscribe((res: any) => {
-          this.proficiencyList = res.result.entity
-        })
+        // Enriches the competency dialog with codes and level names. It is optional
+        // -- the dialog falls back to what the content stores -- but the failure path
+        // was unhandled, which left the list undefined with nothing said about it.
+        this.editorService.getAllEntities(lang).subscribe(
+          (res: any) => {
+            this.proficiencyList = res?.result?.entity || []
+          },
+          () => {
+            this.proficiencyList = []
+          },
+        )
         this.changeText = 'preview'
         this.cdr.detectChanges()
       } else if (data === 'history') {
@@ -320,13 +330,6 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     return true
   }
 
-  get enableAnalytics(): boolean {
-    if (this.configSvc.restrictedFeatures) {
-      return !this.configSvc.restrictedFeatures.has('tocAnalytics')
-    }
-    return false
-  }
-
   private initData(data: Data) {
     const initData = this.tocSvc.initData(data)
     this.content = initData.content
@@ -353,7 +356,8 @@ export class AppTocHomeComponent implements OnInit, OnDestroy, AfterViewChecked 
     if (this.content && this.content.identifier && !this.forPreview) {
       this.getContinueLearningData(this.content.identifier)
     }
-    this.body = this.domSanitizer.bypassSecurityTrustHtml(
+    this.body = SafeContentService.trustedHtml(
+      this.domSanitizer,
       this.content && this.content.body
         ? this.forPreview
           ? this.authAccessControlSvc.proxyToAuthoringUrl(this.content.body)

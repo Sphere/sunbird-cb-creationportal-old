@@ -20,9 +20,7 @@ import { AccessControlService } from '@ws/author/src/lib/modules/shared/services
 
 import { ConfigurationsService } from '@ws-widget/utils'
 
-import {
-  ContentProgressService,
-} from '@ws-widget/collection'
+import { ContentProgressService } from '@ws-widget/collection'
 
 import moment from 'moment'
 
@@ -57,13 +55,12 @@ export class CommentsDialogComponent implements OnInit {
     private _configurationsService: ConfigurationsService,
     private progressSvc: ContentProgressService,
   ) {
-    this.authInitService.publishMessage.subscribe(
-      async (result: any) => {
-        // tslint:disable-next-line:no-console
-        if (result) {
-          await this.updateUI(result)
-        }
-      })
+    this.authInitService.publishMessage.subscribe(async (result: any) => {
+      // tslint:disable-next-line:no-console
+      if (result) {
+        await this.updateUI(result)
+      }
+    })
   }
   updateUI(res: any) {
     if (res) {
@@ -86,7 +83,8 @@ export class CommentsDialogComponent implements OnInit {
           }
         }
       }
-      let count = 0, isDraftOrReview = 0
+      let count = 0,
+        isDraftOrReview = 0
       for (const element of this.contentMeta.children) {
         // console.log('element', element)
         if (element.status === 'Live' && element.contentType !== 'CourseUnit') {
@@ -105,8 +103,8 @@ export class CommentsDialogComponent implements OnInit {
       }
       // console.log("here is ngOnInit", flag, count, isDraftOrReview)
       // tslint:disable-next-line:no-console
-      console.log("here is updateUI", flag, count, isDraftOrReview)
-      if ((flag === count && (flag !== 0 || count !== 0)) && isDraftOrReview === 0) {
+      console.log('here is updateUI', flag, count, isDraftOrReview)
+      if (flag === count && (flag !== 0 || count !== 0) && isDraftOrReview === 0) {
         this.showPublishCBPBtn = true
         this.showPublishResourceBtn = true
       } else {
@@ -150,19 +148,20 @@ export class CommentsDialogComponent implements OnInit {
     }
     const url = this.router.url
     const id = url.split('/')
-    this.editorService.contentRead(id[3])
-      .subscribe((res: any) => {
+    this.editorService.contentRead(id[3]).subscribe(
+      (res: any) => {
         if (res.params.status === 'successful') {
           this.courseEdited = true
         } else {
           this.courseEdited = false
         }
-      }, error => {
+      },
+      error => {
         if (error) {
           this.courseEdited = false
         }
-      })
-
+      },
+    )
 
     let flag = 0
     for (const element of this.contentMeta.children) {
@@ -183,7 +182,8 @@ export class CommentsDialogComponent implements OnInit {
         }
       }
     }
-    let count = 0, isDraftOrReview = 0
+    let count = 0,
+      isDraftOrReview = 0
     for (const element of this.contentMeta.children) {
       // console.log('element', element)
       if (element.status === 'Live' && element.contentType !== 'CourseUnit') {
@@ -202,16 +202,14 @@ export class CommentsDialogComponent implements OnInit {
       }
     }
     // tslint:disable-next-line:no-console
-    console.log("here is ngOnInit", flag, count, isDraftOrReview)
-    if ((flag === count && (flag !== 0 || count !== 0)) && isDraftOrReview === 0) {
+    console.log('here is ngOnInit', flag, count, isDraftOrReview)
+    if (flag === count && (flag !== 0 || count !== 0) && isDraftOrReview === 0) {
       // console.log("yes here okay", isDraftOrReview === 0)
       this.showPublishCBPBtn = true
       this.showPublishResourceBtn = true
     }
 
-
-
-    const nonWhitespaceRegExp: RegExp = new RegExp("\\S")
+    const nonWhitespaceRegExp: RegExp = new RegExp('\\S')
 
     this.commentsForm = this.formBuilder.group({
       comments: ['', [Validators.required, Validators.pattern(nonWhitespaceRegExp)]],
@@ -224,7 +222,7 @@ export class CommentsDialogComponent implements OnInit {
       const score = this.qualityResponse.finalWeightedScore || 0
       return score.toFixed(1)
     } else {
-      return
+      return undefined
     }
   }
   showError(formControl: AbstractControl) {
@@ -243,8 +241,7 @@ export class CommentsDialogComponent implements OnInit {
   submitData() {
     if (
       this.commentsForm.controls.comments.value &&
-      ((!['Draft', 'Live'].includes(this.contentMeta.status)) ||
-        ['Draft', 'Live'].includes(this.contentMeta.status))
+      (!['Draft', 'Live'].includes(this.contentMeta.status) || ['Draft', 'Live'].includes(this.contentMeta.status))
     ) {
       this.dialogRef.close(this.commentsForm)
     } else {
@@ -277,13 +274,13 @@ export class CommentsDialogComponent implements OnInit {
       //     this.showPublishCBPBtn = true
       //   }
       // }, 500)
-
     })
 
     // else {
     //   //this.refreshCourse()
     // }
-    let flag = 0, isDraftOrReview = 0
+    let flag = 0,
+      isDraftOrReview = 0
     for (const element of this.contentMeta.children) {
       // console.log('element', element)
       if (element.status === 'Live' && element.contentType !== 'CourseUnit') {
@@ -321,10 +318,10 @@ export class CommentsDialogComponent implements OnInit {
     }
     // console.log("here is refreshCourse", flag, count)
     // tslint:disable-next-line:no-console
-    console.log("here is refreshCourse", flag, count, isDraftOrReview)
+    console.log('here is refreshCourse', flag, count, isDraftOrReview)
 
     setTimeout(() => {
-      if ((flag === count && (flag !== 0 || count !== 0)) && isDraftOrReview === 0) {
+      if (flag === count && (flag !== 0 || count !== 0) && isDraftOrReview === 0) {
         this.showPublishCBPBtn = true
         this.showPublishResourceBtn = true
       }
@@ -347,37 +344,43 @@ export class CommentsDialogComponent implements OnInit {
     if (this.contentMeta) {
       if (this.accessService.hasRole(['content_publisher'])) {
         role = 'publisher'
-        currentStatus = "Sent for Publish"
+        currentStatus = 'Sent for Publish'
         nextStatus = 'Draft'
       } else if (this.accessService.hasRole(['content_reviewer'])) {
         role = 'reviewer'
-        currentStatus = "Sent for Review"
+        currentStatus = 'Sent for Review'
         nextStatus = 'Draft'
       } else {
         role = 'creator'
       }
       let dat = {
-        "userId": this._configurationsService!.userProfile!.userId,
-        "courseId": id[3],
-        "role": role,
-        "comments": this.commentsForm.value.comments === '' ? `Sending the course back to draft status from ${role}` : this.commentsForm.value.comments,
-        "currentStatus": currentStatus,
-        "nextStatus": nextStatus,
-        "readComments": false,
-        "createdDate": moment(new Date()).toISOString(),
-        "updatedDate": moment(new Date()).toISOString(),
-        "username": this._configurationsService!.userProfile!.userName
+        userId: this._configurationsService!.userProfile!.userId,
+        courseId: id[3],
+        role: role,
+        comments:
+          this.commentsForm.value.comments === ''
+            ? `Sending the course back to draft status from ${role}`
+            : this.commentsForm.value.comments,
+        currentStatus: currentStatus,
+        nextStatus: nextStatus,
+        readComments: false,
+        createdDate: moment(new Date()).toISOString(),
+        updatedDate: moment(new Date()).toISOString(),
+        username: this._configurationsService!.userProfile!.userName,
       }
       console.log(dat)
-      this.progressSvc.addComment(dat).subscribe(res => {
-        console.log(res)
-        if (res) {
+      this.progressSvc.addComment(dat).subscribe(
+        res => {
+          console.log(res)
+          if (res) {
+            this.authInitService.changeMessage('MoveCourseToDraft')
+          }
+        },
+        (err: any) => {
+          console.log(err)
           this.authInitService.changeMessage('MoveCourseToDraft')
-        }
-      }, (err: any) => {
-        console.log(err)
-        this.authInitService.changeMessage('MoveCourseToDraft')
-      })
+        },
+      )
     }
 
     //this.authInitService.changeMessage('MoveCourseToDraft')

@@ -16,12 +16,11 @@ import { AuthInitService } from './../../../../services/init.service'
 
 import { EditorService } from './editor.service'
 
-import { IAssessmentDetails } from '../routing/modules/iap-assessment/interface/iap-assessment.interface'
+import { IAssessmentDetails } from '../../../../interface/iap-assessment.interface'
 
 // import { isArray } from 'lodash'
 
 import * as _ from 'lodash'
-
 
 @Injectable()
 export class EditorContentService {
@@ -43,7 +42,7 @@ export class EditorContentService {
     private accessService: AccessControlService,
     private editorService: EditorService,
     private authInitService: AuthInitService,
-  ) { }
+  ) {}
 
   getListOfFiles() {
     return this.listOfFiles
@@ -78,7 +77,8 @@ export class EditorContentService {
           ...(this.upDatedContent[id] ? this.upDatedContent[id] : {}),
         }),
       )
-    } {
+    }
+    {
       const value = this.getChildData(id)
       if (value) {
         return value
@@ -110,7 +110,6 @@ export class EditorContentService {
   }
 
   setOriginalMeta(meta: NSContent.IContentMeta) {
-
     this.originalContent[meta.identifier] = JSON.parse(JSON.stringify(meta))
   }
 
@@ -124,14 +123,17 @@ export class EditorContentService {
   }
 
   cleanProperties(objParam: any) {
-    const propertiesTobeExcluded: any = []
     const obj = { ...objParam }
-    let propNames = Object.getOwnPropertyNames(obj)
-    propNames = propNames.filter(el => !propertiesTobeExcluded.includes(el))
+    const propNames = Object.getOwnPropertyNames(obj)
     for (const prop of propNames) {
       const propName = prop
       // tslint:disable-next-line: max-line-length
-      if (obj[propName] === null || obj[propName] === undefined || obj[propName] === '' || (_.isArray(obj[propName]) && obj[propName].length === 0)) {
+      if (
+        obj[propName] === null ||
+        obj[propName] === undefined ||
+        obj[propName] === '' ||
+        (_.isArray(obj[propName]) && obj[propName].length === 0)
+      ) {
         delete (obj as any)[propName]
       }
     }
@@ -152,7 +154,7 @@ export class EditorContentService {
         // metadata: (parentData.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category']) : undefined,
       }
       parentData.children.forEach((element: any) => {
-        if ((element.contentType === 'Collection' || element.contentType === 'CourseUnit')) {
+        if (element.contentType === 'Collection' || element.contentType === 'CourseUnit') {
           nodesModify[element.identifier] = {
             isNew: false,
             root: false,
@@ -164,7 +166,7 @@ export class EditorContentService {
         }
         if (element.children && element.children.length > 0) {
           parentData.children.forEach((subEle: any) => {
-            if ((subEle.contentType === 'Collection' || subEle.contentType === 'CourseUnit')) {
+            if (subEle.contentType === 'Collection' || subEle.contentType === 'CourseUnit') {
               nodesModify[subEle.identifier] = {
                 isNew: false,
                 root: false,
@@ -193,7 +195,7 @@ export class EditorContentService {
     console.log(this.upDatedContent[id])
     let data = this.cleanProperties(this.upDatedContent[id])
     data = this.currentContentData
-    if (data && data.duration === 0 || data && data.duration) {
+    if ((data && data.duration === 0) || (data && data.duration)) {
       // tslint:disable-next-line:max-line-length
       data.duration = _.isNumber(data.duration) ? data.duration.toString() : data.duration
     }
@@ -214,7 +216,10 @@ export class EditorContentService {
             // objectType: 'Content',
             // contentType: 'Course',
             // tslint:disable-next-line:max-line-length
-            metadata: (element.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey', 'resourceType']) : undefined,
+            metadata:
+              element.identifier === id
+                ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey', 'resourceType'])
+                : undefined,
           }
         }
         if (element.children && element.children.length > 0) {
@@ -226,7 +231,10 @@ export class EditorContentService {
                 // objectType: 'Content',
                 // contentType: 'Course',
                 // tslint:disable-next-line:max-line-length
-                metadata: (subEle.identifier === id) ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey', 'resourceType']) : undefined,
+                metadata:
+                  subEle.identifier === id
+                    ? _.omit(data, ['status', 'isIframeSupported', 'category', 'versionKey', 'resourceType'])
+                    : undefined,
               }
             }
           })
@@ -237,26 +245,22 @@ export class EditorContentService {
   }
   resetStatus() {
     let isDraftPresent
-    Object.keys(this.originalContent).map(v => {
+    Object.keys(this.originalContent).forEach(v => {
       isDraftPresent = this.originalContent[v].status === 'Draft'
     })
     return isDraftPresent
   }
   changeStatusDraft() {
-    Object.keys(this.originalContent).map(v => {
+    Object.keys(this.originalContent).forEach(v => {
       this.originalContent[v].status = 'Draft'
     })
   }
 
   resetOriginalMetaWithHierarchy(meta: any) {
-    meta.creatorContacts =
-      this.jsonVerify(meta.creatorContacts) ? JSON.parse(meta.creatorContacts) : []
-    meta.trackContacts =
-      this.jsonVerify(meta.reviewer) ? JSON.parse(meta.reviewer) : []
-    meta.creatorDetails =
-      this.jsonVerify(meta.creatorDetails) ? JSON.parse(meta.creatorDetails) : []
-    meta.publisherDetails = this.jsonVerify(meta.publisherDetails) ?
-      JSON.parse(meta.publisherDetails) : []
+    meta.creatorContacts = this.jsonVerify(meta.creatorContacts) ? JSON.parse(meta.creatorContacts) : []
+    meta.trackContacts = this.jsonVerify(meta.reviewer) ? JSON.parse(meta.reviewer) : []
+    meta.creatorDetails = this.jsonVerify(meta.creatorDetails) ? JSON.parse(meta.creatorDetails) : []
+    meta.publisherDetails = this.jsonVerify(meta.publisherDetails) ? JSON.parse(meta.publisherDetails) : []
     this.originalContent[meta.identifier] = meta
     if (meta.children && meta.children.length > 0) {
       meta.children.forEach((element: any) => {
@@ -282,7 +286,8 @@ export class EditorContentService {
       ...JSON.parse(JSON.stringify(meta)),
     }
 
-    if (Object.keys(meta).length === 0) { // empty
+    if (Object.keys(meta).length === 0) {
+      // empty
       this.setOriginalMeta(meta)
     } else {
       this.originalContent[id] = {
@@ -311,17 +316,13 @@ export class EditorContentService {
     this.isSubmitted = false
   }
 
-  hasAccess(
-    meta: NSContent.IContentMeta,
-    forPreview = false,
-    parentMeta?: NSContent.IContentMeta,
-  ): boolean {
+  hasAccess(meta: NSContent.IContentMeta, forPreview = false, parentMeta?: NSContent.IContentMeta): boolean {
     return this.accessService.hasAccess(meta, forPreview, parentMeta)
   }
 
   isLangPresent(lang: string): boolean {
     let isPresent = false
-    Object.keys(this.originalContent).map(v => {
+    Object.keys(this.originalContent).forEach(v => {
       isPresent = this.originalContent[v].locale === lang
     })
     return isPresent
@@ -330,19 +331,19 @@ export class EditorContentService {
   private getParentUpdatedMeta(): NSContent.IContentMeta {
     const meta = {} as any
     const parentMeta = this.getUpdatedMeta(this.parentContent)
-    Object.keys(this.authInitService.authConfig).map(v => {
+    Object.keys(this.authInitService.authConfig).forEach(v => {
       // tslint:disable-next-line: no-console
 
       meta[v as keyof NSContent.IContentMeta] = parentMeta[v as keyof NSContent.IContentMeta]
         ? parentMeta[v as keyof NSContent.IContentMeta]
         : JSON.parse(
-          JSON.stringify(
-            this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-              parentMeta.contentType
-              // tslint:disable-next-line: ter-computed-property-spacing
-            ][0].value,
-          ),
-        )
+            JSON.stringify(
+              this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
+                parentMeta.contentType
+                // tslint:disable-next-line: ter-computed-property-spacing
+              ][0].value,
+            ),
+          )
     })
     return meta
   }
@@ -350,10 +351,7 @@ export class EditorContentService {
   parentUpdatedMeta() {
     return this.getParentUpdatedMeta()
   }
-  createInAnotherLanguage(
-    language: string,
-    meta = {},
-  ): Observable<NSContent.IContentMeta | boolean> {
+  createInAnotherLanguage(language: string, meta = {}): Observable<NSContent.IContentMeta | boolean> {
     const parentContent = this.getParentUpdatedMeta()
     if (this.isLangPresent(language)) {
       return of(true)
@@ -375,16 +373,14 @@ export class EditorContentService {
     delete (requestBody as any).status
     delete (requestBody as any).categoryType
     delete (requestBody as any).accessPaths
-    return this.editorService
-      .createAndReadContent(requestBody)
-      .pipe(tap(v => this.setOriginalMeta(v)))
+    return this.editorService.createAndReadContent(requestBody).pipe(tap(v => this.setOriginalMeta(v)))
   }
 
   isValid(id: string): boolean {
     let isValid = true
     const arr = ['competencies', 'draftImage', 'source', 'purpose', 'appIcon', 'license']
 
-    Object.keys(this.authInitService.authConfig).map(v => {
+    Object.keys(this.authInitService.authConfig).forEach(v => {
       if (!arr.includes(v)) {
         if (this.checkCondition(id, v, 'required') && !this.isPresent(v, id)) {
           // console.log('checkCondition  ', v)
@@ -422,69 +418,48 @@ export class EditorContentService {
         returnValue = false
       } else if (
         this.authInitService.authConfig[meta as keyof IFormMeta][directType][data.contentType] &&
-        this.authInitService.authConfig[meta as keyof IFormMeta][directType][data.contentType]
-          .length === 0
+        this.authInitService.authConfig[meta as keyof IFormMeta][directType][data.contentType].length === 0
       ) {
         returnValue = true
       } else {
-        this.authInitService.authConfig[meta as keyof IFormMeta][directType][data.contentType].map(
-          condition => {
-            let childReturnValue = false
-            Object.keys(condition).map(childMeta => {
-              if (
-                condition[childMeta as keyof typeof condition].indexOf(true) > -1 &&
-                this.isPresent(childMeta, id)
-              ) {
-                childReturnValue = true
-              } else if (
-                condition[childMeta as keyof typeof condition].indexOf(
-                  data[childMeta as keyof NSContent.IContentMeta],
-                ) > -1
-              ) {
-                childReturnValue = true
-              }
-            })
-            if (childReturnValue) {
-              returnValue = true
+        this.authInitService.authConfig[meta as keyof IFormMeta][directType][data.contentType].forEach(condition => {
+          let childReturnValue = false
+          Object.keys(condition).forEach(childMeta => {
+            if (condition[childMeta as keyof typeof condition].indexOf(true) > -1 && this.isPresent(childMeta, id)) {
+              childReturnValue = true
+            } else if (condition[childMeta as keyof typeof condition].indexOf(data[childMeta as keyof NSContent.IContentMeta]) > -1) {
+              childReturnValue = true
             }
-          },
-        )
+          })
+          if (childReturnValue) {
+            returnValue = true
+          }
+        })
       }
       if (
         this.authInitService.authConfig[meta as keyof IFormMeta] &&
         this.authInitService.authConfig[meta as keyof IFormMeta][counterType][data.contentType] &&
-        this.authInitService.authConfig[meta as keyof IFormMeta][counterType][data.contentType]
-          .length === 0
+        this.authInitService.authConfig[meta as keyof IFormMeta][counterType][data.contentType].length === 0
       ) {
         returnValue = false
       } else if (
         this.authInitService.authConfig[meta as keyof IFormMeta] &&
         this.authInitService.authConfig[meta as keyof IFormMeta][counterType][data.contentType] &&
-        this.authInitService.authConfig[meta as keyof IFormMeta][counterType][data.contentType]
-          .length > 0
+        this.authInitService.authConfig[meta as keyof IFormMeta][counterType][data.contentType].length > 0
       ) {
-        this.authInitService.authConfig[meta as keyof IFormMeta][counterType][data.contentType].map(
-          condition => {
-            let childReturnValue = false
-            Object.keys(condition).map(childMeta => {
-              if (
-                condition[childMeta as keyof typeof condition].indexOf(true) > -1 &&
-                this.isPresent(childMeta, id)
-              ) {
-                childReturnValue = true
-              } else if (
-                condition[childMeta as keyof typeof condition].indexOf(
-                  data[childMeta as keyof NSContent.IContentMeta],
-                ) > -1
-              ) {
-                childReturnValue = true
-              }
-            })
-            if (childReturnValue) {
-              returnValue = false
+        this.authInitService.authConfig[meta as keyof IFormMeta][counterType][data.contentType].forEach(condition => {
+          let childReturnValue = false
+          Object.keys(condition).forEach(childMeta => {
+            if (condition[childMeta as keyof typeof condition].indexOf(true) > -1 && this.isPresent(childMeta, id)) {
+              childReturnValue = true
+            } else if (condition[childMeta as keyof typeof condition].indexOf(data[childMeta as keyof NSContent.IContentMeta]) > -1) {
+              childReturnValue = true
             }
-          },
-        )
+          })
+          if (childReturnValue) {
+            returnValue = false
+          }
+        })
       }
     } catch (ex) {
       // tslint:disable-next-line: no-console
@@ -546,17 +521,13 @@ export class EditorContentService {
   checkUniqueCondition(
     content: NSContent.IContentMeta,
     conditions: { [key in keyof NSContent.IContentMeta]: any[] }[],
-    title?: string
+    title?: string,
   ): boolean {
     try {
       return conditions.some(condition => {
         let isLocalPassed = true
         Object.keys(condition).forEach(meta => {
-          if (
-            condition[meta as keyof NSContent.IContentMeta].indexOf(
-              content[meta as keyof NSContent.IContentMeta],
-            ) < 0
-          ) {
+          if (condition[meta as keyof NSContent.IContentMeta].indexOf(content[meta as keyof NSContent.IContentMeta]) < 0) {
             isLocalPassed = false
           }
 
@@ -566,13 +537,13 @@ export class EditorContentService {
             } else {
               isLocalPassed = false
             }
-          } else if (title === 'Publish'
-            && content[meta as keyof NSContent.IContentMeta] === 'Review'
-            && content['reviewStatus' as keyof NSContent.IContentMeta] === 'Reviewed'
+          } else if (
+            title === 'Publish' &&
+            content[meta as keyof NSContent.IContentMeta] === 'Review' &&
+            content['reviewStatus' as keyof NSContent.IContentMeta] === 'Reviewed'
           ) {
             isLocalPassed = true
           }
-
         })
         return isLocalPassed
       })
@@ -583,6 +554,12 @@ export class EditorContentService {
     }
   }
 
-  jsonVerify(s: string) { try { JSON.parse(s); return true } catch (e) { return false } }
-
+  jsonVerify(s: string) {
+    try {
+      JSON.parse(s)
+      return true
+    } catch (e) {
+      return false
+    }
+  }
 }

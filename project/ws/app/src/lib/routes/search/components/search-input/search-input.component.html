@@ -1,5 +1,5 @@
 <div role="form" class="flex items-center border search border-solid search-border">
-  <div [ngClass]="{'border-right': languageSearch?.length}" class="flex items-center">
+  <div [ngClass]="{ 'border-right': languageSearch?.length }" class="flex items-center">
     <button class="lang-btn margin-right-s" *ngIf="languageSearch?.length" mat-button [matMenuTriggerFor]="sortLang">
       <span class="uppercase">
         {{ searchLocale.split(',').length === 1 ? searchLocale : 'pref' || 'en' }}
@@ -10,14 +10,21 @@
   <div class="w-full search">
     <form (submit)="updateQuery(queryControl.value)">
       <mat-form-field appearance="none" class="autocomplete-form" color="primary" [floatLabel]="'never'">
-        <input type="search" class="ml-2" i18n-placeholder="search content" [placeholder]="placeHolder" i18-aria-label
-          aria-label="Query" matInput [formControl]="queryControl" [matAutocomplete]="auto" accesskey="F" />
-        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete"
-          (optionSelected)="updateQuery($event.option.value)">
-          <mat-option *ngIf="queryControl.value" [value]="queryControl.value">{{ queryControl.value }}
-          </mat-option>
+        <input
+          type="search"
+          class="ml-2"
+          i18n-placeholder="search content"
+          [placeholder]="placeHolder"
+          i18-aria-label
+          aria-label="Query"
+          matInput
+          [formControl]="queryControl"
+          [matAutocomplete]="auto"
+        />
+        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="updateQuery($event.option.value)">
+          <mat-option *ngIf="queryControl.value" [value]="queryControl.value">{{ queryControl.value }} </mat-option>
           <mat-option *ngFor="let result of autoCompleteResults" [value]="result._source.searchTerm">
-            {{result._source.searchTerm}}
+            {{ result._source.searchTerm }}
           </mat-option>
           <mat-option *ngFor="let option of filteredOptions$ | async" [value]="option">
             {{ option }}
@@ -26,7 +33,12 @@
       </mat-form-field>
     </form>
   </div>
-  <div (click)="updateQuery(queryControl.value)" class="flex items-center justify-center w-8 sm:w-16 cursor-pointer">
+  <div
+    (click)="updateQuery(queryControl.value)"
+    (keydown)="isActivationKey($event) && updateQuery(queryControl.value)"
+    [attr.tabindex]="0"
+    class="flex items-center justify-center w-8 sm:w-16 cursor-pointer"
+  >
     <mat-icon>search</mat-icon>
   </div>
 </div>
@@ -37,19 +49,27 @@
       <button mat-menu-item (click)="searchLanguage(lang)">
         <span class="flex items-center w-full">
           <span class="mr-2 flex items-center">
-            <img *ngIf="lang.split(',').length > 1" [ngStyle]="{ height: '17px' ,width :'17px'}"
-              src="/assets/common/flags/pref.png">
-            <img *ngIf="lang.split(',').length === 1" [ngStyle]="{
-            height: lang === 'all' ? '17px': '14px',
-             width: lang === 'all' ? '17px': '20px'
-          }" src="/assets/common/flags/{{lang}}.png">
+            <img
+              alt=""
+              *ngIf="lang.split(',').length > 1"
+              [ngStyle]="{ height: '17px', width: '17px' }"
+              src="/assets/common/flags/pref.png"
+            />
+            <img
+              alt=""
+              *ngIf="lang.split(',').length === 1"
+              [ngStyle]="{
+                height: lang === 'all' ? '17px' : '14px',
+                width: lang === 'all' ? '17px' : '20px',
+              }"
+              src="/assets/common/flags/{{ lang }}.png"
+            />
           </span>
           <span>{{ lang }}</span>
           <mat-icon class="ml-2" *ngIf="lang === searchLocale">check</mat-icon>
         </span>
       </button>
-      <mat-divider *ngIf="(preferredLanguages?.split(',').length > 1 ? i==1 : i==0) && languageSearch.includes('all')">
-      </mat-divider>
+      <mat-divider *ngIf="(preferredLanguages?.split(',').length > 1 ? i == 1 : i == 0) && languageSearch.includes('all')"> </mat-divider>
     </div>
   </ng-template>
 </mat-menu>

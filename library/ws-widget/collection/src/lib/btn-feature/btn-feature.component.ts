@@ -4,7 +4,7 @@ import { Event, NavigationEnd, Router } from '@angular/router'
 
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
 
-import { ConfigurationsService, EventService, NsPage } from '@ws-widget/utils'
+import { ConfigurationsService, EventService, NsPage, isActivationKey } from '@ws-widget/utils'
 
 import { Subscription } from 'rxjs'
 
@@ -15,7 +15,6 @@ import { MobileAppsService } from '../../../../../../src/app/services/mobile-app
 import { CustomTourService } from '../_common/tour-guide/tour-guide.service'
 
 import { BtnFeatureService } from './btn-feature.service'
-
 
 export const typeMap = {
   cardFull: 'card-full',
@@ -39,8 +38,10 @@ export const typeMap = {
   templateUrl: './btn-feature.component.html',
   styleUrls: ['./btn-feature.component.scss'],
 })
-export class BtnFeatureComponent extends WidgetBaseComponent
-  implements OnInit, OnDestroy, NsWidgetResolver.IWidgetData<NsPage.INavLink> {
+export class BtnFeatureComponent extends WidgetBaseComponent implements OnInit, OnDestroy, NsWidgetResolver.IWidgetData<NsPage.INavLink> {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() widgetData!: NsPage.INavLink
   @Input() showFixedLength = false
   @Input()
@@ -79,7 +80,7 @@ export class BtnFeatureComponent extends WidgetBaseComponent
             this.badgeCount = ''
           }
         })
-        .catch(_err => { })
+        .catch(_err => {})
     }
   }
 
@@ -88,11 +89,7 @@ export class BtnFeatureComponent extends WidgetBaseComponent
     if (this.configSvc.restrictedFeatures) {
       this.isPinFeatureAvailable = !this.configSvc.restrictedFeatures.has('pinFeatures')
     }
-    if (
-      !this.widgetData.actionBtn &&
-      this.widgetData.actionBtnId &&
-      this.configurationsSvc.appsConfig
-    ) {
+    if (!this.widgetData.actionBtn && this.widgetData.actionBtnId && this.configurationsSvc.appsConfig) {
       this.widgetData.actionBtn = this.configurationsSvc.appsConfig.features[this.widgetData.actionBtnId]
       if (this.widgetData.actionBtn && this.widgetData.actionBtn.badgeEndpoint) {
         this.navigationSubs = this.router.events.subscribe((e: Event) => {
@@ -104,9 +101,7 @@ export class BtnFeatureComponent extends WidgetBaseComponent
     }
 
     this.pinnedAppsChangeSubs = this.configurationsSvc.pinnedApps.subscribe(pinnedApps => {
-      this.isPinned = Boolean(
-        this.widgetData.actionBtn && pinnedApps.has(this.widgetData.actionBtn.id),
-      )
+      this.isPinned = Boolean(this.widgetData.actionBtn && pinnedApps.has(this.widgetData.actionBtn.id))
     })
     if (!this.id && this.widgetData.actionBtnId) {
       this.id = this.widgetData.actionBtnId

@@ -1,10 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  OnDestroy,
-  OnInit,
-
-} from '@angular/core'
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core'
 
 import { NSIQuality } from '../../../interface/content-quality'
 
@@ -24,7 +18,7 @@ import { MatDialog } from '@angular/material/dialog'
 
 import { CommentsViewComponent } from '../../../../../../modules/shared/components/comments-view/comments-view.component'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-reviewer-checklist-view',
@@ -32,18 +26,21 @@ import { CommentsViewComponent } from '../../../../../../modules/shared/componen
   styleUrls: ['./reviewer-checklist.component.scss'],
 })
 export class ReviewerChecklist implements OnInit, OnDestroy, AfterViewInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   links: any = ['First', 'second', 'third']
   qualityResponse!: NSIQuality.IQualityResponse
   currentContent!: string
   content!: any
   loading: boolean = false
-  constructor(private _qualityService: ContentQualityService, private router: Router,
+  constructor(
+    private _qualityService: ContentQualityService,
+    private router: Router,
     private editorService: EditorService,
     private loader: LoaderService,
     private authAccessService: AccessControlService,
     public dialog: MatDialog,
-
-
   ) {
     const url = this.router.url
     const id = url.split('/')
@@ -52,7 +49,7 @@ export class ReviewerChecklist implements OnInit, OnDestroy, AfterViewInit {
 
     this.editorService.readcontentV3(id[3]).subscribe((data: any) => {
       this.content = data
-      console.log("data", data)
+      console.log('data', data)
     })
     const reqObj = {
       resourceId: id[3],
@@ -67,20 +64,16 @@ export class ReviewerChecklist implements OnInit, OnDestroy, AfterViewInit {
         const rse = result.result.resources || []
         if (rse.length === 1) {
           this.qualityResponse = rse[0]
-          console.log("rse: ", rse[0])
+          console.log('rse: ', rse[0])
         }
       }
     })
   }
-  ngOnDestroy() {
-  }
+  ngOnDestroy() {}
 
-  ngAfterViewInit() {
-  }
+  ngAfterViewInit() {}
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
   get getQualityPercent() {
     const score = this.qualityResponse.finalWeightedScore || 0
     return score.toFixed(1)
@@ -101,7 +94,6 @@ export class ReviewerChecklist implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   openComments(question: any) {
-
     const dialogRef = this.dialog.open(CommentsViewComponent, {
       width: '450px',
       height: '250px',

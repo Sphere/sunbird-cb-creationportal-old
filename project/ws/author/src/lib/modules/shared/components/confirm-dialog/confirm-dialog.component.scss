@@ -22,8 +22,8 @@
   align-items: center;
   gap: 12px;
   padding: 16px 20px;
-  border-bottom: 1px solid #E2E8F0;
-  background: #FAFBFC;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fafbfc;
 }
 .cd-header-icon {
   width: 36px;
@@ -42,12 +42,16 @@
   }
 
   &.cd-header-icon--danger {
-    background: #FEF2F2;
-    mat-icon { color: #DC2626; }
+    background: #fef2f2;
+    mat-icon {
+      color: #dc2626;
+    }
   }
   &.cd-header-icon--info {
-    background: #EBF4FD;
-    mat-icon { color: #1C5D95; }
+    background: #ebf4fd;
+    mat-icon {
+      color: #1c5d95;
+    }
   }
 }
 .cd-title {
@@ -55,7 +59,7 @@
   // for the dialog accessible name) keeps this compact header-title style.
   font-size: 14px !important;
   font-weight: 600 !important;
-  color: #0F172A !important;
+  color: #0f172a !important;
   margin: 0 !important;
   padding: 0 !important;
   font-family: Roboto, sans-serif !important;
@@ -67,7 +71,7 @@
 }
 .cd-subtitle {
   font-size: 12px;
-  color: #64748B;
+  color: #64748b;
   margin: 2px 0 0;
   font-family: Roboto, sans-serif;
 }
@@ -75,16 +79,26 @@
   margin-left: auto !important;
   width: 32px !important;
   height: 32px !important;
-  color: #64748B !important;
+  color: #64748b !important;
   border-radius: 6px !important;
   flex-shrink: 0;
 
-  mat-icon { font-size: 20px; width: 20px; height: 20px; line-height: 20px; }
-  &:hover { background: #F1F5F9 !important; color: #0F172A !important; }
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+  &:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+  }
 }
 
 // ── Message body ──────────────────────────────────────────────────────────
-.cd-content { display: block; }
+.cd-content {
+  display: block;
+}
 .cd-message {
   padding: 20px;
   font-size: 14px;
@@ -101,8 +115,8 @@
   justify-content: flex-end !important;
   gap: 10px !important;
   padding: 12px 20px !important;
-  border-top: 1px solid #E2E8F0;
-  background: #FAFBFC;
+  border-top: 1px solid #e2e8f0;
+  background: #fafbfc;
 }
 .cd-btn-cancel {
   font-size: 13px !important;
@@ -111,10 +125,12 @@
   height: 36px !important;
   border-radius: 8px !important;
   color: #475569 !important;
-  border-color: #CBD5E1 !important;
+  border-color: #cbd5e1 !important;
   padding: 0 16px !important;
 
-  &:hover { background: #F1F5F9 !important; }
+  &:hover {
+    background: #f1f5f9 !important;
+  }
 }
 .cd-btn-danger {
   font-size: 13px !important;
@@ -122,11 +138,13 @@
   font-weight: 600 !important;
   height: 36px !important;
   border-radius: 8px !important;
-  background: #DC2626 !important;
-  color: #FFFFFF !important;
+  background: #dc2626 !important;
+  color: #ffffff !important;
   padding: 0 18px !important;
 
-  &:hover { background: #B91C1C !important; }
+  &:hover {
+    background: #b91c1c !important;
+  }
 }
 .cd-btn-confirm {
   font-size: 13px !important;
@@ -134,11 +152,13 @@
   font-weight: 600 !important;
   height: 36px !important;
   border-radius: 8px !important;
-  background: #1C5D95 !important;
-  color: #FFFFFF !important;
+  background: #1c5d95 !important;
+  color: #ffffff !important;
   padding: 0 18px !important;
 
-  &:hover { background: #154F81 !important; }
+  &:hover {
+    background: #154f81 !important;
+  }
 }
 
 // ── Assessment form (preserved styles) ───────────────────────────────────
@@ -156,17 +176,17 @@
   overflow-x: scroll;
 }
 .buttonColor {
-  border: 1px #1C5D95 solid !important;
+  border: 1px #1c5d95 solid !important;
   border-radius: 30px !important;
-  font-family: Roboto !important;
+  font-family: Roboto, sans-serif !important;
 }
 .yesButtonColor {
-  background-color: #1C5D95 !important;
+  background-color: #1c5d95 !important;
   color: white !important;
 }
 .noButtonColor {
   background-color: white !important;
-  color: #1C5D95 !important;
+  color: #1c5d95 !important;
 }
 
 ::ng-deep .theme-igot.day-mode .mat-form-field-appearance-outline .mat-form-field-infix,

@@ -1,6 +1,13 @@
-<viewer-overview *ngIf="viewState === 'initial'" [learningObjective]="learningObjective"
-  [complexityLevel]="complexityLevel" [duration]="duration" [timeLimit]="quizJson?.timeLimit"
-  [noOfQuestions]="quizJson?.questions?.length" (userSelection)="overViewed($event)"></viewer-overview>
+<viewer-overview
+  *ngIf="viewState === 'initial'"
+  [learningObjective]="learningObjective"
+  [complexityLevel]="complexityLevel"
+  [duration]="duration"
+  [timeLimit]="quizJson?.timeLimit"
+  [noOfQuestions]="quizJson?.questions?.length"
+  [isAssessment]="!!quizJson?.isAssessment"
+  (userSelection)="overViewed($event)"
+></viewer-overview>
 
 <div #quizContainer *ngIf="viewState !== 'initial'" class="quiz-container">
   <nav class="quiz-nav-bar">
@@ -8,8 +15,11 @@
       <button class="quiz-nav-btn" aria-label="menu toggle" i18n-aria-label (click)="sidenav.toggle()">
         <mat-icon>menu</mat-icon>
       </button>
-      <ws-widget-btn-fullscreen [widgetType]="'actionButton'" [widgetSubType]="'actionButtonFullscreen'"
-        [widgetData]="{ fsContainer: quizContainer }"></ws-widget-btn-fullscreen>
+      <ws-widget-btn-fullscreen
+        [widgetType]="'actionButton'"
+        [widgetSubType]="'actionButtonFullscreen'"
+        [widgetData]="{ fsContainer: quizContainer }"
+      ></ws-widget-btn-fullscreen>
     </div>
     <div class="quiz-nav-timer">
       <mat-icon class="timer-icon">alarm</mat-icon>
@@ -22,13 +32,18 @@
     <mat-sidenav [mode]="sidenavMode" class="sidenav" #sidenav [opened]="sidenavOpenDefault">
       <p class="sidenav-heading" i18n>Questions</p>
       <div class="question-grid">
-        <div class="q-cell" *ngFor="let question of quizJson?.questions; let i = index"
+        <div
+          class="q-cell"
+          *ngFor="let question of quizJson?.questions; let i = index"
           (click)="scroll(i + 1)"
+          (keydown)="isActivationKey($event) && scroll(i + 1)"
+          [attr.tabindex]="0"
           [ngClass]="{
             'q-cell--marked': isQuestionMarked(question?.questionId),
             'q-cell--attempted': !isQuestionMarked(question?.questionId) && isQuestionAttempted(question?.questionId),
-            'q-cell--default': !isQuestionMarked(question?.questionId) && !isQuestionAttempted(question?.questionId)
-          }">
+            'q-cell--default': !isQuestionMarked(question?.questionId) && !isQuestionAttempted(question?.questionId),
+          }"
+        >
           {{ i + 1 }}
         </div>
       </div>
@@ -37,7 +52,9 @@
     <mat-sidenav-content class="quiz-content">
       <div class="questions-wrap">
         <ng-container *ngIf="!(viewState === 'answer' && quizJson?.isAssessment)">
-          <viewer-question #questionsReference [id]="'question' + (i + 1)"
+          <viewer-question
+            #questionsReference
+            [id]="'question' + (i + 1)"
             *ngFor="let question of quizJson?.questions; let i = index"
             [markedQuestions]="markedQuestions"
             [artifactUrl]="artifactUrl"
@@ -45,8 +62,9 @@
             [total]="quizJson?.questions.length"
             [viewState]="viewState"
             [question]="question"
-            [itemSelectedList]="questionAnswerHash[(question?.questionId)]"
-            (itemSelected)="fillSelectedItems(question, $event)">
+            [itemSelectedList]="questionAnswerHash[question?.questionId]"
+            (itemSelected)="fillSelectedItems(question, $event)"
+          >
           </viewer-question>
           <span *ngIf="!quizJson">Add Question to view here</span>
         </ng-container>

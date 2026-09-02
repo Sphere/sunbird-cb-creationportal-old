@@ -4,20 +4,24 @@
       <mat-icon>chevron_left</mat-icon>
     </button>
     <div class="duration-block">
-      <img loading="lazy" src=".\cbp-assets\icons\clock.svg" alt="duration">
+      <img loading="lazy" src=".\cbp-assets\icons\clock.svg" alt="duration" />
       <span>{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
     </div>
   </div>
 
-  <span class="cne-block" *ngIf="content?.cneName && content?.cneName != ' '">
-    CNE hours: {{ content.cneName }}
-  </span>
+  <span class="cne-block" *ngIf="content?.cneName && content?.cneName != ' '"> CNE hours: {{ content.cneName }} </span>
 
   <div class="banner-title">{{ content?.name }}</div>
 
   <div class="banner-source" *ngIf="content?.creator">
     <span i18n>By</span>:
-    <span class="blue-link cursor-pointer" (click)="showOrgprofile(content?.sourceName)">
+    <span
+      class="blue-link cursor-pointer"
+      role="button"
+      [attr.tabindex]="0"
+      (click)="showOrgprofile(content?.sourceName)"
+      (keydown)="isActivationKey($event) && showOrgprofile(content?.sourceName)"
+    >
       {{ content?.sourceName }}
     </span>
   </div>
@@ -25,7 +29,7 @@
   <div class="rating-block">
     <span class="average-rating">N/A</span>
     <ng-container>
-      <img *ngFor="let star of stars; let i = index" [src]="getStarImage(i)" alt="Star">
+      <img *ngFor="let star of stars; let i = index" [src]="getStarImage(i)" alt="Star" />
     </ng-container>
     <span class="total-rating">( 5 )</span>
   </div>
@@ -35,44 +39,49 @@
       [mode]="'determinate'"
       [value]="optmisticPercentage"
       class="banner-progress"
-      [attr.aria-labelledby]="'m-c-'+ content?.identifier"
-      i18n-aria-label>
+      [attr.aria-labelledby]="'m-c-' + content?.identifier"
+      i18n-aria-label
+    >
     </mat-progress-bar>
     <span class="progress-value">{{ optmisticPercentage }}%</span>
   </div>
 
   <div class="action-icons-row">
     <div class="action-icon-item">
-      <button mat-icon-button class="action-icon-btn action-icon-btn--active" (click)="openDetails(content, tocConfig)" aria-label="Details">
-        <img loading="lazy" src=".\cbp-assets\icons\details.svg" alt="details">
+      <button
+        mat-icon-button
+        class="action-icon-btn action-icon-btn--active"
+        (click)="openDetails(content, tocConfig)"
+        aria-label="Details"
+      >
+        <img loading="lazy" src=".\cbp-assets\icons\details.svg" alt="details" />
       </button>
       <span class="action-icon-label action-icon-label--active" i18n>Details</span>
     </div>
 
     <div class="action-icon-item" *ngIf="content?.competencies_v1">
       <button mat-icon-button class="action-icon-btn" (click)="openCompetency(content)" aria-label="Competency">
-        <img loading="lazy" src=".\cbp-assets\icons\competency.svg" alt="competency">
+        <img loading="lazy" src=".\cbp-assets\icons\competency.svg" alt="competency" />
       </button>
       <span class="action-icon-label" i18n>Competency</span>
     </div>
 
     <div class="action-icon-item">
       <button mat-icon-button class="action-icon-btn" i18n-matTooltip matTooltip="Preview Certificate" aria-label="Certificate">
-        <img loading="lazy" src=".\cbp-assets\icons\Vector.png" alt="certificate" class="cert-icon">
+        <img loading="lazy" src=".\cbp-assets\icons\Vector.png" alt="certificate" class="cert-icon" />
       </button>
       <span class="action-icon-label" i18n>Certificate</span>
     </div>
 
     <div class="action-icon-item action-icon-item--share">
-      <ws-widget-btn-content-share [isGray]="true" [isTocBanner]="isTocBanner" [forPreview]="forPreview"
-        [widgetData]="content">
+      <ws-widget-btn-content-share [isGray]="true" [isTocBanner]="isTocBanner" [forPreview]="forPreview" [widgetData]="content">
       </ws-widget-btn-content-share>
       <span class="action-icon-label" i18n>Share</span>
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="myModal" [ngStyle]="{'display': displayStyle, 'opacity': '1', 'top': 'auto'}">
+<div class="modal fade" id="myModal" [ngStyle]="{ display: displayStyle, opacity: '1', top: 'auto' }">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
@@ -82,9 +91,7 @@
         <h3>{{ certificateMsg }}</h3>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="close-btn" data-dismiss="modal" (click)="closePopup()" i18n>
-          Close
-        </button>
+        <button type="button" class="btn btn-secondary" id="close-btn" data-dismiss="modal" (click)="closePopup()" i18n>Close</button>
       </div>
     </div>
   </div>

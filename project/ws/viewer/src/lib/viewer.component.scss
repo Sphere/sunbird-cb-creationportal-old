@@ -17,7 +17,7 @@
   min-width: 1px;
 }
 .mode-block {
-  color: #1C5D95;
+  color: #1c5d95;
   font-family: Roboto, sans-serif;
   font-size: 14px;
   font-weight: 500;
@@ -25,21 +25,21 @@
 }
 .review-block {
   display: flex;
-  background: #F7FBFE;
-  border-top: 3px solid #1C5D95;
-  border-bottom: 1px solid #DDE8F0;
+  background: #f7fbfe;
+  border-top: 3px solid #1c5d95;
+  border-bottom: 1px solid #dde8f0;
   justify-content: space-between;
   align-items: center;
   padding: 0 24px;
   height: 48px;
 }
-.review-checkBox{
-  color: #1C5D95;
-font-family: Roboto;
-font-size: 16px;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
+.review-checkBox {
+  color: #1c5d95;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 }
 .viewer-sidenav-container {
   height: calc(100vh - 56px);
@@ -74,5 +74,5 @@ line-height: normal;
 }
 
 .sidenavContent::-webkit-scrollbar {
-  width: 6px !important
+  width: 6px !important;
 }

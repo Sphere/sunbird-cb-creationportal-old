@@ -5,6 +5,19 @@ export namespace NsContent {
 
   export interface IContent {
     platform?: any
+    /**
+     * True for an assessment, false for a quiz. The server returns this on quiz
+     * content -- the authoring editor already reads it -- but it was missing from
+     * this interface, so the TOC had no way to tell the two apart and fell back to
+     * displayContentType, which reports both as ASSESSMENT.
+     */
+    isAssessment?: boolean
+    /**
+     * Course-level setting, read off the hierarchy root. The TOC and the player
+     * show a lock against each resource when it is on; it is an indicator only
+     * and never gates the click.
+     */
+    gatingEnabled?: boolean
     addedOn: string
     appIcon: string
     artifactUrl: string
@@ -92,16 +105,7 @@ export namespace NsContent {
     sourceIconUrl?: string
     sourceUrl?: string
     ssoEnabled?: boolean
-    status:
-    | 'Draft'
-    | 'InReview'
-    | 'QualityReview'
-    | 'Reviewed'
-    | 'Processing'
-    | 'Live'
-    | 'Deleted'
-    | 'MarkedForDeletion'
-    | 'Expired'
+    status: 'Draft' | 'InReview' | 'QualityReview' | 'Reviewed' | 'Processing' | 'Live' | 'Deleted' | 'MarkedForDeletion' | 'Expired'
     subTitle?: string
     subTitles?: ISubtitle[]
     studyMaterials?: IRelatedContentMeta[]
@@ -309,7 +313,6 @@ export namespace NsContent {
     PLAYLIST = 'application/playlist',
     TEXT_WEB = 'text/x-url',
     UNKNOWN = 'application/unknown',
-
   }
   export enum EDisplayContentTypes {
     ASSESSMENT = 'ASSESSMENT',

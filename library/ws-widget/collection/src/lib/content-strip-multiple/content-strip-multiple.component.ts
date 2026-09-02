@@ -16,6 +16,8 @@ import {
   EventService,
   ConfigurationsService,
   UtilityService,
+  isActivationKey,
+  nextWidgetId,
 } from '@ws-widget/utils'
 
 import { Subscription } from 'rxjs'
@@ -23,7 +25,6 @@ import { Subscription } from 'rxjs'
 import { filter } from 'rxjs/operators'
 
 import { SearchServService } from '@ws/app/src/lib/routes/search/services/search-serv.service'
-
 
 interface IStripUnitContentData {
   key: string
@@ -51,14 +52,16 @@ interface IStripUnitContentData {
   templateUrl: './content-strip-multiple.component.html',
   styleUrls: ['./content-strip-multiple.component.scss'],
 })
-export class ContentStripMultipleComponent extends WidgetBaseComponent
-  implements
-  OnInit,
-  OnDestroy,
-  NsWidgetResolver.IWidgetData<NsContentStripMultiple.IContentStripMultiple> {
+export class ContentStripMultipleComponent
+  extends WidgetBaseComponent
+  implements OnInit, OnDestroy, NsWidgetResolver.IWidgetData<NsContentStripMultiple.IContentStripMultiple>
+{
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() widgetData!: NsContentStripMultiple.IContentStripMultiple
   @HostBinding('id')
-  public id = `ws-strip-miltiple_${Math.random()}`
+  public id = nextWidgetId('ws-strip-miltiple_')
   stripsResultDataMap: { [key: string]: IStripUnitContentData } = {}
   stripsKeyOrder: string[] = []
   showAccordionData = true
@@ -122,14 +125,12 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
       }))
       .filter(({ key, type, from }) => key && type && from)
     const eventTypeSet = new Set(keyAndEvent.map(e => e.type))
-    this.changeEventSubscription = this.eventSvc.events$
-      .pipe(filter(event => eventTypeSet.has(event.eventType)))
-      .subscribe(event => {
-        keyAndEvent
-          .filter(e => e.type === event.eventType && e.from === event.from)
-          .map(e => e.key)
-          .forEach(k => this.fetchStripFromKey(k, false))
-      })
+    this.changeEventSubscription = this.eventSvc.events$.pipe(filter(event => eventTypeSet.has(event.eventType))).subscribe(event => {
+      keyAndEvent
+        .filter(e => e.type === event.eventType && e.from === event.from)
+        .map(e => e.key)
+        .forEach(k => this.fetchStripFromKey(k, false))
+    })
   }
 
   private fetchStripFromKey(key: string, calculateParentStatus = true) {
@@ -139,10 +140,7 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
     }
   }
 
-  private fetchStripFromRequestData(
-    strip: NsContentStripMultiple.IContentStripUnit,
-    calculateParentStatus = true,
-  ) {
+  private fetchStripFromRequestData(strip: NsContentStripMultiple.IContentStripUnit, calculateParentStatus = true) {
     // setting initial values
     this.processStrip(strip, [], 'fetching', false, null)
     this.fetchFromApi(strip, calculateParentStatus)
@@ -155,13 +153,7 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
     if (strip.request && strip.request.api && Object.keys(strip.request.api).length) {
       this.contentStripSvc.getContentStripResponseApi(strip.request.api).subscribe(
         results => {
-          this.processStrip(
-            strip,
-            this.transformContentsToWidgets(results.contents, strip),
-            'done',
-            calculateParentStatus,
-            null,
-          )
+          this.processStrip(strip, this.transformContentsToWidgets(results.contents, strip), 'done', calculateParentStatus, null)
         },
         () => {
           this.processStrip(strip, [], 'error', calculateParentStatus, null)
@@ -178,27 +170,17 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
       }
       this.contentSvc.search(strip.request.search).subscribe(
         results => {
-          const showViewMore = Boolean(
-            results.result.length > 5 && strip.stripConfig && strip.stripConfig.postCardForSearch,
-          )
+          const showViewMore = Boolean(results.result.length > 5 && strip.stripConfig && strip.stripConfig.postCardForSearch)
           const viewMoreUrl = showViewMore
             ? {
-              path: '/app/search/learning',
-              queryParams: {
-                q: strip.request && strip.request.search && strip.request.search.query,
-                f: JSON.stringify(
-                  strip.request && strip.request.search && strip.request.search.filters,
-                ),
-              },
-            }
+                path: '/app/search/learning',
+                queryParams: {
+                  q: strip.request && strip.request.search && strip.request.search.query,
+                  f: JSON.stringify(strip.request && strip.request.search && strip.request.search.filters),
+                },
+              }
             : null
-          this.processStrip(
-            strip,
-            this.transformContentsToWidgets(results.result, strip),
-            'done',
-            calculateParentStatus,
-            viewMoreUrl,
-          )
+          this.processStrip(strip, this.transformContentsToWidgets(results.result, strip), 'done', calculateParentStatus, viewMoreUrl)
         },
         () => {
           this.processStrip(strip, [], 'error', calculateParentStatus, null)
@@ -206,31 +188,16 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
       )
     }
   }
-  fetchFromSearchRegionRecommendation(
-    strip: NsContentStripMultiple.IContentStripUnit,
-    calculateParentStatus = true,
-  ) {
-    if (
-      strip.request &&
-      strip.request.searchRegionRecommendation &&
-      Object.keys(strip.request.searchRegionRecommendation).length
-    ) {
-      this.contentSvc
-        .searchRegionRecommendation(strip.request.searchRegionRecommendation)
-        .subscribe(
-          results => {
-            this.processStrip(
-              strip,
-              this.transformContentsToWidgets(results.contents, strip),
-              'done',
-              calculateParentStatus,
-              null,
-            )
-          },
-          () => {
-            this.processStrip(strip, [], 'error', calculateParentStatus, null)
-          },
-        )
+  fetchFromSearchRegionRecommendation(strip: NsContentStripMultiple.IContentStripUnit, calculateParentStatus = true) {
+    if (strip.request && strip.request.searchRegionRecommendation && Object.keys(strip.request.searchRegionRecommendation).length) {
+      this.contentSvc.searchRegionRecommendation(strip.request.searchRegionRecommendation).subscribe(
+        results => {
+          this.processStrip(strip, this.transformContentsToWidgets(results.contents, strip), 'done', calculateParentStatus, null)
+        },
+        () => {
+          this.processStrip(strip, [], 'error', calculateParentStatus, null)
+        },
+      )
     }
   }
   fetchFromSearchV6(strip: NsContentStripMultiple.IContentStripUnit, calculateParentStatus = true) {
@@ -244,32 +211,20 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
       }
       this.contentSvc.searchV6(strip.request.searchV6).subscribe(
         results => {
-          const showViewMore = Boolean(
-            results.result.length > 5 && strip.stripConfig && strip.stripConfig.postCardForSearch,
-          )
+          const showViewMore = Boolean(results.result.length > 5 && strip.stripConfig && strip.stripConfig.postCardForSearch)
           const viewMoreUrl = showViewMore
             ? {
-              path: '/app/search/learning',
-              queryParams: {
-                q: strip.request && strip.request.searchV6 && strip.request.searchV6.query,
-                f:
-                  strip.request && strip.request.searchV6 && strip.request.searchV6.filters
-                    ? JSON.stringify(
-                      this.searchServSvc.transformSearchV6Filters(
-                        strip.request.searchV6.filters,
-                      ),
-                    )
-                    : {},
-              },
-            }
+                path: '/app/search/learning',
+                queryParams: {
+                  q: strip.request && strip.request.searchV6 && strip.request.searchV6.query,
+                  f:
+                    strip.request && strip.request.searchV6 && strip.request.searchV6.filters
+                      ? JSON.stringify(this.searchServSvc.transformSearchV6Filters(strip.request.searchV6.filters))
+                      : {},
+                },
+              }
             : null
-          this.processStrip(
-            strip,
-            this.transformContentsToWidgets(results.result, strip),
-            'done',
-            calculateParentStatus,
-            viewMoreUrl,
-          )
+          this.processStrip(strip, this.transformContentsToWidgets(results.result, strip), 'done', calculateParentStatus, viewMoreUrl)
         },
         () => {
           this.processStrip(strip, [], 'error', calculateParentStatus, null)
@@ -281,13 +236,7 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
     if (strip.request && strip.request.ids && Object.keys(strip.request.ids).length) {
       this.contentSvc.fetchMultipleContent(strip.request.ids).subscribe(
         results => {
-          this.processStrip(
-            strip,
-            this.transformContentsToWidgets(results, strip),
-            'done',
-            calculateParentStatus,
-            null,
-          )
+          this.processStrip(strip, this.transformContentsToWidgets(results, strip), 'done', calculateParentStatus, null)
         },
         () => {
           this.processStrip(strip, [], 'error', calculateParentStatus, null)
@@ -296,10 +245,7 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
     }
   }
 
-  private transformContentsToWidgets(
-    contents: NsContent.IContent[],
-    strip: NsContentStripMultiple.IContentStripUnit,
-  ) {
+  private transformContentsToWidgets(contents: NsContent.IContent[], strip: NsContentStripMultiple.IContentStripUnit) {
     return (contents || []).map((content, idx) => ({
       widgetType: 'card',
       widgetSubType: 'cardContent',
@@ -358,16 +304,16 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
       widgets:
         fetchStatus === 'done'
           ? [
-            ...(strip.preWidgets || []).map(w => ({
-              ...w,
-              widgetHostClass: `mb-2 ${w.widgetHostClass}`,
-            })),
-            ...results,
-            ...(strip.postWidgets || []).map(w => ({
-              ...w,
-              widgetHostClass: `mb-2 ${w.widgetHostClass}`,
-            })),
-          ]
+              ...(strip.preWidgets || []).map(w => ({
+                ...w,
+                widgetHostClass: `mb-2 ${w.widgetHostClass}`,
+              })),
+              ...results,
+              ...(strip.postWidgets || []).map(w => ({
+                ...w,
+                widgetHostClass: `mb-2 ${w.widgetHostClass}`,
+              })),
+            ]
           : [],
       showOnNoData: Boolean(
         strip.noDataWidget &&
@@ -382,11 +328,7 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
       ...this.stripsResultDataMap,
       [strip.key]: stripData,
     }
-    if (
-      calculateParentStatus &&
-      (fetchStatus === 'done' || fetchStatus === 'error') &&
-      stripData.widgets
-    ) {
+    if (calculateParentStatus && (fetchStatus === 'done' || fetchStatus === 'error') && stripData.widgets) {
       this.checkParentStatus(fetchStatus, stripData.widgets.length)
     }
     if (calculateParentStatus && !(results && results.length > 0)) {
@@ -409,8 +351,7 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
       return
     }
     this.showParentLoader = settledCount !== totalCount
-    this.showParentNoData =
-      this.noDataCount > 0 && this.noDataCount + this.errorDataCount === totalCount
+    this.showParentNoData = this.noDataCount > 0 && this.noDataCount + this.errorDataCount === totalCount
     this.showParentError = this.errorDataCount === totalCount
   }
 
@@ -435,8 +376,7 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
       strip.request &&
       ((strip.request.api && Object.keys(strip.request.api).length) ||
         (strip.request.search && Object.keys(strip.request.search).length) ||
-        (strip.request.searchRegionRecommendation &&
-          Object.keys(strip.request.searchRegionRecommendation).length) ||
+        (strip.request.searchRegionRecommendation && Object.keys(strip.request.searchRegionRecommendation).length) ||
         (strip.request.searchV6 && Object.keys(strip.request.searchV6).length) ||
         (strip.request.ids && Object.keys(strip.request.ids).length))
     ) {
@@ -447,8 +387,7 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
 
   processContentLikes(results: NsWidgetResolver.IRenderConfigWithAnyData[]): Promise<any> {
     const contentIds = {
-      content_id:
-        results.map(result => result.widgetData && result.widgetData.content.identifier) || [],
+      content_id: results.map(result => result.widgetData && result.widgetData.content.identifier) || [],
     }
     return this.contentSvc
       .fetchContentLikes(contentIds)
@@ -458,7 +397,7 @@ export class ContentStripMultipleComponent extends WidgetBaseComponent
           result.widgetData.likes = likes[result.widgetData.content.identifier] || 0
         })
       })
-      .catch(_err => { })
+      .catch(_err => {})
       .finally(() => Promise.resolve())
   }
 }

@@ -1,0 +1,53 @@
+name: Build & Sonar Analysis
+
+# SonarQube Community Edition has no PR decoration / branch-analysis plugin,
+# so a PR is analyzed as a regular scan (no inline PR comments on
+# sonar.aastrika.org) — this still gives every PR into these branches a fresh
+# analysis run, and push keeps the branch's own dashboard current post-merge.
+on:
+  push:
+    branches:
+      - main
+      - master
+      - production
+  pull_request:
+    branches:
+      - main
+      - master
+      - production
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonarqube:
+    name: SonarQube
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build
+        run: npm run build
+
+      - name: Test with coverage
+        continue-on-error: true
+        run: npm test -- --coverage --ci
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

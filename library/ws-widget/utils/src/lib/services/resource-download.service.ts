@@ -5,6 +5,8 @@ import * as XLSX from 'xlsx'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
 
+import { stripHtmlTags } from '../helpers/functions/stripHtmlTags'
+
 export interface IDownloadableResource {
   name?: string
   identifier?: string
@@ -72,9 +74,7 @@ export class ResourceDownloadService {
 
   // ── internals ─────────────────────────────────────────────────────────────
 
-  private async buildResourceFile(
-    resource: IDownloadableResource,
-  ): Promise<{ blob: Blob; fileName: string }> {
+  private async buildResourceFile(resource: IDownloadableResource): Promise<{ blob: Blob; fileName: string }> {
     const baseName = this.safeName(resource.name) || resource.identifier || 'resource'
     const url = resource.artifactUrl || resource.downloadUrl || ''
 
@@ -89,17 +89,13 @@ export class ResourceDownloadService {
   }
 
   private isQuiz(resource: IDownloadableResource): boolean {
-    return (
-      resource.mimeType === 'application/json' ||
-      (resource.artifactUrl || '').split('?')[0].toLowerCase().endsWith('.json')
-    )
+    return resource.mimeType === 'application/json' || (resource.artifactUrl || '').split('?')[0].toLowerCase().endsWith('.json')
   }
 
   /** Fetch the quiz.json and build an Excel matching the bulk-upload template. */
   private async quizToExcelBlob(url: string): Promise<Blob> {
     const json: any = await firstValueFrom(this.http.get(url))
-    const questions: any[] =
-      json?.questions || json?.data?.questions || json?.contents?.[0]?.data?.questions || []
+    const questions: any[] = json?.questions || json?.data?.questions || json?.contents?.[0]?.data?.questions || []
 
     const rows = questions.map((q: any) => {
       const options: any[] = q?.options || []
@@ -117,8 +113,18 @@ export class ResourceDownloadService {
     // Always emit the header row even for an empty/unparseable quiz.
     const sheetData = rows.length
       ? rows
-      : [{ Question: '', 'Option 1': '', 'Option 2': '', 'Option 3': '',
-           'Option 4': '', 'Option 5': '', 'Option 6': '', 'Correct Answer': '' }]
+      : [
+          {
+            Question: '',
+            'Option 1': '',
+            'Option 2': '',
+            'Option 3': '',
+            'Option 4': '',
+            'Option 5': '',
+            'Option 6': '',
+            'Correct Answer': '',
+          },
+        ]
 
     const worksheet = XLSX.utils.json_to_sheet(sheetData)
     const workbook = XLSX.utils.book_new()
@@ -133,7 +139,7 @@ export class ResourceDownloadService {
   private collectResources(course: IDownloadableCourse): IDownloadableResource[] {
     const out: IDownloadableResource[] = []
     const walk = (nodes: IDownloadableResource[] | undefined) => {
-      (nodes || []).forEach(node => {
+      ;(nodes || []).forEach(node => {
         if ((node.artifactUrl || node.downloadUrl) && node.contentType !== 'CourseUnit') {
           out.push(node)
         }
@@ -193,6 +199,6 @@ export class ResourceDownloadService {
   }
 
   private stripHtml(value: string | undefined): string {
-    return (value || '').toString().replace(/<[^>]*>/g, '').trim()
+    return stripHtmlTags(value).trim()
   }
 }

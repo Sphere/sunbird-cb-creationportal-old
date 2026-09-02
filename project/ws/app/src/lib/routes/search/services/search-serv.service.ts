@@ -15,8 +15,15 @@ import { Observable, of } from 'rxjs'
 
 import { SearchApiService } from '../apis/search-api.service'
 
-import { IFilterUnitItem, IFilterUnitResponse, ISearchAutoComplete, ISearchQuery, ISearchRequest, ISearchSocialSearchPartialRequest, ISocialSearchRequest } from '../models/search.model'
-
+import {
+  IFilterUnitItem,
+  IFilterUnitResponse,
+  ISearchAutoComplete,
+  ISearchQuery,
+  ISearchRequest,
+  ISearchSocialSearchPartialRequest,
+  ISocialSearchRequest,
+} from '../models/search.model'
 
 const API_END_POINTS = {
   translateFiltersBase: '/apis/protected/v8/translate/filterdata',
@@ -38,7 +45,7 @@ export class SearchServService {
     private searchApi: SearchApiService,
     private configSrv: ConfigurationsService,
     private http: HttpClient,
-  ) { }
+  ) {}
 
   get defaultFiltersTranslated() {
     return { en: {}, all: {} }
@@ -55,8 +62,7 @@ export class SearchServService {
 
   async getApplyPhraseSearch(): Promise<boolean> {
     const config = await this.getSearchConfig()
-    if (config.search.tabs[0].phraseSearch ||
-      config.search.tabs[0].phraseSearch === undefined) {
+    if (config.search.tabs[0].phraseSearch || config.search.tabs[0].phraseSearch === undefined) {
       return true
     }
     return false
@@ -71,7 +77,7 @@ export class SearchServService {
   }
 
   getLearning(request: ISearchRequest): Observable<NSSearch.ISearchV6ApiResult> {
-    request.locale = (request.locale && request.locale.length && request.locale[0] !== 'all') ? request.locale : []
+    request.locale = request.locale && request.locale.length && request.locale[0] !== 'all' ? request.locale : []
     return this.searchV6Wrapper(request)
   }
 
@@ -92,12 +98,14 @@ export class SearchServService {
       visibleFilters: {},
       includeSourceFields: ['creatorLogo'],
       isStandAlone: request.hasOwnProperty('isStandAlone') ? request.isStandAlone : undefined,
-      sort: request.hasOwnProperty('sort') ? request.sort && request.sort.length ? request.sort : undefined : undefined,
+      sort: request.hasOwnProperty('sort') ? (request.sort && request.sort.length ? request.sort : undefined) : undefined,
     }
-    this.getSearchConfig().then(config => {
-      v6Request.visibleFilters = config.search.visibleFilters
-      v6Request.excludeSourceFields = config.search.excludeSourceFields
-    }).catch(_err => { })
+    this.getSearchConfig()
+      .then(config => {
+        v6Request.visibleFilters = config.search.visibleFilters
+        v6Request.excludeSourceFields = config.search.excludeSourceFields
+      })
+      .catch(_err => {})
     return this.searchApi.getSearchV6Results(v6Request)
   }
   fetchSocialSearchUsers(request: ISearchSocialSearchPartialRequest) {
@@ -129,10 +137,7 @@ export class SearchServService {
           const filterNameSubParts = filterName.split('/')
           let filterNameSubPartConcatStr = ''
           for (const filterNameSubPartStr of filterNameSubParts) {
-            filterNameSubPartConcatStr =
-              filterNameSubPartConcatStr +
-              (filterNameSubPartConcatStr.length ? '/' : '') +
-              filterNameSubPartStr
+            filterNameSubPartConcatStr = filterNameSubPartConcatStr + (filterNameSubPartConcatStr.length ? '/' : '') + filterNameSubPartStr
             valuesForSet.push(filterNameSubPartConcatStr)
           }
         })
@@ -148,16 +153,15 @@ export class SearchServService {
 
   transformSearchV6Filters(v6filters: NSSearch.ISearchV6Filters[]) {
     const filters: any = {}
-    v6filters.forEach((f => {
+    v6filters.forEach(f => {
       if (f.andFilters) {
         f.andFilters.forEach(andFilter => {
           Object.keys(andFilter).forEach(key => {
             filters[key] = andFilter[key]
           })
-
         })
       }
-    }))
+    })
     return filters
   }
 
@@ -167,7 +171,6 @@ export class SearchServService {
     selectedFilters: { [key: string]: string[] },
     showContentType?: boolean,
   ) {
-
     let concepts: IFilterUnitItem[] = []
     const filtersResponse: IFilterUnitResponse[] = filters
       .filter(unitFilter => {
@@ -186,25 +189,24 @@ export class SearchServService {
       .map(
         (unitFilter: IFilterUnitResponse): IFilterUnitResponse => ({
           ...unitFilter,
-          checked:
-            selectedFilters &&
-            Array.isArray(selectedFilters[unitFilter.type]) &&
-            Boolean(selectedFilters[unitFilter.type].length),
+          checked: selectedFilters && Array.isArray(selectedFilters[unitFilter.type]) && Boolean(selectedFilters[unitFilter.type].length),
           content: unitFilter.content.map(
             (unitFilterContent: IFilterUnitItem): IFilterUnitItem => ({
               ...unitFilterContent,
-              checked: selectedFilters &&
+              checked:
+                selectedFilters &&
                 Array.isArray(selectedFilters[unitFilter.type]) &&
-                Boolean(selectedFilters[unitFilter.type].length) && selectedFilterSet.has(unitFilterContent.type || ''),
+                Boolean(selectedFilters[unitFilter.type].length) &&
+                selectedFilterSet.has(unitFilterContent.type || ''),
               children: !Array.isArray(unitFilterContent.children)
                 ? []
                 : unitFilterContent.children.map(
-                  (unitFilterSecondLevel: IFilterUnitItem): IFilterUnitItem => ({
-                    ...unitFilterSecondLevel,
-                    children: [],
-                    checked: selectedFilterSet.has(unitFilterSecondLevel.type || ''),
-                  }),
-                ),
+                    (unitFilterSecondLevel: IFilterUnitItem): IFilterUnitItem => ({
+                      ...unitFilterSecondLevel,
+                      children: [],
+                      checked: selectedFilterSet.has(unitFilterSecondLevel.type || ''),
+                    }),
+                  ),
             }),
           ),
         }),
@@ -315,7 +317,7 @@ export class SearchServService {
         if (key) {
           let str = ''
           const count = filters[key].length
-          filters[key].map((cur: string, i: number) => {
+          filters[key].forEach((cur: string, i: number) => {
             if (i !== count - 1) {
               str += `"${cur}",`
             } else {
@@ -436,6 +438,5 @@ export class SearchServService {
       return of(filtersTranslation[lang]).toPromise()
     }
     return of(filtersTranslation['en'] || {}).toPromise()
-
   }
 }

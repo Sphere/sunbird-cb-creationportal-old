@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core'
 
-import { ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService, isActivationKey } from '@ws-widget/utils'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatDialog } from '@angular/material/dialog'
@@ -10,7 +10,6 @@ import { WsDiscussionForumService } from '../../ws-discussion-forum.services'
 
 import { NsDiscussionForum } from '../../ws-discussion-forum.model'
 
-
 @Component({
   standalone: false,
   selector: 'ws-widget-btn-social-vote',
@@ -18,14 +17,15 @@ import { NsDiscussionForum } from '../../ws-discussion-forum.model'
   styleUrls: ['./btn-social-vote.component.scss'],
 })
 export class BtnSocialVoteComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() voteType: 'downVote' | 'upVote' | 'none' = 'none'
   @Input() iconType: 'thumbs' | 'triangle' = 'thumbs'
   @Input() postId = ''
   @Input() postCreatorId = ''
   @Input() activity: NsDiscussionForum.IPostActivity | null = null
-  @ViewChild('invalidUser', { static: true }) invalidUser!: ElementRef<
-    any
-  >
+  @ViewChild('invalidUser', { static: true }) invalidUser!: ElementRef<any>
 
   userId = ''
   isUpdating = false
@@ -40,7 +40,7 @@ export class BtnSocialVoteComponent implements OnInit {
     }
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   upVote(invalidUserMsg: string) {
     if (this.postCreatorId === this.userId) {

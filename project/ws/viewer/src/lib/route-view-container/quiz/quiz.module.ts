@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core'
 
 import { CommonModule } from '@angular/common'
 
-
 import { MatCardModule } from '@angular/material/card'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatButtonModule } from '@angular/material/button'
@@ -16,35 +15,23 @@ import {
   BtnContentLikeModule,
   // BtnContentShareModule,
   // BtnGoalsModule,
-  BtnPlaylistModule,
   DisplayContentTypeModule,
   UserImageModule,
-  UserContentRatingModule,
-  BtnContentFeedbackV2Module,
   BtnPageBackModule,
   // PlayerBriefModule,
 } from '@ws-widget/collection'
 
-
-import {
-  PipeDurationTransformModule,
-  PipeLimitToModule,
-  PipePartialContentModule,
-} from '@ws-widget/utils'
-
+import { PipeDurationTransformModule, PipeLimitToModule, PipePartialContentModule } from '@ws-widget/utils'
 
 import { WidgetResolverModule } from '@ws-widget/resolver'
-
 
 import { QuizComponent } from './quiz.component'
 
 import { QuizRoutingModule } from './quiz-routing.module'
 
-
 import { QuizModule as QuizPluginModule } from '../../plugins/quiz/quiz.module'
 
 import { SharedModule } from '../../../../../author/src/lib/modules/shared/shared.module'
-
 
 @NgModule({
   declarations: [QuizComponent],
@@ -64,21 +51,16 @@ import { SharedModule } from '../../../../../author/src/lib/modules/shared/share
     BtnContentLikeModule,
     // BtnContentShareModule,
     // BtnGoalsModule,
-    BtnPlaylistModule,
     DisplayContentTypeModule,
     UserImageModule,
     PipeDurationTransformModule,
     PipeLimitToModule,
     PipePartialContentModule,
     WidgetResolverModule,
-    UserContentRatingModule,
-    BtnContentFeedbackV2Module,
     BtnPageBackModule,
     // PlayerBriefModule,
-    SharedModule
+    SharedModule,
   ],
-  exports: [
-    QuizComponent,
-  ],
+  exports: [QuizComponent],
 })
-export class QuizModule { }
+export class QuizModule {}

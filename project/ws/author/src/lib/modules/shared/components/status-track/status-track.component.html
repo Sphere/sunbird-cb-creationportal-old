@@ -13,26 +13,40 @@
 
   <div class="st-body">
     <div class="progress" *ngIf="workFlow.length">
-      <div class="progress-step" [class.active]="state.isActive" [class.complete]="state.isCompleted"
-        *ngFor="let state of workFlow; let i = index">
+      <div
+        class="progress-step"
+        [class.active]="state.isActive"
+        [class.complete]="state.isCompleted"
+        *ngFor="let state of workFlow; let i = index"
+      >
         <ws-auth-status-display [needStyle]="false" [status]="state.processName"></ws-auth-status-display>
         <div class="info" *ngIf="state.isCompleted && state.name">
           - {{ state.name }} <br />
           on {{ state.date | date }}
         </div>
         <div class="info" *ngIf="state.isActive && state.owner">Pending with {{ state.owner }}</div>
-        <div class="info" *ngIf="!state.isActive && !state.isCompleted && state.owner">
-          Assigned to {{ state.owner }}
-        </div>
+        <div class="info" *ngIf="!state.isActive && !state.isCompleted && state.owner">Assigned to {{ state.owner }}</div>
       </div>
     </div>
-    <div *ngIf="isClient1" (click)="showModal = true" class="st-full-flow">
+    <div
+      *ngIf="isClient1"
+      (click)="showModal = true"
+      (keydown)="isActivationKey($event) && (showModal = true)"
+      [attr.tabindex]="0"
+      class="st-full-flow"
+    >
       <span class="cursor-pointer" i18n>Complete Flow</span>
     </div>
   </div>
 </div>
 
 <div class="custom-modal" [class.showModal]="showModal">
-  <span (click)="showModal = false" class="modal-close cursor-pointer">&times;</span>
-  <img src="/assets/images/authoring/client1.png" class="modal-image" />
+  <span
+    (click)="showModal = false"
+    (keydown)="isActivationKey($event) && (showModal = false)"
+    [attr.tabindex]="0"
+    class="modal-close cursor-pointer"
+    >&times;</span
+  >
+  <img alt="" src="/assets/images/authoring/client1.png" class="modal-image" />
 </div>
