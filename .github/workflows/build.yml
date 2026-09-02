@@ -28,8 +28,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Pinned because this project's Jest suite is validated on Node 20, which also
-      # matches the Dockerfile runtime. Without this the runner's default is used.
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -40,23 +38,16 @@ jobs:
       - name: Build
         run: npm run build
 
-      # Jest, not Karma: this project migrated off Karma, so the template's
-      # `--browsers=ChromeHeadless` would fail and produce no coverage. --coverage
-      # writes coverage/lcov.info, which sonar-project.properties reads.
       - name: Test with coverage
         continue-on-error: true
         run: npm test -- --coverage --ci
-
-      # Our self-hosted SonarQube server 401s the scanner CLI's own JRE
-      # auto-provisioning request (see sonar-project.properties), so that's
-      # disabled and the scanner runs against this JDK instead.
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
 
       - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@v3
+        uses: SonarSource/sonarqube-scan-action@v4
         env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
