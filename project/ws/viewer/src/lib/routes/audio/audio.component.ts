@@ -8,19 +8,13 @@ import { ActivatedRoute } from '@angular/router'
 
 import { AccessControlService } from '@ws/author'
 
-import {
-  NsContent,
-  IWidgetsPlayerMediaData,
-  NsDiscussionForum,
-  WidgetContentService,
-} from '@ws-widget/collection'
+import { NsContent, IWidgetsPlayerMediaData, NsDiscussionForum, WidgetContentService } from '@ws-widget/collection'
 
 import { ViewerUtilService } from '../../viewer-util.service'
 
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
 // import { environment } from '../../../../../../../src/environments/environment'
-
 
 @Component({
   standalone: false,
@@ -37,32 +31,22 @@ export class AudioComponent implements OnInit, OnDestroy {
   isFetchingDataComplete = false
   forPreview = window.location.href.includes('/author/')
   audioData: NsContent.IContent | null = null
-  widgetResolverAudioData: NsWidgetResolver.IRenderConfigWithTypedData<
-    IWidgetsPlayerMediaData
-  > | null = null
-  discussionForumWidget: NsWidgetResolver.IRenderConfigWithTypedData<
-    NsDiscussionForum.IDiscussionForumInput
-  > | null = null
+  widgetResolverAudioData: NsWidgetResolver.IRenderConfigWithTypedData<IWidgetsPlayerMediaData> | null = null
+  discussionForumWidget: NsWidgetResolver.IRenderConfigWithTypedData<NsDiscussionForum.IDiscussionForumInput> | null = null
   constructor(
     private activatedRoute: ActivatedRoute,
     private contentSvc: WidgetContentService,
     private valueSvc: ValueService,
     private viewerSvc: ViewerUtilService,
     private accessControlSvc: AccessControlService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.screenSizeSubscription = this.valueSvc.isXSmall$.subscribe(data => {
       this.isScreenSizeSmall = data
     })
-    this.isNotEmbed = !(
-      window.location.href.includes('/embed/') ||
-      this.activatedRoute.snapshot.queryParams.embed === 'true'
-    )
-    if (
-      this.activatedRoute.snapshot.queryParamMap.get('preview') &&
-      !this.accessControlSvc.authoringConfig.newDesign
-    ) {
+    this.isNotEmbed = !(window.location.href.includes('/embed/') || this.activatedRoute.snapshot.queryParams.embed === 'true')
+    if (this.activatedRoute.snapshot.queryParamMap.get('preview') && !this.accessControlSvc.authoringConfig.newDesign) {
       // to do make sure the data updates for two consecutive resource of same mimeType
       this.viewerDataSubscription = this.viewerSvc
         .getContent(this.activatedRoute.snapshot.paramMap.get('resourceId') || '')
@@ -80,7 +64,6 @@ export class AudioComponent implements OnInit, OnDestroy {
           this.isFetchingDataComplete = true
 
           if (this.audioData.subTitles) {
-
             let subTitleUrl = ''
             if (this.audioData.subTitles.length > 0 && this.audioData.subTitles[0]) {
               if (this.audioData.subTitles[0].url.indexOf('/content-store/') > -1) {
@@ -89,13 +72,14 @@ export class AudioComponent implements OnInit, OnDestroy {
                 subTitleUrl = `/apis/authContent/${encodeURIComponent(this.audioData.subTitles[0].url)}`
               }
             }
-            this.widgetResolverAudioData.widgetData.subtitles = [{
-              srclang: '',
-              label: '',
-              url: subTitleUrl,
-            }]
+            this.widgetResolverAudioData.widgetData.subtitles = [
+              {
+                srclang: '',
+                label: '',
+                url: subTitleUrl,
+              },
+            ]
           }
-
         })
       // this.htmlData = this.viewerDataSvc.resource
     } else {
@@ -112,10 +96,7 @@ export class AudioComponent implements OnInit, OnDestroy {
           this.widgetResolverAudioData = this.initWidgetResolverAudioData()
           if (this.audioData && this.audioData.identifier) {
             if (this.activatedRoute.snapshot.queryParams.collectionId) {
-              await this.fetchContinueLearning(
-                this.activatedRoute.snapshot.queryParams.collectionId,
-                this.audioData.identifier,
-              )
+              await this.fetchContinueLearning(this.activatedRoute.snapshot.queryParams.collectionId, this.audioData.identifier)
             } else {
               await this.fetchContinueLearning(this.audioData.identifier, this.audioData.identifier)
             }
@@ -126,42 +107,34 @@ export class AudioComponent implements OnInit, OnDestroy {
 
           // if (data.content.data.subTitles[0]) {
           if (data.content.data.subTitles && data.content.data.subTitles[0]) {
-
             let subTitlesUrl = ''
             if (data.content.data.subTitles[0].url.indexOf('/content-store/') > -1) {
               subTitlesUrl = `/apis/authContent/${new URL(data.content.data.subTitles[0].url).pathname}`
             } else {
               subTitlesUrl = `/apis/authContent/${encodeURIComponent(data.content.data.subTitles[0].url)}`
             }
-            this.widgetResolverAudioData.widgetData.subtitles = [{
-              srclang: '',
-              label: '',
-              url: subTitlesUrl,
-            }]
-
+            this.widgetResolverAudioData.widgetData.subtitles = [
+              {
+                srclang: '',
+                label: '',
+                url: subTitlesUrl,
+              },
+            ]
           }
 
-          this.widgetResolverAudioData.widgetData.url = this.audioData
-            ? this.forPreview
-              ? this.audioData.artifactUrl
-              // ? this.viewerSvc.getAuthoringUrl(this.audioData.artifactUrl)
-              : this.audioData.artifactUrl
-            : ''
-          this.widgetResolverAudioData.widgetData.identifier = this.audioData
-            ? this.audioData.identifier
-            : ''
+          this.widgetResolverAudioData.widgetData.url = this.audioData ? this.audioData.artifactUrl : ''
+          this.widgetResolverAudioData.widgetData.identifier = this.audioData ? this.audioData.identifier : ''
           this.widgetResolverAudioData = JSON.parse(JSON.stringify(this.widgetResolverAudioData))
           this.isFetchingDataComplete = true
-
         },
-        () => { },
+        () => {},
       )
     }
   }
 
   generateUrl(oldUrl: any) {
     // @ts-ignore: Unreachable code error
-    let bucket = window["env"]["azureBucket"]
+    let bucket = window['env']['azureBucket']
     if (oldUrl.includes(bucket)) {
       return oldUrl
     }
@@ -228,15 +201,8 @@ export class AudioComponent implements OnInit, OnDestroy {
       this.contentSvc.fetchContentHistory(collectionId).subscribe(
         data => {
           if (data) {
-            if (
-              data.identifier === audioId &&
-              data.continueData &&
-              data.continueData.progress &&
-              this.widgetResolverAudioData
-            ) {
-              this.widgetResolverAudioData.widgetData.resumePoint = Number(
-                data.continueData.progress,
-              )
+            if (data.identifier === audioId && data.continueData && data.continueData.progress && this.widgetResolverAudioData) {
+              this.widgetResolverAudioData.widgetData.resumePoint = Number(data.continueData.progress)
             }
           }
           resolve(true)

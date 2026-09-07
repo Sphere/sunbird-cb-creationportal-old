@@ -2,6 +2,7 @@ import { Component, OnInit, OnChanges, SimpleChanges, Input, Output, EventEmitte
 
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-progress-stepper',
@@ -9,6 +10,9 @@ import { AuthInitService } from '@ws/author/src/lib/services/init.service'
   styleUrls: ['./progress-stepper.component.scss'],
 })
 export class ProgressStepperComponent implements OnInit, OnChanges {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() steps: any = [
     { label: '1. Introduction', key: 'Introduction', activeStep: true, completed: false },
     { label: '2. Course Details', key: 'CourseDetails', activeStep: false, completed: false },

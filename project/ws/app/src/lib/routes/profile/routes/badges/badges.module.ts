@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common'
 
 import { BadgesComponent } from './badges.component'
 
-
 import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
 import { MatIconModule } from '@angular/material/icon'
@@ -23,11 +22,6 @@ import { HorizontalScrollerModule, DefaultThumbnailModule } from '@ws-widget/uti
 
 import { BtnLinkedinShareModule } from '../../../../../../../../../library/ws-widget/collection/src/lib/btn-linkedin-share/btn-linkedin-share.module'
 
-import { BtnFacebookShareModule } from '../../../../../../../../../library/ws-widget/collection/src/lib/btn-facebook-share/btn-facebook-share.module'
-
-import { BtnTwitterShareModule } from '../../../../../../../../../library/ws-widget/collection/src/lib/btn-twitter-share/btn-twitter-share.module'
-
-
 @NgModule({
   declarations: [BadgesComponent, BadgesCardComponent, BadgesNotEarnedComponent, BadgesShareDialogComponent],
   imports: [
@@ -43,8 +37,6 @@ import { BtnTwitterShareModule } from '../../../../../../../../../library/ws-wid
     DefaultThumbnailModule,
     MatMenuModule,
     BtnLinkedinShareModule,
-    BtnFacebookShareModule,
-    BtnTwitterShareModule,
   ],
 })
-export class BadgesModule { }
+export class BadgesModule {}

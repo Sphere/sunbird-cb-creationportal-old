@@ -5,13 +5,9 @@ import { DomSanitizer, SafeStyle } from '@angular/platform-browser'
 
 import { Router } from '@angular/router'
 
-import {
-  NsContent,
-  WidgetContentService,
-  viewerRouteGenerator
-} from '@ws-widget/collection'
+import { NsContent, WidgetContentService, viewerRouteGenerator } from '@ws-widget/collection'
 
-import { TFetchStatus } from '@ws-widget/utils'
+import { TFetchStatus, SafeContentService, isActivationKey } from '@ws-widget/utils'
 
 import { UtilityService } from '@ws-widget/utils/src/lib/services/utility.service'
 
@@ -37,7 +33,6 @@ import { AppTocCertificateModalComponent } from '../app-toc-certificate-modal/ap
 
 // import { ConfirmmodalComponent } from '../../../../../../../viewer/src/lib/plugins/quiz/confirm-modal-component'
 
-
 @Component({
   standalone: false,
   selector: 'ws-app-learner-banner',
@@ -48,6 +43,9 @@ import { AppTocCertificateModalComponent } from '../app-toc-certificate-modal/ap
   ],
 })
 export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
+  /** Enter/Space equivalent for the (click) handlers in the template. */
+  readonly isActivationKey = isActivationKey
+
   @Input() banners: NsAppToc.ITocBanner | null = null
   @Input() content: NsContent.IContent | null = null
   @Input() resumeData: NsContent.IContinueLearningData | null = null
@@ -68,7 +66,9 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
   // contentProgress = 0
   bannerUrl: SafeStyle | null = null
   routePath = 'overview'
-  validPaths = new Set(['overview', 'contents',
+  validPaths = new Set([
+    'overview',
+    'contents',
     // 'analytics'
   ])
   averageRating: any = ''
@@ -85,11 +85,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
   // btnPlaylistConfig: NsPlaylist.IBtnPlaylist | null = null
   // btnGoalsConfig: NsGoal.IBtnGoal | null = null
   isRegistrationSupported = false
-  checkRegistrationSources: Set<string> = new Set([
-    'SkillSoft Digitalization',
-    'SkillSoft Leadership',
-    'Pluralsight',
-  ])
+  checkRegistrationSources: Set<string> = new Set(['SkillSoft Digitalization', 'SkillSoft Leadership', 'Pluralsight'])
   isUserRegistered = false
   actionBtnStatus = 'wait'
   showIntranetMessage = false
@@ -101,7 +97,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
   contextPath?: string
   tocConfig: any = null
   cohortResults: {
-    [key: string]: { hasError: boolean; contents: NsCohorts.ICohortsContent[], count: Number }
+    [key: string]: { hasError: boolean; contents: NsCohorts.ICohortsContent[]; count: Number }
   } = {}
   identifier: any
   cohortTypesEnum = NsCohorts.ECohortTypes
@@ -113,7 +109,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
   enrolledCourse: any
   lastCourseID: any
   certificateMsg?: any
-  stars: number[] = [1, 2, 3, 4, 5];
+  stars: number[] = [1, 2, 3, 4, 5]
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -127,23 +123,18 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
     // private snackBar: MatSnackBar,
     public createBatchDialog: MatDialog,
     private dialog: MatDialog,
-    @Inject(DOCUMENT) public document: Document
-  ) {
-  }
+    @Inject(DOCUMENT) public document: Document,
+  ) {}
   @HostListener('window:popstate')
   onPopState() {
     let url = sessionStorage.getItem('cURL') || '/page/home'
     if (url) {
       location.href = url
     }
-
-
   }
 
   ngOnInit() {
-    console.log("learner", this.content)
-
-
+    console.log('learner', this.content)
   }
 
   enrollUser() {
@@ -155,7 +146,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
         this.isResource ? undefined : this.content.identifier,
         this.isResource ? undefined : this.content.contentType,
         this.forPreview,
-        this.content.primaryCategory
+        this.content.primaryCategory,
       )
     }
     setTimeout(() => {
@@ -164,7 +155,6 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
         this.router.navigate([this.firstResourceLink.url], { queryParams: query })
       }
     }, 500)
-
   }
 
   getStarImage(index: number): string {
@@ -183,8 +173,6 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-
-
   setConfirmDialogStatus(percentage: any) {
     this.contentSvc.showConformation = percentage
   }
@@ -201,14 +189,11 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   get isPostAssessment(): boolean {
-    if (!(this.tocConfig)) {
+    if (!this.tocConfig) {
       return false
     }
     if (this.content) {
-      return (
-        this.content.contentType === NsContent.EContentTypes.COURSE &&
-        this.content.learningMode === 'Instructor-Led'
-      )
+      return this.content.contentType === NsContent.EContentTypes.COURSE && this.content.learningMode === 'Instructor-Led'
     }
     return false
   }
@@ -239,7 +224,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
     }
     // Return uniqueIds as an array (if needed)
     return [...uniqueIds]
-  };
+  }
 
   ngOnChanges() {
     this.assignPathAndUpdateBanner(this.router.url)
@@ -254,13 +239,12 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
     return batchId
   }
 
-
   redirectPage(updatedContentFound: any) {
-    console.log("updatedContentFound: ", updatedContentFound)
+    console.log('updatedContentFound: ', updatedContentFound)
   }
 
   downloadCertificate(content: any) {
-    console.log("content: ", content)
+    console.log('content: ', content)
     this.openPopup(content)
   }
 
@@ -269,10 +253,7 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
     this.router.navigateByUrl(url1)
   }
 
-
-  enrollApi() {
-
-  }
+  enrollApi() {}
 
   findObjectById(array: any, id: any): any {
     console.log(array, id)
@@ -290,14 +271,11 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
     return null
   }
 
-  sendApi() {
-
-  }
+  sendApi() {}
 
   closePopup() {
     this.displayStyle = 'none'
   }
-
 
   get showInstructorLedMsg() {
     return (
@@ -313,34 +291,25 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
     return this.isResource && this.content && !this.content.artifactUrl.length
   }
 
-
   get showActionButtons() {
-    return (
-      this.actionBtnStatus !== 'wait' &&
-      this.content &&
-      this.content.status !== 'Deleted' &&
-      this.content.status !== 'Expired'
-    )
+    return this.actionBtnStatus !== 'wait' && this.content && this.content.status !== 'Deleted' && this.content.status !== 'Expired'
   }
 
   get showButtonContainer() {
     return (
       this.actionBtnStatus === 'grant' &&
       !(this.isMobile && this.content && this.content.isInIntranet) &&
-      !(
-        this.content &&
-        this.content.contentType === 'Course' &&
-        this.content.children.length === 0 &&
-        !this.content.artifactUrl
-      ) &&
+      !(this.content && this.content.contentType === 'Course' && this.content.children.length === 0 && !this.content.artifactUrl) &&
       !(this.content && this.content.contentType === 'Resource' && !this.content.artifactUrl)
     )
   }
 
   get isResource() {
     if (this.content) {
-      const isResource = this.content.contentType === NsContent.EContentTypes.KNOWLEDGE_ARTIFACT ||
-        this.content.contentType === NsContent.EContentTypes.RESOURCE || !this.content.children.length
+      const isResource =
+        this.content.contentType === NsContent.EContentTypes.KNOWLEDGE_ARTIFACT ||
+        this.content.contentType === NsContent.EContentTypes.RESOURCE ||
+        !this.content.children.length
       if (isResource) {
         this.mobileAppsSvc.sendViewerData(this.content)
       }
@@ -355,7 +324,6 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.tocSvc.analyticsFetchStatus = 'none'
     if (this.routerParamSubscription) {
       this.routerParamSubscription.unsubscribe()
     }
@@ -363,8 +331,6 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
       this.routeSubscription.unsubscribe()
     }
   }
-
-
 
   private assignPathAndUpdateBanner(url: string) {
     const path = url.split('/').pop()
@@ -375,21 +341,18 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
   }
   private updateBannerUrl() {
     if (this.banners) {
-      this.bannerUrl = this.sanitizer.bypassSecurityTrustStyle(
-        `url(${this.banners[this.routePath]})`,
-      )
+      this.bannerUrl = SafeContentService.trustedStyle(this.sanitizer, `url(${this.banners[this.routePath]})`)
     }
   }
 
   get sanitizedIntroductoryVideoIcon() {
     if (this.content && this.content.introductoryVideoIcon) {
-      return this.sanitizer.bypassSecurityTrustStyle(`url(${this.content.introductoryVideoIcon})`)
+      return SafeContentService.trustedStyle(this.sanitizer, `url(${this.content.introductoryVideoIcon})`)
     }
     return null
   }
 
   generateQuery(type: 'RESUME' | 'START_OVER' | 'START'): { [key: string]: string } {
-
     if (this.firstResourceLink && (type === 'START' || type === 'START_OVER')) {
       let qParams: { [key: string]: string } = {
         ...this.firstResourceLink.queryParams,
@@ -443,17 +406,8 @@ export class AppLearnerBannerComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-
-
-  openRating() {
-
-  }
-  readCourseRatingSummary() {
-
-
-  }
-
-
+  openRating() {}
+  readCourseRatingSummary() {}
 
   openPopup(content: any) {
     this.dialog.open(AppTocCertificateModalComponent, {

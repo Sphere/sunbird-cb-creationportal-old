@@ -51,7 +51,7 @@ import { map } from 'rxjs/operators'
 
 import * as l from 'lodash'
 
-import { ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService, isActivationKey } from '@ws-widget/utils'
 
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 
@@ -62,6 +62,9 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
   styleUrls: ['./my-content.component.scss'],
 })
 export class MyContentComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   constructor(
     private myContSvc: MyContentService,
     private activatedRoute: ActivatedRoute,

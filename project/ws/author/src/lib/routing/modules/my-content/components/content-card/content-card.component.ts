@@ -16,6 +16,7 @@ import { LoaderService } from 'project/ws/author/src/lib/services/loader.service
 
 import { CertificateStatusDialogComponentDialogComponent } from '../../../../../modules/shared/components/cert-upload-status-dialog/cert-upload-status-dialogcomponent'
 
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-root-content-card',
@@ -23,6 +24,9 @@ import { CertificateStatusDialogComponentDialogComponent } from '../../../../../
   styleUrls: ['./content-card.component.scss'],
 })
 export class ContentCardComponent implements OnInit, OnChanges {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() data: any
   @Input() competencyData: any
   @Input() ordinals: any

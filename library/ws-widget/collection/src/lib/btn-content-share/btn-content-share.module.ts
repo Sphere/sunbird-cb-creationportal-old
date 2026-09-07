@@ -12,20 +12,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { MatInputModule } from '@angular/material/input'
 import { UserAutocompleteModule } from '../_common/user-autocomplete/user-autocomplete.module'
 
-
 import { BtnContentShareComponent } from './btn-content-share.component'
 
 import { BtnContentShareDialogComponent } from './btn-content-share-dialog/btn-content-share-dialog.component'
 
 import { BtnLinkedinShareModule } from '../btn-linkedin-share/btn-linkedin-share.module'
 
-import { BtnFacebookShareModule } from '../btn-facebook-share/btn-facebook-share.module'
-
-import { BtnTwitterShareModule } from '../btn-twitter-share/btn-twitter-share.module'
-
 import { QRCodeComponent } from 'angularx-qrcode'
-
-import { BtnWhatsappShareModule } from '../btn-whatsapp-share/btn-whatsapp-share.module'
 
 @NgModule({
   declarations: [BtnContentShareComponent, BtnContentShareDialogComponent],
@@ -41,11 +34,8 @@ import { BtnWhatsappShareModule } from '../btn-whatsapp-share/btn-whatsapp-share
     MatProgressSpinnerModule,
     UserAutocompleteModule,
     BtnLinkedinShareModule,
-    BtnFacebookShareModule,
-    BtnTwitterShareModule,
     QRCodeComponent,
-    BtnWhatsappShareModule
   ],
   exports: [BtnContentShareComponent],
 })
-export class BtnContentShareModule { }
+export class BtnContentShareModule {}

@@ -6,7 +6,6 @@ import { NSQuiz } from './quiz.model'
 
 import { Observable } from 'rxjs'
 
-
 const API_END_POINTS = {
   ASSESSMENT_SUBMIT_V2: `/apis/protected/v8/user/evaluate/assessment/submit/v2`,
   ASSESSMENT_SUBMIT_N: `/apis/protected/v8/assessment/submit/v2`,
@@ -15,12 +14,8 @@ const API_END_POINTS = {
 @Injectable({
   providedIn: 'root',
 })
-
 export class QuizService {
-
-  constructor(
-    private http: HttpClient,
-  ) { }
+  constructor(private http: HttpClient) {}
 
   submitQuizV2(req: NSQuiz.IQuizSubmitRequest): Observable<NSQuiz.IQuizSubmitResponse> {
     // return this.http.post<NSQuiz.IQuizSubmitResponse>(API_END_POINTS.ASSESSMENT_SUBMIT_V2, req)
@@ -40,12 +35,8 @@ export class QuizService {
       title,
       courseId,
     }
-    quizWithAnswers.questions.map(question => {
-      if (
-        question.questionType === undefined ||
-        question.questionType === 'mcq-mca' ||
-        question.questionType === 'mcq-sca'
-      ) {
+    quizWithAnswers.questions.forEach(question => {
+      if (question.questionType === undefined || question.questionType === 'mcq-mca' || question.questionType === 'mcq-sca') {
         return question.options.map(option => {
           if (questionAnswerHash[question.questionId]) {
             option.userSelected = questionAnswerHash[question.questionId].includes(option.optionId)
@@ -54,7 +45,8 @@ export class QuizService {
           }
           return option
         })
-      } if (question.questionType === 'fitb') {
+      }
+      if (question.questionType === 'fitb') {
         for (let i = 0; i < question.options.length; i += 1) {
           if (questionAnswerHash[question.questionId]) {
             question.options[i].response = questionAnswerHash[question.questionId][0].split(',')[i]
@@ -79,14 +71,13 @@ export class QuizService {
   }
 
   sanitizeAssessmentSubmitRequest(requestData: NSQuiz.IQuizSubmitRequest): NSQuiz.IQuizSubmitRequest {
-    requestData.questions.map(question => {
+    requestData.questions.forEach(question => {
       question.question = ''
-      question.options.map(option => {
+      question.options.forEach(option => {
         option.hint = ''
         option.text = question.questionType === 'fitb' || question.questionType === 'mtf' ? option.text : ''
       })
     })
     return requestData
   }
-
 }

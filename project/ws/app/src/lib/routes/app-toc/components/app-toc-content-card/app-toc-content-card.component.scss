@@ -18,7 +18,7 @@ $border-color: #e2eaf2;
     font-family: Roboto, sans-serif;
     font-size: 18px;
     font-weight: 600;
-    color: #0F172A;
+    color: #0f172a;
     line-height: 1.4;
     margin: 0 0 4px;
   }
@@ -66,7 +66,7 @@ $border-color: #e2eaf2;
     font-family: Roboto, sans-serif;
     font-size: 15px;
     font-weight: 500;
-    color: #0F172A;
+    color: #0f172a;
     line-height: 1.4;
     margin: 0 0 4px;
   }
@@ -153,7 +153,7 @@ $border-color: #e2eaf2;
       font-size: 16px;
       height: 16px;
       width: 16px;
-      color: #1C5D95;
+      color: #1c5d95;
     }
   }
 
@@ -210,14 +210,21 @@ $border-color: #e2eaf2;
 
 .progrss-box {
   align-self: center;
+  margin-left: auto;
+  flex-shrink: 0;
   padding-right: 25px;
+
+  img {
+    width: 16px;
+    height: 16px;
+  }
 
   @include breakpoint-xs {
     padding-right: 30px;
   }
 
   .content-check {
-    color: #27AE60;
+    color: #27ae60;
   }
 }
 

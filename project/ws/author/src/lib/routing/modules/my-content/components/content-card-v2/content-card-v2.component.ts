@@ -23,7 +23,6 @@ import { ISearchContent, ITranslation } from '@ws/author/src/lib/interface/searc
 import { MatDialog } from '@angular/material/dialog'
 import { DeleteDialogComponent } from '@ws/author/src/lib/modules/shared/components/delete-dialog/delete-dialog.component'
 
-
 interface ILanguageBar {
   label: string
   srclang: string
@@ -47,13 +46,7 @@ export class ContentCardV2Component implements OnInit {
   allowedActions: string[] = []
   disabledActions: string[] = []
   isMobile = false
-  timeLinePerspective:
-    | 'lastUpdated'
-    | 'lastAction'
-    | 'deleted'
-    | 'lastPublished'
-    | 'expires'
-    | 'lastUnpublished' = 'lastUpdated'
+  timeLinePerspective: 'lastUpdated' | 'lastAction' | 'deleted' | 'lastPublished' | 'expires' | 'lastUnpublished' = 'lastUpdated'
   @Input() perspective: 'author' | 'reviewer' | 'expiry' | 'deleted' = 'author'
   @Input() content!: ISearchContent
   @Output() action = new EventEmitter<IAction>()
@@ -65,9 +58,7 @@ export class ContentCardV2Component implements OnInit {
   ) {}
 
   getLocale(locale: string): string {
-    const language = this.initService.ordinals.subTitles.find(
-      (v: { srclang: string }) => v.srclang === locale,
-    )
+    const language = this.initService.ordinals.subTitles.find((v: { srclang: string }) => v.srclang === locale)
     return language ? language.label : 'English'
   }
 
@@ -101,12 +92,7 @@ export class ContentCardV2Component implements OnInit {
       } else if (this.content.status === 'Live') {
         this.timeLinePerspective = 'lastPublished'
         this.mainAction = 'edit'
-        this.allowedActions = this.allowedActions.concat([
-          'newLanguage',
-          'delete',
-          'unpublish',
-          'history',
-        ])
+        this.allowedActions = this.allowedActions.concat(['newLanguage', 'delete', 'unpublish', 'history'])
       } else if (this.content.status === 'Unpublished') {
         this.timeLinePerspective = 'lastUnpublished'
         this.mainAction = 'moveToDraft'
@@ -146,7 +132,7 @@ export class ContentCardV2Component implements OnInit {
     }
     if (!this.initService.authAdditionalConfig.allowActionHistory) {
       const index = this.allowedActions.indexOf('history')
-      this.allowedActions.slice(index, 1)
+      this.allowedActions.splice(index, 1)
     }
   }
 

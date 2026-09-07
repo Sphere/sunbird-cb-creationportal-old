@@ -4,8 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 
-import { ValueService } from '@ws-widget/utils'
-
+import { ValueService, isActivationKey } from '@ws-widget/utils'
 
 @Component({
   standalone: false,
@@ -15,16 +14,18 @@ import { ValueService } from '@ws-widget/utils'
   encapsulation: ViewEncapsulation.Emulated,
 })
 export class PlayerVideoPopupComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
 
   isMobile = false
-  currentIndex = 0; // Track the current question index
-  selectedAnswers: any = []; // Store answers for the current question
-  answers: any[] = []; // Track all answers
+  currentIndex = 0 // Track the current question index
+  selectedAnswers: any = [] // Store answers for the current question
+  answers: any[] = [] // Track all answers
   questions: Array<{ text: string; options: string[] }>
-  resultMessage: string | null = null;
-  selectedOption: any | null = null; // To store the selected option
+  resultMessage: string | null = null
+  selectedOption: any | null = null // To store the selected option
   showAnswerInfo: boolean = false
-  layoutDirection = 'column'; // or 'row'
+  layoutDirection = 'column' // or 'row'
   showReset: boolean = false
   constructor(
     private valueSvc: ValueService,
@@ -51,7 +52,7 @@ export class PlayerVideoPopupComponent implements OnInit {
     return this.questions[this.currentIndex]
   }
   onOptionSelected(option: any): void {
-    console.log("option", option)
+    console.log('option', option)
     this.selectedOption = option
     if (option.isCorrect) {
       this.resultMessage = 'Correct'
@@ -100,5 +101,4 @@ export class PlayerVideoPopupComponent implements OnInit {
   closePopup() {
     this.dialogRef.close('skip')
   }
-
 }

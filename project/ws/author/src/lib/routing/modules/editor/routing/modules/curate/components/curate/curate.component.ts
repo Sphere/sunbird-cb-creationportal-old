@@ -44,7 +44,7 @@ import { UrlUploadComponent } from './../url-upload/url-upload.component'
 
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-curate',
@@ -52,6 +52,9 @@ import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
   styleUrls: ['./curate.component.scss'],
 })
 export class CurateComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   contents: NSContent.IContentMeta[] = []
   currentContent = ''
   currentStep = 2
@@ -74,14 +77,12 @@ export class CurateComponent implements OnInit, OnDestroy {
     private authInitService: AuthInitService,
     private accessService: AccessControlService,
     private notificationSvc: NotificationService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.showSettingButtons = this.accessService.rootOrg === 'client1'
     this.allLanguages = this.authInitService.ordinals.subTitles
-    Object.keys(this.contentService.originalContent).map(v =>
-      this.contents.push(this.contentService.originalContent[v]),
-    )
+    Object.keys(this.contentService.originalContent).forEach(v => this.contents.push(this.contentService.originalContent[v]))
     this.contentService.changeActiveCont.subscribe(data => {
       this.currentContent = data
       if (this.contentService.getOriginalMeta(data).isContentEditingDisabled) {
@@ -96,10 +97,7 @@ export class CurateComponent implements OnInit, OnDestroy {
   }
 
   customStepper(step: number) {
-    if (
-      step === 2 &&
-      this.contentService.getOriginalMeta(this.currentContent).isContentEditingDisabled
-    ) {
+    if (step === 2 && this.contentService.getOriginalMeta(this.currentContent).isContentEditingDisabled) {
       return
     }
     if (step === 1) {
@@ -181,10 +179,7 @@ export class CurateComponent implements OnInit, OnDestroy {
         error => {
           if (error.status === 409) {
             const errorMap = new Map<string, NSContent.IContentMeta>()
-            errorMap.set(
-              this.currentContent,
-              this.contentService.getUpdatedMeta(this.currentContent),
-            )
+            errorMap.set(this.currentContent, this.contentService.getUpdatedMeta(this.currentContent))
             this.dialog.open(ErrorParserComponent, {
               width: '80vw',
               height: '90vh',
@@ -239,13 +234,8 @@ export class CurateComponent implements OnInit, OnDestroy {
   }
 
   takeAction() {
-    const needSave = Object.keys(this.contentService.upDatedContent[this.currentContent] || {})
-      .length
-    if (
-      !needSave &&
-      this.contentService.getUpdatedMeta(this.currentContent).status === 'Live' &&
-      !this.isChanged
-    ) {
+    const needSave = Object.keys(this.contentService.upDatedContent[this.currentContent] || {}).length
+    if (!needSave && this.contentService.getUpdatedMeta(this.currentContent).status === 'Live' && !this.isChanged) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.UP_TO_DATE,
@@ -273,11 +263,9 @@ export class CurateComponent implements OnInit, OnDestroy {
         comment: commentsForm.controls.comments.value,
         operation:
           commentsForm.controls.action.value === 'accept' ||
-            ['Draft', 'Live'].includes(
-              this.contentService.originalContent[this.currentContent].status,
-            )
+          ['Draft', 'Live'].includes(this.contentService.originalContent[this.currentContent].status)
             ? ((this.accessService.authoringConfig.isMultiStepFlow && this.isDirectPublish()) ||
-              !this.accessService.authoringConfig.isMultiStepFlow) &&
+                !this.accessService.authoringConfig.isMultiStepFlow) &&
               this.accessService.rootOrg.toLowerCase() === 'client1'
               ? 100000
               : 1
@@ -286,32 +274,18 @@ export class CurateComponent implements OnInit, OnDestroy {
 
       const updatedContent: any = this.contentService.upDatedContent[this.currentContent] || {}
       const updatedMeta = this.contentService.getUpdatedMeta(this.currentContent)
-      const needSave = Object.keys(this.contentService.upDatedContent[this.currentContent] || {})
-        .length
-      const saveCall = (needSave
-        ? this.triggerSave(updatedContent, this.currentContent)
-        : of({} as any)
-      ).pipe(
+      const needSave = Object.keys(this.contentService.upDatedContent[this.currentContent] || {}).length
+      const saveCall = (needSave ? this.triggerSave(updatedContent, this.currentContent) : of({} as any)).pipe(
         mergeMap(() =>
           this.editorService
-            .forwardBackward(
-              body,
-              this.currentContent,
-              this.contentService.originalContent[this.currentContent].status,
-            )
+            .forwardBackward(body, this.currentContent, this.contentService.originalContent[this.currentContent].status)
             .pipe(
               mergeMap(() =>
-                this.notificationSvc
-                  .triggerPushPullNotification(
-                    updatedMeta,
-                    body.comment,
-                    body.operation ? true : false,
-                  )
-                  .pipe(
-                    catchError(() => {
-                      return of({} as any)
-                    }),
-                  ),
+                this.notificationSvc.triggerPushPullNotification(updatedMeta, body.comment, body.operation ? true : false).pipe(
+                  catchError(() => {
+                    return of({} as any)
+                  }),
+                ),
               ),
             ),
         ),
@@ -336,10 +310,7 @@ export class CurateComponent implements OnInit, OnDestroy {
         error => {
           if (error.status === 409) {
             const errorMap = new Map<string, NSContent.IContentMeta>()
-            errorMap.set(
-              this.currentContent,
-              this.contentService.getUpdatedMeta(this.currentContent),
-            )
+            errorMap.set(this.currentContent, this.contentService.getUpdatedMeta(this.currentContent))
             this.dialog.open(ErrorParserComponent, {
               width: '80vw',
               height: '90vh',
@@ -362,24 +333,19 @@ export class CurateComponent implements OnInit, OnDestroy {
   }
 
   isPublisherSame(): boolean {
-    const publisherDetails =
-      this.contentService.getUpdatedMeta(this.currentContent).publisherDetails || []
+    const publisherDetails = this.contentService.getUpdatedMeta(this.currentContent).publisherDetails || []
     return publisherDetails.find(v => v.id === this.accessService.userId) ? true : false
   }
 
   preview() {
     const updatedContent: any = this.contentService.upDatedContent[this.currentContent] || {}
-    const saveCall = Object.keys(updatedContent).length
-      ? this.triggerSave(updatedContent, this.currentContent)
-      : of({} as any)
+    const saveCall = Object.keys(updatedContent).length ? this.triggerSave(updatedContent, this.currentContent) : of({} as any)
     this.loaderService.changeLoad.next(true)
     saveCall.subscribe(
       () => {
         this.loaderService.changeLoad.next(false)
         this.previewMode = true
-        this.mimeTypeRoute = VIEWER_ROUTE_FROM_MIME(
-          this.contentService.getUpdatedMeta(this.currentContent).mimeType as any,
-        )
+        this.mimeTypeRoute = VIEWER_ROUTE_FROM_MIME(this.contentService.getUpdatedMeta(this.currentContent).mimeType as any)
       },
       error => {
         if (error.status === 409) {
@@ -424,9 +390,7 @@ export class CurateComponent implements OnInit, OnDestroy {
         },
       },
     }
-    return this.editorService
-      .updateContent(requestBody)
-      .pipe(tap(() => this.contentService.resetOriginalMeta(meta, id)))
+    return this.editorService.updateContent(requestBody).pipe(tap(() => this.contentService.resetOriginalMeta(meta, id)))
   }
 
   getMessage(type: 'success' | 'failure') {
@@ -513,10 +477,7 @@ export class CurateComponent implements OnInit, OnDestroy {
   }
 
   isDirectPublish(): boolean {
-    return (
-      ['Draft', 'Live'].includes(this.contentService.originalContent[this.currentContent].status) &&
-      this.isPublisherSame()
-    )
+    return ['Draft', 'Live'].includes(this.contentService.originalContent[this.currentContent].status) && this.isPublisherSame()
   }
   delete() {
     this.loaderService.changeLoad.next(true)
@@ -600,12 +561,8 @@ export class CurateComponent implements OnInit, OnDestroy {
   canDelete() {
     return (
       this.accessService.hasRole(['editor', 'admin']) ||
-      (['Draft', 'Live'].includes(
-        this.contentService.originalContent[this.currentContent].status,
-      ) &&
-        this.contentService.originalContent[this.currentContent].creatorContacts.find(
-          v => v.id === this.accessService.userId,
-        ))
+      (['Draft', 'Live'].includes(this.contentService.originalContent[this.currentContent].status) &&
+        this.contentService.originalContent[this.currentContent].creatorContacts.find(v => v.id === this.accessService.userId))
     )
   }
 }

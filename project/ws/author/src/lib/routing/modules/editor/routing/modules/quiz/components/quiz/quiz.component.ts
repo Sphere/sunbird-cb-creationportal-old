@@ -86,6 +86,7 @@ import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image
 
 import * as XLSX from 'xlsx'
 
+import { isActivationKey, randomInt, stripHtmlTags } from '@ws-widget/utils'
 interface QuizOption {
   text: string
   optionId: string
@@ -107,6 +108,9 @@ interface QuizQuestion {
   providers: [QuizResolverService, QuizStoreService],
 })
 export class QuizComponent implements OnInit, OnChanges, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   selectedQuizIndex!: number
   allContents: NSContent.IContentMeta[] = []
   contentLoaded = false
@@ -125,6 +129,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   previewMode = false
   mimeTypeRoute: any
   activeContentSubscription?: Subscription
+  routeDataSubscription?: Subscription
   activeIndexSubscription?: Subscription
   questionsArr: any[] = []
   quizConfig!: any
@@ -192,11 +197,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       }
     })
     this.initService.isAssessmentOrQuizMessage.subscribe((data: any) => {
-      if (data == false) {
-        this.isQuiz = 'Assessment'
-      } else {
-        this.isQuiz = 'Quiz'
-      }
+      // The emitter sends the content's isAssessment flag, and only when it is true
+      // (module-creation). This branch had the sense reversed, so a true -- meaning
+      // "this is an assessment" -- set the label to Quiz, and since that is the only
+      // value ever emitted, an assessment was always mislabelled. Matches the same
+      // derivation used when the content itself is read further down.
+      this.isQuiz = data ? 'Assessment' : 'Quiz'
     })
     console.log('Quiz12', this.isQuiz)
     // this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
@@ -205,6 +211,28 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     //   // }
     // })
   }
+  /**
+   * The content id stored under sessionStorage 'assessment', or null if what is there
+   * is not an id.
+   *
+   * Two callers write that key: an existing assessment's identifier when editing, and
+   * the literal 'true' when a new assessment is being added and no id exists yet. Only
+   * the first is usable as an id, and JSON.parse happily turns the second into a
+   * boolean, so the value is checked rather than trusted.
+   */
+  private parseStoredAssessmentId(code: string | null): string | null {
+    if (!code) {
+      return null
+    }
+    try {
+      const parsed = JSON.parse(code)
+      return typeof parsed === 'string' && parsed.trim() ? parsed : null
+    } catch {
+      // Not JSON at all: treat a bare non-empty string as the id itself.
+      return code.trim() && code !== 'true' ? code : null
+    }
+  }
+
   questionType(type: any) {
     this.isAtLeastOneQuestionPresent()
     this.questionTypeText = type
@@ -213,6 +241,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     this.cdr.detach()
     if (this.activeIndexSubscription) {
       this.activeIndexSubscription.unsubscribe()
+    }
+    if (this.routeDataSubscription) {
+      this.routeDataSubscription.unsubscribe()
     }
     if (this.activeContentSubscription) {
       this.activeContentSubscription.unsubscribe()
@@ -324,18 +355,34 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         this.loaderService.changeLoad.next(false)
       }, 3000)
 
+      // ngOnInit is re-entered on purpose: opening an assessment from the course
+      // builder calls it again through updateAssessmentMessage. Without dropping the
+      // previous subscription first, the old handler stays alive and still writes to
+      // currentContent -- and the editor emits the *course* id on this subject, so a
+      // stale handler would overwrite the assessment id that was just set. The quiz
+      // then read the course, which is a collection rather than application/json, and
+      // nothing rendered: the blank builder.
+      if (this.activeContentSubscription) {
+        this.activeContentSubscription.unsubscribe()
+      }
       this.activeContentSubscription = this.metaContentService.changeActiveCont.subscribe(id => {
         console.log('code', code)
         // Keep the global "Please wait..." loader visible until the quiz content
         // is actually loaded (contentLoaded below) — clearing it here left a blank
         // page while the assessment JSON was still being fetched.
-        if (code) {
+        // sessionStorage 'assessment' is written by two different places with two
+        // different meanings: course-collection stores the id of an existing assessment
+        // being edited, while module-creation stores the flag 'true' when a new one is
+        // being added and no id exists yet. Parsing blindly turned that flag into the
+        // boolean true and asked the server for content/v3/hierarchy/true, which 404s
+        // and left the builder blank. Only treat the stored value as an id when it
+        // actually is one; otherwise keep the id the subject just emitted.
+        const storedAssessmentId = this.parseStoredAssessmentId(code)
+        if (storedAssessmentId) {
           this.isEdited = true
-          id = JSON.parse(code) // use real assessment ID for all subsequent lookups
-          this.metaContentService.currentContent = id
-        } else {
-          this.metaContentService.currentContent = id
+          id = storedAssessmentId
         }
+        this.metaContentService.currentContent = id
         this.allLanguages = this.initService.ordinals.subTitles
 
         this.quizConfig = this.quizStoreSvc.getQuizConfig('ques')
@@ -350,7 +397,13 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         })
 
         if (this.activateRoute.parent && this.activateRoute.parent.parent) {
-          this.activateRoute.parent.parent.data.subscribe(v => {
+          // Same re-entrancy problem as above: each ngOnInit re-run added another
+          // route-data subscriber, so one click issued as many readcontentV3 calls
+          // as the assessment had been opened this session.
+          if (this.routeDataSubscription) {
+            this.routeDataSubscription.unsubscribe()
+          }
+          this.routeDataSubscription = this.activateRoute.parent.parent.data.subscribe(v => {
             // tslint:disable-next-line:no-console
             console.log(v)
 
@@ -686,7 +739,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       // const correctOptions = question.options.filter((option: any) => option.isCorrect) // Get correct options
 
       const row: any = {
-        Question: question.question.replace(/<[^>]*>/g, ''), // Remove HTML tags like <p>
+        Question: stripHtmlTags(question.question),
         // 'Multi Selection': correctOptions.length > 1 ? 'true' : 'FALSE', // Set multiSelection based on correct options
         'Option 1': question.options[0] ? question.options[0].text : '',
         'Option 2': question.options[1] ? question.options[1].text : '',
@@ -880,7 +933,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     }
     //for self assessment
     if (this.courseCompetency) {
-      this.passPercentage = this.passPercentage
       isAssessment = true
     }
 
@@ -973,6 +1025,13 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         this.currentId = this.metaContentService.parentContent
         updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
       }
+      if (!updatedQuizData && this.quizStoreSvc.currentId) {
+        // The store files the author's edits under its own currentId, which is set when
+        // the quiz loads. That is not always the id the editor considers current, and
+        // when the two differ the lookups above miss the very questions being saved.
+        this.currentId = this.quizStoreSvc.currentId
+        updatedQuizData = this.quizStoreSvc.collectiveQuiz[this.currentId]
+      }
     }
     this.currentId = this.metaContentService.currentContent
     const hasTimeChanged =
@@ -985,7 +1044,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       this.metaContentService.setUpdatedMeta({ duration: this.quizDuration } as any, this.currentId)
     }
     return (
-      (doUploadJson ? this.triggerUpload(JSON.parse(JSON.stringify(updatedQuizData))) : of({} as any))
+      (doUploadJson && updatedQuizData ? this.triggerUpload(JSON.parse(JSON.stringify(updatedQuizData))) : of({} as any))
         // ).pipe(map(v => v.result))
         .pipe(
           mergeMap(v => {
@@ -1109,7 +1168,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     }
     //for self assessment
     if (this.courseCompetency) {
-      this.passPercentage = this.passPercentage
       isAssessment = true
     }
 
@@ -1141,7 +1199,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {
       // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex)
+      randomIndex = randomInt(currentIndex)
       currentIndex -= 1
 
       // And swap it with the current element.

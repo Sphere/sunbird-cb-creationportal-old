@@ -1,18 +1,8 @@
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-  Input,
-  OnChanges,
-} from '@angular/core'
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, Input, OnChanges } from '@angular/core'
 
 import { SafeUrl } from '@angular/platform-browser'
-
 
 export interface IPreviewDevice {
   value: string
@@ -49,11 +39,7 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewInit, OnChan
     },
     {
       value: 'desktop',
-      viewValue: this.desktop
-        ? this.desktop.nativeElement.value
-          ? this.desktop.nativeElement.value
-          : 'Desktop'
-        : 'Desktop',
+      viewValue: this.desktop ? (this.desktop.nativeElement.value ? this.desktop.nativeElement.value : 'Desktop') : 'Desktop',
       height: '950px',
       width: '1400px',
     },
@@ -73,11 +59,7 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewInit, OnChan
 
   ngOnChanges() {
     if (this.accessControlSvc.authoringConfig.newDesign) {
-      if (this.mimeTypeRoute === 'channel') {
-        this.iframeUrl = `author/viewer/channel/${this.identifier}`
-      } else {
-        this.iframeUrl = `author/toc/${this.identifier}/overview`
-      }
+      this.iframeUrl = `author/toc/${this.identifier}/overview`
     } else {
       this.iframeUrl = `/viewer/${this.mimeTypeRoute}/${this.identifier}?preview=true`
     }
@@ -99,11 +81,7 @@ export class ViewerComponent implements OnInit, OnDestroy, AfterViewInit, OnChan
       },
       {
         value: 'desktop',
-        viewValue: this.desktop
-          ? this.desktop.nativeElement.value
-            ? this.desktop.nativeElement.value
-            : 'Desktop'
-          : 'Desktop',
+        viewValue: this.desktop ? (this.desktop.nativeElement.value ? this.desktop.nativeElement.value : 'Desktop') : 'Desktop',
         height: '950px',
         width: '1400px',
       },

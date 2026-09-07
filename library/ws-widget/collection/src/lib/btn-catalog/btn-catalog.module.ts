@@ -7,17 +7,8 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatMenuModule } from '@angular/material/menu'
 import { BtnCatalogComponent } from './btn-catalog.component'
 
-import { TreeCatalogModule } from '../tree-catalog/tree-catalog.module'
-
-
 @NgModule({
   declarations: [BtnCatalogComponent],
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    TreeCatalogModule,
-  ],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule],
 })
-export class BtnCatalogModule { }
+export class BtnCatalogModule {}

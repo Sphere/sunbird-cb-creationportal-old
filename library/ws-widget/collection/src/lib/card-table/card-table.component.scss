@@ -22,7 +22,7 @@ $action-btn-size: 2.5 * $size-m; // 40px
 
 .lsearch {
   display: flex;
-  flex: 3
+  flex: 3;
 }
 
 .rsearch {
@@ -64,8 +64,6 @@ $action-btn-size: 2.5 * $size-m; // 40px
 
   .source-icon {
     border-radius: 16px;
-    margin-right: auto;
-    margin-left: auto;
     display: block;
     margin: auto;
     max-width: 98px;
@@ -83,7 +81,7 @@ $action-btn-size: 2.5 * $size-m; // 40px
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
-  border: 1px solid rgba(0, 0, 0, 0.08)
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .card-container {
@@ -123,7 +121,6 @@ mat-card-content {
   display: flex;
   flex-direction: column;
   flex: 1;
-
 }
 
 .new-row {

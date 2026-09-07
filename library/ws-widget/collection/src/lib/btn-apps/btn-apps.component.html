@@ -1,9 +1,21 @@
-<button i18n-aria-label aria-label="Apps" *ngIf="!widgetData?.showTitle" mat-icon-button [matMenuTriggerFor]="appsMenu"
-  [ngClass]="{ 'ws-mat-accent-text': isUrlOpened }" name="appsIconHomePage">
+<button
+  i18n-aria-label
+  aria-label="Apps"
+  *ngIf="!widgetData?.showTitle"
+  mat-icon-button
+  [matMenuTriggerFor]="appsMenu"
+  [ngClass]="{ 'ws-mat-accent-text': isUrlOpened }"
+  name="appsIconHomePage"
+>
   <mat-icon>apps</mat-icon>
 </button>
-<a role="button" matRipple *ngIf="widgetData?.showTitle" [ngClass]="{ 'ws-mat-accent-text': isUrlOpened }"
-  class="flex items-center flex-col cursor-pointer px-2 box-sizing-box" [matMenuTriggerFor]="appsMenu">
+<a
+  matRipple
+  *ngIf="widgetData?.showTitle"
+  [ngClass]="{ 'ws-mat-accent-text': isUrlOpened }"
+  class="flex items-center flex-col cursor-pointer px-2 box-sizing-box"
+  [matMenuTriggerFor]="appsMenu"
+>
   <mat-icon>apps</mat-icon>
   <span [ngClass]="instanceVal === 'RootOrg' ? 'title font-sans' : 'mat-caption'" i18n>Apps</span>
 </a>

@@ -4,14 +4,13 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 
-
 import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper'
 
 import { ConfigurationsService } from '../../services/configurations.service'
 
 import { ValueService } from '../../services/value.service'
 
-
+import { isActivationKey } from '../../helpers/functions/isActivationKey'
 @Component({
   standalone: false,
   selector: 'ws-utils-image-crop',
@@ -19,6 +18,9 @@ import { ValueService } from '../../services/value.service'
   styleUrls: ['./image-crop.component.scss'],
 })
 export class ImageCropComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   // need to set for creator Logo
   @Output() data = new EventEmitter<File>()
   isRoundCrop = false
@@ -47,11 +49,12 @@ export class ImageCropComponent implements OnInit {
     private configSvc: ConfigurationsService,
     private snackBar: MatSnackBar,
     private valueSvc: ValueService,
-    @Inject(MAT_DIALOG_DATA) data: {
-      isRoundCrop: boolean,
-      imageFile: File,
-      height: number,
-      width: number,
+    @Inject(MAT_DIALOG_DATA)
+    data: {
+      isRoundCrop: boolean
+      imageFile: File
+      height: number
+      width: number
       imageFileName: string
     },
   ) {
@@ -70,7 +73,6 @@ export class ImageCropComponent implements OnInit {
         this.opWidth = data.width
       }
     }
-
   }
 
   ngOnInit() {
@@ -83,23 +85,19 @@ export class ImageCropComponent implements OnInit {
         this.dialogRef.updateSize('70%')
       }
     })
-
   }
 
   // displays the default image
   changeToDefaultImg($event: any) {
-    $event.target.src = this.configSvc.instanceConfig ?
-      this.configSvc.instanceConfig.logos.defaultContent : ''
+    $event.target.src = this.configSvc.instanceConfig ? this.configSvc.instanceConfig.logos.defaultContent : ''
   }
 
   // image cropping event
   imageCropped(event: ImageCroppedEvent) {
-
     this.imageFileBase64 = event.base64 // store the cropped image as a base64 value
     this.cropimageFile = this.base64ImageToBlob(this.imageFileBase64) // convert the cropped image as a file
     this.croppedHeight = event.height
     this.croppedWidth = event.width
-
   }
 
   openSnackBar(message: string) {
@@ -115,25 +113,24 @@ export class ImageCropComponent implements OnInit {
   thumbnailSizeDetection() {
     const fr = new FileReader()
     fr.readAsDataURL(this.imageFile)
-    fr.onload = () => { // when file has loaded
+    fr.onload = () => {
+      // when file has loaded
       const img = new Image()
       img.src = fr.result as string
       img.onload = () => {
         this.width = img.width
         this.height = img.height
         if (!this.isRoundCrop) {
-          if ((this.height === this.opHeight) && (this.width === this.opWidth)) {
+          if (this.height === this.opHeight && this.width === this.opWidth) {
             this.openSnackBar('Image is of the required dimensions of the thumbnail, croping is not available!')
             return
           }
-          if ((this.height < this.opHeight) || (this.width < this.opWidth)) {
+          if (this.height < this.opHeight || this.width < this.opWidth) {
             this.isNotOfRequiredSize = true
           }
         }
       }
-
     }
-
   }
 
   base64ImageToBlob(str: string): File {
@@ -159,7 +156,6 @@ export class ImageCropComponent implements OnInit {
     b.name = this.fileName
     const file = new File([blob], this.fileName, { type: 'image/jpeg' })
     return file
-
   }
 
   private flipAfterRotate() {
@@ -211,5 +207,4 @@ export class ImageCropComponent implements OnInit {
   close(): void {
     this.dialogRef.close()
   }
-
 }

@@ -10,7 +10,6 @@ import { NsContent } from '../_services/widget-content.model'
 
 import { NsPlaylist } from './btn-playlist.model'
 
-
 const API_END_POINTS = {
   featureConfig: `/assets/configurations/feature/playlist.json`,
   getAllPlaylists: `/apis/protected/v8/user/playlist`,
@@ -31,8 +30,7 @@ export class BtnPlaylistService {
   private playlistSubject: { [key: string]: ReplaySubject<NsPlaylist.IPlaylist[]> } = {}
   isFetchingPlaylists = false
 
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient) {}
 
   upsertPlaylist(playlistCreateRequest: NsPlaylist.IPlaylistCreateRequest, updatePlaylists = true) {
     return this.http.post<string>(`${API_END_POINTS.createPlaylist}/create`, playlistCreateRequest).pipe(
@@ -76,8 +74,7 @@ export class BtnPlaylistService {
 
   getAllPlaylistsApi(detailsRequired: boolean) {
     const params = new HttpParams().set('details-required', String(detailsRequired))
-    return this.http
-      .get<NsPlaylist.IPlaylistResponse>(API_END_POINTS.getAllPlaylists, { params })
+    return this.http.get<NsPlaylist.IPlaylistResponse>(API_END_POINTS.getAllPlaylists, { params })
   }
 
   getPlaylists(type: NsPlaylist.EPlaylistTypes) {
@@ -90,16 +87,15 @@ export class BtnPlaylistService {
 
   getAllPlaylists() {
     return this.getPlaylists(NsPlaylist.EPlaylistTypes.ME).pipe(
-      mergeMap((my: NsPlaylist.IPlaylist[]) => this.getPlaylists(NsPlaylist.EPlaylistTypes.SHARED).pipe(
-        map((shared: NsPlaylist.IPlaylist[]) => my.concat(shared)),
-      )),
+      mergeMap((my: NsPlaylist.IPlaylist[]) =>
+        this.getPlaylists(NsPlaylist.EPlaylistTypes.SHARED).pipe(map((shared: NsPlaylist.IPlaylist[]) => my.concat(shared))),
+      ),
     )
   }
 
   getPlaylist(playlistId: string, type: NsPlaylist.EPlaylistTypes, sourceFields: string): Observable<NsPlaylist.IPlaylist | null> {
     const params = new HttpParams().set('sourceFields', sourceFields)
-    return this.http
-      .get<NsPlaylist.IPlaylist>(`${API_END_POINTS.playlist(type)}/${playlistId}`, { params })
+    return this.http.get<NsPlaylist.IPlaylist>(`${API_END_POINTS.playlist(type)}/${playlistId}`, { params })
   }
 
   deletePlaylist(playlistId: string, type: NsPlaylist.EPlaylistTypes) {
@@ -143,14 +139,11 @@ export class BtnPlaylistService {
 
   deletePlaylistContent(playlist: NsPlaylist.IPlaylist | undefined, contentIds: string[]) {
     if (playlist) {
-      return this.deleteContent(
-        playlist.id,
-        {
-          contentIds,
-        },
-      )
+      return this.deleteContent(playlist.id, {
+        contentIds,
+      })
     }
-    return throwError(() => { error: 'ERROR_PLAYLIST_UNDEFINED' })
+    return throwError(() => ({ error: 'ERROR_PLAYLIST_UNDEFINED' }))
   }
 
   acceptPlaylist(playlistId: string) {
@@ -162,9 +155,7 @@ export class BtnPlaylistService {
       tap(() => {
         if (this.playlistSubject[NsPlaylist.EPlaylistTypes.PENDING]) {
           this.playlistSubject[NsPlaylist.EPlaylistTypes.PENDING].pipe(first()).subscribe((playlists: NsPlaylist.IPlaylist[]) => {
-            this.playlistSubject[NsPlaylist.EPlaylistTypes.PENDING].next(
-              playlists.filter(playlist => playlist.id !== playlistId),
-            )
+            this.playlistSubject[NsPlaylist.EPlaylistTypes.PENDING].next(playlists.filter(playlist => playlist.id !== playlistId))
           })
         }
       }),
@@ -183,20 +174,20 @@ export class BtnPlaylistService {
     if (!Object.entries(this.playlistSubject).length) {
       this.initSubjects()
     }
-    this.http
-      .get<NsPlaylist.IPlaylistResponse>(API_END_POINTS.getAllPlaylists).subscribe(
-        (playlists: NsPlaylist.IPlaylistResponse) => {
-          this.playlistSubject[NsPlaylist.EPlaylistTypes.ME].next(playlists.user)
-          this.playlistSubject[NsPlaylist.EPlaylistTypes.SHARED].next(playlists.share)
-          this.playlistSubject[NsPlaylist.EPlaylistTypes.PENDING].next(playlists.pending)
-          this.isFetchingPlaylists = false
-        },
-        error => {
-          this.playlistSubject[NsPlaylist.EPlaylistTypes.ME].error(error)
-          this.playlistSubject[NsPlaylist.EPlaylistTypes.SHARED].error(error)
-          this.playlistSubject[NsPlaylist.EPlaylistTypes.PENDING].error(error)
-          this.isFetchingPlaylists = false
-        })
+    this.http.get<NsPlaylist.IPlaylistResponse>(API_END_POINTS.getAllPlaylists).subscribe(
+      (playlists: NsPlaylist.IPlaylistResponse) => {
+        this.playlistSubject[NsPlaylist.EPlaylistTypes.ME].next(playlists.user)
+        this.playlistSubject[NsPlaylist.EPlaylistTypes.SHARED].next(playlists.share)
+        this.playlistSubject[NsPlaylist.EPlaylistTypes.PENDING].next(playlists.pending)
+        this.isFetchingPlaylists = false
+      },
+      error => {
+        this.playlistSubject[NsPlaylist.EPlaylistTypes.ME].error(error)
+        this.playlistSubject[NsPlaylist.EPlaylistTypes.SHARED].error(error)
+        this.playlistSubject[NsPlaylist.EPlaylistTypes.PENDING].error(error)
+        this.isFetchingPlaylists = false
+      },
+    )
   }
 
   private initSubjects() {

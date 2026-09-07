@@ -12,10 +12,9 @@ import { NsContentConstants } from '@ws-widget/collection/src/lib/_constants/wid
 
 import { NsAppToc, NsCohorts } from '../models/app-toc.model'
 
-import { TFetchStatus, ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService } from '@ws-widget/utils'
 
 import { map } from 'rxjs/operators'
-
 
 // TODO: move this in some common place
 const PROTECTED_SLAG_V8 = '/apis/protected/v8'
@@ -28,27 +27,25 @@ const API_END_POINTS = {
   CONTENT_PARENT: (contentId: string) => `${PROTECTED_SLAG_V8}/content/${contentId}/parent`,
   CONTENT_AUTH_PARENT: (contentId: string, rootOrg: string, org: string) =>
     `/apis/authApi/action/content/parent/hierarchy/${contentId}?rootOrg=${rootOrg}&org=${org}`,
-  COHORTS: (cohortType: NsCohorts.ECohortTypes, contentId: string) =>
-    `${PROTECTED_SLAG_V8}/cohorts/${cohortType}/${contentId}`,
-  EXTERNAL_CONTENT: (contentId: string) =>
-    `${PROTECTED_SLAG_V8}/content/external-access/${contentId}`,
+  COHORTS: (cohortType: NsCohorts.ECohortTypes, contentId: string) => `${PROTECTED_SLAG_V8}/cohorts/${cohortType}/${contentId}`,
+  EXTERNAL_CONTENT: (contentId: string) => `${PROTECTED_SLAG_V8}/content/external-access/${contentId}`,
   COHORTS_GROUP_USER: (groupId: number) => `${PROTECTED_SLAG_V8}/cohorts/${groupId}`,
   RELATED_RESOURCE: (contentId: string, contentType: string) =>
     `${PROTECTED_SLAG_V8}/khub/fetchRelatedResources/${contentId}/${contentType}`,
-  POST_ASSESSMENT: (contentId: string) =>
-    `${PROTECTED_SLAG_V8}/user/evaluate/post-assessment/${contentId}`,
+  POST_ASSESSMENT: (contentId: string) => `${PROTECTED_SLAG_V8}/user/evaluate/post-assessment/${contentId}`,
 }
 
 @Injectable()
 export class AppTocService {
   private messageSource = new Subject<any>()
   public currentMessage = this.messageSource.asObservable()
-  analyticsReplaySubject: Subject<any> = new Subject<void>()
-  analyticsFetchStatus: TFetchStatus = 'none'
   private showSubtitleOnBanners = false
   private canShowDescription = false
 
-  constructor(private http: HttpClient, private configSvc: ConfigurationsService) { }
+  constructor(
+    private http: HttpClient,
+    private configSvc: ConfigurationsService,
+  ) {}
 
   changeMessage(message: any) {
     this.messageSource.next(message)
@@ -108,14 +105,8 @@ export class AppTocService {
     }
   }
 
-  getTocStructure(
-    content: NsContent.IContent,
-    tocStructure: NsAppToc.ITocStructure,
-  ): NsAppToc.ITocStructure {
-    if (
-      content &&
-      !(content.contentType === 'Resource' || content.contentType === 'Knowledge Artifact')
-    ) {
+  getTocStructure(content: NsContent.IContent, tocStructure: NsAppToc.ITocStructure): NsAppToc.ITocStructure {
+    if (content && !(content.contentType === 'Resource' || content.contentType === 'Knowledge Artifact')) {
       if (content.contentType === 'Course') {
         tocStructure.course += 1
       } else if (content.contentType === 'Collection') {
@@ -128,11 +119,7 @@ export class AppTocService {
           tocStructure = this.getTocStructure(child, tocStructure)
         })
       }
-
-    } else if (
-      content &&
-      (content.contentType === 'Resource' || content.contentType === 'Knowledge Artifact')
-    ) {
+    } else if (content && (content.contentType === 'Resource' || content.contentType === 'Knowledge Artifact')) {
       switch (content.mimeType) {
         case NsContent.EMimeTypes.HANDS_ON:
           tocStructure.handsOn += 1
@@ -196,10 +183,7 @@ export class AppTocService {
     return null
   }
 
-  filterUnitContent(
-    content: NsContent.IContent,
-    filterCategory: NsContent.EFilterCategory = NsContent.EFilterCategory.ALL,
-  ): boolean {
+  filterUnitContent(content: NsContent.IContent, filterCategory: NsContent.EFilterCategory = NsContent.EFilterCategory.ALL): boolean {
     switch (filterCategory) {
       case NsContent.EFilterCategory.LEARN:
         return (
@@ -215,92 +199,29 @@ export class AppTocService {
         return true
     }
   }
-  fetchContentAnalyticsClientData(contentId: string) {
-    if (this.analyticsFetchStatus !== 'fetching' && this.analyticsFetchStatus !== 'done') {
-      this.getContentAnalyticsClient(contentId)
-    }
-  }
-  private getContentAnalyticsClient(contentId: string) {
-    this.analyticsFetchStatus = 'fetching'
-    const url = `${PROXY_SLAG_V8}/LA/api/la/contentanalytics?content_id=${contentId}&type=course`
-    this.http.get(url).subscribe(
-      result => {
-        this.analyticsFetchStatus = 'done'
-        this.analyticsReplaySubject.next(result)
-      },
-      () => {
-        this.analyticsReplaySubject.next(null)
-        this.analyticsFetchStatus = 'done'
-      },
-    )
-  }
-
-  fetchContentAnalyticsData(contentId: string) {
-    if (this.analyticsFetchStatus !== 'fetching' && this.analyticsFetchStatus !== 'done') {
-      this.getContentAnalytics(contentId)
-    }
-  }
-  private getContentAnalytics(contentId: string) {
-    this.analyticsFetchStatus = 'fetching'
-    // tslint:disable-next-line: max-line-length
-    const url = `${PROXY_SLAG_V8}/LA/LA/api/Users?refinementfilter=${encodeURIComponent(
-      '"source":["Wingspan","Learning Hub"]',
-    )}$${encodeURIComponent(`"courseCode": ["${contentId}"]`)}`
-    this.http.get(url).subscribe(
-      result => {
-        this.analyticsFetchStatus = 'done'
-        this.analyticsReplaySubject.next(result)
-      },
-      () => {
-        this.analyticsReplaySubject.next(null)
-        this.analyticsFetchStatus = 'done'
-      },
-    )
-  }
-
-  clearAnalyticsData() {
-    if (this.analyticsReplaySubject) {
-      this.analyticsReplaySubject.unsubscribe()
-    }
-  }
-
   fetchContentParents(contentId: string): Observable<NsContent.IContentMinimal[]> {
-    return this.http.get<NsContent.IContentMinimal[]>(
-      `${API_END_POINTS.CONTENT_PARENTS}/${contentId}`,
-    )
+    return this.http.get<NsContent.IContentMinimal[]>(`${API_END_POINTS.CONTENT_PARENTS}/${contentId}`)
   }
-  fetchContentWhatsNext(
-    contentId: string,
-    contentType?: string,
-  ): Observable<NsContent.IContentMinimal[]> {
+  fetchContentWhatsNext(contentId: string, contentType?: string): Observable<NsContent.IContentMinimal[]> {
     if (contentType) {
-      return this.http.get<NsContent.IContentMinimal[]>(
-        `${API_END_POINTS.CONTENT_NEXT}/${contentId}?contentType=${contentType}`,
-      )
+      return this.http.get<NsContent.IContentMinimal[]>(`${API_END_POINTS.CONTENT_NEXT}/${contentId}?contentType=${contentType}`)
     }
-    return this.http.get<NsContent.IContentMinimal[]>(
-      `${API_END_POINTS.CONTENT_NEXT}/${contentId}?ts=${new Date().getTime()}`,
-    )
+    return this.http.get<NsContent.IContentMinimal[]>(`${API_END_POINTS.CONTENT_NEXT}/${contentId}?ts=${new Date().getTime()}`)
   }
 
   fetchMoreLikeThisPaid(contentId: string): Observable<NsContent.IContentMinimal[]> {
     return this.http.get<NsContent.IContentMinimal[]>(
-      `${API_END_POINTS.CONTENT_NEXT
-      }/${contentId}?exclusiveContent=true&ts=${new Date().getTime()}`,
+      `${API_END_POINTS.CONTENT_NEXT}/${contentId}?exclusiveContent=true&ts=${new Date().getTime()}`,
     )
   }
 
   fetchMoreLikeThisFree(contentId: string): Observable<NsContent.IContentMinimal[]> {
     return this.http.get<NsContent.IContentMinimal[]>(
-      `${API_END_POINTS.CONTENT_NEXT
-      }/${contentId}?exclusiveContent=false&ts=${new Date().getTime()}`,
+      `${API_END_POINTS.CONTENT_NEXT}/${contentId}?exclusiveContent=false&ts=${new Date().getTime()}`,
     )
   }
 
-  fetchContentCohorts(
-    cohortType: NsCohorts.ECohortTypes,
-    contentId: string,
-  ): Observable<NsCohorts.ICohortsContent[]> {
+  fetchContentCohorts(cohortType: NsCohorts.ECohortTypes, contentId: string): Observable<NsCohorts.ICohortsContent[]> {
     return this.http.get<NsCohorts.ICohortsContent[]>(API_END_POINTS.COHORTS(cohortType, contentId))
   }
   fetchExternalContentAccess(contentId: string): Observable<{ hasAccess: boolean }> {
@@ -310,15 +231,11 @@ export class AppTocService {
     return this.http.get<NsCohorts.ICohortsGroupUsers[]>(API_END_POINTS.COHORTS_GROUP_USER(groupId))
   }
   fetchMoreLikeThis(contentId: string, contentType: string): Observable<any> {
-    return this.http.get<NsContent.IContent[]>(
-      API_END_POINTS.RELATED_RESOURCE(contentId, contentType),
-    )
+    return this.http.get<NsContent.IContent[]>(API_END_POINTS.RELATED_RESOURCE(contentId, contentType))
   }
 
   fetchPostAssessmentStatus(contentId: string) {
-    return this.http.get<{ result: NsAppToc.IPostAssessment[] }>(
-      API_END_POINTS.POST_ASSESSMENT(contentId),
-    )
+    return this.http.get<{ result: NsAppToc.IPostAssessment[] }>(API_END_POINTS.POST_ASSESSMENT(contentId))
   }
 
   // fetchContentParent(contentId: string, data: NsAppToc.IContentParentReq, forPreview = false) {
@@ -335,15 +252,12 @@ export class AppTocService {
   // }
 
   fetchContentParent(contentId: string, _data: NsAppToc.IContentParentReq, _forPreview = false) {
-    return this.http.get<NsAppToc.IContentParentResponseV2>(
-      `${API_END_POINTS.CONTENT_PARENTS_V2}${contentId}?mode=edit`
-    ).pipe(
+    return this.http.get<NsAppToc.IContentParentResponseV2>(`${API_END_POINTS.CONTENT_PARENTS_V2}${contentId}?mode=edit`).pipe(
       map((data: any) => {
         if (data && data.params && data.params.status === 'successful') {
           return data.result.content
         }
-      })
+      }),
     )
   }
-
 }

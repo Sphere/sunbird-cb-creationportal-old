@@ -1,14 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, OnDestroy } from '@angular/core'
 
 import { MatDialog } from '@angular/material/dialog'
-import {
-  FormGroup,
-  FormBuilder,
-  Validators,
-  FormArray,
-  AbstractControl,
-  FormControl,
-} from '@angular/forms'
+import { FormGroup, FormBuilder, Validators, FormArray, AbstractControl, FormControl } from '@angular/forms'
 
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'
 
@@ -20,11 +13,9 @@ import { Observable, Subscription } from 'rxjs'
 
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout'
 
-
 import { NOTIFICATION_TIME } from '../../constants/quiz-constants'
 
 import { QuizStoreService } from '../../services/store.service'
-
 
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
 
@@ -35,7 +26,6 @@ import { McqQuiz, Option } from '../quiz-class'
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 
 import { OpenPlainCkEditorComponent } from '../../shared/components/open-plain-ck-editor/open-plain-ck-editor.component'
-
 
 @Component({
   standalone: false,
@@ -59,9 +49,7 @@ export class MultipleChoiceQuestionComponent implements OnInit, OnChanges, OnDes
   index!: number
   selectedOption?: number
   activeIndexSubscription?: Subscription
-  smallScreen: Observable<boolean> = this.breakpointObserver
-    .observe('(max-width:600px)')
-    .pipe(map((res: BreakpointState) => res.matches))
+  smallScreen: Observable<boolean> = this.breakpointObserver.observe('(max-width:600px)').pipe(map((res: BreakpointState) => res.matches))
   isSmallScreen = false
 
   constructor(
@@ -70,7 +58,7 @@ export class MultipleChoiceQuestionComponent implements OnInit, OnChanges, OnDes
     private snackBar: MatSnackBar,
     private quizStoreSvc: QuizStoreService,
     private breakpointObserver: BreakpointObserver,
-  ) { }
+  ) {}
 
   ngOnDestroy() {
     if (this.activeIndexSubscription) {
@@ -79,9 +67,7 @@ export class MultipleChoiceQuestionComponent implements OnInit, OnChanges, OnDes
   }
 
   openCkEditor(index: number) {
-    const hint =
-      (((this.quizForm.controls.options as FormArray).at(index).get('hint') as FormControl) || {})
-        .value || ''
+    const hint = (((this.quizForm.controls.options as FormArray).at(index).get('hint') as FormControl) || {}).value || ''
     const dialogRef = this.dialog.open(OpenPlainCkEditorComponent, {
       width: '800px',
 
@@ -96,22 +82,19 @@ export class MultipleChoiceQuestionComponent implements OnInit, OnChanges, OnDes
       if (res !== undefined) {
         const optionsArr = this.quizForm.controls['options'] as FormArray
         if (optionsArr && optionsArr.at(index) && optionsArr.at(index).get('hint')) {
-          (optionsArr.at(index).get('hint') as AbstractControl).setValue(res)
+          ;(optionsArr.at(index).get('hint') as AbstractControl).setValue(res)
         }
       }
     })
   }
 
   ngOnInit() {
-    this.smallScreen.subscribe(v => this.isSmallScreen = v)
+    this.smallScreen.subscribe(v => (this.isSmallScreen = v))
     this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
       this.contentLoaded = false
       this.index = index
       const val = this.quizStoreSvc.getQuiz(index)
-      this.selectedQuiz =
-        val && (val.questionType === 'mcq-sca' || val.questionType === 'mcq-mca')
-          ? new McqQuiz(val)
-          : undefined
+      this.selectedQuiz = val && (val.questionType === 'mcq-sca' || val.questionType === 'mcq-mca') ? new McqQuiz(val) : undefined
       if (val && (val.questionType === 'mcq-sca' || val.questionType === 'mcq-mca')) {
         this.setUp()
         this.contentLoaded = true
@@ -150,7 +133,7 @@ export class MultipleChoiceQuestionComponent implements OnInit, OnChanges, OnDes
     const optionsArr = this.quizForm.controls['options'].value
     moveItemInArray(optionsArr, event.previousIndex, event.currentIndex)
     for (let i = 0; i < optionsArr.length; i = i + 1) {
-      (this.quizForm.controls['options'] as FormArray).at(i).setValue(optionsArr[i])
+      ;(this.quizForm.controls['options'] as FormArray).at(i).setValue(optionsArr[i])
     }
   }
 
@@ -191,11 +174,7 @@ export class MultipleChoiceQuestionComponent implements OnInit, OnChanges, OnDes
 
   onSelected($event: any) {
     this.selectedCount = $event.checked ? this.selectedCount + 1 : this.selectedCount - 1
-    if (
-      this.selectedQuiz &&
-      this.selectedQuiz.options &&
-      this.selectedCount === this.selectedQuiz.options.length
-    ) {
+    if (this.selectedQuiz && this.selectedQuiz.options && this.selectedCount === this.selectedQuiz.options.length) {
       this.snackbarRef = this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.MCQ_ALL_OPTIONS_CORRECT,
@@ -224,10 +203,10 @@ export class MultipleChoiceQuestionComponent implements OnInit, OnChanges, OnDes
     const newData = this.quizStoreSvc.getQuiz(this.index)
     if (newData && newData.isInValid) {
       // this.quizForm.markAllAsTouched()
-      Object.keys(this.quizForm.controls).map(v => {
+      Object.keys(this.quizForm.controls).forEach(v => {
         const optionsArr = this.quizForm.controls[v] as FormArray
-        optionsArr.controls.map((d: any) => {
-          Object.keys(d.controls).map(e => {
+        optionsArr.controls.forEach((d: any) => {
+          Object.keys(d.controls).forEach(e => {
             if (e === 'text') {
               d.controls[e].markAsDirty()
               d.controls[e].markAsTouched()

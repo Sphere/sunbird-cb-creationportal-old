@@ -14,7 +14,6 @@ import { IContentNode, IContentTreeNode } from '../interface/icontent-tree'
 
 import { AuthInitService } from './../../../../../../../services/init.service'
 
-
 @Injectable()
 /**
  * The service which contains the logic to parse the collection hierarch data and produce the
@@ -28,7 +27,7 @@ export class CollectionResolverService {
     private accessService: AccessControlService,
     private contentService: EditorContentService,
     private authInitService: AuthInitService,
-  ) { }
+  ) {}
 
   get uniqueId() {
     this._uniqueId += 1
@@ -59,11 +58,7 @@ export class CollectionResolverService {
      * @param { boolean } editable - Whether the user have access to change the parent hierarch or not
      * @returns { IContentNode } the restructured hierarch data to load in tree
      */
-    const recursiveFn = (
-      currContent: NSContent.IContentMeta,
-      parentId: number | undefined = undefined,
-      editable = true,
-    ): IContentNode => {
+    const recursiveFn = (currContent: NSContent.IContentMeta, parentId: number | undefined = undefined, editable = true): IContentNode => {
       const treeStructure: IContentNode = {
         editable,
         parentId,
@@ -91,9 +86,7 @@ export class CollectionResolverService {
       if (treeStructure.childLoaded && treeStructure.children) {
         const children: IContentNode[] = []
         if (currContent.children) {
-          currContent.children.forEach(v =>
-            children.push(recursiveFn(v, treeStructure.id, haveAccessToChangeStructure)),
-          )
+          currContent.children.forEach(v => children.push(recursiveFn(v, treeStructure.id, haveAccessToChangeStructure)))
         }
         // currContent.children.forEach(v =>
         //   children.push(recursiveFn(v, treeStructure.id, haveAccessToChangeStructure)),
@@ -107,18 +100,14 @@ export class CollectionResolverService {
     return recursiveFn(content)
   }
 
-  getFlatHierarchy(
-    id: number,
-    flatNodeMap: Map<number, IContentNode>,
-    rightPermission = true,
-  ): number[] {
+  getFlatHierarchy(id: number, flatNodeMap: Map<number, IContentNode>, rightPermission = true): number[] {
     const returnValue: number[] = []
     const recursiveFunction = (currId: number) => {
       returnValue.push(currId)
       const node = flatNodeMap.get(currId) as IContentNode
       if ((rightPermission && node.editable) || !rightPermission) {
         const children = node.children || []
-        children.map(v => recursiveFunction(v.id))
+        children.forEach(v => recursiveFunction(v.id))
       }
     }
     recursiveFunction(id)
@@ -145,12 +134,9 @@ export class CollectionResolverService {
    * @returns { string } The category type
    */
   getCategoryType(content: NSContent.IContentMeta): string {
-    switch (this.getCategory(content)) {
-      case 'Collection':
-        return ''
-      default:
-        return ''
-    }
+    // Both branches returned '' — the category type is not currently derived
+    // from getCategory(); collapsed to a single return to preserve behavior.
+    return ''
   }
 
   /**
@@ -228,8 +214,7 @@ export class CollectionResolverService {
    * @returns { boolean } The mat icon to be displayed
    */
   hasAccess(content: NSContent.IContentMeta, parentMeta?: NSContent.IContentMeta): boolean {
-    return this.contentService.hasAccess(content, false, parentMeta) &&
-      content.status === 'InReview'
+    return this.contentService.hasAccess(content, false, parentMeta) && content.status === 'InReview'
       ? this.authInitService.collectionConfig.enabledRole.includes('content_reviewer')
       : content.status === 'Reviewed'
         ? this.authInitService.collectionConfig.enabledRole.includes('publisher')
@@ -245,11 +230,7 @@ export class CollectionResolverService {
    * @param { number } maxDepth - Maximum depth allowed in the configuration
    * @returns { boolean } The mat icon to be displayed
    */
-  allowMaxDepth(
-    _dropNode: IContentTreeNode,
-    _dragNode: IContentTreeNode,
-    _maxDepth: number,
-  ): boolean {
+  allowMaxDepth(_dropNode: IContentTreeNode, _dragNode: IContentTreeNode, _maxDepth: number): boolean {
     return true
   }
 }

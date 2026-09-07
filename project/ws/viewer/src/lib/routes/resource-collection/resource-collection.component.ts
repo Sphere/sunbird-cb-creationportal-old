@@ -14,7 +14,6 @@ import { EventService, WsEvents } from '@ws-widget/utils'
 
 import { ViewerUtilService } from '../../viewer-util.service'
 
-
 @Component({
   standalone: false,
   selector: 'viewer-resource-collection',
@@ -30,9 +29,7 @@ export class ResourceCollectionComponent implements OnInit, OnDestroy {
   oldData: NsContent.IContent | null = null
   alreadyRaised = false
   resourceCollectionManifest: any
-  discussionForumWidget: NsWidgetResolver.IRenderConfigWithTypedData<
-    NsDiscussionForum.IDiscussionForumInput
-  > | null = null
+  discussionForumWidget: NsWidgetResolver.IRenderConfigWithTypedData<NsDiscussionForum.IDiscussionForumInput> | null = null
   constructor(
     private activatedRoute: ActivatedRoute,
     private contentSvc: WidgetContentService,
@@ -51,19 +48,11 @@ export class ResourceCollectionComponent implements OnInit, OnDestroy {
         if (this.resourceCollectionData) {
           this.formDiscussionForumWidget(this.resourceCollectionData)
         }
-        if (
-          this.resourceCollectionData &&
-          this.resourceCollectionData.artifactUrl.indexOf('content-store') >= 0
-        ) {
+        if (this.resourceCollectionData && this.resourceCollectionData.artifactUrl.indexOf('content-store') >= 0) {
           await this.setS3Cookie(this.resourceCollectionData.identifier)
         }
-        if (
-          this.resourceCollectionData &&
-          this.resourceCollectionData.mimeType === NsContent.EMimeTypes.COLLECTION_RESOURCE
-        ) {
-          this.resourceCollectionManifest = await this.transformResourceCollection(
-            this.resourceCollectionData,
-          )
+        if (this.resourceCollectionData && this.resourceCollectionData.mimeType === NsContent.EMimeTypes.COLLECTION_RESOURCE) {
+          this.resourceCollectionManifest = await this.transformResourceCollection(this.resourceCollectionData)
         }
         if (this.resourceCollectionData && this.resourceCollectionManifest) {
           this.oldData = this.resourceCollectionData
@@ -78,13 +67,22 @@ export class ResourceCollectionComponent implements OnInit, OnDestroy {
     )
   }
 
-  async ngOnDestroy() {
-    if (this.activatedRoute.snapshot.queryParams.collectionId &&
-      this.activatedRoute.snapshot.queryParams.collectionType
-      && this.resourceCollectionData) {
-      await this.contentSvc.continueLearning(this.resourceCollectionData.identifier,
-                                             this.activatedRoute.snapshot.queryParams.collectionId,
-                                             this.activatedRoute.snapshot.queryParams.collectionType,
+  ngOnDestroy(): void {
+    // Angular does not await lifecycle hooks; run the async work
+    // fire-and-forget, exactly as `async ngOnDestroy()` already did.
+    void this.onDestroyAsync()
+  }
+
+  private async onDestroyAsync(): Promise<void> {
+    if (
+      this.activatedRoute.snapshot.queryParams.collectionId &&
+      this.activatedRoute.snapshot.queryParams.collectionType &&
+      this.resourceCollectionData
+    ) {
+      await this.contentSvc.continueLearning(
+        this.resourceCollectionData.identifier,
+        this.activatedRoute.snapshot.queryParams.collectionId,
+        this.activatedRoute.snapshot.queryParams.collectionType,
       )
     } else if (this.resourceCollectionData) {
       await this.contentSvc.continueLearning(this.resourceCollectionData.identifier)

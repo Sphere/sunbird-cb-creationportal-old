@@ -1,6 +1,7 @@
 import {
   // AuthKeycloakService,
   ConfigurationsService,
+  isActivationKey,
 } from '@ws-widget/utils'
 
 import { OrgServiceService } from './../../org-service.service'
@@ -13,7 +14,6 @@ import forEach from 'lodash/forEach'
 
 import get from 'lodash/get'
 
-
 @Component({
   standalone: false,
   selector: 'ws-app-org',
@@ -22,6 +22,9 @@ import get from 'lodash/get'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrgComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   // @ViewChild('target', { static: false }) target!: MdePopoverTrigger
   orgName!: string
   courseData!: any
@@ -32,7 +35,7 @@ export class OrgComponent implements OnInit, OnDestroy {
   btnText = ''
   courseCount = 0
   cardLimit = 5
-  cometencyData: { identifier: string, name: any; levels: string }[] = []
+  cometencyData: { identifier: string; name: any; levels: string }[] = []
   rating = 4
   starCount = 5
   color = 'accent'
@@ -44,7 +47,7 @@ export class OrgComponent implements OnInit, OnDestroy {
     private router: Router,
     private configSvc: ConfigurationsService,
     private cdr: ChangeDetectorRef,
-  ) { }
+  ) {}
 
   ngOnInit() {
     for (this.index = 0; this.index < this.starCount; this.index++) {
@@ -69,9 +72,7 @@ export class OrgComponent implements OnInit, OnDestroy {
     })
 
     this.orgService.getSearchResults(this.orgName).subscribe((result: any) => {
-      this.courseData = result.result.content.filter(
-        (org: any) => org.sourceName === this.orgName
-      )
+      this.courseData = result.result.content.filter((org: any) => org.sourceName === this.orgName)
       this.courseCount = this.courseData
       if (this.courseData) {
         this.courseData.forEach((course: any) => {
@@ -92,7 +93,7 @@ export class OrgComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck()
     })
 
-    this.configSvc.unMappedUser! == undefined ? this.btnText = 'Login' : this.btnText = 'View Course'
+    this.configSvc.unMappedUser! == undefined ? (this.btnText = 'Login') : (this.btnText = 'View Course')
   }
   toggleCardLimit() {
     if (this.cardLimit === 5) {
@@ -117,6 +118,4 @@ export class OrgComponent implements OnInit, OnDestroy {
   goToLink(a: string) {
     window.open(a, '_blank')
   }
-
-
 }

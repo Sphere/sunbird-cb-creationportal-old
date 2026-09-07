@@ -1,10 +1,8 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core'
 
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
-
 import { ActivatedRoute, Router } from '@angular/router'
 
-import { ConfigurationsService, NsPage, ValueService } from '@ws-widget/utils'
+import { ConfigurationsService, NsPage, ValueService, isActivationKey } from '@ws-widget/utils'
 
 import { Subscription } from 'rxjs'
 
@@ -18,7 +16,6 @@ import { MatDialog } from '@angular/material/dialog'
 
 import { ReviewDialogComponent } from '@ws/viewer/src/lib/components/review-checklist/review-dialog.component'
 
-
 @Component({
   standalone: false,
   selector: 'viewer-viewer-top-bar',
@@ -26,13 +23,16 @@ import { ReviewDialogComponent } from '@ws/viewer/src/lib/components/review-chec
   styleUrls: ['./viewer-top-bar.component.scss'],
 })
 export class ViewerTopBarComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() frameReference: any
   @Input() forPreview = false
   @Output() toggle = new EventEmitter()
   private viewerDataServiceSubscription: Subscription | null = null
   private paramSubscription: Subscription | null = null
   private viewerDataServiceResourceSubscription: Subscription | null = null
-  appIcon: SafeUrl | null = null
+  appIcon: string | null = null
   isTypeOfCollection = false
   collectionType: string | null = null
   prevResourceUrl: string | null = null
@@ -51,7 +51,6 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
   isCreator = false
   constructor(
     private activatedRoute: ActivatedRoute,
-    private domSanitizer: DomSanitizer,
     // private logger: LoggerService,
     private configSvc: ConfigurationsService,
     private viewerDataSvc: ViewerDataService,
@@ -78,10 +77,12 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     // this.logo = false
     // }
     if (this.configSvc.instanceConfig) {
-      this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        `/assets/instances/eagle/app_logos/aastar-logo.svg`
-        // this.configSvc.instanceConfig.logos.app,
-      )
+      // A compile-time literal path to a bundled asset, bound to <img [src]>.
+      // Angular sanitizes that as SecurityContext.URL, which already permits
+      // relative paths, so no bypass is needed — and using one only disabled
+      // that sanitization.
+      // this.configSvc.instanceConfig.logos.app,
+      this.appIcon = '/assets/instances/eagle/app_logos/aastar-logo.svg'
     }
     this.viewerDataServiceSubscription = this.viewerDataSvc.tocChangeSubject.subscribe(data => {
       this.prevResourceUrl = data.prevResource
@@ -100,12 +101,10 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
       this.collectionId = params.get('collectionId') as string
       this.isPreview = params.get('preview') === 'true' ? true : false
     })
-    this.viewerDataServiceResourceSubscription = this.viewerDataSvc.changedSubject.subscribe(
-      _data => {
-        this.resourceId = this.viewerDataSvc.resourceId as string
-        this.resourceName = this.viewerDataSvc.resource ? this.viewerDataSvc.resource.name : ''
-      },
-    )
+    this.viewerDataServiceResourceSubscription = this.viewerDataSvc.changedSubject.subscribe(_data => {
+      this.resourceId = this.viewerDataSvc.resourceId as string
+      this.resourceName = this.viewerDataSvc.resource ? this.viewerDataSvc.resource.name : ''
+    })
   }
   canShow(role: string): boolean {
     switch (role) {
@@ -118,7 +117,11 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
       case 'author':
         // return this.accessService.hasRole(CREATE_ROLE) || this.accessService.hasRole(REVIEW_ROLE)
         //   || this.accessService.hasRole(PUBLISH_ROLE)
-        return this.configSvc.userRoles!.has('content_reviewer') || this.configSvc.userRoles!.has('content_creator') || this.configSvc.userRoles!.has('content_publisher')
+        return (
+          this.configSvc.userRoles!.has('content_reviewer') ||
+          this.configSvc.userRoles!.has('content_creator') ||
+          this.configSvc.userRoles!.has('content_publisher')
+        )
       case 'author_create':
         //return this.accessService.hasRole(CREATE_ROLE)
         return this.configSvc.userRoles!.has('content_creator')
@@ -151,20 +154,19 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
     } catch (_ex) {
       window.history.back()
     }
-
   }
 
   sendForReview(value: string) {
     this.isReviewer = this.accessService.hasRole(['content_reviewer'])
 
-    console.log("value: ", value, this.isReviewer)
+    console.log('value: ', value, this.isReviewer)
     if (value == 'review' && this.isReviewer) {
       const dialogRef = this.dialog.open(ReviewDialogComponent, {
         width: '480px',
-        data: "yes",
+        data: 'yes',
       })
-      dialogRef.afterClosed().subscribe((d) => {
-        console.log("d", d)
+      dialogRef.afterClosed().subscribe(d => {
+        console.log('d', d)
       })
     } else {
       sessionStorage.setItem('isReviewClicked', 'true')
@@ -172,6 +174,5 @@ export class ViewerTopBarComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl(`/author/editor/${this.activatedRoute.snapshot.queryParams.collectionId}`)
       console.log(this.activatedRoute.snapshot.queryParams.collectionId)
     }
-
   }
 }

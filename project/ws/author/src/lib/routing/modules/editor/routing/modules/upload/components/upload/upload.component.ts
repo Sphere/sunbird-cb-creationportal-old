@@ -42,7 +42,7 @@ import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
 
 import { NotificationService } from '@ws/author/src/lib/services/notification.service'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-upload',
@@ -50,6 +50,9 @@ import { NotificationService } from '@ws/author/src/lib/services/notification.se
   styleUrls: ['./upload.component.scss'],
 })
 export class UploadComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   contents: NSContent.IContentMeta[] = []
   currentContent = ''
   currentStep = 2
@@ -72,20 +75,18 @@ export class UploadComponent implements OnInit, OnDestroy {
     private loaderService: LoaderService,
     private accessService: AccessControlService,
     private notificationSvc: NotificationService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.showSettingButtons = this.accessService.rootOrg === 'client1'
     this.allLanguages = this.authInitService.ordinals.subTitles
     this.canTransCode =
       this.authInitService.ordinals.canTransCode &&
-        this.authInitService.ordinals.canTransCode.length &&
-        this.authInitService.ordinals.canTransCode[0]
+      this.authInitService.ordinals.canTransCode.length &&
+      this.authInitService.ordinals.canTransCode[0]
         ? this.authInitService.ordinals.canTransCode[0]
         : false
-    Object.keys(this.contentService.originalContent).map(v =>
-      this.contents.push(this.contentService.originalContent[v]),
-    )
+    Object.keys(this.contentService.originalContent).forEach(v => this.contents.push(this.contentService.originalContent[v]))
     if (this.contents[0] && this.contents[0].artifactUrl) {
       this.currentStep = 3
     }
@@ -103,19 +104,12 @@ export class UploadComponent implements OnInit, OnDestroy {
   }
 
   customStepper(step: number) {
-    if (
-      step === 2 &&
-      this.contentService.getOriginalMeta(this.currentContent).isContentEditingDisabled
-    ) {
+    if (step === 2 && this.contentService.getOriginalMeta(this.currentContent).isContentEditingDisabled) {
       return
     }
     if (step === 1) {
       this.disableCursor = true
-    } else if (
-      this.currentStep === 2 &&
-      step !== 2 &&
-      !this.contentService.getUpdatedMeta(this.currentContent).artifactUrl
-    ) {
+    } else if (this.currentStep === 2 && step !== 2 && !this.contentService.getUpdatedMeta(this.currentContent).artifactUrl) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.UPLOAD_FILE,
@@ -200,10 +194,7 @@ export class UploadComponent implements OnInit, OnDestroy {
         error => {
           if (error.status === 409) {
             const errorMap = new Map<string, NSContent.IContentMeta>()
-            errorMap.set(
-              this.currentContent,
-              this.contentService.getUpdatedMeta(this.currentContent),
-            )
+            errorMap.set(this.currentContent, this.contentService.getUpdatedMeta(this.currentContent))
             this.dialog.open(ErrorParserComponent, {
               width: '80vw',
               height: '90vh',
@@ -256,13 +247,8 @@ export class UploadComponent implements OnInit, OnDestroy {
   }
 
   takeAction() {
-    const needSave = Object.keys(this.contentService.upDatedContent[this.currentContent] || {})
-      .length
-    if (
-      !needSave &&
-      this.contentService.getUpdatedMeta(this.currentContent).status === 'Live' &&
-      !this.isChanged
-    ) {
+    const needSave = Object.keys(this.contentService.upDatedContent[this.currentContent] || {}).length
+    if (!needSave && this.contentService.getUpdatedMeta(this.currentContent).status === 'Live' && !this.isChanged) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
           type: Notify.UP_TO_DATE,
@@ -290,11 +276,9 @@ export class UploadComponent implements OnInit, OnDestroy {
         comment: commentsForm.controls.comments.value,
         operation:
           commentsForm.controls.action.value === 'accept' ||
-            ['Draft', 'Live'].includes(
-              this.contentService.originalContent[this.currentContent].status,
-            )
+          ['Draft', 'Live'].includes(this.contentService.originalContent[this.currentContent].status)
             ? ((this.accessService.authoringConfig.isMultiStepFlow && this.isDirectPublish()) ||
-              !this.accessService.authoringConfig.isMultiStepFlow) &&
+                !this.accessService.authoringConfig.isMultiStepFlow) &&
               this.accessService.rootOrg.toLowerCase() === 'client1'
               ? 100000
               : 1
@@ -302,33 +286,19 @@ export class UploadComponent implements OnInit, OnDestroy {
       }
 
       const updatedContent: any = this.contentService.upDatedContent[this.currentContent] || {}
-      const needSave = Object.keys(this.contentService.upDatedContent[this.currentContent] || {})
-        .length
+      const needSave = Object.keys(this.contentService.upDatedContent[this.currentContent] || {}).length
       const updatedMeta = this.contentService.getUpdatedMeta(this.currentContent)
-      const saveCall = (needSave
-        ? this.triggerSave(updatedContent, this.currentContent)
-        : of({} as any)
-      ).pipe(
+      const saveCall = (needSave ? this.triggerSave(updatedContent, this.currentContent) : of({} as any)).pipe(
         mergeMap(() =>
           this.editorService
-            .forwardBackward(
-              body,
-              this.currentContent,
-              this.contentService.originalContent[this.currentContent].status,
-            )
+            .forwardBackward(body, this.currentContent, this.contentService.originalContent[this.currentContent].status)
             .pipe(
               mergeMap(() =>
-                this.notificationSvc
-                  .triggerPushPullNotification(
-                    updatedMeta,
-                    body.comment,
-                    body.operation ? true : false,
-                  )
-                  .pipe(
-                    catchError(() => {
-                      return of({} as any)
-                    }),
-                  ),
+                this.notificationSvc.triggerPushPullNotification(updatedMeta, body.comment, body.operation ? true : false).pipe(
+                  catchError(() => {
+                    return of({} as any)
+                  }),
+                ),
               ),
             ),
         ),
@@ -353,10 +323,7 @@ export class UploadComponent implements OnInit, OnDestroy {
         error => {
           if (error.status === 409) {
             const errorMap = new Map<string, NSContent.IContentMeta>()
-            errorMap.set(
-              this.currentContent,
-              this.contentService.getUpdatedMeta(this.currentContent),
-            )
+            errorMap.set(this.currentContent, this.contentService.getUpdatedMeta(this.currentContent))
             this.dialog.open(ErrorParserComponent, {
               width: '80vw',
               height: '90vh',
@@ -380,15 +347,11 @@ export class UploadComponent implements OnInit, OnDestroy {
 
   preview() {
     const updatedContent: any = this.contentService.upDatedContent[this.currentContent] || {}
-    const saveCall = Object.keys(updatedContent).length
-      ? this.triggerSave(updatedContent, this.currentContent)
-      : of({} as any)
+    const saveCall = Object.keys(updatedContent).length ? this.triggerSave(updatedContent, this.currentContent) : of({} as any)
     this.loaderService.changeLoad.next(true)
     saveCall.subscribe(
       () => {
-        this.mimeTypeRoute = VIEWER_ROUTE_FROM_MIME(
-          this.contentService.getUpdatedMeta(this.currentContent).mimeType as any,
-        )
+        this.mimeTypeRoute = VIEWER_ROUTE_FROM_MIME(this.contentService.getUpdatedMeta(this.currentContent).mimeType as any)
         this.loaderService.changeLoad.next(false)
         this.previewMode = true
       },
@@ -435,9 +398,7 @@ export class UploadComponent implements OnInit, OnDestroy {
         },
       },
     }
-    return this.editorService
-      .updateContent(requestBody)
-      .pipe(tap(() => this.contentService.resetOriginalMeta(meta, id)))
+    return this.editorService.updateContent(requestBody).pipe(tap(() => this.contentService.resetOriginalMeta(meta, id)))
   }
 
   getMessage(type: 'success' | 'failure') {
@@ -526,10 +487,7 @@ export class UploadComponent implements OnInit, OnDestroy {
   }
 
   isDirectPublish(): boolean {
-    return (
-      ['Draft', 'Live'].includes(this.contentService.originalContent[this.currentContent].status) &&
-      this.isPublisherSame()
-    )
+    return ['Draft', 'Live'].includes(this.contentService.originalContent[this.currentContent].status) && this.isPublisherSame()
   }
 
   delete() {
@@ -589,8 +547,7 @@ export class UploadComponent implements OnInit, OnDestroy {
   }
 
   isPublisherSame(): boolean {
-    const publisherDetails =
-      this.contentService.getUpdatedMeta(this.currentContent).publisherDetails || []
+    const publisherDetails = this.contentService.getUpdatedMeta(this.currentContent).publisherDetails || []
     return publisherDetails.find(v => v.id === this.accessService.userId) ? true : false
   }
 
@@ -602,9 +559,7 @@ export class UploadComponent implements OnInit, OnDestroy {
     ) {
       return 'publish'
     }
-    if (
-      this.contentService.originalContent[this.currentContent].contentType === 'Knowledge Artifact'
-    ) {
+    if (this.contentService.originalContent[this.currentContent].contentType === 'Knowledge Artifact') {
       return 'publish'
     }
     switch (this.contentService.originalContent[this.currentContent].status) {
@@ -621,9 +576,10 @@ export class UploadComponent implements OnInit, OnDestroy {
   }
 
   canDelete() {
-    return this.accessService.hasRole(['editor', 'admin']) ||
+    return (
+      this.accessService.hasRole(['editor', 'admin']) ||
       (['Draft', 'Live'].includes(this.contentService.originalContent[this.currentContent].status) &&
-        this.contentService.originalContent[this.currentContent].creatorContacts.find(v => v.id === this.accessService.userId)
-      )
+        this.contentService.originalContent[this.currentContent].creatorContacts.find(v => v.id === this.accessService.userId))
+    )
   }
 }

@@ -21,6 +21,10 @@ export class SubapplicationRespondService {
   subAppname = ''
   continueLearningData: any = null
   contentWindowinfo: any
+  // Target origin of the embedded sub-application, captured from the origin of
+  // the sub-app's own 'LOADED' message so responses (which carry the auth token)
+  // are delivered only back to that origin instead of being broadcast with '*'.
+  private contentTargetOrigin = window.location.origin
   loaded = false
   constructor(
     private configSvc: ConfigurationsService,
@@ -36,62 +40,62 @@ export class SubapplicationRespondService {
       this.changeContextrespond()
     })
   }
-  loadedRespond(contentWindow: any, applicationName: string, id?: string) {
+  loadedRespond(contentWindow: any, applicationName: string, id?: string, targetOrigin: string = window.location.origin) {
+    this.contentTargetOrigin = targetOrigin
     if (id && this.activatedRoute.snapshot.queryParams.viewMode && this.activatedRoute.snapshot.queryParams.viewMode === 'RESUME') {
       this.continueLearningData = null
-      this.contentSvc.fetchContentHistory(id).subscribe(
-        data => {
-          this.continueLearningData = data.continueData
-          if (this.configSvc && this.configSvc.userProfile) {
-            const firstName = this.configSvc.userProfile.userName ?
-              this.configSvc.userProfile.userName.split(' ', 2)[0] : ''
-            const lastName = this.configSvc.userProfile.userName ?
-              this.configSvc.userProfile.userName.split(' ', 2)[1] : ''
-            const viewMode: string = this.activatedRoute.snapshot.queryParams.viewMode ?
-              this.activatedRoute.snapshot.queryParams.viewMode : ''
-            const token = this.keyCloakSvc.token
-            const response = {
-              subApplicationName: applicationName,
-              requestId: 'LOADED',
-              parentContext: {
-                domainName: window.location.host,
-                url: this.router.url,
-                rootOrg: this.configSvc.rootOrg,
-                theme: this.configSvc.activeThemeObject ? {
-                  name: this.configSvc.activeThemeObject.themeName,
-                  ...this.configSvc.activeThemeObject.color,
-                } : '',
-                fontSize: this.configSvc.activeFontObject ? this.configSvc.activeFontObject.baseFontSize : '14px',
-                locale: (this.configSvc.userPreference && this.configSvc.userPreference.selectedLocale) || 'en',
-                darkMode: this.configSvc.isDarkMode,
-                subApplicationStartMode: viewMode.toUpperCase(),
-                user: {
-                  firstName,
-                  lastName,
-                  token,
-                  userId: this.configSvc.userProfile.userId ? this.configSvc.userProfile.userId : '',
-                  roles: this.configSvc.userRoles ? Array.from(this.configSvc.userRoles) : [],
-                },
-                heartbeatFrequency: '200',
+      this.contentSvc.fetchContentHistory(id).subscribe(data => {
+        this.continueLearningData = data.continueData
+        if (this.configSvc && this.configSvc.userProfile) {
+          const firstName = this.configSvc.userProfile.userName ? this.configSvc.userProfile.userName.split(' ', 2)[0] : ''
+          const lastName = this.configSvc.userProfile.userName ? this.configSvc.userProfile.userName.split(' ', 2)[1] : ''
+          const viewMode: string = this.activatedRoute.snapshot.queryParams.viewMode
+            ? this.activatedRoute.snapshot.queryParams.viewMode
+            : ''
+          const token = this.keyCloakSvc.token
+          const response = {
+            subApplicationName: applicationName,
+            requestId: 'LOADED',
+            parentContext: {
+              domainName: window.location.host,
+              url: this.router.url,
+              rootOrg: this.configSvc.rootOrg,
+              theme: this.configSvc.activeThemeObject
+                ? {
+                    name: this.configSvc.activeThemeObject.themeName,
+                    ...this.configSvc.activeThemeObject.color,
+                  }
+                : '',
+              fontSize: this.configSvc.activeFontObject ? this.configSvc.activeFontObject.baseFontSize : '14px',
+              locale: (this.configSvc.userPreference && this.configSvc.userPreference.selectedLocale) || 'en',
+              darkMode: this.configSvc.isDarkMode,
+              subApplicationStartMode: viewMode.toUpperCase(),
+              user: {
+                firstName,
+                lastName,
+                token,
+                userId: this.configSvc.userProfile.userId ? this.configSvc.userProfile.userId : '',
+                roles: this.configSvc.userRoles ? Array.from(this.configSvc.userRoles) : [],
               },
-              data: this.continueLearningData.data ? {
-                continueLearning: this.continueLearningData.data,
-              } : null,
-            }
-            contentWindow.postMessage(response, '*')
-            this.contentWindowinfo = contentWindow
-            this.loaded = true
-            this.subAppname = applicationName
+              heartbeatFrequency: '200',
+            },
+            data: this.continueLearningData.data
+              ? {
+                  continueLearning: this.continueLearningData.data,
+                }
+              : null,
           }
-        })
+          contentWindow.postMessage(response, targetOrigin)
+          this.contentWindowinfo = contentWindow
+          this.loaded = true
+          this.subAppname = applicationName
+        }
+      })
     } else {
       if (this.configSvc && this.configSvc.userProfile) {
-        const firstName = this.configSvc.userProfile.userName ?
-          this.configSvc.userProfile.userName.split(' ', 2)[0] : ''
-        const lastName = this.configSvc.userProfile.userName ?
-          this.configSvc.userProfile.userName.split(' ', 2)[1] : ''
-        const viewMode: string = this.activatedRoute.snapshot.queryParams.viewMode ?
-          this.activatedRoute.snapshot.queryParams.viewMode : ''
+        const firstName = this.configSvc.userProfile.userName ? this.configSvc.userProfile.userName.split(' ', 2)[0] : ''
+        const lastName = this.configSvc.userProfile.userName ? this.configSvc.userProfile.userName.split(' ', 2)[1] : ''
+        const viewMode: string = this.activatedRoute.snapshot.queryParams.viewMode ? this.activatedRoute.snapshot.queryParams.viewMode : ''
         const token = this.keyCloakSvc.token
         const response = {
           subApplicationName: applicationName,
@@ -100,10 +104,12 @@ export class SubapplicationRespondService {
             domainName: window.location.host,
             url: this.router.url,
             rootOrg: this.configSvc.rootOrg,
-            theme: this.configSvc.activeThemeObject ? {
-              name: this.configSvc.activeThemeObject.themeName,
-              ...this.configSvc.activeThemeObject.color,
-            } : '',
+            theme: this.configSvc.activeThemeObject
+              ? {
+                  name: this.configSvc.activeThemeObject.themeName,
+                  ...this.configSvc.activeThemeObject.color,
+                }
+              : '',
             fontSize: this.configSvc.activeFontObject ? this.configSvc.activeFontObject.baseFontSize : '14px',
             locale: (this.configSvc.userPreference && this.configSvc.userPreference.selectedLocale) || 'en',
             darkMode: this.configSvc.isDarkMode,
@@ -119,7 +125,7 @@ export class SubapplicationRespondService {
           },
           data: null,
         }
-        contentWindow.postMessage(response, '*')
+        contentWindow.postMessage(response, targetOrigin)
         this.contentWindowinfo = contentWindow
         this.loaded = true
         this.subAppname = applicationName
@@ -127,14 +133,13 @@ export class SubapplicationRespondService {
     }
   }
   continueLearningRespond(id: string, continueLearning: any) {
-    this.contentSvc.saveContinueLearning(
-      {
+    this.contentSvc
+      .saveContinueLearning({
         contextPathId: id,
         resourceId: id,
         data: JSON.stringify({ timestamp: Date.now(), data: continueLearning }),
         dateAccessed: Date.now(),
-      },
-    )
+      })
       .toPromise()
       .catch()
   }
@@ -181,12 +186,9 @@ export class SubapplicationRespondService {
   }
   changeContextrespond() {
     if (this.loaded && this.contentWindowinfo && this.configSvc && this.configSvc.userProfile && this.subAppname) {
-      const firstName = this.configSvc.userProfile.userName ?
-        this.configSvc.userProfile.userName.split(' ', 2)[0] : ''
-      const lastName = this.configSvc.userProfile.userName ?
-        this.configSvc.userProfile.userName.split(' ', 2)[1] : ''
-      const viewMode: string = this.activatedRoute.snapshot.queryParams.viewMode ?
-        this.activatedRoute.snapshot.queryParams.viewMode : ''
+      const firstName = this.configSvc.userProfile.userName ? this.configSvc.userProfile.userName.split(' ', 2)[0] : ''
+      const lastName = this.configSvc.userProfile.userName ? this.configSvc.userProfile.userName.split(' ', 2)[1] : ''
+      const viewMode: string = this.activatedRoute.snapshot.queryParams.viewMode ? this.activatedRoute.snapshot.queryParams.viewMode : ''
       const token = this.keyCloakSvc.token
       const response = {
         subApplicationName: this.subAppname,
@@ -195,10 +197,12 @@ export class SubapplicationRespondService {
           domainName: window.location.host,
           url: this.router.url,
           rootOrg: this.configSvc.rootOrg,
-          theme: this.configSvc.activeThemeObject ? {
-            name: this.configSvc.activeThemeObject.themeName,
-            ...this.configSvc.activeThemeObject.color,
-          } : '',
+          theme: this.configSvc.activeThemeObject
+            ? {
+                name: this.configSvc.activeThemeObject.themeName,
+                ...this.configSvc.activeThemeObject.color,
+              }
+            : '',
           fontSize: this.configSvc.activeFontObject ? this.configSvc.activeFontObject.baseFontSize : '14px',
           locale: (this.configSvc.userPreference && this.configSvc.userPreference.selectedLocale) || 'en',
           darkMode: this.configSvc.isDarkMode,
@@ -213,7 +217,7 @@ export class SubapplicationRespondService {
           heartbeatFrequency: '200',
         },
       }
-      this.contentWindowinfo.postMessage(response, '*')
+      this.contentWindowinfo.postMessage(response, this.contentTargetOrigin)
     }
   }
 }

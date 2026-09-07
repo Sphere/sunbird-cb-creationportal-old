@@ -10,7 +10,6 @@ import { map } from 'rxjs/operators'
 
 import { ConfigurationsService } from '@ws-widget/utils'
 
-
 // const PROTECTED_SLAG_V8 = `/LA1/api`
 const PROTECTED_SLAG_V8 = `/api`
 const LA_API_END_POINTS = {
@@ -27,13 +26,12 @@ export class AssessmentService {
     }),
   }
   private assessmentSubject: ReplaySubject<NSCompetency.IAchievementsRes> | null = null
-  constructor(private http: HttpClient, private configSvc: ConfigurationsService) {
-  }
+  constructor(
+    private http: HttpClient,
+    private configSvc: ConfigurationsService,
+  ) {}
 
-  getAssessmentDetails(
-    startDate: string,
-    endDate: string,
-  ): Observable<NSCompetency.IAchievementsRes> {
+  getAssessmentDetails(startDate: string, endDate: string): Observable<NSCompetency.IAchievementsRes> {
     if (!this.assessmentSubject) {
       this.assessmentSubject = new ReplaySubject()
       this.fetchAssessments(startDate, endDate)
@@ -47,23 +45,19 @@ export class AssessmentService {
       this.fetchAssessments(startDate, endDate)
     }
 
-    return this.assessmentSubject
-      .asObservable()
-      .pipe(
-        map((data: NSCompetency.IAchievementsRes) => {
-          if (data.achievements) {
-            data.achievements.find(assessment => assessment.id === id)
-          }
-        }),
-      )
+    return this.assessmentSubject.asObservable().pipe(
+      map((data: NSCompetency.IAchievementsRes) => {
+        if (data.achievements) {
+          return data.achievements.find(assessment => assessment.id === id)
+        }
+        return undefined
+      }),
+    )
   }
 
   private fetchAssessments(startDate: string, endDate: string) {
     this.http
-      .get<NSCompetency.IAchievementsRes>(
-        `${LA_API_END_POINTS.ASSESSMENTS}?startDate=${startDate}&endDate=${endDate}`,
-        this.httpOptions,
-      )
+      .get<NSCompetency.IAchievementsRes>(`${LA_API_END_POINTS.ASSESSMENTS}?startDate=${startDate}&endDate=${endDate}`, this.httpOptions)
       .subscribe(
         data => {
           if (!this.assessmentSubject) {
@@ -85,10 +79,9 @@ export class AssessmentService {
   }
 
   getDetails(startDate: string, endDate: string): Observable<NSCompetency.IAchievementsRes> {
-    return this.http
-      .get<NSCompetency.IAchievementsRes>(
-        `${LA_API_END_POINTS.ASSESSMENTS}?startDate=${startDate}&endDate=${endDate}`,
-        this.httpOptions,
-      )
+    return this.http.get<NSCompetency.IAchievementsRes>(
+      `${LA_API_END_POINTS.ASSESSMENTS}?startDate=${startDate}&endDate=${endDate}`,
+      this.httpOptions,
+    )
   }
 }

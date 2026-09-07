@@ -18,12 +18,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { WidgetResolverModule } from '@ws-widget/resolver'
 
-import { CalendarModule } from '../../module/calendar-module/calendar.module'
-
 import { RouterModule } from '@angular/router'
 
 import { CoursePendingCardComponent } from './components/course-pending-card/course-pending-card.component'
-
 
 @NgModule({
   declarations: [DashboardComponent, CoursePendingCardComponent],
@@ -40,10 +37,9 @@ import { CoursePendingCardComponent } from './components/course-pending-card/cou
     UserImageModule,
     WidgetResolverModule,
     PipeDurationTransformModule,
-    CalendarModule,
     RouterModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
   ],
 })
-export class DashboardModule { }
+export class DashboardModule {}

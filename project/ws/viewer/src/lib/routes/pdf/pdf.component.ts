@@ -5,7 +5,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core'
 import { Subscription } from 'rxjs'
 
 import {
-  NsContent, NsDiscussionForum,
+  NsContent,
+  NsDiscussionForum,
   // WidgetContentService
 } from '@ws-widget/collection'
 
@@ -18,7 +19,6 @@ import { ActivatedRoute } from '@angular/router'
 import { ViewerUtilService } from '../../viewer-util.service'
 
 //import { environment } from '../../../../../../../src/environments/environment'
-
 
 @Component({
   standalone: false,
@@ -46,22 +46,17 @@ export class PdfComponent implements OnInit, OnDestroy {
   }
   isPreviewMode = false
   forPreview = window.location.href.includes('/author/')
-  discussionForumWidget: NsWidgetResolver.IRenderConfigWithTypedData<
-    NsDiscussionForum.IDiscussionForumInput
-  > | null = null
+  discussionForumWidget: NsWidgetResolver.IRenderConfigWithTypedData<NsDiscussionForum.IDiscussionForumInput> | null = null
   constructor(
     private activatedRoute: ActivatedRoute,
     // private contentSvc: WidgetContentService,
     private viewerSvc: ViewerUtilService,
     private eventSvc: EventService,
     private accessControlSvc: AccessControlService,
-  ) { }
+  ) {}
 
   ngOnInit() {
-    if (
-      this.activatedRoute.snapshot.queryParamMap.get('preview') &&
-      !this.accessControlSvc.authoringConfig.newDesign
-    ) {
+    if (this.activatedRoute.snapshot.queryParamMap.get('preview') && !this.accessControlSvc.authoringConfig.newDesign) {
       this.isPreviewMode = true
       this.viewerDataSubscription = this.viewerSvc
         .getContent(this.activatedRoute.snapshot.paramMap.get('resourceId') || '')
@@ -105,12 +100,7 @@ export class PdfComponent implements OnInit, OnDestroy {
           //     await this.fetchContinueLearning(this.pdfData.identifier, this.pdfData.identifier)
           //   }
           // }
-          this.widgetResolverPdfData.widgetData.pdfUrl = this.pdfData
-            ? this.forPreview
-              ? this.pdfData.artifactUrl
-              // ? this.viewerSvc.getAuthoringUrl(this.pdfData.artifactUrl)
-              : this.pdfData.artifactUrl
-            : ''
+          this.widgetResolverPdfData.widgetData.pdfUrl = this.pdfData ? this.pdfData.artifactUrl : ''
 
           this.widgetResolverPdfData.widgetData.identifier = this.pdfData && this.pdfData.identifier
           this.widgetResolverPdfData = JSON.parse(JSON.stringify(this.widgetResolverPdfData))
@@ -121,14 +111,14 @@ export class PdfComponent implements OnInit, OnDestroy {
           }
           this.isFetchingDataComplete = true
         },
-        () => { },
+        () => {},
       )
     }
   }
 
   generateUrl(oldUrl: any) {
     // @ts-ignore: Unreachable code error
-    let bucket = window["env"]["azureBucket"]
+    let bucket = window['env']['azureBucket']
     if (oldUrl.includes(bucket)) {
       return oldUrl
     }

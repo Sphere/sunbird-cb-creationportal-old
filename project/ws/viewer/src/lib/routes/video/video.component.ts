@@ -23,7 +23,6 @@ import { Platform } from '@angular/cdk/platform'
 
 //import { environment } from '../../../../../../../src/environments/environment'
 
-
 @Component({
   standalone: false,
   selector: 'viewer-video',
@@ -39,12 +38,8 @@ export class VideoComponent implements OnInit, OnDestroy {
   videoData: NsContent.IContent | null = null
   isFetchingDataComplete = false
   isNotEmbed = true
-  widgetResolverVideoData: NsWidgetResolver.IRenderConfigWithTypedData<
-    IWidgetsPlayerMediaData
-  > | null = null
-  discussionForumWidget: NsWidgetResolver.IRenderConfigWithTypedData<
-    NsDiscussionForum.IDiscussionForumInput
-  > | null = null
+  widgetResolverVideoData: NsWidgetResolver.IRenderConfigWithTypedData<IWidgetsPlayerMediaData> | null = null
+  discussionForumWidget: NsWidgetResolver.IRenderConfigWithTypedData<NsDiscussionForum.IDiscussionForumInput> | null = null
   constructor(
     private activatedRoute: ActivatedRoute,
     private valueSvc: ValueService,
@@ -52,18 +47,14 @@ export class VideoComponent implements OnInit, OnDestroy {
     // private contentSvc: WidgetContentService,
     private platform: Platform,
     private accessControlSvc: AccessControlService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.screenSizeSubscription = this.valueSvc.isXSmall$.subscribe(data => {
       this.isScreenSizeSmall = data
     })
-    this.isNotEmbed =
-      this.activatedRoute.snapshot.queryParamMap.get('embed') === 'true' ? false : true
-    if (
-      this.activatedRoute.snapshot.queryParamMap.get('preview') &&
-      !this.accessControlSvc.authoringConfig.newDesign
-    ) {
+    this.isNotEmbed = this.activatedRoute.snapshot.queryParamMap.get('embed') === 'true' ? false : true
+    if (this.activatedRoute.snapshot.queryParamMap.get('preview') && !this.accessControlSvc.authoringConfig.newDesign) {
       this.viewerDataSubscription = this.viewerSvc
         .getContent(this.activatedRoute.snapshot.paramMap.get('resourceId') || '')
         .subscribe(data => {
@@ -84,7 +75,6 @@ export class VideoComponent implements OnInit, OnDestroy {
           this.isFetchingDataComplete = true
 
           if (this.videoData.subTitles) {
-
             let subTitleUrl = ''
             if (this.videoData.subTitles.length > 0 && this.videoData.subTitles[0]) {
               if (this.videoData.subTitles[0].url.indexOf('/content-store/') > -1) {
@@ -94,11 +84,13 @@ export class VideoComponent implements OnInit, OnDestroy {
               }
             }
 
-            this.widgetResolverVideoData.widgetData.subtitles = [{
-              srclang: '',
-              label: '',
-              url: subTitleUrl,
-            }]
+            this.widgetResolverVideoData.widgetData.subtitles = [
+              {
+                srclang: '',
+                label: '',
+                url: subTitleUrl,
+              },
+            ]
           }
         })
     } else {
@@ -120,20 +112,13 @@ export class VideoComponent implements OnInit, OnDestroy {
           //     await this.fetchContinueLearning(this.videoData.identifier, this.videoData.identifier)
           //   }
           // }
-          this.widgetResolverVideoData.widgetData.url = this.videoData
-            ? this.forPreview
-              ? this.videoData.artifactUrl // this.viewerSvc.getAuthoringUrl(this.videoData.artifactUrl)
-              : this.videoData.artifactUrl
-            : ''
+          this.widgetResolverVideoData.widgetData.url = this.videoData ? this.videoData.artifactUrl : ''
           this.widgetResolverVideoData.widgetData.resumePoint = this.getResumePoint(this.videoData)
-          this.widgetResolverVideoData.widgetData.identifier = this.videoData
-            ? this.videoData.identifier
-            : ''
+          this.widgetResolverVideoData.widgetData.identifier = this.videoData ? this.videoData.identifier : ''
           this.widgetResolverVideoData.widgetData.mimeType = data.content.data.mimeType
 
           // if (data.content.data.subTitles[0]) {
           if (data.content.data.subTitles && data.content.data.subTitles[0]) {
-
             let subTitlesUrl = ''
             if (data.content.data.subTitles[0].url.indexOf('/content-store/') > -1) {
               subTitlesUrl = `/apis/authContent/${new URL(data.content.data.subTitles[0].url).pathname}`
@@ -141,12 +126,13 @@ export class VideoComponent implements OnInit, OnDestroy {
               subTitlesUrl = `/apis/authContent/${encodeURIComponent(data.content.data.subTitles[0].url)}`
             }
 
-            this.widgetResolverVideoData.widgetData.subtitles = [{
-              srclang: '',
-              label: '',
-              url: subTitlesUrl,
-            }]
-
+            this.widgetResolverVideoData.widgetData.subtitles = [
+              {
+                srclang: '',
+                label: '',
+                url: subTitlesUrl,
+              },
+            ]
           }
 
           this.widgetResolverVideoData = JSON.parse(JSON.stringify(this.widgetResolverVideoData))
@@ -155,14 +141,14 @@ export class VideoComponent implements OnInit, OnDestroy {
           // }
           this.isFetchingDataComplete = true
         },
-        () => { },
+        () => {},
       )
     }
   }
 
   generateUrl(oldUrl: any) {
     // @ts-ignore: Unreachable code error
-    let bucket = window["env"]["azureBucket"]
+    let bucket = window['env']['azureBucket']
     if (oldUrl.includes(bucket)) {
       return oldUrl
     }
@@ -200,7 +186,6 @@ export class VideoComponent implements OnInit, OnDestroy {
         return Math.floor(content.duration * content.progress.progress) || 0
       }
       return 0
-
     }
     return 0
   }

@@ -62,15 +62,14 @@
 
 /* horizontal layout */
 
-  .rowView{
-    .options-container {
-  flex-direction: row;
-  justify-content: space-between;
-
+.rowView {
+  .options-container {
+    flex-direction: row;
+    justify-content: space-between;
   }
   .option {
-  width: 40%;
-}
+    width: 40%;
+  }
 }
 
 .option {
@@ -79,32 +78,30 @@
 
 /* vertical layout */
 
-  .columnView{
-    .options-container {
+.columnView {
+  .options-container {
     flex-direction: column;
     align-items: flex-start;
   }
-  .option{
+  .option {
     width: 100%;
   }
-
 }
-::ng-deep .cdk-overlay-pane{
-overflow: auto;
+::ng-deep .cdk-overlay-pane {
+  overflow: auto;
 }
-c
 .quiz-question {
-  margin-bottom: 5px;
-  font-family: Roboto;
-font-size: 16px;
-font-weight: 400;
-line-height: 12.75px;
-text-align: left;
-text-underline-position: from-font;
-text-decoration-skip-ink: none;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 12.75px;
+  text-align: left;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
   overflow-x: auto;
   margin: 10px 0 10 0 !important;
-color: #000000 !important;
+  margin-bottom: 5px;
+  color: #000000 !important;
   @include breakpoint-xs {
     margin: 0 !important;
   }
@@ -114,7 +111,6 @@ color: #000000 !important;
       margin: 0 !important;
     }
   }
-
 }
 
 correct-option {
@@ -177,13 +173,13 @@ correct-option {
 .background-well {
   background: #eee;
 }
-.next-button{
-    cursor: pointer;
-  background: #2E6491 !important;
-  color: #FFFFFF !important;
+.next-button {
+  cursor: pointer;
+  background: #2e6491 !important;
+  color: #ffffff !important;
   padding: 8px 32px 8px 32px;
   border-radius: 50px;
-  font-family: Roboto;
+  font-family: Roboto, sans-serif;
   font-size: 16px !important;
   font-weight: 400;
   line-height: 19px;
@@ -192,12 +188,12 @@ correct-option {
   border: none !important;
   height: 40px !important;
 }
-.back-button{
-    cursor: pointer;
+.back-button {
+  cursor: pointer;
   background: #ffffff !important;
   padding: 8px 32px 8px 32px;
   border-radius: 50px;
-  font-family: Roboto;
+  font-family: Roboto, sans-serif;
   font-size: 16px !important;
   font-weight: 400;
   line-height: 19px;
@@ -206,15 +202,14 @@ correct-option {
   height: 40px !important;
   color: #1c5d95 !important;
   border: 1px solid #1c5d95 !important;
-
 }
-.skip-button{
-   cursor: pointer;
-  background: #FFFFFF !important;
-  color: #1C5D95 !important;
+.skip-button {
+  cursor: pointer;
+  background: #ffffff !important;
+  color: #1c5d95 !important;
   padding: 8px 32px 8px 32px;
   border-radius: 50px;
-  font-family: Roboto;
+  font-family: Roboto, sans-serif;
   font-size: 16px !important;
   font-weight: 400;
   line-height: 19px;
@@ -222,119 +217,121 @@ correct-option {
   text-align: center !important;
   border: 1px solid !important;
   height: 40px !important;
-  border-color: #1C5D95 !important;
+  border-color: #1c5d95 !important;
 }
 .disabled-back-button {
-  background: #BFBFBF !important;
+  background: #bfbfbf !important;
   color: #808080 !important;
   cursor: not-allowed !important;
   border: none !important;
 }
 
-
 .submit-button {
   cursor: pointer;
-  background: #1C5D95 !important;
-  color: #FFFFFF !important;
+  background: #1c5d95 !important;
+  color: #ffffff !important;
   padding: 8px 32px 8px 32px;
   border-radius: 50px;
-  font-family: Roboto;
-  font-size: 16px ;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
   font-weight: 400;
   line-height: 19px;
   letter-spacing: 0em;
-  text-align: center ;
-  border: none ;
-  height: 40px ;
+  text-align: center;
+  border: none;
+  height: 40px;
 }
 
-@media screen and (max-width:600px) {
+@media screen and (max-width: 600px) {
   .skip-button .back-button .submit-button {
-  cursor: pointer;
-  padding: 8px 22px 8px 22px;
-  border-radius: 50px;
-  font-family: Roboto;
-  font-size: 12px !important;
+    cursor: pointer;
+    padding: 8px 22px 8px 22px;
+    border-radius: 50px;
+    font-family: Roboto, sans-serif;
+    font-size: 12px !important;
+    font-weight: 400;
+    line-height: 14px;
+    letter-spacing: 0em;
+    text-align: center !important;
+    border: none !important;
+    height: 30px !important;
+  }
+  .button-container {
+    gap: 10px !important;
+  }
+}
+
+::ng-deep .theme-igot.day-mode .mat-list-option:hover,
+.theme-igot.day-mode .mat-list-option:focus,
+.theme-igot.day-mode .mat-nav-list .mat-list-item:hover,
+.theme-igot.day-mode .mat-nav-list .mat-list-item:focus,
+.theme-igot.day-mode .mat-action-list .mat-list-item:hover,
+.theme-igot.day-mode .mat-action-list .mat-list-item:focus {
+  background: rgba(255, 255, 255, 0.04);
+}
+.questions-header {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 14px;
-  letter-spacing: 0em;
-  text-align: center !important;
-  border: none !important;
-  height: 30px !important;
+  line-height: 16.41px;
+  text-align: left;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+  color: #257cc7;
 }
-.button-container {
-gap: 10px !important;
-}
-}
-
-::ng-deep .theme-igot.day-mode .mat-list-option:hover, .theme-igot.day-mode .mat-list-option:focus, .theme-igot.day-mode .mat-nav-list .mat-list-item:hover, .theme-igot.day-mode .mat-nav-list .mat-list-item:focus, .theme-igot.day-mode .mat-action-list .mat-list-item:hover, .theme-igot.day-mode .mat-action-list .mat-list-item:focus {
-    background: rgba(255, 255, 255, 0.04);
-}
-.questions-header{
-  font-family: Roboto;
-font-size: 14px;
-font-weight: 400;
-line-height: 16.41px;
-text-align: left;
-text-underline-position: from-font;
-text-decoration-skip-ink: none;
-color: #257CC7;
-
-}
-.question-option{
+.question-option {
   //styleName: Body;
-font-family: Roboto;
-font-size: 16px;
-font-weight: 400;
-line-height: 24px;
-letter-spacing: -0.02em;
-text-align: left;
-text-underline-position: from-font;
-text-decoration-skip-ink: none;
-color: #000000 !important;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+  color: #000000 !important;
 }
 .theme-igot.day-mode .mat-radio-button .mat-radio-container .mat-radio-inner-circle {
-    background-color: #424242 !important;
+  background-color: #424242 !important;
 }
-.correct-answer{
-  background-color: #E8F4F2 !important;
+.correct-answer {
+  background-color: #e8f4f2 !important;
   color: #469788 !important;
 }
-.wrong-answer{
-  background-color: #FFDFDD !important;
-    color:#ED2C23 !important
+.wrong-answer {
+  background-color: #ffdfdd !important;
+  color: #ed2c23 !important;
 }
-.result-message{
-    border-radius: 8px 8px 0px 0px;
-
+.result-message {
+  border-radius: 8px 8px 0px 0px;
 }
-.result-message-container{
+.result-message-container {
   display: flex;
-    justify-content: end;
-    /* align-items: end; */
-    // width: 50%;
-    flex-direction: column;
+  justify-content: end;
+  /* align-items: end; */
+  // width: 50%;
+  flex-direction: column;
 }
-.result-answer-info{
-    border-radius: 0px 0px 8px 8px;
+.result-answer-info {
+  border-radius: 0px 0px 8px 8px;
 
-font-family: Roboto;
-font-size: 14px;
-font-weight: 400;
-line-height: 16.41px;
-letter-spacing: -0.02em;
-text-align: left;
-text-underline-position: from-font;
-text-decoration-skip-ink: none;
-color: #000000 !important;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16.41px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+  color: #000000 !important;
 }
-.result-text{
-  font-family: Roboto;
-font-size: 14px;
-font-weight: 400;
-line-height: 16.41px;
-letter-spacing: -0.02em;
-text-align: left;
-text-underline-position: from-font;
-text-decoration-skip-ink: none;
+.result-text {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16.41px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
 }

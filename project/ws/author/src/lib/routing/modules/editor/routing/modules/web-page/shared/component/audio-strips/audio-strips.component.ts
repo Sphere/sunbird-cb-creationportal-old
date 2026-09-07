@@ -9,7 +9,7 @@ import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/compon
 
 import { IAudioObj } from '../../../interface/page-interface'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 @Component({
   standalone: false,
   selector: 'ws-auth-audio-strips',
@@ -17,11 +17,15 @@ import { IAudioObj } from '../../../interface/page-interface'
   styleUrls: ['./audio-strips.component.scss'],
 })
 export class AudioStripsComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
 
   @Input() set data(val: IAudioObj[]) {
-    this.audioData = this.doRegex ? val.map((obj: IAudioObj) => {
-      return JSON.parse(JSON.stringify(obj).replace(this.downloadRegex, this.regexDownloadReplace))
-    }) : []
+    this.audioData = this.doRegex
+      ? val.map((obj: IAudioObj) => {
+          return JSON.parse(JSON.stringify(obj).replace(this.downloadRegex, this.regexDownloadReplace))
+        })
+      : []
     // this.durations = []
     // this.audioData.forEach(aud=>{
     //   this.getDuration(aud.URL)
@@ -36,15 +40,13 @@ export class AudioStripsComponent implements OnInit, OnDestroy {
   listener?: Subscription
   downloadRegex = new RegExp(`(/content-store/.*?)(\\\)?\\\\?['"])`, 'gm')
 
-  constructor(
-    public dialog: MatDialog,
-  ) { }
+  constructor(public dialog: MatDialog) {}
 
   regexDownloadReplace(_str = '', group1: string, group2: string): string {
     return `${AUTHORING_CONTENT_BASE}${encodeURIComponent(group1)}${group2}`
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   /**
    * Used to play or stop audio
@@ -86,5 +88,4 @@ export class AudioStripsComponent implements OnInit, OnDestroy {
   // getDuration(url: string){
 
   // }
-
 }

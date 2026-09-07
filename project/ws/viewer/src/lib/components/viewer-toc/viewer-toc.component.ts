@@ -7,12 +7,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
 
 import { ActivatedRoute } from '@angular/router'
 
-import {
-  ContentProgressService,
-  NsContent,
-  VIEWER_ROUTE_FROM_MIME,
-  WidgetContentService,
-} from '@ws-widget/collection'
+import { ContentProgressService, NsContent, VIEWER_ROUTE_FROM_MIME, WidgetContentService } from '@ws-widget/collection'
 
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
@@ -20,6 +15,7 @@ import {
   // LoggerService,
   ConfigurationsService,
   UtilityService,
+  SafeContentService,
 } from '@ws-widget/utils'
 
 import { of, Subscription } from 'rxjs'
@@ -67,7 +63,7 @@ interface ICollectionCard {
   selector: 'viewer-viewer-toc',
   templateUrl: './viewer-toc.component.html',
   styleUrls: ['./viewer-toc.component.scss'],
-  providers: [EditorService]
+  providers: [EditorService],
 })
 export class ViewerTocComponent implements OnInit, OnDestroy {
   @Output() hidenav = new EventEmitter<boolean>()
@@ -115,26 +111,20 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
   isErrorOccurred = false
   private paramSubscription: Subscription | null = null
   private viewerDataServiceSubscription: Subscription | null = null
-  hasNestedChild = (_: number, nodeData: IViewerTocCard) =>
-    nodeData && nodeData.children && nodeData.children.length
+  hasNestedChild = (_: number, nodeData: IViewerTocCard) => nodeData && nodeData.children && nodeData.children.length
   private _getChildren = (node: IViewerTocCard) => {
     return node && node.children ? node.children : []
   }
 
   ngOnInit() {
     if (this.configSvc.instanceConfig) {
-      this.defaultThumbnail = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        this.configSvc.instanceConfig.logos.defaultContent,
-      )
+      this.defaultThumbnail = SafeContentService.trustedResourceUrl(this.domSanitizer, this.configSvc.instanceConfig.logos.defaultContent)
     }
     this.paramSubscription = this.activatedRoute.queryParamMap.subscribe(async params => {
       const collectionId = params.get('collectionId')
       const collectionType = params.get('collectionType')
       if (collectionId && collectionType) {
-        if (
-          collectionType.toLowerCase() ===
-          NsContent.EMiscPlayerSupportedCollectionTypes.PLAYLIST.toLowerCase()
-        ) {
+        if (collectionType.toLowerCase() === NsContent.EMiscPlayerSupportedCollectionTypes.PLAYLIST.toLowerCase()) {
           this.collection = await this.getPlaylistContent(collectionId, collectionType)
         } else if (
           collectionType.toLowerCase() === NsContent.EContentTypes.MODULE.toLowerCase() ||
@@ -194,8 +184,7 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
   private processCurrentResourceChange() {
     if (this.collection && this.resourceId) {
       const currentIndex = this.queue.findIndex(c => c.identifier === this.resourceId)
-      const next =
-        currentIndex + 1 < this.queue.length ? this.queue[currentIndex + 1].viewerUrl : null
+      const next = currentIndex + 1 < this.queue.length ? this.queue[currentIndex + 1].viewerUrl : null
       const prev = currentIndex - 1 >= 0 ? this.queue[currentIndex - 1].viewerUrl : null
       this.viewerDataSvc.updateNextPrevResource(Boolean(this.collection), prev, next)
       this.processCollectionForTree()
@@ -203,14 +192,12 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
       this.getContentProgressHash()
     }
   }
-  private async getCollection(
-    collectionId: string,
-    _collectionType: string,
-  ): Promise<IViewerTocCard | null> {
+  private async getCollection(collectionId: string, _collectionType: string): Promise<IViewerTocCard | null> {
     try {
-      let content: NsContent.IContent = await (this.forPreview
-        ? this.contentSvc.fetchAuthoringContentHierarchy(collectionId)
-        : this.contentSvc.fetchContent(collectionId, 'detail')
+      let content: NsContent.IContent = await (
+        this.forPreview
+          ? this.contentSvc.fetchAuthoringContentHierarchy(collectionId)
+          : this.contentSvc.fetchContent(collectionId, 'detail')
       ).toPromise()
       content = content.result.content
       this.collectionCard = this.createCollectionCard(content)
@@ -251,14 +238,9 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async getPlaylistContent(
-    collectionId: string,
-    _collectionType: string,
-  ): Promise<IViewerTocCard | null> {
+  private async getPlaylistContent(collectionId: string, _collectionType: string): Promise<IViewerTocCard | null> {
     try {
-      const playlistFetchResponse = await this.contentSvc
-        .fetchCollectionHierarchy('playlist', collectionId, 0, 1000)
-        .toPromise()
+      const playlistFetchResponse = await this.contentSvc.fetchCollectionHierarchy('playlist', collectionId, 0, 1000).toPromise()
 
       const content: NsContent.IContent = playlistFetchResponse.data
       this.collectionCard = this.createCollectionCard(content)
@@ -314,9 +296,7 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
     return {
       artifactUrl: content.artifactUrl,
       identifier: content.identifier,
-      viewerUrl: `${this.forPreview ? '/author' : ''}/viewer/${VIEWER_ROUTE_FROM_MIME(
-        content.mimeType,
-      )}/${content.identifier}`,
+      viewerUrl: `${this.forPreview ? '/author' : ''}/viewer/${VIEWER_ROUTE_FROM_MIME(content.mimeType)}/${content.identifier}`,
       thumbnailUrl: content.appIcon,
       // this.forPreview
       //   ? this.viewSvc.getAuthoringUrl(content.appIcon)
@@ -335,9 +315,7 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
   showAlert() {
     this.scormAdapterService.LMSCommit()
   }
-  private createCollectionCard(
-    collection: NsContent.IContent | NsContent.IContentMinimal,
-  ): ICollectionCard {
+  private createCollectionCard(collection: NsContent.IContent | NsContent.IContentMinimal): ICollectionCard {
     // return {
     //   type: this.getCollectionTypeCard(collection.displayContentType),
     //   id: collection.identifier,
@@ -352,22 +330,15 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
       type: this.getCollectionTypeCard(collection.displayContentType),
       id: collection.identifier,
       title: collection.name,
-      thumbnail: this.forPreview
-        ? this.viewSvc.getAuthoringUrl(collection.appIcon)
-        : collection.appIcon,
+      thumbnail: this.forPreview ? this.viewSvc.getAuthoringUrl(collection.appIcon) : collection.appIcon,
       subText1: collection.resourceType ? collection.resourceType : collection.contentType,
       subText2: collection.complexityLevel,
       duration: collection.duration,
-      redirectUrl: this.getCollectionTypeRedirectUrl(
-        collection.identifier,
-        collection.displayContentType,
-      ),
+      redirectUrl: this.getCollectionTypeRedirectUrl(collection.identifier, collection.displayContentType),
     }
   }
 
-  private getCollectionTypeCard(
-    displayContentType?: NsContent.EDisplayContentTypes,
-  ): TCollectionCardType | null {
+  private getCollectionTypeCard(displayContentType?: NsContent.EDisplayContentTypes): TCollectionCardType | null {
     switch (displayContentType) {
       case NsContent.EDisplayContentTypes.PROGRAM:
       case NsContent.EDisplayContentTypes.COURSE:
@@ -382,10 +353,7 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getCollectionTypeRedirectUrl(
-    identifier: string,
-    displayContentType?: NsContent.EDisplayContentTypes,
-  ): string | null {
+  private getCollectionTypeRedirectUrl(identifier: string, displayContentType?: NsContent.EDisplayContentTypes): string | null {
     switch (displayContentType) {
       case NsContent.EDisplayContentTypes.PROGRAM:
       case NsContent.EDisplayContentTypes.COURSE:
@@ -439,7 +407,8 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
     this.playerStateService.setState({
       isValid: Boolean(this.collection),
       // tslint:disable-next-line:object-shorthand-properties-first
-      prev, next
+      prev,
+      next,
     })
   }
 }

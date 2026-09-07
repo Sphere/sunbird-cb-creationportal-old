@@ -23,7 +23,9 @@ mat-card {
   overflow: hidden;
   border-radius: 12px !important;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
-  transition: box-shadow 0.2s ease, transform 0.15s ease;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
   cursor: pointer;
   &:hover {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14) !important;
@@ -33,7 +35,7 @@ mat-card {
 
 .card-title {
   font-family: Roboto, sans-serif;
-  color: #1C5D95;
+  color: #1c5d95;
   font-size: 16px;
   font-weight: 500;
   margin: 0 0 4px;
@@ -115,7 +117,7 @@ mat-card {
 .competency-chip {
   font-size: 11px;
   font-weight: 500;
-  color: #1C5D95;
+  color: #1c5d95;
   background: #e8f0f8;
   border-radius: 4px;
   padding: 1px 6px;
@@ -194,7 +196,7 @@ mat-card-actions {
   border-bottom: 1px solid lightgrey;
 }
 .course-status-text {
-  font-family: Roboto !important;
+  font-family: Roboto, sans-serif !important;
   font-size: 11px !important;
   font-weight: 600 !important;
   text-transform: uppercase;
@@ -214,7 +216,8 @@ mat-card-actions {
     color: #1a7f4b;
     background: #e6f4ed;
   }
-  &.status-review, &.status-inreview {
+  &.status-review,
+  &.status-inreview {
     color: #a16207;
     background: #fef9c3;
   }
@@ -226,7 +229,8 @@ mat-card-actions {
     color: #c2410c;
     background: #ffedd5;
   }
-  &.status-unpublished, &.status-retired {
+  &.status-unpublished,
+  &.status-retired {
     color: #b91c1c;
     background: #fef2f2;
   }

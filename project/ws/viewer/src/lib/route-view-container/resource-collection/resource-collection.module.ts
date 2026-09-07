@@ -14,7 +14,6 @@ import { ResourceCollectionRoutingModule } from './resource-collection-routing.m
 
 import { ResourceCollectionComponent } from './resource-collection.component'
 
-
 import { WebModuleModule as PluginWebModuleModule } from '../../plugins/web-module/web-module.module'
 
 import { ResourceCollectionModule as PluginResourceCollectionModule } from '../../plugins/resource-collection/resource-collection.module'
@@ -25,24 +24,14 @@ import {
   BtnContentLikeModule,
   // BtnContentShareModule,
   // BtnGoalsModule,
-  BtnPlaylistModule,
   DisplayContentTypeModule,
   UserImageModule,
-  UserContentRatingModule,
-  BtnContentFeedbackV2Module,
   // PlayerBriefModule,
 } from '@ws-widget/collection'
 
-
-import {
-  PipeDurationTransformModule,
-  PipeLimitToModule,
-  PipePartialContentModule,
-} from '@ws-widget/utils'
-
+import { PipeDurationTransformModule, PipeLimitToModule, PipePartialContentModule } from '@ws-widget/utils'
 
 import { WidgetResolverModule } from '@ws-widget/resolver'
-
 
 @NgModule({
   declarations: [ResourceCollectionComponent],
@@ -64,19 +53,14 @@ import { WidgetResolverModule } from '@ws-widget/resolver'
     BtnContentLikeModule,
     // BtnContentShareModule,
     // BtnGoalsModule,
-    BtnPlaylistModule,
     DisplayContentTypeModule,
     UserImageModule,
-    UserContentRatingModule,
-    BtnContentFeedbackV2Module,
     // PlayerBriefModule,
     PipeDurationTransformModule,
     PipeLimitToModule,
     PipePartialContentModule,
     WidgetResolverModule,
   ],
-  exports: [
-    ResourceCollectionComponent,
-  ],
+  exports: [ResourceCollectionComponent],
 })
-export class ResourceCollectionModule { }
+export class ResourceCollectionModule {}

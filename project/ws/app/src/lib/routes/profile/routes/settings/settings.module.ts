@@ -24,15 +24,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 
 import { SettingsComponent } from './settings.component'
 
-import { NotificationSettingsComponent } from './components/notification-settings/notification-settings.component'
-
 import { SettingsService } from './settings.service'
 
 // import { ProfileSettingsComponent } from '../../../person-profile/module/profile-settings/profile-settings.component'
 
-
 @NgModule({
-  declarations: [SettingsComponent, NotificationSettingsComponent,
+  declarations: [
+    SettingsComponent,
     // ProfileSettingsComponent
   ],
   imports: [
@@ -62,4 +60,4 @@ import { SettingsService } from './settings.service'
   exports: [SettingsComponent],
   providers: [SettingsService],
 })
-export class SettingsModule { }
+export class SettingsModule {}

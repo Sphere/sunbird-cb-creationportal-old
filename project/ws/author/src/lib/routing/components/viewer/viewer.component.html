@@ -1,9 +1,9 @@
-<div style="height: 100vh; z-index: 1000;">
-  <mat-toolbar style="display: flex; justify-content: center; height: auto;">
+<div style="height: 100vh; z-index: 1000">
+  <mat-toolbar style="display: flex; justify-content: center; height: auto">
     <mat-label class="padding-s font-size-m" i18n>Device Type</mat-label>
     <mat-form-field class="font-size-m">
       <mat-select [(value)]="selected">
-        <mat-option style="z-index: 1002;" *ngFor="let device of previewDevices" [value]="device">
+        <mat-option style="z-index: 1002" *ngFor="let device of previewDevices" [value]="device">
           {{ device.viewValue }}
         </mat-option>
       </mat-select>
@@ -15,12 +15,11 @@
       {{actionType}}
     </a> -->
   </mat-toolbar>
-  <div
-    style="display: flex; justify-content: center; overflow: hidden; padding: 8px;"
-    class="mat-toolbar"
-  >
+  <div style="display: flex; justify-content: center; overflow: hidden; padding: 8px" class="mat-toolbar">
     <iframe
-      style="overflow: auto;"
+      style="overflow: auto"
+      i18n-title
+      title="Content preview"
       [src]="iframeUrl | pipeSafeSanitizer: 'resourceUrl'"
       [width]="selected.width"
       [height]="selected.height"

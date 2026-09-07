@@ -1,20 +1,6 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  OnDestroy,
-  ElementRef,
-  Input,
-  Output,
-  EventEmitter,
-} from '@angular/core'
+import { Component, OnInit, ViewChild, OnDestroy, ElementRef, Input, Output, EventEmitter } from '@angular/core'
 
-import {
-  NsInstanceConfig,
-  ConfigurationsService,
-  UserPreferenceService,
-  UtilityService,
-} from '@ws-widget/utils'
+import { NsInstanceConfig, ConfigurationsService, UserPreferenceService, UtilityService, isActivationKey } from '@ws-widget/utils'
 
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 
@@ -36,6 +22,9 @@ import { MatTabChangeEvent } from '@angular/material/tabs'
   styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @ViewChild('successToast', { static: true }) successToast!: ElementRef<any>
   @ViewChild('failureToast', { static: true }) failureToast: ElementRef | null = null
   @ViewChild('maxContentLangToast', { static: true }) maxContentLangToast!: ElementRef<any>
@@ -75,13 +64,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private utilitySvc: UtilityService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     const tab = this.route.snapshot.queryParamMap.get('tab')
     if (this.configSvc.restrictedFeatures) {
-      this.showIntranetSettings =
-        this.utilitySvc.isMobile && !this.configSvc.restrictedFeatures.has('showIntranetMobile')
+      this.showIntranetSettings = this.utilitySvc.isMobile && !this.configSvc.restrictedFeatures.has('showIntranetMobile')
       // this.showProfileSettings = !this.configSvc.restrictedFeatures.has('personProfile')
     }
     switch (tab) {
@@ -117,33 +105,26 @@ export class SettingsComponent implements OnInit, OnDestroy {
       this.chosenLanguage = this.appLanguage
       this.fonts.sort((a, b) => a.scale - b.scale)
 
-      this.allowedLangCode = instanceConfig.locals.reduce(
-        (agg: { [path: string]: NsInstanceConfig.ILocalsConfig }, u) => {
-          agg[u.path] = u
-          return agg
-        },
-        {},
-      )
+      this.allowedLangCode = instanceConfig.locals.reduce((agg: { [path: string]: NsInstanceConfig.ILocalsConfig }, u) => {
+        agg[u.path] = u
+        return agg
+      }, {})
       // Set the initial value for Themes
       this.darkModeForm.setValue(this.configSvc.isDarkMode)
       this.intranetContentForm.setValue(this.isIntranetAllowed)
       this.updateActiveStatus()
       // Events Subscription
-      this.modeChangeSubs = this.darkModeForm.valueChanges
-        .pipe(distinctUntilChanged(), debounceTime(150))
-        .subscribe((isDark: boolean) => {
-          this.btnSettingsSvc.applyThemeMode(isDark)
-        })
+      this.modeChangeSubs = this.darkModeForm.valueChanges.pipe(distinctUntilChanged(), debounceTime(150)).subscribe((isDark: boolean) => {
+        this.btnSettingsSvc.applyThemeMode(isDark)
+      })
       this.modeChangeSubs = this.intranetContentForm.valueChanges
         .pipe(distinctUntilChanged(), debounceTime(150))
         .subscribe((isIntranet: boolean) => {
           this.btnSettingsSvc.intranetContentMode(isIntranet)
         })
-      this.prefChangeSubs = this.configSvc.prefChangeNotifier
-        .pipe(debounceTime(100))
-        .subscribe(() => {
-          this.updateActiveStatus()
-        })
+      this.prefChangeSubs = this.configSvc.prefChangeNotifier.pipe(debounceTime(100)).subscribe(() => {
+        this.updateActiveStatus()
+      })
     }
   }
 
@@ -169,23 +150,15 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   localeHrefPath(langPath: string): string | null {
-    return this.allowedLangCode[langPath] &&
-      this.allowedLangCode[langPath].isAvailable &&
-      this.allowedLangCode[langPath].isEnabled
+    return this.allowedLangCode[langPath] && this.allowedLangCode[langPath].isAvailable && this.allowedLangCode[langPath].isEnabled
       ? langPath
       : null
   }
 
   localeIcon(langPath: string) {
     const currentLocalConfig = this.configSvc.activeLocale
-    if (
-      this.allowedLangCode[langPath] &&
-      this.allowedLangCode[langPath].isEnabled &&
-      currentLocalConfig
-    ) {
-      return currentLocalConfig && currentLocalConfig.path === langPath
-        ? 'radio_button_checked'
-        : 'radio_button_unchecked'
+    if (this.allowedLangCode[langPath] && this.allowedLangCode[langPath].isEnabled && currentLocalConfig) {
+      return currentLocalConfig && currentLocalConfig.path === langPath ? 'radio_button_checked' : 'radio_button_unchecked'
     }
     return 'not_interested'
   }

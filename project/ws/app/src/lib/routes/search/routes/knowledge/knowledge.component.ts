@@ -47,10 +47,10 @@ export class KnowledgeComponent implements OnInit, OnDestroy {
     filters: { [type: string]: string[] }
     sort?: string
   } = {
-      query: '',
-      filters: {},
-      sort: '',
-    }
+    query: '',
+    filters: {},
+    sort: '',
+  }
   khubResult: IKhubViewResultDocs = {
     count: 0,
     filters: {},
@@ -74,7 +74,7 @@ export class KnowledgeComponent implements OnInit, OnDestroy {
     private router: Router,
     private valueSvc: ValueService,
     private searchServ: SearchServService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.defaultSideNavBarOpenedSubscription = this.isLtMedium$.subscribe((isLtMedium: boolean) => {
@@ -168,9 +168,9 @@ export class KnowledgeComponent implements OnInit, OnDestroy {
       relativeTo: this.activated.parent,
     })
   }
-  sortOrder(type: string) {
+  async sortOrder(type: string) {
     try {
-      this.router.navigate([], {
+      await this.router.navigate([], {
         queryParams: { sort: type },
         queryParamsHandling: 'merge',
         relativeTo: this.activated.parent,

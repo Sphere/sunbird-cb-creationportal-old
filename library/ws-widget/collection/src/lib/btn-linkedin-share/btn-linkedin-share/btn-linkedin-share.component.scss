@@ -1,17 +1,23 @@
-.linkedin-img{
-    width:auto;
-    height:20px;
-    position: absolute;
+.linkedin-img {
+  width: auto;
+  height: 20px;
+  position: absolute;
 }
 
-.linked-in-link{
-    background-color: #2867b2 !important;
-    padding: 6px 10px 5px 10px;
-    border-radius: 4px;
+.linked-in-link {
+  background-color: #2867b2 !important;
+  padding: 6px 10px 5px 10px;
+  border-radius: 4px;
+  // now a <button> rather than an <a>: strip the UA button chrome so it renders
+  // exactly as before (no border, inherited typography, pointer cursor).
+  border: 0;
+  font: inherit;
+  line-height: normal;
+  cursor: pointer;
 }
 
-.linkedin-text{
-    font-size: 15px;
-    color: #fff;
-    padding-left: 25px;
+.linkedin-text {
+  font-size: 15px;
+  color: #fff;
+  padding-left: 25px;
 }

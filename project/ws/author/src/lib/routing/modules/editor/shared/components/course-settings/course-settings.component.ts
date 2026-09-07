@@ -26,7 +26,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 
 import { VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection/src/public-api'
 
-import { ConfigurationsService } from '@ws-widget/utils'
+import { ConfigurationsService, randomInt } from '@ws-widget/utils'
 
 import { ImageCropComponent } from '@ws-widget/utils/src/public-api'
 
@@ -87,14 +87,15 @@ import { HttpClient } from '@angular/common/http'
 
 import { isNumber } from 'lodash'
 
+import { EditMetaBaseComponent } from '../edit-meta/edit-meta-base.component'
+
 @Component({
   standalone: false,
   selector: 'ws-auth-course-settings',
   templateUrl: './course-settings.component.html',
   styleUrls: ['./course-settings.component.scss'],
 })
-export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
-  contentMeta!: NSContent.IContentMeta
+export class CourseSettingsComponent extends EditMetaBaseComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   @Output() data = new EventEmitter<string>()
   @Output() courseEditFormSubmit = new EventEmitter<boolean>()
   // Emits live validity of the course-settings form (Reviewers / Publishers /
@@ -105,62 +106,19 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   @Input() nextAction = 'done'
   @Input() stage = 1
   @Input() type = ''
-  location = CONTENT_BASE_STATIC
-  selectable = true
-  removable = true
-  addOnBlur = true
-  addConcepts = false
-  isFileUploaded = false
-  fileUploadForm!: FormGroup
-  creatorContactsCtrl!: FormControl
-  trackContactsCtrl!: FormControl
   publisherDetails!: FormControl
   trackContacts!: FormControl
   activateLink!: FormControl
   previewLinkFormControl!: FormControl
-  publisherDetailsCtrl!: FormControl
-  editorsCtrl!: FormControl
-  creatorDetailsCtrl!: FormControl
-  audienceCtrl!: FormControl
   rolesMappedCtrl!: FormControl
-  jobProfileCtrl!: FormControl
-  regionCtrl!: FormControl
-  accessPathsCtrl!: FormControl
-  keywordsCtrl!: FormControl
   competencySearchCtrl = new FormControl('')
-  selectedSkills: string[] = []
-  canUpdate = true
-  ordinals!: any
-  resourceTypes: string[] = []
   sourceName: string[] = []
-  employeeList: any[] = []
-  audienceList: any[] = []
   rolesMappedListData!: any
   rolesMappedListValuesData!: any
   rolesArray!: any
   rolesMappedList: any[] = []
-  jobProfileList: any[] = []
-  regionList: any[] = []
-  accessPathList: any[] = []
-  infoType = ''
-  isSiemens = false
-  fetchTagsStatus: 'done' | 'fetching' | null = null
-  readonly separatorKeysCodes: number[] = [ENTER, COMMA]
-  selectedIndex = 0
-  hours = 0
-  minutes = 1
-  seconds = 0
   @Input() parentContent: string | null = null
-  routerSubscription!: Subscription
-  imageTypes = IMAGE_SUPPORT_TYPES
-  canExpiry = true
-  showMoreGlance = false
-  complexityLevelList: string[] = []
-  isEditEnabled = false
-  public sideNavBarOpened = false
   // issueCertification!: FormControl
-  bucket: string = ''
-  certificateList: any[] = ['Yes', 'No']
   languageList: any[] = [
     {
       name: 'English',
@@ -172,7 +130,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     },
   ]
   proficiency: any
-  isAddCerticate: boolean = false
   isEnableTitle: boolean = true
   mainCourseDuration: string = ''
   isSelfAssessment: boolean = false
@@ -188,15 +145,8 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   @ViewChild('accessPathsView', { static: false }) accessPathsView!: ElementRef
   @ViewChild('keywordsSearch', { static: true }) keywordsSearch!: ElementRef<any>
 
-  timer: any
-
-  filteredOptions$: Observable<string[]> = of([])
-  saveParent: any
   courseData: any
   //UI variables
-  moduleName: string = 'undefined title'
-  isSaveModuleFormEnable: boolean = false
-  moduleButtonName: string = 'Create'
   roles$!: Observable<any[]>
   sourceNames$!: Observable<any[]>
   userId!: any
@@ -206,23 +156,36 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   competencies_v1: any
 
   constructor(
-    private formBuilder: FormBuilder,
-    private uploadService: UploadService,
-    private snackBar: MatSnackBar,
+    protected formBuilder: FormBuilder,
+    protected uploadService: UploadService,
+    protected snackBar: MatSnackBar,
     public dialog: MatDialog,
-    private editorService: EditorService,
-    private contentService: EditorContentService,
-    private configSvc: ConfigurationsService,
-    private ref: ChangeDetectorRef,
-    // private interestSvc: InterestService,
-    private loader: LoaderService,
-    private authInitService: AuthInitService,
-    private accessService: AccessControlService,
-    // private apiService: ApiService,
-    private http: HttpClient,
-    private router: Router,
-    private storeService: CollectionStoreService,
+    protected editorService: EditorService,
+    protected contentService: EditorContentService,
+    protected configSvc: ConfigurationsService,
+    protected ref: ChangeDetectorRef,
+    protected loader: LoaderService,
+    protected authInitService: AuthInitService,
+    protected accessService: AccessControlService,
+    protected http: HttpClient,
+    protected router: Router,
+    protected storeService: CollectionStoreService,
   ) {
+    super(
+      formBuilder,
+      uploadService,
+      snackBar,
+      dialog,
+      editorService,
+      contentService,
+      configSvc,
+      ref,
+      loader,
+      authInitService,
+      accessService,
+      http,
+      router,
+    )
     if (this.configSvc.userProfile) {
       this.userId = this.configSvc.userProfile.userId
       this.givenName = this.configSvc.userProfile.givenName
@@ -235,7 +198,13 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     })
   }
 
-  async ngAfterViewInit() {
+  ngAfterViewInit(): void {
+    // Angular does not await lifecycle hooks; run the async work
+    // fire-and-forget, exactly as `async ngAfterViewInit()` already did.
+    void this.afterViewInitAsync()
+  }
+
+  private async afterViewInitAsync(): Promise<void> {
     this.editorService.readcontentV3(this.contentService.parentUpdatedMeta().identifier).subscribe(async (data: any) => {
       this.courseData = await data
 
@@ -258,8 +227,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   rolesSubscription!: Subscription
   sourceNameSubscription!: Subscription
   searchComp: any = ''
-
-  contentForm!: FormGroup
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['triggerNext']?.currentValue === true) {
@@ -647,29 +614,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   }
   // trackBy for the form option/chip lists so *ngFor reuses rows instead of
   // re-rendering the whole list on each change.
-  trackByIndex(index: number): number {
-    return index
-  }
 
-  changeCertificate(event: any): void {
-    if (event == 'Yes') {
-      this.isAddCerticate = true
-    } else {
-      this.isAddCerticate = false
-    }
-  }
-
-  optionSelected(keyword: string) {
-    this.keywordsCtrl.setValue(' ')
-    // this.keywordsSearch.nativeElement.blur()
-    if (keyword && keyword.length) {
-      const value = this.contentForm.controls.keywords.value || []
-      if (value.indexOf(keyword) === -1) {
-        value.push(keyword)
-        this.contentForm.controls.keywords.setValue(value)
-      }
-    }
-  }
   getKeys(index: number): string[] {
     return Object.keys(this.rolesMappedListData[index])
   }
@@ -741,73 +686,13 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     this.changeResourceType()
   }
 
-  filterOrdinals() {
-    this.complexityLevelList = []
-    this.ordinals.complexityLevel.map((v: any) => {
-      if (v.condition) {
-        let canAdd = false
-        // tslint:disable-next-line: whitespace
-        ;(v.condition.showFor || []).map((con: any) => {
-          let innerCondition = false
-          Object.keys(con).map(meta => {
-            if (
-              con[meta].indexOf(
-                (this.contentForm.controls[meta] && this.contentForm.controls[meta].value) ||
-                  this.contentMeta[meta as keyof NSContent.IContentMeta],
-              ) > -1
-            ) {
-              innerCondition = true
-            }
-          })
-          if (innerCondition) {
-            canAdd = true
-          }
-        })
-        if (canAdd) {
-          // tslint:disable-next-line: semicolon // tslint:disable-next-line: whitespace
-          ;(v.condition.nowShowFor || []).map((con: any) => {
-            let innerCondition = false
-            Object.keys(con).map(meta => {
-              if (
-                con[meta].indexOf(
-                  (this.contentForm.controls[meta] && this.contentForm.controls[meta].value) ||
-                    this.contentMeta[meta as keyof NSContent.IContentMeta],
-                ) < 0
-              ) {
-                innerCondition = true
-              }
-            })
-            if (innerCondition) {
-              canAdd = false
-            }
-          })
-        }
-        if (canAdd) {
-          this.complexityLevelList.push(v.value)
-        }
-      } else {
-        if (typeof v === 'string') {
-          this.complexityLevelList.push(v)
-        } else {
-          this.complexityLevelList.push(v.value)
-        }
-      }
-    })
-  }
-
-  assignExpiryDate() {
-    this.canExpiry = !this.canExpiry
-    this.contentForm.controls.expiryDate.setValue(
-      this.canExpiry ? new Date(new Date().setMonth(new Date().getMonth() + 6)) : '99991231T235959+0000',
-    )
-  }
   assignFields() {
     this.isSelfAssessment = this.contentMeta.competency
     if (!this.contentForm) {
       this.createForm()
     }
     this.canUpdate = false
-    Object.keys(this.contentForm.controls).map(v => {
+    Object.keys(this.contentForm.controls).forEach(v => {
       try {
         if (
           this.contentMeta[v as keyof NSContent.IContentMeta] ||
@@ -913,70 +798,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     } catch (e) {
       console.error('Failed to parse competencies_v1', e)
     }
-  }
-  convertToISODate(date = ''): Date {
-    try {
-      return new Date(
-        `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}${date.substring(
-          8,
-          11,
-        )}:${date.substring(11, 13)}:${date.substring(13, 15)}.000Z`,
-      )
-    } catch (ex) {
-      return new Date(new Date().setMonth(new Date().getMonth() + 6))
-    }
-  }
-
-  changeMimeType() {
-    const artifactUrl = this.contentForm.controls.artifactUrl ? this.contentForm.controls.artifactUrl.value : ''
-    if (this.contentForm.controls.contentType.value === 'Course') {
-      this.contentForm.controls.mimeType.setValue('application/vnd.ekstep.content-collection')
-    } else {
-      this.contentForm.controls.mimeType.setValue('application/html')
-      if (
-        this.configSvc.instanceConfig &&
-        this.configSvc.instanceConfig.authoring &&
-        this.configSvc.instanceConfig.authoring.urlPatternMatching
-      ) {
-        this.configSvc.instanceConfig.authoring.urlPatternMatching.map(v => {
-          if (artifactUrl.match(v.pattern) && v.allowIframe && v.source === 'youtube') {
-            this.contentForm.controls.mimeType.setValue('video/x-youtube')
-          }
-        })
-      }
-    }
-  }
-
-  changeResourceType() {
-    if (this.contentForm.controls.contentType.value === 'Resource') {
-      this.resourceTypes = this.ordinals.resourceType || this.ordinals.categoryType || []
-    } else {
-      this.resourceTypes = this.ordinals['Offering Mode'] || this.ordinals.categoryType || []
-    }
-
-    if (this.resourceTypes.indexOf(this.contentForm.controls.categoryType.value) < 0) {
-      this.contentForm.controls.resourceType.setValue('')
-    }
-  }
-
-  private setDuration(seconds: any) {
-    const minutes = seconds > 59 ? Math.floor(seconds / 60) : 0
-    const second = seconds % 60
-    this.hours = minutes ? (minutes > 59 ? Math.floor(minutes / 60) : 0) : 0
-    this.minutes = minutes ? minutes % 60 : 0
-    this.seconds = second || 0
-  }
-
-  timeToSeconds() {
-    let total = 0
-    total += this.seconds ? (this.seconds < 60 ? this.seconds : 59) : 0
-    total += this.minutes ? (this.minutes < 60 ? this.minutes : 59) * 60 : 0
-    total += this.hours ? this.hours * 60 * 60 : 0
-    this.contentForm.controls.duration.setValue(total)
-  }
-
-  showInfo(type: string) {
-    this.infoType = this.infoType === type ? '' : type
   }
 
   storeData() {
@@ -1095,7 +916,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
         }
         // tslint:disable-next-line:no-console
         console.log('currentMeta', currentMeta)
-        Object.keys(currentMeta).map(v => {
+        Object.keys(currentMeta).forEach(v => {
           if (
             (this.isSelfAssessment ? true : v !== 'competencies_v1') &&
             v !== 'versionKey' &&
@@ -1190,7 +1011,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     return null // Return null if value is not found
   }
   getValuesForKeys(keysToFind: any) {
-    keysToFind
     const values: any = []
     keysToFind.forEach((key: any) => {
       key = key.split(':')[0]
@@ -1233,51 +1053,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     this.contentService.setUpdatedMeta({ [meta]: value } as any, this.contentMeta.identifier)
   }
 
-  formNext(index: number) {
-    this.selectedIndex = index
-  }
-
-  addKeyword(event: MatChipInputEvent): void {
-    const input = event.input
-    event.value
-      .split(/[,]+/)
-      .map((val: string) => val.trim())
-      .forEach((value: string) => this.optionSelected(value))
-    input.value = ''
-  }
-
-  addReferences(event: MatChipInputEvent): void {
-    const input = event.input
-    const value = event.value
-
-    // Add our fruit
-    if ((value || '').trim().length) {
-      const oldArray = this.contentForm.controls.references.value || []
-      oldArray.push({ title: '', url: value })
-      this.contentForm.controls.references.setValue(oldArray)
-    }
-
-    // Reset the input value
-    if (input) {
-      input.value = ''
-    }
-  }
-
-  removeKeyword(keyword: any): void {
-    const index = this.contentForm.controls.keywords.value.indexOf(keyword)
-    this.contentForm.controls.keywords.value.splice(index, 1)
-    this.contentForm.controls.keywords.setValue(this.contentForm.controls.keywords.value)
-  }
-
-  removeReferences(index: number): void {
-    this.contentForm.controls.references.value.splice(index, 1)
-    this.contentForm.controls.references.setValue(this.contentForm.controls.references.value)
-  }
-
-  compareSkillFn(value1: { identifier: string }, value2: { identifier: string }) {
-    return value1 && value2 ? value1.identifier === value2.identifier : value1 === value2
-  }
-
   addCreatorDetails(event: MatChipInputEvent): void {
     const input = event.input
     if (this.configSvc.userProfile) {
@@ -1298,12 +1073,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     }
   }
 
-  removeCreatorDetails(keyword: any): void {
-    const index = this.contentForm.controls.creatorDetails.value.indexOf(keyword)
-    this.contentForm.controls.creatorDetails.value.splice(index, 1)
-    this.contentForm.controls.creatorDetails.setValue(this.contentForm.controls.creatorDetails.value)
-  }
-
   addToFormControl(event: MatAutocompleteSelectedEvent, fieldName: string): void {
     const value = (event.option.value || '').trim()
     // if (this.contentForm.controls['rolesMapped'] == null) {
@@ -1320,16 +1089,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     this[`${fieldName}View` as keyof CourseSettingsComponent].nativeElement.value = ''
     this[`${fieldName}Ctrl` as keyof CourseSettingsComponent].setValue(null)
     this[`${fieldName}View` as keyof CourseSettingsComponent].nativeElement.blur()
-  }
-
-  removeFromFormControl(keyword: any, fieldName: string): void {
-    const index = this.contentForm.controls[fieldName].value.indexOf(keyword)
-    this.contentForm.controls[fieldName].value.splice(index, 1)
-    this.contentForm.controls[fieldName].setValue(this.contentForm.controls[fieldName].value)
-  }
-
-  conceptToggle() {
-    this.addConcepts = !this.addConcepts
   }
 
   // uploadAppIcon(file: File) {
@@ -1539,136 +1298,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
         imageFileName: fileName,
       },
     })
-    dialogRef.afterClosed().subscribe({
-      next: (result: File) => {
-        if (result) {
-          formdata.append('content', result, fileName)
-          this.loader.changeLoad.next(true)
-
-          let randomNumber = ''
-          // tslint:disable-next-line: no-increment-decrement
-          for (let i = 0; i < 16; i++) {
-            randomNumber += Math.floor(Math.random() * 10)
-          }
-          const requestBody: NSApiRequest.ICreateImageMetaRequestV2 = {
-            request: {
-              content: {
-                code: randomNumber,
-                contentType: 'Asset',
-                createdBy: this.accessService.userId,
-                creator: this.accessService.userName,
-                mimeType: 'image/jpeg',
-                mediaType: 'image',
-                name: fileName,
-                lang: ['English'],
-                license: 'CC BY 4.0',
-                primaryCategory: 'Asset',
-              },
-            },
-          }
-
-          this.http.post<NSApiRequest.ICreateMetaRequest>(`${AUTHORING_BASE}content/v3/create`, requestBody).subscribe((meta: any) => {
-            // return data.result.identifier
-            this.uploadService
-              .upload(formdata, {
-                contentId: meta.result.identifier,
-                contentType: CONTENT_BASE_STATIC,
-              })
-
-              .subscribe(
-                data => {
-                  if (data && data.name !== 'Error') {
-                    // const generateURL = this.generateUrl(data.artifactUrl)
-                    // const updateArtf: NSApiRequest.IUpdateImageMetaRequestV2 = {
-                    //   request: {
-                    //     content: {
-                    //       // content_url: data.result.artifactUrl,
-                    //       // identifier: data.result.identifier,
-                    //       // node_id: data.result.node_id,
-                    //       thumbnail: generateURL,
-                    //       appIcon: generateURL,
-                    //       artifactUrl: generateURL,
-                    //       // versionKey: (new Date()).getTime().toString(),
-                    //       versionKey: meta.result.versionKey,
-                    //     },
-                    //   },
-                    // }
-
-                    // this.apiService
-                    //   .patch<NSApiRequest.ICreateMetaRequest>(
-                    //     `${AUTHORING_BASE}content/v3/update/${data.identifier}`,
-                    //     updateArtf,
-                    //   )
-                    // this.editorService.checkReadAPI(data.identifier)
-                    // .subscribe(
-                    //   (res: any) => {
-                    //     console.log(res)
-                    //     if (res) {
-                    //     }
-                    this.loader.changeLoad.next(false)
-                    this.canUpdate = false
-                    this.contentForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
-                    this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
-                    this.canUpdate = true
-                    // this.data.emit('save')
-                    this.storeData()
-                    this.authInitService.uploadData('thumbnail')
-                    // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-                    this.snackBar.openFromComponent(NotificationComponent, {
-                      data: {
-                        type: Notify.UPLOAD_SUCCESS,
-                      },
-                      duration: NOTIFICATION_TIME * 2000,
-                    })
-                    // })
-                  } else {
-                    this.loader.changeLoad.next(false)
-                    this.snackBar.open(data.message, undefined, { duration: 2000 })
-                  }
-                },
-                () => {
-                  this.loader.changeLoad.next(false)
-                  this.snackBar.openFromComponent(NotificationComponent, {
-                    data: {
-                      type: Notify.UPLOAD_FAIL,
-                    },
-                    duration: NOTIFICATION_TIME * 1000,
-                  })
-                },
-              )
-
-            // .subscribe(
-            //   data => {
-            //     if (data.result) {
-            //       this.loader.changeLoad.next(false)
-            //       this.canUpdate = false
-            //       this.contentForm.controls.appIcon.setValue(data.result.artifactUrl)
-            //       this.contentForm.controls.thumbnail.setValue(data.result.artifactUrl)
-            //       // this.contentForm.controls.posterImage.setValue(data.artifactURL)
-            //       this.canUpdate = true
-            //       this.storeData()
-            //       this.snackBar.openFromComponent(NotificationComponent, {
-            //         data: {
-            //           type: Notify.UPLOAD_SUCCESS,
-            //         },
-            //         duration: NOTIFICATION_TIME * 1000,
-            //       })
-            //     }
-            //   },
-            //   () => {
-            //     this.loader.changeLoad.next(false)
-            //     this.snackBar.openFromComponent(NotificationComponent, {
-            //       data: {
-            //         type: Notify.UPLOAD_FAIL,
-            //       },
-            //       duration: NOTIFICATION_TIME * 1000,
-            //     })
-            //   },
-            // )
-          })
-        }
-      },
-    })
+    this.uploadCroppedAsset(dialogRef, fileName, formdata)
   }
   uploadSourceIcon(file: File) {
     const formdata = new FormData()
@@ -1747,9 +1377,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
       },
     })
   }
-  changeToDefaultImg($event: any) {
-    $event.target.src = this.configSvc.instanceConfig ? this.configSvc.instanceConfig.logos.defaultContent : ''
-  }
 
   generateUrl(oldUrl: any) {
     //const chunk = oldUrl.split('/')
@@ -1774,28 +1401,12 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     // const newUrl = newLink.join('/')
     // console.log(newUrl)
     // return newUrl
-  }
 
-  showError(meta: string) {
-    if (
-      this.contentService.checkCondition(this.contentMeta.identifier, meta, 'required') &&
-      !this.contentService.isPresent(meta, this.contentMeta.identifier)
-    ) {
-      if (this.isSubmitPressed) {
-        return true
-      }
-      if (this.contentForm.controls[meta] && this.contentForm.controls[meta].touched) {
-        return true
-      }
-      return false
-    }
-    return false
-  }
-
-  removeEmployee(employee: NSContent.IAuthorDetails, field: string): void {
-    const index = this.contentForm.controls[field].value.indexOf(employee)
-    this.contentForm.controls[field].value.splice(index, 1)
-    this.contentForm.controls[field].setValue(this.contentForm.controls[field].value)
+    // Falling off the end here returned undefined for any url outside the bucket,
+    // and the caller feeds this straight into the appIcon and thumbnail controls,
+    // so a valid external image blanked both fields. Return the url unchanged,
+    // matching the sibling implementation in edit-meta.
+    return oldUrl
   }
 
   addEmployee(event: MatAutocompleteSelectedEvent, field: string) {
@@ -1853,13 +1464,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     }
   }
 
-  removeField(event: MatChipInputEvent) {
-    // Reset the input value
-    if (event.input) {
-      event.input.value = ''
-    }
-  }
-
   private fetchAudience() {
     // console.log("fasdfaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     if ((this.audienceCtrl.value || '').trim()) {
@@ -1880,41 +1484,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
     //   this.rolesMappedList = this.rolesMappedListData.slice()
     // }
     // console.log("this.rolesMappedList", this.rolesMappedList)
-  }
-
-  private fetchJobProfile() {
-    if ((this.jobProfileCtrl.value || '').trim()) {
-      this.jobProfileList = this.ordinals.jobProfile.filter(
-        (v: any) => v.toLowerCase().indexOf(this.jobProfileCtrl.value.toLowerCase()) > -1,
-      )
-    } else {
-      this.jobProfileList = this.ordinals.jobProfile.slice()
-    }
-  }
-
-  private fetchRegion() {
-    if ((this.regionCtrl.value || '').trim()) {
-      this.regionList = this.ordinals.region.filter((v: any) => v.toLowerCase().indexOf(this.regionCtrl.value.toLowerCase()) > -1)
-    } else {
-      this.regionList = []
-    }
-  }
-
-  private fetchAccessRestrictions() {
-    if (this.accessPathsCtrl.value.trim()) {
-      this.accessPathList = this.ordinals.accessPaths.filter(
-        (v: any) => v.toLowerCase().indexOf(this.accessPathsCtrl.value.toLowerCase()) === 0,
-      )
-    } else {
-      this.accessPathList = this.ordinals.accessPaths.slice()
-    }
-  }
-
-  checkCondition(meta: string, type: 'show' | 'required' | 'disabled'): boolean {
-    if (type === 'disabled' && !this.isEditEnabled) {
-      return true
-    }
-    return this.contentService.checkCondition(this.contentMeta.identifier, meta, type)
   }
 
   createForm() {
@@ -1968,7 +1537,7 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
       gatingEnabled: new FormControl(''),
       issueCertification: !this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
       // competencies_v1: this.isSelfAssessment ? new FormControl('', [Validators.required]) : new FormControl(''),
-      competencies_v1: this.isSelfAssessment ? new FormControl('') : new FormControl(''),
+      competencies_v1: new FormControl(''),
       lang: '',
       // proficiency: new FormControl('', [Validators.required]),
       creatorDetails: [],
@@ -2087,24 +1656,6 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   setPurposeValue(sub: any) {
     this.contentForm.controls.purpose.setValue(sub)
   }
-  openCatalogSelector() {
-    const oldCatalogs = this.addCommonToCatalog(this.contentForm.controls.catalogPaths.value)
-    const dialogRef = this.dialog.open(CatalogSelectComponent, {
-      width: '70%',
-      maxHeight: '90vh',
-
-      data: JSON.parse(JSON.stringify(oldCatalogs)),
-    })
-    dialogRef.afterClosed().subscribe((response: string[]) => {
-      // const catalogs = this.removeCommonFromCatalog(response)
-      this.contentForm.controls.catalogPaths.setValue(response)
-    })
-  }
-
-  removeSkill(skill: string) {
-    const index = this.selectedSkills.indexOf(skill)
-    this.selectedSkills.splice(index, 1)
-  }
 
   // removeCatalog(index: number) {
   //   const catalogs = this.contentForm.controls.catalogPaths.value
@@ -2124,76 +1675,8 @@ export class CourseSettingsComponent implements OnInit, OnChanges, OnDestroy, Af
   //   return newCatalog
   // }
 
-  copyData(type: 'keyword' | 'previewUrl') {
-    const parentId = this.contentService.parentUpdatedMeta().identifier
-    const selBox = document.createElement('textarea')
-    selBox.style.position = 'fixed'
-    selBox.style.left = '0'
-    selBox.style.top = '0'
-    selBox.style.opacity = '0'
-    if (type === 'keyword') {
-      selBox.value = this.contentForm.controls.keywords.value
-    } else if (type === 'previewUrl') {
-      // selBox.value =
-      //   // tslint:disable-next-line: max-line-length
-      //   `${window.location.origin}/viewer/${VIEWER_ROUTE_FROM_MIME(
-      //     this.contentForm.controls.mimeType.value,
-      //   )}/${this.contentMeta.identifier}?preview=true`
-
-      selBox.value =
-        // tslint:disable-next-line: max-line-length
-        `${window.location.origin}/author/viewer/${VIEWER_ROUTE_FROM_MIME(
-          this.contentForm.controls.mimeType.value,
-        )}/${this.contentMeta.identifier}?collectionId=${parentId}&collectionType=Course`
-    }
-    document.body.appendChild(selBox)
-    selBox.focus()
-    selBox.select()
-    document.execCommand('copy')
-    document.body.removeChild(selBox)
-    this.snackBar.openFromComponent(NotificationComponent, {
-      data: {
-        type: Notify.COPY,
-      },
-      duration: NOTIFICATION_TIME * 1000,
-    })
-  }
-
-  addCommonToCatalog(catalogs: string[]): string[] {
-    const newCatalog: any[] = []
-    catalogs.forEach(catalog => {
-      const prefix = 'Common>'
-      if (catalog.indexOf(prefix) > -1) {
-        newCatalog.push(catalog)
-      } else {
-        newCatalog.push(prefix.concat(catalog))
-      }
-    })
-    return newCatalog
-  }
-
-  updateReviewer() {
-    // this.contentForm.controls.trackContacts.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
-    // this.contentForm.controls.publisherDetails.setValue([{ id: '7983c8e5-6365-48cf-8a3c-fd1060fb0bbe', name: 'AnkitVerma' }])
-  }
-
-  public parseJsonData(s: string) {
-    try {
-      const parsedString = JSON.parse(s)
-      return parsedString
-    } catch {
-      return []
-    }
-  }
-
   async onSubmit() {
     this.storeService.parentData = await this.courseData
     this.courseEditFormSubmit.emit(true)
-  }
-
-  moduleCreate(name: string) {
-    this.moduleName = name
-    this.isSaveModuleFormEnable = true
-    this.moduleButtonName = 'Save'
   }
 }

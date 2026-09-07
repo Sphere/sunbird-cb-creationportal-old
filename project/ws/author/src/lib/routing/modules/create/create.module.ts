@@ -8,8 +8,6 @@ import { CommonModule } from '@angular/common'
 
 import { CreateComponent } from './components/create/create.component'
 
-import { EntityCardComponent } from './components/entity-card/entity-card.component'
-
 import { RouterModule } from '@angular/router'
 
 import { CreateService } from './components/create/create.service'
@@ -23,18 +21,8 @@ import { EditorService } from '../editor/services/editor.service'
 import { CatalogSelectModule } from './../editor/shared/components/catalog-select/catalog-select.module'
 
 @NgModule({
-  declarations: [
-    CreateComponent,
-    EntityCardComponent,
-    CreateCourseComponent,
-  ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    RouterModule,
-    CatalogSelectModule,
-  ],
+  declarations: [CreateComponent, CreateCourseComponent],
+  imports: [CommonModule, SharedModule, RouterModule, CatalogSelectModule],
   providers: [CreateService, UploadService, EditorContentService, EditorService],
 })
-
-export class CreateModule { }
+export class CreateModule {}

@@ -14,7 +14,6 @@ import { UploadService } from '../../services/upload.service'
 
 import { ICatalog, ITodoItemFlatNode, TodoItemNode } from './models/catalog-model'
 
-
 // const TREE_DATA = {
 //   Groceries: {
 //     'Almond Meal flour': null,
@@ -74,12 +73,7 @@ export class CatalogSelectComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.treeFlattener = new MatTreeFlattener(
-      this.transformer,
-      this.getLevel,
-      this.isExpandable,
-      this.getChildren,
-    )
+    this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren)
     this.treeControl = new FlatTreeControl<ITodoItemFlatNode>(this.getLevel, this.isExpandable)
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener)
     this.uploadSvc.fetchCatalog().subscribe((res: any) => {
@@ -308,17 +302,13 @@ export class CatalogSelectComponent implements OnInit {
 
   onClose() {
     const returnValue: string[] = ['Common']
-    this.checklistSelection.selected.map(v => {
+    this.checklistSelection.selected.forEach(v => {
       if (v.path) {
         returnValue.push(v.path)
       }
     })
     this.dialogRef.close(
-      this.catalogData && this.catalogData.length
-        ? this.checklistSelection.selected.length
-          ? returnValue
-          : []
-        : this.parentPaths,
+      this.catalogData && this.catalogData.length ? (this.checklistSelection.selected.length ? returnValue : []) : this.parentPaths,
     )
   }
 }

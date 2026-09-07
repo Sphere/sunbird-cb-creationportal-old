@@ -23,19 +23,18 @@
   text-align: center;
   height: 130px;
   box-sizing: border-box;
-  margin-right: 15px;
   padding: 5px;
-  margin: 0px .75rem;
+  margin: 0px 0.75rem;
 }
 
-.delete-button{
+.delete-button {
   position: absolute;
   top: 0px;
   right: 0px;
   z-index: 100;
 }
 
-.large-icon{
+.large-icon {
   font-size: 32px !important;
   height: 32px;
   width: 32px;

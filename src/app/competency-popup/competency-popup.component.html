@@ -37,6 +37,17 @@
     </mat-form-field>
   </div>
 
+  <!-- A course carries one competency at any number of levels, so picking a
+       different one replaces what is saved. Say so before the author commits
+       rather than dropping the old competency silently on save. -->
+  <div *ngIf="willReplaceExisting" class="cp-warning" role="status">
+    <mat-icon class="cp-warning-icon">info</mat-icon>
+    <span class="cp-warning-text">
+      This course already maps <strong>{{ existingCompetencyName }}</strong
+      >. A course can have only one competency, so adding <strong>{{ proficiency?.name }}</strong> will replace it and all of its levels.
+    </span>
+  </div>
+
   <!-- Proficiency levels -->
   <div *ngIf="!disableLevel" class="cp-section">
     <p class="cp-section-label">Proficiency Level</p>
@@ -67,6 +78,6 @@
     (click)="addCompetency(proficiency, null, true)"
     [disabled]="!(proficiency?.id && (hasOneChecked || disableLevel))"
   >
-    Add Competency
+    {{ willReplaceExisting ? 'Replace Competency' : 'Add Competency' }}
   </button>
 </mat-dialog-actions>

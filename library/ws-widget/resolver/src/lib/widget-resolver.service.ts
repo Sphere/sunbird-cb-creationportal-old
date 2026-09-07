@@ -1,15 +1,6 @@
-import {
-  Injectable,
-  Inject,
-  ViewContainerRef,
-  ComponentRef,
-  Type,
-} from '@angular/core'
+import { Injectable, Inject, ViewContainerRef, ComponentRef, Type } from '@angular/core'
 
-import {
-  WIDGET_RESOLVER_GLOBAL_CONFIG,
-  WIDGET_RESOLVER_SCOPED_CONFIG,
-} from './widget-resolver.constant'
+import { WIDGET_RESOLVER_GLOBAL_CONFIG, WIDGET_RESOLVER_SCOPED_CONFIG } from './widget-resolver.constant'
 
 // import { LoggerService } from '@ws-widget/utils'
 
@@ -27,7 +18,6 @@ import { UnresolvedComponent } from './unresolved/unresolved.component'
 
 import { DomSanitizer } from '@angular/platform-browser'
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -43,11 +33,8 @@ export class WidgetResolverService {
     private globalConfig: null | NsWidgetResolver.IRegistrationConfig[],
     @Inject(WIDGET_RESOLVER_SCOPED_CONFIG)
     private scopedConfig: null | NsWidgetResolver.IRegistrationConfig[],
-  ) { }
-  private availableRegisteredWidgets: Map<
-    string,
-    NsWidgetResolver.IRegistrationConfig
-  > | null = null
+  ) {}
+  private availableRegisteredWidgets: Map<string, NsWidgetResolver.IRegistrationConfig> | null = null
   private restrictedWidgetKeys: Set<string> | null = null
   static getWidgetKey(config: NsWidgetResolver.IBaseConfig) {
     return `widget:${config.widgetType}::${config.widgetSubType}`
@@ -63,9 +50,7 @@ export class WidgetResolverService {
 
     this.groups = groups
     this.restrictedFeatures = restrictedFeatures
-    const restrictedWidgetKeysSet: Set<string> = restrictedWidgetKeys
-      ? restrictedWidgetKeys
-      : new Set<string>()
+    const restrictedWidgetKeysSet: Set<string> = restrictedWidgetKeys ? restrictedWidgetKeys : new Set<string>()
     const registrationConfig: Map<string, NsWidgetResolver.IRegistrationConfig> = new Map()
     const allWidgetsConfigurations: NsWidgetResolver.IRegistrationConfig[] = []
     if (this.globalConfig && Array.isArray(this.globalConfig)) {
@@ -92,24 +77,14 @@ export class WidgetResolverService {
     // )
   }
 
-  resolveWidget(
-    receivedConfig: NsWidgetResolver.IRenderConfigWithAnyData,
-    containerRef: ViewContainerRef,
-  ): ComponentRef<any> | null {
+  resolveWidget(receivedConfig: NsWidgetResolver.IRenderConfigWithAnyData, containerRef: ViewContainerRef): ComponentRef<any> | null {
     const key = WidgetResolverService.getWidgetKey(receivedConfig)
     if (this.restrictedWidgetKeys && this.restrictedWidgetKeys.has(key)) {
       // Restricted
       return this.widgetResolved(containerRef, receivedConfig, RestrictedComponent)
     }
     if (this.availableRegisteredWidgets && this.availableRegisteredWidgets.has(key)) {
-      if (
-        hasPermissions(
-          receivedConfig.widgetPermission,
-          this.roles,
-          this.groups,
-          this.restrictedFeatures,
-        )
-      ) {
+      if (hasPermissions(receivedConfig.widgetPermission, this.roles, this.groups, this.restrictedFeatures)) {
         const config = this.availableRegisteredWidgets.get(key)
         if (config && config.component) {
           return this.widgetResolved(containerRef, receivedConfig, config.component)
@@ -134,9 +109,7 @@ export class WidgetResolverService {
     compRef.instance.widgetData = compData.widgetData
     if (compRef.instance.updateBaseComponent) {
       const widgetSafeStyle = compData.widgetHostStyle
-        ? this.domSanitizer.bypassSecurityTrustStyle(
-          Object.entries(compData.widgetHostStyle).reduce((s, [k, v]) => `${s}${k}:${v};`, ''),
-        )
+        ? Object.entries(compData.widgetHostStyle).reduce((s, [k, v]) => `${s}${k}:${v};`, '')
         : undefined
       compRef.instance.updateBaseComponent(
         compData.widgetType,

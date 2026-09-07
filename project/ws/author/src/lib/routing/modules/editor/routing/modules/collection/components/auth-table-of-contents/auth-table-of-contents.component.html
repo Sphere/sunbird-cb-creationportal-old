@@ -16,9 +16,7 @@
   </ng-container>
   <div *ngIf="drawer" class="transitionD">
     <mat-card class="flex items-center mat-card custom-card">
-      <h2 class="flex mat-h w-full justify-center pt-5" i18n>
-        TABLE OF CONTENTS
-      </h2>
+      <h2 class="flex mat-h w-full justify-center pt-5" i18n>TABLE OF CONTENTS</h2>
 
       <button
         *ngIf="!mediumScreen"
@@ -68,20 +66,13 @@
         (cdkDragStarted)="dragStart(node)"
         (cdkDragReleased)="dragEnd()"
         (click)="onNodeSelect(node)"
+        (keydown)="isActivationKey($event) && onNodeSelect(node)"
       >
-        <div
-          *ngIf="draggingPosition === 'above' && node === dropContainer && node.parentId"
-          class="placeholder"
-        >
+        <div *ngIf="draggingPosition === 'above' && node === dropContainer && node.parentId" class="placeholder">
           <span class="dot"></span>
           <span class="line"></span>
         </div>
-        <button
-          *ngIf="node.expandable"
-          mat-icon-button
-          matTreeNodeToggle
-          [attr.aria-label]="'toggle ' + node.name"
-        >
+        <button *ngIf="node.expandable" mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
           <mat-icon
             class="mat-icon-rtl-mirror"
             [class.ws-mat-warn-text]="invalidIds.includes(node.id)"
@@ -107,20 +98,11 @@
           <ws-auth-table-tree-label
             [identifier]="node.identifier"
             [isDragging]="isDragging"
-            [icon]="
-              isDropDisabled
-                ? 'block'
-                : !isDropDisabled && draggingPosition === 'center'
-                ? 'add_circle'
-                : 'format_indent_increase'
-            "
+            [icon]="isDropDisabled ? 'block' : !isDropDisabled && draggingPosition === 'center' ? 'add_circle' : 'format_indent_increase'"
             [id]="node.id"
           ></ws-auth-table-tree-label>
         </div>
-        <div
-          *ngIf="draggingPosition === 'below' && node === dropContainer && node.parentId"
-          class="placeholder second"
-        >
+        <div *ngIf="draggingPosition === 'below' && node === dropContainer && node.parentId" class="placeholder second">
           <span class="dot"></span>
           <span class="line"></span>
         </div>

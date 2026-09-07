@@ -18,7 +18,6 @@ import { ViewerUtilService } from '../../viewer-util.service'
 
 // import { take } from 'rxjs/operators'
 
-
 @Component({
   standalone: false,
   selector: 'viewer-quiz',
@@ -45,7 +44,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     private eventSvc: EventService,
     private viewSvc: ViewerUtilService,
     private cdr: ChangeDetectorRef,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.dataSubscription = this.activatedRoute.data.subscribe(
@@ -70,15 +69,20 @@ export class QuizComponent implements OnInit, OnDestroy {
         this.isFetchingDataComplete = true
         this.cdr.detectChanges()
       },
-      () => { },
+      () => {},
     )
   }
 
-  async ngOnDestroy() {
-    if (this.activatedRoute.snapshot.queryParams.collectionId &&
-      this.activatedRoute.snapshot.queryParams.collectionType
-      && this.quizData) {
-      await this.contentSvc.continueLearning(this.quizData.identifier,
+  ngOnDestroy(): void {
+    // Angular does not await lifecycle hooks; run the async work
+    // fire-and-forget, exactly as `async ngOnDestroy()` already did.
+    void this.onDestroyAsync()
+  }
+
+  private async onDestroyAsync(): Promise<void> {
+    if (this.activatedRoute.snapshot.queryParams.collectionId && this.activatedRoute.snapshot.queryParams.collectionType && this.quizData) {
+      await this.contentSvc.continueLearning(
+        this.quizData.identifier,
         this.activatedRoute.snapshot.queryParams.collectionId,
         this.activatedRoute.snapshot.queryParams.collectionType,
       )

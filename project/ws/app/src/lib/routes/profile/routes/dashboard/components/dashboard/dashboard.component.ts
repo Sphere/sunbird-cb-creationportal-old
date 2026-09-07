@@ -18,7 +18,6 @@ import { NSLearningHistory } from '../../../learning/models/learning.models'
 
 import { LearningHistoryService } from '../../../learning/services/learning-history.service'
 
-
 interface ILearningHistoryContent {
   content: NSLearningHistory.ILearningHistory
   contentType: string
@@ -33,7 +32,6 @@ interface ILearningHistoryContent {
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-
 export class DashboardComponent implements OnInit {
   startDate = '2018-04-01'
   endDate = '2020-03-31'
@@ -157,12 +155,8 @@ export class DashboardComponent implements OnInit {
           this.apiFetchStatus = 'done'
           if (this.timeSpentData) {
             this.userPointsEarned = this.timeSpentData.points_and_ranks.user_points_earned
-            this.orgWideTimePercent = Math.round(
-              this.timeSpentData.timespent_user_vs_org_wide.usage_percent,
-            )
-            this.orgWidePointsPercent = Math.round(
-              this.timeSpentData.points_and_ranks.points_user_vs_org_wide.points_percent,
-            )
+            this.orgWideTimePercent = Math.round(this.timeSpentData.timespent_user_vs_org_wide.usage_percent)
+            this.orgWidePointsPercent = Math.round(this.timeSpentData.points_and_ranks.points_user_vs_org_wide.points_percent)
             this.totalLearningHours = Math.round(this.timeSpentData.time_spent_by_user)
 
             // this.trackWiseDataFetch(this.learningTimeData.track_wise_user_timespent)
@@ -171,7 +165,8 @@ export class DashboardComponent implements OnInit {
         },
         () => {
           this.apiFetchStatus = 'error'
-        })
+        },
+      )
     }
     if (this.enabledTabs.subFeatures.pendingCourses) {
       this.learnHstSvc.fetchContentProgress(this.pageNum, this.pageSize, this.selectedStatusType, 'course').subscribe(
@@ -181,7 +176,8 @@ export class DashboardComponent implements OnInit {
         },
         () => {
           this.historyFetchStatus = 'done'
-        })
+        },
+      )
     }
   }
 
@@ -195,7 +191,7 @@ export class DashboardComponent implements OnInit {
     this.timeEvent = new Date(event)
     const clickedDate = this.timeEvent.getTime() + 330 * 60000
     if (this.timeSpentData) {
-      this.timeSpentData.date_wise.reverse().find((cur: NSProfileData.IProfileData) => {
+      this.timeSpentData.date_wise.reverse().forEach((cur: NSProfileData.IProfileData) => {
         if (clickedDate === cur.key) {
           this.timeSpent = cur.value
           return

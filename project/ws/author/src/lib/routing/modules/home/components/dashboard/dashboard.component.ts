@@ -2,9 +2,7 @@ import { Router } from '@angular/router'
 
 import { DashBoardService } from './dashboard.service'
 
-import { Component, OnInit,
-  ViewEncapsulation,
-} from '@angular/core'
+import { Component, OnInit, ViewEncapsulation } from '@angular/core'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 
@@ -24,15 +22,7 @@ import { LoaderService } from '@ws/author/src/lib/services/loader.service'
 
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 
-import {
-  REVIEW_ROLE,
-  PUBLISH_ROLE,
-  CREATE_ROLE,
-  RESOURCE,
-  KBOARD,
-  CHANNEL,
-} from '@ws/author/src/lib/constants/content-role'
-
+import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE, RESOURCE, KBOARD } from '@ws/author/src/lib/constants/content-role'
 
 @Component({
   standalone: false,
@@ -81,10 +71,6 @@ export class DashboardComponent implements OnInit {
         contentType = 'Resource'
         mimeType = 'application/html'
         break
-      case 'channel':
-        contentType = 'Channel'
-        mimeType = 'application/channel'
-        break
       case 'kboard':
         contentType = 'Knowledge Board'
         mimeType = 'application/vnd.ekstep.content-collection'
@@ -132,8 +118,6 @@ export class DashboardComponent implements OnInit {
         return this.accessService.hasRole(RESOURCE)
       case 'kboard':
         return this.accessService.hasRole(KBOARD)
-      case 'channel':
-        return this.accessService.hasRole(CHANNEL)
       default:
         return false
     }

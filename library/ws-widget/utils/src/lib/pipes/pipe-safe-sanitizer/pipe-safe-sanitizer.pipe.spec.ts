@@ -28,7 +28,7 @@ describe('PipeSafeSanitizerPipe', () => {
 
   it('routes each supported type to the matching sanitizer call', () => {
     expect(pipe.transform('x', 'style')).toBe('style')
-    expect(pipe.transform('x', 'script')).toBe('script')
+    expect(() => pipe.transform('x', 'script')).toThrow('Invalid safe type specified: script')
     expect(pipe.transform('x', 'url')).toBe('url')
     expect(pipe.transform('x', 'resourceUrl')).toBe('resourceUrl')
   })

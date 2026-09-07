@@ -3,12 +3,10 @@ export * from './lib/components/ace-editor-compat/ace-editor-compat.component'
 
 export * from './lib/components/ace-editor-compat/ace-editor-compat.module'
 
-
 // constants
 export * from './lib/components/image-crop/image-crop.component'
 
 export * from './lib/components/new-image-crop/new-image-crop.component'
-
 
 // components
 export * from './lib/components/image-crop/image-crop.module'
@@ -35,6 +33,14 @@ export * from './lib/directives/permission/permission.module'
 
 export * from './lib/helpers/functions/getStringifiedQueryParams'
 
+export * from './lib/helpers/functions/isActivationKey'
+
+export * from './lib/helpers/functions/stripHtmlTags'
+
+export * from './lib/helpers/functions/nextWidgetId'
+
+export * from './lib/helpers/functions/secureRandom'
+
 // helpers
 export * from './lib/helpers/horizontal-scroller/horizontal-scroller.module'
 
@@ -56,7 +62,6 @@ export * from './lib/pipes/pipe-duration-transform/pipe-duration-transform.pipe'
 export * from './lib/pipes/pipe-assessment-duration-transform/pipe-assessment-duration-transform.module'
 
 export * from './lib/pipes/pipe-assessment-duration-transform/pipe-assessment-duration-transform.pipe'
-
 
 export * from './lib/pipes/pipe-html-tag-removal/pipe-html-tag-removal.module'
 
@@ -108,6 +113,8 @@ export * from './lib/services/logger.service'
 
 export * from './lib/services/resource-download.service'
 
+export * from './lib/services/safe-content.service'
+
 export * from './lib/services/ms-office.model'
 
 export * from './lib/services/subapplication-respond.service'
@@ -121,4 +128,3 @@ export * from './lib/services/user-preference.service'
 export * from './lib/services/utility.service'
 
 export * from './lib/services/value.service'
-

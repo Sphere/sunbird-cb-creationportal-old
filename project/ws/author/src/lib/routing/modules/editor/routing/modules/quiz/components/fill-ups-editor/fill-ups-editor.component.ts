@@ -2,14 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input, OnChanges, OnDestroy } 
 
 import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
-import {
-  FormGroup,
-  FormBuilder,
-  Validators,
-  FormControl,
-  FormArray,
-  AbstractControl,
-} from '@angular/forms'
+import { FormGroup, FormBuilder, Validators, FormControl, FormArray, AbstractControl } from '@angular/forms'
 
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'
 
@@ -19,7 +12,6 @@ import { Observable, Subscription } from 'rxjs'
 
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout'
 
-
 import { ConfirmDialogComponent } from '@ws/author/src/lib/modules/shared/components/confirm-dialog/confirm-dialog.component'
 
 import { NotificationComponent } from '@ws/author/src/lib/modules/shared/components/notification/notification.component'
@@ -28,13 +20,11 @@ import { FillUps, Option } from '../quiz-class'
 
 import { NOTIFICATION_TIME } from '../../constants/quiz-constants'
 
-
 import { Notify } from '@ws/author/src/lib/constants/notificationMessage'
 
 import { QuizStoreService } from '../../services/store.service'
 
 import { OpenPlainCkEditorComponent } from '../../shared/components/open-plain-ck-editor/open-plain-ck-editor.component'
-
 
 @Component({
   standalone: false,
@@ -56,9 +46,7 @@ export class FillUpsEditorComponent implements OnInit, OnChanges, OnDestroy {
   selectedOption?: number
   activeIndexSubscription?: Subscription
   selectedIndex!: number
-  smallScreen: Observable<boolean> = this.breakpointObserver
-    .observe('(max-width:600px)')
-    .pipe(map((res: BreakpointState) => res.matches))
+  smallScreen: Observable<boolean> = this.breakpointObserver.observe('(max-width:600px)').pipe(map((res: BreakpointState) => res.matches))
   isSmallScreen = false
 
   constructor(
@@ -67,7 +55,7 @@ export class FillUpsEditorComponent implements OnInit, OnChanges, OnDestroy {
     private snackBar: MatSnackBar,
     private quizStoreSvc: QuizStoreService,
     private breakpointObserver: BreakpointObserver,
-  ) { }
+  ) {}
 
   ngOnDestroy() {
     if (this.activeIndexSubscription) {
@@ -82,7 +70,7 @@ export class FillUpsEditorComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    this.smallScreen.subscribe(v => this.isSmallScreen = v)
+    this.smallScreen.subscribe(v => (this.isSmallScreen = v))
     this.activeIndexSubscription = this.quizStoreSvc.selectedQuizIndex.subscribe(index => {
       this.contentLoaded = false
       const val = this.quizStoreSvc.getQuiz(index)
@@ -96,9 +84,7 @@ export class FillUpsEditorComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   openCkEditor(index: number) {
-    const hint =
-      (((this.quizForm.controls.options as FormArray).at(index).get('hint') as FormControl) || {})
-        .value || ''
+    const hint = (((this.quizForm.controls.options as FormArray).at(index).get('hint') as FormControl) || {}).value || ''
     const dialogRef = this.dialog.open(OpenPlainCkEditorComponent, {
       width: '800px',
       data: {
@@ -112,7 +98,7 @@ export class FillUpsEditorComponent implements OnInit, OnChanges, OnDestroy {
       if (res !== undefined) {
         const optionsArr = this.quizForm.controls['options'] as FormArray
         if (optionsArr && optionsArr.at(index) && optionsArr.at(index).get('hint')) {
-          (optionsArr.at(index).get('hint') as AbstractControl).setValue(res)
+          ;(optionsArr.at(index).get('hint') as AbstractControl).setValue(res)
         }
       }
     })
@@ -122,7 +108,7 @@ export class FillUpsEditorComponent implements OnInit, OnChanges, OnDestroy {
     const optionsArr = this.quizForm.controls['options'].value
     moveItemInArray(optionsArr, event.previousIndex, event.currentIndex)
     for (let i = 0; i < optionsArr.length; i = i + 1) {
-      (this.quizForm.controls['options'] as FormArray).at(i).setValue(optionsArr[i])
+      ;(this.quizForm.controls['options'] as FormArray).at(i).setValue(optionsArr[i])
     }
   }
 
@@ -174,7 +160,7 @@ export class FillUpsEditorComponent implements OnInit, OnChanges, OnDestroy {
   updateContentService($event: any, optionIndex: number) {
     const optionsArr = this.quizForm.controls['options'] as FormArray
     if (optionsArr && optionsArr.at(optionIndex) && optionsArr.at(optionIndex).get('hint')) {
-      (optionsArr.at(optionIndex).get('hint') as AbstractControl).setValue($event)
+      ;(optionsArr.at(optionIndex).get('hint') as AbstractControl).setValue($event)
     }
   }
 
@@ -191,10 +177,10 @@ export class FillUpsEditorComponent implements OnInit, OnChanges, OnDestroy {
   assignForm() {
     const newData = this.quizStoreSvc.getQuiz(this.selectedIndex)
     if (newData && newData.isInValid) {
-      Object.keys(this.quizForm.controls).map(v => {
+      Object.keys(this.quizForm.controls).forEach(v => {
         const optionsArr = this.quizForm.controls[v] as FormArray
-        optionsArr.controls.map((d: any) => {
-          Object.keys(d.controls).map(e => {
+        optionsArr.controls.forEach((d: any) => {
+          Object.keys(d.controls).forEach(e => {
             if (e === 'text') {
               d.controls[e].markAsDirty()
               d.controls[e].markAsTouched()
@@ -216,7 +202,7 @@ export class FillUpsEditorComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.quizForm.valueChanges.pipe(debounceTime(100)).subscribe(() => {
       const updatedValue = JSON.parse(JSON.stringify(this.quizForm.value))
-      updatedValue.options.map((op: any) => op.isCorrect = true)
+      updatedValue.options.map((op: any) => (op.isCorrect = true))
       this.value.emit(updatedValue)
     })
   }

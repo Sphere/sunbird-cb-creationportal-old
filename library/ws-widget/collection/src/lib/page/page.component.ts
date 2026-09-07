@@ -6,7 +6,7 @@ import { ActivatedRoute } from '@angular/router'
 
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
 
-import { ConfigurationsService, EventService, LoggerService, NsPage, ValueService, WsEvents } from '@ws-widget/utils'
+import { ConfigurationsService, EventService, LoggerService, NsPage, ValueService, WsEvents, nextWidgetId } from '@ws-widget/utils'
 
 import { fromEvent, Subscription } from 'rxjs'
 
@@ -16,19 +16,20 @@ import { SubapplicationRespondService } from '../../../../utils/src/lib/services
 
 import { CustomTourService } from '../_common/tour-guide/tour-guide.service'
 
-
 @Component({
   standalone: false,
   selector: 'ws-widget-page',
   templateUrl: './page.component.html',
   styleUrls: ['./page.component.scss'],
 })
-export class PageComponent extends WidgetBaseComponent
-  implements OnInit, AfterViewInit, OnDestroy, NsWidgetResolver.IWidgetData<NsPage.IPage | null> {
+export class PageComponent
+  extends WidgetBaseComponent
+  implements OnInit, AfterViewInit, OnDestroy, NsWidgetResolver.IWidgetData<NsPage.IPage | null>
+{
   @Input() widgetData: NsPage.IPage | null = null
   @Input()
   @HostBinding('id')
-  public id = `page_${Math.random()}`
+  public id = nextWidgetId('page_')
   pageData: NsPage.IPage | null = null
   oldData: NsPage.IPage | null = null
   private responseSubscription: Subscription | null = null
@@ -54,31 +55,24 @@ export class PageComponent extends WidgetBaseComponent
     this.valueSvc.isXSmall$.subscribe(isXSmall => {
       this.isXSmall = isXSmall
       this.links = this.getNavLinks()
-
     })
   }
   ngOnInit() {
     if (this.configSvc.instanceConfig) {
       if (this.configSvc.instanceConfig.logos.navbarLogo) {
-        this.navbarIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
-          this.configSvc.instanceConfig.logos.navbarLogo,
-        )
+        this.navbarIcon = this.configSvc.instanceConfig.logos.navbarLogo
       }
       if (this.configSvc.restrictedFeatures) {
         this.isHlpMenuXs = this.configSvc.restrictedFeatures.has('helpMenuXs')
       }
     }
     this.configSvc.tourGuideNotifier.subscribe(canShow => {
-      if (
-        this.configSvc.restrictedFeatures &&
-        !this.configSvc.restrictedFeatures.has('tourGuide')
-      ) {
+      if (this.configSvc.restrictedFeatures && !this.configSvc.restrictedFeatures.has('tourGuide')) {
         this.isTourGuideAvailable = canShow
         // this.createTour()
       }
     })
     this.activateRoute.data.subscribe(routeData => {
-
       if (this.alreadyRaised && this.oldData) {
         this.raiseEvent(WsEvents.EnumTelemetrySubType.Unloaded)
       }
@@ -87,15 +81,17 @@ export class PageComponent extends WidgetBaseComponent
         this.pageData = routeData.pageData.data
         if (this.pageData && this.pageData.navigationBar) {
           this.navBackground = this.pageData.navigationBar.background || this.configSvc.pageNavBar
-          this.links = this.isXSmall ? this.getNavLinks() : this.getNavLinks().filter(data =>
-            data.widgetData.actionBtnId !== 'channel_how_to')
+          this.links = this.isXSmall
+            ? this.getNavLinks()
+            : this.getNavLinks().filter(data => data.widgetData.actionBtnId !== 'channel_how_to')
         }
       } else if (this.widgetData) {
         this.pageData = this.widgetData
         if (this.pageData && this.pageData.navigationBar) {
           this.navBackground = this.pageData.navigationBar.background || this.configSvc.pageNavBar
-          this.links = this.isXSmall ? this.getNavLinks() : this.getNavLinks().filter(data =>
-            data.widgetData.actionBtnId !== 'channel_how_to')
+          this.links = this.isXSmall
+            ? this.getNavLinks()
+            : this.getNavLinks().filter(data => data.widgetData.actionBtnId !== 'channel_how_to')
         }
       } else {
         this.pageData = null
@@ -110,9 +106,7 @@ export class PageComponent extends WidgetBaseComponent
           .pipe(
             filter(
               (event: MessageEvent) =>
-                Boolean(event) &&
-                Boolean(event.data) &&
-                Boolean(event.source && typeof event.source.postMessage === 'function'),
+                Boolean(event) && Boolean(event.data) && Boolean(event.source && typeof event.source.postMessage === 'function'),
             ),
           )
           .subscribe(async (event: MessageEvent) => {
@@ -128,22 +122,18 @@ export class PageComponent extends WidgetBaseComponent
             }
           })
       }
-
     })
   }
 
   ngAfterViewInit() {
     const hash: any = window.location.hash ? window.location.hash.split('#')[1] : ''
     if (hash && isNaN(hash)) {
-      setTimeout(
-        () => {
-          const element = document.getElementById(hash)
-          if (element) {
-            element.scrollIntoView()
-          }
-        },
-        1000,
-      )
+      setTimeout(() => {
+        const element = document.getElementById(hash)
+        if (element) {
+          element.scrollIntoView()
+        }
+      }, 1000)
     }
     if (this.pageData && this.pageData.tourGuide) {
       this.configSvc.tourGuideNotifier.next(true)
@@ -166,7 +156,6 @@ export class PageComponent extends WidgetBaseComponent
       },
     }
     this.eventSvc.dispatchEvent(event)
-
   }
   getNavLinks(): NsWidgetResolver.IRenderConfigWithTypedData<NsPage.INavLink>[] {
     if (this.pageData && this.pageData.navigationBar && Array.isArray(this.pageData.navigationBar.links)) {
@@ -199,5 +188,4 @@ export class PageComponent extends WidgetBaseComponent
       this.responseSubscription.unsubscribe()
     }
   }
-
 }

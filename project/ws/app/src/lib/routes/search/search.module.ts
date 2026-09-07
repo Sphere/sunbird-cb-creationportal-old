@@ -23,17 +23,13 @@ import { MatToolbarModule } from '@angular/material/toolbar'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { MatDividerModule } from '@angular/material/divider'
 import {
-  BtnChannelAnalyticsModule,
   // BtnContentDownloadModule,
   BtnContentLikeModule,
-  BtnContentMailMeModule,
   // BtnContentShareModule,
   // BtnGoalsModule,
   BtnPageBackModule,
-  BtnPlaylistModule,
   DisplayContentTypeModule,
   PipeContentRouteModule,
-  BtnKbAnalyticsModule,
   UserAutocompleteModule,
 } from '@ws-widget/collection'
 
@@ -41,22 +37,19 @@ import { WidgetResolverModule } from '@ws-widget/resolver'
 
 import {
   DefaultThumbnailModule,
-  HorizontalScrollerModule, PipeDurationTransformModule, PipeLimitToModule, PipePartialContentModule,
+  HorizontalScrollerModule,
+  PipeDurationTransformModule,
+  PipeLimitToModule,
+  PipePartialContentModule,
 } from '@ws-widget/utils/src/public-api'
 
 // import { TrainingApiService } from '../infy/routes/training/apis/training-api.service'
 
 // import { TrainingService } from '../infy/routes/training/services/training.service'
 
-import { BlogsCardComponent } from './components/blogs-card/blogs-card.component'
-
 import { FilterDisplayComponent } from './components/filter-display/filter-display.component'
 
-import { ItemTileComponent } from './components/item-tile/item-tile.component'
-
 import { LearningCardComponent } from './components/learning-card/learning-card.component'
-
-import { QandaCardComponent } from './components/qanda-card/qanda-card.component'
 
 import { SearchInputComponent } from './components/search-input/search-input.component'
 
@@ -70,14 +63,9 @@ import { LearningComponent } from './routes/learning/learning.component'
 
 import { SearchRootComponent } from './routes/search-root/search-root.component'
 
-import { SocialComponent } from './routes/social/social.component'
-
 import { SearchRoutingModule } from './search-routing.module'
 
-import { PeopleComponent } from './routes/people/people.component'
-
 import { SearchInputHomeComponent } from './components/search-input-home/search-input-home.component'
-
 
 @NgModule({
   declarations: [
@@ -85,16 +73,11 @@ import { SearchInputHomeComponent } from './components/search-input-home/search-
     SearchInputComponent,
     SearchInputHomeComponent,
     LearningComponent,
-    BlogsCardComponent,
     FilterDisplayComponent,
-    ItemTileComponent,
     KnowledgeComponent,
     LearningCardComponent,
     // ProjectComponent,
-    QandaCardComponent,
-    SocialComponent,
     HomeComponent,
-    PeopleComponent,
   ],
   imports: [
     CommonModule,
@@ -126,21 +109,17 @@ import { SearchInputHomeComponent } from './components/search-input-home/search-
     // BtnContentDownloadModule,
     BtnContentLikeModule,
     // BtnContentShareModule,
-    BtnPlaylistModule,
     // BtnGoalsModule,
-    BtnContentMailMeModule,
-    BtnKbAnalyticsModule,
     PipePartialContentModule,
     HorizontalScrollerModule,
     MatProgressSpinnerModule,
     DisplayContentTypeModule,
     WidgetResolverModule,
     // BtnKbModule,
-    BtnChannelAnalyticsModule,
     MatDividerModule,
     UserAutocompleteModule,
   ],
-  exports: [ItemTileComponent, SearchInputComponent, SearchInputHomeComponent],
+  exports: [SearchInputComponent, SearchInputHomeComponent],
   // providers: [TrainingApiService, TrainingService],
 })
-export class SearchModule { }
+export class SearchModule {}

@@ -27,6 +27,7 @@ import _ from 'lodash'
 
 import { NSContent } from '../../../../../../project/ws/author/src/lib/interface/content'
 
+import { isActivationKey, nextWidgetId } from '@ws-widget/utils'
 /* tslint:enable */
 @Component({
   standalone: false,
@@ -34,11 +35,16 @@ import { NSContent } from '../../../../../../project/ws/author/src/lib/interface
   templateUrl: './card-table.component.html',
   styleUrls: ['./card-table.component.scss'],
 })
-export class CardTableComponent extends WidgetBaseComponent
-  implements OnInit, OnDestroy, AfterViewInit, OnChanges, NsWidgetResolver.IWidgetData<ITable> {
+export class CardTableComponent
+  extends WidgetBaseComponent
+  implements OnInit, OnDestroy, AfterViewInit, OnChanges, NsWidgetResolver.IWidgetData<ITable>
+{
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() widgetData!: ITable
   @HostBinding('id')
-  public id = `ws-card_${Math.random()}`
+  public id = nextWidgetId('ws-card_')
   @HostBinding('class') class = 'flex-1'
 
   @Input() data?: []
@@ -58,12 +64,11 @@ export class CardTableComponent extends WidgetBaseComponent
     }
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator
-  constructor(
+  constructor() {
     // private events: EventService,
     // private configSvc: ConfigurationsService,
     // private utilitySvc: UtilityService,
     // private snackBar: MatSnackBar,
-  ) {
     super()
     this.actionsClick = new EventEmitter()
     this.clicked = new EventEmitter()
@@ -122,7 +127,11 @@ export class CardTableComponent extends WidgetBaseComponent
   buttonClick(action: string, row: any) {
     // tslint:disable-next-line:no-console
     // console.log(action, row);
-    const isDisabled = _.get(_.find(this.widgetData.actions, ac => ac.name === action), 'disabled') || false
+    const isDisabled =
+      _.get(
+        _.find(this.widgetData.actions, ac => ac.name === action),
+        'disabled',
+      ) || false
     if (!isDisabled && this.actionsClick) {
       this.actionsClick.emit({ action, row })
     }
@@ -168,9 +177,7 @@ export class CardTableComponent extends WidgetBaseComponent
   }
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    this.isAllSelected() ?
-      this.selection.clear() :
-      this.dataSource.data.forEach(row => this.selection.select(row))
+    this.isAllSelected() ? this.selection.clear() : this.dataSource.data.forEach(row => this.selection.select(row))
   }
   /** The label for the checkbox on the passed row */
   checkboxLabel(row?: any): string {
@@ -196,12 +203,7 @@ export class CardTableComponent extends WidgetBaseComponent
           }
           break
         case 'moveToDraft':
-          if (
-            row.status === 'InReview' ||
-            row.status === 'Unpublished' ||
-            row.status === 'Reviewed' ||
-            row.status === 'QualityReview'
-          ) {
+          if (row.status === 'InReview' || row.status === 'Unpublished' || row.status === 'Reviewed' || row.status === 'QualityReview') {
             returnValue = this.hasAccess({ ...row, status: 'Draft' })
           }
           break
@@ -233,16 +235,16 @@ export class CardTableComponent extends WidgetBaseComponent
     return returnValue
   }
   takeAction(action: string, row: any) {
-    const isDisabled = _.get(_.find(this.widgetData.actions, ac => ac.name === action), 'disabled') || false
+    const isDisabled =
+      _.get(
+        _.find(this.widgetData.actions, ac => ac.name === action),
+        'disabled',
+      ) || false
     if (!isDisabled && this.actionsClick) {
       this.actionsClick.emit({ type: action, data: row })
     }
   }
-  hasAccess(
-    meta: NSContent.IContentMeta,
-    forPreview = false,
-    parentMeta?: NSContent.IContentMeta,
-  ): boolean {
+  hasAccess(meta: NSContent.IContentMeta, forPreview = false, parentMeta?: NSContent.IContentMeta): boolean {
     if (this.hasRole(['editor', 'admin'])) {
       return true
     }
@@ -265,9 +267,7 @@ export class CardTableComponent extends WidgetBaseComponent
         })
       }
       if (!returnValue && parentMeta && parentMeta.creatorContacts && meta.creatorContacts) {
-        returnValue = parentMeta.creatorContacts.some(v =>
-          meta.creatorContacts.find(cv => cv.id === v.id),
-        )
+        returnValue = parentMeta.creatorContacts.some(v => meta.creatorContacts.find(cv => cv.id === v.id))
       }
     }
     if (['Reviewed'].indexOf(meta.status) > -1 && this.hasRole(['content_publisher'])) {
@@ -279,9 +279,7 @@ export class CardTableComponent extends WidgetBaseComponent
         })
       }
       if (!returnValue && parentMeta && parentMeta.creatorContacts && meta.creatorContacts) {
-        returnValue = parentMeta.creatorContacts.some(v =>
-          meta.creatorContacts.find(cv => cv.id === v.id),
-        )
+        returnValue = parentMeta.creatorContacts.some(v => meta.creatorContacts.find(cv => cv.id === v.id))
       }
     }
     if (forPreview && meta.visibility === 'Public') {

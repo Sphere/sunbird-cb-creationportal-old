@@ -44,6 +44,7 @@ import { HttpClient } from '@angular/common/http'
 
 import { AUTHORING_BASE } from '@ws/author/src/lib/constants/apiEndpoints'
 
+import { isActivationKey, randomInt } from '@ws-widget/utils'
 declare const CKEDITOR: any
 
 // Inline 16x16 SVG icons (base64 data URIs) for the custom insert-toolbar buttons.
@@ -64,6 +65,9 @@ const WS_UPLOAD_ICONS = {
   styleUrls: ['./plain-ckeditor.component.scss'],
 })
 export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   downloadRegex = new RegExp(`(https://.*?/content-store/.*?)(\\\)?\\\\?['"])`, 'gm')
   uploadRegex = new RegExp(`${AUTHORING_CONTENT_BASE}(.*?)(\\\)?\\\\?['"])`, 'gm')
   downloadPartialImgRegex = RegExp(` src=\s*['"](.*?)['"]`, 'gm')
@@ -501,7 +505,7 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
             let randomNumber = ''
             // tslint:disable-next-line: no-increment-decrement
             for (let i = 0; i < 16; i++) {
-              randomNumber += Math.floor(Math.random() * 10)
+              randomNumber += randomInt(10)
             }
             const requestBody: any = {
               request: {

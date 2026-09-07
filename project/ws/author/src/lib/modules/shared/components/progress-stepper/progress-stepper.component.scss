@@ -2,11 +2,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-    padding: 25px 0px 15px 32px;
-  background: #F3F8FD !important;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.10);
+  padding: 25px 0px 15px 32px;
+  background: #f3f8fd !important;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
 }
-.step-line{
+.step-line {
   display: flex;
 }
 .left-block {
@@ -38,35 +38,35 @@
   display: inline-block;
   width: 17px;
   height: 17px;
-  border: 2px solid #BFDBFE;
-  border-top-color: #1C5D95;
+  border: 2px solid #bfdbfe;
+  border-top-color: #1c5d95;
   border-radius: 50%;
   animation: ps-spin 0.7s linear infinite;
   flex-shrink: 0;
 }
-.step-label{
-  color: #1C5D95;
+.step-label {
+  color: #1c5d95;
   cursor: pointer;
 
-/* Label 2 */
-font-family: Roboto;
-font-size: 12px;
-font-style: normal;
-font-weight: 400;
-line-height: 14.4px; /* 120% */
-letter-spacing: -0.24px;
+  /* Label 2 */
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 14.4px; /* 120% */
+  letter-spacing: -0.24px;
 }
-.step input[type="radio"] {
+.step input[type='radio'] {
   appearance: none;
   width: 16px;
   height: 16px;
-  border: 2px solid #1C5D95;
+  border: 2px solid #1c5d95;
   border-radius: 50%;
   margin-right: 8px;
   position: relative;
 }
 
-.step input[type="radio"]::before {
+.step input[type='radio']::before {
   content: '';
   display: block;
   width: 100%;
@@ -78,43 +78,42 @@ letter-spacing: -0.24px;
   transform: translate(-50%, -50%); /* Centering horizontally and vertically */
 }
 
-.step input[type="radio"]:checked::before {
+.step input[type='radio']:checked::before {
   content: '\2713'; /* Unicode for check mark */
   font-size: 12px;
-  color: #1C5D95;
+  color: #1c5d95;
   text-align: center; /* Center the check mark */
   line-height: 12px; /* Adjust line-height for centering vertically */
 }
 
-.step input[type="radio"]:checked {
+.step input[type='radio']:checked {
   background-color: transparent;
 }
 
-.step.completed input[type="radio"]::before {
+.step.completed input[type='radio']::before {
   content: '\2713'; /* Unicode for check mark */
   font-size: 12px;
-  color: #1C5D95;
+  color: #1c5d95;
   text-align: center; /* Center the check mark */
   line-height: 12px; /* Adjust line-height for centering vertically */
 }
 
-
-.step.active input[type="radio"]::before {
+.step.active input[type='radio']::before {
   content: '';
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #1C5D95;
+  background-color: #1c5d95;
 }
 
-.stepper-header{
-  color: #1C5D95;
-font-family: Roboto;
-font-size: 20px;
-font-style: normal;
-font-weight: 400;
-line-height: 38.4px; /* 192% */
-letter-spacing: -0.4px;
+.stepper-header {
+  color: #1c5d95;
+  font-family: Roboto, sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 38.4px; /* 192% */
+  letter-spacing: -0.4px;
 }
 
 .right-block {
@@ -130,8 +129,8 @@ letter-spacing: -0.4px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #EBF4FD;
-  border: 1px solid #BFDBFE;
+  background: #ebf4fd;
+  border: 1px solid #bfdbfe;
   border-radius: 20px;
   padding: 6px 14px;
 }
@@ -140,8 +139,8 @@ letter-spacing: -0.4px;
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid #BFDBFE;
-  border-top-color: #1C5D95;
+  border: 2px solid #bfdbfe;
+  border-top-color: #1c5d95;
   border-radius: 50%;
   animation: ps-spin 0.7s linear infinite;
   flex-shrink: 0;
@@ -151,7 +150,7 @@ letter-spacing: -0.4px;
   font-family: Roboto, sans-serif;
   font-size: 13px;
   font-weight: 500;
-  color: #1C5D95;
+  color: #1c5d95;
   white-space: nowrap;
 }
 
@@ -159,7 +158,7 @@ letter-spacing: -0.4px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #1C5D95;
+  background: #1c5d95;
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -190,5 +189,7 @@ letter-spacing: -0.4px;
 }
 
 @keyframes ps-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

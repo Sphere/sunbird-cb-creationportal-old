@@ -4,12 +4,11 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
 
 import { ActivatedRoute } from '@angular/router'
 
-import { AuthKeycloakService, ConfigurationsService } from '@ws-widget/utils'
+import { AuthKeycloakService, ConfigurationsService, SafeContentService } from '@ws-widget/utils'
 
 import { Subscription } from 'rxjs'
 
 import { ILoginDescriptiveFooterConfig, IWSPublicLoginConfig } from './login.model'
-
 
 @Component({
   standalone: false,
@@ -42,9 +41,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) {
     const instanceConfig = this.configSvc.instanceConfig
     if (instanceConfig) {
-      this.appIcon = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        instanceConfig.logos.appTransparent,
-      )
+      this.appIcon = SafeContentService.trustedResourceUrl(this.domSanitizer, instanceConfig.logos.appTransparent)
       this.productLogo = instanceConfig.logos.company
       this.developedBy = instanceConfig.logos.developedBy
     }

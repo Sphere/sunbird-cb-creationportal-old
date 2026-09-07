@@ -2,10 +2,13 @@ import {
   Component,
   ElementRef,
   Input,
-  OnChanges, OnDestroy, OnInit,
+  OnChanges,
+  OnDestroy,
+  OnInit,
   QueryList,
   SimpleChanges,
-  ViewChild, ViewChildren,
+  ViewChild,
+  ViewChildren,
 } from '@angular/core'
 
 import { MatDialog } from '@angular/material/dialog'
@@ -26,6 +29,7 @@ import { QuizService } from './quiz.service'
 
 import { EventService } from '../../../../../../../library/ws-widget/utils/src/public-api'
 
+import { isActivationKey } from '@ws-widget/utils'
 export type FetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
 
 @Component({
@@ -35,6 +39,8 @@ export type FetchStatus = 'hasMore' | 'fetching' | 'done' | 'error' | 'none'
   styleUrls: ['./quiz.component.scss'],
 })
 export class QuizComponent implements OnInit, OnChanges, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
 
   @Input() identifier = ''
   @Input() artifactUrl = ''
@@ -91,9 +97,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     private events: EventService,
     public dialog: MatDialog,
     private quizSvc: QuizService,
-  ) { }
+  ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     if (this.quizJson && this.quizJson.timeLimit) {
       this.timeLeft = this.quizJson.timeLimit
     }
@@ -158,23 +164,19 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   startQuiz() {
     this.sidenavOpenDefault = true
-    setTimeout(() => { this.sidenavOpenDefault = false }, 500)
+    setTimeout(() => {
+      this.sidenavOpenDefault = false
+    }, 500)
     this.viewState = 'attempt'
     this.startTime = Date.now()
     this.markedQuestions = new Set([])
     this.questionAnswerHash = {}
     this.currentQuestionIndex = 0
-    console.log("this.quizJson", this.quizJson)
-    if (this.quizJson)
-      this.timeLeft = this.quizJson.timeLimit
+    console.log('this.quizJson', this.quizJson)
+    if (this.quizJson) this.timeLeft = this.quizJson.timeLimit
     if (this.quizJson && this.quizJson.timeLimit !== undefined && this.quizJson.timeLimit > -1) {
       this.timerSubscription = interval(100)
-        .pipe(
-          map(
-            () =>
-              this.startTime + this.quizJson.timeLimit - Date.now(),
-          ),
-        )
+        .pipe(map(() => this.startTime + this.quizJson.timeLimit - Date.now()))
         .subscribe(_timeRemaining => {
           this.timeLeft -= 0.1
           if (this.timeLeft < 0) {
@@ -199,10 +201,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
     this.viewState = 'attempt'
-    if (
-      this.questionAnswerHash[question.questionId] &&
-      question.multiSelection
-    ) {
+    if (this.questionAnswerHash[question.questionId] && question.multiSelection) {
       const questionIndex = this.questionAnswerHash[question.questionId].indexOf(optionId)
       if (questionIndex === -1) {
         this.questionAnswerHash[question.questionId].push(optionId)
@@ -219,10 +218,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   proceedToSubmit() {
     if (this.timeLeft) {
-      if (
-        Object.keys(this.questionAnswerHash).length !==
-        this.quizJson.questions.length
-      ) {
+      if (Object.keys(this.questionAnswerHash).length !== this.quizJson.questions.length) {
         this.submissionState = 'unanswered'
       } else if (this.markedQuestions.size) {
         this.submissionState = 'marked'
@@ -389,7 +385,6 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
     )
 
     /** ------------end------------------- */
-
   }
 
   showAnswers() {
@@ -415,39 +410,27 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   calculateResults() {
-    const correctAnswers = this.quizJson.questions.map(
-      (question: NSQuiz.IQuestion) => {
-        return {
-          questionType: question.questionType,
-          questionId: question.questionId,
-          correctOptions: question.options
-            .filter(option => option.isCorrect)
-            .map(option =>
-              question.questionType === 'fitb' ? option.text : option.optionId,
-            ),
-          correctMtfOptions: question.options
-            .filter(option => option.isCorrect)
-            .map(option =>
-              question.questionType === 'mtf' ? option : undefined,
-            ),
-        }
-      },
-    )
+    const correctAnswers = this.quizJson.questions.map((question: NSQuiz.IQuestion) => {
+      return {
+        questionType: question.questionType,
+        questionId: question.questionId,
+        correctOptions: question.options
+          .filter(option => option.isCorrect)
+          .map(option => (question.questionType === 'fitb' ? option.text : option.optionId)),
+        correctMtfOptions: question.options
+          .filter(option => option.isCorrect)
+          .map(option => (question.questionType === 'mtf' ? option : undefined)),
+      }
+    })
     // logger.log(correctAnswers);
     this.numCorrectAnswers = 0
     this.numIncorrectAnswers = 0
     correctAnswers.forEach(answer => {
       const correctOptions = answer.correctOptions
       const correctMtfOptions = answer.correctMtfOptions
-      let selectedOptions: any =
-        this.questionAnswerHash[answer.questionId] || []
-      if (
-        answer.questionType === 'fitb' &&
-        this.questionAnswerHash[answer.questionId] &&
-        this.questionAnswerHash[answer.questionId][0]
-      ) {
-        selectedOptions =
-          this.questionAnswerHash[answer.questionId][0].split(',') || []
+      let selectedOptions: any = this.questionAnswerHash[answer.questionId] || []
+      if (answer.questionType === 'fitb' && this.questionAnswerHash[answer.questionId] && this.questionAnswerHash[answer.questionId][0]) {
+        selectedOptions = this.questionAnswerHash[answer.questionId][0].split(',') || []
         let correctFlag = true
         let unTouched = false
         if (selectedOptions.length < 1) {
@@ -458,10 +441,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         }
         if (correctFlag && !unTouched) {
           for (let i = 0; i < correctOptions.length; i += 1) {
-            if (
-              correctOptions[i].trim().toLowerCase() !==
-              selectedOptions[i].trim().toLowerCase()
-            ) {
+            if (correctOptions[i].trim().toLowerCase() !== selectedOptions[i].trim().toLowerCase()) {
               correctFlag = false
             }
           }
@@ -483,13 +463,12 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         if (selectedOptions && selectedOptions[0]) {
           // logger.log(selectedOptions)
           // logger.log(correctOptions)
-          (selectedOptions[0] as any[]).forEach(element => {
+          ;(selectedOptions[0] as any[]).forEach(element => {
             const b = element.sourceId
             if (correctMtfOptions) {
               const option = correctMtfOptions[(b.slice(-1) as number) - 1] || { match: '' }
               const match = option.match
-              if (match && match.trim() === element.target.innerHTML.trim()
-              ) {
+              if (match && match.trim() === element.target.innerHTML.trim()) {
                 element.setPaintStyle({
                   stroke: '#357a38',
                 })
@@ -511,7 +490,8 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         }
       } else {
         if (
-          correctOptions.sort().join(',') === selectedOptions.sort().join(',')
+          correctOptions.sort((a: any, b: any) => (a < b ? -1 : a > b ? 1 : 0)).join(',') ===
+          selectedOptions.sort((a: any, b: any) => (a < b ? -1 : a > b ? 1 : 0)).join(',')
         ) {
           this.numCorrectAnswers += 1
         } else if (selectedOptions.length > 0) {
@@ -519,10 +499,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     })
-    this.numUnanswered =
-      this.quizJson.questions.length -
-      this.numCorrectAnswers -
-      this.numIncorrectAnswers
+    this.numUnanswered = this.quizJson.questions.length - this.numCorrectAnswers - this.numIncorrectAnswers
   }
 
   setBorderColor(connection: OnConnectionBindInfo, color: string) {
@@ -554,13 +531,9 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
   raiseTelemetry(action: string, optionId: string | null, event: string) {
     if (optionId) {
-      this.events.raiseInteractTelemetry(
-        action,
-        event,
-        {
-          optionId,
-        },
-      )
+      this.events.raiseInteractTelemetry(action, event, {
+        optionId,
+      })
     } else {
       this.events.raiseInteractTelemetry(action, event, {
         contentId: this.identifier,

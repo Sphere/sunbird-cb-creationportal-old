@@ -16,8 +16,10 @@ import { ActivatedRoute } from '@angular/router'
   templateUrl: './error-resolver.component.html',
   styleUrls: ['./error-resolver.component.scss'],
 })
-export class ErrorResolverComponent extends WidgetBaseComponent
-  implements OnInit, NsWidgetResolver.IWidgetData<NsError.IWidgetErrorResolver> {
+export class ErrorResolverComponent
+  extends WidgetBaseComponent
+  implements OnInit, NsWidgetResolver.IWidgetData<NsError.IWidgetErrorResolver>
+{
   @Input() widgetData!: NsError.IWidgetErrorResolver
 
   errorType: Record<NsError.TErrorType, NsError.TErrorType> = {
@@ -38,7 +40,7 @@ export class ErrorResolverComponent extends WidgetBaseComponent
     super()
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     if (!this.widgetData) {
       this.widgetData = {
         errorType: this.activateRoute.snapshot.data.errorType,
@@ -52,8 +54,7 @@ export class ErrorResolverComponent extends WidgetBaseComponent
   private async initialize() {
     if (this.widgetData && !this.widgetData.errorData && this.configService.instanceConfig) {
       const config: NsError.IErrorConfig = await this.errorResolverSvc.getErrorConfig(
-        this.widgetData.errorDataPath ||
-        this.configService.instanceConfig.defaultFeatureConfigs.error,
+        this.widgetData.errorDataPath || this.configService.instanceConfig.defaultFeatureConfigs.error,
       )
       this.widgetData.errorData = this.getErrorData(config)
     }

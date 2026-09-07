@@ -20,7 +20,7 @@
 }
 
 .back-icon {
-  color: #0F172A;
+  color: #0f172a;
 }
 
 .duration-block {
@@ -38,8 +38,8 @@
   display: inline-block;
   padding: 4px 14px;
   border-radius: 100px;
-  background: #DCFAFF;
-  color: #035F7C;
+  background: #dcfaff;
+  color: #035f7c;
   font-family: Roboto, sans-serif;
   font-size: 13px;
   font-weight: 400;
@@ -52,7 +52,7 @@
   font-size: 28px;
   font-weight: 600;
   line-height: 1.3;
-  color: #0F172A;
+  color: #0f172a;
   word-wrap: break-word;
   margin-bottom: 6px;
 
@@ -71,7 +71,7 @@
 }
 
 .blue-link {
-  color: #1C5D95;
+  color: #1c5d95;
   cursor: pointer;
 }
 
@@ -125,13 +125,13 @@
 
 ::ng-deep .theme-igot.day-mode .mat-progress-bar-fill::after,
 ::ng-deep .theme-igot.day-mode .mdc-linear-progress__bar-inner {
-  background: #30EA7E 0% 0% no-repeat padding-box;
+  background: #30ea7e 0% 0% no-repeat padding-box;
   border-radius: 40px;
 }
 
 ::ng-deep .theme-igot.day-mode .mat-progress-bar-buffer,
 ::ng-deep .theme-igot.day-mode .mdc-linear-progress__buffer-bar {
-  background-color: #EDEDED;
+  background-color: #ededed;
 }
 
 // ── Action icon buttons row ──────────────────────────────────────────────────
@@ -164,7 +164,7 @@
   height: 44px;
 
   &--active {
-    border-color: #1C5D95;
+    border-color: #1c5d95;
   }
 }
 
@@ -175,7 +175,7 @@
   color: #898989;
 
   &--active {
-    color: #1C5D95;
+    color: #1c5d95;
   }
 }
 

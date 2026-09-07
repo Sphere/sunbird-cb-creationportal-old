@@ -11,6 +11,7 @@ import { NSContent } from '@ws/author/src/lib/interface/content'
 import { Component, Input, OnInit, Inject } from '@angular/core'
 
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+import { isActivationKey } from '@ws-widget/utils'
 interface IWorkFlowLog {
   name: string
   date: Date
@@ -36,6 +37,9 @@ interface IWorkFlowStepper {
   styleUrls: ['./status-track.component.scss'],
 })
 export class StatusTrackComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() content!: NSContent.IContentMeta | ISearchContent
   @Input() isDialog = true
   workFlow: IWorkFlowStepper[] = []
@@ -50,7 +54,7 @@ export class StatusTrackComponent implements OnInit {
     public dialogRef: MatDialogRef<StatusTrackComponent>,
     @Inject(MAT_DIALOG_DATA) public data: NSContent.IContentMeta | ISearchContent,
     private workFlowService: WorkFlowService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.isClient1 = this.accessSvc.rootOrg.toLowerCase() === 'client1'
@@ -107,12 +111,7 @@ export class StatusTrackComponent implements OnInit {
             isCompleted: index < this.currentStage,
             isActive: index === this.currentStage,
           }
-          if (
-            index < this.currentStage &&
-            v !== 'Live' &&
-            this.content.comments &&
-            this.content.comments.length
-          ) {
+          if (index < this.currentStage && v !== 'Live' && this.content.comments && this.content.comments.length) {
             for (let i = this.content.comments.length - 1; i > -1; i -= 1) {
               if (acceptedActions.includes(this.content.comments[i].action)) {
                 step.name = this.content.comments[i].name

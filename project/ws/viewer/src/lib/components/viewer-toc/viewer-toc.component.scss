@@ -16,9 +16,9 @@
 
 // ── Module header (parent / nested node) ────────────────────────────────────
 .module-border {
-  background: #F7FBFE;
-  border-top: 1px solid #DDE8F0;
-  border-bottom: 1px solid #DDE8F0;
+  background: #f7fbfe;
+  border-top: 1px solid #dde8f0;
+  border-bottom: 1px solid #dde8f0;
   border-radius: 0;
   box-shadow: none;
   margin: 4px 0;
@@ -43,12 +43,12 @@
   padding: 10px 16px;
   width: 100%;
   box-sizing: border-box;
-  border-bottom: 1px solid #DDE8F0;
+  border-bottom: 1px solid #dde8f0;
   transition: background 0.15s ease;
 
   &.content-active-bg {
-    background-color: #E7F2FA;
-    border-left: 3px solid #1C5D95;
+    background-color: #e7f2fa;
+    border-left: 3px solid #1c5d95;
     padding-left: 13px; // compensate for the 3px border
   }
 
@@ -64,7 +64,7 @@
   font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
-  color: #1D2B36;
+  color: #1d2b36;
   margin: 0 0 4px;
   white-space: normal;
   word-break: break-word;
@@ -81,7 +81,7 @@ a.content-active .toc-item-title {
   font-family: Roboto, sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: #1D2B36;
+  color: #1d2b36;
   margin: 0;
   white-space: normal;
   word-break: break-word;
@@ -103,7 +103,7 @@ a.content-active .toc-item-title {
   span {
     font-family: Roboto, sans-serif;
     font-size: 12px;
-    color: #5A7184;
+    color: #5a7184;
   }
 }
 
@@ -159,6 +159,7 @@ a.content-active .toc-item-title {
 // ── Progress / lock ──────────────────────────────────────────────────────────
 .progrss-box {
   margin-left: auto;
+  align-self: center;
   padding-right: 8px;
   flex-shrink: 0;
 }
@@ -174,10 +175,10 @@ a.content-active .toc-item-title {
 
 // ── Active li highlight (deep tree) ─────────────────────────────────────────
 ::ng-deep mat-tree-node .li-active {
-  background-color: #E7F2FA;
+  background-color: #e7f2fa;
 
   .resource-container {
-    border-bottom: 1px solid #E7F2FA;
+    border-bottom: 1px solid #e7f2fa;
   }
 }
 

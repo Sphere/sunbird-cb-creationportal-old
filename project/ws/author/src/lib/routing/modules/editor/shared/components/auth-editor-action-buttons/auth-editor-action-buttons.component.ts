@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
 
 import { IActionButtonConfig } from '@ws/author/src/lib/interface/action-button'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 /**
  * @description
  * Display the action buttons in the editor which allows user to click save or send for review or preview and so many other options
@@ -18,6 +18,9 @@ import { IActionButtonConfig } from '@ws/author/src/lib/interface/action-button'
   styleUrls: ['./auth-editor-action-buttons.component.scss'],
 })
 export class AuthEditorActionButtonsComponent implements OnInit {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() buttonConfig: IActionButtonConfig | null = null
   @Output() action = new EventEmitter<string>()
   showSettingButtons = true

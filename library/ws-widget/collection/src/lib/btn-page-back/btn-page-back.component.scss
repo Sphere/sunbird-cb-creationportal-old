@@ -12,8 +12,8 @@
   display: flex !important;
   visibility: visible;
   opacity: 1;
-  transition-delay: 1s;
-  transition: visibility 0s linear 0.33s,
+  transition:
+    visibility 0s linear 0.33s,
     opacity 0.33s linear;
 }
 
@@ -21,7 +21,8 @@
   display: none !important;
   visibility: hidden;
   opacity: 0;
-  transition: visibility 0s linear 0.33s,
+  transition:
+    visibility 0s linear 0.33s,
     opacity 0.33s linear;
 }
 
@@ -47,7 +48,7 @@
   width: $size-s;
   height: $size-m;
   transform: matrix(0, 1, -1, 0, 0, 0);
-  background: #00A9F4 0% 0% no-repeat padding-box;
+  background: #00a9f4 0% 0% no-repeat padding-box;
 }
 
 .icon-margin {
@@ -69,7 +70,6 @@
 
 /** No CSS for this example */
 .mat-y-icon {
-
   color: yellowgreen;
 
   svg {

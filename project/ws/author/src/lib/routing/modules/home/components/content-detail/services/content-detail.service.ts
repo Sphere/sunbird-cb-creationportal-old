@@ -37,15 +37,15 @@ import { IFormMeta } from '@ws/author/src/lib/interface/form'
 
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
 
-
 @Injectable()
 export class MyContentService {
   constructor(
     private authInitService: AuthInitService,
-    private apiService: ApiService,
+    // protected so the my-content subclass, which adds one extra endpoint, can reuse it
+    protected apiService: ApiService,
     private accessService: AccessControlService,
     private configSvc: ConfigurationsService,
-  ) { }
+  ) {}
 
   fetchContent(searchData: any): Observable<any> {
     return this.apiService
@@ -57,10 +57,10 @@ export class MyContentService {
     return isKnowledgeBoard
       ? this.apiService.delete(`${CONTENT_DELETE}/${id}/kb${this.accessService.orgRootOrgAsQuery}`)
       : this.apiService.post(`${CONTENT_DELETE}${this.accessService.orgRootOrgAsQuery}`, {
-        identifier: id,
-        author: this.accessService.userId,
-        isAdmin: this.accessService.hasRole(['editor', 'admin']),
-      })
+          identifier: id,
+          author: this.accessService.userId,
+          isAdmin: this.accessService.hasRole(['editor', 'admin']),
+        })
   }
 
   restoreContent(id: string): Observable<null> {
@@ -72,34 +72,29 @@ export class MyContentService {
   }
 
   fetchFromSearchV6(searchData: any, forAdmin = false): Observable<ISearchResult> {
-    return this.apiService.post<ISearchResult>(
-      forAdmin ? SEARCH_V6_ADMIN : SEARCH_V6_AUTH,
-      searchData,
-    )
+    return this.apiService.post<ISearchResult>(forAdmin ? SEARCH_V6_ADMIN : SEARCH_V6_AUTH, searchData)
   }
 
   readContent(id: string): Observable<NSContent.IContentMeta> {
-    return this.apiService.get<NSContent.IContentMeta>(
-      `${CONTENT_READ}${id}${this.accessService.orgRootOrgAsQuery}`,
-    )
+    return this.apiService.get<NSContent.IContentMeta>(`${CONTENT_READ}${id}${this.accessService.orgRootOrgAsQuery}`)
   }
 
   createInAnotherLanguage(id: string, lang: string): Observable<string> {
     return this.readContent(id).pipe(
       mergeMap(content => {
         let requestObj: any = {}
-        Object.keys(this.authInitService.authConfig).map(
+        Object.keys(this.authInitService.authConfig).forEach(
           v =>
-          (requestObj[v as any] = content[v as keyof NSContent.IContentMeta]
-            ? content[v as keyof NSContent.IContentMeta]
-            : JSON.parse(
-              JSON.stringify(
-                this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                  content.contentType
-                  // tslint:disable-next-line: ter-computed-property-spacing
-                ][0].value,
-              ),
-            )),
+            (requestObj[v as any] = content[v as keyof NSContent.IContentMeta]
+              ? content[v as keyof NSContent.IContentMeta]
+              : JSON.parse(
+                  JSON.stringify(
+                    this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
+                      content.contentType
+                      // tslint:disable-next-line: ter-computed-property-spacing
+                    ][0].value,
+                  ),
+                )),
         )
         requestObj = {
           ...requestObj,
@@ -156,11 +151,7 @@ export class MyContentService {
       )
   }
 
-  forwardBackward(
-    meta: NSApiRequest.IForwardBackwardActionGeneral,
-    id: string,
-    status: string,
-  ): Observable<null> {
+  forwardBackward(meta: NSApiRequest.IForwardBackwardActionGeneral, id: string, status: string): Observable<null> {
     const requestBody: NSApiRequest.IForwardBackwardAction = {
       actor: this.accessService.userId,
       ...meta,
@@ -189,27 +180,15 @@ export class MyContentService {
       unpublish,
       identifier: id,
     }
-    return this.apiService.post<any>(
-      `${UNPUBLISH}${this.accessService.orgRootOrgAsQuery}`,
-      requestBody,
-      true,
-      {
-        headers: new HttpHeaders({
-          Accept: 'text/plain',
-        }),
-        responseType: 'text',
-      },
-    )
+    return this.apiService.post<any>(`${UNPUBLISH}${this.accessService.orgRootOrgAsQuery}`, requestBody, true, {
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+      responseType: 'text',
+    })
   }
 
-  getSearchBody(
-    mode: string,
-    locale: string[] = [],
-    pageNo = 0,
-    query = '*',
-    forAdmin = false,
-    pageSize = 24,
-  ): any {
+  getSearchBody(mode: string, locale: string[] = [], pageNo = 0, query = '*', forAdmin = false, pageSize = 24): any {
     const searchV6Body = {
       locale,
       pageSize,
@@ -293,9 +272,7 @@ export class MyContentService {
       searchV6Body.filters[0].andFilters[0].status.push('Live')
       searchV6Body.filters[0].andFilters[0].expiryDate = [
         {
-          lte: this.accessService.convertToESDate(
-            new Date(new Date().setMonth(new Date().getMonth() + 1)),
-          ),
+          lte: this.accessService.convertToESDate(new Date(new Date().setMonth(new Date().getMonth() + 1))),
           gte: this.accessService.convertToESDate(new Date()),
         },
       ]

@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common'
 
 import { RouterModule } from '@angular/router'
 
-
 import { MatCardModule } from '@angular/material/card'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatButtonModule } from '@angular/material/button'
@@ -16,29 +15,17 @@ import {
   // BtnContentShareModule,
   BtnFullscreenModule,
   // BtnGoalsModule,
-  BtnPlaylistModule,
   DisplayContentTypeModule,
-  UserContentRatingModule,
   UserImageModule,
-  BtnContentFeedbackV2Module,
 } from '@ws-widget/collection'
 
-
-import {
-  PipeDurationTransformModule,
-  PipeLimitToModule,
-  PipePartialContentModule,
-} from '@ws-widget/utils'
-
+import { PipeDurationTransformModule, PipeLimitToModule, PipePartialContentModule } from '@ws-widget/utils'
 
 import { WidgetResolverModule } from '@ws-widget/resolver'
 
-
 import { HtmlModule as HtmlViewContainerModule } from '../../route-view-container/html/html.module'
 
-
 import { HtmlComponent } from './html.component'
-
 
 import { AccessControlService } from '@ws/author'
 
@@ -58,16 +45,13 @@ import { AccessControlService } from '@ws/author'
     // BtnContentShareModule,
     BtnFullscreenModule,
     // BtnGoalsModule,
-    BtnPlaylistModule,
     DisplayContentTypeModule,
     UserImageModule,
     MatCardModule,
     MatDividerModule,
     MatButtonModule,
     MatSnackBarModule,
-    UserContentRatingModule,
-    BtnContentFeedbackV2Module,
   ],
   providers: [AccessControlService],
 })
-export class HtmlModule { }
+export class HtmlModule {}

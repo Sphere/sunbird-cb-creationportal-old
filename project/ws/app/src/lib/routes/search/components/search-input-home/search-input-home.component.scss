@@ -17,7 +17,7 @@ ws-app-search-input-home .autocomplete-form {
 }
 
 ws-app-search-input-home input {
-  padding-left: .5rem !important;
+  padding-left: 0.5rem !important;
 }
 
 ws-app-search-input-home .search .mat-form-field-wrapper,
@@ -30,7 +30,6 @@ ws-app-search-input-home .search .mat-mdc-text-field-wrapper {
     padding: 0px;
     padding-bottom: 5px;
   }
-
 }
 
 ws-app-search-input-home .search-border {
@@ -55,7 +54,6 @@ ws-app-search-input-home .border-right {
   border-right: 1px solid #cecece;
 }
 
-
 ws-app-search-input-home .lang-btn {
   margin-right: 0 !important;
 }
@@ -69,7 +67,6 @@ ws-app-search-input-home .search-page-container {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  margin-top: $size-xl;
   padding-top: $size-xl;
   text-align: center;
   margin: auto;
@@ -124,4 +121,5 @@ ws-app-search-input-home .feature-group {
 }
 
 // 821
-@media only screen and (max-width:821px) {}
+@media only screen and (max-width: 821px) {
+}

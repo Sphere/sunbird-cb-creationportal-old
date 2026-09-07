@@ -10,7 +10,6 @@ import { WidgetResolverModule } from '@ws-widget/resolver'
 
 import { IapModule as IapViewContainerModule } from '../../route-view-container/iap/iap.module'
 
-
 import { MatCardModule } from '@angular/material/card'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatButtonModule } from '@angular/material/button'
@@ -21,19 +20,11 @@ import {
   BtnContentLikeModule,
   // BtnContentShareModule,
   // BtnGoalsModule,
-  BtnPlaylistModule,
   DisplayContentTypeModule,
   UserImageModule,
-  UserContentRatingModule,
-  BtnContentFeedbackV2Module,
 } from '@ws-widget/collection'
 
-
-import {
-  PipeDurationTransformModule,
-  PipeLimitToModule,
-  PipePartialContentModule,
-} from '@ws-widget/utils'
+import { PipeDurationTransformModule, PipeLimitToModule, PipePartialContentModule } from '@ws-widget/utils'
 
 @NgModule({
   declarations: [IapComponent],
@@ -50,15 +41,12 @@ import {
     BtnContentLikeModule,
     // BtnContentShareModule,
     // BtnGoalsModule,
-    BtnPlaylistModule,
     DisplayContentTypeModule,
     UserImageModule,
     MatCardModule,
     MatDividerModule,
     MatButtonModule,
     MatSnackBarModule,
-    UserContentRatingModule,
-    BtnContentFeedbackV2Module,
   ],
 })
-export class IapModule { }
+export class IapModule {}

@@ -40,7 +40,7 @@ import { NSApiRequest } from '@ws/author/src/lib/interface/apiRequest'
 
 import { EMPTY } from 'rxjs'
 
-
+import { isActivationKey } from '@ws-widget/utils'
 declare var $: any
 @Component({
   standalone: false,
@@ -50,6 +50,9 @@ declare var $: any
   styleUrls: ['./auth-toc.component.scss'],
 })
 export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
+  /** Enter/Space keyboard equivalent for (click) handlers. */
+  readonly isActivationKey = isActivationKey
+
   @Input() createdFromCourse: any
   @Output() action = new EventEmitter<{ type: string; identifier: string; nodeClicked?: boolean }>()
   @Output() closeEvent = new EventEmitter<boolean>()
@@ -94,7 +97,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     private authInitService: AuthInitService,
     private breakpointObserver: BreakpointObserver,
     private editorService: EditorService,
-  ) { }
+  ) {}
 
   private _transformer = (node: IContentNode, level: number): IContentTreeNode => {
     return {
@@ -192,7 +195,6 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
       this.store.currentSelectedNode = node.id
       this.contentId = node.identifier
       this.editorStore.changeActiveCont.next(node.identifier)
-
     }
   }
 
@@ -215,10 +217,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
       if (tempUpdateContent) {
         tempUpdateContent = this.editorStore.cleanProperties(tempUpdateContent)
         if (tempUpdateContent.duration || tempUpdateContent.duration === 0 || tempUpdateContent.duration === '0') {
-          tempUpdateContent.duration =
-            (isNumber(tempUpdateContent.duration) ?
-              `${tempUpdateContent.duration}` :
-              tempUpdateContent.duration)
+          tempUpdateContent.duration = isNumber(tempUpdateContent.duration) ? `${tempUpdateContent.duration}` : tempUpdateContent.duration
         }
         if (tempUpdateContent.category) {
           delete (tempUpdateContent as any).category
@@ -232,8 +231,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
             content: tempUpdateContent,
           },
         }
-        if (node.category === "Collection") {
-
+        if (node.category === 'Collection') {
         } else {
           if (Object.keys(tempUpdateContent).length !== 1) {
             this.editorService.updateContentV3(requestBody, this.contentId).subscribe(async () => {
@@ -289,7 +287,6 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
-
   }
 
   closeSidenav() {
@@ -347,15 +344,9 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
         const parentNode = this.getParentNode(node)
         this.isDropDisabled = !parentNode
           ? true
-          : !this.store.allowDrop(
-            this.dragContainer as IContentTreeNode,
-            parentNode as IContentTreeNode,
-          )
+          : !this.store.allowDrop(this.dragContainer as IContentTreeNode, parentNode as IContentTreeNode)
       } else {
-        this.isDropDisabled = !this.store.allowDrop(
-          this.dragContainer as IContentTreeNode,
-          this.dropContainer as IContentTreeNode,
-        )
+        this.isDropDisabled = !this.store.allowDrop(this.dragContainer as IContentTreeNode, this.dropContainer as IContentTreeNode)
       }
     }
   }
@@ -373,9 +364,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isDragging = false
     if (!this.isDropDisabled) {
       this.preserveExpandedNodes()
-      const isAdjacentDrop = ['above', 'below'].includes(
-        this.backUpInformation.draggingPosition as string,
-      )
+      const isAdjacentDrop = ['above', 'below'].includes(this.backUpInformation.draggingPosition as string)
       const dropContainer = isAdjacentDrop
         ? this.getParentNode(this.backUpInformation.dropContainer as IContentTreeNode)
         : this.backUpInformation.dropContainer
@@ -464,29 +453,31 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         this.loaderService.changeLoad.next(true)
 
-        this.editorService.updateContentV4(requestBodyV2).subscribe(() => {
-          this.snackBar.openFromComponent(NotificationComponent, {
-            data: {
-              type: Notify.SUCCESS,
-            },
-            duration: NOTIFICATION_TIME * 1000,
-          })
-          this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-            this.editorStore.resetOriginalMetaWithHierarchy(data)
-          })
-          this.store.changedHierarchy = {}
-          this.loaderService.changeLoad.next(false)
-          // tslint:disable-next-line: align
-        }, error => {
-          this.snackBar.openFromComponent(NotificationComponent, {
-            data: {
-              type: (error) ? Notify.FAIL : '',
-            },
-            duration: NOTIFICATION_TIME * 1000,
-          })
-          this.loaderService.changeLoad.next(false)
-        })
-
+        this.editorService.updateContentV4(requestBodyV2).subscribe(
+          () => {
+            this.snackBar.openFromComponent(NotificationComponent, {
+              data: {
+                type: Notify.SUCCESS,
+              },
+              duration: NOTIFICATION_TIME * 1000,
+            })
+            this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
+              this.editorStore.resetOriginalMetaWithHierarchy(data)
+            })
+            this.store.changedHierarchy = {}
+            this.loaderService.changeLoad.next(false)
+            // tslint:disable-next-line: align
+          },
+          error => {
+            this.snackBar.openFromComponent(NotificationComponent, {
+              data: {
+                type: error ? Notify.FAIL : '',
+              },
+              duration: NOTIFICATION_TIME * 1000,
+            })
+            this.loaderService.changeLoad.next(false)
+          },
+        )
       }
     })
   }
@@ -507,12 +498,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
         const parentNode = (asSibling ? this.getParentNode(node) : node) as IContentTreeNode
         this.expandedNodes.add(parentNode.id)
         this.loaderService.changeLoad.next(true)
-        const isDone = await this.store.addChildOrSibling(
-          contents,
-          parentNode,
-          asSibling ? node.id : undefined,
-          'below',
-        )
+        const isDone = await this.store.addChildOrSibling(contents, parentNode, asSibling ? node.id : undefined, 'below')
         this.loaderService.changeLoad.next(false)
         this.snackBar.openFromComponent(NotificationComponent, {
           data: {
@@ -546,7 +532,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
       'below',
       {},
       type === 'web' ? 'link' : '',
-      true
+      true,
     )
     const isDone = contentData.isDone
     const createdContent = contentData.content
@@ -601,13 +587,10 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
   addChapter() {
     // tslint:disable-next-line:max-line-length
     // this.allowedChild = [{"children":[],"id":"upload","name":"Upload Content","icon":"cloud_upload"},{"children":[],"id":"assessment","name":"Assessment","icon":"check_circle"},{"children":[],"id":"web","name":"Attach a Link","icon":"link"}]
-
     // this.action.emit({ type: 'showAddChapter', identifier: '' })
   }
 
-  triggerSave(
-    createdContent?: any
-  ) {
+  triggerSave(createdContent?: any) {
     // const nodesModified: any = {}
     // let isRootPresent = (parentNode && parentNode.identifier) ? true : false
     // Object.keys(this.editorStore.upDatedContent).forEach(v => {
@@ -668,25 +651,28 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store.changedHierarchy = {}
       }),
       tap(async () => {
-        await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe((data: any) => {
-          this.editorStore.resetOriginalMetaWithHierarchy(data)
-          this.snackBar.openFromComponent(NotificationComponent, {
-            data: {
-              type: Notify.SUCCESS,
-            },
-            duration: NOTIFICATION_TIME * 1000,
-          })
-          this.loaderService.changeLoad.next(false)
-          // tslint:disable-next-line: align
-        }, error => {
-          this.snackBar.openFromComponent(NotificationComponent, {
-            data: {
-              type: (error) ? Notify.FAIL : '',
-            },
-            duration: NOTIFICATION_TIME * 1000,
-          })
-          this.loaderService.changeLoad.next(false)
-        })
+        await this.editorService.readcontentV3(this.editorStore.parentContent).subscribe(
+          (data: any) => {
+            this.editorStore.resetOriginalMetaWithHierarchy(data)
+            this.snackBar.openFromComponent(NotificationComponent, {
+              data: {
+                type: Notify.SUCCESS,
+              },
+              duration: NOTIFICATION_TIME * 1000,
+            })
+            this.loaderService.changeLoad.next(false)
+            // tslint:disable-next-line: align
+          },
+          error => {
+            this.snackBar.openFromComponent(NotificationComponent, {
+              data: {
+                type: error ? Notify.FAIL : '',
+              },
+              duration: NOTIFICATION_TIME * 1000,
+            })
+            this.loaderService.changeLoad.next(false)
+          },
+        )
       }),
       catchError(() => {
         this.snackBar.openFromComponent(NotificationComponent, {
@@ -698,8 +684,7 @@ export class AuthTocComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store.deleteContentNode(createdContent)
         this.loaderService.changeLoad.next(false)
         return EMPTY
-      })
+      }),
     )
   }
-
 }

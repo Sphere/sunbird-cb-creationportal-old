@@ -1,9 +1,21 @@
 <div class="header-block" *ngIf="editMeta">
   <span class="description-txt">Description</span>
-  <span *ngIf="!showAdvancedSettings" (click)="toggleAdvancedSettings();" class="advanced-format">Advanced
-    Formatting</span>
-  <span *ngIf="showAdvancedSettings" (click)="toggleAdvancedSettings();" class="advanced-format">Basic
-    Formatting</span>
+  <span
+    *ngIf="!showAdvancedSettings"
+    (click)="toggleAdvancedSettings()"
+    (keydown)="isActivationKey($event) && toggleAdvancedSettings()"
+    [attr.tabindex]="0"
+    class="advanced-format"
+    >Advanced Formatting</span
+  >
+  <span
+    *ngIf="showAdvancedSettings"
+    (click)="toggleAdvancedSettings()"
+    (keydown)="isActivationKey($event) && toggleAdvancedSettings()"
+    [attr.tabindex]="0"
+    class="advanced-format"
+    >Basic Formatting</span
+  >
 </div>
 
 <textarea #editorHost></textarea>
