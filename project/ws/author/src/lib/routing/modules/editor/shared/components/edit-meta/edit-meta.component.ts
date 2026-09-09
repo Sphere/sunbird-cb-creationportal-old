@@ -353,7 +353,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
       this.editorService.readcontentV3(id).subscribe(async (data: any) => {
         if (data.competencies_v1) {
           this.getAllEntity()
-          this.competencies = JSON.parse(data.competencies_v1)
+          this.competencies = this.parseCompetencies(data.competencies_v1)
         }
         this.loader.changeLoad.next(false)
       })
@@ -388,7 +388,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
               competencies_v1: [],
             }
           } else {
-            arr2 = JSON.parse(data.competencies_v1)
+            arr2 = this.parseCompetencies(data.competencies_v1)
             if (data.competencySearch) {
               arr1 = data.competencySearch
             }
@@ -467,7 +467,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
     this.editorService.readcontentV3(id).subscribe(async (data: any) => {
       if (data.competencies_v1 !== undefined) {
         this.getAllEntity()
-        this.competencies = await JSON.parse(data.competencies_v1)
+        this.competencies = this.parseCompetencies(data.competencies_v1)
       } else {
         this.getAllEntity()
         this.competencies = []
@@ -539,6 +539,22 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
     this.loader.changeLoad.next(false)
     this.ref.detach()
     clearInterval(this.timer)
+  }
+
+  /**
+   * competencies_v1 comes back from the API as a JSON string, but is already an
+   * array once it has been written in memory. Tolerate both, and malformed data.
+   */
+  private parseCompetencies(raw: any): any[] {
+    try {
+      if (!raw) {
+        return []
+      }
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+      return Array.isArray(parsed) ? parsed : [parsed]
+    } catch {
+      return []
+    }
   }
 
   private set content(contentMeta: NSContent.IContentMeta) {
@@ -621,7 +637,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
         }
         if (res.competencies_v1) {
           this.getAllEntity()
-          this.competencies = JSON.parse(res.competencies_v1)
+          this.competencies = this.parseCompetencies(res.competencies_v1)
           console.log('this.competencies', res)
         } else {
           this.competencies = []
@@ -714,7 +730,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
 
         if (this.contentMeta.competencies_v1) {
           // this.getAllEntity()
-          this.competencies = JSON.parse(this.contentMeta.competencies_v1)
+          this.competencies = this.parseCompetencies(this.contentMeta.competencies_v1)
         }
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()
