@@ -19,6 +19,8 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 
 import { MatDialog } from '@angular/material/dialog'
 
+import { parseJsonList } from '@ws/author/src/lib/utils/json-field'
+
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '@ws/author/src/lib/constants/upload'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
@@ -1215,17 +1217,17 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     if (this.validationCheck) {
       this.editorService.readcontentV3(this.contentService.parentContent).subscribe((resData: any) => {
         if (resData && Object.keys(resData).length > 0) {
-          resData.creatorContacts = this.jsonVerify(resData.creatorContacts) ? JSON.parse(resData.creatorContacts) : []
-          resData.trackContacts = this.jsonVerify(resData.reviewer) ? JSON.parse(resData.reviewer) : []
+          resData.creatorContacts = parseJsonList(resData.creatorContacts)
+          resData.trackContacts = parseJsonList(resData.reviewer)
           resData.gatingEnabled = this.jsonVerify(resData.gatingEnabled) ? JSON.parse(resData.gatingEnabled) : []
-          resData.creatorDetails = this.jsonVerify(resData.creatorDetails) ? JSON.parse(resData.creatorDetails) : []
-          resData.publisherDetails = this.jsonVerify(resData.publisherDetails) ? JSON.parse(resData.publisherDetails) : []
+          resData.creatorDetails = parseJsonList(resData.creatorDetails)
+          resData.publisherDetails = parseJsonList(resData.publisherDetails)
           if (resData.children.length > 0) {
             resData.children.forEach((element: any) => {
-              element.creatorContacts = this.jsonVerify(element.creatorContacts) ? JSON.parse(element.creatorContacts) : []
-              element.trackContacts = this.jsonVerify(element.reviewer) ? JSON.parse(element.reviewer) : []
-              element.creatorDetails = this.jsonVerify(element.creatorDetails) ? JSON.parse(element.creatorDetails) : []
-              element.publisherDetails = this.jsonVerify(element.publisherDetails) ? JSON.parse(element.publisherDetails) : []
+              element.creatorContacts = parseJsonList(element.creatorContacts)
+              element.trackContacts = parseJsonList(element.reviewer)
+              element.creatorDetails = parseJsonList(element.creatorDetails)
+              element.publisherDetails = parseJsonList(element.publisherDetails)
             })
           }
           this.contentService.setOriginalMeta(resData)

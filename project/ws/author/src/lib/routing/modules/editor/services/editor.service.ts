@@ -42,6 +42,8 @@ import { map, mergeMap, catchError, retry, shareReplay, finalize } from 'rxjs/op
 
 import { CONTENT_READ_MULTIPLE_HIERARCHY } from './../../../../constants/apiEndpoints'
 
+import { toJsonString } from '@ws/author/src/lib/utils/json-field'
+
 import { ISearchContent, ISearchResult } from '../../../../interface/search'
 
 import { environment } from '../../../../../../../../../src/environments/environment'
@@ -398,11 +400,91 @@ export class EditorService {
     return { ...payload, request: { ...payload.request, content: { ...content, category: normalised } } }
   }
 
+  /**
+   * The CBP contact fields are JSON strings everywhere downstream, but Sunbird
+   * Spark reads them back as arrays, and sending one back untouched breaks two
+   * things:
+   *
+   *  - `reviewer` is typed `string` in the content schema, so content/v3/update
+   *    rejects an array with "Metadata reviewer should be a/an String value";
+   *  - the `compositesearch` index maps these fields as `text`, so an object
+   *    fails indexing with a mapper_parsing_exception. That kills the
+   *    transaction-event-processor Flink job outright rather than routing to its
+   *    error topic, which stalls indexing for every content, not just this one.
+   *
+   * Send JSON strings always. The payload is copied rather than edited in place
+   * -- callers hold this metadata in component state as arrays and still need it
+   * that way -- for the same reason as withCategoryAsArray.
+   */
+  private static readonly JSON_STRING_FIELDS = ['reviewer', 'creatorContacts', 'creatorDetails', 'publisherDetails', 'competencies_v1']
+
+  private withContactFieldsAsStrings(payload: any): any {
+    const content = payload?.request?.content
+    if (!content) {
+      return payload
+    }
+    const normalised: any = {}
+    EditorService.JSON_STRING_FIELDS.forEach(field => {
+      if (field in content) {
+        const value = toJsonString(content[field])
+        if (value !== content[field]) {
+          normalised[field] = value
+        }
+      }
+    })
+    if (Object.keys(normalised).length === 0) {
+      return payload
+    }
+    return { ...payload, request: { ...payload.request, content: { ...content, ...normalised } } }
+  }
+
+  /**
+   * The same fields also travel on hierarchy/update, inside each
+   * nodesModified[id].metadata. That endpoint does no per-field validation, so an
+   * array passes silently and corrupts the node -- which is how these values went
+   * bad in the first place. Normalise there too.
+   */
+  private withHierarchyContactFieldsAsStrings(payload: any): any {
+    const nodes = payload?.request?.data?.nodesModified
+    if (!nodes) {
+      return payload
+    }
+    let changed = false
+    const nextNodes: any = {}
+    Object.keys(nodes).forEach(id => {
+      const node = nodes[id]
+      const metadata = node && node.metadata
+      if (!metadata) {
+        nextNodes[id] = node
+        return
+      }
+      const normalised: any = {}
+      EditorService.JSON_STRING_FIELDS.forEach(field => {
+        if (field in metadata) {
+          const value = toJsonString(metadata[field])
+          if (value !== metadata[field]) {
+            normalised[field] = value
+          }
+        }
+      })
+      if (Object.keys(normalised).length === 0) {
+        nextNodes[id] = node
+        return
+      }
+      changed = true
+      nextNodes[id] = { ...node, metadata: { ...metadata, ...normalised } }
+    })
+    if (!changed) {
+      return payload
+    }
+    return { ...payload, request: { ...payload.request, data: { ...payload.request.data, nodesModified: nextNodes } } }
+  }
+
   updateContentV3(meta: NSApiRequest.IContentUpdateV2, id: string): Observable<null> {
     return this.apiService.patch<null>(
       // `${AUTHORING_BASE}content/v3/update/${id}`,
       `/apis/proxies/v8/action/content/v3/update/${id}`,
-      this.withCategoryAsArray(meta),
+      this.withContactFieldsAsStrings(this.withCategoryAsArray(meta)),
     )
   }
 
@@ -410,12 +492,15 @@ export class EditorService {
     return this.http.patch<null>(
       // `${AUTHORING_BASE}content/v3/update/${id}`,
       `/apis/proxies/v8/action/content/v3/update/${id}`,
-      this.withCategoryAsArray(meta),
+      this.withContactFieldsAsStrings(this.withCategoryAsArray(meta)),
     )
   }
 
   updateContentV4(meta: NSApiRequest.IContentUpdateV3): Observable<null> {
-    return this.apiService.patch<null>(`/apis/proxies/v8/action/content/v3/hierarchy/update`, meta)
+    return this.apiService.patch<null>(
+      `/apis/proxies/v8/action/content/v3/hierarchy/update`,
+      this.withHierarchyContactFieldsAsStrings(meta),
+    )
   }
 
   // updateContentV6(meta: NSApiRequest.IContentUpdateV3, check: boolean): Observable<null> {
@@ -429,7 +514,10 @@ export class EditorService {
   // }
 
   updateContentWithFewFields(requestBody: any, identifier: string): Observable<any> {
-    return this.apiService.patch<any>(`/apis/proxies/v8/action/content/v3/update/${identifier}`, this.withCategoryAsArray(requestBody))
+    return this.apiService.patch<any>(
+      `/apis/proxies/v8/action/content/v3/update/${identifier}`,
+      this.withContactFieldsAsStrings(this.withCategoryAsArray(requestBody)),
+    )
   }
 
   updateContentForReviwer(requestBody: any, identifier: string): Observable<any> {
@@ -437,7 +525,7 @@ export class EditorService {
   }
 
   updateHierarchyForReviwer(meta: NSApiRequest.IContentUpdateV3): Observable<any> {
-    return this.apiService.patch<null>(`/apis/proxies/v8/action/content/v3/hierarchyUpdate`, meta)
+    return this.apiService.patch<null>(`/apis/proxies/v8/action/content/v3/hierarchyUpdate`, this.withHierarchyContactFieldsAsStrings(meta))
   }
 
   fetchEmployeeList(data: string, roleType?: string): Observable<any[]> {

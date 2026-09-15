@@ -25,7 +25,8 @@
     "i18n": "node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng xi18n --output-path locale",
     "tailwind": "npx tailwindcss -i ./src/styles/styles.scss -o ./src/styles.scss",
     "format": "prettier --write \"**/*.{ts,html,scss,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,html,scss,json,md}\""
+    "format:check": "prettier --check \"**/*.{ts,html,scss,json,md}\"",
+    "start:cbp-staging": "node --max_old_space_size=12288 ./node_modules/@angular/cli/bin/ng serve --proxy-config proxy/cbp-staging.proxy.json -o"
   },
   "private": true,
   "dependencies": {
