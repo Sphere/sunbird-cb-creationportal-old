@@ -1641,11 +1641,7 @@ export class CourseSettingsComponent extends EditMetaBaseComponent implements On
         this.contentForm.controls.publisherDetails.setValue(this.contentForm.controls.creatorContacts.value || [])
       })
     }
-    const baseUrl = window.location.origin.trim()
-    const targetUrl = 'https://cbp-staging.aastrika.org'.trim()
-    const publisherId = baseUrl === targetUrl ? '8eab395d-46f4-47ff-90af-9d51d5126fc3' : 'b4509d72-87cc-4317-9012-d4b03e307fa5'
-    this.contentForm.controls.publisherDetails.setValue({ id: publisherId, name: 'Publisher Aastrika' })
-    console.log('publisher', this.contentForm.controls.publisherDetailsCtrl)
+    this.contentForm.controls.publisherDetails.setValue([{ id: AASTRIKA_PUBLISHER_ID, name: 'Publisher Aastrika' }])
     //     this.contentForm.controls.publisherDetails.valueChanges.subscribe(() => {
     //   this.contentForm.controls.publisherDetails.setValue(
     //     this.contentForm.controls.publisherDetails.value || [],
