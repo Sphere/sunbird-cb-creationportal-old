@@ -89,6 +89,16 @@ import { isNumber } from 'lodash'
 
 import { EditMetaBaseComponent } from '../edit-meta/edit-meta-base.component'
 
+/**
+ * Every course is published by the Aastrika publisher account, so the publisher
+ * is set here rather than left to the picker.
+ *
+ * This was previously chosen per environment, because the account had a separate
+ * userId on staging. Staging now runs migrated production users, so the same id
+ * applies everywhere.
+ */
+const AASTRIKA_PUBLISHER_ID = 'b4509d72-87cc-4317-9012-d4b03e307fa5'
+
 @Component({
   standalone: false,
   selector: 'ws-auth-course-settings',
@@ -727,11 +737,11 @@ export class CourseSettingsComponent extends EditMetaBaseComponent implements On
         this.contentForm.controls.courseVisibility.setValue(this.contentMeta.courseVisibility)
         this.contentForm.controls.issueCertification.setValue(this.contentMeta.issueCertification)
         this.contentForm.controls.cneName.setValue(this.contentMeta.cneName)
-        // hardcoded aastrika publisher id
-        const baseUrl = window.location.origin.trim()
-        const targetUrl = 'https://cbp-staging.aastrika.org'.trim()
-        const publisherId = baseUrl === targetUrl ? '8eab395d-46f4-47ff-90af-9d51d5126fc3' : 'b4509d72-87cc-4317-9012-d4b03e307fa5'
-        this.contentForm.controls.publisherDetails.setValue([{ id: publisherId, name: 'Publisher Aastrika' }])
+        // Hardcoded Aastrika publisher id. This used to differ per environment,
+        // because the publisher account had its own userId on staging. Staging now
+        // runs migrated production users, so both environments resolve to the same
+        // id and the origin check is gone.
+        this.contentForm.controls.publisherDetails.setValue([{ id: AASTRIKA_PUBLISHER_ID, name: 'Publisher Aastrika' }])
 
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()

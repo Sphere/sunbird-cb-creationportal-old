@@ -452,6 +452,18 @@ describe('CourseSettingsComponent (autocomplete, competency and logo upload)', (
       expect(component.contentForm.controls.publisherDetails.value).toEqual(expect.objectContaining({ name: 'Publisher Aastrika' }))
     })
 
+    it('seeds the Aastrika publisher id, the same one on every environment', () => {
+      // The id used to be chosen from window.location.origin because the publisher
+      // account had a separate userId on staging. Staging now runs migrated
+      // production users, so one id applies everywhere -- assert it explicitly so a
+      // reintroduced per-environment branch fails here.
+      component.contentMeta = { ...component.contentMeta, publisherDetails: [] } as any
+      component.assignFields()
+      expect(component.contentForm.controls.publisherDetails.value).toEqual([
+        { id: 'b4509d72-87cc-4317-9012-d4b03e307fa5', name: 'Publisher Aastrika' },
+      ])
+    })
+
     it('sets the purpose from a chosen subtitle', () => {
       component.setPurposeValue('Some purpose')
       expect(component.contentForm.controls.purpose.value).toBe('Some purpose')
