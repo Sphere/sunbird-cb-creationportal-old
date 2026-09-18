@@ -1505,7 +1505,12 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
       for await (const element of resourceList) {
         if (element.status === 'Live' && element.parentStatus === 'Review') {
           flag += 1
-        } else if (element.reviewerStatus === 'Reviewed' && element.status === 'Review') {
+          // A resource left in Failed by an earlier publish attempt is retried rather than
+          // counted as a blocker. knowlg only refuses to publish content that is Processing,
+          // so a failed resource can simply be published again once whatever broke has been
+          // resolved. Without this it matches no branch, the tally never reaches the resource
+          // count, and the publisher is told to retire the course and start over.
+        } else if (element.reviewerStatus === 'Reviewed' && (element.status === 'Review' || element.status === 'Failed')) {
           const publishRes = await this.editorService
             .publishContent(element.identifier)
             .toPromise()
