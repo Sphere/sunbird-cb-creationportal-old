@@ -121,6 +121,15 @@
   line-height: normal;
   border: none;
 }
+.add-certificate-btn:not([disabled]) {
+  cursor: pointer;
+}
+
+.add-certificate-btn[disabled] {
+  background: #b8c9d9;
+  cursor: not-allowed;
+}
+
 .preview-img {
   max-width: 100%;
   max-height: 300px;

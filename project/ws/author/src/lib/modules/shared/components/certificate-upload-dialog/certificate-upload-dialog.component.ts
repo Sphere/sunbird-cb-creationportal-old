@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core'
+import { ChangeDetectorRef, Component, OnInit, OnDestroy, Inject, Output, EventEmitter } from '@angular/core'
 
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 
@@ -16,13 +16,15 @@ import { SuccessDialogComponent } from '../success-dialog/success-dialog.compone
 
 import { MatDialog } from '@angular/material/dialog'
 import { isActivationKey, SafeContentService } from '@ws-widget/utils'
+import { EMPTY } from 'rxjs'
+import { finalize, switchMap } from 'rxjs/operators'
 @Component({
   standalone: false,
   selector: 'ws-auth-root-certificate-upload-dialog',
   templateUrl: './certificate-upload-dialog.component.html',
   styleUrls: ['./certificate-upload-dialog.component.scss'],
 })
-export class CertificateDialogComponent implements OnInit {
+export class CertificateDialogComponent implements OnInit, OnDestroy {
   /** Enter/Space keyboard equivalent for (click) handlers. */
   readonly isActivationKey = isActivationKey
 
@@ -30,7 +32,16 @@ export class CertificateDialogComponent implements OnInit {
   svgContent!: any
   newRecipientName: string = ''
   file: any
+
+  /**
+   * Object URLs handed to the preview. They are revoked together when the dialog
+   * closes rather than as each one is replaced: the <object> fetches the URL
+   * asynchronously, so revoking the previous one immediately aborts a load that
+   * is still in flight and the preview ends up blank.
+   */
+  private previewObjectUrls: string[] = []
   constructor(
+    private cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
     public dialogRef: MatDialogRef<CertificateDialogComponent>,
     private loader: LoaderService,
@@ -49,16 +60,42 @@ export class CertificateDialogComponent implements OnInit {
     if (this.file && this.file.type === 'image/svg+xml') {
       const reader = new FileReader()
       reader.onload = (e: any) => {
-        const svgContent = e.target.result
-        this.svgContent = SafeContentService.trustedResourceUrl(this.sanitizer, svgContent) as SafeResourceUrl
-        const base64Data = e.target.result.split(',')[1]
-        let svgContents = atob(base64Data)
-        this.extractSvgAttributes(svgContents)
+        // extractSvgAttributes sets the preview itself, from the markup it has
+        // stamped the placeholders into. Setting it here as well would leave two
+        // object URLs racing for the same element.
+        this.extractSvgAttributes(e.target.result as string)
       }
-      reader.readAsDataURL(this.file)
+      // Read as text rather than a data URL: certificate templates inline their
+      // images, so they run to several MB, and a base64 data URI of that size is
+      // refused by the browser and silently previews as blank.
+      reader.readAsText(this.file)
     } else {
-      this.svgContent = null
+      this.setPreview(null)
     }
+  }
+
+  /**
+   * Points the preview at an object URL for the given markup. Object URLs have
+   * no length ceiling and carry no character-set restriction, unlike the
+   * base64 data URI this used to build.
+   */
+  private setPreview(svgMarkup: string | null): void {
+    if (!svgMarkup) {
+      this.svgContent = null
+      this.cdr.detectChanges()
+      return
+    }
+    const url = URL.createObjectURL(new Blob([svgMarkup], { type: 'image/svg+xml' }))
+    this.previewObjectUrls.push(url)
+    this.svgContent = SafeContentService.trustedResourceUrl(this.sanitizer, url) as SafeResourceUrl
+    // FileReader delivers this outside a change-detection cycle, so without an
+    // explicit pass the preview only appears on the next unrelated event.
+    this.cdr.detectChanges()
+  }
+
+  ngOnDestroy(): void {
+    this.previewObjectUrls.forEach(url => URL.revokeObjectURL(url))
+    this.previewObjectUrls = []
   }
   extractSvgAttributes(svgContent: string): void {
     if (svgContent) {
@@ -223,101 +260,119 @@ export class CertificateDialogComponent implements OnInit {
       //   .replace(/\$\{qrCodeImage\}/g, "https://ibb.co/wNbdr4m")
       //   .replace(/\$\{issuedDate\}/g, newIssuedDate)
 
-      // Encode SVG to base64
-      // console.log("last", lasts)
-      const base64EncodedSvg = btoa(modifiedSvgString)
-      // Add data URI prefix
-      const dataUri = `data:image/svg+xml;base64,${base64EncodedSvg}`
-      this.svgContent = SafeContentService.trustedResourceUrl(this.sanitizer, dataUri) as SafeResourceUrl
+      this.setPreview(modifiedSvgString)
     }
   }
   createTemplate() {
+    // The button is disabled until a file is picked; this guards the same thing
+    // for any other caller, since the upload dereferences this.file directly.
+    if (!this.file) {
+      return
+    }
     this.loader.changeLoad.next(true)
     const formdata = new FormData()
     formdata.append('content', this.file as Blob, (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''))
-    const request: any = {
-      name: 'Sunbird rc certificate test',
-    }
-    this.editorService.createTemplate(request).subscribe(
-      (res: any) => {
-        console.log(res)
-        if (res.params.status === 'successful') {
-          this.uploadService
-            .upload(formdata, {
+
+    // One chain with a single finalize, so the loader is cleared on every exit:
+    // success, a step reporting an unsuccessful status, a course with no batch,
+    // or any of the three calls failing. Previously each of those was a separate
+    // nested subscribe and most of them left the spinner running for ever.
+    this.editorService
+      .createTemplate({ name: 'Sunbird rc certificate test' })
+      .pipe(
+        switchMap((res: any) => {
+          if (res && res.params && res.params.status === 'successful') {
+            return this.uploadService.upload(formdata, {
               contentId: res.result.identifier,
               contentType: '/artifacts',
             })
-            .subscribe((data: any) => {
-              console.log(data)
-              if (data.status === 'successful') {
-                // @ts-ignore: Unreachable code error
-                if (this.data['batches']) {
-                  let obj = {
-                    request: {
-                      batch: {
-                        // @ts-ignore: Unreachable code error
-                        batchId: this.data['batches'][0].batchId,
-                        // @ts-ignore: Unreachable code error
-                        courseId: this.data.identifier,
-                        template: {
-                          template: data.artifactUrl,
-                          previewUrl: data.artifactURL,
-                          identifier: data.identifier,
-                          criteria: {
-                            enrollment: {
-                              status: 2,
-                            },
-                          },
-                          name: 'Completion Certificate',
-                          issuer: {
-                            name: 'in',
-                            url: 'https://sphere.aastrika.org/',
-                          },
-                          signatoryList: [
-                            {
-                              image: 'https://www.aastrika.org/wp-content/uploads/2022/12/aastrika-foundation-logo-header.svg',
-                              name: 'aastrika-foundation',
-                              id: 'in',
-                              designation: 'Home',
-                            },
-                          ],
-                        },
-                      },
-                    },
-                  }
-                  this.uploadService.templateToBatch(obj).subscribe((res1: any) => {
-                    console.log(res1)
-                    if (res.params.status === 'successful') {
-                      this.loader.changeLoad.next(false)
-                      this.dialogRef.close()
-                      this.dialog.open(SuccessDialogComponent, {
-                        width: '450px',
-                        height: '300x',
-                        data: {
-                          message: 'Course Certificate successfully attached',
-                          icon: 'check_circle',
-                          color: '#2CB93A',
-                          backgroundColor: '#FFFFFF',
-                          padding: '6px 11px 10px 6px !important',
-                          id: '',
-                          cert_upload: 'Yes',
-                        },
-                      })
-                    }
-                  })
-                } else {
-                  this.loader.changeLoad.next(false)
-                  //add error notification about batch not present
-                }
-              }
-            })
-        }
+          }
+          return EMPTY
+        }),
+        switchMap((data: any) => {
+          if (!data || data.status !== 'successful') {
+            return EMPTY
+          }
+          // @ts-ignore: Unreachable code error
+          const batches = this.data && this.data['batches']
+          if (!batches || !batches.length) {
+            // No batch to attach to; the loader still has to stop.
+            return EMPTY
+          }
+          return this.uploadService.templateToBatch(this.batchRequest(data, batches[0].batchId))
+        }),
+        finalize(() => this.loader.changeLoad.next(false)),
+      )
+      .subscribe(
+        () => {
+          this.dialogRef.close()
+          this.dialog.open(SuccessDialogComponent, {
+            width: '450px',
+            height: '300x',
+            data: {
+              message: 'Course Certificate successfully attached',
+              icon: 'check_circle',
+              color: '#2CB93A',
+              backgroundColor: '#FFFFFF',
+              padding: '6px 11px 10px 6px !important',
+              id: '',
+              cert_upload: 'Yes',
+            },
+          })
+        },
+        (error: any) => {
+          // eslint-disable-next-line no-console
+          console.error('Attaching the certificate failed', error)
+          this.dialog.open(SuccessDialogComponent, {
+            width: '450px',
+            height: '300x',
+            data: {
+              message: 'Could not attach the certificate. Please try again.',
+              icon: 'error',
+              color: '#F44336',
+              backgroundColor: '#FFFFFF',
+              padding: '6px 11px 10px 6px !important',
+              id: '',
+              cert_upload: 'No',
+            },
+          })
+        },
+      )
+  }
+
+  /** The batch payload that carries the uploaded template. */
+  private batchRequest(data: any, batchId: string) {
+    return {
+      request: {
+        batch: {
+          batchId,
+          // @ts-ignore: Unreachable code error
+          courseId: this.data.identifier,
+          template: {
+            template: data.artifactUrl,
+            previewUrl: data.artifactURL,
+            identifier: data.identifier,
+            criteria: {
+              enrollment: {
+                status: 2,
+              },
+            },
+            name: 'Completion Certificate',
+            issuer: {
+              name: 'in',
+              url: 'https://sphere.aastrika.org/',
+            },
+            signatoryList: [
+              {
+                image: 'https://www.aastrika.org/wp-content/uploads/2022/12/aastrika-foundation-logo-header.svg',
+                name: 'aastrika-foundation',
+                id: 'in',
+                designation: 'Home',
+              },
+            ],
+          },
+        },
       },
-      error => {
-        if (error) {
-          console.log(error)
-        }
-      },
-    )
+    }
   }
 }

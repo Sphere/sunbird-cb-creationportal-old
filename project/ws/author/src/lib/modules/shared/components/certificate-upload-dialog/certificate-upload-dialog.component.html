@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="cert-block">
-      <button class="add-certificate-btn" (click)="createTemplate()" style="cursor: pointer">Attach Certificate</button>
+      <button class="add-certificate-btn" [disabled]="!file" (click)="createTemplate()">Attach Certificate</button>
     </div>
   </div>
 </mat-dialog-content>
