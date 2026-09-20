@@ -300,6 +300,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
         const dialogRef = this.dialog.open(this.guideline, {
           width: this.isMobile ? '90vw' : '600px',
           height: 'auto',
+          panelClass: 'zip-guideline-panel',
         })
         dialogRef.afterClosed().subscribe(_ => {
           if (
@@ -876,6 +877,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
       this.dialog.open(this.errorFile, {
         width: this.isMobile ? '90vw' : '600px',
         height: 'auto',
+        panelClass: 'zip-guideline-panel',
       })
       setTimeout(() => {
         const error = document.getElementById('errorFiles')
@@ -891,6 +893,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
       this.dialog.open(this.selectFile, {
         width: this.isMobile ? '90vw' : '600px',
         height: 'auto',
+        panelClass: 'zip-guideline-panel',
       })
     }
   }

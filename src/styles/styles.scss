@@ -53,12 +53,12 @@ body {
     height: 6px;
 
     @include breakpoint-s {
-    width: 3px;
+      width: 3px;
       height: 6px;
     }
 
     @include breakpoint-gt-s {
-    width: 3px;
+      width: 3px;
       height: 6px;
     }
 
@@ -180,7 +180,9 @@ iframe {
   background-color: #ffffff !important;
   --mat-menu-container-color: #ffffff;
   border-radius: 8px !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    0 1px 4px rgba(0, 0, 0, 0.08) !important;
 }
 
 .mat-mdc-menu-content,
@@ -202,7 +204,9 @@ iframe {
   background-color: #ffffff !important;
   --mat-select-panel-background-color: #ffffff;
   border-radius: 8px !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    0 1px 4px rgba(0, 0, 0, 0.08) !important;
   padding: 4px 0 !important;
 
   .mat-mdc-option {
@@ -214,7 +218,7 @@ iframe {
     }
 
     &.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
-      background-color: rgba(28, 93, 149, 0.10) !important;
+      background-color: rgba(28, 93, 149, 0.1) !important;
 
       .mdc-list-item__primary-text {
         color: #1c5d95 !important;
@@ -320,7 +324,9 @@ textarea {
   background-color: #eee;
   border-radius: 3px;
   border: 1px solid #b4b4b4;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 2px 0 0 rgba(255, 255, 255, 0.7) inset;
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.2),
+    0 2px 0 0 rgba(255, 255, 255, 0.7) inset;
   color: #333;
   display: inline-block;
   font-family: consolas, 'Liberation Mono', courier, monospace;
@@ -539,8 +545,8 @@ h3.shepherd-title {
 //   overflow: hidden;
 // }
 
-.checkbox-sidenav>div.mat-drawer-inner-container,
-.checkbox-sidenav>div.mat-mdc-drawer-inner-container {
+.checkbox-sidenav > div.mat-drawer-inner-container,
+.checkbox-sidenav > div.mat-mdc-drawer-inner-container {
   height: auto !important;
   overflow: hidden !important;
 }
@@ -583,6 +589,45 @@ h3.shepherd-title {
 .iup-dialog-panel .mat-mdc-dialog-actions {
   padding: 0 !important;
   margin: 0 !important;
+}
+
+// ── Zip upload dialogs (guidelines / entry file / invalid file names) ─────
+// These are TemplateRef dialogs rendered into the CDK overlay, which sits
+// outside the app's font scope — without an explicit family they fall back to
+// the browser's serif default, and `.mat-h3` no longer supplies one under MDC.
+.zip-guideline-panel {
+  .mat-mdc-dialog-container,
+  .mdc-dialog__surface {
+    font-family: Roboto, sans-serif;
+    color: #1a2d45;
+    overflow-x: hidden;
+  }
+
+  h3 {
+    font-family: Roboto, sans-serif;
+    font-size: 24px;
+    line-height: 1.3;
+    // Leaves room for the close button pinned to the top right.
+    margin: 0 44px 0 0;
+  }
+
+  // Long file names must wrap rather than force a horizontal scrollbar.
+  .mat-mdc-radio-button .mdc-label,
+  .example-radio-button,
+  #errorFiles div {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  // The label sat dark-on-blue and was effectively invisible; the disabled
+  // state keeps Material's muted colour so it still reads as unavailable.
+  button:not([disabled]) .agree-text {
+    color: #fff;
+  }
+
+  button[disabled] .agree-text {
+    color: rgba(0, 0, 0, 0.38);
+  }
 }
 
 #bannerColors {
@@ -654,9 +699,9 @@ h3.shepherd-title {
     border: 0.7rem solid gray;
   }
 }
-.cdk-overlay-container{
+.cdk-overlay-container {
   .mat-dialog-container,
-  .mat-mdc-dialog-container{
+  .mat-mdc-dialog-container {
     border-radius: 30px;
   }
 }
@@ -685,15 +730,17 @@ h3.shepherd-title {
   color: white !important;
 }
 .mat-grid-tile .mat-figure {
-   justify-content: flex-start !important ;
-   align-items: flex-start !important;
+  justify-content: flex-start !important ;
+  align-items: flex-start !important;
 }
 
 // Legacy (pre-MDC) selectors — inert after Material 15 MDC migration, kept for reference
 ::ng-deep .theme-igot.day-mode .mat-checkbox-checked.mat-accent .mat-checkbox-background,
 .theme-igot.day-mode .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
-.theme-igot.day-mode .mat-fab.mat-accent, .theme-igot.day-mode .mat-flat-button.mat-accent,
-.theme-igot.day-mode .mat-mini-fab.mat-accent, .theme-igot.day-mode .mat-raised-button.mat-accent {
+.theme-igot.day-mode .mat-fab.mat-accent,
+.theme-igot.day-mode .mat-flat-button.mat-accent,
+.theme-igot.day-mode .mat-mini-fab.mat-accent,
+.theme-igot.day-mode .mat-raised-button.mat-accent {
   background-color: #1c5d95 !important;
 }
 
@@ -717,41 +764,41 @@ h3.shepherd-title {
 
 a.width-auto.mat-button,
 a.width-auto.mat-mdc-button {
-    width: 30px;
-    min-width: 35px;
-    background-color: rgba(0, 0, 0, 0.8) !important;
-    padding-top: 20px;
-    padding-bottom: 11px;
-    border-radius: 0 !important;
-    font-size: 18px !important;
-    z-index: 9;
+  width: 30px;
+  min-width: 35px;
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  padding-top: 20px;
+  padding-bottom: 11px;
+  border-radius: 0 !important;
+  font-size: 18px !important;
+  z-index: 9;
 }
 
 a.width-auto.mat-button,
 a.width-auto.mat-mdc-button {
-    color: #fff;
-    font-size: 38px;
+  color: #fff;
+  font-size: 38px;
 }
 
 .align-left-arrow {
-    position: relative;
-    right: 15px;
-    top: -4px;
-    color: #fff;
-    font-size: 27px;
+  position: relative;
+  right: 15px;
+  top: -4px;
+  color: #fff;
+  font-size: 27px;
 }
 
 .prev-button .width-auto {
-    left: -26px;
-    top: -5px;
+  left: -26px;
+  top: -5px;
 }
 
 .align-right-arrow {
-    right: 15px;
-    position: relative;
-    top: -4px;
-    color: #fff;
-    font-size: 27px;
+  right: 15px;
+  position: relative;
+  top: -4px;
+  color: #fff;
+  font-size: 27px;
 }
 
 // ── Dialog close (and other icon) buttons — keep glyph + hover circle aligned ─
