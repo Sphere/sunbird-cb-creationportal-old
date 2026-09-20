@@ -1,0 +1,22 @@
+<div class="margin-top-m margin-bottom-m">
+  <div style="position: relative">
+    <h3 class="mat-h3 font-weight-bold margin-remove-bottom" i18n>Following files or folders have special characters in their names</h3>
+    <button class="close-button primary-button" (click)="dismiss.emit()">
+      <mat-icon aria-label="Next">close</mat-icon>
+    </button>
+  </div>
+  <!--
+    The id is load-bearing: both hosts look this element up by id after opening
+    the dialog and rewrite its children to highlight the offending characters.
+  -->
+  <div class="mat-form-field mt-4" id="errorFiles" style="max-height: 400px" [style.overflow]="scrollBody ? 'auto' : null">
+    <div *ngFor="let name of names; trackBy: trackByIndex">{{ name }}</div>
+  </div>
+</div>
+<div class="flex justify-center">
+  <button type="button" mat-raised-button class="ws-mat-primary-background margin-top-m" (click)="acknowledged.emit()">
+    <div class="flex flex-middle justify-center">
+      <p class="margin-remove-bottom agree-text" i18n>I Understand</p>
+    </div>
+  </button>
+</div>

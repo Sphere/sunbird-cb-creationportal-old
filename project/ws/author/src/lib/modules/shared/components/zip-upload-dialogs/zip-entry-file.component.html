@@ -1,0 +1,31 @@
+<div class="margin-top-m margin-bottom-m" [style.max-height]="scrollBody ? null : '400px'">
+  <div style="position: relative">
+    <h3 class="mat-h3 font-weight-bold margin-remove-bottom" i18n>Select the entry file</h3>
+    <button class="close-button primary-button" (click)="dismiss.emit()">
+      <mat-icon aria-label="Next">close</mat-icon>
+    </button>
+  </div>
+  <div class="mt-4" [style.overflow]="scrollBody ? 'auto' : null" [style.max-height]="scrollBody ? '400px' : null">
+    <mat-radio-group
+      aria-labelledby="example-radio-group-label"
+      class="flex flex-1 flex-column example-radio-group"
+      [(ngModel)]="condition.url"
+    >
+      <mat-radio-button
+        class="example-radio-button"
+        *ngFor="let file of fileList; trackBy: trackByIndex"
+        [value]="file"
+        (change)="entryPointSelected.emit(file)"
+      >
+        {{ file }}
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+</div>
+<div class="flex justify-center" [class.padding-bottom-m]="!scrollBody">
+  <button type="button" mat-raised-button color="primary" class="margin-top-m ws-mat-primary-background" (click)="done.emit()">
+    <div class="flex flex-middle justify-center">
+      <p class="margin-remove-bottom agree-text" i18n>Done</p>
+    </div>
+  </button>
+</div>
