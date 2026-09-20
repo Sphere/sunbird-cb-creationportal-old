@@ -290,9 +290,13 @@ export class ContentCardComponent implements OnInit, OnChanges {
         }
       } else {
         this.loader.changeLoad.next(false)
+        // Material caps every dialog at 80vw unless told otherwise, so on anything
+        // narrower than ~1270px the 1085px request was silently clipped and the
+        // preview pane and close button fell outside the dialog.
         const dialogRef = this.dialog.open(CertificateDialogComponent, {
           width: '1085px',
-          height: '645px',
+          maxWidth: '95vw',
+          maxHeight: '90vh',
           data,
         })
         // You can subscribe to the afterClosed() observable to do something when the dialog is closed.

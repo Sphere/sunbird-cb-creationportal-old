@@ -393,6 +393,14 @@ describe('ContentCardComponent', () => {
       afterClosed.next(true)
     })
 
+    it('lets the upload dialog exceed the 80vw default so it is not clipped', () => {
+      component.uploadCertificate(card())
+      expect(dialog.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ width: '1085px', maxWidth: '95vw', maxHeight: '90vh' }),
+      )
+    })
+
     it('filters the batches by course and open statuses', () => {
       component.uploadCertificate(card())
       expect(editorService.getBatchforCert).toHaveBeenCalledWith({
