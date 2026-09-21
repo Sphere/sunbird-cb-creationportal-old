@@ -184,9 +184,9 @@ describe('QuizComponent (save + validation)', () => {
       expect(component.generateUrl('https://h/my-bucket/a.json')).toBe('https://h/my-bucket/a.json')
     })
 
-    it('returns undefined for a url outside the bucket', () => {
+    it('returns a url outside the bucket unchanged rather than undefined', () => {
       ;(window as any).env = { azureBucket: 'my-bucket' }
-      expect(component.generateUrl('https://h/other/a.json')).toBeUndefined()
+      expect(component.generateUrl('https://h/other/a.json')).toBe('https://h/other/a.json')
     })
   })
 

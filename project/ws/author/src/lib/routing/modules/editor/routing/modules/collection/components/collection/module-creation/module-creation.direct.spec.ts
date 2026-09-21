@@ -1182,7 +1182,7 @@ describe('ModuleCreationComponent (direct instantiation)', () => {
     })
 
     it('generateUrl returns nothing for a foreign URL', () => {
-      expect(component.generateUrl('https://host/other/x.png')).toBeUndefined()
+      expect(component.generateUrl('https://host/other/x.png')).toBe('https://host/other/x.png')
     })
 
     it('changeToDefaultImg swaps in the configured fallback thumbnail', () => {

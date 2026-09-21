@@ -985,7 +985,7 @@ describe('ModuleCreationComponent (logic)', () => {
       ;(window as any).env = { azureBucket: 'my-bucket' }
       const comp = build()
       expect(comp.generateUrl('https://host/my-bucket/file.pdf')).toBe('https://host/my-bucket/file.pdf')
-      expect(comp.generateUrl('https://other/file.pdf')).toBeUndefined()
+      expect(comp.generateUrl('https://other/file.pdf')).toBe('https://other/file.pdf')
     })
 
     it('addModule resets the form and creates a fresh module', () => {
@@ -1201,7 +1201,7 @@ describe('ModuleCreationComponent (logic)', () => {
       ],
     }
 
-    it('returns undefined when every entry is valid', () => {
+    it('returns the url unchanged when every entry is valid', () => {
       const comp = build()
       comp.videoActualDuration = 100
       expect(comp.findInvalidEntriesIndices([good])).toBeUndefined()

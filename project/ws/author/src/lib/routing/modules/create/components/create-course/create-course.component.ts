@@ -498,6 +498,12 @@ export class CreateCourseComponent implements OnInit {
     // const newUrl = newLink.join('/')
     // console.log(newUrl)
     // return newUrl
+    // The bucket-rewrite branch below is disabled, so without this the method
+    // falls off the end and returns undefined for any URL that is not on
+    // env.azureBucket -- the content is then fetched from `undefined`, which
+    // fails silently. Environments whose content bucket differs from that
+    // setting hit this for every artifact.
+    return oldUrl
   }
 
   uploadAppIcon(file: File) {
