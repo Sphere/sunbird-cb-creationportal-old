@@ -123,6 +123,35 @@ describe('EditMetaComponent (thumbnail upload)', () => {
     jest.clearAllMocks()
   })
 
+  describe('assignFields — thumbnail after publish', () => {
+    /**
+     * Publishing replaces appIcon with a 56px thumbnail and keeps the uploaded
+     * image in posterImage, so re-editing must read posterImage back or the
+     * preview shows a 56px image stretched to 760x400.
+     */
+    const withRead = (content: any) => {
+      ;(component as any).editorService.readcontentV3 = jest.fn().mockReturnValue(of(content))
+      component.assignFields()
+    }
+
+    it('prefers the uploaded image over the generated thumbnail', () => {
+      withRead({
+        identifier: 'do_1',
+        appIcon: 'https://cdn/do_1/artifact/icon.thumb.png',
+        posterImage: 'https://cdn/do_1/artifact/icon.png',
+      })
+      expect(component.contentForm.controls.appIcon.value).toBe('https://cdn/do_1/artifact/icon.png')
+      expect(component.contentForm.controls.thumbnail.value).toBe('https://cdn/do_1/artifact/icon.png')
+      expect(component.contentForm.controls.posterImage.value).toBe('https://cdn/do_1/artifact/icon.png')
+    })
+
+    it('falls back to appIcon before the course has ever been published', () => {
+      withRead({ identifier: 'do_1', appIcon: 'https://cdn/do_1/artifact/icon.png' })
+      expect(component.contentForm.controls.appIcon.value).toBe('https://cdn/do_1/artifact/icon.png')
+      expect(component.contentForm.controls.thumbnail.value).toBe('https://cdn/do_1/artifact/icon.png')
+    })
+  })
+
   describe('guards', () => {
     it('rejects a file that is not an image', () => {
       component.uploadAppIcon(imageFile('notes.txt'))

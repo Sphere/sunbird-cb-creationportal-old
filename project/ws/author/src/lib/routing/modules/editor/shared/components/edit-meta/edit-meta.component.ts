@@ -621,10 +621,23 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
         // tslint:disable-next-line:no-console
         console.log(res)
         this.contentMeta = res
-        this.contentMeta = res
+        // Publishing does not keep the uploaded image in appIcon: the pipeline's
+        // ThumbnailGenerator resizes it to 56px, points appIcon at that thumbnail
+        // and preserves the original in posterImage. Reading appIcon back shows a
+        // 56px image stretched to 760x400, and saving it leaves the next publish
+        // regenerating a thumbnail from a thumbnail.
+        //
+        // This has to normalise contentMeta rather than only the form control:
+        // further down, a generic loop copies every contentMeta field onto its
+        // control, which would otherwise put the thumbnail straight back.
+        if (res.posterImage) {
+          this.contentMeta.appIcon = res.posterImage
+        }
+        const uploadedIcon = this.contentMeta.appIcon
         this.contentForm.controls.name.setValue(res.name)
-        this.contentForm.controls.appIcon.setValue(res.appIcon)
-        this.contentForm.controls.thumbnail.setValue(res.appIcon)
+        this.contentForm.controls.appIcon.setValue(uploadedIcon)
+        this.contentForm.controls.thumbnail.setValue(uploadedIcon)
+        this.contentForm.controls.posterImage.setValue(res.posterImage)
         this.contentForm.controls.instructions.setValue(res.instructions)
         this.contentForm.controls.lang.setValue(res.lang)
         this.contentForm.controls.subTitle.setValue(res.subTitle)

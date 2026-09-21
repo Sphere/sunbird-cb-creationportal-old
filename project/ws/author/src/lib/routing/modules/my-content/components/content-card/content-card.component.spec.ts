@@ -126,6 +126,29 @@ describe('ContentCardComponent', () => {
     })
   })
 
+  describe('thumbnail', () => {
+    it('prefers the uploaded image over the generated thumbnail', () => {
+      const c = build()
+      c.data = { ...card(), appIcon: 'icon.thumb.png', posterImage: 'icon.png' } as any
+      c.ngOnInit()
+      expect(c.data.appIcon).toBe('icon.png')
+    })
+
+    it('keeps appIcon when the course has never been published', () => {
+      const c = build()
+      c.data = { ...card(), appIcon: 'icon.png' } as any
+      c.ngOnInit()
+      expect(c.data.appIcon).toBe('icon.png')
+    })
+
+    it('falls back to the placeholder when there is no image at all', () => {
+      const c = build()
+      c.data = { ...card(), appIcon: undefined } as any
+      c.ngOnInit()
+      expect(c.data.appIcon).toBe('cbp-assets/icons/default.png')
+    })
+  })
+
   describe('status labels', () => {
     const withStatus = (over: any = {}) => {
       component.data = card(over)
