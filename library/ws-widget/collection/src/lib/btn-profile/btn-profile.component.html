@@ -9,16 +9,27 @@
  -->
 <div id="user">
   <span class="login-pf-text">Logged in as {{ this.givenName }} </span>
+  <!--
+    The trigger held an empty span, so nothing was painted and the menu -- and
+    with it Logout -- could not be reached. It now shows the profile picture
+    when there is one and falls back to an avatar icon, which is also what the
+    component has always resolved profileImage for.
+  -->
   <a
     href="javascript:void(0)"
     mat-icon-button
+    aria-label="Profile and account options"
     i18n-aria-label
     title="option"
-    class="new-margin"
+    class="new-margin profile-trigger"
     #rootTrigger="matMenuTrigger"
     [matMenuTriggerFor]="settingsMenu"
   >
-    <span class="flex flex-column flex-middle"> </span>
+    @if (profileImage) {
+      <img class="profile-avatar" [src]="profileImage" alt="" />
+    } @else {
+      <mat-icon class="profile-avatar-icon">account_circle</mat-icon>
+    }
   </a>
 </div>
 <!--  -->
