@@ -15,13 +15,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core'
 export class ZipInvalidNamesComponent {
   @Input() names: string[] = []
 
-  /** File upload scrolls the list; module creation caps its height only. */
-  @Input() scrollBody = false
-
   @Output() acknowledged = new EventEmitter<void>()
   @Output() dismiss = new EventEmitter<void>()
-
-  trackByIndex(index: number): number {
-    return index
-  }
 }

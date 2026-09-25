@@ -24,9 +24,6 @@ export class ZipGuidelinesComponent {
    */
   @Input() disableUntilAccepted = false
 
-  /** File upload scrolls the checklist body; module creation does not. */
-  @Input() scrollBody = false
-
   @Output() accepted = new EventEmitter<void>()
   @Output() dismiss = new EventEmitter<void>()
 

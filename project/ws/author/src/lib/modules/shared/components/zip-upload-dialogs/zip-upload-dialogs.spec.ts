@@ -1,3 +1,6 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
+
 import { ZipGuidelinesComponent } from './zip-guidelines.component'
 import { ZipEntryFileComponent } from './zip-entry-file.component'
 import { ZipInvalidNamesComponent } from './zip-invalid-names.component'
@@ -66,7 +69,6 @@ describe('ZipGuidelinesComponent', () => {
 
   it('leaves the button enabled unless the host asks for gating', () => {
     expect(component.disableUntilAccepted).toBe(false)
-    expect(component.scrollBody).toBe(false)
   })
 })
 
@@ -88,10 +90,6 @@ describe('ZipEntryFileComponent', () => {
     component.entryPointSelected.emit('story_content/index.html')
     expect(selected).toHaveBeenCalledWith('story_content/index.html')
   })
-
-  it('tracks list rows by index', () => {
-    expect(component.trackByIndex(3)).toBe(3)
-  })
 })
 
 describe('ZipInvalidNamesComponent', () => {
@@ -111,8 +109,68 @@ describe('ZipInvalidNamesComponent', () => {
     component.acknowledged.emit()
     expect(acknowledged).toHaveBeenCalledTimes(1)
   })
+})
 
-  it('tracks list rows by index', () => {
-    expect(component.trackByIndex(0)).toBe(0)
+/**
+ * The three dialogs share one header / scrolling body / footer shell. The body
+ * is the only scroll container: when the dialog surface scrolled instead, the
+ * title scrolled out of view and a long list overflowed its wrapper and painted
+ * over the action button.
+ */
+describe('zip dialog layout', () => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ZipGuidelinesComponent, ZipEntryFileComponent, ZipInvalidNamesComponent],
+      // No FormsModule: these assert the dialog's DOM shape, and without it the
+      // ngModel bindings on the Material controls fall to NO_ERRORS_SCHEMA
+      // instead of demanding a value accessor the stubs cannot supply.
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents()
+  })
+
+  const shellOf = (fixture: ComponentFixture<unknown>) => {
+    fixture.detectChanges()
+    const el: HTMLElement = fixture.nativeElement
+    return {
+      header: el.querySelector('.zip-dialog-header'),
+      body: el.querySelector('.zip-dialog-body'),
+      footer: el.querySelector('.zip-dialog-footer'),
+    }
+  }
+
+  it('gives the guidelines dialog a header, a body and a footer', () => {
+    const fixture = TestBed.createComponent(ZipGuidelinesComponent)
+    fixture.componentInstance.condition = conditions()
+    const { header, body, footer } = shellOf(fixture)
+    expect(header).toBeTruthy()
+    expect(body).toBeTruthy()
+    expect(footer).toBeTruthy()
+    // The close button belongs to the header, which stays put while the body
+    // scrolls -- it used to sit in the flow underneath the title.
+    expect(header!.querySelector('.zip-dialog-close')).toBeTruthy()
+    expect(header!.querySelector('h3')).toBeTruthy()
+    expect(body!.querySelector('.zip-dialog-close')).toBeNull()
+  })
+
+  it('renders one row per entry file inside the scrolling body', () => {
+    const fixture = TestBed.createComponent(ZipEntryFileComponent)
+    fixture.componentInstance.condition = conditions()
+    fixture.componentInstance.fileList = ['story_content/index.html', 'mobile/a.png', 'mobile/b.png']
+    const { body, footer } = shellOf(fixture)
+    expect(body!.querySelectorAll('mat-radio-button').length).toBe(3)
+    // The Done button must be a sibling of the list, not inside it, or a long
+    // list scrolls over the top of it.
+    expect(footer!.querySelector('button')).toBeTruthy()
+    expect(body!.querySelector('.zip-dialog-footer')).toBeNull()
+  })
+
+  it('keeps the errorFiles id on the invalid-names body', () => {
+    const fixture = TestBed.createComponent(ZipInvalidNamesComponent)
+    fixture.componentInstance.names = ['bad name.png', 'another bad.png']
+    const { body } = shellOf(fixture)
+    // Load-bearing: both hosts look this element up by id and rewrite its
+    // children to highlight the offending characters.
+    expect(body!.id).toBe('errorFiles')
+    expect(body!.querySelectorAll('div').length).toBe(2)
   })
 })

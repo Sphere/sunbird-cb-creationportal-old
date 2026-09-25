@@ -1,30 +1,33 @@
-<div class="margin-top-m margin-bottom-m">
-  <div style="position: relative">
-    <h3 class="mat-h3 font-weight-bold margin-remove-bottom" i18n>Guidelines for zip file upload</h3>
-    <button class="close-button primary-button" (click)="dismiss.emit()">
-      <mat-icon aria-label="Next">close</mat-icon>
+<div class="zip-dialog">
+  <div class="zip-dialog-header">
+    <h3 i18n>Guidelines for zip file upload</h3>
+    <button type="button" class="zip-dialog-close" aria-label="Close" i18n-aria-label (click)="dismiss.emit()">
+      <mat-icon>close</mat-icon>
     </button>
   </div>
-  <div [style.overflow]="scrollBody ? 'auto' : null" style="max-height: 400px">
-    <div class="mat-form-field mt-4">
+
+  <div class="zip-dialog-body">
+    <div class="zip-guideline-item">
       <div class="flex w-100">
         <mat-checkbox [(ngModel)]="condition.fileName" i18n></mat-checkbox>
         <div class="margin-left-s" i18n>All the folder and file names should not contains any special character including space</div>
       </div>
-      <div class="flex relative mat-form-field-appearance-fill mt-4" *ngIf="condition.isSubmitPressed && !condition.fileName">
-        <div class="mat-form-field-subscript-wrapper mat-error no-padding" i18n>Accept the declaration</div>
-      </div>
+      @if (condition.isSubmitPressed && !condition.fileName) {
+        <div class="zip-guideline-error" i18n>Accept the declaration</div>
+      }
     </div>
-    <div class="mat-form-field mt-4">
+
+    <div class="zip-guideline-item">
       <div class="flex w-100">
         <mat-checkbox [(ngModel)]="condition.eval" i18n></mat-checkbox>
         <div class="margin-left-s" i18n>Should not have any code which will cause security vulnerability like usage eval function</div>
       </div>
-      <div class="flex relative mat-form-field-appearance-fill mt-4" *ngIf="condition.isSubmitPressed && !condition.eval">
-        <div class="mat-form-field-subscript-wrapper mat-error no-padding" i18n>Accept the declaration</div>
-      </div>
+      @if (condition.isSubmitPressed && !condition.eval) {
+        <div class="zip-guideline-error" i18n>Accept the declaration</div>
+      }
     </div>
-    <div class="mat-form-field mt-4">
+
+    <div class="zip-guideline-item">
       <div class="flex w-100">
         <mat-checkbox [(ngModel)]="condition.externalReference" i18n></mat-checkbox>
         <div class="margin-left-s" i18n>
@@ -32,20 +35,22 @@
           js
         </div>
       </div>
-      <div class="flex relative mat-form-field-appearance-fill mt-4" *ngIf="condition.isSubmitPressed && !condition.externalReference">
-        <div class="mat-form-field-subscript-wrapper mat-error no-padding" i18n>Accept the declaration</div>
-      </div>
+      @if (condition.isSubmitPressed && !condition.externalReference) {
+        <div class="zip-guideline-error" i18n>Accept the declaration</div>
+      }
     </div>
-    <div class="mat-form-field mt-4">
+
+    <div class="zip-guideline-item">
       <div class="flex w-100">
         <mat-checkbox [(ngModel)]="condition.iframe" i18n></mat-checkbox>
         <div class="margin-left-s" i18n>Should not include any iframe. If required contact the Platform Admin.</div>
       </div>
-      <div class="flex relative mat-form-field-appearance-fill mt-4" *ngIf="condition.isSubmitPressed && !condition.iframe">
-        <div class="mat-form-field-subscript-wrapper mat-error no-padding" i18n>Accept the declaration</div>
-      </div>
+      @if (condition.isSubmitPressed && !condition.iframe) {
+        <div class="zip-guideline-error" i18n>Accept the declaration</div>
+      }
     </div>
-    <div class="mat-form-field mt-4">
+
+    <div class="zip-guideline-item">
       <div class="flex w-100">
         <mat-checkbox [(ngModel)]="condition.preview" i18n></mat-checkbox>
         <div class="margin-left-s" i18n>
@@ -53,22 +58,21 @@
           check in the developer mode to know the exact reason
         </div>
       </div>
-      <div class="flex relative mat-form-field-appearance-fill mt-4" *ngIf="condition.isSubmitPressed && !condition.preview">
-        <div class="mat-form-field-subscript-wrapper mat-error no-padding" i18n>Accept the declaration</div>
-      </div>
+      @if (condition.isSubmitPressed && !condition.preview) {
+        <div class="zip-guideline-error" i18n>Accept the declaration</div>
+      }
     </div>
   </div>
-</div>
-<div class="flex justify-center">
-  <button
-    type="button"
-    [disabled]="disableUntilAccepted && !allAccepted"
-    mat-raised-button
-    class="margin-top-m ws-mat-primary-background zip-upload-agree"
-    (click)="agree()"
-  >
-    <div class="flex flex-middle justify-center">
+
+  <div class="zip-dialog-footer">
+    <button
+      type="button"
+      [disabled]="disableUntilAccepted && !allAccepted"
+      mat-raised-button
+      class="ws-mat-primary-background zip-upload-agree"
+      (click)="agree()"
+    >
       <p class="margin-remove-bottom agree-text" i18n>I Agree</p>
-    </div>
-  </button>
+    </button>
+  </div>
 </div>

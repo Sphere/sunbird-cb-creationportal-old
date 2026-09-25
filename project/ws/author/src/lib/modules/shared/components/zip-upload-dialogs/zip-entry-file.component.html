@@ -1,31 +1,24 @@
-<div class="margin-top-m margin-bottom-m" [style.max-height]="scrollBody ? null : '400px'">
-  <div style="position: relative">
-    <h3 class="mat-h3 font-weight-bold margin-remove-bottom" i18n>Select the entry file</h3>
-    <button class="close-button primary-button" (click)="dismiss.emit()">
-      <mat-icon aria-label="Next">close</mat-icon>
+<div class="zip-dialog">
+  <div class="zip-dialog-header">
+    <h3 i18n>Select the entry file</h3>
+    <button type="button" class="zip-dialog-close" aria-label="Close" i18n-aria-label (click)="dismiss.emit()">
+      <mat-icon>close</mat-icon>
     </button>
   </div>
-  <div class="mt-4" [style.overflow]="scrollBody ? 'auto' : null" [style.max-height]="scrollBody ? '400px' : null">
-    <mat-radio-group
-      aria-labelledby="example-radio-group-label"
-      class="flex flex-1 flex-column example-radio-group"
-      [(ngModel)]="condition.url"
-    >
-      <mat-radio-button
-        class="example-radio-button"
-        *ngFor="let file of fileList; trackBy: trackByIndex"
-        [value]="file"
-        (change)="entryPointSelected.emit(file)"
-      >
-        {{ file }}
-      </mat-radio-button>
+
+  <div class="zip-dialog-body">
+    <mat-radio-group class="flex flex-1 flex-column example-radio-group" [(ngModel)]="condition.url">
+      @for (file of fileList; track file) {
+        <mat-radio-button class="example-radio-button" [value]="file" (change)="entryPointSelected.emit(file)">
+          {{ file }}
+        </mat-radio-button>
+      }
     </mat-radio-group>
   </div>
-</div>
-<div class="flex justify-center" [class.padding-bottom-m]="!scrollBody">
-  <button type="button" mat-raised-button color="primary" class="margin-top-m ws-mat-primary-background" (click)="done.emit()">
-    <div class="flex flex-middle justify-center">
+
+  <div class="zip-dialog-footer">
+    <button type="button" mat-raised-button color="primary" class="ws-mat-primary-background" (click)="done.emit()">
       <p class="margin-remove-bottom agree-text" i18n>Done</p>
-    </div>
-  </button>
+    </button>
+  </div>
 </div>

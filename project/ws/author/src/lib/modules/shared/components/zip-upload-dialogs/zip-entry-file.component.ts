@@ -19,14 +19,7 @@ export class ZipEntryFileComponent {
   @Input() condition!: IZipUploadConditions
   @Input() fileList: string[] = []
 
-  /** File upload scrolls the list body; module creation caps the wrapper instead. */
-  @Input() scrollBody = false
-
   @Output() entryPointSelected = new EventEmitter<string>()
   @Output() done = new EventEmitter<void>()
   @Output() dismiss = new EventEmitter<void>()
-
-  trackByIndex(index: number): number {
-    return index
-  }
 }

@@ -600,15 +600,85 @@ h3.shepherd-title {
   .mdc-dialog__surface {
     font-family: Roboto, sans-serif;
     color: #1a2d45;
-    overflow-x: hidden;
+  }
+
+  // The dialog is a header / scrolling body / footer column. The surface itself
+  // must not scroll: when it did, the title scrolled out of view and a long list
+  // overflowed its wrapper and painted over the action button.
+  .mdc-dialog__surface {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    overflow: hidden;
+  }
+
+  // The component host sits between the surface and .zip-dialog, so it has to
+  // pass the height through rather than collapse to its content.
+  ws-auth-zip-guidelines,
+  ws-auth-zip-entry-file,
+  ws-auth-zip-invalid-names,
+  .zip-dialog {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    // Without this a flex child refuses to shrink below its content, which is
+    // what lets the body scroll instead of pushing the footer off the dialog.
+    min-height: 0;
+  }
+
+  .zip-dialog {
+    gap: 16px;
+    padding: 24px;
+  }
+
+  .zip-dialog-header {
+    position: relative;
+    flex: 0 0 auto;
+    // Room for the close button pinned to the top right.
+    padding-right: 44px;
   }
 
   h3 {
     font-family: Roboto, sans-serif;
     font-size: 24px;
+    font-weight: 500;
     line-height: 1.3;
-    // Leaves room for the close button pinned to the top right.
-    margin: 0 44px 0 0;
+    margin: 0;
+  }
+
+  .zip-dialog-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 4px;
+    border: none;
+    background: none;
+    line-height: 1;
+    color: #1a2d45;
+    cursor: pointer;
+  }
+
+  .zip-dialog-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .zip-dialog-footer {
+    display: flex;
+    flex: 0 0 auto;
+    justify-content: center;
+  }
+
+  .zip-guideline-item:not(:first-child) {
+    margin-top: 16px;
+  }
+
+  .zip-guideline-error {
+    margin-top: 4px;
+    color: #f44336;
+    font-size: 12px;
   }
 
   // Long file names must wrap rather than force a horizontal scrollbar.

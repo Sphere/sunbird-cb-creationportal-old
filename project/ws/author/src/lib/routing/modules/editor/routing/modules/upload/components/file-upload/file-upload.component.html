@@ -125,28 +125,17 @@
 </div>
 
 <ng-template #guideline>
-  <ws-auth-zip-guidelines
-    [condition]="fileUploadCondition"
-    [scrollBody]="true"
-    (accepted)="closeDialog()"
-    (dismiss)="closeDialog()"
-  ></ws-auth-zip-guidelines>
+  <ws-auth-zip-guidelines [condition]="fileUploadCondition" (accepted)="closeDialog()" (dismiss)="closeDialog()"></ws-auth-zip-guidelines>
 </ng-template>
 
 <ng-template #errorFile>
-  <ws-auth-zip-invalid-names
-    [names]="errorFileList"
-    [scrollBody]="true"
-    (acknowledged)="closeDialog()"
-    (dismiss)="closeDialog()"
-  ></ws-auth-zip-invalid-names>
+  <ws-auth-zip-invalid-names [names]="errorFileList" (acknowledged)="closeDialog()" (dismiss)="closeDialog()"></ws-auth-zip-invalid-names>
 </ng-template>
 
 <ng-template #selectFile>
   <ws-auth-zip-entry-file
     [condition]="fileUploadCondition"
     [fileList]="fileList"
-    [scrollBody]="true"
     (entryPointSelected)="selectEntryPoint($event)"
     (done)="closeDialog()"
     (dismiss)="closeDialog()"
