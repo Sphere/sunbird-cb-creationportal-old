@@ -36,3 +36,25 @@
 #user {
   margin-top: 15px !important;
 }
+
+// The trigger sits on the dark blue header, so its contents have to be white
+// to be visible at all.
+.profile-trigger {
+  color: #fff;
+}
+
+.profile-avatar {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-avatar-icon {
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  line-height: 32px;
+  color: #fff;
+}

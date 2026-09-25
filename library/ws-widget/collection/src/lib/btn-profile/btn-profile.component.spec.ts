@@ -1,4 +1,12 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { TestBed } from '@angular/core/testing'
+import { MatDialog } from '@angular/material/dialog'
+import { MatIconModule } from '@angular/material/icon'
+import { MatMenuModule } from '@angular/material/menu'
+import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { BehaviorSubject } from 'rxjs'
+
+import { ConfigurationsService } from '@ws-widget/utils/src/public-api'
 import { BtnProfileComponent } from './btn-profile.component'
 
 describe('BtnProfileComponent', () => {
@@ -128,5 +136,64 @@ describe('BtnProfileComponent', () => {
       const c = build()
       expect(() => c.ngOnDestroy()).not.toThrow()
     })
+  })
+})
+
+/**
+ * The menu trigger used to contain nothing but an empty span, so it painted no
+ * pixels: the profile menu, and with it Logout, could not be opened at all.
+ */
+describe('BtnProfileComponent avatar', () => {
+  const render = (profile: any) => {
+    TestBed.resetTestingModule()
+    TestBed.configureTestingModule({
+      declarations: [BtnProfileComponent],
+      imports: [MatMenuModule, MatIconModule, NoopAnimationsModule],
+      providers: [
+        {
+          provide: ConfigurationsService,
+          useValue: {
+            userProfile: profile,
+            userProfileV2: undefined,
+            appsConfig: { features: {} },
+            pinnedApps: new BehaviorSubject<Set<string>>(new Set()),
+          },
+        },
+        { provide: MatDialog, useValue: { open: jest.fn() } },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    })
+    const fixture = TestBed.createComponent(BtnProfileComponent)
+    fixture.detectChanges()
+    return fixture.nativeElement as HTMLElement
+  }
+
+  it('renders the profile picture inside the menu trigger', () => {
+    localStorage.clear()
+    const el = render({ userId: 'u1', givenName: 'Ada', profileImage: 'p1.png' })
+    const trigger = el.querySelector('.profile-trigger')
+    expect(trigger).toBeTruthy()
+    const img = trigger!.querySelector('img.profile-avatar') as HTMLImageElement
+    expect(img).toBeTruthy()
+    expect(img.getAttribute('src')).toBe('p1.png')
+  })
+
+  it('falls back to an avatar icon when there is no picture', () => {
+    localStorage.clear()
+    const el = render({ userId: 'u1', givenName: 'Ada' })
+    const trigger = el.querySelector('.profile-trigger')
+    expect(trigger!.querySelector('img.profile-avatar')).toBeNull()
+    expect(trigger!.querySelector('mat-icon')).toBeTruthy()
+  })
+
+  it('never leaves the trigger empty, so the menu stays reachable', () => {
+    localStorage.clear()
+    const el = render(undefined)
+    const trigger = el.querySelector('.profile-trigger') as HTMLElement
+    expect(trigger).toBeTruthy()
+    expect(trigger.textContent!.trim().length + trigger.querySelectorAll('img').length).toBeGreaterThan(0)
+    // The trigger is the only route to Logout, so it must be labelled for
+    // screen readers as well as visible.
+    expect(trigger.getAttribute('aria-label')).toBeTruthy()
   })
 })
