@@ -2,7 +2,9 @@
   <div class="upload-container">
     <div class="header-text">
       <span class="upload-text" i18n>Upload Certificate</span>
-      <mat-icon style="cursor: pointer" mat-dialog-close mat-raised-button i18n>close</mat-icon>
+      @if (!attaching) {
+        <mat-icon style="cursor: pointer" mat-dialog-close mat-raised-button i18n>close</mat-icon>
+      }
     </div>
     <div>
       <span class="accepted-format-txt">Accepted Format :SVG; 808 px(h)x1350 px(w)</span>
@@ -27,7 +29,19 @@
       </div>
     </div>
     <div class="cert-block">
-      <button class="add-certificate-btn" [disabled]="!file" (click)="createTemplate()">Attach Certificate</button>
+      <!--
+        Attaching runs three chained calls and takes several seconds. The global
+        loader is painted under the CDK overlay, so the progress has to be shown
+        on the button itself or the dialog looks frozen.
+      -->
+      <button class="add-certificate-btn" [class.is-attaching]="attaching" [disabled]="!file || attaching" (click)="createTemplate()">
+        @if (attaching) {
+          <mat-spinner class="attach-spinner" diameter="18" strokeWidth="2"></mat-spinner>
+          <span i18n>Attaching...</span>
+        } @else {
+          <span i18n>Attach Certificate</span>
+        }
+      </button>
     </div>
   </div>
 </mat-dialog-content>

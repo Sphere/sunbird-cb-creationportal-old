@@ -1,4 +1,4 @@
-import { of, throwError } from 'rxjs'
+import { of, Subject, throwError } from 'rxjs'
 import { CertificateDialogComponent } from './certificate-upload-dialog.component'
 
 describe('CertificateDialogComponent', () => {
@@ -300,6 +300,86 @@ describe('CertificateDialogComponent', () => {
       const component = withFile()
       component.createTemplate()
       expect(uploadService.upload).not.toHaveBeenCalled()
+    })
+
+    /** The message the result dialog was opened with. */
+    const shownMessage = () => dialog.open.mock.calls[dialog.open.mock.calls.length - 1][1].data.message
+
+    describe('outcome reporting', () => {
+      it('closes the dialog and confirms on success', () => {
+        const component = withFile({ identifier: 'do_1', batches: [{ batchId: 'b1' }] })
+        component.createTemplate()
+        expect(dialogRef.close).toHaveBeenCalled()
+        expect(shownMessage()).toBe('Course Certificate successfully attached')
+        expect(dialog.open.mock.calls[0][1].data.cert_upload).toBe('Yes')
+      })
+
+      // Each of these used to return EMPTY: the stream completed without
+      // emitting, so neither handler ran and the author was told nothing.
+      it('reports a template that could not be created', () => {
+        editorService.createTemplate.mockReturnValue(of({ params: { status: 'failed' } }))
+        const component = withFile()
+        component.createTemplate()
+        expect(shownMessage()).toBe('Could not create the certificate template. Please try again.')
+        expect(dialogRef.close).not.toHaveBeenCalled()
+      })
+
+      it('reports an upload that did not succeed', () => {
+        uploadService.upload.mockReturnValue(of({ status: 'failed' }))
+        const component = withFile()
+        component.createTemplate()
+        expect(shownMessage()).toBe('The certificate file could not be uploaded. Please try again.')
+      })
+
+      it('explains that the course has no batch', () => {
+        const component = withFile({ identifier: 'do_1' })
+        component.createTemplate()
+        expect(shownMessage()).toBe('This course has no batch yet, so the certificate cannot be attached.')
+      })
+
+      it('falls back to a generic message for an unexpected failure', () => {
+        uploadService.templateToBatch.mockReturnValue(throwError(() => new Error('socket hang up')))
+        const component = withFile({ identifier: 'do_1', batches: [{ batchId: 'b1' }] })
+        component.createTemplate()
+        expect(shownMessage()).toBe('Could not attach the certificate. Please try again.')
+        expect(dialog.open.mock.calls[0][1].data.cert_upload).toBe('No')
+      })
+    })
+
+    describe('busy state', () => {
+      it('marks the dialog busy while the calls are in flight and frees it after', () => {
+        const pending = new Subject<any>()
+        editorService.createTemplate.mockReturnValue(pending)
+        const component = withFile({ identifier: 'do_1', batches: [{ batchId: 'b1' }] })
+
+        component.createTemplate()
+        // The global loader sits under the CDK overlay, so the dialog has to
+        // carry its own busy state or it looks frozen.
+        expect(component.attaching).toBe(true)
+        expect(dialogRef.disableClose).toBe(true)
+
+        pending.next({ params: { status: 'successful' }, result: { identifier: 'tpl_1' } })
+        pending.complete()
+
+        expect(component.attaching).toBe(false)
+        expect(dialogRef.disableClose).toBe(false)
+      })
+
+      it('frees the dialog again when the attempt fails', () => {
+        editorService.createTemplate.mockReturnValue(throwError(() => new Error('boom')))
+        const component = withFile()
+        component.createTemplate()
+        expect(component.attaching).toBe(false)
+        expect(dialogRef.disableClose).toBe(false)
+      })
+
+      it('ignores a second press while the first is still running', () => {
+        editorService.createTemplate.mockReturnValue(new Subject<any>())
+        const component = withFile({ identifier: 'do_1', batches: [{ batchId: 'b1' }] })
+        component.createTemplate()
+        component.createTemplate()
+        expect(editorService.createTemplate).toHaveBeenCalledTimes(1)
+      })
     })
 
     it('swallows a failed template creation', () => {

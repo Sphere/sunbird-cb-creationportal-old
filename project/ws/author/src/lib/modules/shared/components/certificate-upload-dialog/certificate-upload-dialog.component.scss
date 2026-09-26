@@ -140,3 +140,16 @@
   width: 100%;
   height: 418.963px;
 }
+
+// While attaching, the button is disabled but the work is in progress, not
+// unavailable -- keep the primary colour so the spinner and label stay legible
+// rather than falling back to the muted disabled palette.
+.add-certificate-btn.is-attaching {
+  background: #1c5d95;
+  color: #fff;
+  cursor: progress;
+}
+
+.attach-spinner {
+  --mdc-circular-progress-active-indicator-color: #fff;
+}

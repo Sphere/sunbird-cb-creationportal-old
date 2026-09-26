@@ -16,8 +16,16 @@ import { SuccessDialogComponent } from '../success-dialog/success-dialog.compone
 
 import { MatDialog } from '@angular/material/dialog'
 import { isActivationKey, SafeContentService } from '@ws-widget/utils'
-import { EMPTY } from 'rxjs'
+import { throwError } from 'rxjs'
 import { finalize, switchMap } from 'rxjs/operators'
+/** What the author is told when each step of attaching the certificate fails. */
+const CERT_ERROR = {
+  TEMPLATE: 'Could not create the certificate template. Please try again.',
+  UPLOAD: 'The certificate file could not be uploaded. Please try again.',
+  NO_BATCH: 'This course has no batch yet, so the certificate cannot be attached.',
+  GENERIC: 'Could not attach the certificate. Please try again.',
+}
+
 @Component({
   standalone: false,
   selector: 'ws-auth-root-certificate-upload-dialog',
@@ -32,6 +40,14 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
   svgContent!: any
   newRecipientName: string = ''
   file: any
+
+  /**
+   * In-dialog busy state. The global loader is rendered by the app shell, which
+   * sits *below* the CDK overlay, so while this dialog is open that spinner is
+   * hidden behind it and the user sees nothing happen for the several seconds
+   * the three calls take. This drives the button instead.
+   */
+  attaching = false
 
   /**
    * Object URLs handed to the preview. They are revoked together when the dialog
@@ -269,6 +285,13 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
     if (!this.file) {
       return
     }
+    // Guards a second click while the first is still running; the dialog stays
+    // open for the whole chain.
+    if (this.attaching) {
+      return
+    }
+    this.attaching = true
+    this.dialogRef.disableClose = true
     this.loader.changeLoad.next(true)
     const formdata = new FormData()
     formdata.append('content', this.file as Blob, (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''))
@@ -287,57 +310,70 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
               contentType: '/artifacts',
             })
           }
-          return EMPTY
+          // Previously EMPTY, which completes without emitting: the loader
+          // stopped and the user was told nothing at all. Every unhappy path now
+          // reaches the error handler and says what went wrong.
+          return throwError(() => new Error(CERT_ERROR.TEMPLATE))
         }),
         switchMap((data: any) => {
           if (!data || data.status !== 'successful') {
-            return EMPTY
+            return throwError(() => new Error(CERT_ERROR.UPLOAD))
           }
           // @ts-ignore: Unreachable code error
           const batches = this.data && this.data['batches']
           if (!batches || !batches.length) {
-            // No batch to attach to; the loader still has to stop.
-            return EMPTY
+            return throwError(() => new Error(CERT_ERROR.NO_BATCH))
           }
           return this.uploadService.templateToBatch(this.batchRequest(data, batches[0].batchId))
         }),
-        finalize(() => this.loader.changeLoad.next(false)),
+        finalize(() => {
+          this.attaching = false
+          this.dialogRef.disableClose = false
+          this.loader.changeLoad.next(false)
+          // finalize runs outside Angular's change detection when the last
+          // emission came from an XHR callback, so the button would otherwise
+          // stay in its busy state until the next unrelated event.
+          this.cdr.detectChanges()
+        }),
       )
       .subscribe(
         () => {
+          // Only a success closes this dialog. On failure it stays open with the
+          // chosen file still in place, so the author can simply press the button
+          // again instead of picking the certificate a second time.
           this.dialogRef.close()
-          this.dialog.open(SuccessDialogComponent, {
-            width: '450px',
-            height: '300x',
-            data: {
-              message: 'Course Certificate successfully attached',
-              icon: 'check_circle',
-              color: '#2CB93A',
-              backgroundColor: '#FFFFFF',
-              padding: '6px 11px 10px 6px !important',
-              id: '',
-              cert_upload: 'Yes',
-            },
-          })
+          this.showResult('Course Certificate successfully attached', true)
         },
         (error: any) => {
           // eslint-disable-next-line no-console
           console.error('Attaching the certificate failed', error)
-          this.dialog.open(SuccessDialogComponent, {
-            width: '450px',
-            height: '300x',
-            data: {
-              message: 'Could not attach the certificate. Please try again.',
-              icon: 'error',
-              color: '#F44336',
-              backgroundColor: '#FFFFFF',
-              padding: '6px 11px 10px 6px !important',
-              id: '',
-              cert_upload: 'No',
-            },
-          })
+          this.showResult(this.messageFor(error), false)
         },
       )
+  }
+
+  /** The message to show for a failure, preferring the reason we raised ourselves. */
+  private messageFor(error: any): string {
+    const known: string[] = [CERT_ERROR.TEMPLATE, CERT_ERROR.UPLOAD, CERT_ERROR.NO_BATCH]
+    const message = error && error.message
+    return known.indexOf(message) > -1 ? message : CERT_ERROR.GENERIC
+  }
+
+  /** Success and failure differ only in wording and colour, so they share a dialog. */
+  private showResult(message: string, ok: boolean): void {
+    this.dialog.open(SuccessDialogComponent, {
+      width: '450px',
+      height: '300x',
+      data: {
+        message,
+        icon: ok ? 'check_circle' : 'error',
+        color: ok ? '#2CB93A' : '#F44336',
+        backgroundColor: '#FFFFFF',
+        padding: '6px 11px 10px 6px !important',
+        id: '',
+        cert_upload: ok ? 'Yes' : 'No',
+      },
+    })
   }
 
   /** The batch payload that carries the uploaded template. */
