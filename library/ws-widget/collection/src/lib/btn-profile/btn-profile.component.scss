@@ -33,14 +33,33 @@
   color: white !important;
   font-family: Roboto, sans-serif !important;
 }
+// The label and the avatar are different heights, so as a plain block they sat
+// on different baselines. A flex row centres them against each other without
+// moving the block itself within the header.
 #user {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
   margin-top: 15px !important;
+}
+
+.login-pf-text {
+  // Keeps the label on one line next to the avatar rather than wrapping under it.
+  white-space: nowrap;
 }
 
 // The trigger sits on the dark blue header, so its contents have to be white
 // to be visible at all.
 .profile-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #fff;
+  // mat-icon-button reserves a 40px box with its own padding; the avatar is 32px
+  // and was sitting off-centre inside it.
+  padding: 0;
+  line-height: 1;
 }
 
 .profile-avatar {
