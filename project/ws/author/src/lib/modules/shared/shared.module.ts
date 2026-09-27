@@ -63,6 +63,7 @@ import { CommentsDialogComponent } from './components/comments-dialog/comments-d
 
 import { CertificateDialogComponent } from './components/certificate-upload-dialog/certificate-upload-dialog.component'
 
+import { LoaderCardComponent } from './components/loader-card/loader-card.component'
 import { ZipGuidelinesComponent } from './components/zip-upload-dialogs/zip-guidelines.component'
 import { ZipEntryFileComponent } from './components/zip-upload-dialogs/zip-entry-file.component'
 import { ZipInvalidNamesComponent } from './components/zip-upload-dialogs/zip-invalid-names.component'
@@ -125,6 +126,7 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     ZipGuidelinesComponent,
     ZipEntryFileComponent,
     ZipInvalidNamesComponent,
+    LoaderCardComponent,
     IprDialogComponent,
     ConfirmDialogComponent,
     AuthEditorStepsComponent,
@@ -214,6 +216,7 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     ZipGuidelinesComponent,
     ZipEntryFileComponent,
     ZipInvalidNamesComponent,
+    LoaderCardComponent,
     CompetencyPopupComponent,
     ImageUploadIntroPopupComponent,
     ConfirmDialogComponent,

@@ -1,4 +1,12 @@
 <mat-dialog-content class="upload-main-block">
+  <!--
+    The application loader, rendered from inside the dialog. The copy in the app
+    shell is painted below the CDK overlay, so while this dialog is open it was
+    invisible and attaching looked like it did nothing for several seconds.
+  -->
+  @if (attaching) {
+    <ws-auth-loader-card />
+  }
   <div class="upload-container">
     <div class="header-text">
       <span class="upload-text" i18n>Upload Certificate</span>
