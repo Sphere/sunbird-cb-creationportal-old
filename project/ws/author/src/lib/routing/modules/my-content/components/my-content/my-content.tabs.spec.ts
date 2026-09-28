@@ -102,6 +102,28 @@ describe('MyContentComponent (tab state)', () => {
     return component
   }
 
+  describe('the course search', () => {
+    // The AI Studio panes render their own elements and never read cardContent
+    // — the list is *ngIf="!isAiStudio". The search ran anyway on every click
+    // in that menu and the result was discarded, which is what made opening a
+    // feature feel slow.
+    it('is skipped for an AI Studio feature', () => {
+      const component = initWith('assessment')
+      expect(component.fetchContent).not.toHaveBeenCalled()
+    })
+
+    it('is skipped for the legacy AIHub status', () => {
+      const component = initWith('AIHub')
+      expect(component.fetchContent).not.toHaveBeenCalled()
+    })
+
+    // The guard must not touch any other tab.
+    it('still runs for a course tab', () => {
+      const component = initWith('draft')
+      expect(component.fetchContent).toHaveBeenCalled()
+    })
+  })
+
   describe('ngOnInit status matrix', () => {
     const cases: Array<[string, string, string]> = [
       ['allCourses', 'Manage Courses', 'All Courses'],
@@ -118,7 +140,7 @@ describe('MyContentComponent (tab state)', () => {
       ['published', 'My Courses', 'Published'],
       ['unpublished', 'My Courses', 'Retired'],
       ['courseRevision', 'My Courses', 'For Revision'],
-      ['AIHub', 'AIHub', 'AIHub'],
+      ['AIHub', 'AI STUDIO', 'Content Creation'],
       ['selfCourseRevision', 'Self Assessment', 'For Revision'],
     ]
 
@@ -256,7 +278,6 @@ describe('MyContentComponent (tab state)', () => {
     const cases: Array<[string, string, string, string]> = [
       ['External Courses to Review', 'Live Courses', 'Courses to Review', 'externalCourseReview'],
       ['External Self Assessment to Review', 'Live Self Assessment', 'Self Assessment to Review', 'externalSelfAssessmentReview'],
-      ['AIHub', 'AIHub', 'AIHub', 'AIHub'],
       ['Draft', 'My Courses', 'Draft', 'draft'],
     ]
 
@@ -314,17 +335,33 @@ describe('MyContentComponent (tab state)', () => {
       })
     })
 
+    it('navigates "AIHub" to the AI Studio tab', () => {
+      // Kept out of the table above: that table asserts activeLink ===
+      // currentStatus, which holds for every course tab. Here the two say
+      // different things on purpose — activeLink is the sidebar's own marker,
+      // currentStatus is the open feature's label.
+      const component = build()
+      component.navigateContents('AIHub')
+
+      expect(component.currentTab).toBe('AI STUDIO')
+      expect(component.currentStatus).toBe('Content Creation')
+      expect(component.activeLink).toBe('AIHub')
+      expect(mocks.router.navigate).toHaveBeenCalledWith(['/author/my-content'], {
+        queryParams: { status: 'contentStudio' },
+      })
+    })
+
     it('flags the AIHub tab', () => {
       const component = build()
       component.navigateContents('AIHub')
-      expect(component.isAihub).toBe(true)
+      expect(component.isAiStudio).toBe(true)
     })
 
     it('clears the AIHub flag for a course tab', () => {
       const component = build()
-      component.isAihub = true
+      component.isAiStudio = true
       component.navigateContents('Draft')
-      expect(component.isAihub).toBe(false)
+      expect(component.isAiStudio).toBe(false)
     })
 
     it('ignores an unknown link', () => {

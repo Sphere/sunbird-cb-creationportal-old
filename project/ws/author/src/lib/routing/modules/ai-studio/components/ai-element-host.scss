@@ -1,0 +1,192 @@
+/* The AI Hub's own theme, and the layout its elements sit in.
+ *
+ * Everything the elements are told is a variable declared right here, and every
+ * rule below reads one — no colour, face or measurement is spelled out twice.
+ * Retheming the AI Hub is this one block; adding a theme is one more block
+ * beside it, because custom properties resolve at use rather than at build, so
+ * a redefinition re-tints everything reading it with no rebuild.
+ *
+ * Scoped to this file on purpose. These are the AI Hub's values, not the
+ * portal's: nothing here changes how any existing CBP screen looks, and a
+ * portal-wide theme would be CBP's own to declare, not ours to impose.
+ *
+ * The values match the portal so the elements do not look foreign — #1c5d95 is
+ * the blue used across the author UI — but they are stated as OUR variables
+ * rather than read from Material's internals, which change between versions and
+ * expose no reusable primary token in this build.
+ */
+:host {
+  --ai-brand: #1c5d95;
+  --ai-brand-deep: #14446c;
+  /* The pale fill behind a selected card or chip. Kept well away from the
+     brand blue itself so a selection reads as a tint of the page rather than a
+     second, weaker button. */
+  --ai-brand-soft: #eef4fb;
+  --ai-on-brand: #ffffff;
+  --ai-font: Roboto, sans-serif;
+
+  /* Notices. Amber is the package's warning colour and it reads as Aastrika's
+     cream against the portal's blue, so the notices are restated in the same
+     family as the brand: a pale blue ground with dark blue text. They stay
+     distinct from a plain card because they are tinted, not because they are a
+     different colour family. */
+  --ai-note-bg: #eef4fb;
+  --ai-note-fg: #14446c;
+
+  /* How much room a feature gets, and the chrome above it. Both are layout
+     facts about this screen, so they are named once and read below. */
+  --ai-max-width: 1600px;
+  --ai-chrome: 164px;
+}
+
+/* Layout and type for the three @aastrika/ai-elements custom elements.
+ *
+ * One file, three components: the rules are identical for all of them, and a
+ * value written three times drifts. Each component lists this file in its
+ * styleUrls, so Angular's emulated encapsulation scopes it to that component
+ * and it cannot reach anything else in the portal.
+ *
+ * No ::ng-deep: each element is written directly in its own component's
+ * template, so Angular stamps it with that component's scope attribute and an
+ * ordinary selector reaches it. Piercing encapsulation would let these rules
+ * escape to anything else that rendered the same tags.
+ */
+aastrika-content-studio,
+aastrika-assessment,
+aastrika-reports {
+  /* The portal's look, handed to the package through its own token names.
+   *
+   * Set on the ELEMENT, not on the wrapper around it. The package declares its
+   * defaults on the element itself, and a value set directly on an element
+   * always beats one inherited from an ancestor — inheritance only fills in
+   * what is otherwise unset. Putting these on the parent looked tidier and did
+   * nothing at all.
+   *
+   * Both name sets on purpose: the package reads --aastrika-gold* up to 0.4.1
+   * and --aastrika-primary* from 0.4.2, where gold becomes an alias of primary.
+   * Setting both carries the theme across the upgrade with no window where the
+   * elements fall back to gold.
+   *
+   * Only the accent is mapped. --aastrika-ok/warn/err-* stay as they are: a
+   * warning is amber because it is a warning, not because of the brand. */
+  --aastrika-primary: var(--ai-brand);
+  --aastrika-primary-deep: var(--ai-brand-deep);
+  --aastrika-primary-soft: var(--ai-brand-soft);
+  --aastrika-on-primary: var(--ai-on-brand);
+  --aastrika-gold: var(--ai-brand);
+  --aastrika-gold-deep: var(--ai-brand-deep);
+  --aastrika-gold-soft: var(--ai-brand-soft);
+  --aastrika-font: var(--ai-font);
+
+  /* Warnings follow the portal's palette rather than the package's amber. The
+     ok/error pair keep their own colours: green and red mean something on their
+     own and are not the brand's to repaint. */
+  --aastrika-warn-bg: var(--ai-note-bg);
+  --aastrika-warn-fg: var(--ai-note-fg);
+
+  /* Give the element's headings their font back.
+   *
+   * The portal's Material typography sets `html .mat-typography h1 { font: 400
+   * 3.562rem/4rem "Roboto, sans-serif" }` on the body, and the quotes there
+   * wrap the WHOLE stack — so the browser looks for one family literally named
+   * "Roboto, sans-serif", fails to find it, and falls back to its serif
+   * default. That is why one heading rendered in Times while every other word
+   * in the element was Roboto.
+   *
+   * It reaches in because it is a global h1 selector with an ancestor class, so
+   * nothing the package sets on itself can outrank it. Restated here for our
+   * own headings only, reading the same token as the rest of the element, and
+   * leaving every other h1 in the portal exactly as it was. */
+  ::ng-deep h1,
+  ::ng-deep h2,
+  ::ng-deep h3 {
+    font-family: var(--ai-font);
+  }
+
+  /* A custom element is display:inline by default, and vertical padding on an
+     inline box does not lay out — without this the inset below is ignored. */
+  display: block;
+
+  /* THE HOST'S TO OWN, not the package's: there is no inset that is right in
+     every host, and one that already pads its content area would end up with
+     double spacing. This matches the breathing room the portal gives its own
+     routed pages, so the element does not sit flush against the left rail. */
+  /* The horizontal inset is the shared gutter, so the heading inside the
+     element lines up with the breadcrumb above it. my-content declares it on
+     the container that holds both; the fallback is for the routed page, which
+     has no such ancestor. */
+  padding: 34px var(--ai-gutter, 30px) 60px;
+
+  /* The package caps its card stack at 860px, which on the portal's wide
+   * content area leaves most of the screen empty. The portal already gives
+   * every other page the full width, so the element matches them.
+   *
+   * Capped rather than uncapped: a card stretched across a very wide monitor
+   * puts its label at one edge and its control at the other, and the two-column
+   * steps inside (1fr + 280px) would give the fixed column a sliver of the row.
+   * 1600px is wide enough to use the space and narrow enough to stay readable.
+   *
+   * Only .steps is touched. The package's other width limits are deliberate and
+   * stay: .page-sub at 62ch and .voice-why at 52ch are reading measures, and
+   * .search / .revise-voice are control widths that should not stretch.
+   *
+   * INTERIM — a width attribute or token on the package would be the supported
+   * way to say this; reaching in by class name is not. */
+  ::ng-deep .steps {
+    max-width: var(--ai-max-width);
+  }
+
+  /* Width is only worth having if it buys DENSITY, not distance.
+   *
+   * The package's style grid is fixed at two columns, so extra width made each
+   * card twice as wide instead of showing more of them: a card ended up holding
+   * one ~90-character line, past a comfortable measure, and read as a row
+   * rather than a card. auto-fit with a sensible minimum lets the row grow to
+   * three or four cards on a wide screen and fall back to two, then one, on a
+   * narrow one — the same rule covers every size, so no extra breakpoint. */
+  ::ng-deep .types {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+
+  /* Some things must NOT stretch, whatever the container does.
+   *
+   * A dropzone is a target: at full width it becomes a 1500px letterbox with
+   * its label marooned in the middle, which reads as a divider rather than
+   * something to drop a file on. Capping it keeps it a shape the eye can aim
+   * at, and centring keeps it under the heading it belongs to. */
+  ::ng-deep .drop {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Wider cards need proportionally more air, or the content sits thin against
+   * a lot of border. The package's 26/28px was chosen for an 860px card. */
+  ::ng-deep .card-pad {
+    padding: 28px 32px;
+  }
+}
+
+/* The element scrolls inside itself, so the page around it does not.
+ *
+ * These features are tall — Content Studio is five steps, Assessment lists
+ * every question — and when the whole document scrolled to reach the bottom of
+ * one, the portal's left menu went with it: the AI Hub items ended up above the
+ * top of the window, and getting back to Reports meant scrolling the content
+ * up first.
+ *
+ * Given its own height and its own scrollbar, the element keeps its scrolling
+ * to itself and the menu beside it stays where it is.
+ *
+ * 164px is the chrome above this screen — the same offset .nav-container uses.
+ * One number for one measurement, so the two cannot drift apart.
+ *
+ * This is the HOST's to set, not the package's: how much room the element gets,
+ * and whether it or the page does the scrolling, depends entirely on the layout
+ * it was dropped into. A page that scrolls as a whole would want neither. */
+:host {
+  display: block;
+  height: calc(100vh - var(--ai-chrome));
+  overflow-y: auto;
+  overflow-x: hidden;
+}

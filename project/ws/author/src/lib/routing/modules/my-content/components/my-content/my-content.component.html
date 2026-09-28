@@ -534,7 +534,21 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
-        <mat-expansion-panel #panel4 style="cursor: pointer" class="no-shadow" [expanded]="isAiHubExanded" hideToggle>
+        <!-- Gated on canShow('author_create'), the content_creator role. The
+             panel was ungated, so an author without create rights saw a menu
+             they could not use. The gate is for the menu only — the service
+             checks the caller itself, since a host cannot be trusted to.
+             [(expanded)] is two-way: bound one way it was never written back,
+             so a click opened the panel and the next change detection pass
+             closed it again, and the first click appeared to do nothing. -->
+        <mat-expansion-panel
+          *ngIf="allowAuthorContentCreate"
+          #panel4
+          style="cursor: pointer"
+          class="no-shadow"
+          [(expanded)]="isAiStudioExpanded"
+          hideToggle
+        >
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title class="main-block">
               <mat-icon class="add-create-icon">assistant</mat-icon>
@@ -544,16 +558,40 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 (keydown)="isActivationKey($event) && onClickReviewCourse('AIHub')"
                 [attr.tabindex]="0"
               >
-                AI Hub
+                AI Studio
               </span>
               <mat-icon style="color: #808080" *ngIf="!panel4.expanded">keyboard_arrow_down</mat-icon>
               <!-- Add up arrow icon when panel is expanded -->
               <mat-icon style="color: #14446c" *ngIf="panel4.expanded">keyboard_arrow_up</mat-icon>
             </mat-panel-title>
           </mat-expansion-panel-header>
+
+          <!-- One loop over aiStudioFeatures, so adding a feature is a single
+               entry in the component. A plain list rather than <mat-list>:
+               Material's list item owns the layout of whatever it contains and
+               pins the row height, which stacked each glyph above its label. -->
+          <div class="ai-menu" role="list">
+            <a
+              *ngFor="let feature of aiStudioFeatures"
+              class="ai-feature"
+              role="listitem"
+              [class.is-active]="aiStudioFeature === feature.id"
+              (click)="onClickAiStudioFeature(feature.id)"
+              (keydown)="isActivationKey($event) && onClickAiStudioFeature(feature.id)"
+              [attr.tabindex]="0"
+              [attr.aria-current]="aiStudioFeature === feature.id ? 'page' : null"
+            >
+              <!-- width/height on the element, not only in CSS: an SVG with
+                   neither falls back to 300x150. -->
+              <svg class="ai-feature__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path [attr.d]="feature.icon" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span class="ai-feature__label">{{ feature.label }}</span>
+            </a>
+          </div>
         </mat-expansion-panel>
       </mat-accordion>
-      <mat-accordion expanded *ngIf="allowExternalContentReviewer && !isAihub">
+      <mat-accordion expanded *ngIf="allowExternalContentReviewer && !isAiStudio">
         <mat-expansion-panel
           #panel1
           [expanded]="isContentExpanded"
@@ -801,12 +839,24 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             (click)="navigateContents(link)" [ngClass]="{'activeTab':link==activeLink}">
             {{ link }}
           </a> -->
-          <p class="currentTab">{{ currentTab }} : {{ currentStatus }}</p>
+          <p class="currentTab" *ngIf="!isAiStudio">{{ currentTab }} : {{ currentStatus }}</p>
+
+          <!-- AI Studio reads as a path, not a pair joined by a colon: the area
+               is context, the open feature is where you are. Its left edge comes
+               from the same --ai-gutter the element below uses, so the bar and
+               the heading under it line up. -->
+          <nav class="ai-crumb" *ngIf="isAiStudio" aria-label="Breadcrumb">
+            <span class="ai-crumb__area">AI Studio</span>
+            <svg class="ai-crumb__sep" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="ai-crumb__current">{{ currentStatus }}</span>
+          </nav>
 
           <span fxFlex style="flex: 1 1 auto"></span>
 
           <div
-            *ngIf="allowAuthorContentCreate && !isAihub"
+            *ngIf="allowAuthorContentCreate && !isAiStudio"
             class="matExpansion flex flex-middle margin-left-l margin-right-l padding-remove-left create-button"
           >
             <button
@@ -835,10 +885,10 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
         </div>
 
         <div class="outer-flex">
-          <section *ngIf="isAihub" class="aihubContainer">
-            <ws-author-aihub-dashboard></ws-author-aihub-dashboard>
+          <section *ngIf="isAiStudio" class="aiStudioContainer">
+            <ws-author-ai-studio-dashboard [feature]="aiStudioFeature"></ws-author-ai-studio-dashboard>
           </section>
-          <div class="content-box" *ngIf="!isAihub">
+          <div class="content-box" *ngIf="!isAiStudio">
             <div class="flex margin-horizontal-s search-toolbar">
               <div>
                 <mat-chip-set *ngIf="filters && filters.length" #chipList aria-label="Filter">
