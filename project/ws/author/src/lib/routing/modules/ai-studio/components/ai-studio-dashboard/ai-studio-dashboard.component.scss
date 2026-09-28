@@ -1,0 +1,64 @@
+::ng-deep.mat-tab-labels,
+::ng-deep.mat-mdc-tab-labels {
+  display: flex;
+  flex: 1;
+}
+
+.flex-1 {
+  text-align: center;
+  flex: 1;
+}
+
+::ng-deep.theme-igot.day-mode .mat-tab-label,
+.theme-igot.day-mode .mat-tab-link,
+::ng-deep.theme-igot.day-mode .mat-mdc-tab,
+.theme-igot.day-mode .mat-mdc-tab-link {
+  text-align: center;
+  flex: 1;
+}
+
+/* ---- navigation on the routed page ----------------------------------------
+ *
+ * Only rendered at /author/my-content/ai-studio/<feature>, where there is no
+ * sidebar to move between features.
+ *
+ * The colour comes from --ai-brand, the same variable ai-element-host.scss
+ * already defines for the embedded elements, so a future theme redefines one
+ * value and this follows. Nothing here names a hex.
+ */
+.ai-studio-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 30px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+}
+
+.ai-studio-nav__tab {
+  padding: 12px 18px;
+  border-bottom: 2px solid transparent;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover {
+    color: var(--ai-brand, #1c5d95);
+  }
+
+  /* routerLinkActive puts this on the link whose URL is open. */
+  &.is-active {
+    color: var(--ai-brand, #1c5d95);
+    border-bottom-color: var(--ai-brand, #1c5d95);
+    font-weight: 600;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ai-brand, #1c5d95);
+    outline-offset: -2px;
+  }
+}

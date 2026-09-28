@@ -2,14 +2,14 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestBed } from '@angular/core/testing'
 
-import { AIHubService } from './aihub.service'
+import { AIStudioService } from './ai-studio.service'
 
-describe('AIHubService', () => {
-  let service: AIHubService
+describe('AIStudioService', () => {
+  let service: AIStudioService
 
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] })
-    service = TestBed.inject(AIHubService)
+    service = TestBed.inject(AIStudioService)
   })
 
   it('should be created', () => {

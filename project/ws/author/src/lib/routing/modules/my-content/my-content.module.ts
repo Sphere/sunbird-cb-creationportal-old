@@ -18,12 +18,11 @@ import { ContentCardV2Component } from './components/content-card-v2/content-car
 
 import { PipeDurationTransformModule } from '@ws-widget/utils'
 
-import { AIHubModule } from '../aihub/aihub.module'
+import { AIStudioModule } from '../ai-studio/ai-studio.module'
 
 @NgModule({
   declarations: [MyContentComponent, ContentCardComponent, ContentCardV2Component],
-  imports: [CommonModule, SharedModule, MyContentRoutingModule, PipeContentRouteModule, PipeDurationTransformModule,
-    AIHubModule],
+  imports: [CommonModule, SharedModule, MyContentRoutingModule, PipeContentRouteModule, PipeDurationTransformModule, AIStudioModule],
   providers: [MyContentService],
 })
-export class MyContentModule { }
+export class MyContentModule {}
