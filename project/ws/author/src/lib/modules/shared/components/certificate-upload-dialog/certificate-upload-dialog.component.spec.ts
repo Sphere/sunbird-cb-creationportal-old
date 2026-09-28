@@ -33,6 +33,20 @@ describe('CertificateDialogComponent', () => {
       <text id="\${courseName}"><tspan>x</tspan></text>
     </svg>`
 
+  /**
+   * The shape registry (RC) templates actually use: the field id is plain and
+   * the tspan carries a handlebars token. The legacy fixture above puts the
+   * whole `${...}` token in the id, which is why the mismatch went unnoticed.
+   */
+  const rcSvg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <text id="recipientName"><tspan x="51%" y="435">{{credentialSubject.recipientName}}</tspan></text>
+      <image id="QrCode" xlink:href="{{qrCode}}" />
+      <text id="rmNumber"><tspan x="85%" y="230">{{credentialSubject.rmNumber}}</tspan></text>
+      <text id="issuedDate"><tspan x="393" y="742">{{dateFormat issuanceDate "DD MMMM YYYY"}}</tspan></text>
+      <text id="maxScore"><tspan x="57%" y="586">{{credentialSubject.maxScore}}</tspan></text>
+      <text id="courseName"><tspan x="50%" y="66%">{{credentialSubject.trainingName}}</tspan></text>
+    </svg>`
+
   const build = (data: any = { identifier: 'do_1' }) =>
     new CertificateDialogComponent(cdr, sanitizer, dialogRef, loader, uploadService, editorService, dialog, data)
 
@@ -174,7 +188,7 @@ describe('CertificateDialogComponent', () => {
     })
 
     it('fills the existing placeholders in a prepared template', async () => {
-      const component = build()
+      const component = build({ identifier: 'do_1', name: 'Normal Labour Course' })
       component.extractSvgAttributes(templatedSvg)
       const rendered = await renderedSvg()
       expect(rendered).toContain('Test User')
@@ -183,6 +197,46 @@ describe('CertificateDialogComponent', () => {
       expect(rendered).toContain('Normal Labour Course')
       // The placeholder ids stay; no duplicate elements are appended.
       expect(rendered).not.toContain('id="recipientName"')
+    })
+
+    it('fills an RC template in place, leaving no handlebars on show', async () => {
+      const component = build({ identifier: 'do_1', name: 'Normal Labour Course' })
+      component.extractSvgAttributes(rcSvg)
+      const rendered = await renderedSvg()
+      // Every field is substituted where the designer placed it...
+      expect(rendered).toContain('Test User')
+      expect(rendered).toContain('#09123')
+      expect(rendered).toContain('100%')
+      expect(rendered).toContain('Normal Labour Course')
+      expect(rendered).not.toContain('{{credentialSubject.recipientName}}')
+      expect(rendered).not.toContain('{{credentialSubject.trainingName}}')
+      expect(rendered).not.toContain('{{qrCode}}')
+      // ...and the original coordinates survive, i.e. nothing was appended at
+      // the hardcoded fallback position over the artwork.
+      expect(rendered).toContain('y="435"')
+      expect(rendered).not.toContain('y="440"')
+    })
+
+    it('falls back to a neutral course name when the content has none', async () => {
+      const component = build({ identifier: 'do_1' })
+      component.extractSvgAttributes(rcSvg)
+      expect(await renderedSvg()).toContain('Course Name')
+    })
+
+    it('still fills legacy templates that carry the token in the id', async () => {
+      const component = build({ identifier: 'do_1', name: 'Legacy Course' })
+      component.extractSvgAttributes(templatedSvg)
+      expect(await renderedSvg()).toContain('Legacy Course')
+    })
+
+    it('previews a template that will not parse as-is, not the parser error', async () => {
+      const component = build({ identifier: 'do_1' })
+      // xlink used without the namespace being declared -- DOMParser answers
+      // with a <parsererror> document rather than throwing.
+      component.extractSvgAttributes('<svg xmlns="http://www.w3.org/2000/svg"><image xlink:href="x"/></svg>')
+      const rendered = await renderedSvg()
+      expect(rendered).not.toContain('parsererror')
+      expect(rendered).toContain('<image xlink:href="x"/>')
     })
 
     it('stamps today as the issued date', async () => {
@@ -215,8 +269,10 @@ describe('CertificateDialogComponent', () => {
     it('creates the template, uploads it and attaches it to the batch', () => {
       const component = withFile()
       component.createTemplate()
+      // Named after the course rather than the fixed test string every
+      // certificate asset used to be created with.
       expect(editorService.createTemplate).toHaveBeenCalledWith({
-        name: 'Sunbird rc certificate test',
+        name: expect.stringContaining('Certificate'),
       })
       expect(uploadService.upload).toHaveBeenCalledWith(expect.any(FormData), {
         contentId: 'tpl_1',

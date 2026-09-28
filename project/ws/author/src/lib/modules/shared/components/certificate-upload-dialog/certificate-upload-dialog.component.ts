@@ -26,6 +26,16 @@ const CERT_ERROR = {
   GENERIC: 'Could not attach the certificate. Please try again.',
 }
 
+const SVG_NS = 'http://www.w3.org/2000/svg'
+const XLINK_NS = 'http://www.w3.org/1999/xlink'
+
+/** One text placeholder the certificate preview fills in. */
+interface ICertPreviewField {
+  id: string
+  value: string
+  fallback: { x: string; y: string; fontSize: string }
+}
+
 @Component({
   standalone: false,
   selector: 'ws-auth-root-certificate-upload-dialog',
@@ -113,172 +123,117 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
     this.previewObjectUrls.forEach(url => URL.revokeObjectURL(url))
     this.previewObjectUrls = []
   }
-  extractSvgAttributes(svgContent: string): void {
-    if (svgContent) {
-      this.newRecipientName = 'Test User'
-      const date = new Date()
-      const day = date.getDate().toString().padStart(2, '0')
-      const month = (date.getMonth() + 1).toString().padStart(2, '0')
-      const year = date.getFullYear()
-      const rmNumber = '#09123'
-      const maxScore = '100%'
-      const courseName = 'Normal Labour Course'
+  /**
+   * The sample values the preview stamps into a template, keyed by the element
+   * id the template carries. `fallback` is only used when a template does not
+   * carry that element at all, in which case a sample is appended so the author
+   * still sees every field the certificate will end up with.
+   */
+  private previewFields(): ICertPreviewField[] {
+    const date = new Date()
+    const day = date.getDate().toString().padStart(2, '0')
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const issuedDate = `${day}-${month}-${date.getFullYear()}`
+    // The course being edited, so the preview shows the author their own title
+    // rather than a sample from another course.
+    const courseName = (this.data && this.data.name) || 'Course Name'
 
-      const newIssuedDate = `${day}-${month}-${year}`
-      // let qrCode = "https://ibb.co/wNbdr4m"
-      // Replace the content of the specified tspan elements
-      // const last = svgContent.replace(/<tspan[^>]+>\${recipientName}<\/tspan>/g, `<tspan x="600" y="440">${newRecipientName}</tspan>`)
-      //   .replace(/<tspan[^>]+>\${issuedDate}<\/tspan>/g, `<tspan x="620" y="800">${newIssuedDate}</tspan>`)
-      // let newSvgContent = svgContent.replace(/<tspan[^>]*>(.*?)<\/tspan>/, `<tspan x="600" y="440">Likhith</tspan>`).replace(/<tspan[^>]*>(.*?)<\/tspan>/, `<tspan x="620" y="800">10-08-2023</tspan>`)
-
-      // @ts-ignore: Unreachable code error
-      let bucket = window['env']['sitePath']
-
-      const newQrCodeImage = bucket + '/cbp-assets/images/qrCode.png'
-
-      // Create a DOMParser
-      const parser = new DOMParser()
-      const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml')
-
-      // Update or add recipient name
-      let recipientText = svgDoc.querySelector('text[id="${recipientName}"] tspan')
-      if (recipientText) {
-        recipientText.textContent = this.newRecipientName
-      } else {
-        const newTextElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'text')
-        newTextElement.setAttribute('id', 'recipientName')
-        newTextElement.setAttribute('fill', 'black')
-        newTextElement.setAttribute('xml:space', 'preserve')
-        newTextElement.setAttribute('style', 'white-space: pre')
-        newTextElement.setAttribute('font-family', 'Roboto')
-        newTextElement.setAttribute('font-size', '48')
-        newTextElement.setAttribute('letter-spacing', '0em')
-
-        const tspanElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'tspan')
-        tspanElement.setAttribute('x', '600')
-        tspanElement.setAttribute('y', '440')
-        tspanElement.textContent = this.newRecipientName
-
-        newTextElement.appendChild(tspanElement)
-        svgDoc.documentElement.appendChild(newTextElement)
-      }
-
-      // Update or add QR code image
-      let qrCodeImageElement = svgDoc.querySelector('image[id="QrCode"]')
-      if (qrCodeImageElement) {
-        qrCodeImageElement.setAttribute('xlink:href', newQrCodeImage)
-      } else {
-        const newImageElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'image')
-        newImageElement.setAttribute('id', 'QrCode')
-        newImageElement.setAttribute('class', 'qr-code')
-        newImageElement.setAttribute('x', '600')
-        newImageElement.setAttribute('y', '620')
-        newImageElement.setAttribute('width', '150')
-        newImageElement.setAttribute('height', '150')
-        newImageElement.setAttribute('xlink:href', newQrCodeImage)
-
-        svgDoc.documentElement.appendChild(newImageElement)
-      }
-
-      // Update or add rnNumber date
-      let rmNumbers = svgDoc.querySelector('text[id="${rmNumber}"] tspan')
-      if (rmNumbers) {
-        rmNumbers.textContent = rmNumber
-      } else {
-        const rmNumbersTextElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'text')
-        rmNumbersTextElement.setAttribute('id', 'rmNumber')
-        rmNumbersTextElement.setAttribute('fill', 'black')
-        rmNumbersTextElement.setAttribute('xml:space', 'preserve')
-        rmNumbersTextElement.setAttribute('style', 'white-space: pre')
-        rmNumbersTextElement.setAttribute('font-family', 'Roboto')
-        rmNumbersTextElement.setAttribute('font-size', '20')
-        rmNumbersTextElement.setAttribute('letter-spacing', '0em')
-
-        const tspanElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'tspan')
-        tspanElement.setAttribute('x', '600')
-        tspanElement.setAttribute('y', '460')
-        tspanElement.textContent = rmNumber
-
-        rmNumbersTextElement.appendChild(tspanElement)
-        svgDoc.documentElement.appendChild(rmNumbersTextElement)
-      }
-
-      // Update or add issued date
-      let issuedDateText = svgDoc.querySelector('text[id="${issuedDate}"] tspan')
-      if (issuedDateText) {
-        issuedDateText.textContent = newIssuedDate
-      } else {
-        const newTextElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'text')
-        newTextElement.setAttribute('id', 'issuedDate')
-        newTextElement.setAttribute('fill', 'black')
-        newTextElement.setAttribute('xml:space', 'preserve')
-        newTextElement.setAttribute('style', 'white-space: pre')
-        newTextElement.setAttribute('font-family', 'Roboto')
-        newTextElement.setAttribute('font-size', '20')
-        newTextElement.setAttribute('letter-spacing', '0em')
-
-        const tspanElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'tspan')
-        tspanElement.setAttribute('x', '620')
-        tspanElement.setAttribute('y', '800')
-        tspanElement.textContent = newIssuedDate
-
-        newTextElement.appendChild(tspanElement)
-        svgDoc.documentElement.appendChild(newTextElement)
-      }
-
-      let maxScoreText = svgDoc.querySelector('text[id="${maxScore}"] tspan')
-      if (maxScoreText) {
-        maxScoreText.textContent = maxScore
-      } else {
-        const maxScoreTextElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'text')
-        maxScoreTextElement.setAttribute('id', 'maxScore')
-        maxScoreTextElement.setAttribute('fill', 'black')
-        maxScoreTextElement.setAttribute('xml:space', 'preserve')
-        maxScoreTextElement.setAttribute('style', 'white-space: pre')
-        maxScoreTextElement.setAttribute('font-family', 'Roboto')
-        maxScoreTextElement.setAttribute('font-size', '20')
-        maxScoreTextElement.setAttribute('letter-spacing', '0em')
-        const tspanElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'tspan')
-        tspanElement.setAttribute('x', '640')
-        tspanElement.setAttribute('y', '780')
-        tspanElement.textContent = maxScore
-        maxScoreTextElement.appendChild(tspanElement)
-        svgDoc.documentElement.appendChild(maxScoreTextElement)
-      }
-
-      let courseNameText = svgDoc.querySelector('text[id="${courseName}"] tspan')
-      if (courseNameText) {
-        courseNameText.textContent = courseName
-      } else {
-        const courseNameTextElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'text')
-        courseNameTextElement.setAttribute('id', 'courseName')
-        courseNameTextElement.setAttribute('fill', 'black')
-        courseNameTextElement.setAttribute('xml:space', 'preserve')
-        courseNameTextElement.setAttribute('style', 'white-space: pre')
-        courseNameTextElement.setAttribute('font-family', 'Roboto')
-        courseNameTextElement.setAttribute('font-size', '24')
-        courseNameTextElement.setAttribute('letter-spacing', '0em')
-        const tspanElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'tspan')
-        tspanElement.setAttribute('x', '600')
-        tspanElement.setAttribute('y', '500')
-        tspanElement.textContent = courseName
-        courseNameTextElement.appendChild(tspanElement)
-        svgDoc.documentElement.appendChild(courseNameTextElement)
-      }
-
-      // Serialize the modified SVG back to a string
-      const modifiedSvgString = new XMLSerializer().serializeToString(svgDoc)
-
-      console.log('modifiedSvgString', modifiedSvgString)
-
-      // const lasts = svgContent
-      //   .replace(/\$\{recipientName\}/g, newRecipientName)
-      //   .replace(/\$\{qrCodeImage\}/g, "https://ibb.co/wNbdr4m")
-      //   .replace(/\$\{issuedDate\}/g, newIssuedDate)
-
-      this.setPreview(modifiedSvgString)
-    }
+    return [
+      { id: 'recipientName', value: this.newRecipientName, fallback: { x: '600', y: '440', fontSize: '48' } },
+      { id: 'rmNumber', value: '#09123', fallback: { x: '600', y: '460', fontSize: '20' } },
+      { id: 'issuedDate', value: issuedDate, fallback: { x: '620', y: '800', fontSize: '20' } },
+      { id: 'maxScore', value: '100%', fallback: { x: '640', y: '780', fontSize: '20' } },
+      { id: 'courseName', value: courseName, fallback: { x: '600', y: '500', fontSize: '24' } },
+    ]
   }
+
+  /**
+   * Finds a text placeholder by either id form a template may use.
+   *
+   * Registry (RC) templates identify the field plainly -- `id="recipientName"`
+   * with `{{credentialSubject.recipientName}}` as the tspan text -- while older
+   * templates put the whole `${recipientName}` token in the id. Matching only
+   * the second form meant every field of an RC template missed, leaving the raw
+   * handlebars on show and appending a duplicate sample over the artwork.
+   */
+  private findPlaceholder(svgDoc: Document, id: string): Element | null {
+    return svgDoc.querySelector(`text[id="${id}"] tspan`) || svgDoc.querySelector(`text[id="\${${id}}"] tspan`)
+  }
+
+  /** Stamps one sample value in, appending the field if the template lacks it. */
+  private fillPlaceholder(svgDoc: Document, field: ICertPreviewField): void {
+    const existing = this.findPlaceholder(svgDoc, field.id)
+    if (existing) {
+      existing.textContent = field.value
+      return
+    }
+    const textElement = svgDoc.createElementNS(SVG_NS, 'text')
+    textElement.setAttribute('id', field.id)
+    textElement.setAttribute('fill', 'black')
+    textElement.setAttribute('xml:space', 'preserve')
+    textElement.setAttribute('style', 'white-space: pre')
+    textElement.setAttribute('font-family', 'Roboto')
+    textElement.setAttribute('font-size', field.fallback.fontSize)
+    textElement.setAttribute('letter-spacing', '0em')
+
+    const tspanElement = svgDoc.createElementNS(SVG_NS, 'tspan')
+    tspanElement.setAttribute('x', field.fallback.x)
+    tspanElement.setAttribute('y', field.fallback.y)
+    tspanElement.textContent = field.value
+
+    textElement.appendChild(tspanElement)
+    svgDoc.documentElement.appendChild(textElement)
+  }
+
+  /** Points the QR placeholder at the sample image, adding it if absent. */
+  private fillQrCode(svgDoc: Document, href: string): void {
+    let image = svgDoc.querySelector('image[id="QrCode"]')
+    if (!image) {
+      image = svgDoc.createElementNS(SVG_NS, 'image')
+      image.setAttribute('id', 'QrCode')
+      image.setAttribute('class', 'qr-code')
+      image.setAttribute('x', '600')
+      image.setAttribute('y', '620')
+      image.setAttribute('width', '150')
+      image.setAttribute('height', '150')
+      svgDoc.documentElement.appendChild(image)
+    }
+    // RC templates carry `xlink:href="{{qrCode}}"`. setAttribute alone writes a
+    // plain attribute that happens to be spelled with a colon, which renderers
+    // ignore, so the namespaced one has to be set too; `href` covers SVG2.
+    image.setAttributeNS(XLINK_NS, 'xlink:href', href)
+    image.setAttribute('href', href)
+  }
+
+  extractSvgAttributes(svgContent: string): void {
+    if (!svgContent) {
+      return
+    }
+    this.newRecipientName = 'Test User'
+    // @ts-ignore: Unreachable code error
+    const bucket = window['env']['sitePath']
+    const qrCodeImage = `${bucket}/cbp-assets/images/qrCode.png`
+
+    const svgDoc = new DOMParser().parseFromString(svgContent, 'image/svg+xml')
+    // DOMParser reports a malformed template by handing back a <parsererror>
+    // document instead of throwing. Stamping samples into that and previewing it
+    // shows the author an XML error where their certificate should be, so show
+    // the file they picked, unmodified, and let them see it is the file at fault.
+    if (svgDoc.querySelector('parsererror')) {
+      this.setPreview(svgContent)
+      return
+    }
+
+    // Order matters only in that appended fallbacks paint in this sequence; it
+    // matches what the five inline blocks here used to do.
+    const fields = this.previewFields()
+    this.fillPlaceholder(svgDoc, fields[0])
+    this.fillQrCode(svgDoc, qrCodeImage)
+    fields.slice(1).forEach(field => this.fillPlaceholder(svgDoc, field))
+
+    this.setPreview(new XMLSerializer().serializeToString(svgDoc))
+  }
+
   createTemplate() {
     // The button is disabled until a file is picked; this guards the same thing
     // for any other caller, since the upload dereferences this.file directly.
@@ -301,7 +256,9 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
     // or any of the three calls failing. Previously each of those was a separate
     // nested subscribe and most of them left the spinner running for ever.
     this.editorService
-      .createTemplate({ name: 'Sunbird rc certificate test' })
+      // Named after the course so templates are identifiable in the asset list;
+      // this used to be a fixed test string for every certificate ever created.
+      .createTemplate({ name: this.templateName() })
       .pipe(
         switchMap((res: any) => {
           if (res && res.params && res.params.status === 'successful') {
@@ -350,6 +307,16 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
           this.showResult(this.messageFor(error), false)
         },
       )
+  }
+
+  /**
+   * A name for the asset the template is stored as. The course title makes the
+   * asset identifiable later; the timestamp keeps two certificates for the same
+   * course apart.
+   */
+  private templateName(): string {
+    const course = (this.data && this.data.name) || 'Course'
+    return `${course} - Certificate ${new Date().toISOString().slice(0, 10)}`
   }
 
   /** The message to show for a failure, preferring the reason we raised ourselves. */
