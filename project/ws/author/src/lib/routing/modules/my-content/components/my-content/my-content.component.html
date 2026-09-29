@@ -109,7 +109,22 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
       </mat-accordion>
     </ng-container>
     <ng-container *ngIf="!isNewDesign">
+      <!-- The bar that makes the sidebar line up with the content header: 68px
+           tall with the same divider, so the label sits level with
+           "My Courses : …" and the two sides of the screen agree.
+           It was gated on allowAuthor, so someone whose only grant is AI Studio
+           got no bar at all — their menu started hard against the app bar while
+           the breadcrumb beside it sat in a header of its own.
+           Theirs carries no text. "Dashboard" is a link a creator can follow and
+           they have no dashboard to reach, so the word would be a dead label;
+           "AI Studio" would be the third copy of that name in one view, beside
+           the panel below it and the breadcrumb across from it. What the bar is
+           actually for is the 68px and the divider, so that is all it is —
+           hidden from screen readers, which have nothing to gain from an empty
+           heading. allowAuthor is unchanged, so nobody who has a bar today sees
+           anything different. -->
       <p *ngIf="allowAuthor" class="dashboard-txt">Dashboard</p>
+      <div *ngIf="!allowAuthor && showAiStudio" class="dashboard-txt is-static" aria-hidden="true"></div>
       <mat-accordion expanded *ngIf="allowAuthor">
         <mat-expansion-panel
           #panel1

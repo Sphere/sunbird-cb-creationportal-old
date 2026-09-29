@@ -637,6 +637,17 @@ ws-auth-content-card-v2 {
   &:hover {
     color: #1c5d95;
   }
+
+  /* The AI Studio copy of this bar is a label, not a link — "Dashboard" goes
+     somewhere, this heads the menu below it. So it drops the affordances
+     rather than offering a click that does nothing. */
+  &.is-static {
+    cursor: default;
+
+    &:hover {
+      color: #808080;
+    }
+  }
 }
 /* Normal state */
 ::ng-deep .overflowY::-webkit-scrollbar {
@@ -686,17 +697,11 @@ ws-auth-content-card-v2 {
 .ai-studio-panel {
   padding-bottom: 10px;
 
-  /* Clear of the app bar — but ONLY when this panel is the first thing in the
-     drawer, which is the case for someone whose grant is AI Studio alone. Then
-     its 40px icon box sat about 7px below the dark blue and read as having
-     slipped under it.
-     A content creator sees the course panels above this one, where the same
-     padding is a 22px gap in the middle of the list that was never there. So it
-     is tied to being first rather than applied unconditionally, and that
-     person's sidebar is untouched. */
-  &:first-of-type {
-    padding-top: 22px;
-  }
+  /* No top padding. The gap above this panel is the .dashboard-txt bar, which
+     is 68px tall with the same divider as the content header beside it — so
+     the two sides line up, exactly as they do for a content creator. Padding
+     here instead just pushed the menu down by an arbitrary amount and lined up
+     with nothing. */
 
   /* The header row, inside this panel only. .left-panel-header and .main-block
      are shared by every panel in the sidebar, so they are reached through the
