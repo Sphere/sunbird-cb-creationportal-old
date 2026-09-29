@@ -1,6 +1,7 @@
 import { BehaviorSubject } from 'rxjs'
 import { REVIEW_ROLE, PUBLISH_ROLE, CREATE_ROLE, EXTERNAL_CONTENT_REVIEWER_LIVE } from '@ws/author/src/lib/constants/content-role'
 import { AuthHomeComponent } from './home.component'
+import { AI_STUDIO_ROLES } from '../../../ai-studio/ai-studio.features'
 
 describe('AuthHomeComponent', () => {
   let component: AuthHomeComponent
@@ -124,6 +125,69 @@ describe('AuthHomeComponent', () => {
       accessService.hasRole = jest.fn().mockReturnValue(false)
       component.ngOnInit()
       expect(router.navigate).toHaveBeenCalledWith(['/author/my-content'], { queryParams: { status: 'inreview' } })
+    })
+  })
+
+  /**
+   * The landing page for the AI Studio roles, and — the point of most of these
+   * — proof that adding it moves nobody who already had a landing page.
+   *
+   * The catch-all this sits in front of never tested allowReview: it sent
+   * ANYONE who was not a publisher, creator or external reviewer to the review
+   * queue. That is what an AI Studio user was hitting.
+   */
+  describe('the AI Studio landing', () => {
+    /** hasRole by membership, the way AccessControlService actually resolves it. */
+    const holding = (...names: string[]) => {
+      accessService.hasRole = jest.fn((asked: string[]) => asked.some(r => names.includes(r)))
+    }
+    const landedOn = () => router.navigate.mock.calls[0][1].queryParams.status
+
+    it('opens AI Studio for a user whose only grant is an AI Studio role', () => {
+      accessService.authoringConfig = config({ allowPublish: false })
+      holding(AI_STUDIO_ROLES.admin)
+      component.ngOnInit()
+      expect(landedOn()).toBe('contentStudio')
+    })
+
+    it('opens assessment for an assessment-only user, not content creation', () => {
+      accessService.authoringConfig = config({ allowPublish: false })
+      holding(AI_STUDIO_ROLES.assessment)
+      component.ngOnInit()
+      expect(landedOn()).toBe('assessment')
+    })
+
+    it('still sends a publisher to reviewed, AI Studio role or not', () => {
+      holding('content_publisher', AI_STUDIO_ROLES.admin)
+      component.ngOnInit()
+      expect(landedOn()).toBe('reviewed')
+    })
+
+    it('still sends a creator to draft, AI Studio role or not', () => {
+      accessService.authoringConfig = config({ allowPublish: false })
+      holding('content_creator', AI_STUDIO_ROLES.admin)
+      component.ngOnInit()
+      expect(landedOn()).toBe('draft')
+    })
+
+    it('still sends an external reviewer to external review', () => {
+      accessService.authoringConfig = config({ allowPublish: false })
+      holding('external_content_reviewer_live', AI_STUDIO_ROLES.creator)
+      component.ngOnInit()
+      expect(landedOn()).toBe('externalCourseReview')
+    })
+
+    it('still sends a user with every CBP role to reviewed', () => {
+      holding('content_creator', 'content_reviewer', 'content_publisher', AI_STUDIO_ROLES.admin)
+      component.ngOnInit()
+      expect(landedOn()).toBe('reviewed')
+    })
+
+    it('leaves the in-review catch-all in place for a reviewer with no AI role', () => {
+      accessService.authoringConfig = config({ allowPublish: false })
+      holding('content_reviewer')
+      component.ngOnInit()
+      expect(landedOn()).toBe('inreview')
     })
   })
 

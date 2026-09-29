@@ -534,21 +534,25 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
-        <!-- Gated on canShow('author_create'), the content_creator role. The
-             panel was ungated, so an author without create rights saw a menu
-             they could not use. The gate is for the menu only — the service
-             checks the caller itself, since a host cannot be trusted to.
-             [(expanded)] is two-way: bound one way it was never written back,
+      </mat-accordion>
+      <!-- Its own accordion, outside the allowAuthor one above.
+           allowAuthor is content_creator / content_reviewer / content_publisher,
+           and someone whose only grant is an AI Studio role holds none of the
+           three — so the menu they had just been given sat inside a block they
+           could not see, and their sidebar came up empty. Kept separate rather
+           than widening that condition, so every panel above keeps exactly the
+           gate it had today.
+           Gated on the AI Studio roles where the user has any, and on
+           canShow('author_create') where they have none — see
+           aiStudioFeaturesFor. It was once ungated entirely, so an author
+           without create rights saw a menu they could not use. The gate is for
+           the menu only — the service checks the caller itself, since a host
+           cannot be trusted to. -->
+      <mat-accordion expanded *ngIf="showAiStudio" class="ai-studio-panel">
+        <!-- [(expanded)] is two-way: bound one way it was never written back,
              so a click opened the panel and the next change detection pass
              closed it again, and the first click appeared to do nothing. -->
-        <mat-expansion-panel
-          *ngIf="allowAuthorContentCreate"
-          #panel4
-          style="cursor: pointer"
-          class="no-shadow"
-          [(expanded)]="isAiStudioExpanded"
-          hideToggle
-        >
+        <mat-expansion-panel #panel4 style="cursor: pointer" class="no-shadow" [(expanded)]="isAiStudioExpanded" hideToggle>
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title class="main-block">
               <mat-icon class="add-create-icon">assistant</mat-icon>

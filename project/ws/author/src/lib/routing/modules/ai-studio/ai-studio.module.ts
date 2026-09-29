@@ -34,6 +34,27 @@ import { ReportsComponent } from './components/reports/reports.component'
  */
 const AI_STUDIO_API_BASE = '/apis/protected/v8/aiStudio'
 
+/**
+ * A person's name the way it should be read — "Prince Gupta", not
+ * "prince gupta" or "PRINCE GUPTA".
+ *
+ * Profiles are typed by hand and arrive in whatever case the person used, and
+ * the report shows the value as-is, so the casing has to be settled here.
+ *
+ * A word is only recased when it is written ENTIRELY in one case, which is what
+ * a careless entry looks like. A word that already mixes cases was spelled
+ * deliberately — "McDonald", "deSouza" — and is left exactly as typed, because
+ * respelling somebody's name is worse than leaving it alone. Hyphenated and
+ * apostrophed parts are each treated as words, so "mary-jane o'brien" becomes
+ * "Mary-Jane O'Brien".
+ */
+function toDisplayName(name: string): string {
+  return name.replace(/[^\s\-']+/g, word => {
+    const uniform = word === word.toLowerCase() || word === word.toUpperCase()
+    return uniform ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() : word
+  })
+}
+
 @NgModule({
   declarations: [AIStudioDashboardComponent, ContentStudioComponent, AssessmentComponent, ReportsComponent],
   imports: [
@@ -70,28 +91,33 @@ export class AIStudioModule {
       // before the profile has necessarily loaded, and a value taken now would
       // record every creation against whoever was signed in at startup.
       //
-      // A name reads better than an id in the usage report, so the more
-      // human field wins where the profile carries one. Returning null lets
-      // the service fall back to its own default rather than inventing a name.
-      // A person's name, not their login handle. The name is shown as-is in the
-      // usage report and is how one author's work is told from another's, so it
-      // has to read like a person: the existing rows say "Asha Kumari", while
-      // userName gives "creatoruser_if0d", which names nobody and matches none
-      // of the content already recorded.
+      // creator is the KEY: stable, and never a display name.
       //
-      // Falls back to email, and then to nothing. NOT to userId: that is a UUID,
-      // and a UUID in the creator column is worse than no name at all — it
-      // cannot be read, cannot be searched for, and would sit in the report
-      // beside real names as if it were one. Returning null lets the service
-      // apply its own default instead.
+      // It is what the usage report groups and filters by, so it has to mean
+      // the same person tomorrow as it does today. A display name does not:
+      // change it in the profile and every earlier row keeps the old one, so
+      // one person becomes two creators and neither shows their full usage.
+      // That already happened — the report holds both "Asha Kumari" and
+      // "asha.kumari" for the same person.
+      //
+      // Falls back to email, then to nothing. NOT to userId: a UUID cannot be
+      // read or searched for, and returning null lets the service apply its own
+      // default instead.
       creator: () => {
+        const profile = this.configService.userProfile
+        return profile ? profile.userName || profile.email || null : null
+      },
+
+      // creatorName is what a person READS in the report. Display only, so it
+      // is free to change whenever someone edits their profile.
+      creatorName: () => {
         const profile = this.configService.userProfile
         if (!profile) {
           return null
         }
 
         const full = [profile.firstName, profile.lastName].filter(Boolean).join(' ').trim()
-        return full || profile.email || null
+        return full ? toDisplayName(full) : null
       },
     })
   }

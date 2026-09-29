@@ -55,7 +55,7 @@ import { ConfigurationsService, isActivationKey } from '@ws-widget/utils'
 
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 
-import { AI_STUDIO_FEATURES } from '../../../ai-studio/ai-studio.features'
+import { AI_STUDIO_FEATURES, AIStudioFeature, aiStudioFeaturesFor, hasAnyAIStudioRole } from '../../../ai-studio/ai-studio.features'
 
 @Component({
   standalone: false,
@@ -194,7 +194,22 @@ export class MyContentComponent implements OnInit, OnDestroy {
    * page heading. It used to be written out again in this file, which is a
    * second copy free to drift from the URLs it is supposed to match.
    */
-  readonly aiStudioFeatures = AI_STUDIO_FEATURES
+  aiStudioFeatures: AIStudioFeature[] = AI_STUDIO_FEATURES
+
+  /**
+   * Whether the AI Studio panel is shown at all.
+   *
+   * Defaults to the pre-role behaviour so a caller that never reaches ngOnInit
+   * — a test, a partially initialised view — sees what it saw before.
+   */
+  showAiStudio = false
+
+  /**
+   * Whether this user holds any AI Studio role, i.e. whether the roles decide
+   * rather than the author_create fallback. Also what makes AI Studio a landing
+   * page: a person whose grant is AI Studio should open on it.
+   */
+  hasAiStudioRole = false
 
   panelOpenState = false
   allowReview = false
@@ -243,6 +258,11 @@ export class MyContentComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // FIRST, before the queryParams subscription below: that callback fires
+    // synchronously while subscribing, and it decides which tab an arriving URL
+    // lands on. Computed further down — where the other allow* flags are set —
+    // it would still hold the unfiltered catalogue on the one pass that matters.
+    this.initAiStudioAccess()
     this.pagination = {
       offset: 0,
       limit: 24,
@@ -306,6 +326,16 @@ export class MyContentComponent implements OnInit, OnDestroy {
             else if (this.canShow('review')) {
               status = 'inreview'
             } // For Review
+            // LAST, deliberately. An AI Studio role is additive — people hold it
+            // alongside the authoring roles — so anyone who already has a queue
+            // of their own keeps landing on it. This fires only for a user who
+            // had no tab here at all, who before AI Studio existed had nothing
+            // to open: there is no previous behaviour to change. A creator never
+            // reaches this block; it sits inside !author_create, so Draft stays
+            // their landing whatever else they hold.
+            else if (this.hasAiStudioRole && this.aiStudioFeatures.length) {
+              status = this.aiStudioFeatures[0].id
+            }
           } else if (status === 'selfAssessmentDraft') {
             if (this.canShow('publish')) {
               status = 'selfToPublishedCourse'
@@ -339,6 +369,10 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // 'Draft', 'Sent for review', 'Courses to publish', 'Published Courses', 'Retired'
     this.allowAuthor = this.canShow('author')
     this.allowAuthorContentCreate = this.canShow('author_create')
+    // The AI Studio panel also needs allowAuthorContentCreate, which is only
+    // known here. initAiStudioAccess ran first for the landing decision; this
+    // settles the menu now that the fallback's input exists.
+    this.showAiStudio = this.aiStudioFeatures.length > 0 && (this.hasAiStudioRole || this.allowAuthorContentCreate)
     this.allowRedo = this.accessService.authoringConfig.allowRedo
     this.allowRestore = this.accessService.authoringConfig.allowRestore
     this.allowExpiry = this.accessService.authoringConfig.allowExpiry
@@ -681,7 +715,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
       // 'AIHub' keeps working for any existing link; a feature id restores the
       // view the user was last on.
     } else if (this.isAiStudioStatus(this.status)) {
-      this.aiStudioFeature = this.status === 'AIHub' ? this.aiStudioFeatures[0].id : this.status
+      this.aiStudioFeature = this.allowedAiStudioFeature(this.status)
       this.createCourseBtn = false
       // Same heading as a click, from the same helper: a reload or a shared
       // link must not read differently from having navigated there.
@@ -1154,7 +1188,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isAiStudioExpanded = true
         // Default to the first feature, so opening AI Hub always lands on
         // something rather than an empty pane.
-        this.aiStudioFeature = this.aiStudioFeature || this.aiStudioFeatures[0].id
+        this.aiStudioFeature = this.allowedAiStudioFeature(this.aiStudioFeature)
         // The third way in (the AI Hub header itself) needs the heading too —
         // see setAiStudioHeading for why every path has to set it.
         this.setAiStudioHeading(this.aiStudioFeature)
@@ -2154,20 +2188,54 @@ export class MyContentComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Opens one AI Hub feature.
+   * Reads the AI Studio roles once, into the two fields the rest of the screen
+   * uses.
    *
-   * The id goes into the URL as `status`, which is how the rest of this screen
-   * already remembers what is on show — so a reload or a shared link lands back
-   * on the same feature.
+   * A method rather than an initialiser so it can be called before the
+   * queryParams subscription, which is the only caller whose timing matters.
    */
+  private initAiStudioAccess() {
+    const hasRole = (roles: string[]) => this.accessService.hasRole(roles)
+    this.hasAiStudioRole = hasAnyAIStudioRole(hasRole)
+    this.aiStudioFeatures = aiStudioFeaturesFor(hasRole)
+  }
+
   /**
    * Whether a `?status=` value opens an AI Studio pane rather than a course
    * list. 'AIHub' is still accepted for links made before the rename.
    */
   private isAiStudioStatus(status: string): boolean {
-    return status === 'AIHub' || this.aiStudioFeatures.some(f => f.id === status)
+    // The whole catalogue, not the allowed list: a link to a feature this user
+    // may not open is still a link INTO AI Studio, and has to be recognised as
+    // one so it lands on the pane rather than falling through to the course
+    // list. Which feature it opens is allowedAiStudioFeature's decision.
+    return status === 'AIHub' || AI_STUDIO_FEATURES.some(f => f.id === status)
   }
 
+  /**
+   * The feature to actually open for a `?status=` value.
+   *
+   * 'AIHub', an empty value, an unknown id and a feature this user's roles do
+   * not cover all resolve the same way — to the first feature they may open.
+   * Silently landing somewhere usable is the same choice the route guard makes,
+   * and for the same reason: these are stale links and shared URLs, not attacks,
+   * and the service checks the caller regardless.
+   */
+  private allowedAiStudioFeature(status: string): string {
+    const fallback = this.aiStudioFeatures.length ? this.aiStudioFeatures[0].id : ''
+    if (!status || status === 'AIHub') {
+      return fallback
+    }
+    return this.aiStudioFeatures.some(f => f.id === status) ? status : fallback
+  }
+
+  /**
+   * Opens one AI Studio feature.
+   *
+   * The id goes into the URL as `status`, which is how the rest of this screen
+   * already remembers what is on show — so a reload or a shared link lands back
+   * on the same feature.
+   */
   onClickAiStudioFeature(featureId: string) {
     this.aiStudioFeature = featureId
     this.isAiStudio = true
@@ -2190,7 +2258,9 @@ export class MyContentComponent implements OnInit, OnDestroy {
    * heading cannot drift from the menu and a new feature needs no change here.
    */
   private setAiStudioHeading(featureId: string) {
-    const feature = this.aiStudioFeatures.find(f => f.id === featureId)
+    // Read from the catalogue rather than the allowed list, so the heading is
+    // right for whatever is on screen even if the two ever disagree.
+    const feature = AI_STUDIO_FEATURES.find(f => f.id === featureId)
     this.currentTab = 'AI STUDIO'
     this.currentStatus = feature ? feature.label : ''
   }

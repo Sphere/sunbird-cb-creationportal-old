@@ -29,7 +29,7 @@
   },
   "private": true,
   "dependencies": {
-    "@aastrika/ai-elements": "0.5.0",
+    "@aastrika/ai-elements": "0.6.1",
     "@angular/animations": "21.2.15",
     "@angular/cdk": "21.2.13",
     "@angular/common": "21.2.15",

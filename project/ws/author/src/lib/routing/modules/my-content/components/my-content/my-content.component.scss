@@ -678,6 +678,15 @@ ws-auth-content-card-v2 {
  * Every row reserves the same space for the active bar, so selecting one
  * does not shift its label sideways — which is what the old per-row <img>
  * did, leaving the selected item indented further than the other two. */
+/* Breathing room above the AI Studio header.
+ *
+ * The panel is the first thing in the drawer, so its title sat flush against
+ * the dark blue app bar with nothing between them. Scoped to this accordion —
+ * which AI Studio now has to itself — so no other sidebar panel moves. */
+.ai-studio-panel {
+  padding-top: 12px;
+}
+
 .ai-menu {
   display: flex;
   flex-direction: column;
