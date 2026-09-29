@@ -91,25 +91,28 @@ export class AIStudioModule {
       // before the profile has necessarily loaded, and a value taken now would
       // record every creation against whoever was signed in at startup.
       //
-      // creator is the KEY: stable, and never a display name.
+      // creator is the KEY: stable, opaque, and never a display name.
       //
-      // It is what the usage report groups and filters by, so it has to mean
-      // the same person tomorrow as it does today. A display name does not:
-      // change it in the profile and every earlier row keeps the old one, so
-      // one person becomes two creators and neither shows their full usage.
-      // That already happened — the report holds both "Asha Kumari" and
-      // "asha.kumari" for the same person.
+      // userId, the same identifier the rest of the portal uses everywhere
+      // else. It is what the report groups and filters by, so it has to mean
+      // the same person for as long as the rows live — and a UUID is issued
+      // once and never reissued, where a name or even a handle can be edited.
       //
-      // Falls back to email, then to nothing. NOT to userId: a UUID cannot be
-      // read or searched for, and returning null lets the service apply its own
-      // default instead.
+      // A UUID used to be the wrong choice here, and the reason it no longer is
+      // matters: `creator` was once the only field, so it was both the key and
+      // what a person read in the report, and an unreadable key made the report
+      // unreadable. creatorName below now carries the name, so nobody ever has
+      // to look at this value.
+      //
+      // Falls back to userName then email, and finally to null, which lets the
+      // service apply its own default. Those are last resorts for a profile
+      // that somehow carries no id, not alternatives: mixing identifier kinds
+      // in one column would split a person exactly the way a rename used to.
       creator: () => {
         const profile = this.configService.userProfile
-        return profile ? profile.userName || profile.email || null : null
+        return profile ? profile.userId || profile.userName || profile.email || null : null
       },
 
-      // creatorName is what a person READS in the report. Display only, so it
-      // is free to change whenever someone edits their profile.
       creatorName: () => {
         const profile = this.configService.userProfile
         if (!profile) {
