@@ -14,7 +14,6 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatOptionModule } from '@angular/material/core'
 import { MatSelectModule } from '@angular/material/select'
-import { AIStudioService } from './services/ai-studio.service'
 
 import { configure } from '@aastrika/ai-elements'
 
@@ -30,7 +29,7 @@ import { ReportsComponent } from './components/reports/reports.component'
  * A path rather than a URL, so the browser treats it as same-origin and sends
  * the session cookie by itself. The proxy behind it turns that cookie into a
  * token and a username, which is why nothing here handles either. Matches the
- * PROTECTED_SLAG_V8 convention AIStudioService already uses.
+ * /apis/protected/v8 convention every other authoring call uses.
  */
 const AI_STUDIO_API_BASE = '/apis/protected/v8/aiStudio'
 
@@ -69,7 +68,6 @@ function toDisplayName(name: string): string {
     MatFormFieldModule,
   ],
   exports: [AIStudioDashboardComponent],
-  providers: [AIStudioService],
   // The three Aastrika features are custom elements, not Angular components, so
   // the template compiler has to be told their tags are legitimate. It applies
   // to this module only; every other module still catches an unknown tag.
