@@ -55,6 +55,8 @@ import { ConfigurationsService, isActivationKey } from '@ws-widget/utils'
 
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
 
+import { AI_STUDIO_FEATURES, AIStudioFeature, aiStudioFeaturesFor, hasAnyAIStudioRole } from '../../../ai-studio/ai-studio.features'
+
 @Component({
   standalone: false,
   selector: 'ws-auth-my-content',
@@ -150,7 +152,15 @@ export class MyContentComponent implements OnInit, OnDestroy {
   isContentExpanded: boolean = false
   isCouseExpanded: boolean = false
   isSelfAssessmentExpanded: boolean = false
-  isAiHubExanded: boolean = false
+  /**
+   * Whether the AI Studio panel in the sidebar is open.
+   *
+   * Bound two-way. It used to be bound one-way and never assigned anywhere, so
+   * a click opened the panel inside Material while this stayed false — the next
+   * change detection pass re-applied false and shut it again. The first click
+   * appeared to do nothing.
+   */
+  isAiStudioExpanded: boolean = false
   isSelfAssessmentSelectedColor: boolean = false
   isSelectedSelfPublishCourse: boolean = false
   isSelectedSelfReviewCourse: boolean = false
@@ -159,7 +169,48 @@ export class MyContentComponent implements OnInit, OnDestroy {
   @ViewChild('searchInput', { static: false }) searchInputElem: ElementRef<any> = {} as ElementRef<any>
 
   // sideNavBarOpened = true
-  isAihub = false
+  isAiStudio = false
+
+  /**
+   * The AI Hub feature on screen, or '' when AI Hub is not open.
+   *
+   * One value rather than one boolean per feature: they are mutually exclusive,
+   * so five flags would only be five chances for them to disagree. The strings
+   * double as the `status` query parameter, which is what restores the view on
+   * reload — see the AI Studio branch of ngOnInit and onClickReviewCourse.
+   */
+  aiStudioFeature = ''
+
+  /**
+   * The AI Hub menu, in the order it is shown.
+   *
+   * Driving the template from data keeps the markup to a single loop, so adding
+   * a feature is one entry here rather than a copied block of HTML.
+   */
+  /**
+   * The AI Studio features, from the module that owns them.
+   *
+   * One list defines the menu here, the routes, the dashboard's tabs and the
+   * page heading. It used to be written out again in this file, which is a
+   * second copy free to drift from the URLs it is supposed to match.
+   */
+  aiStudioFeatures: AIStudioFeature[] = AI_STUDIO_FEATURES
+
+  /**
+   * Whether the AI Studio panel is shown at all.
+   *
+   * Hidden until ngOnInit has read the roles, so a partially initialised view
+   * shows nothing rather than briefly showing a menu the person may not have.
+   */
+  showAiStudio = false
+
+  /**
+   * Whether this user holds any AI Studio role, i.e. whether the roles decide
+   * rather than the author_create fallback. Also what makes AI Studio a landing
+   * page: a person whose grant is AI Studio should open on it.
+   */
+  hasAiStudioRole = false
+
   panelOpenState = false
   allowReview = false
   allowAuthor = false
@@ -207,6 +258,11 @@ export class MyContentComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // FIRST, before the queryParams subscription below: that callback fires
+    // synchronously while subscribing, and it decides which tab an arriving URL
+    // lands on. Computed further down — where the other allow* flags are set —
+    // it would still hold the unfiltered catalogue on the one pass that matters.
+    this.initAiStudioAccess()
     this.pagination = {
       offset: 0,
       limit: 24,
@@ -270,6 +326,16 @@ export class MyContentComponent implements OnInit, OnDestroy {
             else if (this.canShow('review')) {
               status = 'inreview'
             } // For Review
+            // LAST, deliberately. An AI Studio role is additive — people hold it
+            // alongside the authoring roles — so anyone who already has a queue
+            // of their own keeps landing on it. This fires only for a user who
+            // had no tab here at all, who before AI Studio existed had nothing
+            // to open: there is no previous behaviour to change. A creator never
+            // reaches this block; it sits inside !author_create, so Draft stays
+            // their landing whatever else they hold.
+            else if (this.hasAiStudioRole && this.aiStudioFeatures.length) {
+              status = this.aiStudioFeatures[0].id
+            }
           } else if (status === 'selfAssessmentDraft') {
             if (this.canShow('publish')) {
               status = 'selfToPublishedCourse'
@@ -285,11 +351,28 @@ export class MyContentComponent implements OnInit, OnDestroy {
       }
 
       this.setAction()
-      this.fetchContent(false)
+
+      // The AI Studio panes render their own elements and never read
+      // cardContent — the course list is *ngIf="!isAiStudio". Fetching it anyway
+      // ran a full content search, plus an entity lookup, on every click in the
+      // AI Studio menu, and then threw all of it away. That search is the pause
+      // between clicking a feature and seeing it.
+      //
+      // `this.status`, not a bare `status`: the local one is scoped to the else
+      // block above, so a bare `status` here silently resolves to the DOM's
+      // global `window.status` — a string, so it type-checks, and always empty,
+      // so the guard never matched. Both branches above set this.status.
+      if (!this.isAiStudioStatus(this.status)) {
+        this.fetchContent(false)
+      }
     })
     // 'Draft', 'Sent for review', 'Courses to publish', 'Published Courses', 'Retired'
     this.allowAuthor = this.canShow('author')
     this.allowAuthorContentCreate = this.canShow('author_create')
+    // An AI Studio role is the only way in. The list is empty without one, so
+    // this says exactly that — content_creator does not imply AI Studio, and
+    // used to only while the roles were still unissued.
+    this.showAiStudio = this.aiStudioFeatures.length > 0
     this.allowRedo = this.accessService.authoringConfig.allowRedo
     this.allowRestore = this.accessService.authoringConfig.allowRestore
     this.allowExpiry = this.accessService.authoringConfig.allowExpiry
@@ -629,12 +712,16 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedSelfPublishCourse = false
       this.isSelectedToSelfPublishCourse = false
       this.isSelectedSelfRetiredCourse = false
-    } else if (this.status === 'AIHub') {
+      // 'AIHub' keeps working for any existing link; a feature id restores the
+      // view the user was last on.
+    } else if (this.isAiStudioStatus(this.status)) {
+      this.aiStudioFeature = this.allowedAiStudioFeature(this.status)
       this.createCourseBtn = false
-      this.currentTab = 'AIHub'
-      this.currentStatus = 'AIHub'
-      this.link = 'AIHub'
-      this.activeLink = 'AIHub'
+      // Same heading as a click, from the same helper: a reload or a shared
+      // link must not read differently from having navigated there.
+      this.setAiStudioHeading(this.aiStudioFeature)
+      this.link = 'AI STUDIO'
+      this.activeLink = 'AI STUDIO'
       this.isSelectedColor = true
       this.isSelectedPublishCourse = false
       this.isSelectedToPublishCourse = false
@@ -644,7 +731,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
       this.isSelectedAllCourse = false
       this.isSelectedCourseWithoutCertificate = false
       this.isSelectedCourseWithCertificate = false
-      this.isAihub = true
+      this.isAiStudio = true
+      this.isAiStudioExpanded = true
     } else if (this.status === 'selfCourseRevision') {
       this.isSelfAssessmentExpanded = true
       this.createCourseBtn = false
@@ -1057,7 +1145,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isSelectedToExternalCouseReview = true
         this.isSelectedToExternalSelfAssessmentReview = false
 
-        this.isAihub = false
+        this.isAiStudio = false
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'externalCourseReview' } })
         break
       case 'External Self Assessment to Review':
@@ -1078,7 +1166,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isSelectedToExternalCouseReview = false
         this.isSelectedToExternalSelfAssessmentReview = true
 
-        this.isAihub = false
+        this.isAiStudio = false
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'externalSelfAssessmentReview' } })
         break
       case 'AIHub':
@@ -1096,11 +1184,18 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.isSelectedAllCourse = false
         this.isSelectedCourseWithoutCertificate = false
         this.isSelectedCourseWithCertificate = false
-        this.isAihub = true
-        this.router.navigate(['/author/my-content'], { queryParams: { status: 'AIHub' } })
+        this.isAiStudio = true
+        this.isAiStudioExpanded = true
+        // Default to the first feature, so opening AI Hub always lands on
+        // something rather than an empty pane.
+        this.aiStudioFeature = this.allowedAiStudioFeature(this.aiStudioFeature)
+        // The third way in (the AI Hub header itself) needs the heading too —
+        // see setAiStudioHeading for why every path has to set it.
+        this.setAiStudioHeading(this.aiStudioFeature)
+        this.router.navigate(['/author/my-content'], { queryParams: { status: this.aiStudioFeature } })
         break
       case 'Draft':
-        this.isAihub = false
+        this.isAiStudio = false
         this.createCourseBtn = true
         this.currentTab = 'My Courses'
         this.currentStatus = 'Draft'
@@ -1121,7 +1216,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
 
       case 'Sent for review':
-        this.isAihub = false
+        this.isAiStudio = false
         this.link = 'Sent for review'
         this.activeLink = 'Sent for review'
         this.isSelectedColor = false
@@ -1175,7 +1270,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfCourseRevision' } })
         break
       case 'Courses to publish':
-        this.isAihub = false
+        this.isAiStudio = false
         this.link = 'Courses to publish'
         this.activeLink = 'Courses to publish'
         this.isSelectedColor = false
@@ -1194,7 +1289,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
 
       case 'Published Courses':
-        this.isAihub = false
+        this.isAiStudio = false
         this.createCourseBtn = true
         this.currentTab = 'My Courses'
         this.currentStatus = 'Published'
@@ -1215,7 +1310,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
 
       case 'Retired':
-        this.isAihub = false
+        this.isAiStudio = false
         this.link = 'Retired'
         this.activeLink = 'Retired'
         this.isSelectedColor = false
@@ -1232,7 +1327,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'unpublished' } })
         break
       case 'All Courses':
-        this.isAihub = false
+        this.isAiStudio = false
         this.createCourseBtn = true
         this.link = 'All Courses'
         this.activeLink = 'All Courses'
@@ -1249,7 +1344,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'allCourses' } })
         break
       case 'Courses without certificate':
-        this.isAihub = false
+        this.isAiStudio = false
         this.createCourseBtn = true
         this.link = 'Courses without certificate'
         this.activeLink = 'Courses without certificate'
@@ -1266,7 +1361,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'coursesWithoutCertificate' } })
         break
       case 'Courses with certificate':
-        this.isAihub = false
+        this.isAiStudio = false
         this.createCourseBtn = true
         this.link = 'Courses with certificate'
         this.activeLink = 'Courses with certificate'
@@ -1284,7 +1379,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         break
       case 'selfAssessmentDraft':
       case 'Self Assessment Draft':
-        this.isAihub = false
+        this.isAiStudio = false
         this.createCourseBtn = false
         this.link = 'Self Assessment Draft'
         this.activeLink = 'Self Assessment Draft'
@@ -1301,7 +1396,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfAssessmentDraft' } })
         break
       case 'Self Sent for review':
-        this.isAihub = false
+        this.isAiStudio = false
         this.link = 'Self Sent for review'
         this.activeLink = 'Self Sent for review'
         this.isSelectedColor = false
@@ -1317,7 +1412,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfSentForReview' } })
         break
       case 'Self Courses to publish':
-        this.isAihub = false
+        this.isAiStudio = false
         this.link = 'Self Courses to publish'
         this.activeLink = 'Self Courses to publish'
         this.isSelectedColor = false
@@ -1333,7 +1428,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfToPublishedCourse' } })
         break
       case 'Self Published Courses':
-        this.isAihub = false
+        this.isAiStudio = false
         this.link = 'Self Published Courses'
         this.activeLink = 'Self Published Courses'
         this.isSelectedColor = false
@@ -1349,7 +1444,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/author/my-content'], { queryParams: { status: 'selfPublishedCourse' } })
         break
       case 'Self Retired Courses':
-        this.isAihub = false
+        this.isAiStudio = false
         this.link = 'Self Retired Courses'
         this.activeLink = 'Self Retired Courses'
         this.isSelectedColor = false
@@ -2090,6 +2185,90 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // Save source name to service for persistence across navigation
     this.filterStateService.setSourceName(sourceName)
     this.fetchContent(false)
+  }
+
+  /**
+   * Reads the AI Studio roles once, into the two fields the rest of the screen
+   * uses.
+   *
+   * A method rather than an initialiser so it can be called before the
+   * queryParams subscription, which is the only caller whose timing matters.
+   */
+  private initAiStudioAccess() {
+    const hasRole = (roles: string[]) => this.accessService.hasRole(roles)
+    this.hasAiStudioRole = hasAnyAIStudioRole(hasRole)
+    this.aiStudioFeatures = aiStudioFeaturesFor(hasRole)
+  }
+
+  /**
+   * Whether a `?status=` value opens an AI Studio pane rather than a course
+   * list. 'AIHub' is still accepted for links made before the rename.
+   */
+  private isAiStudioStatus(status: string): boolean {
+    // Nothing opens an AI Studio pane for someone with no AI Studio role: the
+    // status falls through to the course list instead of rendering a pane with
+    // no feature in it, which is what a bare 'AIHub' link used to do.
+    if (!this.aiStudioFeatures.length) {
+      return false
+    }
+    // The whole catalogue, not the allowed list: a link to a feature this user
+    // may not open is still a link INTO AI Studio, and has to be recognised as
+    // one so it lands on the pane rather than falling through. Which feature it
+    // opens is allowedAiStudioFeature's decision.
+    return status === 'AIHub' || AI_STUDIO_FEATURES.some(f => f.id === status)
+  }
+
+  /**
+   * The feature to actually open for a `?status=` value.
+   *
+   * 'AIHub', an empty value, an unknown id and a feature this user's roles do
+   * not cover all resolve the same way — to the first feature they may open.
+   * Silently landing somewhere usable is the same choice the route guard makes,
+   * and for the same reason: these are stale links and shared URLs, not attacks,
+   * and the service checks the caller regardless.
+   */
+  private allowedAiStudioFeature(status: string): string {
+    const fallback = this.aiStudioFeatures.length ? this.aiStudioFeatures[0].id : ''
+    if (!status || status === 'AIHub') {
+      return fallback
+    }
+    return this.aiStudioFeatures.some(f => f.id === status) ? status : fallback
+  }
+
+  /**
+   * Opens one AI Studio feature.
+   *
+   * The id goes into the URL as `status`, which is how the rest of this screen
+   * already remembers what is on show — so a reload or a shared link lands back
+   * on the same feature.
+   */
+  onClickAiStudioFeature(featureId: string) {
+    this.aiStudioFeature = featureId
+    this.isAiStudio = true
+    this.isAiStudioExpanded = true
+    this.setAiStudioHeading(featureId)
+    this.activeLink = 'AI STUDIO'
+    this.router.navigate(['/author/my-content'], { queryParams: { status: featureId } })
+  }
+
+  /**
+   * Puts the open feature in the page heading — "AI-HUB : Content Studio".
+   *
+   * currentStatus has to be set on EVERY path into AI Hub, not just some: the
+   * heading is one shared pair of fields for the whole screen, so a path that
+   * leaves currentStatus alone keeps whatever the last tab put there. That is
+   * the bug this fixes — opening a feature from Published read
+   * "AI STUDIO : Published".
+   *
+   * The label is read from aiStudioFeatures rather than written out again, so the
+   * heading cannot drift from the menu and a new feature needs no change here.
+   */
+  private setAiStudioHeading(featureId: string) {
+    // Read from the catalogue rather than the allowed list, so the heading is
+    // right for whatever is on screen even if the two ever disagree.
+    const feature = AI_STUDIO_FEATURES.find(f => f.id === featureId)
+    this.currentTab = 'AI STUDIO'
+    this.currentStatus = feature ? feature.label : ''
   }
 
   canShow(role: string): boolean {

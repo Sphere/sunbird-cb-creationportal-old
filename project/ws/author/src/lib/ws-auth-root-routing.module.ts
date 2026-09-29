@@ -22,8 +22,6 @@ import { InitResolver } from './services/init-resolve.service'
 
 import { ReviewerChecklist } from '../../../author/src/lib/routing/modules/editor/shared/components/reviewer-checklist/reviewer-checklist.component'
 
-
-
 const routes: Routes = [
   {
     path: 'home',
@@ -55,10 +53,27 @@ const routes: Routes = [
       contents: ContentAndDataReadMultiLangTOCResolver,
     },
   },
+  // BEFORE 'my-content'. Angular takes the first route that matches, and a
+  // loadChildren route matches on its prefix — so 'my-content' alone would
+  // swallow 'my-content/ai-studio/…' and hand it to MyContentModule, which has
+  // no child route for the rest of the path and simply renders nothing.
+  {
+    path: 'my-content/ai-studio',
+    loadChildren: () => import('./routing/modules/ai-studio/ai-studio.module').then(u => u.AIStudioModule),
+    // The same gate every other authoring route uses. Without it this one URL
+    // was reachable on terms its neighbours do not allow.
+    data: {
+      load: ['ordinals', 'meta'],
+      requiredFeatures: ['authoring'],
+    },
+    canActivate: [GeneralGuard],
+    resolve: {
+      script: InitResolver,
+    },
+  },
   {
     path: 'my-content',
-    loadChildren: () =>
-      import('./routing/modules/my-content/my-content.module').then(u => u.MyContentModule),
+    loadChildren: () => import('./routing/modules/my-content/my-content.module').then(u => u.MyContentModule),
     data: { load: ['ordinals', 'meta'] },
     resolve: {
       script: InitResolver,
@@ -75,15 +90,6 @@ const routes: Routes = [
     resolve: {
       script: InitResolver,
     },
-  },
-  {
-    path: 'my-content/ai-hub',
-    loadChildren: () =>
-      import('./routing/modules/aihub/aihub.module').then(u => u.AIHubModule),
-    data: { load: ['ordinals', 'meta'] },
-    resolve: {
-      script: InitResolver,
-    }
   },
   {
     path: 'create',
@@ -135,4 +141,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
 })
-export class WsAuthorRootRoutingModule { }
+export class WsAuthorRootRoutingModule {}

@@ -190,11 +190,14 @@ describe('MyContentComponent (my-content module)', () => {
       expect(mocks.router.navigate).toHaveBeenCalledWith(['/author/my-content'], { queryParams: { status: 'draft' } })
     })
 
-    it('navigates AIHub and flags aihub view', () => {
+    it('navigates AIHub and flags the AI Studio view', () => {
+      // 'AIHub' still reaches this branch — old links and the sidebar header
+      // both use it — but it resolves to a feature before navigating, so the
+      // URL names the pane that is actually open rather than the group.
       const { component, mocks } = build()
       component.navigateContents('AIHub')
-      expect(component.isAihub).toBe(true)
-      expect(mocks.router.navigate).toHaveBeenCalledWith(['/author/my-content'], { queryParams: { status: 'AIHub' } })
+      expect(component.isAiStudio).toBe(true)
+      expect(mocks.router.navigate).toHaveBeenCalledWith(['/author/my-content'], { queryParams: { status: 'contentStudio' } })
     })
 
     it('navigates published courses', () => {
