@@ -46,12 +46,16 @@ describe('AI Studio feature roles', () => {
   })
 
   /**
-   * The rollout guarantee. The roles are not issued yet, so gating on them
-   * alone would take AI Studio away from everyone who has it today.
+   * The roles ARE the grant. content_creator lets somebody author a course,
+   * which is a different thing from generating one; it never implied AI Studio
+   * and must not open it.
+   *
+   * This returned the whole list while the roles were still unissued, so that
+   * turning gating on did not take the feature from everyone at once.
    */
-  it('leaves a user with no AI Studio role the whole list, unchanged', () => {
-    expect(idsFor()).toEqual(AI_STUDIO_FEATURES.map(f => f.id))
-    expect(idsFor('content_creator', 'admin', 'editor')).toEqual(AI_STUDIO_FEATURES.map(f => f.id))
+  it('gives a user with no AI Studio role nothing at all', () => {
+    expect(idsFor()).toEqual([])
+    expect(idsFor('content_creator', 'admin', 'editor')).toEqual([])
   })
 
   it('stops falling back the moment any AI Studio role is present', () => {
@@ -91,9 +95,9 @@ describe('AI Studio feature roles', () => {
       expect(aiStudioFeaturesFor(asStored('AI_STUDIO_ASSESTEMENT')).map(f => f.id)).toEqual(['assessment'])
     })
 
-    it('still falls back for a user with no AI Studio role at all', () => {
+    it('still gives nothing to a user with no AI Studio role at all', () => {
       expect(hasAnyAIStudioRole(asStored('content_creator'))).toBe(false)
-      expect(aiStudioFeaturesFor(asStored('content_creator')).map(f => f.id)).toEqual(AI_STUDIO_FEATURES.map(f => f.id))
+      expect(aiStudioFeaturesFor(asStored('content_creator')).map(f => f.id)).toEqual([])
     })
 
     it('matches whichever casing the role is issued in', () => {

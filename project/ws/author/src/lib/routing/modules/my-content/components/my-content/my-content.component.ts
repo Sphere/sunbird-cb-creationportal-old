@@ -199,8 +199,8 @@ export class MyContentComponent implements OnInit, OnDestroy {
   /**
    * Whether the AI Studio panel is shown at all.
    *
-   * Defaults to the pre-role behaviour so a caller that never reaches ngOnInit
-   * — a test, a partially initialised view — sees what it saw before.
+   * Hidden until ngOnInit has read the roles, so a partially initialised view
+   * shows nothing rather than briefly showing a menu the person may not have.
    */
   showAiStudio = false
 
@@ -369,10 +369,10 @@ export class MyContentComponent implements OnInit, OnDestroy {
     // 'Draft', 'Sent for review', 'Courses to publish', 'Published Courses', 'Retired'
     this.allowAuthor = this.canShow('author')
     this.allowAuthorContentCreate = this.canShow('author_create')
-    // The AI Studio panel also needs allowAuthorContentCreate, which is only
-    // known here. initAiStudioAccess ran first for the landing decision; this
-    // settles the menu now that the fallback's input exists.
-    this.showAiStudio = this.aiStudioFeatures.length > 0 && (this.hasAiStudioRole || this.allowAuthorContentCreate)
+    // An AI Studio role is the only way in. The list is empty without one, so
+    // this says exactly that — content_creator does not imply AI Studio, and
+    // used to only while the roles were still unissued.
+    this.showAiStudio = this.aiStudioFeatures.length > 0
     this.allowRedo = this.accessService.authoringConfig.allowRedo
     this.allowRestore = this.accessService.authoringConfig.allowRestore
     this.allowExpiry = this.accessService.authoringConfig.allowExpiry
@@ -2205,10 +2205,16 @@ export class MyContentComponent implements OnInit, OnDestroy {
    * list. 'AIHub' is still accepted for links made before the rename.
    */
   private isAiStudioStatus(status: string): boolean {
+    // Nothing opens an AI Studio pane for someone with no AI Studio role: the
+    // status falls through to the course list instead of rendering a pane with
+    // no feature in it, which is what a bare 'AIHub' link used to do.
+    if (!this.aiStudioFeatures.length) {
+      return false
+    }
     // The whole catalogue, not the allowed list: a link to a feature this user
     // may not open is still a link INTO AI Studio, and has to be recognised as
-    // one so it lands on the pane rather than falling through to the course
-    // list. Which feature it opens is allowedAiStudioFeature's decision.
+    // one so it lands on the pane rather than falling through. Which feature it
+    // opens is allowedAiStudioFeature's decision.
     return status === 'AIHub' || AI_STUDIO_FEATURES.some(f => f.id === status)
   }
 

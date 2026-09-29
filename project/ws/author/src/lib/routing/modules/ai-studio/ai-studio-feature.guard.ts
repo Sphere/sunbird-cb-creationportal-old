@@ -4,7 +4,7 @@ import { ActivatedRouteSnapshot, CanActivate, Router, UrlTree } from '@angular/r
 
 import { AccessControlService } from '@ws/author/src/lib/modules/shared/services/access-control.service'
 
-import { AI_STUDIO_DEFAULT_FEATURE, aiStudioFeaturesFor } from './ai-studio.features'
+import { aiStudioFeaturesFor } from './ai-studio.features'
 
 /**
  * Keeps a feature this user may not open — or no feature at all — off the
@@ -39,11 +39,16 @@ export class AIStudioFeatureGuard implements CanActivate {
       return true
     }
 
+    // Nothing they may open at all: send them out of AI Studio rather than to a
+    // feature of it. Redirecting to the default here would bounce straight back
+    // through this guard and loop.
+    if (!allowed.length) {
+      return this.router.createUrlTree(['/author/my-content'])
+    }
+
     // The first feature they may open, rather than the catalogue's first: for
     // an assessment-only user, contentStudio is exactly as unreachable as the
-    // typo they arrived with. Falls back to the default only if the list is
-    // empty, which keeps the redirect a real URL in every case.
-    const landing = allowed.length ? allowed[0].id : AI_STUDIO_DEFAULT_FEATURE
-    return this.router.createUrlTree(['/author/my-content/ai-studio', landing])
+    // typo they arrived with.
+    return this.router.createUrlTree(['/author/my-content/ai-studio', allowed[0].id])
   }
 }

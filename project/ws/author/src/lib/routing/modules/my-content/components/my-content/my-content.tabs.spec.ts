@@ -1,5 +1,6 @@
 import { of } from 'rxjs'
 import { MyContentComponent } from './my-content.component'
+import { AI_STUDIO_ROLES } from '../../../ai-studio/ai-studio.features'
 
 /**
  * Covers the three large tab-state matrices of MyContentComponent — the ngOnInit
@@ -91,6 +92,20 @@ describe('MyContentComponent (tab state)', () => {
   const initWith = (status: string, roles: string[] = ['content_creator']) => {
     const component = build({
       activatedRoute: { queryParams: of({ status }) },
+      // hasRole reads the SAME set canShow does. They are separate seams in the
+      // code, and a test where they disagree is testing a user who cannot exist.
+      accessService: {
+        userId: 'user-1',
+        hasRole: jest.fn((asked: string[]) => asked.some(r => roles.includes(r))),
+        authoringConfig: {
+          newDesign: true,
+          allowRedo: true,
+          allowRestore: true,
+          allowExpiry: true,
+          allowReview: true,
+          allowPublish: true,
+        },
+      },
       configService: {
         unMappedUser: { roles },
         userRoles: new Set(roles),
@@ -107,14 +122,22 @@ describe('MyContentComponent (tab state)', () => {
     // — the list is *ngIf="!isAiStudio". The search ran anyway on every click
     // in that menu and the result was discarded, which is what made opening a
     // feature feel slow.
+    // Both need an AI Studio role, because without one these statuses no longer
+    // open an AI Studio pane at all — they fall through to the course list, and
+    // the search running is then exactly right.
     it('is skipped for an AI Studio feature', () => {
-      const component = initWith('assessment')
+      const component = initWith('assessment', ['content_creator', AI_STUDIO_ROLES.admin])
       expect(component.fetchContent).not.toHaveBeenCalled()
     })
 
     it('is skipped for the legacy AIHub status', () => {
-      const component = initWith('AIHub')
+      const component = initWith('AIHub', ['content_creator', AI_STUDIO_ROLES.admin])
       expect(component.fetchContent).not.toHaveBeenCalled()
+    })
+
+    it('still runs for an AI Studio status the user has no role for', () => {
+      const component = initWith('assessment', ['content_creator'])
+      expect(component.fetchContent).toHaveBeenCalled()
     })
 
     // The guard must not touch any other tab.
@@ -140,7 +163,6 @@ describe('MyContentComponent (tab state)', () => {
       ['published', 'My Courses', 'Published'],
       ['unpublished', 'My Courses', 'Retired'],
       ['courseRevision', 'My Courses', 'For Revision'],
-      ['AIHub', 'AI STUDIO', 'Content Creation'],
       ['selfCourseRevision', 'Self Assessment', 'For Revision'],
     ]
 
@@ -151,6 +173,21 @@ describe('MyContentComponent (tab state)', () => {
         expect(component.currentTab).toBe(tab)
         expect(component.currentStatus).toBe(currentStatus)
       })
+    })
+
+    // Its own case rather than a row in the matrix above: every row there runs
+    // as a content_creator, and AI Studio is no longer something that role can
+    // open. It takes one of the AI Studio roles, which is the whole point.
+    it('opens the AI STUDIO / Content Creation tab for "AIHub", given an AI Studio role', () => {
+      const component = initWith('AIHub', ['content_creator', AI_STUDIO_ROLES.admin])
+      expect(component.currentTab).toBe('AI STUDIO')
+      expect(component.currentStatus).toBe('Content Creation')
+    })
+
+    it('leaves "AIHub" to the course list for someone with no AI Studio role', () => {
+      const component = initWith('AIHub', ['content_creator'])
+      expect(component.isAiStudio).toBe(false)
+      expect(component.currentTab).not.toBe('AI STUDIO')
     })
 
     it('marks the manage-courses group for the certificate statuses', () => {

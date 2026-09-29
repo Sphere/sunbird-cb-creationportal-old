@@ -97,17 +97,17 @@ export function isAIStudioFeature(id: string | null | undefined): boolean {
  * without Angular and every caller — the menu, the guard, the tabs — gets the
  * same answer from the same function.
  *
- * A user holding NO AI Studio role at all keeps the whole list. The roles are
- * issued by the user service, and until they are, gating on them would hide the
- * feature from everyone who has it today. Once any AI Studio role is present,
- * the roles decide and the fallback is not consulted — so provisioning a single
- * user switches gating on for that user and nobody else.
+ * A user holding no AI Studio role gets nothing. These roles ARE the grant:
+ * content_creator lets somebody author a course, which is a different thing from
+ * generating one, and it never implied this.
+ *
+ * It fell back to the whole list while the roles were still unissued, so that
+ * turning gating on did not take the feature away from everyone at once. They
+ * are issued now, so that fallback would only mean handing AI Studio to every
+ * author — the opposite of gating.
  */
 export function aiStudioFeaturesFor(hasRole: (roles: string[]) => boolean): AIStudioFeature[] {
   const holds = eitherCase(hasRole)
-  if (!holds(ALL_AI_STUDIO_ROLES)) {
-    return AI_STUDIO_FEATURES
-  }
   return AI_STUDIO_FEATURES.filter(f => holds(f.roles))
 }
 

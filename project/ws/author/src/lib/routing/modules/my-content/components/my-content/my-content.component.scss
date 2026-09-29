@@ -684,13 +684,52 @@ ws-auth-content-card-v2 {
  * the dark blue app bar with nothing between them. Scoped to this accordion —
  * which AI Studio now has to itself — so no other sidebar panel moves. */
 .ai-studio-panel {
-  padding-top: 12px;
+  padding-bottom: 10px;
+
+  /* Clear of the app bar — but ONLY when this panel is the first thing in the
+     drawer, which is the case for someone whose grant is AI Studio alone. Then
+     its 40px icon box sat about 7px below the dark blue and read as having
+     slipped under it.
+     A content creator sees the course panels above this one, where the same
+     padding is a 22px gap in the middle of the list that was never there. So it
+     is tied to being first rather than applied unconditionally, and that
+     person's sidebar is untouched. */
+  &:first-of-type {
+    padding-top: 22px;
+  }
+
+  /* The header row, inside this panel only. .left-panel-header and .main-block
+     are shared by every panel in the sidebar, so they are reached through the
+     scope rather than edited.
+     20px, not the 14px this briefly had: that was TIGHTER than Material's own
+     24px default, so the glyph ended up nearly touching the drawer edge and the
+     header read as falling off the side. 20px sits it just inside the rows
+     below, which carry 30px, so the hierarchy still shows. */
+  .left-panel-header {
+    padding-left: 20px;
+    padding-right: 16px;
+  }
+
+  /* The glyph and the title were 2px apart, which read as one object rather
+     than an icon labelling a section. */
+  .main-block {
+    gap: 10px;
+    margin-left: 0;
+  }
 }
 
 .ai-menu {
   display: flex;
   flex-direction: column;
-  padding: 4px 0 8px;
+  /* Space under the header so the list reads as a group below the title, and a
+     little air between rows so three items do not run together as one block. */
+  padding: 6px 0 8px;
+  gap: 2px;
+  /* The same surface as the header above it. The header carries #f7f7f7 from
+     .left-panel-header while Material's panel body underneath is white, so the
+     two met in a seam across the middle of the panel — visible as a change of
+     shade with no line to justify it. */
+  background: #f7f7f7;
 }
 
 .ai-feature {
@@ -698,7 +737,7 @@ ws-auth-content-card-v2 {
   align-items: center;
   gap: 10px;
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
   /* Indented past the parent's own icon, so these read as items UNDER
      "AI Studio" rather than beside it. They used to start further left than
      the parent, which inverted the hierarchy the panel is there to show. */

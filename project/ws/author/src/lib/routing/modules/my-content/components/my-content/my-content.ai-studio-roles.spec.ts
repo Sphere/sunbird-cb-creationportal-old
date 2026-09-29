@@ -108,10 +108,12 @@ describe('MyContentComponent (AI Studio roles)', () => {
       expect(landedOn()).toBe('selfSentForReview')
     })
 
-    it('still shows the AI Studio menu to a creator, with every feature', () => {
+    it('hides the AI Studio menu from a plain content creator', () => {
+      // Authoring a course and generating one are different grants. This showed
+      // the whole menu while the AI Studio roles were still unissued.
       const component = initWith(['content_creator'])
-      expect(component.showAiStudio).toBe(true)
-      expect(menuIds(component)).toEqual(['contentStudio', 'assessment', 'reports'])
+      expect(component.showAiStudio).toBe(false)
+      expect(menuIds(component)).toEqual([])
     })
 
     it('still hides the AI Studio menu from a reviewer who cannot create', () => {
