@@ -85,11 +85,6 @@ export const AI_STUDIO_FEATURES: AIStudioFeature[] = [
 /** The feature a bare or unknown path lands on. */
 export const AI_STUDIO_DEFAULT_FEATURE = AI_STUDIO_FEATURES[0].id
 
-/** Whether a string names a feature. Used to reject an unknown URL segment. */
-export function isAIStudioFeature(id: string | null | undefined): boolean {
-  return !!id && AI_STUDIO_FEATURES.some(f => f.id === id)
-}
-
 /**
  * The features this user may open, in menu order.
  *
