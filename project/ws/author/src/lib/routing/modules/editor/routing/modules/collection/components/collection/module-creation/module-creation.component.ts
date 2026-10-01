@@ -2956,6 +2956,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                   // })
 
                   meta['appIcon'] = data.artifactUrl
+                  // posterImage must follow the new image: without it the old poster survives every
+                  // image change, and child content inherits the stale poster (store.service.ts).
+                  meta['posterImage'] = data.artifactUrl
                   meta['thumbnail'] = data.content_url
                   this.thumbnail = data.content_url
                   meta['versionKey'] = this.courseData.versionKey
