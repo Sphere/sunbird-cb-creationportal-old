@@ -449,7 +449,8 @@ describe('CourseSettingsComponent (autocomplete, competency and logo upload)', (
     })
 
     it('seeds a default publisher', () => {
-      expect(component.contentForm.controls.publisherDetails.value).toEqual(expect.objectContaining({ name: 'Publisher Aastrika' }))
+      // A list of publishers, like the one a creator picks -- not a bare object.
+      expect(component.contentForm.controls.publisherDetails.value).toEqual([expect.objectContaining({ name: 'Publisher Aastrika' })])
     })
 
     it('seeds the Aastrika publisher id, the same one on every environment', () => {
