@@ -270,27 +270,48 @@
     line-height: 1.3;
     letter-spacing: 0;
     min-width: 0;
+    /* The bar's top edge sits under the app bar, so centring in the whole box
+       left the words about 6px above the middle of what is visible. */
+    margin-top: 12px;
   }
 
-  /* The area is context: present, but not competing with where you are. */
+  /* The area is context: present, but quieter than where you are — the same
+     grey the sidebar uses for its items. */
   .ai-crumb__area {
-    color: rgba(0, 0, 0, 0.55);
+    color: #5a6a7a;
     font-weight: 500;
   }
 
   .ai-crumb__sep {
     flex: none;
-    color: rgba(0, 0, 0, 0.3);
+    display: block;
+    color: #8a96a3;
   }
 
-  /* The open feature is the subject of the screen, so it carries the weight
-     and the brand colour. */
+  /* The open feature is the subject of the screen: the portal blue, heavier,
+     with its menu glyph — the way the sidebar marks the item that is open. */
   .ai-crumb__current {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
     color: #1c5d95;
     font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  /* The glyph centred on the label's line. As an inline SVG it sat on the text
+     baseline with space left under it, so it rode a little off the words. */
+  .ai-crumb__tile {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    height: 16px;
+
+    svg {
+      display: block;
+    }
   }
   .btn-create {
     width: auto;
@@ -678,92 +699,63 @@ ws-auth-content-card-v2 {
   margin-left: 8px !important;
 }
 
-/* ---- AI Studio sidebar menu ------------------------------------------------
+/* ---- the AI Studio section -------------------------------------------------
  *
- * Top level, NOT nested under .sidenav-content: the menu lives in the drawer,
- * and .sidenav-content is the main pane beside it. Nested, every rule below
- * resolved to `.sidenav-content .ai-feature` and matched nothing — so the
- * glyphs fell back to an SVG's default size and filled the sidebar. */
-/* An AI Studio menu item: glyph, then label.
- *
- * Every row reserves the same space for the active bar, so selecting one
- * does not shift its label sideways — which is what the old per-row <img>
- * did, leaving the selected item indented further than the other two. */
-/* Breathing room above the AI Studio header.
- *
- * The panel is the first thing in the drawer, so its title sat flush against
- * the dark blue app bar with nothing between them. Scoped to this accordion —
- * which AI Studio now has to itself — so no other sidebar panel moves. */
+ * Styled as every other section in this sidebar (Courses, Self Assessment,
+ * Manage Courses), so the menu reads as one menu: an outline glyph and name in
+ * the header, text-only items below in the same 40px rows, the same hover, and
+ * the same blue text and 3px bar for the item that is open. */
 .ai-studio-panel {
-  padding-bottom: 10px;
-
-  /* No top padding. The gap above this panel is the .dashboard-txt bar, which
-     is 68px tall with the same divider as the content header beside it — so
-     the two sides line up, exactly as they do for a content creator. Padding
-     here instead just pushed the menu down by an arbitrary amount and lined up
-     with nothing. */
-
-  /* The header row, inside this panel only. .left-panel-header and .main-block
-     are shared by every panel in the sidebar, so they are reached through the
-     scope rather than edited.
-     20px, not the 14px this briefly had: that was TIGHTER than Material's own
-     24px default, so the glyph ended up nearly touching the drawer edge and the
-     header read as falling off the side. 20px sits it just inside the rows
-     below, which carry 30px, so the hierarchy still shows. */
-  .left-panel-header {
-    padding-left: 20px;
-    padding-right: 16px;
+  /* The glyph at the size and grey of the other section icons; blue while one
+     of AI Studio's features is open, as theirs are. */
+  .add-create-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 26px;
+    color: #8a96a3;
+    transition: color 0.15s ease;
   }
-
-  /* The glyph and the title were 2px apart, which read as one object rather
-     than an icon labelling a section. */
-  .main-block {
-    gap: 10px;
-    margin-left: 0;
+  .add-create-icon.is-active {
+    color: #1c5d95;
   }
 }
 
 .ai-menu {
   display: flex;
   flex-direction: column;
-  /* Space under the header so the list reads as a group below the title, and a
-     little air between rows so three items do not run together as one block. */
-  padding: 6px 0 8px;
-  gap: 2px;
-  /* The same surface as the header above it. The header carries #f7f7f7 from
-     .left-panel-header while Material's panel body underneath is white, so the
-     two met in a seam across the middle of the panel — visible as a change of
-     shade with no line to justify it. */
+  padding: 4px 0;
   background: #f7f7f7;
 }
 
+/* One row: the same box as the list items above (40px, 6px corners, 8px in
+   from the drawer), with the label lined up under the section's name. */
 .ai-feature {
   display: flex;
   align-items: center;
-  gap: 10px;
-  width: 100%;
-  min-height: 44px;
-  /* Indented past the parent's own icon, so these read as items UNDER
-     "AI Studio" rather than beside it. They used to start further left than
-     the parent, which inverted the hierarchy the panel is there to show. */
-  padding: 0 12px 0 30px;
-  border-left: 3px solid transparent;
-  font-size: 14px;
-  color: #808080;
+  height: 40px;
+  margin: 1px 8px;
+  /* 22px + the 8px margin puts the label where the other lists' labels sit. */
+  padding: 0 12px 0 22px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #5a6a7a;
   text-decoration: none;
   cursor: pointer;
   transition:
-    color 0.15s ease,
     background 0.15s ease,
-    border-color 0.15s ease;
+    color 0.15s ease;
 }
 
-/* The glyph takes the row's colour, so it brightens with the label rather
-   than needing a second rule for each state. */
+/* The feature's glyph in the row's colour, so it turns blue with the label. */
 .ai-feature__icon {
   flex: none;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  color: #8a96a3;
+}
+.ai-feature.is-active .ai-feature__icon {
+  color: #1c5d95;
 }
 
 .ai-feature__label {
@@ -774,18 +766,23 @@ ws-auth-content-card-v2 {
 }
 
 .ai-feature:hover {
-  color: #14446c;
-  background: rgba(28, 93, 149, 0.04);
+  background: rgba(28, 93, 149, 0.06);
 }
 
-/* Selected gets a surface as well as the bar. Colour alone is a weak signal
-   next to two other rows in the same family, and it is the only signal a
-   colour-blind user would have had. */
+/* The open feature: blue, heavier, with the 3px bar the other lists use. */
 .ai-feature.is-active {
   color: #1c5d95;
-  background: rgba(28, 93, 149, 0.08);
-  border-left-color: #1c5d95;
   font-weight: 600;
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 3px;
+    height: 14px;
+    margin-right: 8px;
+    border-radius: 2px;
+    background: #1c5d95;
+  }
 }
 
 .ai-feature:focus-visible {

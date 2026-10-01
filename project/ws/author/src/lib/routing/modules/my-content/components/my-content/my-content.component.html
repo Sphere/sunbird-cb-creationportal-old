@@ -570,9 +570,12 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
         <mat-expansion-panel #panel4 style="cursor: pointer" class="no-shadow" [(expanded)]="isAiStudioExpanded" hideToggle>
           <mat-expansion-panel-header class="left-panel-header">
             <mat-panel-title class="main-block">
-              <mat-icon class="add-create-icon">assistant</mat-icon>
+              <!-- Styled as every other section header here: an outline glyph and
+                   the name, both turning blue while one of its features is open. -->
+              <mat-icon class="add-create-icon" [class.is-active]="isAiStudio">assistant</mat-icon>
               <span
                 class="font-weight-500 head-content-block"
+                [class.coursesActive]="isAiStudio"
                 (click)="onClickReviewCourse('AIHub')"
                 (keydown)="isActivationKey($event) && onClickReviewCourse('AIHub')"
                 [attr.tabindex]="0"
@@ -602,7 +605,9 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             >
               <!-- width/height on the element, not only in CSS: an SVG with
                    neither falls back to 300x150. -->
-              <svg class="ai-feature__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <!-- width/height on the element, not only in CSS: an SVG with
+                   neither falls back to 300x150. -->
+              <svg class="ai-feature__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path [attr.d]="feature.icon" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
               <span class="ai-feature__label">{{ feature.label }}</span>
@@ -869,7 +874,18 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             <svg class="ai-crumb__sep" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-            <span class="ai-crumb__current">{{ currentStatus }}</span>
+            <!-- The open feature, with the glyph the menu shows for it — read
+                 from the same list, so the two agree. -->
+            <span class="ai-crumb__current">
+              <ng-container *ngFor="let f of aiStudioFeatures">
+                <span *ngIf="f.id === aiStudioFeature" class="ai-crumb__tile" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path [attr.d]="f.icon" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+              </ng-container>
+              {{ currentStatus }}
+            </span>
           </nav>
 
           <span fxFlex style="flex: 1 1 auto"></span>

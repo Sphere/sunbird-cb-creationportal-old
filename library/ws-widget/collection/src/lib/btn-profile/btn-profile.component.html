@@ -8,20 +8,18 @@
 
  -->
 <div id="user">
-  <span class="login-pf-text">Logged in as {{ this.givenName }} </span>
   <!--
-    The trigger held an empty span, so nothing was painted and the menu -- and
-    with it Logout -- could not be reached. It now shows the profile picture
-    when there is one and falls back to an avatar icon, which is also what the
-    component has always resolved profileImage for.
+    One control: who is signed in, and the menu (Logout) behind it. The name used
+    to sit beside a bare avatar as a separate label, so only the icon could be
+    clicked. The picture shows when there is one, with an avatar icon otherwise.
   -->
   <a
     href="javascript:void(0)"
-    mat-icon-button
     aria-label="Profile and account options"
     i18n-aria-label
-    title="option"
-    class="new-margin profile-trigger"
+    title="Profile and account options"
+    i18n-title
+    class="new-margin profile-trigger user-chip"
     #rootTrigger="matMenuTrigger"
     [matMenuTriggerFor]="settingsMenu"
   >
@@ -30,6 +28,11 @@
     } @else {
       <mat-icon class="profile-avatar-icon">account_circle</mat-icon>
     }
+    <span class="user-chip__text">
+      <small i18n>Signed in as</small>
+      <b class="login-pf-text">{{ givenName }}</b>
+    </span>
+    <mat-icon class="user-chip__chev" aria-hidden="true">expand_more</mat-icon>
   </a>
 </div>
 <!--  -->
