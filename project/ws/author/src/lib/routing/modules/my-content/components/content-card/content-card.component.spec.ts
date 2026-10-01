@@ -420,7 +420,13 @@ describe('ContentCardComponent', () => {
       component.uploadCertificate(card())
       expect(dialog.open).toHaveBeenCalledWith(
         expect.anything(),
-        expect.objectContaining({ width: '1085px', maxWidth: '95vw', maxHeight: '90vh' }),
+        expect.objectContaining({
+          width: '100vw',
+          height: '100vh',
+          maxWidth: '100vw',
+          maxHeight: '100vh',
+          panelClass: 'cert-dialog-fullscreen',
+        }),
       )
     })
 

@@ -924,3 +924,9 @@ a.width-auto.mat-mdc-button {
     color: #ffffff !important;
   }
 }
+
+// The certificate designer opens full screen; rounded corners on a dialog that
+// fills the viewport only clip its edges.
+.cert-dialog-fullscreen {
+  --mat-dialog-container-shape: 0;
+}

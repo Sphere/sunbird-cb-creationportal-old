@@ -296,10 +296,15 @@ export class ContentCardComponent implements OnInit, OnChanges {
         // Material caps every dialog at 80vw unless told otherwise, so on anything
         // narrower than ~1270px the 1085px request was silently clipped and the
         // preview pane and close button fell outside the dialog.
+        // Full screen: designing a certificate needs the field list, the
+        // certificate at a readable size and its settings side by side, and a
+        // boxed dialog left the certificate itself small.
         const dialogRef = this.dialog.open(CertificateDialogComponent, {
-          width: '1085px',
-          maxWidth: '95vw',
-          maxHeight: '90vh',
+          width: '100vw',
+          height: '100vh',
+          maxWidth: '100vw',
+          maxHeight: '100vh',
+          panelClass: 'cert-dialog-fullscreen',
           data,
         })
         // You can subscribe to the afterClosed() observable to do something when the dialog is closed.

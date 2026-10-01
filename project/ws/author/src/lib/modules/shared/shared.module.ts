@@ -62,6 +62,7 @@ import { AuthEditorStepsComponent } from './components/auth-editor-steps/auth-ed
 import { CommentsDialogComponent } from './components/comments-dialog/comments-dialog.component'
 
 import { CertificateDialogComponent } from './components/certificate-upload-dialog/certificate-upload-dialog.component'
+import { CertFieldPlacerComponent } from './components/certificate-upload-dialog/cert-field-placer/cert-field-placer.component'
 
 import { LoaderCardComponent } from './components/loader-card/loader-card.component'
 import { ZipGuidelinesComponent } from './components/zip-upload-dialogs/zip-guidelines.component'
@@ -123,6 +124,7 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     CommentsDialogComponent,
     CommentsViewComponent,
     CertificateDialogComponent,
+    CertFieldPlacerComponent,
     ZipGuidelinesComponent,
     ZipEntryFileComponent,
     ZipInvalidNamesComponent,

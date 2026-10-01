@@ -771,4 +771,11 @@ export class EditorService {
   languageList(): Observable<any> {
     return this.cbpData().pipe(map((data: any) => data.languageList))
   }
+  /**
+   * The standard certificate designs, as listed in the config. Returned as is:
+   * the certificate dialog validates the entries (parseCertTemplates).
+   */
+  certificateTemplates(): Observable<unknown> {
+    return this.cbpData().pipe(map((data: any) => (data ? data.certificateTemplates : undefined)))
+  }
 }

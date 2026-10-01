@@ -1,7 +1,9 @@
 .upload-main-block {
   // overflow: hidden;
   padding: 20px 30px !important;
-  max-height: fit-content;
+  // Fills the full-screen dialog down to the pinned actions, scrolling inside
+  // if it has to. Material caps dialog content at 65vh by default.
+  max-height: none;
 }
 .header-text {
   display: flex;
@@ -101,12 +103,20 @@
 }
 .cert-block {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
-  margin-top: 29px;
+  margin: 0;
+  padding: 16px 30px 20px;
+  border-top: 1px solid #e3e9ef;
 }
 .add-certificate-btn {
   display: flex;
-  width: 194px;
+  // A minimum rather than a fixed width: at 194px the label wrapped onto two
+  // lines, and it has to fit "Attaching..." with its spinner as well.
+  min-width: 194px;
+  height: 44px;
+  white-space: nowrap;
+  box-sizing: border-box;
   padding: 8px 32px;
   justify-content: center;
   align-items: center;
@@ -152,4 +162,642 @@
 
 .attach-spinner {
   --mdc-circular-progress-active-indicator-color: #fff;
+}
+
+// Sits under the preview, where the author can still choose another file.
+.template-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border: 1px solid #f0a500;
+  border-radius: 8px;
+  background: #fff8e8;
+  color: #6b4b00;
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+
+  mat-icon {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    line-height: 16px;
+    color: #f0a500;
+  }
+}
+
+// ---- Place fields / Preview steps ------------------------------------------
+
+.cert-steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+
+.cert-step-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cert-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #5b6b7d;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+
+  &.is-current {
+    color: #1c5d95;
+    font-weight: 500;
+
+    .cert-step-num {
+      border-color: #1c5d95;
+      background: #1c5d95;
+      color: #fff;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 1px;
+  }
+}
+
+.cert-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #b8c9d9;
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+.cert-step-sep {
+  width: 32px;
+  height: 1px;
+  background: #b8c9d9;
+}
+
+.cert-change-file,
+.cert-secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  box-sizing: border-box;
+  padding: 8px 16px;
+  border: 1px solid #1c5d95;
+  border-radius: 50px;
+  background: #fff;
+  color: #1c5d95;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+
+  &[disabled] {
+    border-color: #b8c9d9;
+    color: #b8c9d9;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+  }
+}
+
+.cert-block {
+  gap: 16px;
+}
+
+.preview-block.is-full {
+  flex: none;
+  width: 100%;
+  height: auto;
+  min-height: 300px;
+}
+
+.template-note {
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border: 1px solid #b8c9d9;
+  border-radius: 8px;
+  background: #f5f7fa;
+  color: #3d4f63;
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+// Sits beside Attach in the footer, so it shares its height and type size.
+.cert-secondary-btn {
+  height: 44px;
+  padding: 8px 24px;
+  font-size: 16px;
+}
+
+// ---- Choosing a design ------------------------------------------------------
+
+.cert-start {
+  margin-top: 8px;
+  // However many designs the config lists, the list scrolls here, under the
+  // dialog's own header, rather than pushing the whole dialog.
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  // Room for the card focus ring and the scrollbar.
+  padding: 2px 4px 2px 2px;
+}
+
+.cert-start-title {
+  margin: 0 0 4px;
+  color: #1a2d45;
+  font-family: Roboto, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.cert-start-help {
+  margin: 0 0 16px;
+  color: #5b6b7d;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+}
+
+.cert-template-grid {
+  display: grid;
+  // auto-fill keeps empty tracks, so one or two designs stay card-sized instead
+  // of stretching across the screen; ten or more simply wrap onto more rows.
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  max-width: 1400px;
+}
+
+.cert-template-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 8px 12px;
+  border: 1px solid #b8c9d9;
+  border-radius: 12px;
+  background: #fff;
+  color: #1a2d45;
+  font-family: Roboto, sans-serif;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover:not([disabled]) {
+    border-color: #1c5d95;
+    box-shadow: 0 2px 8px rgba(28, 93, 149, 0.15);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+  }
+
+  &[disabled] {
+    cursor: progress;
+    opacity: 0.7;
+  }
+}
+
+.cert-template-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1350 / 808;
+  margin-bottom: 4px;
+  border: 1px solid #e3e9ef;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #f5f7fa;
+}
+
+.cert-template-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+// A name typed into the config can be any length; one line keeps cards level.
+.cert-template-label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cert-template-desc {
+  color: #5b6b7d;
+  font-size: 12px;
+  line-height: 1.4;
+  // Two lines at most; the full text is on the card's title.
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// The existing upload tile, resized to sit in the grid beside the designs.
+.cert-upload-card {
+  flex: none;
+  width: auto;
+  height: auto;
+  min-height: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+  }
+}
+
+// Stands in while a design's sample thumbnail is being drawn.
+.cert-template-thumb.is-placeholder {
+  background: linear-gradient(90deg, #f5f7fa 0%, #e9eef3 50%, #f5f7fa 100%);
+}
+
+.cert-upload-guide {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border: 1px solid #b8c9d9;
+  border-radius: 12px;
+  background: #f5f7fa;
+  font-family: Roboto, sans-serif;
+}
+
+.cert-guide-title {
+  // An <h4>: the global typography would otherwise give it its own font.
+  font-family: Roboto, sans-serif;
+  margin: 0 0 8px;
+  color: #1a2d45;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cert-guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    color: #3d4f63;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  mat-icon {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+
+  .is-do mat-icon {
+    color: #2e7d32;
+  }
+
+  .is-dont mat-icon {
+    color: #c62828;
+  }
+}
+
+// The close control is a real button now, so it is reachable by keyboard.
+.cert-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #1a2d45;
+  cursor: pointer;
+
+  &:hover {
+    background: #eef4fa;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+  }
+}
+
+// ---- Column scrolling --------------------------------------------------------------
+// A height chain from the dialog down to the editor, so the editor gets exactly the
+// space between the title and the pinned buttons and its columns scroll inside
+// themselves instead of the whole dialog scrolling.
+.upload-main-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-container {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+ws-auth-cert-field-placer {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+// ---- Standard designs: loading, empty and error -------------------------------------
+.cert-templates-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  color: #4a5d73;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #1c5d95;
+  }
+
+  &.is-error mat-icon {
+    color: #c62828;
+  }
+}
+
+.cert-templates-retry {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 500;
+  color: #1c5d95;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+  }
+}
+
+// ---- Many designs: choose a route, then browse ---------------------------------------
+.cert-route-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  max-width: 880px;
+}
+
+.cert-route-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 16px 16px 20px;
+  border: 1px solid #b8c9d9;
+  border-radius: 12px;
+  background: #fff;
+  color: #1a2d45;
+  font-family: Roboto, sans-serif;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #1c5d95;
+    box-shadow: 0 2px 8px rgba(28, 93, 149, 0.15);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+  }
+}
+
+// Three thumbnails fanned out, or the upload icon, at the same height.
+.cert-route-peek {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 120px;
+  margin-bottom: 4px;
+  padding: 12px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  background: #f3f6f9;
+
+  &.is-upload {
+    justify-content: center;
+  }
+}
+
+.cert-route-peek-thumb {
+  display: block;
+  width: 40%;
+  aspect-ratio: 1350 / 808;
+  border: 1px solid #d6e0ea;
+  border-radius: 4px;
+  background: #fff;
+  object-fit: cover;
+  box-shadow: 0 1px 4px rgba(26, 45, 69, 0.12);
+
+  & + & {
+    margin-left: -12%;
+  }
+}
+
+.cert-route-title {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.cert-route-desc {
+  color: #5b6b7d;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.cert-route-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 4px;
+  color: #1c5d95;
+  font-size: 14px;
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  img {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Browse: back, title, count and search on one row; wraps on a narrow screen.
+.cert-browse-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 4px;
+
+  .cert-start-title {
+    margin: 0;
+  }
+}
+
+.cert-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px 4px 4px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: #1c5d95;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    background: #eef3f8;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.cert-browse-count {
+  color: #5b6b7d;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+}
+
+.cert-browse-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  width: 260px;
+  max-width: 100%;
+  padding: 0 12px;
+  box-sizing: border-box;
+  border: 1px solid #b8c9d9;
+  border-radius: 8px;
+  background: #fff;
+
+  &:hover {
+    border-color: #8aaac8;
+  }
+
+  &:focus-within {
+    border-color: #1c5d95;
+    box-shadow: 0 0 0 1px #1c5d95;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #808080;
+  }
+}
+
+.cert-browse-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 8px 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #1a2d45;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+}
+
+.cert-templates-empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 16px;
+  border: 1px dashed #b8c9d9;
+  border-radius: 12px;
+  color: #4a5d73;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+
+  mat-icon {
+    color: #808080;
+  }
+}
+
+.cert-browse-alt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 16px 0 0;
+  color: #5b6b7d;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .cert-browse-search {
+    width: 100%;
+    margin-left: 0;
+  }
 }

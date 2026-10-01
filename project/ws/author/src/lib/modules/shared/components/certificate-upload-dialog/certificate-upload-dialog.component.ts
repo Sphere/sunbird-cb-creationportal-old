@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, OnDestroy, Inject, Output, EventEmitter } from '@angular/core'
+import { ChangeDetectorRef, Component, OnInit, OnDestroy, Inject, Output, EventEmitter, HostListener } from '@angular/core'
 
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 
@@ -13,11 +13,15 @@ import { EditorService } from '@ws/author/src/lib/routing/modules/editor/service
 import { LoaderService } from 'project/ws/author/src/lib/services/loader.service'
 
 import { SuccessDialogComponent } from '../success-dialog/success-dialog.component'
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component'
 
 import { MatDialog } from '@angular/material/dialog'
 import { isActivationKey, SafeContentService } from '@ws-widget/utils'
-import { throwError } from 'rxjs'
-import { finalize, switchMap } from 'rxjs/operators'
+import { Observable, of, throwError } from 'rxjs'
+import { filter, finalize, map, switchMap, take } from 'rxjs/operators'
+import { certSampleFor } from './certificate-fields'
+import { CERT_TEMPLATE_CHOICE_AFTER, ICertTemplate, parseCertTemplates } from './certificate-templates'
+import { CERT_TOKEN_LEGACY, fillSampleTokens, parseCertificateSvg, serialiseSvg } from './certificate-svg'
 /** What the author is told when each step of attaching the certificate fails. */
 const CERT_ERROR = {
   TEMPLATE: 'Could not create the certificate template. Please try again.',
@@ -25,6 +29,9 @@ const CERT_ERROR = {
   NO_BATCH: 'This course has no batch yet, so the certificate cannot be attached.',
   GENERIC: 'Could not attach the certificate. Please try again.',
 }
+
+const CERT_LEGACY_WARNING =
+  'This template uses the older ${...} placeholders. The platform fills {{...}} placeholders only, so these fields will be empty on the issued certificate.'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 const XLINK_NS = 'http://www.w3.org/1999/xlink'
@@ -59,6 +66,55 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
    */
   attaching = false
 
+  /** Shown under the preview when the chosen template will not render properly. */
+  templateWarning = ''
+
+  /**
+   * The artwork the field placer works on. It changes only when a file is chosen
+   * or the author returns to placing; the placer reloads whenever this changes,
+   * so it must not follow every edit.
+   */
+  svgText = ''
+  /** The template with the placed fields written in -- what gets uploaded. */
+  mappedSvg = ''
+  /** Placing fields comes first; the preview then shows the rendered result. */
+  step: 'place' | 'preview' = 'place'
+  /** Whether any field has been placed. */
+  hasFields = false
+  /**
+   * Whether the author has changed the design since choosing it -- the thing
+   * closing or changing design would throw away. Choosing a design and leaving
+   * again is not work, so it is not asked about.
+   */
+  hasUnsavedChanges = false
+  /**
+   * The editor writes the template out once as soon as it loads a design. That
+   * first write is the design as chosen, not an edit, so it is not counted.
+   */
+  private expectInitialEmit = false
+
+  /**
+   * The standard designs a creator can start from, read from the shared config
+   * on S3 so designs can be added without a portal release.
+   */
+  templates: ICertTemplate[] = []
+  /** The list of designs is still being fetched. */
+  templatesLoading = true
+  /** The list of designs could not be fetched; uploading still works. */
+  templatesFailed = false
+  /** With many designs: the creator chose "Use a ready-made design". */
+  browsingTemplates = false
+  /** What the creator typed to narrow the list of designs. */
+  templateFilter = ''
+  /**
+   * Each design drawn with sample values, for its thumbnail. Showing the file as
+   * it is would put `{{credentialSubject.recipientName}}` in front of the creator.
+   */
+  thumbnails: { [id: string]: string } = {}
+  /** The design being fetched, which disables the others meanwhile. */
+  loadingTemplate: string | null = null
+  templateLoadError = ''
+
   /**
    * Object URLs handed to the preview. They are revoked together when the dialog
    * closes rather than as each one is replaced: the <object> fetches the URL
@@ -78,7 +134,183 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    console.log(this.data)
+    this.loadTemplates()
+    // Every way out is routed through requestClose, so unsaved work is never
+    // lost to a stray Esc or a click outside the dialog -- not only the close icon.
+    this.dialogRef.disableClose = true
+    if (this.dialogRef.backdropClick) {
+      this.dialogRef.backdropClick().subscribe(() => this.requestClose())
+    }
+    if (this.dialogRef.keydownEvents) {
+      this.dialogRef
+        .keydownEvents()
+        .pipe(filter(event => event.key === 'Escape'))
+        .subscribe(() => this.requestClose())
+    }
+  }
+
+  /**
+   * Refreshing or closing the tab would lose the design just as surely as closing
+   * the dialog, and an attach in progress would be cut off halfway. Browsers only
+   * show their own generic "Leave site?" message here -- the text cannot be set --
+   * but it still stops the loss. Nothing is asked when there is nothing to lose.
+   */
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    if (!this.hasUnsavedChanges && !this.attaching) {
+      return
+    }
+    event.preventDefault()
+    // Older Chromium only shows the prompt once returnValue is set.
+    event.returnValue = ''
+  }
+
+  /** Closes the dialog, first checking with the author if that loses their work. */
+  requestClose(): void {
+    if (this.attaching) {
+      return
+    }
+    this.confirmDiscard('discardCertificate').subscribe(discard => {
+      if (discard) {
+        this.dialogRef.close()
+      }
+    })
+  }
+
+  /** Back to choosing a design, first checking with the author if that loses their work. */
+  requestChangeDesign(): void {
+    if (this.attaching) {
+      return
+    }
+    this.confirmDiscard('changeCertificateDesign').subscribe(discard => {
+      if (discard) {
+        this.startOver()
+      }
+    })
+  }
+
+  /** True straight away when there is nothing to lose; otherwise the author's answer. */
+  private confirmDiscard(message: 'discardCertificate' | 'changeCertificateDesign'): Observable<boolean> {
+    if (!this.hasUnsavedChanges) {
+      return of(true)
+    }
+    return this.dialog
+      .open(ConfirmDialogComponent, { width: '460px', data: message })
+      .afterClosed()
+      .pipe(map(answer => answer === true))
+  }
+
+  /**
+   * Which start screen to show. A few designs fit beside the upload card on one
+   * screen; past CERT_TEMPLATE_CHOICE_AFTER the creator first picks a route --
+   * ready-made or their own -- and only then sees the full list.
+   */
+  get startView(): 'single' | 'choose' | 'browse' {
+    if (this.templatesLoading || this.templatesFailed || this.templates.length <= CERT_TEMPLATE_CHOICE_AFTER) {
+      return 'single'
+    }
+    return this.browsingTemplates ? 'browse' : 'choose'
+  }
+
+  /** A few thumbnails on the "ready-made" route card, as a taste of the list. */
+  get peekTemplates(): ICertTemplate[] {
+    return this.templates.slice(0, 3)
+  }
+
+  /** The designs matching the search, by name or description. */
+  get filteredTemplates(): ICertTemplate[] {
+    const term = this.templateFilter.trim().toLowerCase()
+    if (!term) {
+      return this.templates
+    }
+    return this.templates.filter(t => `${t.name} ${t.description}`.toLowerCase().includes(term))
+  }
+
+  browseTemplates(): void {
+    this.browsingTemplates = true
+    this.templateLoadError = ''
+  }
+
+  backToChoice(): void {
+    this.browsingTemplates = false
+    this.templateFilter = ''
+    this.templateLoadError = ''
+  }
+
+  onTemplateFilter(event: Event): void {
+    this.templateFilter = (event.target as HTMLInputElement | null)?.value ?? ''
+  }
+
+  clearTemplateFilter(): void {
+    this.templateFilter = ''
+  }
+
+  /** Fetches the list of standard designs, then draws their thumbnails. */
+  loadTemplates(): void {
+    this.templatesLoading = true
+    this.templatesFailed = false
+    this.editorService
+      .certificateTemplates()
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.templatesLoading = false
+          this.cdr.detectChanges()
+        }),
+      )
+      .subscribe({
+        next: raw => {
+          this.templates = parseCertTemplates(raw)
+          void this.loadThumbnails()
+        },
+        error: () => {
+          this.templates = []
+          this.templatesFailed = true
+        },
+      })
+  }
+
+  /**
+   * Draws each standard design with sample values. A design whose thumbnail
+   * cannot be built still shows -- as a plain placeholder -- and can be chosen.
+   */
+  private async loadThumbnails(): Promise<void> {
+    if (typeof fetch !== 'function') {
+      return
+    }
+    await Promise.all(
+      this.templates.map(async template => {
+        try {
+          const response = await fetch(template.url)
+          if (!response.ok) {
+            return
+          }
+          const { doc } = parseCertificateSvg(await response.text())
+          if (!doc) {
+            return
+          }
+          fillSampleTokens(doc, token => this.sampleFor(token))
+          const qr = doc.querySelector('image[id="QrCode"]')
+          if (qr) {
+            qr.setAttributeNS(XLINK_NS, 'xlink:href', this.sampleQrHref())
+            qr.setAttribute('href', this.sampleQrHref())
+          }
+          const url = URL.createObjectURL(new Blob([serialiseSvg(doc)], { type: 'image/svg+xml' }))
+          this.previewObjectUrls.push(url)
+          this.thumbnails[template.id] = url
+        } catch {
+          // Left without a thumbnail; the card still works.
+        }
+      }),
+    )
+    this.cdr.detectChanges()
+  }
+
+  /** The sample QR image the previews show in place of a learner's real one. */
+  private sampleQrHref(): string {
+    // @ts-ignore: Unreachable code error
+    const bucket = window['env'] ? window['env']['sitePath'] : ''
+    return `${bucket}/cbp-assets/images/qrCode.png`
   }
   onFileSelected(event: any): void {
     this.file = event.target.files[0]
@@ -86,18 +318,116 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
     if (this.file && this.file.type === 'image/svg+xml') {
       const reader = new FileReader()
       reader.onload = (e: any) => {
-        // extractSvgAttributes sets the preview itself, from the markup it has
-        // stamped the placeholders into. Setting it here as well would leave two
-        // object URLs racing for the same element.
-        this.extractSvgAttributes(e.target.result as string)
+        this.startWith(e.target.result as string)
       }
       // Read as text rather than a data URL: certificate templates inline their
       // images, so they run to several MB, and a base64 data URI of that size is
       // refused by the browser and silently previews as blank.
       reader.readAsText(this.file)
     } else {
+      this.svgText = ''
+      this.mappedSvg = ''
+      this.hasFields = false
       this.setPreview(null)
     }
+    // Lets the same file be chosen again after "Choose a different file".
+    if (event && event.target) {
+      event.target.value = ''
+    }
+  }
+
+  /**
+   * Starts from one of the standard designs. It is fetched as text and treated
+   * exactly like an uploaded file, so everything after this point is shared.
+   */
+  async useTemplate(template: ICertTemplate): Promise<void> {
+    if (this.loadingTemplate) {
+      return
+    }
+    this.loadingTemplate = template.id
+    this.templateLoadError = ''
+    this.cdr.detectChanges()
+    try {
+      const response = await fetch(template.url)
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      const markup = await response.text()
+      // Attaching uploads a file, so the design becomes one.
+      this.file = new File([markup], `${template.id}-certificate.svg`, { type: 'image/svg+xml' })
+      this.startWith(markup)
+    } catch {
+      this.templateLoadError = `The ${template.name} design could not be loaded. Please try again.`
+    } finally {
+      this.loadingTemplate = null
+      this.cdr.detectChanges()
+    }
+  }
+
+  /** Back to choosing a design, discarding the one in progress. */
+  startOver(): void {
+    this.svgText = ''
+    this.mappedSvg = ''
+    this.file = null
+    this.step = 'place'
+    this.hasFields = false
+    this.hasUnsavedChanges = false
+    this.templateWarning = ''
+    this.templateLoadError = ''
+    this.svgContent = null
+    this.cdr.detectChanges()
+  }
+
+  /** A chosen design or file starts over at designing it. */
+  private startWith(markup: string): void {
+    this.svgText = markup
+    this.mappedSvg = markup
+    this.step = 'place'
+    this.hasFields = false
+    this.hasUnsavedChanges = false
+    this.expectInitialEmit = true
+    // extractSvgAttributes sets the preview itself, from the markup it has
+    // stamped the placeholders into. Setting it here as well would leave two
+    // object URLs racing for the same element.
+    this.extractSvgAttributes(markup)
+  }
+
+  /** The placer's latest output. Kept apart from svgText so the placer does not reload. */
+  onTemplateChange(markup: string): void {
+    this.mappedSvg = markup
+    if (this.expectInitialEmit) {
+      this.expectInitialEmit = false
+      return
+    }
+    this.hasUnsavedChanges = true
+  }
+
+  onValidityChange(hasFields: boolean): void {
+    this.hasFields = hasFields
+  }
+
+  /**
+   * Back to placing. The placer is rebuilt when it reappears, so it is handed
+   * the mapped template -- it reads the fields back out of it -- or every
+   * placement made so far would be lost.
+   */
+  goToPlace(): void {
+    if (this.step === 'place') {
+      return
+    }
+    if (this.mappedSvg) {
+      this.svgText = this.mappedSvg
+    }
+    // The editor is rebuilt and writes the template out once more on loading;
+    // that is not a new change.
+    this.expectInitialEmit = true
+    this.step = 'place'
+  }
+
+  /** The rendered result, with every field filled with a sample. */
+  goToPreview(): void {
+    this.step = 'preview'
+    this.extractSvgAttributes(this.mappedSvg || this.svgText)
   }
 
   /**
@@ -125,48 +455,68 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
   }
   /**
    * The sample values the preview stamps into a template, keyed by the element
-   * id the template carries. `fallback` is only used when a template does not
-   * carry that element at all, in which case a sample is appended so the author
-   * still sees every field the certificate will end up with.
+   * id the template carries. `fallback` is only used for a template that has no
+   * placeholders of any kind, where there is nothing to fill in place.
    */
   private previewFields(): ICertPreviewField[] {
-    const date = new Date()
-    const day = date.getDate().toString().padStart(2, '0')
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const issuedDate = `${day}-${month}-${date.getFullYear()}`
-    // The course being edited, so the preview shows the author their own title
-    // rather than a sample from another course.
-    const courseName = (this.data && this.data.name) || 'Course Name'
-
     return [
-      { id: 'recipientName', value: this.newRecipientName, fallback: { x: '600', y: '440', fontSize: '48' } },
-      { id: 'rmNumber', value: '#09123', fallback: { x: '600', y: '460', fontSize: '20' } },
-      { id: 'issuedDate', value: issuedDate, fallback: { x: '620', y: '800', fontSize: '20' } },
-      { id: 'maxScore', value: '100%', fallback: { x: '640', y: '780', fontSize: '20' } },
-      { id: 'courseName', value: courseName, fallback: { x: '600', y: '500', fontSize: '24' } },
+      { id: 'recipientName', value: this.sampleFor('recipientName'), fallback: { x: '600', y: '440', fontSize: '48' } },
+      { id: 'rmNumber', value: this.sampleFor('rmNumber'), fallback: { x: '600', y: '460', fontSize: '20' } },
+      { id: 'issuedDate', value: this.sampleFor('issuedDate'), fallback: { x: '620', y: '800', fontSize: '20' } },
+      { id: 'maxScore', value: this.sampleFor('maxScore'), fallback: { x: '640', y: '780', fontSize: '20' } },
+      { id: 'courseName', value: this.sampleFor('courseName'), fallback: { x: '600', y: '500', fontSize: '24' } },
     ]
+  }
+
+  /**
+   * A realistic value for one placeholder, as the learner would see it -- the
+   * same values the field placer shows, and dates in the pattern the template
+   * asks for, so the preview looks like an issued certificate.
+   */
+  private sampleFor(token: string): string {
+    const courseName = this.data && this.data.name ? this.data.name : ''
+    return certSampleFor(token, { courseName })
+  }
+
+  /**
+   * Replaces every token in the template's text with a sample, in place, so each
+   * value keeps the position, anchor and font the designer gave it. Returns the
+   * nodes it filled, so the id pass that follows can leave them alone.
+   */
+  private fillTokens(svgDoc: Document): Set<Element> {
+    return fillSampleTokens(svgDoc, token => this.sampleFor(token))
   }
 
   /**
    * Finds a text placeholder by either id form a template may use.
    *
    * Registry (RC) templates identify the field plainly -- `id="recipientName"`
-   * with `{{credentialSubject.recipientName}}` as the tspan text -- while older
-   * templates put the whole `${recipientName}` token in the id. Matching only
-   * the second form meant every field of an RC template missed, leaving the raw
-   * handlebars on show and appending a duplicate sample over the artwork.
+   * with a handlebars token as the tspan text -- while older templates put the
+   * whole token in the id.
    */
   private findPlaceholder(svgDoc: Document, id: string): Element | null {
     return svgDoc.querySelector(`text[id="${id}"] tspan`) || svgDoc.querySelector(`text[id="\${${id}}"] tspan`)
   }
 
-  /** Stamps one sample value in, appending the field if the template lacks it. */
-  private fillPlaceholder(svgDoc: Document, field: ICertPreviewField): void {
+  /**
+   * Stamps one sample into a field the template identifies by id -- for older
+   * templates, whose text is a stand-in rather than a token. A field the token
+   * pass already filled is left as it is: that value came from the template's
+   * own token, which can carry detail the id cannot, such as its date pattern.
+   */
+  private fillById(svgDoc: Document, field: ICertPreviewField, tokenFilled: Set<Element>): boolean {
     const existing = this.findPlaceholder(svgDoc, field.id)
-    if (existing) {
-      existing.textContent = field.value
-      return
+    if (!existing) {
+      return false
     }
+    if (!tokenFilled.has(existing)) {
+      existing.textContent = field.value
+    }
+    return true
+  }
+
+  /** Appends a sample for a template that carries no placeholders at all. */
+  private appendPlaceholder(svgDoc: Document, field: ICertPreviewField): void {
     const textElement = svgDoc.createElementNS(SVG_NS, 'text')
     textElement.setAttribute('id', field.id)
     textElement.setAttribute('fill', 'black')
@@ -185,10 +535,17 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
     svgDoc.documentElement.appendChild(textElement)
   }
 
-  /** Points the QR placeholder at the sample image, adding it if absent. */
-  private fillQrCode(svgDoc: Document, href: string): void {
+  /**
+   * Points the QR placeholder at the sample image. Only creates one when the
+   * template has nothing else to fill; adding it to a template that simply has
+   * no QR code puts a stray image over the artwork.
+   */
+  private fillQrCode(svgDoc: Document, href: string, create: boolean): void {
     let image = svgDoc.querySelector('image[id="QrCode"]')
     if (!image) {
+      if (!create) {
+        return
+      }
       image = svgDoc.createElementNS(SVG_NS, 'image')
       image.setAttribute('id', 'QrCode')
       image.setAttribute('class', 'qr-code')
@@ -198,7 +555,7 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
       image.setAttribute('height', '150')
       svgDoc.documentElement.appendChild(image)
     }
-    // RC templates carry `xlink:href="{{qrCode}}"`. setAttribute alone writes a
+    // RC templates carry the QR as an xlink:href. setAttribute alone writes a
     // plain attribute that happens to be spelled with a colon, which renderers
     // ignore, so the namespaced one has to be set too; `href` covers SVG2.
     image.setAttributeNS(XLINK_NS, 'xlink:href', href)
@@ -209,7 +566,11 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
     if (!svgContent) {
       return
     }
-    this.newRecipientName = 'Test User'
+    this.newRecipientName = certSampleFor('recipientName')
+    // A template still on the legacy syntax previews fine but will not render on
+    // the platform, which substitutes handlebars only. Say so rather than let it
+    // look correct here and come out blank for the learner.
+    this.templateWarning = CERT_TOKEN_LEGACY.test(svgContent) ? CERT_LEGACY_WARNING : ''
     // @ts-ignore: Unreachable code error
     const bucket = window['env']['sitePath']
     const qrCodeImage = `${bucket}/cbp-assets/images/qrCode.png`
@@ -224,12 +585,27 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
       return
     }
 
-    // Order matters only in that appended fallbacks paint in this sequence; it
-    // matches what the five inline blocks here used to do.
+    // Fill whatever the template actually carries: any token in its text, then
+    // the fields it identifies by id, then its QR code.
+    const tokenFilled = this.fillTokens(svgDoc)
+    let filled = tokenFilled.size
     const fields = this.previewFields()
-    this.fillPlaceholder(svgDoc, fields[0])
-    this.fillQrCode(svgDoc, qrCodeImage)
-    fields.slice(1).forEach(field => this.fillPlaceholder(svgDoc, field))
+    fields.forEach(field => {
+      if (this.fillById(svgDoc, field, tokenFilled)) {
+        filled += 1
+      }
+    })
+    const hasQr = !!svgDoc.querySelector('image[id="QrCode"]')
+    const isBare = filled === 0 && !hasQr
+
+    // Nothing to fill means a template with no placeholders, where appending
+    // samples is the only way to show anything. A template that does carry
+    // placeholders is left exactly as designed -- appending to it put fields
+    // over the artwork that the certificate will never have.
+    if (isBare) {
+      fields.forEach(field => this.appendPlaceholder(svgDoc, field))
+    }
+    this.fillQrCode(svgDoc, qrCodeImage, isBare)
 
     this.setPreview(new XMLSerializer().serializeToString(svgDoc))
   }
@@ -249,7 +625,10 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
     this.dialogRef.disableClose = true
     this.loader.changeLoad.next(true)
     const formdata = new FormData()
-    formdata.append('content', this.file as Blob, (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''))
+    // The template with the placed fields written in, rather than the artwork as
+    // it was chosen; they are the same when nothing has been placed.
+    const content: Blob = this.mappedSvg ? new Blob([this.mappedSvg], { type: 'image/svg+xml' }) : (this.file as Blob)
+    formdata.append('content', content, (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''))
 
     // One chain with a single finalize, so the loader is cleared on every exit:
     // success, a step reporting an unsuccessful status, a course with no batch,
@@ -285,7 +664,7 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
         }),
         finalize(() => {
           this.attaching = false
-          this.dialogRef.disableClose = false
+          // disableClose stays on: closing is always routed through requestClose.
           this.loader.changeLoad.next(false)
           // finalize runs outside Angular's change detection when the last
           // emission came from an XHR callback, so the button would otherwise
@@ -352,7 +731,9 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
           // @ts-ignore: Unreachable code error
           courseId: this.data.identifier,
           template: {
-            template: data.artifactUrl,
+            // No template URL: lern reads the template asset by this identifier
+            // and takes its artifactUrl itself, so a URL sent here is ignored.
+            // The identifier is what makes that work and must stay.
             previewUrl: data.artifactURL,
             identifier: data.identifier,
             criteria: {
