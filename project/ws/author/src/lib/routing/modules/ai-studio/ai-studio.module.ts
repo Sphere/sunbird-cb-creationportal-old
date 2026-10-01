@@ -54,6 +54,70 @@ function toDisplayName(name: string): string {
   })
 }
 
+/** A profile shape that may carry a name under any of the portal's field names. */
+interface NameSource {
+  firstName?: string
+  lastName?: string
+  firstname?: string
+  surname?: string
+  surName?: string
+  givenName?: string
+  userName?: string
+}
+
+/**
+ * A person's full name from one profile shape, or '' if it carries none.
+ *
+ * Structured first+last wins, then a single givenName. userName is the LAST
+ * resort on purpose: in the portal's PID mode it is a login handle, but in
+ * disablePidCheck mode userProfile carries no name fields at all and userName
+ * holds the token's `name` claim — the person's real full name. Ordering it
+ * last means the handle is only ever used when nothing better exists, and only
+ * for the display name — never for the id (see resolveCreatorId).
+ */
+function fullNameOf(src: NameSource | null | undefined): string {
+  if (!src) {
+    return ''
+  }
+  const first = src.firstName ?? src.firstname
+  const last = src.lastName ?? src.surName ?? src.surname
+  const full = [first, last].filter(Boolean).join(' ').trim()
+  return full || (src.givenName ?? '').trim() || (src.userName ?? '').trim()
+}
+
+/**
+ * The stable id to record content against — a userId, never a name.
+ *
+ * userId first, then the V2 profile's userId, then email: each a stable
+ * identifier. userName is deliberately excluded — it is a login handle, and a
+ * name or handle in this column is what split one person across many rows.
+ */
+function resolveCreatorId(cfg: ConfigurationsService): string | null {
+  return cfg.userProfile?.userId || cfg.userProfileV2?.userId || cfg.userProfile?.email || cfg.userProfileV2?.email || null
+}
+
+/**
+ * The person's display name, from wherever the portal stored it.
+ *
+ * Auth modes populate different shapes: PID mode fills userProfile/userProfileV2
+ * with firstName/surName (and the raw profile lives in unMappedUser, top level
+ * or under profileDetails.profileReq.personalDetails); disablePidCheck mode fills
+ * only userProfile.userName with the token's name claim. Tried in order so the id
+ * is never recorded without a name when one exists anywhere. Unlike the id, a
+ * handle here is harmless — this column is shown, never grouped on.
+ */
+function resolveCreatorName(cfg: ConfigurationsService): string | null {
+  const raw = (cfg.unMappedUser as { result?: { response?: unknown } } | null)?.result?.response ?? cfg.unMappedUser
+  const rawAny = raw as { profileDetails?: { profileReq?: { personalDetails?: NameSource }; personalDetails?: NameSource } } | null
+  const personal = rawAny?.profileDetails?.profileReq?.personalDetails ?? rawAny?.profileDetails?.personalDetails
+  const full =
+    fullNameOf(cfg.userProfile as NameSource | null) ||
+    fullNameOf(cfg.userProfileV2 as NameSource | null) ||
+    fullNameOf(personal) ||
+    fullNameOf(raw as NameSource | null)
+  return full ? toDisplayName(full) : null
+}
+
 @NgModule({
   declarations: [AIStudioDashboardComponent, ContentStudioComponent, AssessmentComponent, ReportsComponent],
   imports: [
@@ -102,24 +166,19 @@ export class AIStudioModule {
       // unreadable. creatorName below now carries the name, so nobody ever has
       // to look at this value.
       //
-      // Falls back to userName then email, and finally to null, which lets the
-      // service apply its own default. Those are last resorts for a profile
-      // that somehow carries no id, not alternatives: mixing identifier kinds
-      // in one column would split a person exactly the way a rename used to.
-      creator: () => {
-        const profile = this.configService.userProfile
-        return profile ? profile.userId || profile.userName || profile.email || null : null
-      },
+      // Only ever an id, never a name. userId first; if a V1 profile somehow
+      // carries none, the V2 profile's userId, then email — each a stable
+      // identifier. userName is deliberately NOT in this chain: it is a login
+      // handle, not the key, and putting it here is exactly how a value like
+      // "aistudioadmin_wctg" (or a hand-set "AI-STUDIO ADMIN") ended up in a
+      // column that is meant to hold the UUID the report groups by. null lets
+      // the service apply its own default rather than record a name.
+      creator: () => resolveCreatorId(this.configService),
 
-      creatorName: () => {
-        const profile = this.configService.userProfile
-        if (!profile) {
-          return null
-        }
-
-        const full = [profile.firstName, profile.lastName].filter(Boolean).join(' ').trim()
-        return full ? toDisplayName(full) : null
-      },
+      // The human-readable name for the report, resolved from whichever profile
+      // shape this auth mode populated (see resolveCreatorName). null lets the
+      // service fall back to showing the id.
+      creatorName: () => resolveCreatorName(this.configService),
     })
   }
 }

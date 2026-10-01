@@ -23,7 +23,6 @@
      second, weaker button. */
   --ai-brand-soft: #eef4fb;
   --ai-on-brand: #ffffff;
-  --ai-font: Roboto, sans-serif;
 
   /* Notices. Amber is the package's warning colour and it reads as Aastrika's
      cream against the portal's blue, so the notices are restated in the same
@@ -35,7 +34,6 @@
 
   /* How much room a feature gets, and the chrome above it. Both are layout
      facts about this screen, so they are named once and read below. */
-  --ai-max-width: 1600px;
   --ai-chrome: 164px;
 }
 
@@ -76,32 +74,16 @@ aastrika-reports {
   --aastrika-gold: var(--ai-brand);
   --aastrika-gold-deep: var(--ai-brand-deep);
   --aastrika-gold-soft: var(--ai-brand-soft);
-  --aastrika-font: var(--ai-font);
+  /* The font is deliberately NOT mapped. The package bundles its own (Inter)
+     and asserts it on :host and every heading class, so the element carries its
+     type into any host. Mapping --aastrika-font to the portal's face here would
+     override that — the opposite of letting the element keep its own design. */
 
   /* Warnings follow the portal's palette rather than the package's amber. The
      ok/error pair keep their own colours: green and red mean something on their
      own and are not the brand's to repaint. */
   --aastrika-warn-bg: var(--ai-note-bg);
   --aastrika-warn-fg: var(--ai-note-fg);
-
-  /* Give the element's headings their font back.
-   *
-   * The portal's Material typography sets `html .mat-typography h1 { font: 400
-   * 3.562rem/4rem "Roboto, sans-serif" }` on the body, and the quotes there
-   * wrap the WHOLE stack — so the browser looks for one family literally named
-   * "Roboto, sans-serif", fails to find it, and falls back to its serif
-   * default. That is why one heading rendered in Times while every other word
-   * in the element was Roboto.
-   *
-   * It reaches in because it is a global h1 selector with an ancestor class, so
-   * nothing the package sets on itself can outrank it. Restated here for our
-   * own headings only, reading the same token as the rest of the element, and
-   * leaving every other h1 in the portal exactly as it was. */
-  ::ng-deep h1,
-  ::ng-deep h2,
-  ::ng-deep h3 {
-    font-family: var(--ai-font);
-  }
 
   /* A custom element is display:inline by default, and vertical padding on an
      inline box does not lay out — without this the inset below is ignored. */
@@ -117,54 +99,11 @@ aastrika-reports {
      has no such ancestor. */
   padding: 34px var(--ai-gutter, 30px) 60px;
 
-  /* The package caps its card stack at 860px, which on the portal's wide
-   * content area leaves most of the screen empty. The portal already gives
-   * every other page the full width, so the element matches them.
-   *
-   * Capped rather than uncapped: a card stretched across a very wide monitor
-   * puts its label at one edge and its control at the other, and the two-column
-   * steps inside (1fr + 280px) would give the fixed column a sliver of the row.
-   * 1600px is wide enough to use the space and narrow enough to stay readable.
-   *
-   * Only .steps is touched. The package's other width limits are deliberate and
-   * stay: .page-sub at 62ch and .voice-why at 52ch are reading measures, and
-   * .search / .revise-voice are control widths that should not stretch.
-   *
-   * INTERIM — a width attribute or token on the package would be the supported
-   * way to say this; reaching in by class name is not. */
-  ::ng-deep .steps {
-    max-width: var(--ai-max-width);
-  }
-
-  /* Width is only worth having if it buys DENSITY, not distance.
-   *
-   * The package's style grid is fixed at two columns, so extra width made each
-   * card twice as wide instead of showing more of them: a card ended up holding
-   * one ~90-character line, past a comfortable measure, and read as a row
-   * rather than a card. auto-fit with a sensible minimum lets the row grow to
-   * three or four cards on a wide screen and fall back to two, then one, on a
-   * narrow one — the same rule covers every size, so no extra breakpoint. */
-  ::ng-deep .types {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  }
-
-  /* Some things must NOT stretch, whatever the container does.
-   *
-   * A dropzone is a target: at full width it becomes a 1500px letterbox with
-   * its label marooned in the middle, which reads as a divider rather than
-   * something to drop a file on. Capping it keeps it a shape the eye can aim
-   * at, and centring keeps it under the heading it belongs to. */
-  ::ng-deep .drop {
-    max-width: 720px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  /* Wider cards need proportionally more air, or the content sits thin against
-   * a lot of border. The package's 26/28px was chosen for an 860px card. */
-  ::ng-deep .card-pad {
-    padding: 28px 32px;
-  }
+  /* No class-name overrides. The package now caps and centres its own width
+     (.as-wide / .cs-wide default to 1600px), lays out its own card grids and
+     dropzones, and owns its type. Reaching in by class name is what broke when
+     the redesign renamed those classes — so layout stays the package's, and a
+     host that needs a different width sets --aastrika-max-width. */
 }
 
 /* The element scrolls inside itself, so the page around it does not.
