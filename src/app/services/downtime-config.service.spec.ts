@@ -125,6 +125,40 @@ describe('DowntimeConfigService', () => {
     })
   })
 
+  describe('choosing the section by host', () => {
+    const onHost = (host: string) => jest.spyOn(service as any, 'currentHostname').mockReturnValue(host)
+
+    it('prefers the section for this host', async () => {
+      onHost('cbp-uat.aastrika.org')
+      const state = await loadWith(formResponse({ 'cbp-uat': cbp({ type: 'partial' }), cbp: cbp(), default: cbp() }))
+      expect(state.type).toBe('partial')
+    })
+
+    it('leaves other CBP hosts alone', async () => {
+      onHost('cbp-staging.aastrika.org')
+      const state = await loadWith(formResponse({ 'cbp-uat': cbp() }))
+      expect(state.isDowntime).toBe(false)
+    })
+
+    it('falls back to cbp when this host has no section', async () => {
+      onHost('cbp-sphere.aastrika.org')
+      const state = await loadWith(formResponse({ cbp: cbp({ type: 'partial' }), default: cbp() }))
+      expect(state.type).toBe('partial')
+    })
+
+    it('lets a switched-off host section override cbp, so one environment can stay up', async () => {
+      onHost('cbp-staging.aastrika.org')
+      const state = await loadWith(formResponse({ 'cbp-staging': cbp({ isEnabled: false }), cbp: cbp() }))
+      expect(state.isDowntime).toBe(false)
+    })
+
+    it('uses only cbp and default on a host that is not a CBP host, such as localhost', async () => {
+      onHost('localhost')
+      const state = await loadWith(formResponse({ localhost: cbp(), cbp: cbp({ type: 'partial' }) }))
+      expect(state.type).toBe('partial')
+    })
+  })
+
   describe('bypass', () => {
     it('blocks everyone during a full downtime by default', async () => {
       await loadWith(formResponse({ cbp: cbp() }))
