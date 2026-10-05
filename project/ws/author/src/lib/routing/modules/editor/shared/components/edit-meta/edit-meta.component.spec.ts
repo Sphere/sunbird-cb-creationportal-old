@@ -1046,6 +1046,8 @@ describe('EditMetaComponent', () => {
       expect(http.post).toHaveBeenCalled()
       expect(component.contentForm.controls.appIcon.value).toBe('a/b.png')
       expect(component.contentForm.controls.thumbnail.value).toBe('a/b.png')
+      // The poster follows the new image, or the old one survives every change.
+      expect(component.contentForm.controls.posterImage.value).toBe('a/b.png')
       expect(authInitService.uploadData).toHaveBeenCalledWith('thumbnail')
     })
 
