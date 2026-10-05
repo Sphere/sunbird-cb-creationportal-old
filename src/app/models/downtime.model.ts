@@ -65,7 +65,11 @@ export interface DowntimeState {
   refreshInterval: number
 }
 
-/** The key this portal reads under `DOWN_TIME_INFO.WEB`; `default` is the fallback. */
+/**
+ * The key for every CBP portal under `DOWN_TIME_INFO.WEB`. A host-specific key
+ * (`cbp-uat`, `cbp-staging`, `cbp-sphere`) is checked before it, and `default`
+ * after it; the first section present is used.
+ */
 export const DOWNTIME_APP_NAME = 'cbp'
 
 /** The query parameter that carries the bypass code. */

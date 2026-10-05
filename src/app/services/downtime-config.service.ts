@@ -106,7 +106,10 @@ export class DowntimeConfigService implements OnDestroy {
 
   private parse(response: unknown): DowntimeState {
     const web = this.pick(response, ['result', 'form', 'data', 'schemas', 'DOWN_TIME_INFO', 'WEB'])
-    const config = (this.pick(web, [DOWNTIME_APP_NAME]) || this.pick(web, ['default'])) as AppDowntimeConfig | undefined
+    // The most specific section present wins, even if it is switched off.
+    const config = this.configKeys()
+      .map(key => this.pick(web, [key]))
+      .find(section => !!section) as AppDowntimeConfig | undefined
     this.config = config || null
     if (!config) {
       return NO_DOWNTIME
@@ -142,6 +145,23 @@ export class DowntimeConfigService implements OnDestroy {
       // Only an enabled https link is shown; anything else in hand-edited config is ignored.
       appLink: link && link.isEnabled && /^https:\/\//i.test(link.url || '') ? link : undefined,
     }
+  }
+
+  /**
+   * The sections to look for, most specific first: this host (`cbp-uat`,
+   * `cbp-staging`, `cbp-sphere` -- the first label of the hostname), then every
+   * CBP portal (`cbp`), then every portal (`default`). Environments that share a
+   * form service can then still be switched separately.
+   */
+  private configKeys(): string[] {
+    const hostKey = (this.currentHostname().split('.')[0] || '').toLowerCase()
+    const keys = hostKey.startsWith(DOWNTIME_APP_NAME) && hostKey !== DOWNTIME_APP_NAME ? [hostKey] : []
+    return [...keys, DOWNTIME_APP_NAME, 'default']
+  }
+
+  /** Separate so tests can set the host. */
+  protected currentHostname(): string {
+    return window.location.hostname
   }
 
   private scheduleRefresh(seconds: number): void {
