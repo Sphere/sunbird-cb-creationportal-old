@@ -1,0 +1,90 @@
+// Covers the whole portal, above dialogs and the route loader.
+.downtime-full {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  overflow-y: auto;
+  background: var(--dt-bg, #f5f8fb);
+  color: var(--dt-text, #1a2d45);
+  font-family: Roboto, sans-serif;
+
+  &.is-dark {
+    background: var(--dt-bg, #0f1720);
+    color: var(--dt-text, #e6edf3);
+  }
+}
+
+.downtime-full-card {
+  width: 100%;
+  max-width: 560px;
+  text-align: center;
+}
+
+.downtime-full-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--dt-primary, #1c5d95) 12%, transparent);
+  color: var(--dt-primary, #1c5d95);
+
+  mat-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 44px;
+  }
+
+  img {
+    max-width: 56px;
+    max-height: 56px;
+  }
+}
+
+.downtime-full-title {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.downtime-full-message {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+.downtime-full-link {
+  display: inline-block;
+  margin-top: 24px;
+  padding: 8px 24px;
+  border-radius: 8px;
+  background: var(--dt-primary, #1c5d95);
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--dt-primary, #1c5d95);
+    outline-offset: 3px;
+  }
+}
+
+.downtime-full-hint {
+  margin: 8px 0 0;
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+@media (max-width: 600px) {
+  .downtime-full-title {
+    font-size: 22px;
+  }
+}

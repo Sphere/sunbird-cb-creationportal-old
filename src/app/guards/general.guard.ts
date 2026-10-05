@@ -11,7 +11,7 @@ import {
 // import { ConfigurationsService, AuthKeycloakService } from '../../../library/ws-widget/utils/src/public-api'
 
 import { ConfigurationsService } from '../../../library/ws-widget/utils/src/public-api'
-
+import { DowntimeConfigService } from '../services/downtime-config.service'
 
 @Injectable({
   providedIn: 'root',
@@ -21,12 +21,17 @@ export class GeneralGuard implements CanActivate {
     private router: Router,
     private configSvc: ConfigurationsService,
     // private authSvc: AuthKeycloakService
-  ) { }
+    private downtimeSvc?: DowntimeConfigService,
+  ) {}
 
   async canActivate(
     next: ActivatedRouteSnapshot,
     // state: RouterStateSnapshot,
   ): Promise<boolean | UrlTree> {
+    // A full downtime holds every page behind the maintenance screen.
+    if (this.downtimeSvc && this.downtimeSvc.isBlocking()) {
+      return false
+    }
     const requiredFeatures = (next.data && next.data.requiredFeatures) || []
     const requiredRoles = (next.data && next.data.requiredRoles) || []
     // return await this.shouldAllow<boolean | UrlTree>(state, requiredFeatures, requiredRoles)
@@ -67,11 +72,7 @@ export class GeneralGuard implements CanActivate {
     // }
 
     // If invalid user
-    if (
-      this.configSvc.userProfile === null &&
-      this.configSvc.instanceConfig &&
-      !Boolean(this.configSvc.instanceConfig.disablePidCheck)
-    ) {
+    if (this.configSvc.userProfile === null && this.configSvc.instanceConfig && !Boolean(this.configSvc.instanceConfig.disablePidCheck)) {
       return this.router.parseUrl('/app/invalid-user')
     }
     /**
@@ -95,8 +96,8 @@ export class GeneralGuard implements CanActivate {
       // return this.router.parseUrl(`/app/tnc`)
     }
     /**
-       * Test IF User updated the profile details
-       */
+     * Test IF User updated the profile details
+     */
     // if (!this.configSvc.profileDetailsStatus) {
     //   // return this.router.parseUrl('/app/user-profile/details')
     //   return this.router.navigate(['/app/user-profile/details', { isForcedUpdate: true }])
@@ -106,9 +107,7 @@ export class GeneralGuard implements CanActivate {
      * Test IF User has requried role to access the page
      */
     if (requiredRoles && requiredRoles.length && this.configSvc.userRoles) {
-      const requiredRolePreset = requiredRoles.some(item =>
-        (this.configSvc.userRoles || new Set()).has(item),
-      )
+      const requiredRolePreset = requiredRoles.some(item => (this.configSvc.userRoles || new Set()).has(item))
 
       if (!requiredRolePreset) {
         return this.router.navigateByUrl('/error-access-forbidden')
@@ -117,9 +116,7 @@ export class GeneralGuard implements CanActivate {
 
     // check if feature is restricted
     if (requiredFeatures && requiredFeatures.length && this.configSvc.restrictedFeatures) {
-      const requiredFeaturesMissing = requiredFeatures.some(item =>
-        (this.configSvc.restrictedFeatures || new Set()).has(item),
-      )
+      const requiredFeaturesMissing = requiredFeatures.some(item => (this.configSvc.restrictedFeatures || new Set()).has(item))
 
       if (requiredFeaturesMissing) {
         return this.router.parseUrl('/author/cbp')
