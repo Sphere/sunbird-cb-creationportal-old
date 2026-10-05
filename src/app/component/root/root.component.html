@@ -1,3 +1,7 @@
+<!-- Planned downtime: the full-screen maintenance page, or a banner for a partial downtime. -->
+<ws-downtime-full />
+<ws-downtime-banner />
+
 <div class="route-loader-overlay" *ngIf="routeChangeInProgress" aria-live="polite" aria-label="Loading">
   <div class="route-loader-card">
     <div class="route-loader-spinner"></div>
@@ -11,11 +15,13 @@
     isNavBarRequired && (isXSmall$ | async) === false && (authSvc.isLoggedIn$ | async) === true
   " [hidden]="!showNavbar" [mode]="'top'"></ws-app-nav-bar> -->
 
-<ws-app-nav-bar class="top-nav-bar" *ngIf="
-      isNavBarRequired && (isXSmall$ | async) === false
-    " [hidden]="!showNavbar" [mode]="'top'"></ws-app-nav-bar>
+<ws-app-nav-bar
+  class="top-nav-bar"
+  *ngIf="isNavBarRequired && (isXSmall$ | async) === false"
+  [hidden]="!showNavbar"
+  [mode]="'top'"
+></ws-app-nav-bar>
 <!-- </ws-widget-sticky-header> -->
-
 
 <!-- <div class="height-adjust" [ngClass]="{
     'height-on-bottom custom-scroll':
@@ -30,33 +36,29 @@
   <router-outlet></router-outlet>
 </div> -->
 
-<div class="height-adjust" [ngClass]="{
-    'height-on-bottom custom-scroll':
-      (isXSmall$ | async) === true && showNavbar,
-      'height-adjust-setup' : isSetupPage,
-    'height-on-top':
-      (isXSmall$ | async) === false &&
-      showNavbar &&
-      isNavBarRequired
-  }">
+<div
+  class="height-adjust"
+  [ngClass]="{
+    'height-on-bottom custom-scroll': (isXSmall$ | async) === true && showNavbar,
+    'height-adjust-setup': isSetupPage,
+    'height-on-top': (isXSmall$ | async) === false && showNavbar && isNavBarRequired,
+  }"
+>
   <router-outlet></router-outlet>
 </div>
-
 
 <!-- <ws-app-footer class="app-footer" [ngClass]="{ 'padding-bottom: 56px': !isSetupPage}"
   *ngIf="(authSvc.isLoggedIn$ | async) === true && showNavbar"></ws-app-footer> -->
 
 <!-- <ws-app-footer class="app-footer" [ngClass]="{ 'padding-bottom: 56px': !isSetupPage}" *ngIf="showNavbar">
 </ws-app-footer> -->
-<ws-app-footer class="app-footer" [ngStyle]="{ 'padding-bottom: 56px': !isSetupPage}" *ngIf="showNavbar">
-</ws-app-footer>
+<ws-app-footer class="app-footer" [ngStyle]="{ 'padding-bottom: 56px': !isSetupPage }" *ngIf="showNavbar"> </ws-app-footer>
 
 <!-- <ws-app-nav-bar class="bottom-nav-bar" [hidden]="!showNavbar"
   *ngIf="isNavBarRequired && (isXSmall$ | async) === true && (authSvc.isLoggedIn$ | async) === true" [mode]="'bottom'">
 </ws-app-nav-bar> -->
 
-<ws-app-nav-bar class="bottom-nav-bar" [hidden]="!showNavbar" *ngIf="isNavBarRequired && (isXSmall$ | async) === true"
-  [mode]="'bottom'">
+<ws-app-nav-bar class="bottom-nav-bar" [hidden]="!showNavbar" *ngIf="isNavBarRequired && (isXSmall$ | async) === true" [mode]="'bottom'">
 </ws-app-nav-bar>
 
 <ng-container #previewContainer></ng-container>

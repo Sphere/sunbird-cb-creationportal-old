@@ -36,6 +36,10 @@ import { SearchModule } from '@ws/app/src/public-api'
 import { KeycloakService } from 'keycloak-angular'
 import { AppRoutingModule } from './app-routing.module'
 import { InitService } from './services/init.service'
+import { DowntimeConfigService } from './services/downtime-config.service'
+import { appInitializer } from './app-initializer'
+import { DowntimeFullComponent } from './component/downtime-full/downtime-full.component'
+import { DowntimeBannerComponent } from './component/downtime-banner/downtime-banner.component'
 import { GlobalErrorHandlingService } from './services/global-error-handling.service'
 
 import { RootComponent } from './component/root/root.component'
@@ -60,14 +64,6 @@ import { OrgComponent } from '../../project/ws/app/src/lib/routes/org/components
 import { PlayerVideoPopupComponent } from '../../library/ws-widget/collection/src/lib/player-video-popup/player-video-popup-component'
 import { SharedModule } from '../../project/ws/author/src/lib/modules/shared/shared.module'
 
-const appInitializer = (initSvc: InitService, logger: LoggerService) => async () => {
-  try {
-    await initSvc.init()
-  } catch (error) {
-    logger.error('ERROR DURING APP INITIALIZATION >', error)
-  }
-}
-
 const getBaseHref = (platformLocation: PlatformLocation): string => {
   return platformLocation.getBaseHrefFromDOM()
 }
@@ -86,6 +82,8 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
     LoginRootDirective,
     OrgComponent,
     PlayerVideoPopupComponent,
+    DowntimeFullComponent,
+    DowntimeBannerComponent,
   ],
   imports: [
     SharedModule,
@@ -124,7 +122,7 @@ const getBaseHref = (platformLocation: PlatformLocation): string => {
   bootstrap: [RootComponent],
   providers: [
     {
-      deps: [InitService, LoggerService],
+      deps: [InitService, LoggerService, DowntimeConfigService],
       multi: true,
       provide: APP_INITIALIZER,
       useFactory: appInitializer,
