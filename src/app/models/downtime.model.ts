@@ -65,9 +65,22 @@ export interface DowntimeContent {
   appLink?: AppLink
 }
 
-export interface AppDowntimeConfig {
+/** One kind of downtime inside a section: switched on or off, with its own text. */
+export interface DowntimeModeConfig {
   isEnabled: boolean
-  type: DowntimeType
+  content?: Partial<DowntimeContent>
+}
+
+/**
+ * A section of the form. It either holds a `full` and a `partial` block, each
+ * switched on separately (full wins when both are on), or -- the older shape --
+ * a single `isEnabled` + `type` + `content`.
+ */
+export interface AppDowntimeConfig {
+  full?: DowntimeModeConfig
+  partial?: DowntimeModeConfig
+  isEnabled?: boolean
+  type?: DowntimeType
   /** How often open tabs re-read the config, in seconds. */
   refreshInterval?: number
   /** rootOrgId values whose signed-in users skip the downtime (for testing). */

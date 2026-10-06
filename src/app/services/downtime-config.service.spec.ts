@@ -306,4 +306,44 @@ describe('DowntimeConfigService', () => {
       expect(content.dismissible).toBe(false)
     })
   })
+
+  describe('full and partial blocks in one section', () => {
+    const text = (en: string) => ({ icon: 'wrench', title: { en }, message: { en: en + ' message' } })
+    const section = (fullOn: boolean, partialOn: boolean) => ({
+      refreshInterval: 45,
+      full: { isEnabled: fullOn, content: text('Full') },
+      partial: { isEnabled: partialOn, content: text('Partial') },
+    })
+
+    it('shows the partial banner when only partial is on', async () => {
+      const state = await loadWith(formResponse({ cbp: section(false, true) }))
+      expect(state.isDowntime).toBe(true)
+      expect(state.type).toBe('partial')
+      expect(state.content.title.en).toBe('Partial')
+      expect(state.refreshInterval).toBe(45)
+    })
+
+    it('shows the full page when only full is on', async () => {
+      const state = await loadWith(formResponse({ cbp: section(true, false) }))
+      expect(state.type).toBe('full')
+      expect(state.content.title.en).toBe('Full')
+    })
+
+    it('lets full win when both are on', async () => {
+      const state = await loadWith(formResponse({ cbp: section(true, true) }))
+      expect(state.type).toBe('full')
+      expect(state.content.title.en).toBe('Full')
+    })
+
+    it('has no downtime when both are off, ignoring any old-style switch', async () => {
+      const state = await loadWith(formResponse({ cbp: { ...section(false, false), isEnabled: true, type: 'full' } }))
+      expect(state.isDowntime).toBe(false)
+      expect(state.refreshInterval).toBe(45)
+    })
+
+    it('works with only one of the blocks present', async () => {
+      const state = await loadWith(formResponse({ cbp: { partial: { isEnabled: true, content: text('Partial') } } }))
+      expect(state.type).toBe('partial')
+    })
+  })
 })
