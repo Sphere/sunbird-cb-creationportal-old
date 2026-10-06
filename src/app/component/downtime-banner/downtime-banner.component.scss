@@ -1,0 +1,102 @@
+@import 'ws-vars';
+
+// Fixed at the top (or bottom) of the viewport, so it is seen on every page. At the
+// top it sets --downtime-banner-offset, which moves the root nav bar and the page
+// content down below it rather than under it.
+.downtime-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--dt-banner, #fff3cd);
+  border-left: 4px solid var(--dt-border, #ce9a39);
+  color: var(--dt-text, #1a2d45);
+  font-family: $font-family-roboto;
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: 0 1px 4px rgba(26, 45, 69, 0.12);
+
+  &.is-bottom {
+    top: auto;
+    bottom: 0;
+  }
+}
+
+.downtime-banner-icon {
+  display: inline-flex;
+  flex: none;
+  margin-top: 1px;
+  color: var(--dt-border, #ce9a39);
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+
+  img {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.downtime-banner-text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  min-width: 0;
+}
+
+.downtime-banner-tag {
+  flex-basis: 100%;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.downtime-banner-title {
+  font-weight: 500;
+}
+
+.downtime-banner-link {
+  color: var(--dt-primary, #1c5d95);
+  font-weight: 500;
+}
+
+.downtime-banner-close {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: -4px -8px -4px 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dt-primary, #1c5d95);
+    outline-offset: 1px;
+  }
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}

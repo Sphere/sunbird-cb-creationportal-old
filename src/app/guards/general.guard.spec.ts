@@ -87,4 +87,17 @@ describe('GeneralGuard', () => {
     configSvc.restrictedFeatures = undefined
     await expect(guard.canActivate(snapshot({ requiredFeatures: ['frac'] }))).resolves.toBe(true)
   })
+
+  describe('during a full downtime', () => {
+    it('holds every page behind the maintenance screen', async () => {
+      const blocked = new (GeneralGuard as any)(router, configSvc, { isBlocking: () => true })
+      await expect(blocked.canActivate(snapshot())).resolves.toBe(false)
+      expect(router.parseUrl).not.toHaveBeenCalled()
+    })
+
+    it('lets users through when the downtime does not block them', async () => {
+      const open = new (GeneralGuard as any)(router, configSvc, { isBlocking: () => false })
+      await expect(open.canActivate(snapshot())).resolves.toBe(true)
+    })
+  })
 })

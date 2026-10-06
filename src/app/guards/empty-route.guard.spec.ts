@@ -32,4 +32,19 @@ describe('EmptyRouteGuard', () => {
     expect(guard.canActivate({} as any, {} as any)).toBe(false)
     expect(router.parseUrl).not.toHaveBeenCalled()
   })
+
+  describe('during a full downtime', () => {
+    it('does not send a signed-in user on to the authoring home page', () => {
+      configSvc.userProfile = { userId: 'u1' }
+      const blocked = new (EmptyRouteGuard as any)(router, configSvc, { isBlocking: () => true })
+      expect(blocked.canActivate({} as any, {} as any)).toBe(false)
+      expect(router.parseUrl).not.toHaveBeenCalled()
+    })
+
+    it('behaves as before when the downtime does not block', () => {
+      configSvc.userProfile = { userId: 'u1' }
+      const open = new (EmptyRouteGuard as any)(router, configSvc, { isBlocking: () => false })
+      expect(open.canActivate({} as any, {} as any)).toEqual({ url: '/author/cbp' })
+    })
+  })
 })

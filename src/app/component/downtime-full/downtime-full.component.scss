@@ -1,0 +1,149 @@
+@import 'ws-vars';
+
+// Covers the whole portal, above dialogs and the route loader.
+.downtime-full {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  overflow-y: auto;
+  background: var(--dt-bg, #f5f8fb);
+  color: var(--dt-text, #1a2d45);
+  font-family: $font-family-roboto;
+
+  &.is-dark {
+    background: var(--dt-bg, #0f1720);
+    color: var(--dt-text, #e6edf3);
+  }
+}
+
+.downtime-full-card {
+  width: 100%;
+  max-width: 560px;
+  text-align: center;
+}
+
+.downtime-full-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--dt-primary, #1c5d95) 12%, transparent);
+  color: var(--dt-primary, #1c5d95);
+
+  mat-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 44px;
+  }
+
+  img {
+    max-width: 56px;
+    max-height: 56px;
+  }
+}
+
+// Sized here, not by the height attribute, which the global img styles override.
+.downtime-full-logo {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  margin: 0 auto $size-l;
+  // Blends a configured logo with a white background into the page colour.
+  mix-blend-mode: multiply;
+}
+
+.downtime-full.is-dark .downtime-full-logo {
+  mix-blend-mode: normal;
+}
+
+// The app's global heading styles set a serif face on h1; the portal uses Roboto.
+.downtime-full-title {
+  margin: 0 0 $size-xs;
+  font-family: $font-family-roboto;
+  letter-spacing: normal;
+  // The design system's page-title size.
+  font-size: $size-xl;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.downtime-full-message {
+  margin: 0;
+  font-family: $font-family-roboto;
+  font-size: $size-m;
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+.downtime-full-note {
+  margin: $size-m 0 0;
+  font-family: $font-family-roboto;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.downtime-full-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: $size-s;
+  margin-top: $size-l;
+}
+
+// Secondary (outlined) so a configured link, when present, stays the one primary action.
+.downtime-full-retry {
+  padding: $size-xs $size-l;
+  border: 1px solid var(--dt-primary, #1c5d95);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--dt-primary, #1c5d95);
+  font-family: $font-family-roboto;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, var(--dt-primary, #1c5d95) 8%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dt-primary, #1c5d95);
+    outline-offset: 3px;
+  }
+}
+
+.downtime-full-link {
+  display: inline-block;
+  padding: $size-xs $size-l;
+  font-family: $font-family-roboto;
+  font-size: 14px;
+  border-radius: 8px;
+  background: var(--dt-primary, #1c5d95);
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--dt-primary, #1c5d95);
+    outline-offset: 3px;
+  }
+}
+
+.downtime-full-hint {
+  margin: 8px 0 0;
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+@media (max-width: 600px) {
+  .downtime-full-title {
+    font-size: $size-l;
+  }
+}

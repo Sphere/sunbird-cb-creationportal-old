@@ -20,8 +20,12 @@ ws-app-nav-bar {
 }
 
 @keyframes route-loader-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .route-loader-card {
@@ -29,36 +33,46 @@ ws-app-nav-bar {
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 32px 48px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10), 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.06);
   animation: route-loader-pop-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes route-loader-pop-in {
-  from { transform: scale(0.88); opacity: 0; }
-  to   { transform: scale(1);    opacity: 1; }
+  from {
+    transform: scale(0.88);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .route-loader-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid #E2E8F0;
-  border-top-color: #1C5D95;
+  border: 3px solid #e2e8f0;
+  border-top-color: #1c5d95;
   border-radius: 50%;
   animation: route-loader-spin 0.75s linear infinite;
 }
 
 @keyframes route-loader-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .route-loader-text {
   font-size: 13px;
   font-weight: 500;
-  color: #64748B;
+  color: #64748b;
   font-family: Roboto, sans-serif;
   margin: 0;
   letter-spacing: 0.1px;
@@ -70,14 +84,16 @@ ws-app-nav-bar {
   box-sizing: border-box;
 }
 
+// --downtime-banner-offset is the height of a maintenance banner shown at the top
+// (0 otherwise), so the nav bar and the page sit below it rather than under it.
 .height-on-top {
-  padding-top: 72px;
+  padding-top: calc(72px + var(--downtime-banner-offset, 0px));
 }
 
 .top-nav-bar {
   position: fixed;
   width: 100%;
-  top: 0;
+  top: var(--downtime-banner-offset, 0px);
 }
 
 .bottom-nav-bar {

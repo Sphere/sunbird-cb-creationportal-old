@@ -1,0 +1,37 @@
+@if (visible()) {
+  <div
+    #banner
+    class="downtime-banner"
+    role="status"
+    [class.is-bottom]="css().position === 'bottom'"
+    [style.--dt-banner]="css().bannerColor"
+    [style.--dt-border]="css().borderColor"
+    [style.--dt-text]="css().textColor"
+    [style.--dt-primary]="css().primaryColor"
+  >
+    <span class="downtime-banner-icon" aria-hidden="true">
+      @if (imageIcon()) {
+        <img [src]="icon()" alt="" />
+      } @else {
+        <mat-icon>{{ materialIcon() }}</mat-icon>
+      }
+    </span>
+    <div class="downtime-banner-text">
+      @if (bypassing() && bypassNotice()) {
+        <span class="downtime-banner-tag">{{ bypassNotice() }}</span>
+      }
+      <span class="downtime-banner-title">{{ title() }}</span>
+      @if (message()) {
+        <span class="downtime-banner-message">{{ message() }}</span>
+      }
+      @if (appLink(); as link) {
+        <a class="downtime-banner-link" [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.label }}</a>
+      }
+    </div>
+    @if (dismissible()) {
+      <button type="button" class="downtime-banner-close" [attr.aria-label]="dismissLabel()" (click)="dismiss()">
+        <mat-icon aria-hidden="true">close</mat-icon>
+      </button>
+    }
+  </div>
+}

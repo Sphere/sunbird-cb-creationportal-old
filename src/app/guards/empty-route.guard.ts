@@ -14,7 +14,7 @@ import { Observable } from 'rxjs'
 // import { ConfigurationsService, AuthKeycloakService } from '@ws-widget/utils'
 
 import { ConfigurationsService } from '@ws-widget/utils'
-
+import { DowntimeConfigService } from '../services/downtime-config.service'
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +25,8 @@ export class EmptyRouteGuard implements CanActivate {
     private configSvc: ConfigurationsService,
     // private authSvc: AuthKeycloakService,
     // private activateRoute: ActivatedRoute
-  ) { }
+    private downtimeSvc?: DowntimeConfigService,
+  ) {}
   // canActivate(
   //   _next: ActivatedRouteSnapshot,
   //   _state: RouterStateSnapshot,
@@ -51,6 +52,10 @@ export class EmptyRouteGuard implements CanActivate {
     _next: ActivatedRouteSnapshot,
     _state: RouterStateSnapshot,
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    // A full downtime holds every page behind the maintenance screen.
+    if (this.downtimeSvc && this.downtimeSvc.isBlocking()) {
+      return false
+    }
     if (this.configSvc.userProfile && this.configSvc.userProfile.userId) {
       return this.router.parseUrl('/author/cbp')
     }
