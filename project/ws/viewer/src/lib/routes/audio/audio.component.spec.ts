@@ -144,8 +144,8 @@ describe('AudioComponent', () => {
       expect(build().generateUrl('http://my-bucket/a.mp3')).toBe('http://my-bucket/a.mp3')
     })
 
-    it('returns undefined when url does not contain the bucket', () => {
-      expect(build().generateUrl('http://other/a.mp3')).toBeUndefined()
+    it('returns the url unchanged when url does not contain the bucket', () => {
+      expect(build().generateUrl('http://other/a.mp3')).toBe('http://other/a.mp3')
     })
   })
 

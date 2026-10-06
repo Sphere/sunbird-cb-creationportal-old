@@ -14,6 +14,8 @@ import { IFormMeta } from './../../../../interface/form'
 
 import { AuthInitService } from './../../../../services/init.service'
 
+import { parseJsonList } from '@ws/author/src/lib/utils/json-field'
+
 import { EditorService } from './editor.service'
 
 import { IAssessmentDetails } from '../../../../interface/iap-assessment.interface'
@@ -257,10 +259,10 @@ export class EditorContentService {
   }
 
   resetOriginalMetaWithHierarchy(meta: any) {
-    meta.creatorContacts = this.jsonVerify(meta.creatorContacts) ? JSON.parse(meta.creatorContacts) : []
-    meta.trackContacts = this.jsonVerify(meta.reviewer) ? JSON.parse(meta.reviewer) : []
-    meta.creatorDetails = this.jsonVerify(meta.creatorDetails) ? JSON.parse(meta.creatorDetails) : []
-    meta.publisherDetails = this.jsonVerify(meta.publisherDetails) ? JSON.parse(meta.publisherDetails) : []
+    meta.creatorContacts = parseJsonList(meta.creatorContacts)
+    meta.trackContacts = parseJsonList(meta.reviewer)
+    meta.creatorDetails = parseJsonList(meta.creatorDetails)
+    meta.publisherDetails = parseJsonList(meta.publisherDetails)
     this.originalContent[meta.identifier] = meta
     if (meta.children && meta.children.length > 0) {
       meta.children.forEach((element: any) => {

@@ -26,13 +26,26 @@
   height: 32px;
   border-radius: 50%;
   border: none;
-  outline: none;
   cursor: pointer;
   padding: 0;
-  color: white;
+  // Same cause as the Agree button: this relied on `ws-mat-primary-background` for its fill,
+  // which is not defined globally, so a white glyph sat on the browser's default grey button.
+  background-color: #1c5d95;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  &:hover {
+    background-color: #174b79;
+  }
+
+  // `outline: none` was removed rather than replaced -- suppressing it with no substitute
+  // leaves keyboard users unable to see where they are.
+  &:focus-visible {
+    outline: 2px solid #133e64;
+    outline-offset: 2px;
+  }
 
   mat-icon {
     font-size: 18px;
@@ -57,6 +70,16 @@
   justify-content: center;
 }
 
+// The button previously relied on the `ws-mat-primary-background` utility for its fill, but
+// that class is never defined globally -- only inside three unrelated component stylesheets,
+// scoped to their own components. So here it did nothing: the button kept Material's default
+// near-white protected-button surface while `.text-white` forced the label and icon white,
+// leaving "I Agree" invisible and looking disabled.
+//
+// Colours are set through the MDC tokens rather than plain `background-color`, because
+// mat-raised-button paints its own container and a bare declaration loses to it. #1C5D95 is
+// the project primary (as used by the sibling dialogs in this folder); on white it gives a
+// ~6.5:1 contrast ratio, so it clears WCAG AA for the 14px label.
 .agree-btn {
   display: inline-flex;
   align-items: center;
@@ -64,6 +87,32 @@
   border-radius: 22px !important;
   padding: 0 24px !important;
   height: 42px !important;
+
+  --mdc-protected-button-container-color: #1c5d95;
+  --mdc-protected-button-label-text-color: #fff;
+  background-color: #1c5d95;
+  color: #fff;
+
+  &:hover {
+    --mdc-protected-button-container-color: #174b79;
+    background-color: #174b79;
+  }
+
+  &:active {
+    --mdc-protected-button-container-color: #133e64;
+    background-color: #133e64;
+  }
+
+  // Keyboard users need a focus ring that is visible against the button itself.
+  &:focus-visible {
+    outline: 2px solid #133e64;
+    outline-offset: 2px;
+  }
+
+  mat-icon,
+  .agree-text {
+    color: inherit;
+  }
 }
 
 .agree-text {

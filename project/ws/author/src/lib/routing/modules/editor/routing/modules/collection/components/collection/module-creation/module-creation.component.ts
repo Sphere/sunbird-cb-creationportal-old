@@ -19,6 +19,8 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 
 import { MatDialog } from '@angular/material/dialog'
 
+import { parseJsonList } from '@ws/author/src/lib/utils/json-field'
+
 import { IMAGE_MAX_SIZE, IMAGE_SUPPORT_TYPES } from '@ws/author/src/lib/constants/upload'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
@@ -1215,17 +1217,17 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     if (this.validationCheck) {
       this.editorService.readcontentV3(this.contentService.parentContent).subscribe((resData: any) => {
         if (resData && Object.keys(resData).length > 0) {
-          resData.creatorContacts = this.jsonVerify(resData.creatorContacts) ? JSON.parse(resData.creatorContacts) : []
-          resData.trackContacts = this.jsonVerify(resData.reviewer) ? JSON.parse(resData.reviewer) : []
+          resData.creatorContacts = parseJsonList(resData.creatorContacts)
+          resData.trackContacts = parseJsonList(resData.reviewer)
           resData.gatingEnabled = this.jsonVerify(resData.gatingEnabled) ? JSON.parse(resData.gatingEnabled) : []
-          resData.creatorDetails = this.jsonVerify(resData.creatorDetails) ? JSON.parse(resData.creatorDetails) : []
-          resData.publisherDetails = this.jsonVerify(resData.publisherDetails) ? JSON.parse(resData.publisherDetails) : []
+          resData.creatorDetails = parseJsonList(resData.creatorDetails)
+          resData.publisherDetails = parseJsonList(resData.publisherDetails)
           if (resData.children.length > 0) {
             resData.children.forEach((element: any) => {
-              element.creatorContacts = this.jsonVerify(element.creatorContacts) ? JSON.parse(element.creatorContacts) : []
-              element.trackContacts = this.jsonVerify(element.reviewer) ? JSON.parse(element.reviewer) : []
-              element.creatorDetails = this.jsonVerify(element.creatorDetails) ? JSON.parse(element.creatorDetails) : []
-              element.publisherDetails = this.jsonVerify(element.publisherDetails) ? JSON.parse(element.publisherDetails) : []
+              element.creatorContacts = parseJsonList(element.creatorContacts)
+              element.trackContacts = parseJsonList(element.reviewer)
+              element.creatorDetails = parseJsonList(element.creatorDetails)
+              element.publisherDetails = parseJsonList(element.publisherDetails)
             })
           }
           this.contentService.setOriginalMeta(resData)
@@ -1857,7 +1859,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       for await (const element of resourceList) {
         if (element.status === 'Live' && element.parentStatus === 'Review') {
           flag += 1
-        } else if (element.reviewerStatus === 'Reviewed' && element.status === 'Review') {
+          // A resource left in Failed by an earlier publish attempt is retried rather than
+          // counted as a blocker. knowlg only refuses to publish content that is Processing,
+          // so a failed resource can simply be published again once whatever broke has been
+          // resolved. Without this it matches no branch, the tally never reaches the resource
+          // count, and the publisher is told to retire the course and start over.
+        } else if (element.reviewerStatus === 'Reviewed' && (element.status === 'Review' || element.status === 'Failed')) {
           const publishRes = await this.editorService
             .publishContent(element.identifier)
             .toPromise()
@@ -2949,6 +2956,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                   // })
 
                   meta['appIcon'] = data.artifactUrl
+                  // posterImage must follow the new image: without it the old poster survives every
+                  // image change, and child content inherits the stale poster (store.service.ts).
+                  meta['posterImage'] = data.artifactUrl
                   meta['thumbnail'] = data.content_url
                   this.thumbnail = data.content_url
                   meta['versionKey'] = this.courseData.versionKey
@@ -3260,6 +3270,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     if (oldUrl.includes(this.bucket)) {
       return oldUrl
     }
+    // The bucket-rewrite branch below is disabled, so without this the method
+    // falls off the end and returns undefined for any URL that is not on
+    // env.azureBucket -- the content is then fetched from `undefined`, which
+    // fails silently. Environments whose content bucket differs from that
+    // setting hit this for every artifact.
+    return oldUrl
   }
   jsonVerify(s: string) {
     try {
@@ -4173,6 +4189,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           const dialogRef = this.dialog.open(this.guideline, {
             width: this.isMobile ? '90vw' : '600px',
             height: 'auto',
+            panelClass: 'zip-guideline-panel',
           })
           dialogRef.afterClosed().subscribe(_ => {
             if (
@@ -4286,6 +4303,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.dialog.open(this.errorFile, {
         width: this.isMobile ? '90vw' : '600px',
         height: 'auto',
+        panelClass: 'zip-guideline-panel',
       })
       setTimeout(() => {
         const error = document.getElementById('errorFiles')
@@ -4301,6 +4319,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       const dialogRef = this.dialog.open(this.selectFile, {
         width: this.isMobile ? '90vw' : '600px',
         height: 'auto',
+        panelClass: 'zip-guideline-panel',
       })
       dialogRef.afterClosed().subscribe(_ => {
         if (

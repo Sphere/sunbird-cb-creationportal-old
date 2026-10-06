@@ -1,0 +1,619 @@
+@if (error()) {
+  <p class="placer-error" role="alert">
+    <mat-icon aria-hidden="true">error</mat-icon>
+    <span>{{ error() }}</span>
+  </p>
+} @else {
+  <div class="placer">
+    <!-- Fields: learner details the issued certificate can carry -->
+    <section class="placer-palette" aria-labelledby="placer-palette-title">
+      <h4 id="placer-palette-title" class="placer-heading" i18n>Learner details</h4>
+      <p class="placer-help" i18n>Filled in for each learner. Pick one to place it, then drag it onto its line.</p>
+      <div class="palette-scroll">
+        @if (placedFields().length) {
+          <p class="palette-section-title" i18n>On the certificate</p>
+          <ul class="palette-list">
+            @for (field of placedFields(); track field.key) {
+              <li><ng-container *ngTemplateOutlet="paletteButton; context: { $implicit: field }"></ng-container></li>
+            }
+          </ul>
+        }
+        @if (availableFields().length) {
+          <p class="palette-section-title" i18n>Add to the certificate</p>
+          <ul class="palette-list">
+            @for (field of availableFields(); track field.key) {
+              <li><ng-container *ngTemplateOutlet="paletteButton; context: { $implicit: field }"></ng-container></li>
+            }
+          </ul>
+        }
+      </div>
+
+      <ng-template #paletteButton let-field>
+        <button
+          type="button"
+          class="palette-item"
+          [class.is-placed]="placedKeys().has(field.key)"
+          [class.is-selected]="selectedKey() === field.key"
+          [attr.aria-pressed]="placedKeys().has(field.key)"
+          [title]="field.hint"
+          (click)="addField(field)"
+        >
+          <span class="palette-label">{{ field.label }}</span>
+          @if (placedKeys().has(field.key)) {
+            <mat-icon class="palette-state" aria-hidden="true">check_circle</mat-icon>
+            <span class="cdk-visually-hidden" i18n>placed</span>
+          } @else {
+            <mat-icon class="palette-state" aria-hidden="true">add</mat-icon>
+          }
+        </button>
+      </ng-template>
+    </section>
+
+    <!-- Canvas: the artwork, with everything editable drawn over it -->
+    <section class="placer-canvas" aria-labelledby="placer-canvas-title">
+      <div class="canvas-toolbar">
+        <h4 id="placer-canvas-title" class="placer-heading" i18n>Certificate</h4>
+        <div class="toolbar-groups">
+          <div class="toolbar-group" role="toolbar" aria-label="Add to certificate" i18n-aria-label>
+            <span class="toolbar-label" i18n>Add</span>
+            <button type="button" class="tool-btn" (click)="addText()">
+              <mat-icon aria-hidden="true">title</mat-icon>
+              <span i18n>Text</span>
+            </button>
+            <button type="button" class="tool-btn" (click)="addLine()">
+              <!-- The bundled icon font predates horizontal_rule; remove is the same bar. -->
+              <mat-icon aria-hidden="true">remove</mat-icon>
+              <span i18n>Line</span>
+            </button>
+            <button type="button" class="tool-btn" (click)="imageInput.click()">
+              <mat-icon aria-hidden="true">image</mat-icon>
+              <span i18n>Picture</span>
+            </button>
+            <input
+              #imageInput
+              class="cdk-visually-hidden"
+              type="file"
+              [accept]="imageTypes"
+              aria-label="Picture to add"
+              i18n-aria-label
+              (change)="onImagePicked($event)"
+            />
+          </div>
+          <!-- Changes only the preview: the values shown on the certificate while designing. -->
+          <div class="toolbar-group" role="group" aria-label="Preview values" i18n-aria-label>
+            <span class="toolbar-label" i18n>Preview values</span>
+            <div class="segmented">
+              <button
+                type="button"
+                [class.is-active]="sampleMode() === 'short'"
+                [attr.aria-pressed]="sampleMode() === 'short'"
+                (click)="setSampleMode('short')"
+                i18n
+              >
+                Typical
+              </button>
+              <button
+                type="button"
+                [class.is-active]="sampleMode() === 'long'"
+                [attr.aria-pressed]="sampleMode() === 'long'"
+                (click)="setSampleMode('long')"
+                i18n
+              >
+                Longest
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--
+        Learner details typed into the design print the same for everyone, with
+        no error anywhere -- so this is said plainly, with each one marked below.
+      -->
+      @if (hardcoded().length) {
+        <div class="hardcoded-callout" role="alert">
+          <mat-icon aria-hidden="true">report</mat-icon>
+          <div>
+            <p class="hardcoded-title" i18n>Some learner details are typed into this design</p>
+            <p class="hardcoded-body" i18n>
+              Anything that is part of the design prints exactly the same on every learner's certificate. Remove these from your design file
+              and upload it again, then place the matching item from <strong>Learner details</strong>, so each learner gets their own.
+            </p>
+            <ul class="hardcoded-list">
+              @for (item of hardcoded(); track $index) {
+                <li>{{ hardcodedMessage(item) }}</li>
+              }
+            </ul>
+          </div>
+        </div>
+      }
+
+      @if (imageError()) {
+        <p class="placer-inline-error" role="alert">{{ imageError() }}</p>
+      }
+
+      <div
+        #stage
+        class="canvas-stage"
+        [style.aspect-ratio]="canvas().width + ' / ' + canvas().height"
+        [style.max-width]="stageMaxWidth()"
+        (pointerdown)="onStagePointerDown($event)"
+      >
+        @if (backgroundUrl()) {
+          <img class="canvas-art" [src]="backgroundUrl()" alt="Certificate artwork" i18n-alt draggable="false" />
+        }
+
+        <!-- The design's own wording: untouched until clicked, then editable. -->
+        @for (item of artworkTexts(); track $index) {
+          <button
+            type="button"
+            class="artwork-text-target"
+            [ngStyle]="artworkTextStyle(item)"
+            [attr.aria-label]="'Edit the wording: ' + item.decoration.text"
+            (click)="editArtworkText($index)"
+          >
+            <span class="artwork-text-tag" i18n>Edit</span>
+          </button>
+        }
+
+        @for (item of hardcoded(); track $index) {
+          <div class="hardcoded-marker" [ngStyle]="hardcodedStyle(item)" aria-hidden="true">
+            <span class="hardcoded-tag" i18n>Fixed</span>
+          </div>
+        }
+
+        @if (guide(); as line) {
+          <div class="canvas-guide" [ngStyle]="guideStyle(line)" aria-hidden="true"></div>
+        }
+
+        <!-- The author's text, lines and pictures, under the learner details -->
+        @for (item of decorations(); track item.id) {
+          <div
+            class="deco-chip"
+            [class.is-text]="item.kind === 'text'"
+            [class.is-line]="item.kind === 'line'"
+            [class.is-vertical]="item.kind === 'line' && item.vertical"
+            [class.is-image]="item.kind === 'image'"
+            [class.is-selected]="selectedKey() === item.id"
+            [class.is-warned]="isWarned(item.id)"
+            [ngStyle]="decorationStyle(item)"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="labelFor(item.id) + '. Arrow keys move it, Delete removes it.'"
+            (pointerdown)="onChipPointerDown($event, item.id)"
+            (pointermove)="onChipPointerMove($event)"
+            (pointerup)="onChipPointerUp($event)"
+            (pointercancel)="onChipPointerUp($event)"
+            (keydown)="onChipKeydown($event, item.id)"
+            (focus)="selectedKey.set(item.id)"
+          >
+            @if (item.kind === 'text') {
+              {{ item.text }}
+            } @else if (item.kind === 'image') {
+              <img [src]="item.href" alt="" draggable="false" />
+            }
+          </div>
+        }
+
+        @for (field of placed(); track field.key) {
+          <div
+            class="field-chip"
+            [class.is-image]="field.key === 'QrCode'"
+            [class.is-selected]="selectedKey() === field.key"
+            [class.is-warned]="isWarned(field.key)"
+            [ngStyle]="chipStyle(field)"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="labelFor(field.key) + ' field. Arrow keys move it, Delete removes it.'"
+            (pointerdown)="onChipPointerDown($event, field.key)"
+            (pointermove)="onChipPointerMove($event)"
+            (pointerup)="onChipPointerUp($event)"
+            (pointercancel)="onChipPointerUp($event)"
+            (keydown)="onChipKeydown($event, field.key)"
+            (focus)="selectedKey.set(field.key)"
+          >
+            @if (field.key === 'QrCode') {
+              <!-- Drawn here: the bundled icon font has no QR code icon. -->
+              <svg class="qr-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm11-2h2v2h-2v-2zm-3 0h2v3h-2v-3zm3 3h2v2h-2v-2zm2 2h3v3h-2v-1h-1v-2zm-5 1h2v2h-2v-2zm3 1h1v2h-3v-1h2v-1zm4-6h1v4h-1v-4z"
+                />
+              </svg>
+            } @else {
+              {{ sampleFor(field.key) }}
+            }
+          </div>
+        }
+      </div>
+
+      @if (!placed().length) {
+        <p class="canvas-empty" i18n>No learner details yet. Choose one from the list on the left to add it.</p>
+      }
+
+      <!--
+        Checked against the longest values whatever the preview shows, so a field
+        that only overflows for a long name is still caught. One panel, not a stack
+        of banners; choosing an item selects it and shows the longest values.
+      -->
+      @if (warnings().length) {
+        <div class="warnings-panel" role="alert" aria-live="polite">
+          <p class="warnings-head">
+            <mat-icon aria-hidden="true">warning</mat-icon>
+            <span i18n>{{ warnings().length }} item(s) may not fit with long values. Select one to see it.</span>
+          </p>
+          <ul class="placer-warnings">
+            @for (warning of warnings(); track $index) {
+              <li>
+                <button type="button" class="warning-item" (click)="showWarning(warning)">{{ warning.message }}</button>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+      @if (artworkTexts().length) {
+        <p class="placer-help" i18n>Click any of the design's own wording to edit it.</p>
+      }
+      @if (outlinedWording()) {
+        <p class="wording-note" role="note">
+          <mat-icon aria-hidden="true">info</mat-icon>
+          <span i18n
+            >The wording in this design is drawn as shapes, not text, so it can't be edited here. To change it, export the design again with
+            <strong>Outline text</strong> turned off.</span
+          >
+        </p>
+      } @else if (fixedWordingCount()) {
+        <p class="wording-note" role="note">
+          <mat-icon aria-hidden="true">info</mat-icon>
+          <span i18n
+            >{{ fixedWordingCount() }} piece(s) of wording in this design use effects the editor can't keep, such as letter spacing or mixed
+            styles, so they stay exactly as designed.</span
+          >
+        </p>
+      }
+      @if (snapLines().length) {
+        <p class="placer-help" i18n>Text snaps onto the lines in the artwork. Hold Alt while dragging to place it freely.</p>
+      } @else {
+        <p class="placer-help" i18n>This artwork has no lines to snap to, so place text by dragging or with the arrow keys.</p>
+      }
+    </section>
+
+    <!-- Settings: whatever is selected -->
+    <section class="placer-props" aria-labelledby="placer-props-title">
+      <h4 id="placer-props-title" class="placer-heading" i18n>Settings</h4>
+
+      @if (selected(); as field) {
+        <!-- A learner detail -->
+        <p class="props-name">{{ selectedField()?.label }}</p>
+        <p class="placer-help">{{ selectedField()?.hint }}</p>
+
+        <div class="props-grid">
+          <label class="props-label" for="prop-x" i18n>Left</label>
+          <input
+            id="prop-x"
+            class="module-input"
+            type="number"
+            min="0"
+            [value]="field.x"
+            (change)="updateNumber('x', $any($event.target).value)"
+          />
+
+          <label class="props-label" for="prop-y" i18n>Top</label>
+          <input
+            id="prop-y"
+            class="module-input"
+            type="number"
+            min="0"
+            [value]="field.y"
+            (change)="updateNumber('y', $any($event.target).value)"
+          />
+
+          @if (field.key === 'QrCode') {
+            <label class="props-label" for="prop-w" i18n>Width</label>
+            <input
+              id="prop-w"
+              class="module-input"
+              type="number"
+              min="1"
+              [value]="field.width"
+              (change)="updateNumber('width', $any($event.target).value)"
+            />
+
+            <label class="props-label" for="prop-h" i18n>Height</label>
+            <input
+              id="prop-h"
+              class="module-input"
+              type="number"
+              min="1"
+              [value]="field.height"
+              (change)="updateNumber('height', $any($event.target).value)"
+            />
+          } @else {
+            <label class="props-label" for="prop-size" i18n>Text size</label>
+            <input
+              id="prop-size"
+              class="module-input"
+              type="number"
+              min="1"
+              [value]="field.fontSize"
+              (change)="updateNumber('fontSize', $any($event.target).value)"
+            />
+
+            <label class="props-label" for="prop-align" i18n>Align</label>
+            <select
+              id="prop-align"
+              class="module-input"
+              [value]="field.anchor"
+              (change)="updateSelected({ anchor: $any($event.target).value })"
+            >
+              <option value="start" i18n>Left</option>
+              <option value="middle" i18n>Centre</option>
+              <option value="end" i18n>Right</option>
+            </select>
+
+            <label class="props-label" for="prop-font" i18n>Font</label>
+            <select
+              id="prop-font"
+              class="module-input"
+              [value]="field.fontFamily"
+              (change)="updateSelected({ fontFamily: $any($event.target).value })"
+            >
+              @for (font of fonts; track font) {
+                <option [value]="font">{{ font }}</option>
+              }
+              @if (fonts.indexOf(field.fontFamily) < 0) {
+                <option [value]="field.fontFamily">{{ field.fontFamily }}</option>
+              }
+            </select>
+
+            <span class="props-label" i18n>Style</span>
+            <label class="props-check">
+              <input
+                type="checkbox"
+                [checked]="field.fontWeight === 'bold'"
+                (change)="updateSelected({ fontWeight: $any($event.target).checked ? 'bold' : 'normal' })"
+              />
+              <span i18n>Bold</span>
+            </label>
+
+            <label class="props-label" for="prop-fill" i18n>Colour</label>
+            <input
+              id="prop-fill"
+              class="props-colour"
+              type="color"
+              [value]="field.fill"
+              (change)="updateSelected({ fill: $any($event.target).value })"
+            />
+          }
+        </div>
+
+        <div class="props-actions">
+          @if (field.key !== 'QrCode' && snapLines().length) {
+            <button type="button" class="props-btn" (click)="snapSelectedToLine()">
+              <mat-icon aria-hidden="true">vertical_align_center</mat-icon>
+              <span i18n>Centre on nearest line</span>
+            </button>
+          }
+          <button type="button" class="props-btn is-danger" (click)="removeSelected()">
+            <mat-icon aria-hidden="true">delete</mat-icon>
+            <span i18n>Remove</span>
+          </button>
+        </div>
+      } @else if (selectedDecoration(); as item) {
+        <p class="props-name">{{ labelFor(item.id) }}</p>
+
+        @if (item.kind === 'text') {
+          <label class="props-label props-block" for="prop-text" i18n>Text</label>
+          <textarea
+            id="prop-text"
+            class="module-input props-textarea"
+            rows="3"
+            [value]="item.text"
+            (input)="updateDecorationText($any($event.target).value)"
+            (blur)="commitText()"
+          ></textarea>
+        }
+
+        <div class="props-grid">
+          <label class="props-label" for="deco-x" i18n>Left</label>
+          <input
+            id="deco-x"
+            class="module-input"
+            type="number"
+            min="0"
+            [value]="item.x"
+            (change)="updateDecorationNumber('x', $any($event.target).value)"
+          />
+
+          <label class="props-label" for="deco-y" i18n>Top</label>
+          <input
+            id="deco-y"
+            class="module-input"
+            type="number"
+            min="0"
+            [value]="item.y"
+            (change)="updateDecorationNumber('y', $any($event.target).value)"
+          />
+
+          @if (item.kind === 'text') {
+            <label class="props-label" for="deco-size" i18n>Text size</label>
+            <input
+              id="deco-size"
+              class="module-input"
+              type="number"
+              min="1"
+              [value]="item.fontSize"
+              (change)="updateDecorationNumber('fontSize', $any($event.target).value)"
+            />
+
+            <label class="props-label" for="deco-align" i18n>Align</label>
+            <select
+              id="deco-align"
+              class="module-input"
+              [value]="item.anchor"
+              (change)="updateDecoration({ anchor: $any($event.target).value })"
+            >
+              <option value="start" i18n>Left</option>
+              <option value="middle" i18n>Centre</option>
+              <option value="end" i18n>Right</option>
+            </select>
+
+            <label class="props-label" for="deco-font" i18n>Font</label>
+            <select
+              id="deco-font"
+              class="module-input"
+              [value]="item.fontFamily"
+              (change)="updateDecoration({ fontFamily: $any($event.target).value })"
+            >
+              @for (font of fonts; track font) {
+                <option [value]="font">{{ font }}</option>
+              }
+              @if (item.fontFamily && fonts.indexOf(item.fontFamily) < 0) {
+                <option [value]="item.fontFamily">{{ item.fontFamily }}</option>
+              }
+            </select>
+
+            <span class="props-label" i18n>Style</span>
+            <div class="props-checks">
+              <label class="props-check">
+                <input
+                  type="checkbox"
+                  [checked]="item.fontWeight === 'bold'"
+                  (change)="updateDecoration({ fontWeight: $any($event.target).checked ? 'bold' : 'normal' })"
+                />
+                <span i18n>Bold</span>
+              </label>
+              <label class="props-check">
+                <input
+                  type="checkbox"
+                  [checked]="item.fontStyle === 'italic'"
+                  (change)="updateDecoration({ fontStyle: $any($event.target).checked ? 'italic' : 'normal' })"
+                />
+                <span i18n>Italic</span>
+              </label>
+            </div>
+
+            <label class="props-label" for="deco-fill" i18n>Colour</label>
+            <input
+              id="deco-fill"
+              class="props-colour"
+              type="color"
+              [value]="item.fill"
+              (change)="updateDecoration({ fill: $any($event.target).value })"
+            />
+          }
+
+          @if (item.kind === 'line') {
+            <label class="props-label" for="deco-length" i18n>Length</label>
+            <input
+              id="deco-length"
+              class="module-input"
+              type="number"
+              min="1"
+              [value]="item.length"
+              (change)="updateDecorationNumber('length', $any($event.target).value)"
+            />
+
+            <label class="props-label" for="deco-dir" i18n>Direction</label>
+            <select
+              id="deco-dir"
+              class="module-input"
+              [value]="item.vertical ? 'v' : 'h'"
+              (change)="updateDecoration({ vertical: $any($event.target).value === 'v' })"
+            >
+              <option value="h" i18n>Horizontal</option>
+              <option value="v" i18n>Vertical</option>
+            </select>
+
+            <label class="props-label" for="deco-weight" i18n>Thickness</label>
+            <input
+              id="deco-weight"
+              class="module-input"
+              type="number"
+              min="1"
+              [value]="item.strokeWidth"
+              (change)="updateDecorationNumber('strokeWidth', $any($event.target).value)"
+            />
+
+            <span class="props-label" i18n>Style</span>
+            <label class="props-check">
+              <input type="checkbox" [checked]="item.dashed" (change)="updateDecoration({ dashed: $any($event.target).checked })" />
+              <span i18n>Dashed</span>
+            </label>
+
+            <label class="props-label" for="deco-stroke" i18n>Colour</label>
+            <input
+              id="deco-stroke"
+              class="props-colour"
+              type="color"
+              [value]="item.stroke"
+              (change)="updateDecoration({ stroke: $any($event.target).value })"
+            />
+          }
+
+          @if (item.kind === 'image') {
+            <label class="props-label" for="deco-iw" i18n>Width</label>
+            <input
+              id="deco-iw"
+              class="module-input"
+              type="number"
+              min="1"
+              [value]="item.width"
+              (change)="updateImageWidth($any($event.target).value)"
+            />
+
+            <label class="props-label" for="deco-ih" i18n>Height</label>
+            <input
+              id="deco-ih"
+              class="module-input"
+              type="number"
+              min="1"
+              [value]="item.height"
+              (change)="updateDecorationNumber('height', $any($event.target).value)"
+            />
+          }
+        </div>
+
+        <div class="props-actions">
+          @if (item.kind === 'text' && snapLines().length) {
+            <button type="button" class="props-btn" (click)="snapSelectedToLine()">
+              <mat-icon aria-hidden="true">vertical_align_center</mat-icon>
+              <span i18n>Centre on nearest line</span>
+            </button>
+          }
+          <button type="button" class="props-btn" (click)="duplicateSelected()">
+            <mat-icon aria-hidden="true">content_copy</mat-icon>
+            <span i18n>Duplicate</span>
+          </button>
+          <button type="button" class="props-btn is-danger" (click)="removeSelected()">
+            <mat-icon aria-hidden="true">delete</mat-icon>
+            <span i18n>Remove</span>
+          </button>
+        </div>
+      } @else {
+        <!-- Nothing selected: the certificate's own settings. -->
+        @if (backgroundColour(); as colour) {
+          <p class="props-name" i18n>Certificate</p>
+          <div class="props-grid">
+            <label class="props-label" for="cert-bg" i18n>Background</label>
+            <div class="props-bg">
+              <input
+                id="cert-bg"
+                class="props-colour"
+                type="color"
+                [value]="colour"
+                (change)="setBackgroundColour($any($event.target).value)"
+              />
+              @if (colour !== originalBackgroundColour()) {
+                <button type="button" class="props-link" (click)="resetBackground()" i18n>Reset</button>
+              }
+            </div>
+          </div>
+        }
+        <p class="placer-help" i18n>
+          Select anything on the certificate to change it, or click an empty part of it for these settings. Use Text, Line and Picture above
+          the certificate to add your own.
+        </p>
+      }
+    </section>
+  </div>
+}

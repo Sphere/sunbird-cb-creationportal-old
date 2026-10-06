@@ -300,6 +300,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
         const dialogRef = this.dialog.open(this.guideline, {
           width: this.isMobile ? '90vw' : '600px',
           height: 'auto',
+          panelClass: 'zip-guideline-panel',
         })
         dialogRef.afterClosed().subscribe(_ => {
           if (
@@ -649,6 +650,12 @@ export class FileUploadComponent implements OnInit, OnChanges {
     // }
     // const newUrl = newLink.join('/')
     // return newUrl
+    // The bucket-rewrite branch below is disabled, so without this the method
+    // falls off the end and returns undefined for any URL that is not on
+    // env.azureBucket -- the content is then fetched from `undefined`, which
+    // fails silently. Environments whose content bucket differs from that
+    // setting hit this for every artifact.
+    return oldUrl
   }
 
   upload() {
@@ -876,6 +883,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
       this.dialog.open(this.errorFile, {
         width: this.isMobile ? '90vw' : '600px',
         height: 'auto',
+        panelClass: 'zip-guideline-panel',
       })
       setTimeout(() => {
         const error = document.getElementById('errorFiles')
@@ -891,6 +899,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
       this.dialog.open(this.selectFile, {
         width: this.isMobile ? '90vw' : '600px',
         height: 'auto',
+        panelClass: 'zip-guideline-panel',
       })
     }
   }

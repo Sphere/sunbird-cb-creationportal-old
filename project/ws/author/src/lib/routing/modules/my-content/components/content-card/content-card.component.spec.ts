@@ -126,6 +126,29 @@ describe('ContentCardComponent', () => {
     })
   })
 
+  describe('thumbnail', () => {
+    it('prefers the uploaded image over the generated thumbnail', () => {
+      const c = build()
+      c.data = { ...card(), appIcon: 'icon.thumb.png', posterImage: 'icon.png' } as any
+      c.ngOnInit()
+      expect(c.data.appIcon).toBe('icon.png')
+    })
+
+    it('keeps appIcon when the course has never been published', () => {
+      const c = build()
+      c.data = { ...card(), appIcon: 'icon.png' } as any
+      c.ngOnInit()
+      expect(c.data.appIcon).toBe('icon.png')
+    })
+
+    it('falls back to the placeholder when there is no image at all', () => {
+      const c = build()
+      c.data = { ...card(), appIcon: undefined } as any
+      c.ngOnInit()
+      expect(c.data.appIcon).toBe('cbp-assets/icons/default.png')
+    })
+  })
+
   describe('status labels', () => {
     const withStatus = (over: any = {}) => {
       component.data = card(over)
@@ -391,6 +414,20 @@ describe('ContentCardComponent', () => {
       expect(dialog.open).toHaveBeenCalled()
       expect(loader.changeLoad.next).toHaveBeenCalledWith(false)
       afterClosed.next(true)
+    })
+
+    it('lets the upload dialog exceed the 80vw default so it is not clipped', () => {
+      component.uploadCertificate(card())
+      expect(dialog.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          width: '100vw',
+          height: '100vh',
+          maxWidth: '100vw',
+          maxHeight: '100vh',
+          panelClass: 'cert-dialog-fullscreen',
+        }),
+      )
     })
 
     it('filters the batches by course and open statuses', () => {
