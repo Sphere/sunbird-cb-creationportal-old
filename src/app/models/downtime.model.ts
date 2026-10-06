@@ -33,11 +33,34 @@ export interface AppLink {
   hint?: string
 }
 
+/**
+ * Everything the maintenance page and banner show. Only `title` and `message` are
+ * expected in the form; every other field has a default, and a text field set to
+ * an empty English value (`{ "en": "" }`) is hidden.
+ */
 export interface DowntimeContent {
   /** A Material icon alias (`wrench`, `info`, `warning`, `error`) or an https image URL. */
   icon: string
   title: MultilingualContent
   message: MultilingualContent
+  /** The logo above the maintenance page: an https image URL (an S3 svg or png). No logo when it is left out. */
+  logo?: string
+  /** The logo's text for screen readers. */
+  logoAlt?: MultilingualContent
+  /** The logo's height in px (16-160). Defaults to 48. */
+  logoHeight?: number
+  /** The line under the message saying the page updates by itself. */
+  note?: MultilingualContent
+  /** Whether the maintenance page shows a button to check again now. Defaults to true. */
+  showRetry?: boolean
+  /** The label of that button. */
+  retryLabel?: MultilingualContent
+  /** The line shown to testers who bypass a full downtime. */
+  bypassNotice?: MultilingualContent
+  /** Whether the banner can be closed. Defaults to true. */
+  dismissible?: boolean
+  /** The banner close button's label for screen readers. */
+  dismissLabel?: MultilingualContent
   css?: DowntimeCssConfig
   appLink?: AppLink
 }
@@ -111,5 +134,20 @@ export const DOWNTIME_DEFAULTS = {
   MESSAGE: {
     en: 'We are making improvements. Please check back soon.',
     hi: 'हम सुधार कर रहे हैं। कृपया थोड़ी देर बाद फिर से प्रयास करें।',
+  } as MultilingualContent,
+  LOGO_ALT: { en: 'Aastrika Sphere', hi: 'आस्त्रिका स्फीयर' } as MultilingualContent,
+  LOGO_HEIGHT: 48,
+  DISMISS_LABEL: { en: 'Dismiss maintenance notice', hi: 'रखरखाव सूचना बंद करें' } as MultilingualContent,
+  NOTE: {
+    en: "This page will update automatically when we're back.",
+    hi: 'हमारे वापस आते ही यह पेज अपने आप अपडेट हो जाएगा।',
+  } as MultilingualContent,
+  RETRY_LABEL: {
+    en: 'Check again',
+    hi: 'फिर से देखें',
+  } as MultilingualContent,
+  BYPASS_NOTICE: {
+    en: 'Maintenance mode — you are bypassing it',
+    hi: 'रखरखाव मोड चालू है — आप इसे बायपास कर रहे हैं',
   } as MultilingualContent,
 }

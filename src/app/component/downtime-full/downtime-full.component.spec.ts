@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing'
 import { BehaviorSubject } from 'rxjs'
 import { DowntimeFullComponent } from './downtime-full.component'
 import { DowntimeConfigService } from '../../services/downtime-config.service'
-import { DowntimeState } from '../../models/downtime.model'
+import { DOWNTIME_DEFAULTS, DowntimeState } from '../../models/downtime.model'
 
 describe('DowntimeFullComponent', () => {
   let state$: BehaviorSubject<DowntimeState>
@@ -17,6 +17,15 @@ describe('DowntimeFullComponent', () => {
       icon: 'wrench',
       title: { en: 'Down for maintenance', hi: 'रखरखाव जारी है' },
       message: { en: 'Back at 6pm.', hi: 'शाम 6 बजे' },
+      // What the service fills in when the form leaves these out.
+      logo: '',
+      logoAlt: DOWNTIME_DEFAULTS.LOGO_ALT,
+      logoHeight: DOWNTIME_DEFAULTS.LOGO_HEIGHT,
+      note: DOWNTIME_DEFAULTS.NOTE,
+      showRetry: true,
+      retryLabel: DOWNTIME_DEFAULTS.RETRY_LABEL,
+      bypassNotice: DOWNTIME_DEFAULTS.BYPASS_NOTICE,
+      dismissible: true,
       css: { backgroundColor: '#000000', textColor: '#ffffff', primaryColor: '#ff0000' },
     },
     ...over,
@@ -110,5 +119,48 @@ describe('DowntimeFullComponent', () => {
     expect(link.getAttribute('href')).toBe('https://status.example')
     expect(link.textContent).toContain('Status page')
     expect(el.querySelector('.downtime-full-hint')!.textContent).toContain('Updated hourly')
+  })
+
+  it('tells people the page updates itself, and offers to check again now', () => {
+    const fixture = render()
+    const reload = jest.spyOn(fixture.componentInstance as any, 'reloadPage').mockImplementation(() => undefined)
+    const el: HTMLElement = fixture.nativeElement
+    expect(el.querySelector('.downtime-full-note')!.textContent).toContain('update automatically')
+    ;(el.querySelector('.downtime-full-retry') as HTMLButtonElement).click()
+    expect(reload).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows no logo unless the form sets one', () => {
+    expect(render().nativeElement.querySelector('.downtime-full-logo')).toBeNull()
+  })
+
+  describe('configured from the form', () => {
+    const withContent = (extra: any) => state$.next(downtime({ content: { ...downtime().content, ...extra } }))
+
+    it('shows the configured note, button label and logo', () => {
+      withContent({
+        note: { en: 'Back by midnight.' },
+        retryLabel: { en: 'Try now' },
+        logo: 'https://cdn.example/brand.svg',
+        logoAlt: { en: 'Acme' },
+        logoHeight: 64,
+      })
+      const el: HTMLElement = render().nativeElement
+      expect(el.querySelector('.downtime-full-note')!.textContent).toContain('Back by midnight.')
+      expect(el.querySelector('.downtime-full-retry')!.textContent).toContain('Try now')
+      const logo = el.querySelector('.downtime-full-logo') as HTMLImageElement
+      expect(logo.getAttribute('src')).toBe('https://cdn.example/brand.svg')
+      expect(logo.getAttribute('alt')).toBe('Acme')
+      expect(logo.style.height).toBe('64px')
+    })
+
+    it('hides the note, the button and the logo when the form turns them off', () => {
+      withContent({ note: { en: '' }, showRetry: false, logo: '' })
+      const el: HTMLElement = render().nativeElement
+      expect(el.querySelector('.downtime-full-note')).toBeNull()
+      expect(el.querySelector('.downtime-full-retry')).toBeNull()
+      expect(el.querySelector('.downtime-full-logo')).toBeNull()
+      expect(el.querySelector('.downtime-full-actions')).toBeNull()
+    })
   })
 })

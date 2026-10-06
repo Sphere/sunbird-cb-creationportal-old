@@ -10,6 +10,7 @@ import {
   DOWNTIME_DEFAULTS,
   DowntimeContent,
   DowntimeState,
+  MultilingualContent,
 } from '../models/downtime.model'
 
 /** Public form read, served by ui-proxies without a session. */
@@ -129,10 +130,21 @@ export class DowntimeConfigService implements OnDestroy {
   private withDefaults(content: Partial<DowntimeContent> | undefined): DowntimeContent {
     const css = (content && content.css) || {}
     const link = content && content.appLink
+    const logo = content ? content.logo : undefined
     return {
       icon: (content && content.icon) || DOWNTIME_DEFAULTS.ICON,
       title: content && content.title && content.title.en ? content.title : DOWNTIME_DEFAULTS.TITLE,
       message: content && content.message && content.message.en ? content.message : DOWNTIME_DEFAULTS.MESSAGE,
+      // Only an https image URL is shown; anything else means no logo.
+      logo: typeof logo === 'string' && /^https:\/\//i.test(logo) ? logo : '',
+      logoAlt: this.optionalText(content && content.logoAlt, DOWNTIME_DEFAULTS.LOGO_ALT),
+      logoHeight: this.logoHeight(content && content.logoHeight),
+      note: this.optionalText(content && content.note, DOWNTIME_DEFAULTS.NOTE),
+      showRetry: !(content && content.showRetry === false),
+      retryLabel: this.optionalText(content && content.retryLabel, DOWNTIME_DEFAULTS.RETRY_LABEL),
+      bypassNotice: this.optionalText(content && content.bypassNotice, DOWNTIME_DEFAULTS.BYPASS_NOTICE),
+      dismissible: !(content && content.dismissible === false),
+      dismissLabel: this.optionalText(content && content.dismissLabel, DOWNTIME_DEFAULTS.DISMISS_LABEL),
       css: {
         theme: css.theme === 'dark' ? 'dark' : 'light',
         primaryColor: css.primaryColor || DOWNTIME_DEFAULTS.PRIMARY_COLOR,
@@ -145,6 +157,23 @@ export class DowntimeConfigService implements OnDestroy {
       // Only an enabled https link is shown; anything else in hand-edited config is ignored.
       appLink: link && link.isEnabled && /^https:\/\//i.test(link.url || '') ? link : undefined,
     }
+  }
+
+  /**
+   * A configured text, or the default when it is missing or malformed. A text with
+   * an empty English value is kept as it is, which is how a line is hidden.
+   */
+  private optionalText(text: unknown, fallback: MultilingualContent): MultilingualContent {
+    if (text && typeof text === 'object' && typeof (text as MultilingualContent).en === 'string') {
+      return text as MultilingualContent
+    }
+    return fallback
+  }
+
+  /** A configured logo height kept within a sensible range, or the default. */
+  private logoHeight(value: unknown): number {
+    const px = Number(value)
+    return Number.isFinite(px) && px > 0 ? Math.min(Math.max(Math.round(px), 16), 160) : DOWNTIME_DEFAULTS.LOGO_HEIGHT
   }
 
   /**

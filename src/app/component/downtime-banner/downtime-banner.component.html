@@ -1,5 +1,6 @@
 @if (visible()) {
   <div
+    #banner
     class="downtime-banner"
     role="status"
     [class.is-bottom]="css().position === 'bottom'"
@@ -16,8 +17,8 @@
       }
     </span>
     <div class="downtime-banner-text">
-      @if (bypassing()) {
-        <span class="downtime-banner-tag">Maintenance mode — you are bypassing it</span>
+      @if (bypassing() && bypassNotice()) {
+        <span class="downtime-banner-tag">{{ bypassNotice() }}</span>
       }
       <span class="downtime-banner-title">{{ title() }}</span>
       @if (message()) {
@@ -27,8 +28,10 @@
         <a class="downtime-banner-link" [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.label }}</a>
       }
     </div>
-    <button type="button" class="downtime-banner-close" aria-label="Dismiss maintenance notice" (click)="dismiss()">
-      <mat-icon aria-hidden="true">close</mat-icon>
-    </button>
+    @if (dismissible()) {
+      <button type="button" class="downtime-banner-close" [attr.aria-label]="dismissLabel()" (click)="dismiss()">
+        <mat-icon aria-hidden="true">close</mat-icon>
+      </button>
+    }
   </div>
 }
