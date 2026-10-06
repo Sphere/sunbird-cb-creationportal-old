@@ -10,6 +10,7 @@ import {
   DOWNTIME_DEFAULTS,
   DowntimeContent,
   DowntimeState,
+  DowntimeType,
   MultilingualContent,
 } from '../models/downtime.model'
 
@@ -116,15 +117,32 @@ export class DowntimeConfigService implements OnDestroy {
       return NO_DOWNTIME
     }
     const refreshInterval = Number(config.refreshInterval) > 0 ? Number(config.refreshInterval) : DOWNTIME_DEFAULTS.REFRESH_INTERVAL
-    if (config.isEnabled !== true) {
+    const active = this.activeMode(config)
+    if (!active) {
       return { ...NO_DOWNTIME, refreshInterval }
     }
-    return {
-      isDowntime: true,
-      type: config.type === 'partial' ? 'partial' : 'full',
-      content: this.withDefaults(config.content),
-      refreshInterval,
+    return { isDowntime: true, type: active.type, content: this.withDefaults(active.content), refreshInterval }
+  }
+
+  /**
+   * The downtime to show. With `full` and `partial` blocks, whichever is switched
+   * on applies, and full wins when both are. Without them, the section's own
+   * `isEnabled` and `type` decide.
+   */
+  private activeMode(config: AppDowntimeConfig): { type: DowntimeType; content?: Partial<DowntimeContent> } | null {
+    if (config.full || config.partial) {
+      if (config.full && config.full.isEnabled === true) {
+        return { type: 'full', content: config.full.content }
+      }
+      if (config.partial && config.partial.isEnabled === true) {
+        return { type: 'partial', content: config.partial.content }
+      }
+      return null
     }
+    if (config.isEnabled !== true) {
+      return null
+    }
+    return { type: config.type === 'partial' ? 'partial' : 'full', content: config.content }
   }
 
   private withDefaults(content: Partial<DowntimeContent> | undefined): DowntimeContent {
