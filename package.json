@@ -1,6 +1,6 @@
 {
   "name": "cbp",
-  "version": "5.1.2",
+  "version": "5.1.5",
   "scripts": {
     "ng": "ng",
     "start": "node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng serve --proxy-config proxy/localhost.proxy.json -o",
@@ -30,6 +30,7 @@
   },
   "private": true,
   "dependencies": {
+    "@aastrika/ai-elements": "0.7.1",
     "@angular/animations": "21.2.15",
     "@angular/cdk": "21.2.13",
     "@angular/common": "21.2.15",

@@ -6,8 +6,18 @@
   transition: opacity 0.25s ease;
 }
 
-// Subtle dim — readable enough to give context, clearly inactive
-.dim {
+// Subtle dim — readable enough to give context, clearly inactive.
+//
+// Scoped to .outer, the page shell it is actually for. This component is
+// ViewEncapsulation.None, so a bare `.dim` is a GLOBAL rule: it matched every
+// element on the page carrying that class, including inside the embedded AI
+// Studio elements, where `dim` marks a step whose turn has not come. A whole
+// section of those rendered at 45% and looked broken, and nothing done inside
+// the package could override it — it was reaching in from out here.
+//
+// .outer is the only element this class is ever put on (root.component.html),
+// so the shell behaves exactly as before.
+.outer.dim {
   opacity: 0.45;
 }
 

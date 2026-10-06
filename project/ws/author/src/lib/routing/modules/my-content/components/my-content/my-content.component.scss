@@ -228,6 +228,18 @@
 .sidenav-content {
   margin: 0;
 
+  /* One gutter for the AI Studio screen.
+   *
+   * The bar sat at 24px (its own margin) while the element below it sat at
+   * 30px (its host padding), so the breadcrumb and the heading under it were
+   * six pixels apart down the whole page. Both read this now, and neither
+   * carries its own number — ai-element-host.scss consumes it too.
+   *
+   * A property of this element, not a nested rule: nesting it produced
+   * `.sidenav-content .sidenav-content`, which matches nothing, so the
+   * breadcrumb fell back to no inset at all while the element kept its 30px. */
+  --ai-gutter: 30px;
+
   // Compact list items inside the main content panel
   ::ng-deep .mat-mdc-list-item {
     height: 40px !important;
@@ -244,6 +256,62 @@
     background: #f3f8fd;
     border-bottom: 1px solid #dce8f3;
     box-sizing: border-box;
+  }
+
+  /* AI Studio's breadcrumb. Scoped to its own class, so every other tab keeps
+     the .currentTab treatment exactly as it was. */
+  .ai-crumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: var(--ai-gutter, 30px);
+    font-family: Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.3;
+    letter-spacing: 0;
+    min-width: 0;
+    /* The bar's top edge sits under the app bar, so centring in the whole box
+       left the words about 6px above the middle of what is visible. */
+    margin-top: 12px;
+  }
+
+  /* The area is context: present, but quieter than where you are — the same
+     grey the sidebar uses for its items. */
+  .ai-crumb__area {
+    color: #5a6a7a;
+    font-weight: 500;
+  }
+
+  .ai-crumb__sep {
+    flex: none;
+    display: block;
+    color: #8a96a3;
+  }
+
+  /* The open feature is the subject of the screen: the portal blue, heavier,
+     with its menu glyph — the way the sidebar marks the item that is open. */
+  .ai-crumb__current {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    color: #1c5d95;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* The glyph centred on the label's line. As an inline SVG it sat on the text
+     baseline with space left under it, so it rode a little off the words. */
+  .ai-crumb__tile {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    height: 16px;
+
+    svg {
+      display: block;
+    }
   }
   .btn-create {
     width: auto;
@@ -424,7 +492,7 @@ ws-auth-content-card-v2 {
   overflow-y: auto;
   overflow-x: hidden;
 }
-.aihubContainer {
+.aiStudioContainer {
   width: 100%;
 }
 
@@ -590,6 +658,17 @@ ws-auth-content-card-v2 {
   &:hover {
     color: #1c5d95;
   }
+
+  /* The AI Studio copy of this bar is a label, not a link — "Dashboard" goes
+     somewhere, this heads the menu below it. So it drops the affordances
+     rather than offering a click that does nothing. */
+  &.is-static {
+    cursor: default;
+
+    &:hover {
+      color: #808080;
+    }
+  }
 }
 /* Normal state */
 ::ng-deep .overflowY::-webkit-scrollbar {
@@ -618,4 +697,95 @@ ws-auth-content-card-v2 {
   font-size: 15px;
   padding-left: 3px;
   margin-left: 8px !important;
+}
+
+/* ---- the AI Studio section -------------------------------------------------
+ *
+ * Styled as every other section in this sidebar (Courses, Self Assessment,
+ * Manage Courses), so the menu reads as one menu: an outline glyph and name in
+ * the header, text-only items below in the same 40px rows, the same hover, and
+ * the same blue text and 3px bar for the item that is open. */
+.ai-studio-panel {
+  /* The glyph at the size and grey of the other section icons; blue while one
+     of AI Studio's features is open, as theirs are. */
+  .add-create-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 26px;
+    color: #8a96a3;
+    transition: color 0.15s ease;
+  }
+  .add-create-icon.is-active {
+    color: #1c5d95;
+  }
+}
+
+.ai-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+  background: #f7f7f7;
+}
+
+/* One row: the same box as the list items above (40px, 6px corners, 8px in
+   from the drawer), with the label lined up under the section's name. */
+.ai-feature {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  margin: 1px 8px;
+  /* 22px + the 8px margin puts the label where the other lists' labels sit. */
+  padding: 0 12px 0 22px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #5a6a7a;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+/* The feature's glyph in the row's colour, so it turns blue with the label. */
+.ai-feature__icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  color: #8a96a3;
+}
+.ai-feature.is-active .ai-feature__icon {
+  color: #1c5d95;
+}
+
+.ai-feature__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-feature:hover {
+  background: rgba(28, 93, 149, 0.06);
+}
+
+/* The open feature: blue, heavier, with the 3px bar the other lists use. */
+.ai-feature.is-active {
+  color: #1c5d95;
+  font-weight: 600;
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 3px;
+    height: 14px;
+    margin-right: 8px;
+    border-radius: 2px;
+    background: #1c5d95;
+  }
+}
+
+.ai-feature:focus-visible {
+  outline: 2px solid #1c5d95;
+  outline-offset: -2px;
 }

@@ -1,0 +1,21 @@
+<!-- On its own URL there is no sidebar, so the page carries its own way between
+     features. Inside my-content this is hidden: the sidebar is already there,
+     and two controls for one choice can disagree.
+     Links, not buttons — each feature is a real URL, so it can be opened in a
+     new tab, bookmarked and shared, and the browser's back button works. -->
+<nav class="ai-studio-nav" *ngIf="routed">
+  <a
+    *ngFor="let f of features"
+    class="ai-studio-nav__tab"
+    [routerLink]="['/author/my-content/ai-studio', f.id]"
+    routerLinkActive="is-active"
+    >{{ f.label }}</a
+  >
+</nav>
+
+<!-- One feature at a time, chosen from the sidebar.
+     Each is inside an *ngIf rather than hidden with CSS, so only the selected
+     one is constructed — an element that is never shown never calls the API. -->
+<ws-author-content-studio *ngIf="active === 'contentStudio'"></ws-author-content-studio>
+<ws-author-assessment *ngIf="active === 'assessment'"></ws-author-assessment>
+<ws-author-reports *ngIf="active === 'reports'"></ws-author-reports>
