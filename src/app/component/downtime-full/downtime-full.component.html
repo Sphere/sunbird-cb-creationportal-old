@@ -11,6 +11,9 @@
     [style.--dt-primary]="css().primaryColor"
   >
     <div class="downtime-full-card">
+      @if (logo()) {
+        <img class="downtime-full-logo" [src]="logo()" [style.height.px]="logoHeight()" [attr.alt]="logoAlt()" />
+      }
       <div class="downtime-full-icon" aria-hidden="true">
         @if (imageIcon()) {
           <img [src]="icon()" alt="" />
@@ -20,8 +23,20 @@
       </div>
       <h1 id="downtime-full-title" class="downtime-full-title">{{ title() }}</h1>
       <p id="downtime-full-message" class="downtime-full-message">{{ message() }}</p>
+      @if (note()) {
+        <p class="downtime-full-note">{{ note() }}</p>
+      }
+      @if (appLink() || (showRetry() && retryLabel())) {
+        <div class="downtime-full-actions">
+          @if (appLink(); as link) {
+            <a class="downtime-full-link" [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.label }}</a>
+          }
+          @if (showRetry() && retryLabel()) {
+            <button type="button" class="downtime-full-retry" (click)="checkAgain()">{{ retryLabel() }}</button>
+          }
+        </div>
+      }
       @if (appLink(); as link) {
-        <a class="downtime-full-link" [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.label }}</a>
         @if (link.hint) {
           <p class="downtime-full-hint">{{ link.hint }}</p>
         }

@@ -252,4 +252,58 @@ describe('DowntimeConfigService', () => {
       http.expectNone(DOWNTIME_FORM_READ_URL)
     })
   })
+
+  describe('configuring the page and banner from the form', () => {
+    const withContent = (content: any) => loadWith(formResponse({ cbp: cbp({ content: { ...cbp().content, ...content } }) }))
+
+    it('fills in the logo, note, button and bypass notice when the form leaves them out', async () => {
+      const { content } = await loadWith(formResponse({ cbp: cbp() }))
+      expect(content.logo).toBe('')
+      expect(content.note).toEqual(DOWNTIME_DEFAULTS.NOTE)
+      expect(content.showRetry).toBe(true)
+      expect(content.retryLabel).toEqual(DOWNTIME_DEFAULTS.RETRY_LABEL)
+      expect(content.bypassNotice).toEqual(DOWNTIME_DEFAULTS.BYPASS_NOTICE)
+      expect(content.dismissible).toBe(true)
+      expect(content.logoAlt).toEqual(DOWNTIME_DEFAULTS.LOGO_ALT)
+      expect(content.logoHeight).toBe(DOWNTIME_DEFAULTS.LOGO_HEIGHT)
+      expect(content.dismissLabel).toEqual(DOWNTIME_DEFAULTS.DISMISS_LABEL)
+    })
+
+    it('takes the logo size and labels from the form, keeping the size within 16-160px', async () => {
+      const { content } = await withContent({ logoHeight: 64, logoAlt: { en: 'Acme' }, dismissLabel: { en: 'Hide' } })
+      expect(content.logoHeight).toBe(64)
+      expect(content.logoAlt!.en).toBe('Acme')
+      expect(content.dismissLabel!.en).toBe('Hide')
+      expect((await withContent({ logoHeight: 4000 })).content.logoHeight).toBe(160)
+      expect((await withContent({ logoHeight: 'big' })).content.logoHeight).toBe(DOWNTIME_DEFAULTS.LOGO_HEIGHT)
+    })
+
+    it('shows a logo only for an https URL from the form', async () => {
+      expect((await withContent({ logo: 'https://cdn.example/brand.svg' })).content.logo).toBe('https://cdn.example/brand.svg')
+      expect((await withContent({ logo: '' })).content.logo).toBe('')
+      expect((await withContent({ logo: 'javascript:alert(1)' })).content.logo).toBe('')
+      expect((await withContent({ logo: 'cbp-assets/logo.svg' })).content.logo).toBe('')
+    })
+
+    it('takes the note, button label and bypass notice from the form, in each language', async () => {
+      const { content } = await withContent({
+        note: { en: 'Back by midnight.', hi: 'आधी रात तक' },
+        retryLabel: { en: 'Try now' },
+        bypassNotice: { en: 'Testing mode' },
+      })
+      expect(content.note!.hi).toBe('आधी रात तक')
+      expect(content.retryLabel!.en).toBe('Try now')
+      expect(content.bypassNotice!.en).toBe('Testing mode')
+    })
+
+    it('keeps an empty text, which is how a line is hidden', async () => {
+      expect((await withContent({ note: { en: '' } })).content.note!.en).toBe('')
+    })
+
+    it('can turn off the button and the banner close', async () => {
+      const { content } = await withContent({ showRetry: false, dismissible: false })
+      expect(content.showRetry).toBe(false)
+      expect(content.dismissible).toBe(false)
+    })
+  })
 })

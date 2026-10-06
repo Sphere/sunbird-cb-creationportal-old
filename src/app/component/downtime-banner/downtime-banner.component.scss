@@ -1,5 +1,8 @@
-// Fixed at the top (or bottom) of the viewport, above the nav bar, so it is
-// seen on every page without shifting the portal's own layout.
+@import 'ws-vars';
+
+// Fixed at the top (or bottom) of the viewport, so it is seen on every page. At the
+// top it sets --downtime-banner-offset, which moves the root nav bar and the page
+// content down below it rather than under it.
 .downtime-banner {
   position: fixed;
   top: 0;
@@ -13,7 +16,7 @@
   background: var(--dt-banner, #fff3cd);
   border-left: 4px solid var(--dt-border, #ce9a39);
   color: var(--dt-text, #1a2d45);
-  font-family: Roboto, sans-serif;
+  font-family: $font-family-roboto;
   font-size: 14px;
   line-height: 1.5;
   box-shadow: 0 1px 4px rgba(26, 45, 69, 0.12);
