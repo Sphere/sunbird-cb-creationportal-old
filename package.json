@@ -138,7 +138,7 @@
   },
   "resolutions": {
     "minimatch": "^3.1.2",
-    "videojs-contrib-quality-levels/video.js": "8.24.1"
+    "videojs-contrib-quality-levels/**/video.js": "8.24.1"
   },
   "husky": {
     "hooks": {
