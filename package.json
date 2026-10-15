@@ -137,7 +137,8 @@
     "webpack-bundle-analyzer": "^3.4.1"
   },
   "resolutions": {
-    "minimatch": "^3.1.2"
+    "minimatch": "^3.1.2",
+    "videojs-contrib-quality-levels/**/video.js": "8.24.1"
   },
   "husky": {
     "hooks": {
