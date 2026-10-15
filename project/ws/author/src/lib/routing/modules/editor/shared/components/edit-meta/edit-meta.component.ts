@@ -353,7 +353,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
       this.editorService.readcontentV3(id).subscribe(async (data: any) => {
         if (data.competencies_v1) {
           this.getAllEntity()
-          this.competencies = JSON.parse(data.competencies_v1)
+          this.competencies = this.parseCompetencies(data.competencies_v1)
         }
         this.loader.changeLoad.next(false)
       })
@@ -388,7 +388,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
               competencies_v1: [],
             }
           } else {
-            arr2 = JSON.parse(data.competencies_v1)
+            arr2 = this.parseCompetencies(data.competencies_v1)
             if (data.competencySearch) {
               arr1 = data.competencySearch
             }
@@ -467,7 +467,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
     this.editorService.readcontentV3(id).subscribe(async (data: any) => {
       if (data.competencies_v1 !== undefined) {
         this.getAllEntity()
-        this.competencies = await JSON.parse(data.competencies_v1)
+        this.competencies = this.parseCompetencies(data.competencies_v1)
       } else {
         this.getAllEntity()
         this.competencies = []
@@ -541,6 +541,22 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
     clearInterval(this.timer)
   }
 
+  /**
+   * competencies_v1 comes back from the API as a JSON string, but is already an
+   * array once it has been written in memory. Tolerate both, and malformed data.
+   */
+  private parseCompetencies(raw: any): any[] {
+    try {
+      if (!raw) {
+        return []
+      }
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+      return Array.isArray(parsed) ? parsed : [parsed]
+    } catch {
+      return []
+    }
+  }
+
   private set content(contentMeta: NSContent.IContentMeta) {
     const isCreator = this.configSvc.userProfile && this.configSvc.userProfile.userId === contentMeta.createdBy ? true : false
 
@@ -605,10 +621,23 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
         // tslint:disable-next-line:no-console
         console.log(res)
         this.contentMeta = res
-        this.contentMeta = res
+        // Publishing does not keep the uploaded image in appIcon: the pipeline's
+        // ThumbnailGenerator resizes it to 56px, points appIcon at that thumbnail
+        // and preserves the original in posterImage. Reading appIcon back shows a
+        // 56px image stretched to 760x400, and saving it leaves the next publish
+        // regenerating a thumbnail from a thumbnail.
+        //
+        // This has to normalise contentMeta rather than only the form control:
+        // further down, a generic loop copies every contentMeta field onto its
+        // control, which would otherwise put the thumbnail straight back.
+        if (res.posterImage) {
+          this.contentMeta.appIcon = res.posterImage
+        }
+        const uploadedIcon = this.contentMeta.appIcon
         this.contentForm.controls.name.setValue(res.name)
-        this.contentForm.controls.appIcon.setValue(res.appIcon)
-        this.contentForm.controls.thumbnail.setValue(res.appIcon)
+        this.contentForm.controls.appIcon.setValue(uploadedIcon)
+        this.contentForm.controls.thumbnail.setValue(uploadedIcon)
+        this.contentForm.controls.posterImage.setValue(res.posterImage)
         this.contentForm.controls.instructions.setValue(res.instructions)
         this.contentForm.controls.lang.setValue(res.lang)
         this.contentForm.controls.subTitle.setValue(res.subTitle)
@@ -621,7 +650,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
         }
         if (res.competencies_v1) {
           this.getAllEntity()
-          this.competencies = JSON.parse(res.competencies_v1)
+          this.competencies = this.parseCompetencies(res.competencies_v1)
           console.log('this.competencies', res)
         } else {
           this.competencies = []
@@ -714,7 +743,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
 
         if (this.contentMeta.competencies_v1) {
           // this.getAllEntity()
-          this.competencies = JSON.parse(this.contentMeta.competencies_v1)
+          this.competencies = this.parseCompetencies(this.contentMeta.competencies_v1)
         }
         if (this.isSubmitPressed) {
           this.contentForm.controls[v].markAsDirty()

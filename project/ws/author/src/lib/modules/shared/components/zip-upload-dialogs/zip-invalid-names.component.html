@@ -1,0 +1,24 @@
+<div class="zip-dialog">
+  <div class="zip-dialog-header">
+    <h3 i18n>Following files or folders have special characters in their names</h3>
+    <button type="button" class="zip-dialog-close" aria-label="Close" i18n-aria-label (click)="dismiss.emit()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!--
+    The id is load-bearing: both hosts look this element up by id after opening
+    the dialog and rewrite its children to highlight the offending characters.
+  -->
+  <div class="zip-dialog-body" id="errorFiles">
+    @for (name of names; track name) {
+      <div>{{ name }}</div>
+    }
+  </div>
+
+  <div class="zip-dialog-footer">
+    <button type="button" mat-raised-button class="ws-mat-primary-background" (click)="acknowledged.emit()">
+      <p class="margin-remove-bottom agree-text" i18n>I Understand</p>
+    </button>
+  </div>
+</div>

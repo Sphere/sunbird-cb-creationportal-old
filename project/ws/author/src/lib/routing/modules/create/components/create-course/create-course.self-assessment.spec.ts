@@ -242,5 +242,22 @@ describe('CreateCourseComponent (self assessment and icon upload)', () => {
       expect(mocks.dialog.open).not.toHaveBeenCalled()
       expect(mocks.snackBar.openFromComponent).toHaveBeenCalled()
     })
+
+    it('still opens the new course when the forum creation fails', async () => {
+      // Sunbird Spark has no Kong route for the forum API, so this 404s. The forum is
+      // ancillary -- the competency course itself is already created.
+      const { component, mocks } = build()
+      ready(component)
+      mocks.svc.createForum.mockReturnValue(throwError(() => ({ status: 404 })))
+      jest.spyOn(component, 'setContentType').mockResolvedValue(undefined as any)
+      jest.spyOn(component, 'getChildrenCount').mockReturnValue(undefined as any)
+
+      component.createSelfAssessmentCourse()
+      await settle()
+
+      expect(mocks.svc.createForum).toHaveBeenCalled()
+      expect(mocks.editorService.updateNewContentV3).toHaveBeenCalled()
+      expect(mocks.router.navigateByUrl).toHaveBeenCalledWith('/author/editor/do_new/collection', expect.anything())
+    })
   })
 })

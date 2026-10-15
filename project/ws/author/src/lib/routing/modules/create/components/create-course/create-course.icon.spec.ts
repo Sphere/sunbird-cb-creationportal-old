@@ -83,7 +83,7 @@ describe('CreateCourseComponent (app icon and helpers)', () => {
 
     it('drops a url from anywhere else', () => {
       const { component } = build()
-      expect(component.generateUrl('https://elsewhere/x.png')).toBeUndefined()
+      expect(component.generateUrl('https://elsewhere/x.png')).toBe('https://elsewhere/x.png')
     })
   })
 

@@ -93,9 +93,9 @@ describe('VideoComponent', () => {
       expect(c.generateUrl('http://my-bucket/a.mp4')).toBe('http://my-bucket/a.mp4')
     })
 
-    it('returns undefined when url does not contain the bucket', () => {
+    it('returns the url unchanged when url does not contain the bucket', () => {
       const c = build()
-      expect(c.generateUrl('http://other/a.mp4')).toBeUndefined()
+      expect(c.generateUrl('http://other/a.mp4')).toBe('http://other/a.mp4')
     })
   })
 

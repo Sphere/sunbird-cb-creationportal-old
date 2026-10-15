@@ -1,0 +1,53 @@
+{
+  "/apis/**": {
+    "target": "https://cbp-staging.aastrika.org/",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "/apis": "/apis"
+    }
+  },
+  "/protected/**": {
+    "target": "https://cbp-staging.aastrika.org/",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  },
+  "/auth/**": {
+    "target": "https://cbp-staging.aastrika.org/",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  },
+  "/content-api/**": {
+    "target": "http://localhost:3004",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "/apis": ""
+    }
+  },
+  "/content-store/**": {
+    "target": "http://localhost:3005",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "/apis": ""
+    }
+  },
+  "/assets/instances/**": {
+    "target": "https://cbp-staging.aastrika.org/",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  },
+  "/theme-igot.js": {
+    "target": "https://cbp-staging.aastrika.org/",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  }
+}

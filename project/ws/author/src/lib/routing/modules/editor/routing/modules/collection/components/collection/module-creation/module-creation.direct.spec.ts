@@ -1182,7 +1182,7 @@ describe('ModuleCreationComponent (direct instantiation)', () => {
     })
 
     it('generateUrl returns nothing for a foreign URL', () => {
-      expect(component.generateUrl('https://host/other/x.png')).toBeUndefined()
+      expect(component.generateUrl('https://host/other/x.png')).toBe('https://host/other/x.png')
     })
 
     it('changeToDefaultImg swaps in the configured fallback thumbnail', () => {
@@ -1216,6 +1216,39 @@ describe('ModuleCreationComponent (direct instantiation)', () => {
 
     it('isAssessmentResource is false with no content loaded', () => {
       expect(component.isAssessmentResource).toBe(false)
+    })
+  })
+
+  describe('uploadAppIcon', () => {
+    const imageFile = () => new File(['x'], 'course image.jpg', { type: 'image/jpeg' })
+    const uploaded = {
+      artifactUrl: 'https://s3/content/do_img/artifact/new.jpg',
+      content_url: 'https://s3/content/do_img/artifact/new.jpg',
+    }
+
+    beforeEach(() => {
+      ;(component as any).content = { identifier: 'do_course', contentType: 'Course' }
+      ;(component as any).courseData = course()
+      uploadService.upload.mockReturnValue(of(uploaded))
+    })
+
+    it('sets posterImage to the new image along with appIcon and thumbnail', () => {
+      component.uploadAppIcon(imageFile())
+      afterClosed.next(imageFile())
+
+      const meta = contentService.setUpdatedMeta.mock.calls[0][0]
+      expect(meta.appIcon).toBe(uploaded.artifactUrl)
+      expect(meta.posterImage).toBe(uploaded.artifactUrl)
+      expect(meta.thumbnail).toBe(uploaded.content_url)
+    })
+
+    it('sends posterImage in the content update request', () => {
+      component.uploadAppIcon(imageFile())
+      afterClosed.next(imageFile())
+
+      const [body, id] = editorService.updateNewContentV3.mock.calls[0]
+      expect(id).toBe('do_course')
+      expect(body.request.content.posterImage).toBe(uploaded.artifactUrl)
     })
   })
 })

@@ -73,6 +73,67 @@ describe('EditorService (endpoints and payload shaping)', () => {
     })
   })
 
+  describe('CBP contact metadata is sent as JSON strings', () => {
+    // Sunbird Spark reads these fields back as arrays. Two things break if one is
+    // sent back unchanged: content/v3/update rejects an array for `reviewer`
+    // ("Metadata reviewer should be a/an String value"), and the compositesearch
+    // index maps them as `text`, so an object fails indexing with a
+    // mapper_parsing_exception that kills the whole indexer job.
+    const sentContent = () => (apiService.patch as jest.Mock).mock.calls[0][1].request.content
+
+    it.each(['reviewer', 'creatorContacts', 'creatorDetails', 'publisherDetails', 'competencies_v1'])(
+      'stringifies %s when it arrives as an array',
+      field => {
+        svc.updateContentV3({ request: { content: { [field]: [{ id: 'x1' }] } } } as any, 'do_1').subscribe()
+        expect(sentContent()[field]).toBe('[{"id":"x1"}]')
+      },
+    )
+
+    it('stringifies every contact field in one payload', () => {
+      svc
+        .updateContentV3(
+          {
+            request: {
+              content: {
+                reviewer: [{ id: 'r1' }],
+                creatorDetails: [{ id: 'c1', name: 'creator' }],
+                publisherDetails: [{ id: 'p1' }],
+              },
+            },
+          } as any,
+          'do_1',
+        )
+        .subscribe()
+      const content = sentContent()
+      expect(content.reviewer).toBe('[{"id":"r1"}]')
+      expect(content.creatorDetails).toBe('[{"id":"c1","name":"creator"}]')
+      expect(content.publisherDetails).toBe('[{"id":"p1"}]')
+    })
+
+    it('stringifies a reviewer array on updateContentWithFewFields', () => {
+      svc.updateContentWithFewFields({ request: { content: { reviewer: [{ id: 'r1' }] } } }, 'do_1').subscribe()
+      expect(sentContent().reviewer).toBe('[{"id":"r1"}]')
+    })
+
+    it('leaves a field that is already a string untouched', () => {
+      svc.updateContentV3({ request: { content: { reviewer: '[{"id":"r1"}]' } } } as any, 'do_1').subscribe()
+      expect(sentContent().reviewer).toBe('[{"id":"r1"}]')
+    })
+
+    it('does not invent fields the payload does not carry', () => {
+      svc.updateContentV3({ request: { content: { name: 'A course' } } } as any, 'do_1').subscribe()
+      const content = sentContent()
+      expect(content).not.toHaveProperty('reviewer')
+      expect(content).not.toHaveProperty('creatorDetails')
+      expect(content).not.toHaveProperty('publisherDetails')
+    })
+
+    it('leaves unrelated list fields such as reviewerIDs as arrays', () => {
+      svc.updateContentV3({ request: { content: { reviewerIDs: ['r1', 'r2'] } } } as any, 'do_1').subscribe()
+      expect(sentContent().reviewerIDs).toEqual(['r1', 'r2'])
+    })
+  })
+
   describe('reviewer endpoints', () => {
     it('rejects a content by identifier', () => {
       svc.rejectContentApi({ request: {} }, 'do_1').subscribe()

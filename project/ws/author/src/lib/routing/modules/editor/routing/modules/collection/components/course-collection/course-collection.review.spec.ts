@@ -479,6 +479,37 @@ describe('CourseCollectionComponent (review and publish workflow)', () => {
       expect(dialog.closeAll).toHaveBeenCalled()
       expect(snackBar.open).toHaveBeenCalledWith('Gateway Timeout', undefined, { duration: 1000 })
     })
+
+    /**
+     * A resource can be left in Failed by an earlier publish attempt -- an upload or
+     * packaging problem since resolved. knowlg only refuses to publish content that is
+     * Processing, so the retry is allowed; previously Failed matched no branch and the
+     * publisher was told to retire the course and start again.
+     */
+    it('retries a resource left in Failed rather than blocking the publish', async () => {
+      await component.contentPublish([resource({ status: 'Failed' })])
+      expect(editorService.publishContent).toHaveBeenCalledWith('do_res')
+      expect(initService.publishData).toHaveBeenCalled()
+      expect(snackBar.open).not.toHaveBeenCalledWith(expect.stringContaining('not correct'), undefined, { duration: 3000 })
+    })
+
+    it('publishes a mix of live, reviewed and failed resources', async () => {
+      await component.contentPublish([
+        resource({ identifier: 'do_live', status: 'Live' }),
+        resource({ identifier: 'do_reviewed' }),
+        resource({ identifier: 'do_failed', status: 'Failed' }),
+      ])
+      expect(editorService.publishContent).toHaveBeenCalledWith('do_reviewed')
+      expect(editorService.publishContent).toHaveBeenCalledWith('do_failed')
+      expect(editorService.publishContent).not.toHaveBeenCalledWith('do_live')
+      expect(initService.publishData).toHaveBeenCalled()
+    })
+
+    it('still warns when a failed resource was never reviewed', async () => {
+      await component.contentPublish([resource({ status: 'Failed', reviewerStatus: 'Draft' })])
+      expect(editorService.publishContent).not.toHaveBeenCalled()
+      expect(snackBar.open).toHaveBeenCalledWith(expect.stringContaining('not correct'), undefined, { duration: 3000 })
+    })
   })
 
   // ------------------------------------------------------------- PublishCBP --
