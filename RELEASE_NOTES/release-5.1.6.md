@@ -5,15 +5,17 @@
 | **Build branch deployed**    | `release-5.1.6` (Jenkins deploy source)                                                               |
 | **Tag**                      | `v5.1.6` (immutable marker + GitHub Release)                                                          |
 | **Baseline (previous prod)** | `v5.1.5`                                                                                              |
-| **Commits**                  | `31` (non-merge) — `sunbird-spark/upgrade` (30) + AI Studio `@aastrika/ai-elements` 0.7.1 → 0.8.1 (1) |
+| **Commits**                  | `32` (non-merge) — `sunbird-spark/upgrade` (30) + AI Studio `@aastrika/ai-elements` 0.7.1 → 0.8.1 → 0.8.2 (2) |
 | **Author**                   | Prince Gupta                                                                                          |
 
 ## Summary
 
-This release updates AI Studio inside the portal (Content Creation, Assessment Creation, Reports) by moving `@aastrika/ai-elements` from 0.7.1 to 0.8.1. Creators get a guided setup, large PDFs that upload in full, edit-mode frames and roleplay pictures that show, and a content watermark they can turn on or off. The AI Studio tags, attributes and events are the same, so no portal code is touched for it. The release is cut from `sunbird-spark/upgrade`, so it also ships that branch's work since 5.1.5 — listed under **Also in this release**.
+This release updates AI Studio inside the portal (Content Creation, Assessment Creation, Reports) by moving `@aastrika/ai-elements` from 0.7.1 to 0.8.2. Creators get a guided setup, large PDFs that upload in full, edit-mode frames and roleplay pictures that show, and a content watermark they can turn on or off. The AI Studio tags, attributes and events are the same, so no portal code is touched for it. The release is cut from `sunbird-spark/upgrade`, so it also ships that branch's work since 5.1.5 — listed under **Also in this release**.
 
 ## ✨ Features
 
+- **ai-studio** — **The voice and music the brief asks for, ready to play (0.8.2).** After a plan or an AI change, the Voice and Background music boxes show what the video will use — a Voice Library voice or a track composed for it (✦) — each with ▶, without reloading the page; a music chip sits beside the voice chip. A track picked after the plan is what the video plays.
+- **ai-studio** — **Follow my script (0.8.2).** A chip above the Creative brief asks for the document to be used as a ready script: one scene per script scene, narration word for word, directions used only for the pictures.
 - **ai-studio** — **Guided setup, one card at a time.** Training material, Video style and Video settings each fold to a done line with **Change** once finished, and say where they are (**Step n of 3**). **Generate scene plan** waits until the style is confirmed with **Continue**. Settings are icon tiles with one look and AA text contrast.
 - **ai-studio** — **Content watermark.** On by default; every video (slides, watercolor, roleplay, edited, translated) carries the faded Aastrika AI Studio mark bottom-right. Off makes the video without it. The plan and the finished video show **Watermark on** or **No watermark**.
 - **ai-studio** — **Start another video while one is being made.** **New video** shows during planning and rendering; the first keeps going and lands in My videos.
@@ -22,6 +24,7 @@ This release updates AI Studio inside the portal (Content Creation, Assessment C
 
 ## 🐛 Fixes
 
+- **ai-studio** — **An AI music change on a made video can be applied (0.8.2).** Update stayed disabled after asking the AI for other music; the change now shows in the list and Update is enabled.
 - **ai-studio** — **Large PDFs upload in full.** A file over 5 MB is sent in pieces; through the portal's proxy the pieces' labels were lost and the service read only the first 5 MB ("Invalid PDF structure"). Pieces now go to a path the proxy forwards in full, and if anything still drops them the file is sent again whole.
 - **ai-studio** — **Edit-mode frames and roleplay pictures show in the portal.** They are now fetched under `/v1/studio/get-video/…`, which the existing `aiStudioGetVideo` gateway route covers, with the session header.
 - **ai-studio** — **The screen keeps following a video while the server is briefly busy (0.8.0).** A failed status check retries instead of freezing the progress.
