@@ -1,5 +1,5 @@
 # ── Stage 1: builder — install deps, build the Angular app, prep the server ──
-FROM node:20 AS builder
+FROM node:22 AS builder
 
 # Build argument for cache busting / layer cache reuse
 ARG BUILDKIT_INLINE_CACHE=1

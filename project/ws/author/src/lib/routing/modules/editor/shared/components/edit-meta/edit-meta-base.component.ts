@@ -667,6 +667,9 @@ export abstract class EditMetaBaseComponent {
                     this.canUpdate = false
                     this.contentForm.controls.appIcon.setValue(this.generateUrl(data.artifactUrl))
                     this.contentForm.controls.thumbnail.setValue(this.generateUrl(data.artifactUrl))
+                    // posterImage must follow the new image too: without it the old poster
+                    // survives every image change, and child content inherits it.
+                    this.contentForm.controls.posterImage?.setValue(this.generateUrl(data.artifactUrl))
                     this.canUpdate = true
                     this.storeData()
                     this.authInitService.uploadData('thumbnail')

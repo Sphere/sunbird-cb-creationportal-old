@@ -458,5 +458,22 @@ describe('EditorService', () => {
         done()
       })
     })
+
+    it('certificateTemplates maps certificateTemplates as is', done => {
+      const list = [{ id: 'classic', name: 'Classic', url: 'https://bucket/classic.svg' }]
+      apiService.get.mockReturnValue(of({ certificateTemplates: list }))
+      svc.certificateTemplates().subscribe(res => {
+        expect(res).toEqual(list)
+        done()
+      })
+    })
+
+    it('certificateTemplates is undefined when the config has no list', done => {
+      apiService.get.mockReturnValue(of({ roles: [] }))
+      svc.certificateTemplates().subscribe(res => {
+        expect(res).toBeUndefined()
+        done()
+      })
+    })
   })
 })

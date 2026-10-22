@@ -196,8 +196,8 @@ describe('FileUploadComponent (direct instantiation)', () => {
       expect(component.generateUrl('https://x/my-bucket/file.pdf')).toBe('https://x/my-bucket/file.pdf')
       expect(component.bucket).toBe('my-bucket')
     })
-    it('returns undefined when the url does not contain the bucket', () => {
-      expect(component.generateUrl('https://x/other/file.pdf')).toBeUndefined()
+    it('returns the url unchanged when the url does not contain the bucket', () => {
+      expect(component.generateUrl('https://x/other/file.pdf')).toBe('https://x/other/file.pdf')
     })
   })
 

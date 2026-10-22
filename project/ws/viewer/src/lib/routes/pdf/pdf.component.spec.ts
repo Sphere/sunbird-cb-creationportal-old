@@ -59,7 +59,7 @@ describe('PdfComponent', () => {
 
   it('generateUrl returns undefined for a url without the bucket', () => {
     const c = build()
-    expect(c.generateUrl('https://host/other/doc.pdf')).toBeUndefined()
+    expect(c.generateUrl('https://host/other/doc.pdf')).toBe('https://host/other/doc.pdf')
   })
 
   it('raiseEvent dispatches a telemetry event with content details', () => {

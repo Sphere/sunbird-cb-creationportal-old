@@ -790,4 +790,16 @@ describe('ModuleCreationComponent (drag-drop and uploads)', () => {
       expectNotified(Notify.SAVE_SUCCESS)
     })
   })
+
+  describe('zip guideline dialog', () => {
+    it('gives the dialog its panel class so the overlay picks up Roboto', () => {
+      component.acceptType = '.zip'
+      // The template is a @ViewChild and stays undefined under direct
+      // instantiation, so stub it rather than matching on it.
+      component.guideline = {} as any
+      component.uploadPdf({ name: 'course_package.zip', type: 'application/zip', size: 1024 } as File)
+      expect(dialog.open).toHaveBeenCalledWith(component.guideline, expect.objectContaining({ panelClass: 'zip-guideline-panel' }))
+      afterClosed.next(undefined)
+    })
+  })
 })

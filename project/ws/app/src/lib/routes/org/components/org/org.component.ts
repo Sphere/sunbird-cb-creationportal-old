@@ -77,7 +77,17 @@ export class OrgComponent implements OnInit, OnDestroy {
       if (this.courseData) {
         this.courseData.forEach((course: any) => {
           if (course && course.competencies_v1) {
-            forEach(JSON.parse(get(course, 'competencies_v1')), (value: any) => {
+            // competencies_v1 comes back from the API as a JSON string, but is
+            // already an array once it has been written in memory.
+            let competencies: any[] = []
+            try {
+              const raw = get(course, 'competencies_v1')
+              const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+              competencies = Array.isArray(parsed) ? parsed : [parsed]
+            } catch {
+              competencies = []
+            }
+            forEach(competencies, (value: any) => {
               if (value.level) {
                 this.cometencyData.push({
                   identifier: course.identifier,
