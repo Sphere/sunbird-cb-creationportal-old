@@ -70,17 +70,16 @@
 
           <mat-divider></mat-divider>
 
-          <div
-            class="flex flex-middle py-4 cursor-pointer"
+          <button
+            type="button"
+            class="btn-reset btn-block flex flex-middle py-4 cursor-pointer"
             (click)="showContentLang = !showContentLang"
-            (keydown)="isActivationKey($event) && (showContentLang = !showContentLang)"
-            [attr.tabindex]="0"
           >
             <mat-icon *ngIf="showContentLang">keyboard_arrow_down</mat-icon>
             <mat-icon *ngIf="!showContentLang">chevron_right</mat-icon>
 
             <span i18n class="px-4">Do you want to select additional languages for Content?</span>
-          </div>
+          </button>
           <mat-selection-list
             class="flex flex-wrapped"
             [hidden]="!showContentLang"
@@ -250,21 +249,16 @@
           </div>
 
           <ul *ngIf="themes.length && themes.length > 1" class="flex flex-between flex-wrapped padding-remove">
-            <li
-              *ngFor="let themeObj of themes"
-              class="theme-section"
-              matRipple
-              (click)="changeTheme(themeObj.themeClass)"
-              (keydown)="isActivationKey($event) && changeTheme(themeObj.themeClass)"
-              [attr.tabindex]="0"
-            >
-              <div class="flex flex-around margin-bottom-m theme-pad" [style.color]="themeObj.themeName">
-                <div class="btn-circle mat-elevation-z5" [style.backgroundColor]="themeObj.color.primary"></div>
-                <div class="btn-circle mat-elevation-z5" [style.backgroundColor]="themeObj.color.accent"></div>
-                <div class="btn-circle mat-elevation-z5" [style.backgroundColor]="themeObj.color.warn"></div>
-              </div>
-              <mat-icon>{{ activeThemeKey === themeObj.themeClass ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
-              <span>{{ themeObj.themeName }}</span>
+            <li *ngFor="let themeObj of themes" class="theme-section" matRipple>
+              <button type="button" class="btn-reset btn-block" (click)="changeTheme(themeObj.themeClass)">
+                <div class="flex flex-around margin-bottom-m theme-pad" [style.color]="themeObj.themeName">
+                  <div class="btn-circle mat-elevation-z5" [style.backgroundColor]="themeObj.color.primary"></div>
+                  <div class="btn-circle mat-elevation-z5" [style.backgroundColor]="themeObj.color.accent"></div>
+                  <div class="btn-circle mat-elevation-z5" [style.backgroundColor]="themeObj.color.warn"></div>
+                </div>
+                <mat-icon>{{ activeThemeKey === themeObj.themeClass ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
+                <span>{{ themeObj.themeName }}</span>
+              </button>
             </li>
           </ul>
         </mat-card-content>
@@ -283,12 +277,5 @@
   id="lang-change-toast"
   i18n-value
   value="This feature is in beta and hence parts of the site may appear in English only."
-/>
-<input
-  type="hidden"
-  id="lang-change-toast"
-  i18n-value
-  value="This feature is in beta and hence parts of the site may
-      appear in English only. "
 />
 <input type="hidden" #maxContentLangToast i18n-value value="Only 2 content language are allowed" />

@@ -255,7 +255,7 @@ describe('FileUploadComponent (transfer)', () => {
       component.fileUploadCondition = { url: '' } as any
       uploadService.upload.mockReturnValue(of({ artifactUrl: 'https://elsewhere/pkg.zip' }))
       component.upload()
-      expect(component.generateStreamUrl).toHaveBeenCalledWith('')
+      expect(component.generateStreamUrl).toHaveBeenCalledWith('https://elsewhere/pkg.zip')
       expect(component.fileUploadForm.controls.entryPoint.value).toBe('')
     })
 
@@ -310,8 +310,8 @@ describe('FileUploadComponent (transfer)', () => {
   // ------------------------------------------------- misc transfer helpers --
 
   describe('helpers', () => {
-    it('builds the streaming url from the snapshot folder', () => {
-      expect(component.generateStreamUrl('index.html')).toContain('content-1-snapshot/index.html')
+    it('builds the streaming url from the snapshot folder, without the entry file', () => {
+      expect(component.generateStreamUrl('')).toMatch(/\/html\/content-1-snapshot$/)
     })
 
     it('closes every open dialog', () => {
@@ -321,8 +321,51 @@ describe('FileUploadComponent (transfer)', () => {
 
     it('offers the entry-point picker for a clean archive', () => {
       component.errorFileList = []
+      component.fileList = ['index.html', 'index_lms.html']
       component.processAndShowResult()
       expect(dialog.open).toHaveBeenCalledWith(component.selectFile, expect.anything())
+    })
+
+    it('rejects an archive without index.html at the top level before upload', () => {
+      component.errorFileList = []
+      component.fileList = ['pkg/', 'pkg/index.html']
+      component.file = makeFile('pkg.zip')
+      component.processAndShowResult()
+      expect(component.file).toBeNull()
+      expect(snackBar.open).toHaveBeenCalledWith(expect.stringContaining('inside the folder "pkg"'), 'OK', expect.anything())
+      expect(dialog.open).not.toHaveBeenCalled()
+    })
+
+    it('shows the loader while reading a zip and stops it before the result', () => {
+      ;(global as any).zip = {
+        useWebWorkers: true,
+        BlobReader: function BlobReader(this: any) {
+          /* stub */
+        },
+        createReader: (_r: any, ok: any) => ok({ getEntries: (fn: any) => fn([{ filename: 'index.html' }]) }),
+      }
+      component.file = makeFile('pkg.zip')
+      component.extractFile()
+      expect(loaderService.changeLoad.next).toHaveBeenNthCalledWith(1, true)
+      expect(loaderService.changeLoad.next).toHaveBeenLastCalledWith(false)
+      expect(dialog.open).toHaveBeenCalledWith(component.selectFile, expect.anything())
+      delete (global as any).zip
+    })
+
+    it('stops the loader when the file is not a readable zip', () => {
+      ;(global as any).zip = {
+        useWebWorkers: true,
+        BlobReader: function BlobReader(this: any) {
+          /* stub */
+        },
+        createReader: (_r: any, _ok: any, fail: any) => fail(new Error('bad zip')),
+      }
+      component.file = makeFile('pkg.zip')
+      component.extractFile()
+      expect(component.file).toBeNull()
+      expect(loaderService.changeLoad.next).toHaveBeenLastCalledWith(false)
+      expect(snackBar.open).toHaveBeenCalledWith(expect.stringContaining('could not be read as a zip'), 'OK', expect.anything())
+      delete (global as any).zip
     })
 
     it('rejects an archive with badly named files', () => {

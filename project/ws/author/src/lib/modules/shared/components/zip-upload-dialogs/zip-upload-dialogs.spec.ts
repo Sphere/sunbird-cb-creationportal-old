@@ -33,6 +33,11 @@ describe('ZipGuidelinesComponent', () => {
     component.condition = conditions()
   })
 
+  it('lists one declaration per acceptance flag, in a fixed order', () => {
+    expect(component.items.map(i => i.key)).toEqual(['fileName', 'eval', 'externalReference', 'iframe', 'preview'])
+    component.items.forEach(i => expect(i.text.length).toBeGreaterThan(0))
+  })
+
   it('does not consider a partly ticked checklist accepted', () => {
     component.condition = conditions({ fileName: true, eval: true })
     expect(component.allAccepted).toBe(false)

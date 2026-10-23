@@ -1,9 +1,15 @@
-<div class="pdf-layout" *ngIf="pdfData">
-  <div id="fullScreenContainer" class="pdf-content-wrap">
-    <ng-container *ngIf="isFetchingDataComplete" [wsResolverWidget]="widgetResolverPdfData"></ng-container>
-  </div>
-  <div class="player-nav-links">
-    <app-player-navigation-widget></app-player-navigation-widget>
+<div class="player-layout pdf-layout" *ngIf="pdfData">
+  <div class="player-box">
+    <div id="fullScreenContainer" class="player-stage pdf-content-wrap">
+      @if (!pdfData.artifactUrl) {
+        <viewer-no-file />
+      } @else {
+        <ng-container *ngIf="isFetchingDataComplete" [wsResolverWidget]="widgetResolverPdfData"></ng-container>
+      }
+    </div>
+    <div class="player-nav-links">
+      <app-player-navigation-widget></app-player-navigation-widget>
+    </div>
   </div>
   <div *ngIf="discussionForumWidget && isRestricted" class="discussion-section">
     <h2 class="discussion-head">Discussion Forum</h2>

@@ -858,7 +858,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
 
         const meta = <any>{}
         if (this.canExpiry) {
-          currentMeta.expiryDate = `${expiryDate.toISOString().replace(/-/g, '').replace(/:/g, '').split('.')[0]}+0000`
+          currentMeta.expiryDate = `${expiryDate.toISOString().replaceAll(/-/g, '').replaceAll(/:/g, '').split('.')[0]}+0000`
         }
         Object.keys(currentMeta).forEach(v => {
           if (
@@ -1144,7 +1144,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
 
   uploadAppIcon(file: File) {
     const formdata = new FormData()
-    const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
+    const fileName = file.name.replaceAll(/[^A-Za-z0-9.]/g, '')
     if (!(IMAGE_SUPPORT_TYPES.indexOf(`.${fileName.toLowerCase().split('.').pop()}`) > -1)) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -1198,7 +1198,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
   }
   uploadSourceIcon(file: File) {
     const formdata = new FormData()
-    const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
+    const fileName = file.name.replaceAll(/[^A-Za-z0-9.]/g, '')
     if (!(IMAGE_SUPPORT_TYPES.indexOf(`.${fileName.toLowerCase().split('.').pop()}`) > -1)) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {

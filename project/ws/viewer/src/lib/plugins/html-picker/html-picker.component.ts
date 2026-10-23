@@ -17,7 +17,6 @@ import 'ace-builds/src-noconflict/worker-html'
 import 'ace-builds/src-noconflict/worker-javascript'
 import { IHtmlPicker } from './html-picker.model'
 
-
 @Component({
   standalone: false,
   selector: 'viewer-plugin-html-picker',
@@ -50,9 +49,7 @@ export class HtmlPickerComponent implements OnInit, OnDestroy {
   firstClick = true
   isClick = false
   clickInterval: any
-  constructor(
-    private eventSvc: EventService,
-  ) { }
+  constructor(private eventSvc: EventService) {}
 
   ngOnInit() {
     // //console.log(this.newData)
@@ -85,7 +82,6 @@ export class HtmlPickerComponent implements OnInit, OnDestroy {
       this.startClickTimer()
     }
     this.firstClick = false
-
   }
   update() {
     let htmlContent = ''
@@ -98,47 +94,42 @@ export class HtmlPickerComponent implements OnInit, OnDestroy {
       jsContent = this.newData.javascript || ''
       cdnLinks = this.newData.cdnLinks || []
     }
-    if (this.newData && (!this.newData.htmlPresent)) {
+    if (this.newData && !this.newData.htmlPresent) {
       htmlContent = ''
     }
-    if (this.newData && (!this.newData.cssPresent)) {
+    if (this.newData && !this.newData.cssPresent) {
       cssContent = ''
     }
-    if (this.newData && (!this.newData.javascriptPresent)) {
+    if (this.newData && !this.newData.javascriptPresent) {
       jsContent = ''
     }
     while (htmlContent.indexOf('//') !== -1) {
       htmlContent =
-        htmlContent.slice(0, htmlContent.indexOf('//')) +
-        htmlContent.slice(htmlContent.indexOf('\n', htmlContent.indexOf('//')))
-    }
-    for (let i = 0; i < htmlContent.length; i += 1) {
-      htmlContent = htmlContent.replace('\'', 'replacedPlaceHolder')
-    }
-    for (let i = 0; i < htmlContent.length; i += 1) {
-      htmlContent = htmlContent.replace('replacedPlaceHolder', '\\\'')
+        htmlContent.slice(0, htmlContent.indexOf('//')) + htmlContent.slice(htmlContent.indexOf('\n', htmlContent.indexOf('//')))
     }
     for (let i = 0; i < cssContent.length; i += 1) {
-      cssContent = cssContent.replace('\'', 'replacedPlaceHolder')
+      cssContent = cssContent.replace("'", 'replacedPlaceHolder')
     }
     for (let i = 0; i < cssContent.length; i += 1) {
-      cssContent = cssContent.replace('replacedPlaceHolder', '\\\'')
+      cssContent = cssContent.replace('replacedPlaceHolder', "\\'")
     }
     while (jsContent.indexOf('//') !== -1) {
-      jsContent =
-        jsContent.slice(0, jsContent.indexOf('//')) + jsContent.slice(jsContent.indexOf('\n', jsContent.indexOf('//')))
+      jsContent = jsContent.slice(0, jsContent.indexOf('//')) + jsContent.slice(jsContent.indexOf('\n', jsContent.indexOf('//')))
     }
     for (let i = 0; i < jsContent.length; i += 1) {
-      jsContent = jsContent.replace('\'', 'replacedPlaceHolder')
+      jsContent = jsContent.replace("'", 'replacedPlaceHolder')
     }
     for (let i = 0; i < jsContent.length; i += 1) {
-      jsContent = jsContent.replace('replacedPlaceHolder', '\\\'')
+      jsContent = jsContent.replace('replacedPlaceHolder', "\\'")
     }
     // const htmlContentNew = htmlContent.replace('<', '<style>' + cssContent + '</style><');
     // const doc: HTMLIFrameElement = <HTMLIFrameElement>document.getElementById('my-output');
     // doc.src = 'javascript:\'' + htmlContentNew + '\<script>' + jsContent + '\<\/script>' + '\'';
     const doc: HTMLIFrameElement = document.getElementById('my-output') as HTMLIFrameElement
-    doc.src = `javascript:\'${htmlContent}\'`
+    // srcdoc renders the author's HTML as the frame's document. It replaces a
+    // javascript: URL (Sonar: a form of eval), which also forced every quote in
+    // the HTML to be escaped to fit inside the '...' string literal.
+    doc.srcdoc = htmlContent
     let iframeDoc: Document = new Document()
     if (doc.contentWindow) {
       iframeDoc = doc.contentWindow.document
@@ -154,16 +145,18 @@ export class HtmlPickerComponent implements OnInit, OnDestroy {
         //   }
         // }
         const child = iframeDoc.createElement(ele.type === 'css' ? 'link' : 'script')
-        child.setAttribute(ele.type === 'css' ? 'href' : 'src', src); if (ele.type === 'css') {
+        child.setAttribute(ele.type === 'css' ? 'href' : 'src', src)
+        if (ele.type === 'css') {
           child.setAttribute('rel', 'stylesheet')
         }
         setTimeout(() => {
           iframeDoc.head.appendChild(child)
         })
       }
-    }); if (jsContent) {
+    })
+    if (jsContent) {
       const executeJS = iframeDoc.createElement('script')
-      let inlineScript = new Text
+      let inlineScript = new Text()
       if (this.newData) {
         inlineScript = iframeDoc.createTextNode(this.newData.javascript)
       }
@@ -195,14 +188,13 @@ export class HtmlPickerComponent implements OnInit, OnDestroy {
       if (this.isInput) {
         this.raiseInteractTelemetry('editor', 'codeinput')
       }
-    },                               2 * 60000)
+    }, 2 * 60000)
   }
   startClickTimer() {
     this.clickInterval = setInterval(() => {
       if (this.isClick) {
         this.raiseInteractTelemetry('editor', 'buttonclick')
       }
-    },                               2 * 60000)
+    }, 2 * 60000)
   }
-
 }

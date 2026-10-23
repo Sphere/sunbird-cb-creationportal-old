@@ -202,7 +202,7 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
  */
 export function formatCertDate(date: Date, format: string = CERT_DATE_FORMAT): string {
   const pad = (n: number) => (n < 10 ? `0${n}` : String(n))
-  return format.replace(/YYYY|MMMM|MMM|MM|DD|D/g, part => {
+  return format.replaceAll(/YYYY|MMMM|MMM|MM|DD|D/g, part => {
     switch (part) {
       case 'YYYY':
         return String(date.getFullYear())
@@ -225,7 +225,7 @@ export function humaniseCertField(field: string): string {
   if (!field) {
     return CERT_SAMPLE_FALLBACK
   }
-  const spaced = field.replace(/[_-]+/g, ' ').replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+  const spaced = field.replaceAll(/[_-]+/g, ' ').replaceAll(/([a-z0-9])([A-Z])/g, '$1 $2')
   return spaced.charAt(0).toUpperCase() + spaced.slice(1)
 }
 
@@ -255,15 +255,15 @@ export interface ICertSampleOptions {
 function parseCertToken(token: string): { name: string; key: string; dateFormat: string | null } {
   const inner = token
     .trim()
-    .replace(/^\{\{\s*|\s*\}\}$/g, '')
-    .replace(/^\$\{\s*|\s*\}$/g, '')
+    .replaceAll(/^\{\{\s*|\s*\}\}$/g, '')
+    .replaceAll(/^\$\{\s*|\s*\}$/g, '')
   const helper = /^dateFormat\s+\S+\s+"([^"]*)"/.exec(inner)
   if (helper) {
     return { name: 'issuanceDate', key: 'issuedDate', dateFormat: helper[1] }
   }
   const parts = inner.split(/\s+/)
   const expression = parts.length > 1 && parts[0].indexOf('.') < 0 ? parts[1] : parts[0]
-  const name = expression.replace(/['"]/g, '').split('.').pop() || ''
+  const name = expression.replaceAll(/['"]/g, '').split('.').pop() || ''
   return { name, key: CERT_LEGACY_KEYS[name] || name, dateFormat: null }
 }
 

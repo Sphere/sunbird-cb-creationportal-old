@@ -1,13 +1,14 @@
 <div class="zip-dialog">
   <div class="zip-dialog-header">
-    <h3 i18n>Select the entry file</h3>
+    <h3 class="zip-dialog-title" i18n>Select the entry file</h3>
+    <p class="zip-dialog-subtitle" i18n>The page the player opens first.</p>
     <button type="button" class="zip-dialog-close" aria-label="Close" i18n-aria-label (click)="dismiss.emit()">
       <mat-icon>close</mat-icon>
     </button>
   </div>
 
   <div class="zip-dialog-body">
-    <mat-radio-group class="flex flex-1 flex-column example-radio-group" [(ngModel)]="condition.url">
+    <mat-radio-group class="zip-entry-list" [(ngModel)]="condition.url" aria-label="Entry file" i18n-aria-label>
       @for (file of fileList; track file) {
         <mat-radio-button class="example-radio-button" [value]="file" (change)="entryPointSelected.emit(file)">
           {{ file }}
@@ -17,8 +18,6 @@
   </div>
 
   <div class="zip-dialog-footer">
-    <button type="button" mat-raised-button color="primary" class="ws-mat-primary-background" (click)="done.emit()">
-      <p class="margin-remove-bottom agree-text" i18n>Done</p>
-    </button>
+    <button type="button" class="zip-btn zip-btn-primary" (click)="done.emit()" i18n>Done</button>
   </div>
 </div>

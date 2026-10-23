@@ -23,7 +23,6 @@ import { HttpClient } from '@angular/common/http'
 
 import { ConfigurationsService } from '@ws-widget/utils'
 
-
 const PROTECTED_SLAG_V8 = '/apis/protected/v8'
 
 const API_END_POINTS = {
@@ -36,7 +35,7 @@ export class UploadService {
     private accessService: AccessControlService,
     private http: HttpClient,
     private configSvc: ConfigurationsService,
-  ) { }
+  ) {}
 
   // upload(
   //   data: FormData,
@@ -101,15 +100,10 @@ export class UploadService {
       // tslint:disable-next-line:max-line-length
       // ${CONTENT_BASE}${this.accessService.rootOrg.replace(/ /g, '_')}/${this.accessService.org.replace(/ /g, '_')}/Public/${contentData.contentId.replace('.img', '')}${contentData.contentType}
       `apis/protected/v8/creatorCertificateTemplate/template/add`,
-      data
+      data,
     )
   }
-  upload(
-    data: FormData,
-    contentData: NSApiRequest.IContentData,
-    options?: any,
-    isZip = false,
-  ): Observable<any> {
+  upload(data: FormData, contentData: NSApiRequest.IContentData, options?: any, isZip = false): Observable<any> {
     if (isZip) {
       // return this.zipUpload(data, contentData, options)
     }
@@ -130,11 +124,7 @@ export class UploadService {
     )
   }
 
-  zipUpload(
-    data: FormData,
-    contentData: NSApiRequest.IContentData,
-    options?: any,
-  ): Observable<NSApiResponse.IFileApiResponseV2> {
+  zipUpload(data: FormData, contentData: NSApiRequest.IContentData, options?: any): Observable<NSApiResponse.IFileApiResponseV2> {
     return this.apiService.post<NSApiResponse.IFileApiResponseV2>(
       // tslint:disable-next-line:max-line-length
       // `${CONTENT_BASE_ZIP}${this.accessService.rootOrg.replace(/ /g, '_')}/${this.accessService.org.replace(/ /g, '_')}/Public/${contentData.contentId.replace('.img', '')}${contentData.contentType}`,
@@ -145,28 +135,20 @@ export class UploadService {
     )
   }
 
-  encodedUpload(
-    data: any,
-    fileName: string,
-    contentData: NSApiRequest.IContentData,
-  ): Observable<NSApiResponse.IFileApiResponse> {
+  encodedUpload(data: any, fileName: string, contentData: NSApiRequest.IContentData): Observable<NSApiResponse.IFileApiResponse> {
     return this.apiService.post<NSApiResponse.IFileApiResponse>(
       `${CONTENT_BASE_ENCODE}`,
       {
         fileName,
         text: this.apiService.base64(CONTENT_BASE_ENCODE, data).data,
         // tslint:disable-next-line:max-line-length
-        location: `${this.accessService.rootOrg.replace(/ /g, '_')}/${this.accessService.org.replace(/ /g, '_')}/Public/${contentData.contentId.replace('.img', '')}${contentData.contentType}`,
+        location: `${this.accessService.rootOrg.replaceAll(/ /g, '_')}/${this.accessService.org.replaceAll(/ /g, '_')}/Public/${contentData.contentId.replace('.img', '')}${contentData.contentType}`,
       },
       false,
     )
   }
 
-  encodedUploadAWS(
-    data: any,
-    fileName: string,
-    contentData: NSApiRequest.IContentData,
-  ): Observable<NSApiResponse.IFileApiResponse> {
+  encodedUploadAWS(data: any, fileName: string, contentData: NSApiRequest.IContentData): Observable<NSApiResponse.IFileApiResponse> {
     // return this.apiService.post<NSApiResponse.IFileApiResponse>(
     //   `${CONTENT_BASE_ENCODE}`,
     //   {

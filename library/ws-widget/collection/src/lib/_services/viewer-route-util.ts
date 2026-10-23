@@ -1,6 +1,5 @@
 import { NsContent } from './widget-content.model'
 
-
 export const VIEWER_ROUTE_FROM_MIME = (mimeType: NsContent.EMimeTypes) => {
   switch (mimeType) {
     case NsContent.EMimeTypes.MP3:
@@ -79,4 +78,20 @@ export function viewerRouteGenerator(
     queryParams,
     url,
   }
+}
+
+/** The start page every HTML package resource opens at (players launch `streamingUrl` + `entryPoint`). */
+export const HTML_PACKAGE_ENTRY_POINT = '/index.html'
+
+/** `packageType` value that marks an `html-archive` resource as a plain HTML package. */
+export const HTML_PACKAGE_TYPE = 'html'
+
+/**
+ * HTML and SCORM resources are both `application/vnd.ekstep.html-archive` zips:
+ * SCORM was stored as html-archive before Sunbird had a SCORM mimeType. Only
+ * HTML resources carry `packageType: 'html'`, so every existing SCORM resource
+ * (which has none) stays SCORM, whatever its entry point.
+ */
+export function isHtmlPackage(content: { mimeType?: string; packageType?: string } | null | undefined): boolean {
+  return !!content && content.mimeType === NsContent.EMimeTypes.ZIP && content.packageType === HTML_PACKAGE_TYPE
 }

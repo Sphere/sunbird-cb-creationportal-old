@@ -4,7 +4,16 @@
 <div class="flex flex-1 container-balanced">
   <span class="spacer"></span>
   <mat-form-field floatLabel="never" class="search-container">
-    <input name="query" matInput [formControl]="queryControl" i18n-placeholder placeholder="Find Features" autocomplete="off" />
+    <label class="sr-only" for="features-search-query" i18n>Find features</label>
+    <input
+      id="features-search-query"
+      name="query"
+      matInput
+      [formControl]="queryControl"
+      i18n-placeholder
+      placeholder="Find Features"
+      autocomplete="off"
+    />
     <mat-icon *ngIf="!queryControl.value" matSuffix>find_in_page</mat-icon>
     <button *ngIf="queryControl.value" matSuffix mat-icon-button (click)="clear()">
       <mat-icon>close</mat-icon>
