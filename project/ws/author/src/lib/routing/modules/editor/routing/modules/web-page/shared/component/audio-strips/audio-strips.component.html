@@ -22,33 +22,20 @@
           <span>{{ aud.label }}</span>
         </div>
         <div class="flex flex-col items-center justify-center pt-2" [ngClass]="{ 'opacity-50': !(showStatusForCard === i) }">
-          <div
-            class="icon-container ws-mat-primary-background-op30"
-            (click)="audioControl(aud.srclang)"
-            (keydown)="isActivationKey($event) && audioControl(aud.srclang)"
-            [attr.tabindex]="0"
-          >
-            <mat-icon class="cursor-pointer" *ngIf="!isAudioPlaying" aria-label="play this audio" i18n-aria-label> play_arrow </mat-icon>
-            <mat-icon class="cursor-pointer" *ngIf="isAudioPlaying" aria-label="stop playing the audio" i18n-aria-label> stop </mat-icon>
-          </div>
-          <span
-            class="m-1 cursor-pointer"
-            i18n
-            *ngIf="!isAudioPlaying"
-            (click)="audioControl(aud.srclang)"
-            (keydown)="isActivationKey($event) && audioControl(aud.srclang)"
-            [attr.tabindex]="0"
-            >Play</span
-          >
-          <span
-            class="m-1 cursor-pointer"
-            i18n
-            *ngIf="isAudioPlaying"
-            (click)="audioControl(aud.srclang)"
-            (keydown)="isActivationKey($event) && audioControl(aud.srclang)"
-            [attr.tabindex]="0"
-            >Stop</span
-          >
+          <button type="button" class="btn-reset icon-container ws-mat-primary-background-op30" (click)="audioControl(aud.srclang)">
+            <mat-icon class="cursor-pointer" *ngIf="!isAudioPlaying" aria-hidden="false" aria-label="play this audio" i18n-aria-label>
+              play_arrow
+            </mat-icon>
+            <mat-icon class="cursor-pointer" *ngIf="isAudioPlaying" aria-hidden="false" aria-label="stop playing the audio" i18n-aria-label>
+              stop
+            </mat-icon>
+          </button>
+          <button type="button" class="btn-reset m-1 cursor-pointer" i18n *ngIf="!isAudioPlaying" (click)="audioControl(aud.srclang)">
+            Play
+          </button>
+          <button type="button" class="btn-reset m-1 cursor-pointer" i18n *ngIf="isAudioPlaying" (click)="audioControl(aud.srclang)">
+            Stop
+          </button>
           <!-- <span class="" *ngIf="aud.duration">{{aud.duration}}</span> -->
         </div>
       </div>

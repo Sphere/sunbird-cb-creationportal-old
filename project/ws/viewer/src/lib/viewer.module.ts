@@ -47,6 +47,7 @@ import { WidgetResolverModule } from '@ws-widget/resolver'
 import { ViewerComponent } from './viewer.component'
 
 import { ViewerTocComponent } from './components/viewer-toc/viewer-toc.component'
+import { HtmlPackageDebugDialogComponent } from './components/html-package-debug-dialog/html-package-debug-dialog.component'
 
 import { ViewerTopBarModule } from './components/viewer-top-bar/viewer-top-bar.module'
 
@@ -59,7 +60,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { AppTocModule } from '@ws/app'
 
 @NgModule({
-  declarations: [ViewerComponent, ViewerTocComponent, ReviewDialogComponent],
+  declarations: [ViewerComponent, ViewerTocComponent, ReviewDialogComponent, HtmlPackageDebugDialogComponent],
   imports: [
     FormsModule,
     ReactiveFormsModule,

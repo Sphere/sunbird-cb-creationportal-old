@@ -18,7 +18,9 @@
       <div class="w-full search">
         <form (submit)="search(query.value)" class="w-full search-form flex">
           <mat-form-field class="w-full" appearance="none">
+            <label class="sr-only" for="search-home-query" i18n>Search</label>
             <input
+              id="search-home-query"
               name="searchQuery"
               [matAutocomplete]="auto"
               [formControl]="query"
@@ -38,14 +40,15 @@
           </mat-autocomplete>
         </form>
       </div>
-      <div
+      <button
+        type="button"
         (click)="search()"
-        (keydown)="isActivationKey($event) && search()"
-        [attr.tabindex]="0"
-        class="flex items-center justify-center w-16 cursor-pointer"
+        class="btn-reset btn-block flex items-center justify-center w-16 cursor-pointer"
+        aria-label="Search"
+        i18n-aria-label
       >
-        <mat-icon>search</mat-icon>
-      </div>
+        <mat-icon aria-hidden="true">search</mat-icon>
+      </button>
     </div>
     <div class="flex flex-wrap md:flex-no-wrap justify-around mt-10">
       <a

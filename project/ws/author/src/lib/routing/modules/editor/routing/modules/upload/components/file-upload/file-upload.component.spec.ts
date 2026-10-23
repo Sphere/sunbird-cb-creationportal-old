@@ -183,9 +183,9 @@ describe('FileUploadComponent (direct instantiation)', () => {
     expect(snackBar.openFromComponent).toHaveBeenCalled()
   })
 
-  it('generateStreamUrl builds an azure snapshot url', () => {
-    const url = component.generateStreamUrl('index1.html')
-    expect(url).toContain('content-1-snapshot/index1.html')
+  it('generateStreamUrl builds the snapshot folder on the host of the uploaded zip', () => {
+    const url = component.generateStreamUrl('https://bucket.s3.example.com/content/content-1/artifact/pkg.zip')
+    expect(url).toBe('https://bucket.s3.example.com/content/html/content-1-snapshot')
   })
 
   describe('generateUrl', () => {

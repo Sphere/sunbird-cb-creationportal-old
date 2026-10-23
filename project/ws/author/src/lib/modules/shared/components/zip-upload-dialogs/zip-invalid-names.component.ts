@@ -11,6 +11,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core'
   standalone: false,
   selector: 'ws-auth-zip-invalid-names',
   templateUrl: './zip-invalid-names.component.html',
+  styleUrls: ['./zip-upload-dialogs.scss'],
 })
 export class ZipInvalidNamesComponent {
   @Input() names: string[] = []

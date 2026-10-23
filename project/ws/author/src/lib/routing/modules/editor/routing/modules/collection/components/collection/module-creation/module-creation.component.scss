@@ -903,6 +903,11 @@
   margin-left: 5px;
   margin-right: 5px;
 }
+// Self-assessment resource row is a native <button>: buttons shrink to fit, so match
+// the old block <div> width (full width minus its 5px side margins).
+.btn-reset.resource-1 {
+  width: calc(100% - 10px);
+}
 .heading-resource {
   display: flex;
   flex-direction: row;
@@ -1819,6 +1824,11 @@ ul li {
   padding: 8px;
 }
 
+// In-video quiz tab delete icon: a <button> beside the tab label; flex keeps it exactly icon-sized.
+.tab-delete-btn {
+  display: flex;
+}
+
 .active-tab {
   background-color: #f3f8fd !important;
   color: #000000 !important;
@@ -1976,6 +1986,7 @@ ul li {
   position: absolute;
   right: 5px; /* Adjust position as needed */
   cursor: pointer;
+  display: flex; // now a <button> wrapping the icon; flex keeps it exactly icon-sized (no inline baseline gap)
 }
 .option-block {
   display: flex;

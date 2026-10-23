@@ -1,0 +1,62 @@
+// One player box for every resource type (PDF, video, audio, HTML), so they
+// all have the same size and frame and the "File not uploaded" state looks the
+// same everywhere:
+//
+//   .player-layout          fills the viewer area under the top bar
+//     .player-box           bordered card: the content plus Previous / Next
+//       .player-stage       the content; takes whatever height is left
+//       .player-nav-links   Previous / Next, its natural height
+//
+// The viewer's content area already has a fixed height, so filling it (rather
+// than guessing the top-bar height with calc) keeps the page itself from
+// scrolling on every screen size and in review mode.
+@mixin player-layout {
+  :host {
+    display: block;
+    height: 100%;
+  }
+
+  .player-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+
+  .player-box {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    // The full area; anything after the box (a discussion forum) scrolls below it.
+    height: 100%;
+    min-height: 360px;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 1px solid #dde8f0;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .player-stage {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    width: 100%;
+    overflow: auto;
+    background: #fff;
+
+    &:fullscreen {
+      height: 100vh;
+    }
+  }
+
+  .player-box > .player-nav-links {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+}
