@@ -50,35 +50,65 @@
   </div> -->
   <div class="flex addpadding items-center margin-top-l margin-bottom-m">
     <p class="mat-h3 font-weight-bold margin-remove" i18n>Add Options</p>
-    <button class="mat-elevation-z5 small-button padding-remove ws-mat-primary-background margin-left-s" (click)="addOption()"
-      type="button" mat-icon-button i18n-matTooltip matTooltipPosition="below" matTooltip="Add option" i18n-aria-label aria-label="add option">
+    <button
+      class="mat-elevation-z5 small-button padding-remove ws-mat-primary-background margin-left-s"
+      (click)="addOption()"
+      type="button"
+      mat-icon-button
+      i18n-matTooltip
+      matTooltipPosition="below"
+      matTooltip="Add option"
+      i18n-aria-label
+      aria-label="add option"
+    >
       <mat-icon class="text-white small-icon">add</mat-icon>
     </button>
   </div>
   <div *ngIf="!isSmallScreen" class="forMob">
     <div class="optionlist" cdkDropList (cdkDropListDropped)="drop($event)">
-      <mat-card *ngFor="let option of selectedQuiz.options; let i = index" formArrayName="options" class="custom w-full" cdkDrag
-        cdkDragBoundary=" .optionlist">
+      <mat-card
+        *ngFor="let option of selectedQuiz.options; let i = index"
+        formArrayName="options"
+        class="custom w-full"
+        cdkDrag
+        cdkDragBoundary=" .optionlist"
+      >
         <div class="custom-placeholder" *cdkDragPlaceholder></div>
         <div class="flex w-full justify-between items-center" [formGroupName]="i">
           <div class="flex romanN text-center items-center pl-4">{{ i + 1 | romanconvert }}.</div>
           <div class="cursor-auto item1 item-spacing" [ngClass]="{ 'width-31': showHint }">
             <!-- fxFlex.lt-sm="34%" fxFlex.lt-md="35%" fxFlex="37%" -->
-            <input class="module-input" formControlName="text" i18n-aria-label aria-label="enter text" />
+            <label class="sr-only" [for]="'mtf-option-text-' + i" i18n>Enter text</label>
+            <input [id]="'mtf-option-text-' + i" class="module-input" formControlName="text" i18n-aria-label aria-label="enter text" />
           </div>
           <div class="cursor-auto item1 item-spacing" [ngClass]="{ 'width-31': showHint }">
-            <input class="module-input" formControlName="match" i18n-aria-label aria-label="enter match" />
+            <label class="sr-only" [for]="'mtf-option-match-' + i" i18n>Enter match</label>
+            <input [id]="'mtf-option-match-' + i" class="module-input" formControlName="match" i18n-aria-label aria-label="enter match" />
           </div>
           <div class="flex hint-button justify-center item-spacing" *ngIf="showHint">
-            <button class="inline-flex py-2 px-4 items-center hint" (click)="openCkEditor(i)" mat-button i18n-aria-label aria-label="edit hint"
-              type="button">
+            <button
+              class="inline-flex py-2 px-4 items-center hint"
+              (click)="openCkEditor(i)"
+              mat-button
+              i18n-aria-label
+              aria-label="edit hint"
+              type="button"
+            >
               <mat-icon class="fill-current w-4 h-4 mr-2">info</mat-icon>
               <span class="padding-1" i18n>Hint</span>
             </button>
           </div>
           <div class="flex justify-center width-4 items-center item-spacing">
-            <button mat-icon-button (click)="removeOption(i)" i18n-aria-label aria-label="Delete this option" i18n-matTooltip matTooltipPosition="below"
-              matTooltip="Delete this option" type="button">
+            <button
+              mat-icon-button
+              (click)="removeOption(i)"
+              i18n-aria-label
+              aria-label="Delete this option"
+              i18n-matTooltip
+              matTooltipPosition="below"
+              matTooltip="Delete this option"
+              type="button"
+            >
               <mat-icon>delete</mat-icon>
             </button>
           </div>
@@ -88,19 +118,33 @@
   </div>
   <div *ngIf="isSmallScreen">
     <div cdkDropList (cdkDropListDropped)="drop($event)">
-      <mat-card *ngFor="let option of selectedQuiz.options; let i = index" formArrayName="options" class="custom" cdkDrag cdkDragBoundary=" .optionlist">
+      <mat-card
+        *ngFor="let option of selectedQuiz.options; let i = index"
+        formArrayName="options"
+        class="custom"
+        cdkDrag
+        cdkDragBoundary=" .optionlist"
+      >
         <div class="custom-placeholder" *cdkDragPlaceholder></div>
         <div class="w-full" [formGroupName]="i">
           <div class="flex-col">
             <div class="flex justify-between">
-              <div class="flex romanN text-center items-center pl-4">
-                {{ i + 1 | romanconvert }}.
-              </div>
+              <div class="flex romanN text-center items-center pl-4">{{ i + 1 | romanconvert }}.</div>
               <div class="flex-e items-center pr-1">
-                <button mat-icon-button (click)="removeOption(i)" [disabled]="selectedQuiz.options.length === matchOptions.minOptions" i18n-aria-label
-                  aria-label="Delete this option" [ngClass]="{
-                    'cursor-not-allowed': selectedQuiz.options.length === matchOptions.minOptions
-                  }" i18n-matTooltip matTooltipPosition="below" matTooltip="Delete this option" type="button">
+                <button
+                  mat-icon-button
+                  (click)="removeOption(i)"
+                  [disabled]="selectedQuiz.options.length === matchOptions.minOptions"
+                  i18n-aria-label
+                  aria-label="Delete this option"
+                  [ngClass]="{
+                    'cursor-not-allowed': selectedQuiz.options.length === matchOptions.minOptions,
+                  }"
+                  i18n-matTooltip
+                  matTooltipPosition="below"
+                  matTooltip="Delete this option"
+                  type="button"
+                >
                   <mat-icon>delete</mat-icon>
                 </button>
               </div>
@@ -135,7 +179,14 @@
                 </div>
 
                 <div class="cursor-auto flex-grow pr-1 minorChange WidthForsmall paddforInput">
-                  <input class="module-input" formControlName="text" i18n-aria-label aria-label="enter text" />
+                  <label class="sr-only" [for]="'mtf-option-text-mobile-' + i" i18n>Enter text</label>
+                  <input
+                    [id]="'mtf-option-text-mobile-' + i"
+                    class="module-input"
+                    formControlName="text"
+                    i18n-aria-label
+                    aria-label="enter text"
+                  />
                 </div>
               </div>
               <div class="flex items-center minorChange">
@@ -165,14 +216,27 @@
                 </div>
 
                 <div class="cursor-auto pr-1 flex-grow minorChange WidthForsmall paddforInput">
-                  <input class="module-input" formControlName="match" i18n-aria-label aria-label="enter match" />
+                  <label class="sr-only" [for]="'mtf-option-match-mobile-' + i" i18n>Enter match</label>
+                  <input
+                    [id]="'mtf-option-match-mobile-' + i"
+                    class="module-input"
+                    formControlName="match"
+                    i18n-aria-label
+                    aria-label="enter match"
+                  />
                 </div>
               </div>
             </div>
             <div class="flex justify-start forhint" *ngIf="showHint">
               <div class="pl-3 hint-button justify-center item-spacing">
-                <button class="inline-flex py-2 px-4 items-center hint remove-padding" (click)="openCkEditor(i)" mat-icon-button i18n-aria-label
-                  aria-label="edit hint" type="button">
+                <button
+                  class="inline-flex py-2 px-4 items-center hint remove-padding"
+                  (click)="openCkEditor(i)"
+                  mat-icon-button
+                  i18n-aria-label
+                  aria-label="edit hint"
+                  type="button"
+                >
                   <mat-icon class="fill-current w-4 h-4 mr-2">info</mat-icon>
                   <span class="padding-1" i18n>Hint</span>
                 </button>

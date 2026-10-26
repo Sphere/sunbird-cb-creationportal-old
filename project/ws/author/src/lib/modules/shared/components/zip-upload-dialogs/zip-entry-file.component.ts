@@ -14,6 +14,7 @@ import { IZipUploadConditions } from './zip-upload-conditions.model'
   standalone: false,
   selector: 'ws-auth-zip-entry-file',
   templateUrl: './zip-entry-file.component.html',
+  styleUrls: ['./zip-upload-dialogs.scss'],
 })
 export class ZipEntryFileComponent {
   @Input() condition!: IZipUploadConditions

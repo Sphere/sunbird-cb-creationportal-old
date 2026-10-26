@@ -1,4 +1,4 @@
-import { VIEWER_ROUTE_FROM_MIME, viewerRouteGenerator } from './viewer-route-util'
+import { VIEWER_ROUTE_FROM_MIME, isHtmlPackage, viewerRouteGenerator } from './viewer-route-util'
 import { NsContent } from './widget-content.model'
 
 describe('viewer-route-util', () => {
@@ -85,6 +85,25 @@ describe('viewer-route-util', () => {
       const result = viewerRouteGenerator('id-7', NsContent.EMimeTypes.PDF, 'coll-4', undefined, false, 'CatX')
       // collectionType missing => collection branch skipped, primaryCategory retained
       expect(result.queryParams).toEqual({ primaryCategory: 'CatX' })
+    })
+  })
+
+  describe('isHtmlPackage', () => {
+    const zip = 'application/vnd.ekstep.html-archive'
+
+    it('is true for a zip marked packageType html', () => {
+      expect(isHtmlPackage({ mimeType: zip, packageType: 'html' })).toBe(true)
+    })
+
+    it('keeps existing SCORM as SCORM even when it launches at /index.html', () => {
+      expect(isHtmlPackage({ mimeType: zip, entryPoint: '/index.html' } as any)).toBe(false)
+      expect(isHtmlPackage({ mimeType: zip, entryPoint: '/index_lms.html' } as any)).toBe(false)
+      expect(isHtmlPackage({ mimeType: zip })).toBe(false)
+    })
+
+    it('is false for other types and missing content', () => {
+      expect(isHtmlPackage({ mimeType: 'application/pdf', packageType: 'html' })).toBe(false)
+      expect(isHtmlPackage(null)).toBe(false)
     })
   })
 })

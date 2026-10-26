@@ -1,6 +1,7 @@
 <div class="zip-dialog">
   <div class="zip-dialog-header">
-    <h3 i18n>Following files or folders have special characters in their names</h3>
+    <h3 class="zip-dialog-title" i18n>Following files or folders have special characters in their names</h3>
+    <p class="zip-dialog-subtitle" i18n>Rename them, zip the package again and upload it.</p>
     <button type="button" class="zip-dialog-close" aria-label="Close" i18n-aria-label (click)="dismiss.emit()">
       <mat-icon>close</mat-icon>
     </button>
@@ -12,13 +13,11 @@
   -->
   <div class="zip-dialog-body" id="errorFiles">
     @for (name of names; track name) {
-      <div>{{ name }}</div>
+      <div class="zip-invalid-name">{{ name }}</div>
     }
   </div>
 
   <div class="zip-dialog-footer">
-    <button type="button" mat-raised-button class="ws-mat-primary-background" (click)="acknowledged.emit()">
-      <p class="margin-remove-bottom agree-text" i18n>I Understand</p>
-    </button>
+    <button type="button" class="zip-btn zip-btn-primary" (click)="acknowledged.emit()" i18n>I Understand</button>
   </div>
 </div>

@@ -1,0 +1,129 @@
+<div class="debug-dialog">
+  <header class="debug-header">
+    <div class="debug-heading">
+      <mat-icon class="debug-heading-icon" aria-hidden="true">bug_report</mat-icon>
+      <div>
+        <h2 class="debug-title" i18n>HTML package debug</h2>
+        @if (data.name) {
+          <p class="debug-subtitle">{{ data.name }}</p>
+        }
+      </div>
+    </div>
+    <button type="button" class="debug-close" (click)="close()" aria-label="Close" i18n-aria-label>
+      <mat-icon aria-hidden="true">close</mat-icon>
+    </button>
+  </header>
+
+  <div class="debug-body">
+    @if (report().total === 0) {
+      <div class="debug-empty">
+        <mat-icon class="debug-empty-icon" aria-hidden="true">cloud_off</mat-icon>
+        <h3 i18n>No events received yet</h3>
+        <p i18n>
+          Play the package in this preview and interact with it. Events appear here as they arrive. If nothing shows up, the package is not
+          reporting progress, so learner progress and course completion will not be recorded.
+        </p>
+        <p class="debug-hint" i18n>A package reports progress by posting this message to the page:</p>
+        <pre class="debug-code">
+window.top.postMessage(&#123;
+  type: 'html-archive:telemetry',
+  event: &#123; type: 'PROGRESS', id: '&lt;package id&gt;', extra: &#123; pct: 40 &#125; &#125;
+&#125;, '*')</pre
+        >
+      </div>
+    } @else {
+      <section class="debug-overview" aria-label="Progress overview" i18n-aria-label>
+        <div class="debug-progress">
+          <div class="debug-progress-head">
+            <span class="debug-label" i18n>Progress</span>
+            <span class="debug-progress-value">
+              {{ report().progress === null ? 'Not reported' : report().progress + '%' }}
+            </span>
+          </div>
+          <mat-progress-bar mode="determinate" [value]="report().progress || 0" aria-hidden="true" />
+          @if (report().position) {
+            <p class="debug-position"><span i18n>Learner is at:</span> {{ report().position }}</p>
+          }
+        </div>
+
+        <dl class="debug-stats">
+          <div>
+            <dt i18n>Events received</dt>
+            <dd>{{ report().total }}</dd>
+          </div>
+          <div>
+            <dt i18n>Last event</dt>
+            <dd>{{ report().lastAt | date: 'HH:mm:ss' }}</dd>
+          </div>
+        </dl>
+
+        <ul class="debug-checks" aria-label="Package checks" i18n-aria-label>
+          <li [class.is-ok]="report().reportsProgress">
+            <mat-icon aria-hidden="true">{{ report().reportsProgress ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            <span i18n>Reports progress (PROGRESS)</span>
+          </li>
+          <li [class.is-ok]="report().savesResumeState">
+            <mat-icon aria-hidden="true">{{ report().savesResumeState ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            <span i18n>Saves resume state (STATE)</span>
+          </li>
+          <li [class.is-ok]="report().completed">
+            <mat-icon aria-hidden="true">{{ report().completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            <span i18n>Reached 100%</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="debug-log" aria-label="Event log" i18n-aria-label>
+        <h3 class="debug-section-title">
+          <span i18n>Event log</span>
+          <span class="debug-section-note" i18n>newest first · last {{ report().rows.length }}</span>
+        </h3>
+        <ol class="debug-events">
+          @for (row of report().rows; track trackRow($index, row)) {
+            <li class="debug-event">
+              <div class="debug-event-head">
+                <span class="debug-event-type">{{ row.type }}</span>
+                <time class="debug-event-time">{{ row.at | date: 'HH:mm:ss' }}</time>
+              </div>
+              @if (row.fields.length) {
+                <dl class="debug-fields">
+                  @for (field of row.fields; track field.key) {
+                    <div class="debug-field">
+                      <dt>{{ field.key }}</dt>
+                      <dd>
+                        @if (field.json) {
+                          <details>
+                            <summary>{{ field.text }}</summary>
+                            <pre class="debug-code">{{ field.json }}</pre>
+                          </details>
+                        } @else {
+                          {{ field.text }}
+                        }
+                      </dd>
+                    </div>
+                  }
+                </dl>
+              }
+            </li>
+          }
+        </ol>
+      </section>
+    }
+
+    <p class="debug-note" i18n>Preview only. Learner progress is saved by the learner portal when the course is published.</p>
+  </div>
+
+  <footer class="debug-footer">
+    @if (report().total > 0) {
+      <button type="button" class="debug-btn debug-btn-text" (click)="clear()">
+        <mat-icon aria-hidden="true">delete_sweep</mat-icon>
+        <span i18n>Clear</span>
+      </button>
+      <button type="button" class="debug-btn debug-btn-secondary" (click)="copyLog()">
+        <mat-icon aria-hidden="true">content_copy</mat-icon>
+        <span>{{ copied() ? 'Copied' : 'Copy log' }}</span>
+      </button>
+    }
+    <button type="button" class="debug-btn debug-btn-primary" (click)="close()" i18n>Close</button>
+  </footer>
+</div>

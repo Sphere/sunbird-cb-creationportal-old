@@ -80,17 +80,17 @@
                   <h3 class="overview-description" *ngIf="!showSubtitleOnBanner" i18n-title title="Description">
                     {{ content?.purpose | pipeLimitTo: 450 }}
                   </h3>
-                  <div
+                  <button
+                    type="button"
                     *ngIf="sanitizedIntroductoryVideoIcon"
-                    class="overview-intro ws-mat-primary-lite-background"
+                    class="btn-reset btn-block overview-intro ws-mat-primary-lite-background"
                     [style.backgroundImage]="sanitizedIntroductoryVideoIcon"
-                    role="button"
                     (click)="playIntroVideo()"
-                    (keydown)="isActivationKey($event) && playIntroVideo()"
-                    [attr.tabindex]="0"
+                    aria-label="Play introduction video"
+                    i18n-aria-label
                   >
-                    <mat-icon class="overview-intro-overlay">play_arrow</mat-icon>
-                  </div>
+                    <mat-icon class="overview-intro-overlay" aria-hidden="true">play_arrow</mat-icon>
+                  </button>
                 </div>
                 <div *ngSwitchCase="'contents'"></div>
                 <div class="metadata-row">

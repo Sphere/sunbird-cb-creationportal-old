@@ -194,6 +194,8 @@ export class EditorService {
           license: 'CC BY 4.0',
           ownershipType: ['createdFor'],
           purpose: meta.description ? meta.description : '',
+          ...(meta.entryPoint ? { entryPoint: meta.entryPoint } : {}),
+          ...(meta.packageType ? { packageType: meta.packageType } : {}),
         },
       },
     }
@@ -692,7 +694,7 @@ export class EditorService {
     const destination = `${this.accessService.rootOrg.replace(
       / /g,
       '_',
-    )}%2F${this.accessService.org.replace(/ /g, '_')}%2FPublic%2F${lexId.replace('.img', '')}`
+    )}%2F${this.accessService.org.replaceAll(/ /g, '_')}%2FPublic%2F${lexId.replace('.img', '')}`
     const location = url.split('/').slice(4, 8).join('%2F')
     return this.apiService.post(
       CONTENT_BASE_COPY,

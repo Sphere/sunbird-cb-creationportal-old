@@ -436,9 +436,9 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
           }
           const htmlFile = JSON.parse(
             JSON.stringify(e.body)
-              .replace(/<a href/gm, '<a target=\\"_blank\\" href')
+              .replaceAll(/<a href/gm, '<a target=\\"_blank\\" href')
               .replace(this.imagesUrlbase, '')
-              .replace(/(<img.*width=)['"](\d+?)['"](.*\/>)/gm, '$1"$2" style="width:100%; heigth: auto; max-width:$2" $3'),
+              .replaceAll(/(<img.*width=)['"](\d+?)['"](.*\/>)/gm, '$1"$2" style="width:100%; heigth: auto; max-width:$2" $3'),
           )
           // .replace(/ href=\s*['"].*?\/web-hosted\/.*?lex_.*?\/assets\/(.*?)['"]/gm, ' href="$1"')
           const fileName = `index${e.fileIndex}.html`
@@ -459,8 +459,8 @@ export class WebModuleEditorComponent implements OnInit, OnDestroy {
       mergeMap(v => {
         const updatedMeta = JSON.parse(JSON.stringify(this.metaContentService.upDatedContent[this.currentId] || {}))
         if (v && v.code) {
-          updatedMeta.artifactUrl = (v.authArtifactURL || v.artifactURL).replace(/%2F/g, '/')
-          updatedMeta.downloadUrl = v.downloadURL.replace(/%2F/g, '/')
+          updatedMeta.artifactUrl = (v.authArtifactURL || v.artifactURL).replaceAll(/%2F/g, '/')
+          updatedMeta.downloadUrl = v.downloadURL.replaceAll(/%2F/g, '/')
           this.changedContent = false
         }
         return this.triggerSave(updatedMeta, this.currentId)

@@ -18,7 +18,7 @@ $nav-height: 48px;
   height: $nav-height;
   padding: 0 16px;
   background: #fff;
-  border-bottom: 1px solid #DDE8F0;
+  border-bottom: 1px solid #dde8f0;
   flex-shrink: 0;
 }
 
@@ -38,11 +38,11 @@ $nav-height: 48px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  color: #5A7184;
+  color: #5a7184;
 
   &:hover {
-    background: #F7FBFE;
-    color: #1C5D95;
+    background: #f7fbfe;
+    color: #1c5d95;
   }
 
   mat-icon {
@@ -64,24 +64,24 @@ $nav-height: 48px;
   width: 18px;
   height: 18px;
   line-height: 18px;
-  color: #5A7184;
+  color: #5a7184;
 }
 
 .timer-value {
   font-family: Roboto, sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: #1D2B36;
+  color: #1d2b36;
 
   &.submitted {
-    color: #5A7184;
+    color: #5a7184;
   }
 }
 
 .submitted-tag {
   font-family: Roboto, sans-serif;
   font-size: 12px;
-  color: #1C5D95;
+  color: #1c5d95;
   font-weight: 500;
 }
 
@@ -89,20 +89,20 @@ $nav-height: 48px;
 .sidenav-container {
   flex: 1 1 auto;
   height: calc(100% - #{$nav-height});
-  background: #F7FBFE;
+  background: #f7fbfe;
 }
 
 .sidenav {
   width: 200px;
   background: #fff;
-  border-right: 1px solid #DDE8F0;
+  border-right: 1px solid #dde8f0;
 }
 
 .sidenav-heading {
   font-family: Roboto, sans-serif;
   font-size: 11px;
   font-weight: 600;
-  color: #5A7184;
+  color: #5a7184;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   margin: 16px 16px 12px;
@@ -117,6 +117,8 @@ $nav-height: 48px;
 }
 
 .q-cell {
+  // content-box keeps the 36px box + border size the <div> had (a <button> defaults to border-box)
+  box-sizing: content-box;
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -127,35 +129,37 @@ $nav-height: 48px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 
   &--default {
-    border: 1.5px solid #DDE8F0;
-    color: #5A7184;
+    border: 1.5px solid #dde8f0;
+    color: #5a7184;
     background: #fff;
 
     &:hover {
-      border-color: #1C5D95;
-      color: #1C5D95;
+      border-color: #1c5d95;
+      color: #1c5d95;
     }
   }
 
   &--attempted {
-    border: 2px solid #1C5D95;
-    color: #1C5D95;
-    background: #E7F2FA;
+    border: 2px solid #1c5d95;
+    color: #1c5d95;
+    background: #e7f2fa;
   }
 
   &--marked {
-    border: 2px solid #F4A72A;
-    color: #F4A72A;
-    background: #FFF8EC;
+    border: 2px solid #f4a72a;
+    color: #f4a72a;
+    background: #fff8ec;
   }
 }
 
 // Quiz content area
 .quiz-content {
-  background: #F7FBFE;
+  background: #f7fbfe;
 }
 
 .questions-wrap {
@@ -168,7 +172,7 @@ $nav-height: 48px;
 // Results card
 .results-card {
   background: #fff;
-  border: 1px solid #DDE8F0;
+  border: 1px solid #dde8f0;
   border-radius: 8px;
   padding: 24px;
   margin-top: 8px;
@@ -178,7 +182,7 @@ $nav-height: 48px;
   font-family: Roboto, sans-serif;
   font-size: 16px;
   font-weight: 500;
-  color: #1D2B36;
+  color: #1d2b36;
   margin: 0 0 20px;
   text-align: center;
 }
@@ -205,8 +209,8 @@ $nav-height: 48px;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  background: #F7FBFE;
-  border: 1px solid #DDE8F0;
+  background: #f7fbfe;
+  border: 1px solid #dde8f0;
   border-radius: 8px;
   padding: 16px 12px;
 }
@@ -229,6 +233,6 @@ $nav-height: 48px;
   font-family: Roboto, sans-serif;
   font-size: 12px;
   font-weight: 400;
-  color: #5A7184;
+  color: #5a7184;
   text-align: center;
 }

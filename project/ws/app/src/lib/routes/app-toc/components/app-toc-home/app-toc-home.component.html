@@ -48,15 +48,14 @@
 
       <div class="activity-meta-row">
         <span class="activity-time">{{ comment.createdDate | momentDate }}</span>
-        <span
+        <button
+          type="button"
           *ngIf="comment.currentStatus !== 'course-created'"
-          class="view-comment-link"
+          class="btn-reset view-comment-link"
           (click)="toggleComments(comment)"
-          (keydown)="isActivationKey($event) && toggleComments(comment)"
-          [attr.tabindex]="0"
         >
           {{ comment.readComments ? 'Hide' : 'View' }} comment
-        </span>
+        </button>
       </div>
       <p class="comment-body" *ngIf="comment.readComments">{{ comment.comments }}</p>
     </div>

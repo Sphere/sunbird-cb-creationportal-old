@@ -443,10 +443,17 @@ describe('ModuleCreationComponent (drag-drop and uploads)', () => {
       expect(component.upload).toHaveBeenCalled()
     })
 
-    it('does not upload when the metadata save fails', async () => {
+    it('shows the loader from the first request', async () => {
+      await component.triggerUpload()
+      expect(loader.changeLoad.next.mock.calls[0]).toEqual([true])
+    })
+
+    it('does not upload when the metadata save fails, and says so', async () => {
       editorService.updateContentV3.mockReturnValue(of({ params: { status: 'failed' } }))
       await component.triggerUpload()
       expect(component.upload).not.toHaveBeenCalled()
+      expect(component.errorMessage).toHaveBeenCalled()
+      expect(loader.changeLoad.next).toHaveBeenLastCalledWith(false)
     })
 
     it('does not upload when the metadata save rejects', async () => {
@@ -460,6 +467,7 @@ describe('ModuleCreationComponent (drag-drop and uploads)', () => {
       await component.triggerUpload()
       expect(component.errorMessage).toHaveBeenCalled()
       expect(component.upload).not.toHaveBeenCalled()
+      expect(loader.changeLoad.next).toHaveBeenLastCalledWith(false)
     })
   })
 
@@ -533,7 +541,7 @@ describe('ModuleCreationComponent (drag-drop and uploads)', () => {
       component.fileUploadCondition = { url: '' } as any
       uploadService.upload.mockReturnValue(of({ artifactUrl: 'https://elsewhere/pkg.zip' }))
       component.upload()
-      expect(component.generateStreamUrl).toHaveBeenCalledWith('')
+      expect(component.generateStreamUrl).toHaveBeenCalledWith('https://elsewhere/pkg.zip')
       expect(component.fileUploadForm.controls.entryPoint.value).toBe('')
     })
 

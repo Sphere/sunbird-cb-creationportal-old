@@ -114,8 +114,10 @@
         <div *ngIf="this.data.data.questionType == 'mcq-sca'">
           <div [formGroup]="questionForm">
             <span i18n> MCQ: Question </span><br />
+            <label class="sr-only" for="edit-assessment-mcq-question" i18n>Question statement</label>
             <mat-form-field appearance="outline">
               <input
+                id="edit-assessment-mcq-question"
                 matInput
                 formControlName="question"
                 maxlength="100"
@@ -149,8 +151,15 @@
                   ></mat-checkbox>
                 </div>
                 <div class="cursor-auto item2 item-spacing">
+                  <label class="sr-only" [for]="'edit-assessment-mcq-option-' + i" i18n>Option {{ i + 1 }} answer</label>
                   <mat-form-field class="w-full myfield" appearance="outline">
-                    <input matInput formControlName="text" i18n-aria-label aria-label="Enter answer" />
+                    <input
+                      [id]="'edit-assessment-mcq-option-' + i"
+                      matInput
+                      formControlName="text"
+                      i18n-aria-label
+                      aria-label="Enter answer"
+                    />
                   </mat-form-field>
                 </div>
                 <div class="cursor-auto item2 item-spacing">
@@ -192,8 +201,9 @@
         <div *ngIf="this.data.data.questionType == 'fitb'">
           <span i18n> Fill in the blanks:</span><br />
           <div style="display: flex; flex-direction: row">
+            <label class="sr-only" for="edit-assessment-fitb-question" i18n>Question statement</label>
             <mat-form-field appearance="outline">
-              <input matInput maxlength="100" i18n-placeholder placeholder="Question Statement" />
+              <input id="edit-assessment-fitb-question" matInput maxlength="100" i18n-placeholder placeholder="Question Statement" />
             </mat-form-field>
             <button
               mat-raised-button
@@ -207,8 +217,9 @@
           <span>Note : You will be able to add answers once you start adding blanks</span>
           <mat-card class="edit-card custom w-full" cdkDrag>
             <div class="cursor-auto item2 item-spacing">
+              <label class="sr-only" for="edit-assessment-fitb-answer" i18n>Answer</label>
               <mat-form-field class="w-full myfield" appearance="outline">
-                <input matInput i18n-aria-label aria-label="Type Here" />
+                <input id="edit-assessment-fitb-answer" matInput i18n-aria-label aria-label="Type Here" />
               </mat-form-field>
             </div>
             <div class="cursor-auto item2 item-spacing">
@@ -243,24 +254,35 @@
         </div>
         <div *ngIf="this.data.data.questionType == 'mtf'">
           <span i18n> Match the following: </span><br />
+          <label class="sr-only" for="edit-assessment-mtf-question" i18n>Question statement</label>
           <mat-form-field appearance="outline">
-            <input matInput maxlength="100" i18n-placeholder placeholder="Question Statement" /> </mat-form-field
+            <input
+              id="edit-assessment-mtf-question"
+              matInput
+              maxlength="100"
+              i18n-placeholder
+              placeholder="Question Statement"
+            /> </mat-form-field
           ><br />
           <span i18n>Options</span><br />
           <div style="display: flex; flex-direction: row">
+            <label class="sr-only" for="edit-assessment-mtf-option-1" i18n>Option 1</label>
             <mat-form-field appearance="outline">
-              <input matInput maxlength="100" i18n-placeholder placeholder="Type Option" />
+              <input id="edit-assessment-mtf-option-1" matInput maxlength="100" i18n-placeholder placeholder="Type Option" />
             </mat-form-field>
+            <label class="sr-only" for="edit-assessment-mtf-match-1" i18n>Match 1</label>
             <mat-form-field appearance="outline">
-              <input matInput maxlength="100" i18n-placeholder placeholder="Type Match" />
+              <input id="edit-assessment-mtf-match-1" matInput maxlength="100" i18n-placeholder placeholder="Type Match" />
             </mat-form-field>
           </div>
           <div style="display: flex; flex-direction: row">
+            <label class="sr-only" for="edit-assessment-mtf-option-2" i18n>Option 2</label>
             <mat-form-field appearance="outline">
-              <input matInput maxlength="100" i18n-placeholder placeholder="Type Option" />
+              <input id="edit-assessment-mtf-option-2" matInput maxlength="100" i18n-placeholder placeholder="Type Option" />
             </mat-form-field>
+            <label class="sr-only" for="edit-assessment-mtf-match-2" i18n>Match 2</label>
             <mat-form-field appearance="outline">
-              <input matInput maxlength="100" i18n-placeholder placeholder="Type Match" />
+              <input id="edit-assessment-mtf-match-2" matInput maxlength="100" i18n-placeholder placeholder="Type Match" />
             </mat-form-field>
           </div>
           <div style="display: flex; flex-direction: row">

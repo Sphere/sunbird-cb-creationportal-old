@@ -28,25 +28,15 @@
         <div class="info" *ngIf="!state.isActive && !state.isCompleted && state.owner">Assigned to {{ state.owner }}</div>
       </div>
     </div>
-    <div
-      *ngIf="isClient1"
-      (click)="showModal = true"
-      (keydown)="isActivationKey($event) && (showModal = true)"
-      [attr.tabindex]="0"
-      class="st-full-flow"
-    >
+    <button type="button" *ngIf="isClient1" (click)="showModal = true" class="btn-reset btn-block st-full-flow">
       <span class="cursor-pointer" i18n>Complete Flow</span>
-    </div>
+    </button>
   </div>
 </div>
 
 <div class="custom-modal" [class.showModal]="showModal">
-  <span
-    (click)="showModal = false"
-    (keydown)="isActivationKey($event) && (showModal = false)"
-    [attr.tabindex]="0"
-    class="modal-close cursor-pointer"
-    >&times;</span
-  >
+  <button type="button" (click)="showModal = false" class="btn-reset modal-close cursor-pointer" aria-label="Close" i18n-aria-label>
+    &times;
+  </button>
   <img alt="" src="/assets/images/authoring/client1.png" class="modal-image" />
 </div>

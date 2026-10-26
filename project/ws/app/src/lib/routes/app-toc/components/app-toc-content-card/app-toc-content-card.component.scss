@@ -164,21 +164,13 @@ $border-color: #e2eaf2;
 }
 
 // ── Content-type icons ───────────────────────────────────────────────────────
-// Standard colored icons (PDF / video / link / SCORM PNG)
-.content-type-img {
-  width: 14px;
+// One Material icon per type, sized to the label text.
+.type-icon {
+  width: 16px;
   height: 16px;
-  object-fit: contain;
-  vertical-align: middle;
-}
-
-// SVG icons that need a dark background to be visible (audio / SCORM SVG)
-.content-type-img-dark {
-  width: 14px;
-  height: 16px;
-  object-fit: contain;
-  vertical-align: middle;
-  background-color: #000;
+  font-size: 16px;
+  line-height: 16px;
+  color: #1c5d95;
 }
 
 // ── Misc ─────────────────────────────────────────────────────────────────────
