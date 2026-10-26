@@ -3,8 +3,7 @@
     <div
       class="upload-box flex flex-middle flex-col justify-center p-20 cursor-pointer"
       (click)="fileInput.click()"
-      (keydown)="isActivationKey($event) && fileInput.click()"
-      [attr.tabindex]="0"
+      (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && fileInput.click()"
       wsAuthDragDrop
       (fileDropped)="onDrop($event)"
     >
@@ -19,7 +18,9 @@
 
       <!-- <span class="font-weight-500" [hidden]="file"> -->
       <span class="font-weight-500" [hidden]="uploadedFileList[currentContent]">
+        <label class="sr-only" for="file-upload-input" i18n>Choose a file to upload</label>
         <input
+          id="file-upload-input"
           type="file"
           #fileInput
           class="inputfile"
@@ -94,14 +95,9 @@
 
           <p class="margin-left-xs margin-remove-bottom">
             <span i18n>I have read and I agree with the </span>
-            <span
-              class="ws-mat-primary-text font-weight-bold cursor-pointer"
-              (click)="showIpr()"
-              (keydown)="isActivationKey($event) && showIpr()"
-              [attr.tabindex]="0"
-              i18n
-              >IPR Declaration</span
-            >
+            <button type="button" class="btn-reset ws-mat-primary-text font-weight-bold cursor-pointer" (click)="showIpr()" i18n>
+              IPR Declaration
+            </button>
           </p>
         </div>
         <span class="spacer"></span>

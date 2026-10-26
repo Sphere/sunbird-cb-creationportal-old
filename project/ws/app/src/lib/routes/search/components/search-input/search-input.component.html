@@ -10,7 +10,9 @@
   <div class="w-full search">
     <form (submit)="updateQuery(queryControl.value)">
       <mat-form-field appearance="none" class="autocomplete-form" color="primary" [floatLabel]="'never'">
+        <label class="sr-only" for="search-input-query" i18n>Search content</label>
         <input
+          id="search-input-query"
           type="search"
           class="ml-2"
           i18n-placeholder="search content"
@@ -33,14 +35,15 @@
       </mat-form-field>
     </form>
   </div>
-  <div
+  <button
+    type="button"
     (click)="updateQuery(queryControl.value)"
-    (keydown)="isActivationKey($event) && updateQuery(queryControl.value)"
-    [attr.tabindex]="0"
-    class="flex items-center justify-center w-8 sm:w-16 cursor-pointer"
+    class="btn-reset btn-block flex items-center justify-center w-8 sm:w-16 cursor-pointer"
+    aria-label="Search"
+    i18n-aria-label
   >
-    <mat-icon>search</mat-icon>
-  </div>
+    <mat-icon aria-hidden="true">search</mat-icon>
+  </button>
 </div>
 
 <mat-menu #sortLang="matMenu">

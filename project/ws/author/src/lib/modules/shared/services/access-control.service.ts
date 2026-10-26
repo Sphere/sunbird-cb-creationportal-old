@@ -14,14 +14,13 @@ import { ConfigurationsService, NsInstanceConfig } from '@ws-widget/utils'
 
 import { NSContent } from '@ws/author/src/lib/interface/content'
 
-
 @Injectable({ providedIn: 'root' })
 export class AccessControlService {
   downloadRegex = new RegExp(`(https://.*?/content-store/.*?)(\\\)?\\\\?['"])`, 'gm')
   constructor(
     private configService: ConfigurationsService,
     @Inject(APP_BASE_HREF) private baseHref: string,
-  ) { }
+  ) {}
 
   hasRole(role: string[]): boolean {
     let returnValue = false
@@ -54,9 +53,7 @@ export class AccessControlService {
   get locale(): string {
     // return this.configService.userPreference && this.configService.userPreference.selectedLocale ?
     //   this.configService.userPreference.selectedLocale : 'en'
-    return this.baseHref && this.baseHref.replace(/\//g, '')
-      ? this.baseHref.replace(/\//g, '').split('-')[0]
-      : 'en'
+    return this.baseHref && this.baseHref.replaceAll(/\//g, '') ? this.baseHref.replaceAll(/\//g, '').split('-')[0] : 'en'
   }
 
   get org(): string {
@@ -72,21 +69,15 @@ export class AccessControlService {
   }
 
   get defaultLogo(): string {
-    return this.configService.instanceConfig
-      ? this.configService.instanceConfig.logos.defaultContent
-      : ''
+    return this.configService.instanceConfig ? this.configService.instanceConfig.logos.defaultContent : ''
   }
 
   get appName(): string {
-    return this.configService.instanceConfig
-      ? this.configService.instanceConfig.details.appName
-      : 'Wingspan'
+    return this.configService.instanceConfig ? this.configService.instanceConfig.details.appName : 'Wingspan'
   }
 
   get activePrimary(): string {
-    return this.configService.activeThemeObject
-      ? this.configService.activeThemeObject.color.primary
-      : ''
+    return this.configService.activeThemeObject ? this.configService.activeThemeObject.color.primary : ''
   }
 
   getAction(status: string, operation?: number): string {
@@ -156,11 +147,7 @@ export class AccessControlService {
   //   return returnValue
   // }
 
-  hasAccess(
-    meta: NSContent.IContentMeta,
-    forPreview = false,
-    parentMeta?: NSContent.IContentMeta,
-  ): boolean {
+  hasAccess(meta: NSContent.IContentMeta, forPreview = false, parentMeta?: NSContent.IContentMeta): boolean {
     // if (this.hasRole(['editor', 'admin', 'content_creator'])) {
     //   return true
     // }
@@ -194,7 +181,7 @@ export class AccessControlService {
       }
     }
 
-    if ((meta.reviewStatus === 'InReview' && meta.status === 'Review') && this.hasRole(['content_reviewer'])) {
+    if (meta.reviewStatus === 'InReview' && meta.status === 'Review' && this.hasRole(['content_reviewer'])) {
       if (meta.reviewerIDs && meta.reviewerIDs.length > 0) {
         if (meta.reviewerIDs.includes(this.userId)) {
           returnValue = true
@@ -206,11 +193,11 @@ export class AccessControlService {
       //   )
       // }
       if (!returnValue && parentMeta && parentMeta.createdBy && meta.createdBy) {
-        returnValue = (parentMeta.createdBy === meta.createdBy) ? true : false
+        returnValue = parentMeta.createdBy === meta.createdBy ? true : false
       }
     }
     // if (['Reviewed'].indexOf(meta.status) > -1 && this.hasRole(['content_publisher'])) {
-    if ((meta.reviewStatus === 'Reviewed' && meta.status === 'Review') && this.hasRole(['content_publisher'])) {
+    if (meta.reviewStatus === 'Reviewed' && meta.status === 'Review' && this.hasRole(['content_publisher'])) {
       if (meta.publisherIDs && meta.publisherIDs.length > 0) {
         if (meta.publisherIDs.includes(this.userId)) {
           returnValue = true
@@ -222,7 +209,7 @@ export class AccessControlService {
       //   )
       // }
       if (!returnValue && parentMeta && parentMeta.createdBy && meta.createdBy) {
-        returnValue = (parentMeta.createdBy === meta.createdBy) ? true : false
+        returnValue = parentMeta.createdBy === meta.createdBy ? true : false
       }
     }
     if (forPreview && meta.visibility === 'Public') {
@@ -245,7 +232,7 @@ export class AccessControlService {
   }
 
   convertToESDate(expiryDate: Date): string {
-    return `${expiryDate.toISOString().replace(/-/g, '').replace(/:/g, '').split('.')[0]}+0000`
+    return `${expiryDate.toISOString().replaceAll(/-/g, '').replaceAll(/:/g, '').split('.')[0]}+0000`
   }
 
   /**

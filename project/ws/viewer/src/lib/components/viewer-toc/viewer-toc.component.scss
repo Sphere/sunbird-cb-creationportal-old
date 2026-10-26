@@ -168,9 +168,32 @@ a.content-active .toc-item-title {
 .debug-btn {
   border-radius: 25px;
   font-size: 12px;
-  padding: 0 12px;
-  height: 28px;
-  line-height: 28px;
+  padding: 0 10px;
+  height: 26px;
+  line-height: 26px;
+  margin-left: 4px;
+
+  .debug-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    margin-right: 2px;
+  }
+}
+
+// One Material icon per type, then the type name / duration, on one compact line.
+.type-row {
+  gap: 8px;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  color: #5a6a7a;
+}
+
+.type-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: #1c5d95;
 }
 
 // ── Active li highlight (deep tree) ─────────────────────────────────────────

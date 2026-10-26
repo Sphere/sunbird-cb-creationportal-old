@@ -165,40 +165,50 @@
       </a>
       <div *ngIf="content?.mimeType !== 'Assessment'" class="flex">
         <div [ngSwitch]="content.mimeType">
-          <div class="flex items-center" *ngSwitchCase="'application/pdf'">
-            <img alt="" src="cbp-assets/icons/pdf-icon.png" />
-            <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
+          <div class="flex items-center type-row" *ngSwitchCase="'application/pdf'">
+            <mat-icon class="type-icon" aria-hidden="true">picture_as_pdf</mat-icon>
+            <span *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
             <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
           </div>
-          <div class="flex items-center" *ngSwitchCase="'audio/mpeg'">
-            <img alt="" src="cbp-assets/icons/video-icon.png" />
-            <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
+          <div class="flex items-center type-row" *ngSwitchCase="'audio/mpeg'">
+            <mat-icon class="type-icon" aria-hidden="true">headset</mat-icon>
+            <span *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
             <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
           </div>
-          <div class="flex items-center" *ngSwitchCase="'video/mp4'">
-            <img alt="" src="cbp-assets/icons/video-icon.png" />
-            <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
+          <div class="flex items-center type-row" *ngSwitchCase="'video/mp4'">
+            <mat-icon class="type-icon" aria-hidden="true">play_circle_outline</mat-icon>
+            <span *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
             <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
           </div>
-          <div class="flex items-center" *ngSwitchCase="'application/vnd.ekstep.html-archive'">
-            <img alt="" src="cbp-assets/icons/video-icon.png" />
-            <span style="margin-left: 10px; margin-right: 10px" *ngIf="content?.duration > 0">{{
-              content?.duration | pipeDurationTransform: 'hms'
-            }}</span>
+          <div class="flex items-center type-row" *ngSwitchCase="'application/vnd.ekstep.html-archive'">
+            @if (isHtmlPackage(content)) {
+              <mat-icon class="type-icon" aria-hidden="true">code</mat-icon>
+              <span class="type-name">HTML</span>
+            } @else {
+              <mat-icon class="type-icon" aria-hidden="true">archive</mat-icon>
+              <span class="type-name">SCORM</span>
+            }
+            <span *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
             <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
             <button
-              title="Enable Debug Mode to track SCORM progress and completion data sent to the LMS. When activated, a popup window will appear at the top of the screen during SCORM playback, displaying real-time status updates on data transmission. This will help you to take decisions in making SCORM compatible to the LMS."
+              type="button"
+              [title]="
+                isHtmlPackage(content)
+                  ? 'Show the progress events this HTML package sent while playing, to check that it reports progress to the LMS.'
+                  : 'Enable Debug Mode to track SCORM progress and completion data sent to the LMS. When activated, a popup window will appear at the top of the screen during SCORM playback, displaying real-time status updates on data transmission. This will help you to take decisions in making SCORM compatible to the LMS.'
+              "
               class="debug-btn"
-              mat-raised-button
+              mat-stroked-button
               color="primary"
-              (click)="showAlert()"
+              (click)="showAlert(content)"
             >
+              <mat-icon class="debug-icon" aria-hidden="true">bug_report</mat-icon>
               Debug
             </button>
           </div>
-          <div class="flex items-center" *ngSwitchCase="'text/x-url'">
-            <img alt="" style="width: 14px; height: 17px" src="cbp-assets/icons/link-icon.png" />
-            <span style="margin-left: 10px" *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
+          <div class="flex items-center type-row" *ngSwitchCase="'text/x-url'">
+            <mat-icon class="type-icon" aria-hidden="true">link</mat-icon>
+            <span *ngIf="content?.duration > 0">{{ content?.duration | pipeDurationTransform: 'hms' }}</span>
             <span *ngIf="content?.duration === '0'">{{ content?.duration }}</span>
           </div>
         </div>

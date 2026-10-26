@@ -2,12 +2,13 @@ import { NestedTreeControl } from '@angular/cdk/tree'
 
 import { ChangeDetectorRef, Component, EventEmitter, NgZone, OnDestroy, OnInit, Output, Input } from '@angular/core'
 
+import { MatDialog } from '@angular/material/dialog'
 import { MatTreeNestedDataSource } from '@angular/material/tree'
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser'
 
 import { ActivatedRoute } from '@angular/router'
 
-import { ContentProgressService, NsContent, VIEWER_ROUTE_FROM_MIME, WidgetContentService } from '@ws-widget/collection'
+import { ContentProgressService, NsContent, VIEWER_ROUTE_FROM_MIME, WidgetContentService, isHtmlPackage } from '@ws-widget/collection'
 
 import { NsWidgetResolver } from '@ws-widget/resolver'
 
@@ -31,6 +32,11 @@ import { ViewerDataService } from '../../viewer-data.service'
 import { ViewerUtilService } from '../../viewer-util.service'
 
 import { SCORMAdapterService } from 'project/ws/viewer/src/lib/plugins/html/SCORMAdapter/scormAdapter'
+import { HtmlPackageDebugService } from 'project/ws/viewer/src/lib/plugins/html/html-package-debug.service'
+import {
+  HtmlPackageDebugDialogComponent,
+  IHtmlPackageDebugDialogData,
+} from '../html-package-debug-dialog/html-package-debug-dialog.component'
 
 interface IViewerTocCard {
   artifactUrl: string
@@ -43,6 +49,9 @@ interface IViewerTocCard {
   complexity: string
   children: null | IViewerTocCard[]
   mimeType: string
+  entryPoint?: string
+  /** 'html' marks an HTML package; absent means SCORM. */
+  packageType?: string
 }
 
 export type TCollectionCardType = 'content' | 'playlist' | 'goals'
@@ -85,6 +94,8 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
     private scormAdapterService: SCORMAdapterService,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone,
+    private htmlDebug: HtmlPackageDebugService = new HtmlPackageDebugService(),
+    private dialog: MatDialog | null = null,
   ) {
     this.nestedTreeControl = new NestedTreeControl<IViewerTocCard>(this._getChildren)
     this.nestedDataSource = new MatTreeNestedDataSource()
@@ -306,13 +317,36 @@ export class ViewerTocComponent implements OnInit, OnDestroy {
       type: content.resourceType ? content.resourceType : content.contentType,
       complexity: content.complexityLevel,
       mimeType: content.mimeType,
+      entryPoint: content.entryPoint,
+      packageType: content.packageType,
       children:
         Array.isArray(content.children) && content.children.length
           ? content.children.map(child => this.convertContentToIViewerTocCard(child))
           : null,
     }
   }
-  showAlert() {
+  /** Readable from the template: HTML packages and SCORM share the zip mimeType. */
+  readonly isHtmlPackage = isHtmlPackage
+
+  /**
+   * Debug: a SCORM package shows what it stored through the SCORM API; an HTML
+   * package shows the progress events it posted while playing.
+   */
+  showAlert(content?: IViewerTocCard) {
+    if (content && isHtmlPackage(content)) {
+      if (!this.dialog) {
+        alert(this.htmlDebug.summary(content.identifier))
+        return
+      }
+      this.dialog.open<HtmlPackageDebugDialogComponent, IHtmlPackageDebugDialogData>(HtmlPackageDebugDialogComponent, {
+        data: { contentId: content.identifier, name: content.title },
+        width: '640px',
+        maxWidth: 'calc(100vw - 32px)',
+        maxHeight: '85vh',
+        autoFocus: false,
+      })
+      return
+    }
     this.scormAdapterService.LMSCommit()
   }
   private createCollectionCard(collection: NsContent.IContent | NsContent.IContentMinimal): ICollectionCard {

@@ -32,7 +32,7 @@
             </div>
           </div>
           <button *ngIf="content?.artifactUrl" type="button" mat-icon-button [matMenuTriggerFor]="buttonMenu">
-            <mat-icon>more_vertical</mat-icon>
+            <mat-icon>more_vert</mat-icon>
           </button>
 
           <div *ngIf="hasContentStructure" class="child-meta-container">
@@ -123,12 +123,7 @@
       <!-- <img class="card-thumbnail ws-mat-primary-lite-background" [src]="content?.thumbnail" alt="Thumbnail"
         (click)="viewChildren = !viewChildren" [wsUtilsDefaultThumbnail]="defaultThumbnail" /> -->
       <div class="flex flex-between width-expand">
-        <div
-          class="ml-2 text-truncate cursor-pointer"
-          (click)="viewChildren = !viewChildren"
-          (keydown)="isActivationKey($event) && (viewChildren = !viewChildren)"
-          [attr.tabindex]="0"
-        >
+        <button type="button" class="btn-reset ml-2 text-truncate cursor-pointer" (click)="viewChildren = !viewChildren">
           <h2 class="margin-remove text-truncate">{{ content?.name }}</h2>
           <div class="collection-meta">
             <span class="meta-type">{{ contentTypeLabel }}</span>
@@ -204,9 +199,9 @@
               </span>
             </div>
           </div>
-        </div>
+        </button>
         <button *ngIf="content?.artifactUrl" type="button" mat-icon-button [matMenuTriggerFor]="buttonMenu">
-          <mat-icon>more_vertical</mat-icon>
+          <mat-icon>more_vert</mat-icon>
         </button>
       </div>
       <button type="button" (click)="viewChildren = !viewChildren" class="margin-left-m" mat-button color="primary">
@@ -240,31 +235,35 @@
           <div class="resource-meta-row" *ngIf="content?.mimeType">
             <div class="type-block" [ngSwitch]="content?.mimeType | lowercase">
               <span *ngSwitchCase="'application/pdf'" class="type-label">
-                <img class="content-type-img" src="cbp-assets/images/pdf-icon.png" alt="PDF" /> PDF
+                <mat-icon class="type-icon" aria-hidden="true">picture_as_pdf</mat-icon> PDF
               </span>
               <span *ngSwitchCase="'audio/mpeg'" class="type-label">
-                <img class="content-type-img-dark" src="cbp-assets/images/audio-img.svg" alt="Audio" /> Audio
+                <mat-icon class="type-icon" aria-hidden="true">headset</mat-icon> Audio
               </span>
-              <span *ngSwitchCase="'application/x-mpegURL'" class="type-label">
-                <img class="content-type-img-dark" src="cbp-assets/images/audio-img.svg" alt="Audio" /> Audio
+              <span *ngSwitchCase="'application/x-mpegurl'" class="type-label">
+                <mat-icon class="type-icon" aria-hidden="true">headset</mat-icon> Audio
               </span>
               <span *ngSwitchCase="'video/mp4'" class="type-label">
-                <img class="content-type-img" src="cbp-assets/images/video-icon.png" alt="Video" /> Video
+                <mat-icon class="type-icon" aria-hidden="true">play_circle_outline</mat-icon> Video
               </span>
               <span *ngSwitchCase="'application/html'" class="type-label">
-                <img class="content-type-img" src="cbp-assets/images/SCROM-img.svg" alt="SCORM" /> SCORM
+                <mat-icon class="type-icon" aria-hidden="true">archive</mat-icon> SCORM
               </span>
               <span *ngSwitchCase="'application/web-module'" class="type-label">
-                <img class="content-type-img" src="cbp-assets/images/SCROM-img.svg" alt="SCORM" /> SCORM
+                <mat-icon class="type-icon" aria-hidden="true">archive</mat-icon> SCORM
               </span>
               <span *ngSwitchCase="'application/vnd.ekstep.html-archive'" class="type-label">
-                <img class="content-type-img-dark" src="cbp-assets/images/SCROM-img.svg" alt="SCORM" /> SCORM
+                @if (isHtmlPackage(content)) {
+                  <mat-icon class="type-icon" aria-hidden="true">code</mat-icon> HTML
+                } @else {
+                  <mat-icon class="type-icon" aria-hidden="true">archive</mat-icon> SCORM
+                }
               </span>
               <span *ngSwitchCase="'video/x-youtube'" class="type-label">
-                <img class="content-type-img" src="cbp-assets/images/link-icon.png" alt="Link" /> Link
+                <mat-icon class="type-icon" aria-hidden="true">link</mat-icon> Link
               </span>
               <span *ngSwitchCase="'text/x-url'" class="type-label">
-                <img class="content-type-img" src="cbp-assets/images/link-icon.png" alt="Link" /> Link
+                <mat-icon class="type-icon" aria-hidden="true">link</mat-icon> Link
               </span>
               <span *ngSwitchCase="'application/quiz'" class="type-label">Quiz</span>
               <span *ngSwitchCase="'application/json'" class="type-label">

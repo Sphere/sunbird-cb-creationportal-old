@@ -1,12 +1,6 @@
-import {
-  CONTENT_BASE_STATIC,
-  CONTENT_BASE_STREAM,
-  CONTENT_BASE_WEBHOST,
-  CONTENT_BASE_WEBHOST_ASSETS,
-} from '../constants/apiEndpoints'
+import { CONTENT_BASE_STATIC, CONTENT_BASE_STREAM, CONTENT_BASE_WEBHOST, CONTENT_BASE_WEBHOST_ASSETS } from '../constants/apiEndpoints'
 
 import { NSContent } from './content'
-
 
 export namespace NSApiRequest {
   export interface ICreateMetaRequestGeneral {
@@ -66,6 +60,10 @@ export namespace NSApiRequest {
     primaryCategory: string
     purpose?: string
     isAssessment: boolean
+    /** Set only for an HTML package resource: its fixed start page. */
+    entryPoint?: string
+    /** Set only for an HTML package resource: 'html' (SCORM has none). */
+    packageType?: string
   }
 
   export interface IContentUpdateV2 {
@@ -77,7 +75,7 @@ export namespace NSApiRequest {
   export interface ICreateMetaRequestV2 {
     request: {
       content: {
-        isAssessment: boolean,
+        isAssessment: boolean
         name: string
         code: string
         // description: string
@@ -94,6 +92,8 @@ export namespace NSApiRequest {
         ownershipType: string[]
         purpose?: string
         instructions: string
+        entryPoint?: string
+        packageType?: string
       }
     }
   }
@@ -128,11 +128,7 @@ export namespace NSApiRequest {
 
   export interface IContentData {
     contentId: string
-    contentType:
-    | typeof CONTENT_BASE_STATIC
-    | typeof CONTENT_BASE_STREAM
-    | typeof CONTENT_BASE_WEBHOST
-    | typeof CONTENT_BASE_WEBHOST_ASSETS
+    contentType: typeof CONTENT_BASE_STATIC | typeof CONTENT_BASE_STREAM | typeof CONTENT_BASE_WEBHOST | typeof CONTENT_BASE_WEBHOST_ASSETS
   }
 
   export interface ICreateImageMetaRequestV2 {
@@ -165,5 +161,4 @@ export namespace NSApiRequest {
       }
     }
   }
-
 }

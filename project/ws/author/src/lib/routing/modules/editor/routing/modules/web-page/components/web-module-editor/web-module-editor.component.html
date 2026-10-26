@@ -52,18 +52,17 @@
       <p class="margin-remove-bottom mat-h3 font-weight-bold" i18n>Language</p>
     </div>
     <div class="flex flex-middle">
-      <p
-        class="p-2"
+      <button
+        type="button"
+        class="btn-reset p-2"
         *ngFor="let content of allContents"
         [ngClass]="{
           'ws-mat-primary-border-bottom-bolder': currentId === content.identifier,
         }"
         (click)="changeContent(content)"
-        (keydown)="isActivationKey($event) && changeContent(content)"
-        [attr.tabindex]="0"
       >
         {{ content.locale | uppercase }}
-      </p>
+      </button>
       <button mat-icon-button class="small-button padding-remove ws-mat-primary-background mat-elevation-z6 margin-left-s">
         <mat-icon
           class="text-white small-icon"
@@ -205,9 +204,12 @@
           <mat-sidenav-content>
             <ng-container *ngIf="userData[currentId].pages.length">
               <div class="pl-3">
-                <p class="font-weight-bold" i18n="Title label|Label which explains the user to enter title">Title</p>
+                <p class="font-weight-bold">
+                  <label for="web-module-page-title" i18n="Title label|Label which explains the user to enter title">Title</label>
+                </p>
                 <mat-form-field class="w-full" appearance="outline">
                   <input
+                    id="web-module-page-title"
                     [ngModel]="userData[currentId].pageJson[selectedPage].title"
                     #title
                     aria-label="page title|input for user to enter title"
@@ -260,8 +262,7 @@
                     aria-label="click to expand card"
                     i18n-aria-label
                     (click)="showAudioCard = !showAudioCard"
-                    (keydown)="isActivationKey($event) && (showAudioCard = !showAudioCard)"
-                    [attr.tabindex]="0"
+                    (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && (showAudioCard = !showAudioCard)"
                   >
                     <div class="flex">
                       <p class="font-weight-bold pb-1 self-center margin-remove-bottom" i18n>Audios</p>
@@ -276,10 +277,17 @@
                         <mat-icon>add_circle_outline</mat-icon>
                       </button>
                     </div>
-                    <div class="self-center">
+                    <!-- No handler of its own: its click bubbles to the header row above, which toggles the card. -->
+                    <button
+                      type="button"
+                      class="btn-reset self-center"
+                      [attr.aria-expanded]="showAudioCard"
+                      aria-label="click to expand card"
+                      i18n-aria-label
+                    >
                       <mat-icon class="self-end" *ngIf="!showAudioCard">keyboard_arrow_down</mat-icon>
                       <mat-icon class="self-end" *ngIf="showAudioCard">keyboard_arrow_up</mat-icon>
-                    </div>
+                    </button>
                   </div>
                   <div class="mb-4 pr-8" *ngIf="showAudioCard">
                     <ws-auth-audio-strips

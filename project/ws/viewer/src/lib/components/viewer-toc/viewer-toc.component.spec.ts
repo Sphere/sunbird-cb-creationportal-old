@@ -521,6 +521,44 @@ describe('ViewerTocComponent', () => {
       component.showAlert()
       expect(scormAdapterService.LMSCommit).toHaveBeenCalled()
     })
+
+    it('commits the SCORM session for a SCORM zip', () => {
+      component.showAlert({ identifier: 'do_s', mimeType: 'application/vnd.ekstep.html-archive', entryPoint: '/index_lms.html' } as any)
+      expect(scormAdapterService.LMSCommit).toHaveBeenCalled()
+    })
+
+    it('commits the SCORM session for an existing SCORM that launches at /index.html', () => {
+      component.showAlert({ identifier: 'do_s', mimeType: 'application/vnd.ekstep.html-archive', entryPoint: '/index.html' } as any)
+      expect(scormAdapterService.LMSCommit).toHaveBeenCalled()
+    })
+
+    it('shows the progress an HTML package reported instead of the SCORM data', () => {
+      const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => undefined)
+      ;(component as any).htmlDebug.record('do_h', { type: 'PROGRESS', id: 'pkg', extra: { pct: 45 } })
+      component.showAlert({
+        identifier: 'do_h',
+        mimeType: 'application/vnd.ekstep.html-archive',
+        entryPoint: '/index.html',
+        packageType: 'html',
+      } as any)
+      expect(scormAdapterService.LMSCommit).not.toHaveBeenCalled()
+      expect(alertSpy).toHaveBeenCalledWith(expect.stringContaining('Progress: 45%'))
+      alertSpy.mockRestore()
+    })
+
+    it('opens the HTML package debug dialog when a dialog service is available', () => {
+      const dialog = { open: jest.fn() }
+      ;(component as any).dialog = dialog
+      component.showAlert({
+        identifier: 'do_h',
+        title: 'html 2',
+        mimeType: 'application/vnd.ekstep.html-archive',
+        entryPoint: '/index.html',
+        packageType: 'html',
+      } as any)
+      expect(scormAdapterService.LMSCommit).not.toHaveBeenCalled()
+      expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: { contentId: 'do_h', name: 'html 2' } }))
+    })
   })
 
   describe('ngOnDestroy', () => {
