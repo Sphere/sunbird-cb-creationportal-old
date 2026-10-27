@@ -2722,7 +2722,8 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         const videoElement = this.videoPlayer.nativeElement
         videoElement.load()
       }
-      this.videoQuestions = content.videoQuestions ? JSON.parse(content.videoQuestions) : []
+      // Spark returns the saved array as-is; the legacy platform returned a JSON string.
+      this.videoQuestions = parseJsonList(content.videoQuestions)
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
       this.isShowDownloadBtnEnabled = true
       this.uploadText = 'mp4, m4v'

@@ -51,6 +51,26 @@ const videoJsOptions: videoJs.PlayerOptions = {
   nativeControlsForTouch: false,
 }
 
+/**
+ * `videoQuestions` arrives as a JSON string from the legacy platform but as the saved
+ * array from Sunbird Spark, which has no schema entry for it. `JSON.parse` on an array
+ * stringifies it first, so `[]` became "" and threw "Unexpected end of JSON input".
+ */
+export function parseVideoQuestions(raw: unknown): any[] {
+  if (Array.isArray(raw)) {
+    return raw
+  }
+  if (typeof raw !== 'string' || raw.trim() === '') {
+    return []
+  }
+  try {
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
 @Component({
   standalone: false,
   selector: 'ws-widget-player-video',
@@ -392,7 +412,7 @@ export class PlayerVideoComponent
     const content = await this.contentSvc.readcontentV3(this.widgetData.identifier).toPromise()
 
     console.log('content', content)
-    if (content && content.videoQuestions) this.widgetData.videoQuestions = content.videoQuestions ? JSON.parse(content.videoQuestions) : []
+    if (content && content.videoQuestions) this.widgetData.videoQuestions = parseVideoQuestions(content.videoQuestions)
     console.log('this.widgetData.videoQuestions', this.widgetData.videoQuestions)
     if (content.artifactUrl && content.artifactUrl.indexOf('/content-store/') > -1) {
       this.widgetData.url = content.artifactUrl
