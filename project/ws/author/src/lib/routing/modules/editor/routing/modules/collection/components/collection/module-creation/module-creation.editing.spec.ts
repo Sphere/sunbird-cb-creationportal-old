@@ -652,6 +652,26 @@ describe('ModuleCreationComponent (resource authoring)', () => {
       expect(load).toHaveBeenCalled()
     })
 
+    it('opens a Spark video whose questions come back as an array (empty array used to throw)', async () => {
+      component.videoPlayer = undefined as any
+      const empty = content({ mimeType: 'video/mp4', artifactUrl: 'https://cdn/dir/a.mp4', videoQuestions: [] })
+      editorService.readContentV2.mockReturnValue(of(empty))
+      await component.editContent(empty)
+      expect(component.videoQuestions).toEqual([])
+      // The setup after the parse runs, so the upload panel is configured.
+      expect(component.acceptType).toBe('.mp4, .m4v')
+      expect(component.isPdfOrAudioOrVedioEnabled).toBe(true)
+
+      const withQs = content({
+        mimeType: 'video/mp4',
+        artifactUrl: 'https://cdn/dir/b.mp4',
+        videoQuestions: [{ question: 'q1' }],
+      })
+      editorService.readContentV2.mockReturnValue(of(withQs))
+      await component.editContent(withQs)
+      expect(component.videoQuestions).toEqual([{ question: 'q1' }])
+    })
+
     it('opens a video with no questions and no player', async () => {
       component.videoPlayer = undefined as any
       const video = content({ mimeType: 'video/mp4', artifactUrl: undefined })
