@@ -1,12 +1,12 @@
 # Release 6.0.1 — 2026-10-27
 
-|                              |                                                    |
-| ---------------------------- | -------------------------------------------------- |
-| **Build branch deployed**    | `release-6.0.1` (Jenkins deploy source)            |
-| **Tag**                      | `v6.0.1` (immutable marker + GitHub Release)       |
-| **Baseline (previous prod)** | `v6.0.0`                                           |
-| **Commits**                  | `2` (non-merge) — one hotfix, plus this note       |
-| **Author**                   | Likhith Thammegowda                                |
+|                              |                                              |
+| ---------------------------- | -------------------------------------------- |
+| **Build branch deployed**    | `release-6.0.1` (Jenkins deploy source)      |
+| **Tag**                      | `v6.0.1` (immutable marker + GitHub Release) |
+| **Baseline (previous prod)** | `v6.0.0`                                     |
+| **Commits**                  | `2` (non-merge) — one hotfix, plus this note |
+| **Author**                   | Likhith Thammegowda                          |
 
 ## Summary
 
