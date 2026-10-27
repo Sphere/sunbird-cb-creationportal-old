@@ -45,7 +45,29 @@ jest.mock('../_services/videojs-util', () => ({
 }))
 
 // eslint-disable-next-line import/first
-import { PlayerVideoComponent } from './player-video.component'
+import { PlayerVideoComponent, parseVideoQuestions } from './player-video.component'
+
+describe('parseVideoQuestions', () => {
+  it('returns an array unchanged (Sunbird Spark)', () => {
+    const qs = [{ timestampInSeconds: 3 }]
+    expect(parseVideoQuestions(qs)).toBe(qs)
+    expect(parseVideoQuestions([])).toEqual([])
+  })
+
+  it('parses a JSON string (legacy platform)', () => {
+    expect(parseVideoQuestions('[{"timestampInSeconds":3}]')).toEqual([{ timestampInSeconds: 3 }])
+  })
+
+  it('yields [] for empty, malformed or non-array input', () => {
+    expect(parseVideoQuestions(undefined)).toEqual([])
+    expect(parseVideoQuestions(null)).toEqual([])
+    expect(parseVideoQuestions('')).toEqual([])
+    expect(parseVideoQuestions('  ')).toEqual([])
+    expect(parseVideoQuestions('{bad')).toEqual([])
+    expect(parseVideoQuestions('{"a":1}')).toEqual([])
+    expect(parseVideoQuestions({ a: 1 })).toEqual([])
+  })
+})
 
 describe('PlayerVideoComponent', () => {
   let eventSvc: any
@@ -98,6 +120,18 @@ describe('PlayerVideoComponent', () => {
       expect(c.widgetData.videoQuestions).toEqual([{ timestampInSeconds: 5 }])
       expect(c.widgetData.url).toBe('/content-store/video.mp4')
       expect(c.widgetData.posterImage).toBe('icon.png')
+    })
+
+    it('takes Spark array questions as-is and still sets the url (empty array used to throw)', async () => {
+      contentSvc.readcontentV3 = jest.fn(() => of({ videoQuestions: [], artifactUrl: '/content-store/video.mp4', appIcon: 'icon.png' }))
+      const c = build()
+      await c.fetchContent()
+      expect(c.widgetData.videoQuestions).toEqual([])
+      expect(c.widgetData.url).toBe('/content-store/video.mp4')
+
+      contentSvc.readcontentV3 = jest.fn(() => of({ videoQuestions: [{ timestampInSeconds: 7 }] }))
+      await c.fetchContent()
+      expect(c.widgetData.videoQuestions).toEqual([{ timestampInSeconds: 7 }])
     })
 
     it('leaves the url unset for a non content-store artifact', async () => {
