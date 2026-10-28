@@ -1007,7 +1007,7 @@ describe('ModuleCreationComponent (direct instantiation)', () => {
   describe('upload helpers', () => {
     it('generateStreamUrl points at the snapshot folder for the current content', () => {
       component.currentContent = 'do_res'
-      expect(component.generateStreamUrl('index.html')).toContain('do_res-snapshot/index.html')
+      expect(component.generateStreamUrl('')).toMatch(/\/html\/do_res-snapshot$/)
     })
 
     it('profanityCheckAPICall passes the file name through', () => {

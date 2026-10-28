@@ -359,7 +359,7 @@ export class LearningComponent implements OnInit, OnDestroy {
       this.searchRequestObject.query = `"${this.searchRequestObject.query}"`
     } else if (withQuotes && this.searchRequestObject.query.indexOf(' ') > -1) {
       this.exactResult.applied = true
-      this.searchRequestObject.query = this.searchRequestObject.query.replace(/['"]+/g, '')
+      this.searchRequestObject.query = this.searchRequestObject.query.replaceAll(/['"]+/g, '')
       this.searchResults.result = []
       this.exactResult.show = false
       this.searchRequestObject.pageNo = 0
@@ -419,7 +419,7 @@ export class LearningComponent implements OnInit, OnDestroy {
           return
         } else if (this.searchResults.totalHits > 0 && this.searchRequestObject.query.indexOf(' ') > -1 && !this.exactResult.applied) {
           this.exactResult.show = true
-          this.exactResult.text = this.searchRequestObject.query.replace(/['"]+/g, '')
+          this.exactResult.text = this.searchRequestObject.query.replaceAll(/['"]+/g, '')
         }
         if (this.searchResults.result.length < this.searchResults.totalHits) {
           this.searchRequestStatus = 'hasMore'

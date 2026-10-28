@@ -561,6 +561,27 @@ describe('ModuleCreationComponent (resource save path)', () => {
       expect(storeService.uploadFileType.next).toHaveBeenCalledWith('pdf')
     })
 
+    it('creates an HTML resource with its marker and fixed entry point', async () => {
+      component.zipPackageType = 'html'
+      await component.setContentType('upload', 'zip')
+      expect(storeService.createChildOrSibling).toHaveBeenCalledWith(
+        'upload',
+        expect.anything(),
+        undefined,
+        'below',
+        expect.objectContaining({ entryPoint: '/index.html', packageType: 'html' }),
+        '',
+      )
+    })
+
+    it('creates a SCORM resource without an entry point', async () => {
+      component.zipPackageType = 'scorm'
+      await component.setContentType('upload', 'zip')
+      const newData = storeService.createChildOrSibling.mock.calls[0][4]
+      expect(newData.entryPoint).toBeUndefined()
+      expect(newData.packageType).toBeUndefined()
+    })
+
     it('creates a link resource with the link file type', async () => {
       await component.setContentType('web')
       expect(storeService.createChildOrSibling).toHaveBeenCalledWith(

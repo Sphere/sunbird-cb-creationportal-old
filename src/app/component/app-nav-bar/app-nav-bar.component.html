@@ -132,14 +132,8 @@
       },
     }"
   ></ws-widget-btn-feature>
-  <div
-    mat-menu-item
-    *ngIf="isTourGuideAvailable"
-    (click)="startTour()"
-    (keydown)="isActivationKey($event) && startTour()"
-    [attr.tabindex]="0"
-  >
+  <button type="button" mat-menu-item *ngIf="isTourGuideAvailable" (click)="startTour()">
     <mat-icon>help</mat-icon>
     <span class="ml-2">Tour Guide</span>
-  </div>
+  </button>
 </mat-menu>

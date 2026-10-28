@@ -18,7 +18,7 @@
     <ng-template #submitAsTextView>
       <mat-form-field class="textView margin-m">
         <mat-label i18n>Your answer here</mat-label>
-        <textarea rows="7" minlength="10" matInput [formControl]="answerControl"></textarea>
+        <textarea id="resource-collection-answer-text" rows="7" minlength="10" matInput [formControl]="answerControl"></textarea>
         <mat-error i18n> Min length should be 10 characters </mat-error>
       </mat-form-field>
     </ng-template>
@@ -27,13 +27,15 @@
       <div class="margin-m">
         <div>
           <div i18n>Files allowed- pdf, mp4, mp3, mpeg</div>
-          <div class=" margin-top-xl">
+          <div class="margin-top-xl">
             <button mat-raised-button color="primary" (click)="inputFile.click()" type="button">
               <span i18n>Upload</span>
             </button>
             {{ selectedFile?.name }}
           </div>
+          <label class="sr-only" for="resource-collection-answer-file" i18n>Upload answer file</label>
           <input
+            id="resource-collection-answer-file"
             #inputFile
             accept="application/pdf, video/mp4, audio/mp3, audio/mpeg"
             (change)="changeFile($event.target.files)"
@@ -54,16 +56,7 @@
           [value]="submitData.value"
         >
         </mat-progress-spinner>
-        <button
-          [disabled]="submitData.isSubmit"
-          i18n
-          mat-raised-button
-          color="primary"
-          type="button"
-          (click)="submit()"
-        >
-          Submit
-        </button>
+        <button [disabled]="submitData.isSubmit" i18n mat-raised-button color="primary" type="button" (click)="submit()">Submit</button>
       </div>
     </form>
   </mat-card-content>
@@ -73,16 +66,10 @@
 <mat-card class="mb-5">
   <mat-card-content>
     <div *ngIf="fetchingStatus === 'fetching'" class="spinner">
-      <mat-progress-spinner mode="indeterminate" diameter="100" stroleWidth="3">
-      </mat-progress-spinner>
+      <mat-progress-spinner mode="indeterminate" diameter="100" stroleWidth="3"> </mat-progress-spinner>
     </div>
     <ng-container>
-      <table
-        *ngIf="submissionData.length > 0 && fetchingStatus === 'fetched'"
-        mat-table
-        [dataSource]="dataSource"
-        class="table"
-      >
+      <table *ngIf="submissionData.length > 0 && fetchingStatus === 'fetched'" mat-table [dataSource]="dataSource" class="table">
         <ng-container matColumnDef="#">
           <th mat-header-cell *matHeaderCellDef text-bold i18n>#</th>
           <td mat-cell *matCellDef="let element; let i = index">
@@ -104,9 +91,7 @@
               mat-raised-button
               color="primary"
               class="submissionbutton"
-              (click)="
-                openDialog(element.submission_url, element.submission_type, element.submission_time)
-              "
+              (click)="openDialog(element.submission_url, element.submission_type, element.submission_time)"
             >
               <span i18n>View Submission</span>
             </button>
@@ -120,14 +105,8 @@
           </td>
         </ng-container>
 
-        <tr
-          mat-header-row
-          *matHeaderRowDef="['#', 'submission_time', 'Content', 'feedback_by']"
-        ></tr>
-        <tr
-          mat-row
-          *matRowDef="let row; columns: ['#', 'submission_time', 'Content', 'feedback_by']"
-        ></tr>
+        <tr mat-header-row *matHeaderRowDef="['#', 'submission_time', 'Content', 'feedback_by']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['#', 'submission_time', 'Content', 'feedback_by']"></tr>
       </table>
 
       <mat-paginator

@@ -447,6 +447,23 @@ describe('ModuleCreationComponent (resource authoring)', () => {
       expect(component.acceptType).toBe('.zip')
       expect(component.isShowDownloadBtnEnabled).toBe(false)
       expect(component.setContentType).toHaveBeenCalledWith('zip', 'zip')
+      expect(component.zipPackageType).toBe('scorm')
+    })
+
+    it('configures an HTML package as a zip with a fixed entry file', () => {
+      component.createResourseContent('HTML', 'zip')
+      expect(component.zipPackageType).toBe('html')
+      expect(component.acceptType).toBe('.zip')
+      expect(component.uploadText).toContain('index.html')
+      expect(component.resourceImg).toBe('cbp-assets/icons/html_icon.svg')
+      expect(component.isShowDownloadBtnEnabled).toBe(false)
+      expect(component.isPdfOrAudioOrVedioEnabled).toBe(true)
+      expect(component.setContentType).toHaveBeenCalledWith('zip', 'zip')
+    })
+
+    it('offers HTML next to SCORM in the learning formats', () => {
+      const names = component.contentList.map((c: any) => c.name)
+      expect(names.indexOf('HTML')).toBe(names.indexOf('SCORM v1.1/1.2') + 1)
     })
 
     it('configures an assessment', () => {
@@ -671,6 +688,47 @@ describe('ModuleCreationComponent (resource authoring)', () => {
       expect(component.uploadFileName).toBe('p.zip')
       expect(component.acceptType).toBe('.zip')
       expect(component.isShowDownloadBtnEnabled).toBe(false)
+      expect(component.zipPackageType).toBe('scorm')
+    })
+
+    it('recognises an HTML package by its packageType', async () => {
+      const html = content({
+        mimeType: 'application/vnd.ekstep.html-archive',
+        artifactUrl: 'https://cdn/dir/site.zip',
+        entryPoint: '/index.html',
+        packageType: 'html',
+      })
+      editorService.readContentV2.mockReturnValue(of(html))
+      await component.editContent(html)
+      expect(component.zipPackageType).toBe('html')
+      expect(component.uploadFileName).toBe('site.zip')
+      expect(component.resourceImg).toBe('cbp-assets/icons/html_icon.svg')
+      expect(component.uploadText).toContain('index.html')
+    })
+
+    it('recognises an HTML draft that has no zip uploaded yet', async () => {
+      const draft = content({
+        mimeType: 'application/vnd.ekstep.html-archive',
+        artifactUrl: '',
+        entryPoint: '/index.html',
+        packageType: 'html',
+      })
+      editorService.readContentV2.mockReturnValue(of(draft))
+      await component.editContent(draft)
+      expect(component.zipPackageType).toBe('html')
+      expect(component.uploadFileName).toBe('')
+    })
+
+    it('keeps an existing SCORM that launches at /index.html as SCORM', async () => {
+      const scorm = content({
+        mimeType: 'application/vnd.ekstep.html-archive',
+        artifactUrl: 'https://cdn/dir/rise-course.zip',
+        entryPoint: '/index.html',
+      })
+      editorService.readContentV2.mockReturnValue(of(scorm))
+      await component.editContent(scorm)
+      expect(component.zipPackageType).toBe('scorm')
+      expect(component.resourceImg).toBe('cbp-assets/images/SCROM-img.svg')
     })
 
     it('reads the quiz JSON of an existing assessment', async () => {

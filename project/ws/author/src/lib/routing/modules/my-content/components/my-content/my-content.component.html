@@ -123,7 +123,17 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
            hidden from screen readers, which have nothing to gain from an empty
            heading. allowAuthor is unchanged, so nobody who has a bar today sees
            anything different. -->
-      <p *ngIf="allowAuthor" class="dashboard-txt">Dashboard</p>
+      <!-- The sidebar's title: it heads the menu below. It used to be a small grey
+           "DASHBOARD" with a pointer cursor and hover colour, but no click action. -->
+      <div *ngIf="allowAuthor" class="dashboard-txt workspace-head">
+        <span class="workspace-icon" aria-hidden="true"><mat-icon>dashboard</mat-icon></span>
+        <span class="workspace-text">
+          <span class="workspace-title" i18n>My Workspace</span>
+          @if (workspaceRoles) {
+            <span class="workspace-sub" [title]="workspaceRoles">{{ workspaceRoles }}</span>
+          }
+        </span>
+      </div>
       <div *ngIf="!allowAuthor && showAiStudio" class="dashboard-txt is-static" aria-hidden="true"></div>
       <mat-accordion expanded *ngIf="allowAuthor">
         <mat-expansion-panel
@@ -134,7 +144,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
           class="no-shadow"
           hideToggle
         >
-          <mat-expansion-panel-header class="left-panel-header">
+          <mat-expansion-panel-header class="left-panel-header" (keydown)="isActivationKey($event) && onClickReviewCourse('Draft')">
             <mat-panel-title class="main-block">
               <svg
                 [ngClass]="{
@@ -183,8 +193,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               </svg>
               <span
                 (click)="onClickReviewCourse('Draft')"
-                (keydown)="isActivationKey($event) && onClickReviewCourse('Draft')"
-                [attr.tabindex]="0"
+                (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && onClickReviewCourse('Draft')"
                 class="font-weight-500 head-content-block"
                 [ngClass]="{
                   coursesActive:
@@ -315,7 +324,10 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
           class="no-shadow"
           hideToggle
         >
-          <mat-expansion-panel-header class="left-panel-header">
+          <mat-expansion-panel-header
+            class="left-panel-header"
+            (keydown)="isActivationKey($event) && onClickReviewCourse('selfAssessmentDraft')"
+          >
             <mat-panel-title class="main-block">
               <svg
                 [ngClass]="{
@@ -364,8 +376,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <span
                 class="font-weight-500 head-content-block"
                 (click)="onClickReviewCourse('selfAssessmentDraft')"
-                (keydown)="isActivationKey($event) && onClickReviewCourse('selfAssessmentDraft')"
-                [attr.tabindex]="0"
+                (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && onClickReviewCourse('selfAssessmentDraft')"
                 [ngClass]="{
                   selfAssessmentActive:
                     isSelfAssessmentSelectedColor ||
@@ -463,7 +474,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
           class="no-shadow"
           hideToggle
         >
-          <mat-expansion-panel-header class="left-panel-header">
+          <mat-expansion-panel-header class="left-panel-header" (keydown)="isActivationKey($event) && onClickReviewCourse('All Courses')">
             <mat-panel-title class="main-block">
               <svg
                 [ngClass]="{
@@ -495,8 +506,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <span
                 class="font-weight-500 head-content-block"
                 (click)="onClickReviewCourse('All Courses')"
-                (keydown)="isActivationKey($event) && onClickReviewCourse('All Courses')"
-                [attr.tabindex]="0"
+                (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && onClickReviewCourse('All Courses')"
                 [ngClass]="{
                   manageCourseActive:
                     isSelectedAllCourse || isSelectedCourseWithoutCertificate || isSelectedCourseWithCertificate || panel3.expanded,
@@ -568,7 +578,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
              so a click opened the panel and the next change detection pass
              closed it again, and the first click appeared to do nothing. -->
         <mat-expansion-panel #panel4 style="cursor: pointer" class="no-shadow" [(expanded)]="isAiStudioExpanded" hideToggle>
-          <mat-expansion-panel-header class="left-panel-header">
+          <mat-expansion-panel-header class="left-panel-header" (keydown)="isActivationKey($event) && onClickReviewCourse('AIHub')">
             <mat-panel-title class="main-block">
               <!-- Styled as every other section header here: an outline glyph and
                    the name, both turning blue while one of its features is open. -->
@@ -577,8 +587,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 class="font-weight-500 head-content-block"
                 [class.coursesActive]="isAiStudio"
                 (click)="onClickReviewCourse('AIHub')"
-                (keydown)="isActivationKey($event) && onClickReviewCourse('AIHub')"
-                [attr.tabindex]="0"
+                (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && onClickReviewCourse('AIHub')"
               >
                 AI Studio
               </span>
@@ -624,7 +633,10 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
           class="no-shadow"
           hideToggle
         >
-          <mat-expansion-panel-header class="left-panel-header">
+          <mat-expansion-panel-header
+            class="left-panel-header"
+            (keydown)="isActivationKey($event) && onClickReviewCourse('External Courses to Review')"
+          >
             <mat-panel-title class="main-block">
               <svg
                 [ngClass]="{
@@ -643,7 +655,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 viewBox="0 0 16 14"
                 fill="none"
               >
-                <g clip-path="url(#clip0_1391_8909)">
+                <g clip-path="url(#clip0_1391_8909_ext)">
                   <path
                     fill="#808080"
                     d="M15.0329 4.68675H0.965057C0.965057 4.75323 0.965057 4.81347 0.965057 4.87372C0.965057 7.16308 0.965057 9.45452 0.965057 11.7439C0.965057 12.5375 1.43371 13.0132 2.2148 13.0132C3.40082 13.0132 4.58684 13.0132 5.77287 13.0132C5.8407 13.0132 5.90853 13.0132 5.97431 13.0236C6.24358 13.061 6.41418 13.2729 6.39774 13.543C6.3813 13.7943 6.18191 13.9813 5.91675 13.9917C5.88386 13.9917 5.84892 13.9917 5.81603 13.9917C4.60123 13.9917 3.38849 13.9917 2.17369 13.9917C0.926002 13.9917 0.00513875 13.0714 0.00308325 11.8166C-0.00102775 8.60484 -0.00102775 5.39309 0.00308325 2.18133C0.00513875 0.922392 0.923947 0 2.17163 0C6.05858 0 9.94759 0 13.8345 0C15.0802 0 15.9949 0.922392 15.9969 2.18133C15.999 3.63555 15.9969 5.0877 15.9969 6.54192C15.9969 6.81822 15.8448 7.01558 15.6084 7.06129C15.3844 7.10283 15.1562 6.9865 15.0781 6.77044C15.0452 6.67696 15.0349 6.571 15.0349 6.47129C15.0308 5.94569 15.0349 5.42009 15.0349 4.89449C15.0349 4.83217 15.0349 4.76985 15.0349 4.68675H15.0329ZM0.965057 3.68957H15.0185C15.0247 3.64594 15.0308 3.61478 15.0308 3.58154C15.0308 3.09541 15.0349 2.60929 15.0267 2.12316C15.0267 1.99644 15.0021 1.86348 14.9609 1.74299C14.7944 1.25063 14.3731 0.976406 13.7996 0.976406C9.93525 0.976406 6.06886 0.976406 2.20452 0.976406C2.14286 0.976406 2.08119 0.976406 2.01953 0.982638C1.47893 1.02627 1.037 1.44176 0.981501 1.98605C0.956835 2.23327 0.965057 2.48256 0.963001 2.73186C0.960946 3.04763 0.963001 3.36341 0.963001 3.69165L0.965057 3.68957Z"
@@ -666,15 +678,16 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   />
                 </g>
                 <defs>
-                  <clipPath id="clip0_1391_8909">
+                  <clipPath id="clip0_1391_8909_ext">
                     <rect width="16" height="14" fill="white" />
                   </clipPath>
                 </defs>
               </svg>
               <span
                 (click)="onClickReviewCourse('External Courses to Review')"
-                (keydown)="isActivationKey($event) && onClickReviewCourse('External Courses to Review')"
-                [attr.tabindex]="0"
+                (keydown)="
+                  $event.target === $event.currentTarget && isActivationKey($event) && onClickReviewCourse('External Courses to Review')
+                "
                 class="font-weight-500 head-content-block"
                 [ngClass]="{ coursesActive: isSelectedToExternalCouseReview || panel1.expanded }"
                 i18n
@@ -707,7 +720,10 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
           class="no-shadow"
           hideToggle
         >
-          <mat-expansion-panel-header class="left-panel-header">
+          <mat-expansion-panel-header
+            class="left-panel-header"
+            (keydown)="isActivationKey($event) && onClickReviewCourse('External Self Assessment to Review')"
+          >
             <mat-panel-title class="main-block">
               <svg
                 [ngClass]="{
@@ -725,7 +741,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                 viewBox="0 0 16 19"
                 fill="none"
               >
-                <g clip-path="url(#clip0_1391_8923)">
+                <g clip-path="url(#clip0_1391_8923_ext)">
                   <path
                     d="M15.9969 10.1638C15.9969 12.2762 15.9969 14.3886 15.9969 16.5041C15.9969 17.6906 15.241 18.6495 14.0887 18.9251C13.8687 18.9791 13.6364 18.9971 13.4103 18.9971C9.80445 19.0001 6.20174 19.0031 2.59593 18.9971C1.09042 18.9971 0 17.9483 0 16.4921C0 12.2732 0 8.05431 0 3.83541C0 2.37918 1.08732 1.33344 2.59593 1.32745C2.93979 1.32745 3.28054 1.31546 3.62439 1.33044C3.80097 1.33943 3.87531 1.27951 3.92488 1.1237C4.10765 0.542399 4.51346 0.173845 5.12681 0.0360119C5.25692 0.00604813 5.39632 0.00305176 5.52953 0.00305176C7.17135 0.00305176 8.81317 0.00305176 10.455 0.00305176C11.2697 0.00305176 11.8118 0.380595 12.0751 1.13568C12.1278 1.2825 12.1959 1.33644 12.3601 1.33344C12.8527 1.32745 13.3514 1.29449 13.8347 1.36041C15.1171 1.52821 15.9907 2.54697 15.9938 3.82642C15.9969 5.93887 15.9938 8.05131 15.9938 10.1667L15.9969 10.1638ZM3.57793 2.65185C3.29293 2.65185 2.94288 2.65185 2.59593 2.65185C1.84008 2.65484 1.37231 3.11029 1.37231 3.8474C1.37231 8.0573 1.37231 12.2702 1.37231 16.4801C1.37231 17.2142 1.84318 17.6697 2.59903 17.6697C6.19555 17.6697 9.79206 17.6697 13.3886 17.6697C13.5156 17.6697 13.6488 17.6637 13.7696 17.6337C14.3179 17.4959 14.6277 17.0644 14.6277 16.4471C14.6277 12.2552 14.6277 8.06629 14.6277 3.87437C14.6277 3.75751 14.6184 3.64065 14.5967 3.52379C14.51 3.07733 14.1073 2.69379 13.6488 2.66383C13.2151 2.63686 12.7814 2.65784 12.3384 2.65784C12.3229 2.69979 12.3075 2.73574 12.2951 2.7747C12.0782 3.52379 11.502 3.96725 10.7028 3.97025C8.9061 3.97624 7.10629 3.97325 5.30958 3.97025C4.85421 3.97025 4.43601 3.84141 4.13863 3.50581C3.92798 3.2661 3.78548 2.96646 3.58103 2.64585L3.57793 2.65185ZM8.00465 2.65185C8.88132 2.65185 9.75799 2.65185 10.6347 2.65185C10.898 2.65185 10.9847 2.57694 10.9537 2.33423C10.9227 2.09152 10.8484 1.85181 10.7988 1.60911C10.7524 1.38438 10.613 1.31846 10.3837 1.32146C9.55044 1.33044 8.71713 1.32445 7.88074 1.32445C7.10319 1.32445 6.32565 1.32445 5.55121 1.32445C5.41491 1.32445 5.2817 1.33644 5.24143 1.48326C5.16709 1.74694 5.08035 2.01062 5.04318 2.28329C4.99981 2.58593 5.08035 2.65185 5.39632 2.65185C6.2668 2.65185 7.13417 2.65185 8.00465 2.65185Z"
                     fill="#808080"
@@ -748,7 +764,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   />
                 </g>
                 <defs>
-                  <clipPath id="clip0_1391_8923">
+                  <clipPath id="clip0_1391_8923_ext">
                     <rect width="16" height="19" fill="white" />
                   </clipPath>
                 </defs>
@@ -756,8 +772,11 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               <span
                 class="font-weight-500 head-content-block"
                 (click)="onClickReviewCourse('External Self Assessment to Review')"
-                (keydown)="isActivationKey($event) && onClickReviewCourse('External Self Assessment to Review')"
-                [attr.tabindex]="0"
+                (keydown)="
+                  $event.target === $event.currentTarget &&
+                    isActivationKey($event) &&
+                    onClickReviewCourse('External Self Assessment to Review')
+                "
                 [ngClass]="{ selfAssessmentActive: isSelectedToExternalSelfAssessmentReview || panel2.expanded }"
                 i18n
                 >Self Assessment</span
@@ -863,7 +882,15 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             (click)="navigateContents(link)" [ngClass]="{'activeTab':link==activeLink}">
             {{ link }}
           </a> -->
-          <p class="currentTab" *ngIf="!isAiStudio">{{ currentTab }} : {{ currentStatus }}</p>
+          <div class="page-heading" *ngIf="!isAiStudio">
+            <span class="page-eyebrow">{{ currentTab }}</span>
+            <h1 class="currentTab">
+              {{ pageTitle }}
+              @if (cardContent?.length) {
+                <span class="page-count" [attr.aria-label]="cardContent.length + ' items'">{{ cardContent.length }}</span>
+              }
+            </h1>
+          </div>
 
           <!-- AI Studio reads as a path, not a pair joined by a colon: the area
                is context, the open feature is where you are. Its left edge comes
@@ -890,10 +917,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
 
           <span fxFlex style="flex: 1 1 auto"></span>
 
-          <div
-            *ngIf="allowAuthorContentCreate && !isAiStudio"
-            class="matExpansion flex flex-middle margin-left-l margin-right-l padding-remove-left create-button"
-          >
+          <div *ngIf="allowAuthorContentCreate && !isAiStudio" class="matExpansion flex flex-middle padding-remove-left create-button">
             <button
               (click)="createCourse('courseWithLevel')"
               *ngIf="createCourseBtn"
@@ -910,7 +934,7 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               *ngIf="!createCourseBtn"
               mat-button
               class="btn-create self-btn-create"
-              id="ws-auth-root-home-btn-create"
+              id="ws-auth-root-home-btn-create-self"
               name="ws-auth-root-home-btn-create"
             >
               <mat-icon class="add-create-icon">add</mat-icon>
@@ -924,9 +948,9 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             <ws-author-ai-studio-dashboard [feature]="aiStudioFeature"></ws-author-ai-studio-dashboard>
           </section>
           <div class="content-box" *ngIf="!isAiStudio">
-            <div class="flex margin-horizontal-s search-toolbar">
-              <div>
-                <mat-chip-set *ngIf="filters && filters.length" #chipList aria-label="Filter">
+            <div class="flex search-toolbar">
+              <div *ngIf="filters && filters.length">
+                <mat-chip-set #chipList aria-label="Filter">
                   <mat-chip>
                     <span class="ws-mat-primary-text" i18n>Clear All</span>
                     <mat-icon
@@ -945,9 +969,18 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
               </div>
               <div class="flex items-center search border border-solid search-border">
                 <div class="border-right flex items-center" *ngIf="allLanguages?.length">
-                  <button mat-button [matMenuTriggerFor]="sortLang">
-                    <span *ngIf="searchLanguage">{{ searchLanguage | uppercase }}</span>
-                    <span *ngIf="!searchLanguage" i18n>ALL</span>
+                  <button
+                    mat-button
+                    class="lang-btn"
+                    [matMenuTriggerFor]="sortLang"
+                    matTooltip="Filter by language"
+                    i18n-matTooltip
+                    aria-label="Filter by language"
+                    i18n-aria-label
+                  >
+                    <mat-icon class="lang-icon">translate</mat-icon>
+                    <span *ngIf="searchLanguage">{{ selectedLanguageName }}</span>
+                    <span *ngIf="!searchLanguage" i18n>All languages</span>
                     <mat-icon>arrow_drop_down</mat-icon>
                   </button>
                 </div>
@@ -959,45 +992,73 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
                   </button>
                 </div>
                 <div class="width-3-4 pl-2">
+                  <label class="sr-only" for="my-content-search-input" i18n>Search by course name</label>
                   <mat-form-field class="w-full" appearance="none" [floatLabel]="'never'">
-                    <input type="text" (keyup.enter)="search()" matInput #searchInput name="searchBox" placeholder="Search for content" />
+                    <input
+                      id="my-content-search-input"
+                      type="text"
+                      (keyup.enter)="search()"
+                      matInput
+                      #searchInput
+                      name="searchBox"
+                      placeholder="Search by course name"
+                      i18n-placeholder
+                      aria-label="Search by course name"
+                      i18n-aria-label
+                    />
                   </mat-form-field>
                 </div>
-                <div
-                  (click)="search()"
-                  (keydown)="isActivationKey($event) && search()"
-                  [attr.tabindex]="0"
-                  class="flex items-center justify-center w-16 pointer"
-                >
+                @if (queryFilter) {
+                  <button
+                    type="button"
+                    class="search-icon-btn"
+                    (click)="clearSearch()"
+                    matTooltip="Clear search"
+                    i18n-matTooltip
+                    aria-label="Clear search"
+                    i18n-aria-label
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                }
+                <button type="button" class="search-icon-btn search-submit" (click)="search()" aria-label="Search" i18n-aria-label>
                   <mat-icon>search</mat-icon>
-                </div>
+                </button>
               </div>
               <span fxFlex style="flex: 1 1 auto">
-                <span class="results-count" *ngIf="cardContent?.length > 0">Showing {{ cardContent?.length }} results</span>
+                <!-- The heading badge already shows the list size; this only
+                     reports what a search narrowed it to. -->
+                <span class="results-count" *ngIf="queryFilter && cardContent?.length > 0" aria-live="polite">
+                  {{ cardContent?.length }} {{ cardContent?.length === 1 ? 'match' : 'matches' }} for “{{ queryFilter }}”
+                </span>
               </span>
-              <div class="flex items-center">
-                <div></div>
-
-                <div
+              <div class="view-toggle">
+                <button
+                  type="button"
+                  class="view-toggle-btn"
+                  [class.is-active]="!listview"
+                  [attr.aria-pressed]="!listview"
                   (click)="listview = false"
-                  (keydown)="isActivationKey($event) && (listview = false)"
-                  [attr.tabindex]="0"
-                  class="filter-icons"
+                  matTooltip="Grid view"
+                  i18n-matTooltip
+                  aria-label="Grid view"
+                  i18n-aria-label
                 >
-                  <span class="mr-2">
-                    <mat-icon class="pointer">border_all</mat-icon>
-                  </span>
-                </div>
-                <div
+                  <mat-icon>view_module</mat-icon>
+                </button>
+                <button
+                  type="button"
+                  class="view-toggle-btn"
+                  [class.is-active]="listview"
+                  [attr.aria-pressed]="listview"
                   (click)="listview = true"
-                  (keydown)="isActivationKey($event) && (listview = true)"
-                  [attr.tabindex]="0"
-                  class="filter-icons"
+                  matTooltip="List view"
+                  i18n-matTooltip
+                  aria-label="List view"
+                  i18n-aria-label
                 >
-                  <span>
-                    <mat-icon class="pointer">list</mat-icon>
-                  </span>
-                </div>
+                  <mat-icon>view_list</mat-icon>
+                </button>
               </div>
             </div>
             <div class="content-scroll-container">
@@ -1034,19 +1095,35 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             <div style="display: none" class="text-right margin-right-xxl margin-bottom-m" *ngIf="showLoadMore">
               <button mat-raised-button [color]="'primary'" (click)="loadMore()" i18n>Load More...</button>
             </div>
-            <div class="flat-no-data-found margin-m" *ngIf="!fetchError && cardContent && !cardContent.length">
-              <!-- <mat-icon class="large-icon">info</mat-icon> -->
-              <!-- <span class="font-weight-bold margin-left-s mat-h3 margin-remove-bottom" i18n>No data found</span> -->
-              <div class="no-data-msg">
-                <img alt="" src="cbp-assets/icons/cuate.svg" />
-                <span>
-                  <h3 class="no-data-msg-text">No data found</h3>
-                </span>
-              </div>
+            <div class="list-state" aria-live="polite" *ngIf="!fetchError && cardContent && !cardContent.length">
+              <img class="list-state-art" alt="" src="cbp-assets/icons/cuate.svg" />
+              @if (queryFilter) {
+                <h3 class="list-state-title" i18n>No results for “{{ queryFilter }}”</h3>
+                <p class="list-state-text" i18n>Check the spelling or try a shorter name. Search looks only in {{ pageTitle }}.</p>
+                <button type="button" class="list-state-btn" (click)="clearSearch()" i18n>Clear search</button>
+              } @else {
+                <h3 class="list-state-title" i18n>Nothing in {{ pageTitle }} yet</h3>
+                <p class="list-state-text" i18n>Items appear here when they reach this stage.</p>
+                @if (allowAuthorContentCreate && isDraftStatus) {
+                  <button
+                    type="button"
+                    class="list-state-btn is-primary"
+                    (click)="createCourse(createCourseBtn ? 'courseWithLevel' : 'selfAssessment')"
+                  >
+                    <mat-icon>add</mat-icon>
+                    <span>{{ createCourseBtn ? 'Create a new course' : 'Create a new self assessment' }}</span>
+                  </button>
+                }
+              }
             </div>
-            <div class="flat-error-alert margin-m" *ngIf="fetchError">
-              <mat-icon class="large-icon">info</mat-icon>
-              <span class="font-weight-bold margin-left-s mat-h3 margin-remove-bottom" i18n>Unable to fetch data</span>
+            <div class="list-state is-error" role="alert" *ngIf="fetchError">
+              <mat-icon class="list-state-icon">error_outline</mat-icon>
+              <h3 class="list-state-title" i18n>Could not load {{ pageTitle }}</h3>
+              <p class="list-state-text" i18n>Check your connection and try again.</p>
+              <button type="button" class="list-state-btn" (click)="fetchContent(false)">
+                <mat-icon>refresh</mat-icon>
+                <span i18n>Try again</span>
+              </button>
             </div>
           </div>
         </div>
@@ -1054,17 +1131,20 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
     </mat-sidenav-container>
     <mat-menu #sortLang="matMenu">
       <ng-template matMenuContent>
-        <button mat-menu-item class="flex flex-between" (click)="setCurrentLanguage('')">
-          <span i18n class="flex items-center w-full"
-            >ALL
-            <mat-icon class="ml-2" *ngIf="searchLanguage === ''">check</mat-icon>
-          </span>
+        <!-- Title case with the tick in its own leading column, so the names line up. -->
+        <button mat-menu-item class="lang-option" [class.is-selected]="!searchLanguage" (click)="setCurrentLanguage('')">
+          <mat-icon class="lang-option-check">{{ !searchLanguage ? 'check' : '' }}</mat-icon>
+          <span i18n>All languages</span>
         </button>
-        <button mat-menu-item class="flex flex-between" *ngFor="let lang of allLanguages" (click)="setCurrentLanguage(lang.value)">
-          <span class="flex items-center w-full">
-            <span>{{ lang.name | uppercase }}</span>
-            <mat-icon class="ml-2" *ngIf="lang.value === searchLanguage">check</mat-icon>
-          </span>
+        <button
+          mat-menu-item
+          class="lang-option"
+          [class.is-selected]="lang.value === searchLanguage"
+          *ngFor="let lang of allLanguages"
+          (click)="setCurrentLanguage(lang.value)"
+        >
+          <mat-icon class="lang-option-check">{{ lang.value === searchLanguage ? 'check' : '' }}</mat-icon>
+          <span>{{ lang.name | titlecase }}</span>
         </button>
       </ng-template>
     </mat-menu>

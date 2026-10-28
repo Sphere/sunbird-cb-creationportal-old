@@ -14,8 +14,8 @@
 .qb-sidebar-header {
   flex-shrink: 0;
   min-width: 0;
-  background: #FFFFFF;
-  border-bottom: 1px solid #E2E8F0;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
   overflow: hidden;
 }
 
@@ -32,7 +32,7 @@
   font-family: Roboto, sans-serif;
   font-size: 11px;
   font-weight: 700;
-  color: #64748B;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   flex: 1;
@@ -47,9 +47,11 @@
   width: 28px !important;
   height: 28px !important;
   line-height: 28px !important;
-  color: #94A3B8;
+  color: #94a3b8;
 
-  ::ng-deep .mat-icon { font-size: 18px; }
+  ::ng-deep .mat-icon {
+    font-size: 18px;
+  }
 }
 
 // Type selector + add button — CSS grid ensures exact fit every time
@@ -89,13 +91,13 @@
   }
 
   --mdc-outlined-text-field-container-shape: 8px;
-  --mdc-outlined-text-field-outline-color: #CBD5E1;
-  --mdc-outlined-text-field-hover-outline-color: #1C5D95;
-  --mdc-outlined-text-field-focus-outline-color: #1C5D95;
+  --mdc-outlined-text-field-outline-color: #cbd5e1;
+  --mdc-outlined-text-field-hover-outline-color: #1c5d95;
+  --mdc-outlined-text-field-focus-outline-color: #1c5d95;
   --mdc-outlined-text-field-focus-outline-width: 2px;
   --mdc-outlined-text-field-input-text-font: Roboto, sans-serif;
   --mdc-outlined-text-field-input-text-size: 13px;
-  --mdc-outlined-text-field-input-text-color: #0F172A;
+  --mdc-outlined-text-field-input-text-color: #0f172a;
 }
 
 // Add (+) button — fixed 32×32px blue square
@@ -106,7 +108,7 @@
   max-width: 32px !important;
   padding: 0 !important;
   border-radius: 8px !important;
-  background: #1C5D95 !important;
+  background: #1c5d95 !important;
   box-shadow: none !important;
   display: flex !important;
   align-items: center !important;
@@ -115,12 +117,13 @@
   overflow: hidden !important;
   // MDC icon-button state-layer is 48px by default — shrink to match visual size
   --mdc-icon-button-state-layer-size: 32px;
+  --mat-icon-button-state-layer-size: 32px; // Material 21 name for the token above
 
   ::ng-deep .mat-icon {
     font-size: 18px !important;
     width: 18px !important;
     height: 18px !important;
-    color: #FFFFFF !important;
+    color: #ffffff !important;
     line-height: 18px !important;
   }
 
@@ -160,33 +163,45 @@
   padding: 0 !important;
   border-radius: 8px !important;
   box-shadow: none !important;
-  border: 1px solid #E2E8F0 !important;
-  background: #FFFFFF !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #ffffff !important;
   cursor: grab;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 
   &:hover {
-    border-color: #1C5D95 !important;
-    background: #F8FAFC !important;
+    border-color: #1c5d95 !important;
+    background: #f8fafc !important;
   }
 
   // Selected + valid
   &.qb-item-card--active {
-    background: #1C5D95 !important;
-    border-color: #1C5D95 !important;
+    background: #1c5d95 !important;
+    border-color: #1c5d95 !important;
 
-    .qb-item-label { color: #FFFFFF !important; }
-    .qb-item-delete-btn { color: rgba(255,255,255,0.7) !important; }
-    .qb-item-delete-btn:hover { color: #FFFFFF !important; }
+    .qb-item-label {
+      color: #ffffff !important;
+    }
+    .qb-item-delete-btn {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+    .qb-item-delete-btn:hover {
+      color: #ffffff !important;
+    }
   }
 
   // Invalid (incomplete content)
   &.qb-item-card--invalid {
-    background: #FEF2F2 !important;
-    border-color: #FECACA !important;
+    background: #fef2f2 !important;
+    border-color: #fecaca !important;
 
-    .qb-item-label { color: #B91C1C !important; }
-    .qb-item-delete-btn { color: #B91C1C !important; }
+    .qb-item-label {
+      color: #b91c1c !important;
+    }
+    .qb-item-delete-btn {
+      color: #b91c1c !important;
+    }
   }
 }
 
@@ -218,12 +233,15 @@
   height: 26px !important;
   line-height: 26px !important;
   padding: 0 !important;
-  color: #CBD5E1;
+  color: #cbd5e1;
   transition: color 0.15s;
   overflow: hidden !important;
   --mdc-icon-button-state-layer-size: 26px;
+  --mat-icon-button-state-layer-size: 26px; // Material 21 name for the token above
 
-  &:hover:not([disabled]) { color: #EF4444 !important; }
+  &:hover:not([disabled]) {
+    color: #ef4444 !important;
+  }
 
   ::ng-deep .mat-icon {
     font-size: 15px !important;
@@ -233,17 +251,22 @@
 }
 
 // Drag-and-drop helpers
-.new-display { display: flex; flex-direction: column; }
+.new-display {
+  display: flex;
+  flex-direction: column;
+}
 
 .custom-placeholder {
-  border: 2px dashed #CBD5E1;
+  border: 2px dashed #cbd5e1;
   border-radius: 8px;
   min-height: 36px;
   opacity: 0.6;
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.cdk-drag-placeholder { opacity: 0; }
+.cdk-drag-placeholder {
+  opacity: 0;
+}
 
 .cdk-drag-animating {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
@@ -262,7 +285,7 @@
 
 // Bordered dots in collapsed mode
 .bordered {
-  border: 1px solid #CBD5E1;
+  border: 1px solid #cbd5e1;
   border-radius: 6px;
 }
 
@@ -271,6 +294,6 @@
 }
 
 .invalidQues {
-  background-color: #FEF2F2 !important;
-  color: #B91C1C !important;
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
 }

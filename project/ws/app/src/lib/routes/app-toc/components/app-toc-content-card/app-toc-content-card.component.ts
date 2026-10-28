@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core'
 
-import { NsContent, viewerRouteGenerator } from '@ws-widget/collection'
+import { NsContent, isHtmlPackage, viewerRouteGenerator } from '@ws-widget/collection'
 
 import { ConfigurationsService, ResourceDownloadService, isActivationKey } from '@ws-widget/utils'
 
@@ -15,6 +15,8 @@ import { NsAppToc } from '../../models/app-toc.model'
 export class AppTocContentCardComponent implements OnInit, OnChanges {
   /** Enter/Space keyboard equivalent for (click) handlers. */
   readonly isActivationKey = isActivationKey
+  /** Tells an HTML package from SCORM: both are html-archive zips. */
+  readonly isHtmlPackage = isHtmlPackage
 
   @Input() content: NsContent.IContent | null = null
 

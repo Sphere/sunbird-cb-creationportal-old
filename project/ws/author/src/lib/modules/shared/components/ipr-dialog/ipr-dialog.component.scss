@@ -88,19 +88,26 @@
   padding: 0 24px !important;
   height: 42px !important;
 
-  --mdc-protected-button-container-color: #1c5d95;
-  --mdc-protected-button-label-text-color: #fff;
+  // Angular Material 21 renamed these tokens from --mdc-protected-button-*; the old
+  // names did nothing, so on hover Material repainted the label in its primary blue,
+  // blue on blue. The state layer is white so the hover tint lightens, not blues.
+  --mat-button-protected-container-color: #1c5d95;
+  --mat-button-protected-label-text-color: #fff;
+  --mat-button-protected-state-layer-color: #fff;
+  --mat-button-protected-ripple-color: rgba(255, 255, 255, 0.24);
   background-color: #1c5d95;
   color: #fff;
 
   &:hover {
-    --mdc-protected-button-container-color: #174b79;
+    --mat-button-protected-container-color: #174b79;
     background-color: #174b79;
+    color: #fff;
   }
 
   &:active {
-    --mdc-protected-button-container-color: #133e64;
+    --mat-button-protected-container-color: #133e64;
     background-color: #133e64;
+    color: #fff;
   }
 
   // Keyboard users need a focus ring that is visible against the button itself.
@@ -109,9 +116,10 @@
     outline-offset: 2px;
   }
 
+  // Set, not inherited: Material styles the label wrapper between the button and these.
   mat-icon,
   .agree-text {
-    color: inherit;
+    color: #fff;
   }
 }
 

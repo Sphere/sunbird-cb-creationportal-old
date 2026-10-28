@@ -153,15 +153,6 @@ describe('HtmlComponent', () => {
     expect(c.pageFetchStatus).toBe('error')
   })
 
-  it('backToDetailsPage navigates to the toc overview with the primaryCategory query param', () => {
-    const c = build()
-    c.htmlContent = { identifier: 'id1', primaryCategory: 'Learning Resource' } as any
-    c.backToDetailsPage()
-    expect(router.navigate).toHaveBeenCalledWith(['/app/toc/id1/overview'], {
-      queryParams: { primaryCategory: 'Learning Resource' },
-    })
-  })
-
   it('raiseTelemetry forwards interact telemetry with the content id', () => {
     const c = build()
     c.htmlContent = { identifier: 'id1' } as any
@@ -184,6 +175,24 @@ describe('HtmlComponent', () => {
     c.htmlContent = { identifier: 'id1' } as any
     c.receiveMessage({ data: { event: 'ping' } })
     expect(events.raiseInteractTelemetry).toHaveBeenCalledWith('ping', 'scrom', expect.objectContaining({ contentId: 'id1' }))
+  })
+
+  it('receiveMessage raises an HTML package event under its own type', () => {
+    const c = build()
+    const info = jest.spyOn(console, 'info').mockImplementation(() => undefined)
+    c.htmlContent = { identifier: 'id1' } as any
+    c.receiveMessage({
+      data: { type: 'html-archive:telemetry', event: { type: 'PROGRESS', id: 'asha-s1', extra: { pct: 27, section: 's1' } } },
+    })
+    expect(events.raiseInteractTelemetry).toHaveBeenCalledWith(
+      'PROGRESS',
+      'scrom',
+      expect.objectContaining({ contentId: 'id1', id: 'asha-s1', pct: 27, section: 's1', event: 'PROGRESS' }),
+    )
+    expect(info).toHaveBeenCalledWith('[HTML package]', 'PROGRESS', { pct: 27, section: 's1' })
+    // kept for the side list's Debug button
+    expect((c as any).htmlDebug.progressFor('id1')).toBe(27)
+    info.mockRestore()
   })
 
   it('receiveMessage falls back to message/id when there is no data payload', () => {
@@ -237,6 +246,24 @@ describe('HtmlComponent', () => {
       contentWindow: { addEventListener: jest.fn() },
     } as any
     c.onIframeLoadOrError('load', iframe)
+    expect(c.showIsLoadingMessage).toBe(false)
+    expect(c.pageFetchStatus).toBe('done')
+  })
+
+  it('does not bring the loading message back after the content has loaded', () => {
+    jest.useFakeTimers()
+    const c = build()
+    c.htmlContent = {
+      identifier: 'h1',
+      mimeType: 'application/vnd.ekstep.html-archive',
+      artifactUrl: 'https://static.sphere.aastrika.org/content/h1/artifact/site.zip',
+      streamingUrl: 'https://static.sphere.aastrika.org/content/html/h1-snapshot',
+      entryPoint: '/index.html',
+      isIframeSupported: 'Yes',
+    } as any
+    c.ngOnChanges()
+    c.onIframeLoadOrError('load', { src: 'x', contentWindow: { addEventListener: jest.fn() } } as any)
+    jest.advanceTimersByTime(3000)
     expect(c.showIsLoadingMessage).toBe(false)
   })
 

@@ -628,7 +628,7 @@ export class CertificateDialogComponent implements OnInit, OnDestroy {
     // The template with the placed fields written in, rather than the artwork as
     // it was chosen; they are the same when nothing has been placed.
     const content: Blob = this.mappedSvg ? new Blob([this.mappedSvg], { type: 'image/svg+xml' }) : (this.file as Blob)
-    formdata.append('content', content, (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''))
+    formdata.append('content', content, (this.file as File).name.replaceAll(/[^A-Za-z0-9_.]/g, ''))
 
     // One chain with a single finalize, so the loader is cleared on every exit:
     // success, a step reporting an unsuccessful status, a course with no batch,

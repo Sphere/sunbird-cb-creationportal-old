@@ -165,6 +165,21 @@ describe('CollectionStoreService (create + hierarchy)', () => {
       expect(body.ownershipType).toEqual(['createdFor'])
     })
 
+    it('sends the marker and entry point of an HTML resource on create', async () => {
+      await service.createChildOrSibling('upload', treeNode({ id: 1 }), undefined, 'below', {
+        entryPoint: '/index.html',
+        packageType: 'html',
+      })
+      expect(editorService.createAndReadContentV2.mock.calls[0][0].entryPoint).toBe('/index.html')
+      expect(editorService.createAndReadContentV2.mock.calls[0][0].packageType).toBe('html')
+    })
+
+    it('leaves the marker and entry point out for every other resource', async () => {
+      await service.createChildOrSibling('upload', treeNode({ id: 1 }), undefined, 'below', {})
+      expect('entryPoint' in editorService.createAndReadContentV2.mock.calls[0][0]).toBe(false)
+      expect('packageType' in editorService.createAndReadContentV2.mock.calls[0][0]).toBe(false)
+    })
+
     // getModuleRequest() walks this.parentData.children while assembling the
     // hierarchy payload, so the module tests need the course tree seeded.
     const seedParentData = () => {

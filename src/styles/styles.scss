@@ -930,3 +930,52 @@ a.width-auto.mat-mdc-button {
 .cert-dialog-fullscreen {
   --mat-dialog-container-shape: 0;
 }
+
+// ── Accessibility utilities (Sonar a11y sweep) ─────────────────────────────
+// Both use :where() so they carry zero specificity: any component or utility
+// style on the same element still wins, and nothing that looked one way before
+// the sweep changes because of these.
+//
+// .btn-reset: a real <button> that looks like whatever it replaced (a clickable
+// <span>/<div>/<mat-icon>). Native buttons get Enter/Space and focus for free,
+// which the old tabindex + (keydown) pairs were imitating.
+:where(.btn-reset) {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+
+// For a <div> that was a block-level click target.
+:where(.btn-reset.btn-block) {
+  display: block;
+  width: 100%;
+}
+
+:where(.btn-reset):focus-visible {
+  outline: 2px solid #1c5d95;
+  outline-offset: 2px;
+}
+
+// A label that is read by screen readers but not shown, for inputs whose
+// visible cue is a placeholder or an icon.
+// Normal specificity (not :where), so a global label rule cannot make it visible.
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

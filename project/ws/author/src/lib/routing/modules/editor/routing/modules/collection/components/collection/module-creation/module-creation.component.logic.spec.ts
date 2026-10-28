@@ -225,6 +225,49 @@ describe('ModuleCreationComponent (logic)', () => {
     })
   })
 
+  describe('previewResource', () => {
+    const html = { identifier: 'do_html', mimeType: 'application/vnd.ekstep.html-archive', contentType: 'Resource' }
+    const pdf = { identifier: 'do_pdf', mimeType: 'application/pdf', contentType: 'Resource' }
+
+    it('plays the resource that is open in the builder', () => {
+      const comp = build()
+      comp.courseData = { identifier: 'do_course', children: [pdf, html] }
+      comp.showAddModuleForm = true
+      comp.editItem = 'do_html'
+      comp.content = html
+      comp.previewResource()
+      expect(router.navigateByUrl).toHaveBeenCalledWith('/author/viewer/html/do_html?collectionId=do_course&collectionType=Course')
+    })
+
+    it('plays the first resource, searching inside modules, when none is open', () => {
+      const comp = build()
+      comp.courseData = {
+        identifier: 'do_course',
+        children: [{ identifier: 'do_mod', contentType: 'CourseUnit', children: [pdf] }, html],
+      }
+      comp.showAddModuleForm = false
+      comp.previewResource()
+      expect(router.navigateByUrl).toHaveBeenCalledWith('/author/viewer/pdf/do_pdf?collectionId=do_course&collectionType=Course')
+    })
+
+    it('uses the first resource when a module, not a resource, is open', () => {
+      const comp = build()
+      comp.courseData = { identifier: 'do_course', children: [html] }
+      comp.showAddModuleForm = true
+      comp.editItem = 'do_mod'
+      comp.content = { identifier: 'do_mod', mimeType: 'application/vnd.ekstep.content-collection', contentType: 'CourseUnit' }
+      comp.previewResource()
+      expect(router.navigateByUrl).toHaveBeenCalledWith('/author/viewer/html/do_html?collectionId=do_course&collectionType=Course')
+    })
+
+    it('opens the course contents page when the course has no resources yet', () => {
+      const comp = build()
+      comp.courseData = { identifier: 'do_course', children: [{ identifier: 'do_mod', contentType: 'CourseUnit', children: [] }] }
+      comp.previewResource()
+      expect(router.navigateByUrl).toHaveBeenCalledWith('/author/toc/do_course/contents')
+    })
+  })
+
   describe('courseData setter', () => {
     it('emits validityChange true once the course has 2+ resources', () => {
       const comp = build()
@@ -1040,10 +1083,12 @@ describe('ModuleCreationComponent (logic)', () => {
       expect(comp.dragEle3).toBe('three')
     })
 
-    it('generateStreamUrl builds a snapshot url for the active content', () => {
+    it('generateStreamUrl builds the snapshot folder for the active content', () => {
       const comp = build()
       comp.currentContent = 'c9'
-      expect(comp.generateStreamUrl('index.html')).toContain('/c9-snapshot/index.html')
+      expect(comp.generateStreamUrl('https://b.example.com/content/c9/artifact/p.zip')).toBe(
+        'https://b.example.com/content/html/c9-snapshot',
+      )
     })
 
     it('errorMessage raises the upload-failure notification', () => {
@@ -1411,11 +1456,44 @@ describe('ModuleCreationComponent (logic)', () => {
       expect(comp.fileList).toEqual(['index.html', 'assets/app.js'])
       expect(comp.errorFileList).toEqual([])
       expect(spy).toHaveBeenCalled()
+      expect(loader.changeLoad.next).toHaveBeenCalledWith(true)
+      delete (global as any).zip
+    })
+
+    it('stops the loader and asks again when the file is not a readable zip', () => {
+      ;(global as any).zip = {
+        useWebWorkers: true,
+        BlobReader: function BlobReader(this: any) {
+          /* stub */
+        },
+        createReader: (_reader: any, _ok: any, fail: any) => fail(new Error('bad zip')),
+      }
+      const comp = build()
+      const spy = jest.spyOn(comp, 'processAndShowResult').mockImplementation(() => undefined)
+      comp.file = new File(['x'], 'a.zip')
+      comp.uploadFileName = 'a.zip'
+
+      comp.extractFile()
+
+      expect(spy).not.toHaveBeenCalled()
+      expect(comp.file).toBeNull()
+      expect(comp.uploadFileName).toBe('')
+      expect(loader.changeLoad.next).toHaveBeenLastCalledWith(false)
+      expect(snackBar.open).toHaveBeenCalledWith(expect.stringContaining('could not be read as a zip'), 'OK', expect.anything())
       delete (global as any).zip
     })
   })
 
   describe('processAndShowResult', () => {
+    it('stops the reading loader before showing any result', () => {
+      const comp = build()
+      comp.errorFileList = []
+      comp.fileList = []
+      comp.file = new File(['x'], 'a.zip')
+      comp.processAndShowResult()
+      expect(loader.changeLoad.next).toHaveBeenCalledWith(false)
+    })
+
     it('opens the error dialog when there are bad file names', () => {
       jest.useFakeTimers()
       const comp = build()
@@ -1433,6 +1511,7 @@ describe('ModuleCreationComponent (logic)', () => {
       const comp = build()
       const trigger = jest.spyOn(comp, 'triggerUpload').mockResolvedValue(undefined as any)
       comp.errorFileList = []
+      comp.fileList = ['index.html']
       comp.selectedEntryFile = true
       comp.fileUploaded = { name: 'my app!.zip' }
       comp.fileUploadCondition = {
@@ -1451,11 +1530,51 @@ describe('ModuleCreationComponent (logic)', () => {
       expect(trigger).toHaveBeenCalled()
     })
 
+    it('uploads an HTML package straight away with index.html as its entry point', () => {
+      const comp = build()
+      const trigger = jest.spyOn(comp, 'triggerUpload').mockResolvedValue(undefined as any)
+      comp.zipPackageType = 'html'
+      comp.errorFileList = []
+      comp.fileList = ['index.html', 'css/', 'css/site.css']
+      comp.file = new File(['x'], 'my site.zip')
+
+      comp.processAndShowResult()
+
+      expect(dialog.open).not.toHaveBeenCalled()
+      expect(comp.entryPoint).toBe('/index.html')
+      expect(comp.fileUploadCondition.url).toBe('index.html')
+      expect(comp.selectedEntryFile).toBe(true)
+      expect(comp.uploadFileName).toBe('mysite.zip')
+      expect(trigger).toHaveBeenCalled()
+    })
+
+    it.each([
+      ['scorm', ['index_lms.html', 'imsmanifest.xml'], 'top level'],
+      ['html', ['site/', 'site/index.html'], 'inside the folder "site"'],
+    ])('stops a %s zip without a root index.html before upload', (type, files, message) => {
+      const comp = build()
+      const trigger = jest.spyOn(comp, 'triggerUpload').mockResolvedValue(undefined as any)
+      comp.zipPackageType = type as 'scorm' | 'html'
+      comp.errorFileList = []
+      comp.fileList = files
+      comp.file = new File(['x'], 'p.zip')
+      comp.uploadFileName = 'p.zip'
+
+      comp.processAndShowResult()
+
+      expect(comp.file).toBeNull()
+      expect(comp.uploadFileName).toBe('')
+      expect(snackBar.open).toHaveBeenCalledWith(expect.stringContaining(message), 'OK', expect.anything())
+      expect(dialog.open).not.toHaveBeenCalled()
+      expect(trigger).not.toHaveBeenCalled()
+    })
+
     it('does not upload when a condition is unmet', () => {
       dialog.open.mockReturnValue({ afterClosed: () => of(true) })
       const comp = build()
       const trigger = jest.spyOn(comp, 'triggerUpload').mockResolvedValue(undefined as any)
       comp.errorFileList = []
+      comp.fileList = ['index.html']
       comp.selectedEntryFile = false
       comp.processAndShowResult()
       expect(trigger).not.toHaveBeenCalled()

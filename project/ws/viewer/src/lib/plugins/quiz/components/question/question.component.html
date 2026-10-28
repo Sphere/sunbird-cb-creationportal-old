@@ -42,7 +42,9 @@
         (keydown)="isActivationKey($event) && itemSelected.emit(option.optionId)"
         [attr.tabindex]="0"
       >
+        <label class="sr-only" [for]="'quiz-mca-option-' + question?.questionId + '-' + option?.optionId">{{ option?.text }}</label>
         <input
+          [id]="'quiz-mca-option-' + question?.questionId + '-' + option?.optionId"
           type="checkbox"
           class="option-check"
           [checked]="isSelected(option)"

@@ -86,6 +86,24 @@ describe('EditorService', () => {
         const body = http.post.mock.calls[0][1]
         expect(body.request.content.isExternal).toBe(true)
         expect(body.request.content.createdBy).toBe('user-1')
+        expect('entryPoint' in body.request.content).toBe(false)
+        done()
+      })
+    })
+
+    it('sends the start page of an HTML package resource', done => {
+      http.post.mockReturnValue(of({ result: { identifier: 'html-id' } }))
+      const meta = {
+        contentType: 'Resource',
+        mimeType: 'application/vnd.ekstep.html-archive',
+        name: 'R',
+        primaryCategory: 'Learning Resource',
+        entryPoint: '/index.html',
+        packageType: 'html',
+      } as any
+      svc.createV2(meta).subscribe(() => {
+        expect(http.post.mock.calls[0][1].request.content.entryPoint).toBe('/index.html')
+        expect(http.post.mock.calls[0][1].request.content.packageType).toBe('html')
         done()
       })
     })

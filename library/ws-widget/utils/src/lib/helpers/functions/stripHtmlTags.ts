@@ -23,5 +23,5 @@ export function stripHtmlTags(value: string | undefined | null): string {
   if (value === undefined || value === null) {
     return ''
   }
-  return String(value).replace(/<[^>]*>/g, '')
+  return String(value).replaceAll(/<[^>]*>/g, '')
 }

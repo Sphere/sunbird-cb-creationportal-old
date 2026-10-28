@@ -1,14 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core'
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild } from '@angular/core'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { NsWidgetResolver, WidgetBaseComponent } from '@ws-widget/resolver'
@@ -29,15 +19,19 @@ import { IPickerContentData, ISearchConfig } from './picker-content.model'
 
 import { PickerContentService } from './picker-content.service'
 
-
 @Component({
   standalone: false,
   selector: 'ws-widget-picker-content[widgetData]',
   templateUrl: './picker-content.component.html',
   styleUrls: ['./picker-content.component.scss'],
 })
-export class PickerContentComponent extends WidgetBaseComponent
-  implements OnInit, OnChanges, OnDestroy, NsWidgetResolver.IWidgetData<IPickerContentData> {
+export class PickerContentComponent
+  extends WidgetBaseComponent
+  implements OnInit, OnChanges, OnDestroy, NsWidgetResolver.IWidgetData<IPickerContentData>
+{
+  private static nextId = 0
+  /** Unique per instance, so two pickers on one page never share an input id. */
+  readonly searchInputId = `picker-content-search-${PickerContentComponent.nextId++}`
   allowContentTypes = ['Resource', 'Course', 'Learning Path', 'Module']
   @ViewChild('removeSubset', { static: true })
   errorRemoveSubsetMessage!: ElementRef<any>
@@ -132,10 +126,7 @@ export class PickerContentComponent extends WidgetBaseComponent
           return this.searchServSvc.searchV6Wrapper({
             query,
             locale: [this.language || 'en'],
-            filters:
-              this.customSearchFilters ?
-                this.customSearchFilters :
-                { contentType: this.selectedContentTypes },
+            filters: this.customSearchFilters ? this.customSearchFilters : { contentType: this.selectedContentTypes },
             isStandAlone: applyIsStandAlone ? applyIsStandAlone : undefined,
             didYouMean: false,
           })
@@ -155,14 +146,10 @@ export class PickerContentComponent extends WidgetBaseComponent
           })
           const availableFilters = this.widgetData.availableFilters || ['contentType']
           if (!this.displayFilters && availableFilters) {
-            this.displayFilters = search.filters.filter(filter =>
-              availableFilters.includes(filter.type),
-            )
+            this.displayFilters = search.filters.filter(filter => availableFilters.includes(filter.type))
             const contentTypes = this.displayFilters.find(filter => filter.type === 'contentType')
             if (contentTypes) {
-              contentTypes.content = contentTypes.content.filter(type =>
-                this.allowContentTypes.includes(type.type || ''),
-              )
+              contentTypes.content = contentTypes.content.filter(type => this.allowContentTypes.includes(type.type || ''))
             }
           }
           return
@@ -179,19 +166,17 @@ export class PickerContentComponent extends WidgetBaseComponent
       if (this.selectionType === 'checkbox') {
         this.selectedContentIds.add(identifier)
         if (this.removeSubset) {
-          this.pickerContentSvc
-            .removeSubset(Array.from(this.selectedContentIds))
-            .subscribe(response => {
-              if (response.goal_message && response.goal_message.length) {
-                this.change.emit({
-                  checked: false,
-                  content: contentMeta ? contentMeta : { identifier },
-                })
-                this.snackBar.open(response.goal_message[0], 'X')
-              }
-              this.suggestedDurationChange.emit(response.suggested_time)
-              this.selectedContentIds = new Set(response.resource_list)
-            })
+          this.pickerContentSvc.removeSubset(Array.from(this.selectedContentIds)).subscribe(response => {
+            if (response.goal_message && response.goal_message.length) {
+              this.change.emit({
+                checked: false,
+                content: contentMeta ? contentMeta : { identifier },
+              })
+              this.snackBar.open(response.goal_message[0], 'X')
+            }
+            this.suggestedDurationChange.emit(response.suggested_time)
+            this.selectedContentIds = new Set(response.resource_list)
+          })
         }
       } else {
         this.selectedContentIds = new Set([identifier])
@@ -209,9 +194,7 @@ export class PickerContentComponent extends WidgetBaseComponent
     if (checked) {
       this.selectedContentTypes.push(item)
     } else {
-      this.selectedContentTypes = this.selectedContentTypes.filter(
-        contentType => contentType !== item,
-      )
+      this.selectedContentTypes = this.selectedContentTypes.filter(contentType => contentType !== item)
     }
     this.debounceSubject.next(false)
   }
