@@ -418,7 +418,17 @@ export class EditorService {
    * -- callers hold this metadata in component state as arrays and still need it
    * that way -- for the same reason as withCategoryAsArray.
    */
-  private static readonly JSON_STRING_FIELDS = ['reviewer', 'creatorContacts', 'creatorDetails', 'publisherDetails', 'competencies_v1']
+  // videoQuestions: compositesearch maps it as text (legacy stored a JSON string). Sent as an
+  // array of objects, the indexer's PUT failed with mapper_parsing_exception and cancelled the
+  // whole Flink job on every restart, so nothing after a video save was indexed.
+  private static readonly JSON_STRING_FIELDS = [
+    'reviewer',
+    'creatorContacts',
+    'creatorDetails',
+    'publisherDetails',
+    'competencies_v1',
+    'videoQuestions',
+  ]
 
   private withContactFieldsAsStrings(payload: any): any {
     const content = payload?.request?.content

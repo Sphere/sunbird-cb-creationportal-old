@@ -8,7 +8,7 @@ jest.mock('video.js', () => ({
 }))
 
 // tslint:disable-next-line: no-import-side-effect
-import { videojsEventNames, videoJsInitializer, videoInitializer, youtubeInitializer } from './videojs-util'
+import { convertData, videojsEventNames, videoJsInitializer, videoInitializer, youtubeInitializer } from './videojs-util'
 
 describe('videojs-util', () => {
   let dispatcher: jest.Mock
@@ -340,7 +340,25 @@ describe('videojs-util', () => {
             ],
           }),
         )
-        expect(player.markers.mock.calls[0][0].markerTip.text()).toBe('Quiz')
+        const tip = player.markers.mock.calls[0][0].markerTip.text
+        expect(tip({ time: 10, text: 'Q1' })).toBe('0:10 · Q1')
+        expect(tip({ time: 3725, text: 'Q2' })).toBe('1:02:05 · Q2')
+      })
+
+      it('marks each point once, notes extra questions and skips empty or broken entries', () => {
+        expect(
+          convertData([
+            { timestampInSeconds: '15', question: [{ text: 'A' }, { text: 'B' }, { text: 'C' }] },
+            { timestampInSeconds: 30, question: [] },
+            { timestampInSeconds: 'x', question: [{ text: 'D' }] },
+            { timestampInSeconds: 40, question: [{}] },
+          ]),
+        ).toEqual([
+          { time: 15, text: 'A (+2 more)' },
+          { time: 40, text: 'Question' },
+        ])
+        expect(convertData('[]')).toEqual([])
+        expect(convertData(undefined)).toEqual([])
       })
 
       it('warns when the markers plugin is missing', () => {

@@ -25,10 +25,9 @@ import { WidgetContentService } from '../_services/widget-content.service'
 import { ViewerDataService } from 'project/ws/viewer/src/lib/viewer-data.service'
 
 import { PlayerVideoPopupComponent } from '../player-video-popup/player-video-popup-component'
+import { VideoQuestionsReviewDialogComponent } from './video-questions-review-dialog.component'
 
 import { MatDialog } from '@angular/material/dialog'
-
-import { interval, Subscription } from 'rxjs'
 
 import 'videojs-markers'
 
@@ -114,7 +113,9 @@ export class PlayerVideoComponent
     volumechange: 'volumechange',
     loadeddata: 'loadeddata',
   }
-  videoStates: { [videoId: string]: { popupTriggered: any; currentMilestone: any } } = {}
+  videoStates: {
+    [videoId: string]: { popupTriggered: Set<number>; currentMilestone: number | null; lastTime: number; popupOpen: boolean }
+  } = {}
 
   constructor(
     private eventSvc: EventService,
@@ -169,70 +170,146 @@ export class PlayerVideoComponent
   }
 
   addTimeUpdateListener(videoElement: HTMLVideoElement): void {
+    const videoId = videoElement.id
+    if (this.videoStates[videoId]) {
+      return // Already listening; a second registration would fire every question twice.
+    }
     const player = videoJs(videoElement, {
       ...videoJsOptions,
       poster: this.widgetData.posterImage,
       autoplay: this.widgetData.autoplay || false,
     })
 
-    const videoId = videoElement.id
-    this.videoStates[videoId] = {
-      popupTriggered: new Set<number>(), // Track triggered milestones
-      currentMilestone: null,
-    }
-
-    // Handle play event
-    player.on(this.videojsEventNames.play, () => {
-      const intervalId = interval(500).subscribe(() => {
-        const currentTimeInSeconds = Math.round(player.currentTime())
-        if (this.widgetData.videoQuestions && this.widgetData.videoQuestions.length > 0) {
-          for (const milestone of this.widgetData.videoQuestions) {
-            console.log('currentTimeInSeconds', currentTimeInSeconds, milestone.timestampInSeconds)
-            // Check if popup has already been triggered for this milestone
-            if (
-              currentTimeInSeconds === milestone.timestampInSeconds &&
-              !this.videoStates[videoId].popupTriggered.has(milestone.timestampInSeconds)
-            ) {
-              player.pause()
-              console.log('Popup triggered for milestone:', milestone.timestampInSeconds)
-              this.videoStates[videoId].popupTriggered.add(milestone.timestampInSeconds)
-              this.videoStates[videoId].currentMilestone = milestone.timestampInSeconds
-              this.openPopup(milestone.question, player, intervalId)
-              return // Exit loop after triggering popup
-            }
-          }
-        }
-      })
+    this.questionPlayer = player
+    this.questionVideoId = videoId
+    const state = (this.videoStates[videoId] = {
+      popupTriggered: new Set<number>(), // Milestones already shown in this pass
+      currentMilestone: null as number | null,
+      lastTime: 0,
+      popupOpen: false as boolean,
     })
 
-    // Handle timeupdate for user seeking
+    // A question fires when playback CROSSES its timestamp (previous tick < t <= this tick).
+    // The old check polled every 500ms for an exact rounded second, so at 2x/3x speed the
+    // poll often stepped over it; each play also started an interval that was never stopped.
     player.on('timeupdate', () => {
-      const currentTimeInSeconds = Math.round(player.currentTime())
-      if (this.widgetData.videoQuestions) {
-        for (const milestone of this.widgetData.videoQuestions) {
-          // Reset popupTriggered if user seeks before the milestone
-          if (currentTimeInSeconds < milestone.timestampInSeconds) {
-            this.videoStates[videoId].popupTriggered.delete(milestone.timestampInSeconds)
-          }
+      const now = player.currentTime()
+      const previous = state.lastTime
+      state.lastTime = now
+      const milestones = this.widgetData.videoQuestions
+      if (!Array.isArray(milestones) || milestones.length === 0) {
+        return
+      }
+      for (const milestone of milestones) {
+        // Seeking back before a question shows it again on the next pass.
+        if (now < Number(milestone.timestampInSeconds)) {
+          state.popupTriggered.delete(Number(milestone.timestampInSeconds))
         }
+      }
+      // A jump of more than a few seconds is a seek, not playback: don't fire on it.
+      const isPlayback = now >= previous && now - previous <= PlayerVideoComponent.MAX_PLAYBACK_STEP
+      if (state.popupOpen || !isPlayback) {
+        return
+      }
+      const due = milestones.find(milestone => {
+        const at = Number(milestone.timestampInSeconds)
+        return at > previous && at <= now && !state.popupTriggered.has(at) && this.hasQuestions(milestone)
+      })
+      if (due) {
+        const at = Number(due.timestampInSeconds)
+        player.pause()
+        state.popupTriggered.add(at)
+        state.currentMilestone = at
+        state.popupOpen = true
+        this.openPopup(due.question, player, videoId)
       }
     })
   }
 
-  openPopup(questions: any, videoElement: any, intervalId: Subscription): void {
+  /** Largest gap between two timeupdate ticks that still counts as playback (3x speed ~1s). */
+  private static readonly MAX_PLAYBACK_STEP = 3
+
+  private hasQuestions(milestone: any): boolean {
+    return Array.isArray(milestone && milestone.question) && milestone.question.length > 0
+  }
+
+  /** The player the question listener is attached to, used by Jump to. */
+  private questionPlayer: any = null
+  private questionVideoId: string | null = null
+
+  /** Milestones that actually hold questions; drives the reviewer button. */
+  get questionMilestones(): any[] {
+    const all = this.widgetData && this.widgetData.videoQuestions
+    return Array.isArray(all) ? all.filter(m => this.hasQuestions(m)) : []
+  }
+
+  get questionCount(): number {
+    return this.questionMilestones.reduce((n, m) => n + m.question.length, 0)
+  }
+
+  /** Lets creators, reviewers and publishers see every question, its answer and hints. */
+  openQuestionsReview(): void {
+    if (this.questionPlayer) {
+      this.questionPlayer.pause()
+    }
+    const ref = this.dialog.open(VideoQuestionsReviewDialogComponent, {
+      width: '720px',
+      maxWidth: 'calc(100vw - 32px)',
+      autoFocus: 'first-tabbable',
+      ariaLabelledBy: 'vqr-title',
+      data: { milestones: this.questionMilestones },
+    })
+    if (ref) {
+      ref.afterClosed().subscribe(result => {
+        if (result && typeof result.jumpTo === 'number') {
+          this.jumpToQuestion(result.jumpTo)
+        }
+      })
+    }
+  }
+
+  /**
+   * Seeks a couple of seconds before a question and plays, so the reviewer sees the popup
+   * fire exactly as a learner would.
+   */
+  jumpToQuestion(seconds: number): void {
+    const player = this.questionPlayer
+    if (!player) {
+      return
+    }
+    const target = Math.max(0, seconds - PlayerVideoComponent.JUMP_LEAD_IN)
+    const state = this.questionVideoId ? this.videoStates[this.questionVideoId] : undefined
+    if (state) {
+      state.popupTriggered.forEach(at => at >= target && state.popupTriggered.delete(at))
+      state.lastTime = target
+      state.popupOpen = false
+    }
+    player.currentTime(target)
+    player.play()
+  }
+
+  private static readonly JUMP_LEAD_IN = 2
+
+  openPopup(questions: any, player: any, videoId?: string): void {
     const confirmdialog = this.dialog.open(PlayerVideoPopupComponent, {
-      width: '600px',
+      width: '640px',
+      maxWidth: 'calc(100vw - 32px)',
+      autoFocus: 'first-tabbable',
+      panelClass: 'video-question-dialog',
+      ariaLabelledBy: 'vq-title',
       data: { questions },
     })
 
+    const resume = () => {
+      if (videoId && this.videoStates[videoId]) {
+        this.videoStates[videoId].popupOpen = false
+      }
+      player.play()
+    }
     if (confirmdialog) {
-      confirmdialog.afterClosed().subscribe(() => {
-        console.log('Popup closed')
-        this.dialog.closeAll()
-        videoElement.play()
-        intervalId.unsubscribe() // Stop the current interval
-        this.addTimeUpdateListener(videoElement) // Resume the listener if needed
-      })
+      confirmdialog.afterClosed().subscribe(resume)
+    } else {
+      resume()
     }
   }
 

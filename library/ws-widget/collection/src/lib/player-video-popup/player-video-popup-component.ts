@@ -52,27 +52,33 @@ export class PlayerVideoPopupComponent implements OnInit {
     return this.questions[this.currentIndex]
   }
   onOptionSelected(option: any): void {
-    console.log('option', option)
     this.selectedOption = option
-    if (option.isCorrect) {
-      this.resultMessage = 'Correct'
-    } else {
-      this.resultMessage = 'Wrong'
-    }
+    this.answers[this.currentIndex] = option
+    this.resultMessage = option.isCorrect ? 'Correct' : 'Wrong'
   }
   moveToPrevious(): void {
     this.showAnswerInfo = false
 
     if (this.currentIndex > 0) {
       this.currentIndex--
+      this.restoreSelection()
     }
   }
 
   moveToNext(): void {
     this.showAnswerInfo = false
+    this.showReset = false
     if (this.currentIndex < this.questions.length - 1) {
       this.currentIndex++
+      this.restoreSelection()
     }
+  }
+
+  /** Each question keeps its own choice; a fresh question starts unselected. */
+  private restoreSelection(): void {
+    const answer = this.answers[this.currentIndex]
+    this.selectedOption = answer ?? null
+    this.resultMessage = answer ? (answer.isCorrect ? 'Correct' : 'Wrong') : null
   }
 
   submitQuiz(): void {
@@ -84,11 +90,14 @@ export class PlayerVideoPopupComponent implements OnInit {
         this.showReset = true
       }
     }
-    console.log('Submitted answers:', this.resultMessage, this.answers)
   }
+  /** Retry: clear the wrong choice so the learner picks again. */
   reset() {
     this.showReset = false
     this.showAnswerInfo = false
+    this.selectedOption = null
+    this.resultMessage = null
+    this.answers[this.currentIndex] = null
   }
   continue(): void {
     this.dialogRef.close({ event: 'submit', answers: this.answers })
@@ -96,7 +105,6 @@ export class PlayerVideoPopupComponent implements OnInit {
   sendAction(value: string): void {
     this.showAnswerInfo = false
     this.dialogRef.close({ event: value })
-    console.log('value', value)
   }
   closePopup() {
     this.dialogRef.close('skip')

@@ -1,6 +1,5 @@
 import videoJs from 'video.js'
 
-
 import { Subscription, interval, fromEvent } from 'rxjs'
 
 import { WsEvents } from '@ws-widget/utils'
@@ -10,7 +9,6 @@ import { ROOT_WIDGET_CONFIG } from '../collection.config'
 import { IWidgetsPlayerMediaData } from '../_models/player-media.model'
 
 import { NsContent } from './widget-content.model'
-
 
 export const videojsEventNames = {
   disposing: 'disposing',
@@ -116,11 +114,7 @@ function eventDispatchHelper(
   }
 }
 
-function generateEventDispatcherHelper(
-  passThroughData: any,
-  dispatcher: any,
-  widgetSubType: string,
-) {
+function generateEventDispatcherHelper(passThroughData: any, dispatcher: any, widgetSubType: string) {
   // let activityStartedAt: Date | null = null
   return (
     eventType: WsEvents.EnumTelemetrySubType,
@@ -131,22 +125,10 @@ function generateEventDispatcherHelper(
     // if (eventType === WsEvents.EnumTelemetrySubType.Loaded) {
     //   activityStartedAt = new Date()
     // }
-    eventDispatchHelper(
-      passThroughData,
-      dispatcher,
-      eventType,
-      widgetData,
-      widgetSubType,
-      playerState,
-      mimeType,
-    )
+    eventDispatchHelper(passThroughData, dispatcher, eventType, widgetData, widgetSubType, playerState, mimeType)
   }
 }
-function saveContinueLearning(
-  widgetData: IWidgetsPlayerMediaData,
-  saveCLearning: saveContinueLearningFunction,
-  currentTime: any,
-) {
+function saveContinueLearning(widgetData: IWidgetsPlayerMediaData, saveCLearning: saveContinueLearningFunction, currentTime: any) {
   const data = {
     resourceId: widgetData.identifier,
     dateAccessed: Date.now(),
@@ -195,11 +177,7 @@ export function videoJsInitializer(
 
   marker(widgetData, player)
 
-
-
-  const eventDispatcher = enableTelemetry
-    ? generateEventDispatcherHelper(passThroughData, dispatcher, widgetSubType)
-    : () => undefined
+  const eventDispatcher = enableTelemetry ? generateEventDispatcherHelper(passThroughData, dispatcher, widgetSubType) : () => undefined
   let heartBeatSubscription: Subscription
   let currentTimeInterval: Subscription
   let loaded = false
@@ -212,9 +190,8 @@ export function videoJsInitializer(
           const start = Number(resumePoint)
           // if (start > 10 && player.duration() - start > 20) {
           player.currentTime(start)
-
         }
-      } catch (err) { }
+      } catch (err) {}
     })
     player.on(videojsEventNames.ended, () => {
       if (loaded) {
@@ -240,8 +217,6 @@ export function videoJsInitializer(
           fireRealTimeProgress(mimeType, widgetData, fireRProgress, player.currentTime(), player.duration())
         }
       })
-
-
     })
     player.on(videojsEventNames.pause, () => {
       if (loaded) {
@@ -286,9 +261,7 @@ export function videoInitializer(
   player.muted(false) // Ensure video is not muted
 
   marker(widgetData, player)
-  const eventDispatcher = enableTelemetry
-    ? generateEventDispatcherHelper(passThroughData, dispatcher, widgetSubType)
-    : () => undefined
+  const eventDispatcher = enableTelemetry ? generateEventDispatcherHelper(passThroughData, dispatcher, widgetSubType) : () => undefined
   let heartBeatSubscription: Subscription
   let currentTimeInterval: Subscription
   let playSubscription: Subscription
@@ -307,11 +280,10 @@ export function videoInitializer(
         loaded = true
       }
       currentTimeInterval = interval(500).subscribe(_ => {
-        if (elem.currentTime >= elem.duration * 5 / 100 && elem.currentTime < elem.duration * 95 / 100
-          && !readyToRaise) {
+        if (elem.currentTime >= (elem.duration * 5) / 100 && elem.currentTime < (elem.duration * 95) / 100 && !readyToRaise) {
           readyToRaise = true
         }
-        if (elem.currentTime >= elem.duration * 95 / 100 && readyToRaise) {
+        if (elem.currentTime >= (elem.duration * 95) / 100 && readyToRaise) {
           fireRealTimeProgress(mimeType, widgetData, fireRProgress, elem.currentTime, elem.duration)
           readyToRaise = false
         }
@@ -392,9 +364,7 @@ export function youtubeInitializer(
       },
     },
   })
-  const eventDispatcher = enableTelemetry
-    ? generateEventDispatcherHelper(passThroughData, dispatcher, widgetSubType)
-    : () => undefined
+  const eventDispatcher = enableTelemetry ? generateEventDispatcherHelper(passThroughData, dispatcher, widgetSubType) : () => undefined
   let heartBeatSubscription: Subscription
   let currentTimeInterval: Subscription
   let loaded = false
@@ -411,11 +381,14 @@ export function youtubeInitializer(
           loaded = true
         }
         currentTimeInterval = interval(500).subscribe(_ => {
-          if (player.getCurrentTime() >= player.getDuration() * 5 / 100 && player.getCurrentTime() < player.getDuration() * 95 / 100
-            && !readyToRaise) {
+          if (
+            player.getCurrentTime() >= (player.getDuration() * 5) / 100 &&
+            player.getCurrentTime() < (player.getDuration() * 95) / 100 &&
+            !readyToRaise
+          ) {
             readyToRaise = true
           }
-          if (player.getCurrentTime() >= player.getDuration() * 95 / 100 && readyToRaise) {
+          if (player.getCurrentTime() >= (player.getDuration() * 95) / 100 && readyToRaise) {
             fireRealTimeProgress(mimeType, widgetData, fireRProgress, player.getCurrentTime(), player.getDuration())
             readyToRaise = false
           }
@@ -459,35 +432,48 @@ export function youtubeInitializer(
   return { dispose }
 }
 function marker(widgetData: any, player: any) {
-  console.log("yes ere quiz")
-  if (widgetData.videoQuestions) {
-    console.log("yes", widgetData.videoQuestions)
-    let markers = convertData(widgetData.videoQuestions)
-    if (player.markers) {
-      console.log("markers", markers)
-      player.markers({
-        markerStyle: {
-          width: '8px',
-          'background-color': 'yellow',
-        },
-        markerTip: {
-          display: true,
-          text: function () {
-            return "Quiz"
-          }
-        },
-        markers: markers,
-      })
-    } else {
-      console.error('Markers plugin is not loaded.')
-    }
+  const markers = convertData(widgetData.videoQuestions)
+  if (markers.length === 0) {
+    return
+  }
+  if (player.markers) {
+    player.markers({
+      markerStyle: {
+        width: '6px',
+        'border-radius': '3px',
+        'background-color': '#f5b301',
+      },
+      markerTip: {
+        display: true,
+        // Reviewers hover a marker to see when and what is asked.
+        text: (m: { time: number; text: string }) => `${formatMarkerTime(m.time)} · ${m.text}`,
+      },
+      markers,
+    })
+  } else {
+    console.error('Markers plugin is not loaded.')
   }
 }
-function convertData(data: any[]): { time: number, text: string }[] {
-  return data.map(item => {
-    return {
-      time: item.timestampInSeconds,
-      text: item.question[0].text
-    }
-  })
+/** One timeline marker per question point; points with no questions are skipped. */
+export function convertData(data: unknown): { time: number; text: string }[] {
+  if (!Array.isArray(data)) {
+    return []
+  }
+  return data
+    .filter(item => item && Array.isArray(item.question) && item.question.length > 0 && !isNaN(Number(item.timestampInSeconds)))
+    .map(item => {
+      const count = item.question.length
+      const first = (item.question[0] && item.question[0].text) || 'Question'
+      return {
+        time: Number(item.timestampInSeconds),
+        text: count > 1 ? `${first} (+${count - 1} more)` : first,
+      }
+    })
+}
+function formatMarkerTime(totalSeconds: number): string {
+  const s = Math.max(0, Math.floor(totalSeconds))
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  const sec = String(s % 60).padStart(2, '0')
+  return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${sec}` : `${m}:${sec}`
 }

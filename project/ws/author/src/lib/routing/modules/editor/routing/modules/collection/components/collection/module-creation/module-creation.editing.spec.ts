@@ -461,9 +461,10 @@ describe('ModuleCreationComponent (resource authoring)', () => {
       expect(component.setContentType).toHaveBeenCalledWith('zip', 'zip')
     })
 
-    it('offers HTML next to SCORM in the learning formats', () => {
+    it('does not offer the HTML learning format (not approved for production)', () => {
       const names = component.contentList.map((c: any) => c.name)
-      expect(names.indexOf('HTML')).toBe(names.indexOf('SCORM v1.1/1.2') + 1)
+      expect(names).not.toContain('HTML')
+      expect(names).toEqual(['Link', 'PDF', 'Audio', 'Video', 'SCORM v1.1/1.2'])
     })
 
     it('configures an assessment', () => {

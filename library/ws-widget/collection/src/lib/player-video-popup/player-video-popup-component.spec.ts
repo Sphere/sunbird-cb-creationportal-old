@@ -140,6 +140,39 @@ describe('PlayerVideoPopupComponent', () => {
     })
   })
 
+  describe('per-question state', () => {
+    it('records the chosen option as the answer for the current question', () => {
+      component.onOptionSelected(questions[0].options[1])
+      expect(component.answers).toEqual([questions[0].options[1], null])
+    })
+
+    it('Retry clears the wrong choice so the learner picks again', () => {
+      component.onOptionSelected(questions[0].options[1])
+      component.submitQuiz()
+      component.reset()
+      expect(component.selectedOption).toBeNull()
+      expect(component.resultMessage).toBeNull()
+      expect(component.answers[0]).toBeNull()
+    })
+
+    it('Next starts the following question unselected and without Retry', () => {
+      component.onOptionSelected(questions[0].options[1])
+      component.showReset = true
+      component.moveToNext()
+      expect(component.selectedOption).toBeNull()
+      expect(component.resultMessage).toBeNull()
+      expect(component.showReset).toBe(false)
+    })
+
+    it('going back restores that question’s earlier choice', () => {
+      component.onOptionSelected(questions[0].options[0])
+      component.moveToNext()
+      component.moveToPrevious()
+      expect(component.selectedOption).toBe(questions[0].options[0])
+      expect(component.resultMessage).toBe('Correct')
+    })
+  })
+
   describe('continue', () => {
     it('closes the dialog with submit event and answers', () => {
       component.continue()
