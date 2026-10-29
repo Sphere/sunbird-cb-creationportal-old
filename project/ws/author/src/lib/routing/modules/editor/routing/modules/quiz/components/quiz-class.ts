@@ -52,6 +52,11 @@ export class Option {
     this.text = init.text || ''
     this.optionId = init.optionId || ''
     this.isCorrect = init.isCorrect
+    // Keep the saved hint. Dropping it here left the Hint editor empty and, because the
+    // editor writes its form back over the stored options, erased hints on the next edit.
+    if (init.hint) {
+      this.hint = init.hint
+    }
   }
 }
 
