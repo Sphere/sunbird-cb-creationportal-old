@@ -57,6 +57,7 @@ import {
   snapshotFolderUrl,
   zipPackageMessage,
 } from '@ws/author/src/lib/modules/shared/components/zip-upload-dialogs/zip-package.util'
+import { NO_CONFIG_DEFAULT, configDefault, emptiedFieldValue, isBooleanConfigField } from '@ws/author/src/lib/utils/config-default'
 @Component({
   standalone: false,
   selector: 'ws-auth-file-upload',
@@ -822,17 +823,19 @@ export class FileUploadComponent implements OnInit, OnChanges {
         v !== 'versionKey' &&
         JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !== JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])
       ) {
-        if (currentMeta[v] || (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' && currentMeta[v] === false)) {
+        if (currentMeta[v] || (isBooleanConfigField(this.authInitService.authConfig, v) && currentMeta[v] === false)) {
           meta[v] = currentMeta[v]
         } else {
-          meta[v] = JSON.parse(
-            JSON.stringify(
-              this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                originalMeta.contentType
-                // tslint:disable-next-line: ter-computed-property-spacing
-              ][0].value,
-            ),
+          const value = emptiedFieldValue(
+            this.authInitService.authConfig,
+            v,
+            originalMeta.contentType,
+            currentMeta[v],
+            originalMeta[v as keyof NSContent.IContentMeta],
           )
+          if (value !== NO_CONFIG_DEFAULT) {
+            meta[v] = value
+          }
         }
       } else if (v === 'versionKey') {
         meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]

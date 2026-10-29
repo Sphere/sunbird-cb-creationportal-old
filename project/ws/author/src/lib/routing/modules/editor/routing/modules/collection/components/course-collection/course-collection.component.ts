@@ -3203,7 +3203,7 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
    * in. Was 28 duplicated lines of paired switches; the table lives in the helper.
    */
   getMessage(type: 'success' | 'failure') {
-    return getStatusMessage(this.contentService.originalContent[this.currentParentId].status, type)
+    return getStatusMessage(this.parentStatus() as string, type)
   }
 
   async subAction(event: { type: string; identifier: string; nodeClicked?: boolean }) {
@@ -3541,8 +3541,14 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** The parent's status; tolerates a parent missing from the loaded content (was a TypeError). */
+  private parentStatus(): string | undefined {
+    const original = this.contentService.originalContent[this.currentParentId]
+    return original ? original.status : this.contentService.getUpdatedMeta(this.currentParentId)?.status
+  }
+
   getAction(): string {
-    switch (this.contentService.originalContent[this.currentParentId].status) {
+    switch (this.parentStatus()) {
       case 'Draft':
       case 'Live':
         return 'sendForReview'
@@ -3564,8 +3570,8 @@ export class CourseCollectionComponent implements OnInit, OnDestroy {
   canDelete() {
     return (
       this.accessControlSvc.hasRole(['editor', 'admin']) ||
-      (['Draft', 'Live'].includes(this.contentService.originalContent[this.currentParentId].status) &&
-        this.contentService.originalContent[this.currentParentId].creatorContacts.find(v => v.id === this.accessControlSvc.userId))
+      (['Draft', 'Live'].includes(this.parentStatus() as string) &&
+        (this.contentService.originalContent[this.currentParentId]?.creatorContacts || []).some(v => v.id === this.accessControlSvc.userId))
     )
   }
 

@@ -96,7 +96,7 @@ describe('QuizComponent (direct instantiation)', () => {
     cdr = { detach: jest.fn(), detectChanges: jest.fn(), markForCheck: jest.fn() }
     breakpointObserver = { observe: jest.fn().mockReturnValue(of({ matches: false })) }
     dialog = { open: jest.fn().mockReturnValue({ afterClosed: () => afterClosed.asObservable() }) }
-    snackBar = { openFromComponent: jest.fn() }
+    snackBar = { openFromComponent: jest.fn(), open: jest.fn() }
     quizStoreSvc = {
       collectiveQuiz: {},
       currentId: 'do_1',
@@ -347,17 +347,106 @@ describe('QuizComponent (direct instantiation)', () => {
       expect(component.assessmentDuration).toBe('')
       expect(component.passPercentage).toBe('')
       expect(component.randomCount).toBe('')
+      expect(json.sheetSettings).toEqual({})
+    })
+
+    describe('hint and settings columns', () => {
+      const full = [...headers, 'Hint 1', 'Hint 2', 'Duration (Minutes)', 'Random Count', 'Pass Percentage']
+
+      it('stores a Hint column on its option, as editor HTML', () => {
+        const json = component.generateQuizJson([full, ['2+2?', '4', '5', '', '', '', '', '1', 'Yes, 4', '']])
+        expect(json.questions[0].options[0].hint).toBe('<p>Yes, 4</p>')
+        expect(json.questions[0].options[1]).not.toHaveProperty('hint')
+      })
+
+      it('reads duration, random count and pass percentage for an assessment', () => {
+        component.isQuiz = 'Assessment'
+        const json = component.generateQuizJson([
+          full,
+          ['Q1', 'a', 'b', '', '', '', '', '1', '', '', 120, 1, 75],
+          ['Q2', 'a', 'b', '', '', '', '', '2', '', '', '', '', ''],
+        ])
+        expect(json.sheetSettings).toEqual({ duration: 120, randomCount: 1, passPercentage: 75 })
+        expect(json.timeLimit).toBe(7200)
+        expect(json.randomCount).toBe(1)
+        expect(json.sheetWarnings).toEqual([])
+      })
+
+      it('reports a random count larger than the number of questions', () => {
+        const json = component.generateQuizJson([full, ['Q1', 'a', 'b', '', '', '', '', '1', '', '', '', 5, '']])
+        expect(json.sheetSettings.randomCount).toBeUndefined()
+        expect(json.sheetWarnings[0]).toContain('from 1 to 1')
+      })
+    })
+  })
+
+  describe('applySheetSettings', () => {
+    it('saves each sheet setting through the same path as typing it in', () => {
+      component.isQuiz = 'Assessment'
+      component.applySheetSettings({ duration: 120, randomCount: 3, passPercentage: 75 })
+      expect(component.assessmentDuration).toBe(120)
+      expect(component.randomCount).toBe(3)
+      expect(component.passPercentage).toBe(75)
+      expect(metaContentService.setUpdatedMeta).toHaveBeenCalledWith({ assessmentDuration: 120 }, 'do_1', true)
+      expect(metaContentService.setUpdatedMeta).toHaveBeenCalledWith({ randomCount: 3 }, 'do_1', true)
+      expect(snackBar.open).not.toHaveBeenCalled()
+    })
+
+    it('shows the warnings and changes nothing it was not given', () => {
+      component.assessmentDuration = 30
+      component.applySheetSettings({}, ['Random Count "9" must be a whole number from 1 to 2'])
+      expect(component.assessmentDuration).toBe(30)
+      expect(snackBar.open).toHaveBeenCalledWith(expect.stringContaining('Random Count "9"'), 'OK', expect.anything())
     })
   })
 
   describe('downloads', () => {
-    it('downloadTemplate triggers the sample workbook download', () => {
+    it('downloadTemplate builds the template with hint and settings columns plus instructions', () => {
       const click = jest.fn()
       const anchor = { href: '', download: '', click } as any
       jest.spyOn(document, 'createElement').mockReturnValueOnce(anchor)
+      ;(URL as any).createObjectURL = jest.fn().mockReturnValue('blob:t')
+      ;(URL as any).revokeObjectURL = jest.fn()
+      const XLSX = require('xlsx')
+      const append = jest.spyOn(XLSX.utils, 'book_append_sheet')
       component.downloadTemplate()
       expect(anchor.download).toBe('Sample_Bulk_Upload_Template.xlsx')
       expect(click).toHaveBeenCalled()
+      expect(append.mock.calls.map(c => c[2])).toEqual(['Questions', 'How to fill'])
+      const sheet = append.mock.calls[0][1] as any
+      const headerRow = XLSX.utils.sheet_to_json(sheet, { header: 1 })[0]
+      expect(headerRow).toEqual(expect.arrayContaining(['Hint 1', 'Hint 6', 'Duration (Minutes)', 'Random Count', 'Pass Percentage']))
+      append.mockRestore()
+    })
+
+    it('downloadUploadedQuestion exports hints and settings so the file uploads back unchanged', () => {
+      const click = jest.fn()
+      const anchor = { href: '', download: '', click } as any
+      jest.spyOn(document, 'createElement').mockReturnValueOnce(anchor)
+      ;(URL as any).createObjectURL = jest.fn().mockReturnValue('blob:x')
+      ;(URL as any).revokeObjectURL = jest.fn()
+      const XLSX = require('xlsx')
+      const append = jest.spyOn(XLSX.utils, 'book_append_sheet')
+      component.resourceDetails = { isAssessment: true } as any
+      component.isQuiz = 'Assessment'
+      component.assessmentDuration = 45
+      component.randomCount = 1
+      component.passPercentage = 60
+      component.questionsArr = [
+        question({
+          question: '<p>2+2?</p>',
+          options: [
+            { text: '4', isCorrect: true, hint: '<p>Yes</p>' },
+            { text: '5', isCorrect: false },
+          ],
+        }),
+      ]
+      component.downloadUploadedQuestion()
+      const rows = XLSX.utils.sheet_to_json(append.mock.calls[0][1], { header: 1 })
+      const again = component.generateQuizJson(rows)
+      expect(again.questions[0].options[0].hint).toBe('<p>Yes</p>')
+      expect(again.sheetSettings).toEqual({ duration: 45, randomCount: 1, passPercentage: 60 })
+      append.mockRestore()
     })
 
     it('downloadUploadedQuestion exports the current questions', () => {
@@ -417,9 +506,13 @@ describe('QuizComponent (direct instantiation)', () => {
       expect(metaContentService.setUpdatedMeta).toHaveBeenCalledWith({ assessmentDuration: 90 }, 'do_1', true)
     })
 
-    it('applies the 100 clamp to every field, not just the pass percentage', () => {
+    it('caps only the pass percentage at 100: a long duration and a large random count are kept', () => {
+      component.passPercentage = 60
       component.addTodo(300, 'assessmentDuration')
-      expect(component.assessmentDuration).toBe(100)
+      expect(component.assessmentDuration).toBe(300)
+      component.addTodo(150, 'randomCount')
+      expect(component.randomCount).toBe(150)
+      expect(component.passPercentage).toBe(60)
     })
   })
 

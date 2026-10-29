@@ -274,15 +274,42 @@ describe('CourseSettingsComponent (storeData + uploads)', () => {
       expect(authInitService.isEditMetaPageAction).toHaveBeenCalledWith('isSettingsPage')
     })
 
-    it('warns the user when the parent has not been saved yet', () => {
+    it('still warns the user when reading the saved course genuinely fails', () => {
+      contentService.getOriginalMeta.mockImplementation(() => {
+        throw new Error('not loaded')
+      })
+
+      component.storeData()
+
+      expect(snackBar.open).toHaveBeenCalledWith('Please Save Parent first and refresh page.')
+      expect(contentService.setUpdatedMeta).not.toHaveBeenCalled()
+    })
+
+    // A field with no config default used to throw and abort the whole save, so a fresh
+    // course showed "Please Save Parent first" until a reload. It must save instead.
+    it('clears a saved field that has no config default instead of aborting the save', () => {
       authInitService.authConfig = {}
       contentService.getOriginalMeta.mockReturnValue({ contentType: 'Course', name: 'Was Set', versionKey: 'vk-1' })
       component.contentForm.controls.name.setValue('')
 
       component.storeData()
 
-      expect(snackBar.open).toHaveBeenCalledWith('Please Save Parent first and refresh page.')
-      expect(contentService.setUpdatedMeta).not.toHaveBeenCalled()
+      expect(snackBar.open).not.toHaveBeenCalledWith('Please Save Parent first and refresh page.')
+      const [meta] = contentService.setUpdatedMeta.mock.calls[0]
+      expect(meta.name).toBe('')
+      expect(meta.versionKey).toBe('vk-1')
+    })
+
+    it('leaves out an empty field that has no config default and was never saved (a fresh course)', () => {
+      authInitService.authConfig = {}
+      contentService.getOriginalMeta.mockReturnValue({ contentType: 'Course', versionKey: 'vk-1' })
+      component.contentForm.controls.name.setValue('')
+
+      component.storeData()
+
+      expect(snackBar.open).not.toHaveBeenCalledWith('Please Save Parent first and refresh page.')
+      const [meta] = contentService.setUpdatedMeta.mock.calls[0]
+      expect(meta).not.toHaveProperty('name')
     })
   })
 

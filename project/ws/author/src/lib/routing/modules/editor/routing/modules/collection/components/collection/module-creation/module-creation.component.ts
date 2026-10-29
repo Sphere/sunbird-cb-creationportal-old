@@ -128,6 +128,7 @@ import {
   snapshotFolderUrl,
   zipPackageMessage,
 } from '@ws/author/src/lib/modules/shared/components/zip-upload-dialogs/zip-package.util'
+import { NO_CONFIG_DEFAULT, configDefault, emptiedFieldValue, isBooleanConfigField } from '@ws/author/src/lib/utils/config-default'
 @Component({
   standalone: false,
   selector: 'ws-author-module-creation',
@@ -817,8 +818,14 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         break
     }
   }
+  /** The parent's status; tolerates a parent missing from the loaded content (was a TypeError). */
+  private parentStatus(): string | undefined {
+    const original = this.contentService.originalContent[this.currentParentId]
+    return original ? original.status : this.contentService.getUpdatedMeta(this.currentParentId)?.status
+  }
+
   getAction(): string {
-    switch (this.contentService.originalContent[this.currentParentId].status) {
+    switch (this.parentStatus()) {
       case 'Draft':
       case 'Live':
         return 'sendForReview'
@@ -1649,7 +1656,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
    * in. Was 28 duplicated lines of paired switches; the table lives in the helper.
    */
   getMessage(type: 'success' | 'failure') {
-    return getStatusMessage(this.contentService.originalContent[this.currentParentId].status, type)
+    return getStatusMessage(this.parentStatus() as string, type)
   }
   async changeStatusToDraft(comment: string) {
     //const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
@@ -4169,17 +4176,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                 meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
               }
             } else {
-              if (this.initService.authConfig[v as keyof IFormMeta] && this.initService.authConfig[v as keyof IFormMeta].defaultValue) {
-                if (v !== 'isIframeSupported') {
-                  meta[v as keyof NSContent.IContentMeta] = JSON.parse(
-                    JSON.stringify(
-                      this.initService.authConfig[v as keyof IFormMeta].defaultValue[
-                        originalMeta.contentType
-                        // tslint:disable-next-line: ter-computed-property-spacing
-                      ][0].value,
-                    ),
-                  )
-                }
+              const fallback = configDefault(this.initService.authConfig, v, originalMeta.contentType)
+              if (fallback !== NO_CONFIG_DEFAULT && v !== 'isIframeSupported') {
+                meta[v as keyof NSContent.IContentMeta] = fallback
               }
             }
           } else if (v === 'versionKey') {
@@ -5087,20 +5086,22 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         v !== 'versionKey' &&
         JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !== JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])
       ) {
-        if (currentMeta[v] || (this.initService.authConfig[v as keyof IFormMeta].type === 'boolean' && currentMeta[v] === false)) {
+        if (currentMeta[v] || (isBooleanConfigField(this.initService.authConfig, v) && currentMeta[v] === false)) {
           if (v !== 'duration') {
             meta[v] = currentMeta[v]
           }
         } else {
           if (v !== 'duration') {
-            meta[v] = JSON.parse(
-              JSON.stringify(
-                this.initService.authConfig[v as keyof IFormMeta].defaultValue[
-                  originalMeta.contentType
-                  // tslint:disable-next-line: ter-computed-property-spacing
-                ][0].value,
-              ),
+            const value = emptiedFieldValue(
+              this.initService.authConfig,
+              v,
+              originalMeta.contentType,
+              currentMeta[v],
+              originalMeta[v as keyof NSContent.IContentMeta],
             )
+            if (value !== NO_CONFIG_DEFAULT) {
+              meta[v] = value
+            }
           }
         }
       } else if (v === 'versionKey') {

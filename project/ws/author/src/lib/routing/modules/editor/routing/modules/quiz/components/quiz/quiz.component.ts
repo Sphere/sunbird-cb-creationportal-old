@@ -87,10 +87,21 @@ import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image
 import * as XLSX from 'xlsx'
 
 import { isActivationKey, randomInt, stripHtmlTags } from '@ws-widget/utils'
+import {
+  ALL_COLUMNS,
+  SheetSettings,
+  cell,
+  hintTextToHtml,
+  questionsToSheetRows,
+  readSheetSettings,
+  templateInstructions,
+  templateRows,
+} from './quiz-sheet.util'
 interface QuizOption {
   text: string
   optionId: string
   isCorrect: boolean
+  hint?: string
 }
 
 interface QuizQuestion {
@@ -627,19 +638,41 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
 
       // Process the Excel data
       const quizJson = this.generateQuizJson(jsonData)
-      console.log('Generated Quiz JSON:', this.questionsArr, quizJson)
 
       // Assign to questionsArr or any other variable as needed
       this.questionsArr = quizJson.questions
       this.quizStoreSvc.collectiveQuiz[this.currentId] = this.questionsArr
+      this.applySheetSettings(quizJson.sheetSettings, quizJson.sheetWarnings)
       this.checkValidity()
       this.quizStoreSvc.changeQuiz(0)
-      console.log('Generated Quiz JSON 2:', this.questionsArr)
       this.cdr.detectChanges()
       this.cdr.markForCheck() // Explicitly mark the component for change detection
     }
     reader.readAsArrayBuffer(file)
   }
+  /**
+   * Settings from the sheet go through addTodo, the same path as typing them in, so they are
+   * saved and validated the same way. Invalid values are reported, not saved.
+   */
+  applySheetSettings(settings: SheetSettings | undefined, warnings: string[] = []): void {
+    if (settings) {
+      if (settings.duration !== undefined) {
+        this.addTodo(settings.duration, 'assessmentDuration')
+      }
+      if (settings.randomCount !== undefined) {
+        this.addTodo(settings.randomCount, 'randomCount')
+      }
+      if (settings.passPercentage !== undefined) {
+        this.addTodo(settings.passPercentage, 'passPercentage')
+      }
+    }
+    if (warnings.length) {
+      this.snackBar.open(`Questions uploaded. Please check in the form: ${warnings.join('; ')}.`, 'OK', {
+        duration: NOTIFICATION_TIME * 3000,
+      })
+    }
+  }
+
   generateQuizJson(data: any[]): any {
     const quizJson = {
       timeLimit: 0, // Default time limit
@@ -647,7 +680,10 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       isAssessment: this.resourceDetails.isAssessment,
       randomCount: 0, // Default random count
       questions: [] as QuizQuestion[], // Explicitly type the questions array
+      sheetSettings: {} as SheetSettings,
+      sheetWarnings: [] as string[],
     }
+    const sheetRows: { [key: string]: any }[] = []
 
     this.assessmentDuration = ''
     this.passPercentage = ''
@@ -671,6 +707,7 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
       headers.forEach((header: string, index: number) => {
         rowData[header] = row[index] !== undefined && row[index] !== null ? row[index] : '' // Explicitly handle undefined or null
       })
+      sheetRows.push(rowData)
 
       // Skip rows with insufficient data
       if (!rowData['Question'] || !rowData['Correct Answer']) {
@@ -703,11 +740,17 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         const key = `Option ${optionIndex}`
         const optionText = rowData[key] !== undefined && rowData[key] !== null ? String(rowData[key]).trim() : ''
 
-        options.push({
+        const option: QuizOption = {
           text: optionText, // Keep the text (even if empty, but only up to lastNonEmptyIndex)
           optionId: `${questionId}-${String.fromCharCode(96 + optionIndex)}`, // Sequential IDs (a, b, c...)
           isCorrect: correctAnswers.includes(optionIndex), // Match option number
-        })
+        }
+        // Optional "Hint N" column: stored the way the hint editor stores it.
+        const hintText = cell(rowData, `Hint ${optionIndex}`)
+        if (hintText) {
+          option.hint = hintTextToHtml(hintText)
+        }
+        options.push(option)
       }
 
       const correctOptions = options.filter((option: any) => option.isCorrect) // Get correct options
@@ -721,66 +764,60 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
         multiSelection, // Assign the boolean value
       })
     }
-    console.log('quizJson', quizJson)
+    const { settings, warnings } = readSheetSettings(sheetRows, quizJson.questions.length, this.isQuiz === 'Assessment')
+    quizJson.sheetSettings = settings
+    quizJson.sheetWarnings = warnings
+    if (settings.duration !== undefined) {
+      quizJson.timeLimit = settings.duration * 60
+    }
+    if (settings.randomCount !== undefined) {
+      quizJson.randomCount = settings.randomCount
+    }
+    if (settings.passPercentage !== undefined) {
+      quizJson.passPercentage = settings.passPercentage
+    }
     return quizJson
   }
+
+  /** A template with every column (including hints and settings), two examples and a "How to fill" sheet. */
   downloadTemplate(): void {
-    const s3Url = 'https://aastar-app-assets.s3.ap-south-1.amazonaws.com/final_single_row_questions.xlsx' // Replace with your S3 file URL
-    const anchor = document.createElement('a')
-    anchor.href = s3Url
-    anchor.download = 'Sample_Bulk_Upload_Template.xlsx' // Set the desired file name
-    // anchor.target = '_blank'
-    anchor.click()
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(templateRows(), { header: ALL_COLUMNS }), 'Questions')
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(templateInstructions()), 'How to fill')
+    this.saveWorkbook(workbook, 'Sample_Bulk_Upload_Template.xlsx')
   }
 
+  /** Exports the questions with their hints, plus the current settings, in the upload format. */
   downloadUploadedQuestion(): void {
-    // Prepare the data for Excel
-    const excelData = this.questionsArr.map((question: any) => {
-      // const correctOptions = question.options.filter((option: any) => option.isCorrect) // Get correct options
-
-      const row: any = {
-        Question: stripHtmlTags(question.question),
-        // 'Multi Selection': correctOptions.length > 1 ? 'true' : 'FALSE', // Set multiSelection based on correct options
-        'Option 1': question.options[0] ? question.options[0].text : '',
-        'Option 2': question.options[1] ? question.options[1].text : '',
-        'Option 3': question.options[2] ? question.options[2].text : '',
-        'Option 4': question.options[3] ? question.options[3].text : '',
-        'Option 5': question.options[4] ? question.options[4].text : '',
-        'Option 6': question.options[5] ? question.options[5].text : '',
-        'Correct Answer': question.options
-          .map((option: any, index: number) => (option.isCorrect ? index + 1 : null))
-          .filter((option: string | null) => option !== null)
-          .join(', '), // Combine correct answers into a single string
-      }
-      return row
-    })
-
-    // Convert the data to a worksheet
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excelData)
-
-    // Create a new workbook and append the worksheet
+    const settings: SheetSettings = {
+      duration: Number(this.assessmentDuration) || undefined,
+      randomCount: Number(this.randomCount) || undefined,
+      passPercentage:
+        this.isQuiz === 'Assessment' && this.passPercentage !== '' && this.passPercentage !== null && this.passPercentage !== undefined
+          ? Number(this.passPercentage)
+          : undefined,
+    }
+    const excelData = questionsToSheetRows(this.questionsArr, settings, stripHtmlTags)
     const workbook: XLSX.WorkBook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Questions')
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(excelData, { header: ALL_COLUMNS }), 'Questions')
+    this.saveWorkbook(workbook, 'Uploaded_Questions.xlsx')
+  }
 
-    // Generate the Excel file and trigger the download
+  private saveWorkbook(workbook: XLSX.WorkBook, fileName: string): void {
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
     const blob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
-
-    // Create a temporary anchor element to trigger the download
     const anchor = document.createElement('a')
     const url = URL.createObjectURL(blob)
     anchor.href = url
-    anchor.download = 'Uploaded_Questions.xlsx' // Set the desired file name
+    anchor.download = fileName
     anchor.click()
-
-    // Clean up the URL object
     URL.revokeObjectURL(url)
   }
   addTodo(event: any, field: string) {
     const meta: any = {}
-    console.log('event', event)
-    if (event > 100) {
-      // Reset the input value to 100
+    // Only a percentage is capped at 100. This used to apply to every field and also overwrote
+    // the pass percentage, so a 120-minute duration saved as 100 and set Pass % to 100.
+    if (field === 'passPercentage' && event > 100) {
       this.passPercentage = 100
       event = 100
     }

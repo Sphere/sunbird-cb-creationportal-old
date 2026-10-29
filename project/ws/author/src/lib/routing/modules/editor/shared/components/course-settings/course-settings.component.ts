@@ -88,6 +88,7 @@ import { HttpClient } from '@angular/common/http'
 import { isNumber } from 'lodash'
 
 import { EditMetaBaseComponent } from '../edit-meta/edit-meta-base.component'
+import { NO_CONFIG_DEFAULT, configDefault, emptiedFieldValue, isBooleanConfigField } from '@ws/author/src/lib/utils/config-default'
 
 /**
  * Every course is published by the Aastrika publisher account, so the publisher
@@ -706,24 +707,17 @@ export class CourseSettingsComponent extends EditMetaBaseComponent implements On
       try {
         if (
           this.contentMeta[v as keyof NSContent.IContentMeta] ||
-          (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
-            this.contentMeta[v as keyof NSContent.IContentMeta] === false)
+          (isBooleanConfigField(this.authInitService.authConfig, v) && this.contentMeta[v as keyof NSContent.IContentMeta] === false)
         ) {
           this.contentForm.controls[v].setValue(this.contentMeta[v as keyof NSContent.IContentMeta])
         } else {
           if (v === 'expiryDate') {
             this.contentForm.controls[v].setValue(new Date(new Date().setMonth(new Date().getMonth() + 60)))
           } else {
-            this.contentForm.controls[v].setValue(
-              JSON.parse(
-                JSON.stringify(
-                  this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                    this.contentMeta.contentType
-                    // tslint:disable-next-line: ter-computed-property-spacing
-                  ][0].value,
-                ),
-              ),
-            )
+            const fallback = configDefault(this.authInitService.authConfig, v, this.contentMeta.contentType)
+            if (fallback !== NO_CONFIG_DEFAULT) {
+              this.contentForm.controls[v].setValue(fallback)
+            }
           }
         }
 
@@ -942,14 +936,18 @@ export class CourseSettingsComponent extends EditMetaBaseComponent implements On
             ) {
               meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
             } else {
-              meta[v as keyof NSContent.IContentMeta] = JSON.parse(
-                JSON.stringify(
-                  this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                    originalMeta.contentType
-                    // tslint:disable-next-line: ter-computed-property-spacing
-                  ][0].value,
-                ),
+              // Form-only fields (cneName, trackContactsCtrl, ...) have no config default; the
+              // direct lookup threw and aborted the whole save on a fresh course.
+              const value = emptiedFieldValue(
+                this.authInitService.authConfig,
+                v,
+                originalMeta.contentType,
+                currentMeta[v as keyof NSContent.IContentMeta],
+                originalMeta[v as keyof NSContent.IContentMeta],
               )
+              if (value !== NO_CONFIG_DEFAULT) {
+                meta[v as keyof NSContent.IContentMeta] = value
+              }
             }
           } else if (v === 'versionKey') {
             meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]

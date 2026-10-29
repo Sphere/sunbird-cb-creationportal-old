@@ -739,6 +739,23 @@ describe('ModuleCreationComponent (logic)', () => {
     it('falls back to sendForReview for an unknown status', () => {
       expect(build2('Whatever').getAction()).toBe('sendForReview')
     })
+
+    it('uses the updated meta when the parent is missing from the loaded content (was a TypeError)', () => {
+      contentService.originalContent = {}
+      contentService.getUpdatedMeta = jest.fn(() => ({ status: 'InReview' }))
+      const comp = build()
+      comp.currentParentId = 'p1'
+      expect(comp.getAction()).toBe('review')
+    })
+
+    it('defaults to sendForReview when the parent is not loaded at all', () => {
+      contentService.originalContent = {}
+      contentService.getUpdatedMeta = jest.fn(() => undefined)
+      const comp = build()
+      comp.currentParentId = 'p1'
+      expect(() => comp.getAction()).not.toThrow()
+      expect(comp.getAction()).toBe('sendForReview')
+    })
   })
 
   describe('in-video quiz questions', () => {
