@@ -17,7 +17,7 @@
       <div class="correct-answer" *ngIf="option?.isCorrect">{{ i + 1 }} : {{ option?.text }}</div>
       <div
         class="background-well padding-left-m padding-xs"
-        *ngIf="viewState === 'review' && option?.hint && !unTouchedBlank[i]"
+        *ngIf="option?.hint && (viewState !== 'review' || !unTouchedBlank[i])"
         [ngClass]="{
           'correct-option': viewState === 'review' && correctOption[i],
           'incorrect-option': viewState === 'review' && !correctOption[i],
@@ -29,99 +29,44 @@
     </div>
   </div>
 
+  <!-- Creator preview = answer key: correct options are ticked and every option's hint is shown.
+       Multiple choice used to be clickable here while single choice was already read-only. -->
   <div class="quiz-options-list" *ngIf="question.questionType === 'mcq-mca'">
     <ng-container *ngFor="let option of question?.options">
-      <div
-        class="option-row"
-        [ngClass]="{
-          'option-row--correct':
-            (viewState === 'review' && option?.isCorrect && isSelected(option)) || (viewState === 'answer' && option?.isCorrect),
-          'option-row--incorrect': viewState === 'review' && !option?.isCorrect && isSelected(option),
-        }"
-        (click)="itemSelected.emit(option.optionId)"
-        (keydown)="isActivationKey($event) && itemSelected.emit(option.optionId)"
-        [attr.tabindex]="0"
-      >
+      <div class="option-row option-row--readonly" [class.option-row--correct]="option?.isCorrect">
         <label class="sr-only" [for]="'quiz-mca-option-' + question?.questionId + '-' + option?.optionId">{{ option?.text }}</label>
         <input
           [id]="'quiz-mca-option-' + question?.questionId + '-' + option?.optionId"
           type="checkbox"
           class="option-check"
-          [checked]="isSelected(option)"
-          (click)="$event.stopPropagation()"
-          (keydown)="isActivationKey($event) && $event.stopPropagation()"
+          [checked]="option?.isCorrect"
+          disabled
         />
-        <span
-          class="option-text"
-          [class.correct-option]="
-            (viewState === 'review' && option?.isCorrect && isSelected(option)) || (viewState === 'answer' && option?.isCorrect)
-          "
-          [class.error-text]="viewState === 'review' && !option?.isCorrect && isSelected(option)"
-        >
-          {{ option?.text }}
-        </span>
+        <span class="option-text" [class.correct-option]="option?.isCorrect">{{ option?.text }}</span>
+        <span *ngIf="option?.isCorrect" class="answer-key-badge" i18n="correct answer badge">Correct</span>
       </div>
-      <div class="hint-well" *ngIf="viewState === 'review' && isSelected(option) && option?.hint">
-        <ng-container *ngIf="viewState === 'review' && !option?.isCorrect && isSelected(option)">
-          <p class="hint-label" i18n="option explanation label">Explanation</p>
-          <p class="margin-remove error-text" [innerHTML]="option?.hint"></p>
-        </ng-container>
-        <ng-container *ngIf="!(viewState === 'review' && !option?.isCorrect && isSelected(option))">
-          <p class="hint-label" i18n="option explanation label">Explanation</p>
-          <p class="margin-remove correct-option" [innerHTML]="option?.hint"></p>
-        </ng-container>
-      </div>
+      <ng-container *ngTemplateOutlet="optionHint; context: { $implicit: option }"></ng-container>
     </ng-container>
   </div>
 
-  <mat-radio-group *ngIf="question.questionType === 'mcq-sca'" class="quiz-radio-group">
-    <div *ngFor="let option of question?.options">
-      <mat-radio-button
-        aria-readonly="true"
-        class="quiz-radio-button"
-        [ngClass]="{
-          'correct-answer':
-            (viewState === 'review' && option?.isCorrect && isSelected(option)) || (viewState === 'answer' && option?.isCorrect),
-          'incorrect-answer': viewState === 'review' && !option?.isCorrect && isSelected(option),
-          'checked-radio': option?.isCorrect,
-        }"
-        [checked]="option?.isCorrect"
-        [value]="option.optionId"
-        [disabled]="true"
-        (change)="itemSelected.emit(option.optionId)"
-      >
-        <span class="wrap-mat-radio-label">
-          <mat-error *ngIf="viewState === 'review' && !option?.isCorrect && isSelected(option)">{{ option?.text }}</mat-error>
-          <div
-            [ngClass]="{
-              'correct-option':
-                (viewState === 'review' && option?.isCorrect && isSelected(option)) || (viewState === 'answer' && option?.isCorrect),
-              'blue-text': option?.isCorrect,
-            }"
-            [hidden]="viewState === 'review' && !option?.isCorrect && isSelected(option)"
-          >
-            {{ option?.text }}
-          </div>
-        </span>
-      </mat-radio-button>
-      <div class="background-well padding-left-m padding-xs" *ngIf="viewState === 'review' && isSelected(option) && option?.hint">
-        <mat-error *ngIf="viewState === 'review' && !option?.isCorrect && isSelected(option)">
-          <p class="hint-label" i18n="option explanation label">Explanation:</p>
-          <p class="margin-remove" [innerHTML]="option?.hint"></p>
-        </mat-error>
-        <div
-          [ngClass]="{
-            'correct-option':
-              (viewState === 'review' && option?.isCorrect && isSelected(option)) || (viewState === 'answer' && option?.isCorrect),
-          }"
-          [hidden]="viewState === 'review' && !option?.isCorrect && isSelected(option)"
-        >
-          <p class="hint-label" i18n="option explanation label">Explanation:</p>
-          <p class="margin-remove" [innerHTML]="option?.hint"></p>
-        </div>
+  <div *ngIf="question.questionType === 'mcq-sca'" class="quiz-options-list" role="radiogroup">
+    <ng-container *ngFor="let option of question?.options">
+      <div class="option-row option-row--readonly" [class.option-row--correct]="option?.isCorrect">
+        <label class="sr-only" [for]="'quiz-sca-option-' + question?.questionId + '-' + option?.optionId">{{ option?.text }}</label>
+        <input
+          [id]="'quiz-sca-option-' + question?.questionId + '-' + option?.optionId"
+          type="radio"
+          class="option-check"
+          [name]="'quiz-sca-' + question?.questionId"
+          [checked]="option?.isCorrect"
+          disabled
+        />
+        <span class="option-text" [class.correct-option]="option?.isCorrect">{{ option?.text }}</span>
+        <span *ngIf="option?.isCorrect" class="answer-key-badge" i18n="correct answer badge">Correct</span>
       </div>
-    </div>
-  </mat-radio-group>
+      <ng-container *ngTemplateOutlet="optionHint; context: { $implicit: option }"></ng-container>
+    </ng-container>
+  </div>
 
   <div *ngIf="question.questionType === 'mtf'">
     <div (scroll)="repaintEveryThing()" (resize)="repaintEveryThing()">
@@ -162,3 +107,10 @@
     </table>
   </div>
 </div>
+
+<ng-template #optionHint let-option>
+  <div *ngIf="option?.hint" class="answer-key-hint" [class.answer-key-hint--correct]="option?.isCorrect">
+    <p class="hint-label" i18n="option explanation label">Explanation</p>
+    <div class="margin-remove" [innerHTML]="option?.hint"></div>
+  </div>
+</ng-template>

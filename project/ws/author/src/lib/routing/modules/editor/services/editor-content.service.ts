@@ -23,6 +23,7 @@ import { IAssessmentDetails } from '../../../../interface/iap-assessment.interfa
 // import { isArray } from 'lodash'
 
 import * as _ from 'lodash'
+import { NO_CONFIG_DEFAULT, configDefault, emptiedFieldValue, isBooleanConfigField } from '@ws/author/src/lib/utils/config-default'
 
 @Injectable()
 export class EditorContentService {
@@ -334,18 +335,14 @@ export class EditorContentService {
     const meta = {} as any
     const parentMeta = this.getUpdatedMeta(this.parentContent)
     Object.keys(this.authInitService.authConfig).forEach(v => {
-      // tslint:disable-next-line: no-console
-
-      meta[v as keyof NSContent.IContentMeta] = parentMeta[v as keyof NSContent.IContentMeta]
-        ? parentMeta[v as keyof NSContent.IContentMeta]
-        : JSON.parse(
-            JSON.stringify(
-              this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                parentMeta.contentType
-                // tslint:disable-next-line: ter-computed-property-spacing
-              ][0].value,
-            ),
-          )
+      if (parentMeta[v as keyof NSContent.IContentMeta]) {
+        meta[v as keyof NSContent.IContentMeta] = parentMeta[v as keyof NSContent.IContentMeta]
+        return
+      }
+      const fallback = configDefault(this.authInitService.authConfig, v, parentMeta.contentType)
+      if (fallback !== NO_CONFIG_DEFAULT) {
+        meta[v as keyof NSContent.IContentMeta] = fallback
+      }
     })
     return meta
   }

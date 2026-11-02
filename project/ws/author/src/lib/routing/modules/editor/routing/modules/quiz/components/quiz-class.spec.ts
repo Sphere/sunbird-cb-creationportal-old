@@ -31,6 +31,20 @@ describe('quiz-class models', () => {
       expect(o.optionId).toBe('o1')
       expect(o.isCorrect).toBe(true)
     })
+
+    // The constructor used to drop the hint, so the Hint editor opened empty and the next
+    // edit of the question wrote empty hints back over the saved ones.
+    it('keeps a saved hint', () => {
+      expect(new Option({ text: 'A', hint: '<p>Why A</p>' }).hint).toBe('<p>Why A</p>')
+      expect(new Option({ text: 'A' })).not.toHaveProperty('hint')
+    })
+
+    it('keeps hints through McqQuiz, FillUps and MatchQuiz', () => {
+      const options = [{ text: 'A', hint: '<p>h</p>', isCorrect: true }]
+      expect(new McqQuiz({ options }).options[0].hint).toBe('<p>h</p>')
+      expect(new FillUps({ options }).options[0].hint).toBe('<p>h</p>')
+      expect(new MatchQuiz({ options }).options[0].hint).toBe('<p>h</p>')
+    })
   })
 
   describe('MatchOption', () => {

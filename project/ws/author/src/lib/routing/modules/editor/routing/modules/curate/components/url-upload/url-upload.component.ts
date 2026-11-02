@@ -26,6 +26,7 @@ import { AuthInitService } from './../../../../../../../../services/init.service
 import { URLCheckerClass } from './url-upload.helper'
 
 import { EditorService } from '@ws/author/src/lib/routing/modules/editor/services/editor.service'
+import { NO_CONFIG_DEFAULT, configDefault, emptiedFieldValue, isBooleanConfigField } from '@ws/author/src/lib/utils/config-default'
 
 @Component({
   standalone: false,
@@ -166,19 +167,21 @@ export class UrlUploadComponent implements OnInit {
       if (
         JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !== JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])
       ) {
-        if (currentMeta[v] || (this.initService.authConfig[v as keyof IFormMeta].type === 'boolean' && meta[v] === false)) {
+        if (currentMeta[v] || (isBooleanConfigField(this.initService.authConfig, v) && meta[v] === false)) {
           meta[v] = currentMeta[v]
           meta['versionKey'] = currentMeta['versionKey']
           meta['isIframeSupported'] = currentMeta['mimeType'] === 'text/x-url' ? currentMeta['isIframeSupported'] : undefined
         } else {
-          meta[v] = JSON.parse(
-            JSON.stringify(
-              this.initService.authConfig[v as keyof IFormMeta].defaultValue[
-                originalMeta.contentType
-                // tslint:disable-next-line: ter-computed-property-spacing
-              ][0].value,
-            ),
+          const value = emptiedFieldValue(
+            this.initService.authConfig,
+            v,
+            originalMeta.contentType,
+            currentMeta[v],
+            originalMeta[v as keyof NSContent.IContentMeta],
           )
+          if (value !== NO_CONFIG_DEFAULT) {
+            meta[v] = value
+          }
         }
       }
     })

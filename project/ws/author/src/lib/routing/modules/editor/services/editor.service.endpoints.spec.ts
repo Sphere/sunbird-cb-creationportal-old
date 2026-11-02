@@ -81,7 +81,7 @@ describe('EditorService (endpoints and payload shaping)', () => {
     // mapper_parsing_exception that kills the whole indexer job.
     const sentContent = () => (apiService.patch as jest.Mock).mock.calls[0][1].request.content
 
-    it.each(['reviewer', 'creatorContacts', 'creatorDetails', 'publisherDetails', 'competencies_v1'])(
+    it.each(['reviewer', 'creatorContacts', 'creatorDetails', 'publisherDetails', 'competencies_v1', 'videoQuestions'])(
       'stringifies %s when it arrives as an array',
       field => {
         svc.updateContentV3({ request: { content: { [field]: [{ id: 'x1' }] } } } as any, 'do_1').subscribe()
@@ -126,6 +126,34 @@ describe('EditorService (endpoints and payload shaping)', () => {
       expect(content).not.toHaveProperty('reviewer')
       expect(content).not.toHaveProperty('creatorDetails')
       expect(content).not.toHaveProperty('publisherDetails')
+    })
+
+    describe('videoQuestions (a video saved with in-video questions)', () => {
+      // compositesearch maps videoQuestions as text. Sent as objects, one video save
+      // failed indexing and cancelled the indexer job on every restart, so nothing
+      // after it reached the Draft/Review lists.
+      const questions = [{ timestampInSeconds: 60, question: [{ text: 'q', options: [{ text: 'a', isCorrect: true }] }] }]
+
+      it('is sent as a JSON string on the video save (content/v3/update)', () => {
+        svc.updateNewContentV3({ request: { content: { videoQuestions: questions } } }, 'do_v').subscribe()
+        const sent = http.patch.mock.calls[0][1].request.content
+        expect(sent.videoQuestions).toBe(JSON.stringify(questions))
+      })
+
+      it('is sent as a JSON string inside hierarchy/update node metadata', () => {
+        svc
+          .updateContentV4({ request: { data: { nodesModified: { do_v: { metadata: { videoQuestions: questions } } } } } } as any)
+          .subscribe()
+        const sent = (apiService.patch as jest.Mock).mock.calls[0][1].request.data.nodesModified.do_v.metadata
+        expect(sent.videoQuestions).toBe(JSON.stringify(questions))
+      })
+
+      it('sends an empty list as "[]" and leaves an existing string alone', () => {
+        svc.updateNewContentV3({ request: { content: { videoQuestions: [] } } }, 'do_v').subscribe()
+        expect(http.patch.mock.calls[0][1].request.content.videoQuestions).toBe('[]')
+        svc.updateNewContentV3({ request: { content: { videoQuestions: '[]' } } }, 'do_v').subscribe()
+        expect(http.patch.mock.calls[1][1].request.content.videoQuestions).toBe('[]')
+      })
     })
 
     it('leaves unrelated list fields such as reviewerIDs as arrays', () => {

@@ -1,337 +1,287 @@
-@import 'ws-vars';
-@import 'ws-mixins';
+// In-video question dialog. Native radios and buttons instead of mat-selection-list +
+// loose mat-radio-buttons: those gave an oversized row, stray scroll arrows and no single
+// selection. Everything is scoped to this component; the old global `.cdk-overlay-pane`
+// rule leaked into every dialog in the app.
 
-.app-class .mat-list-option {
-  padding-top: $size-m;
-  padding-bottom: $size-m;
-  height: auto;
+:host {
+  display: block;
+  font-family: Roboto, sans-serif;
+}
 
-  .mat-pseudo-checkbox.mat-pseudo-checkbox-checked {
-    // background-color: #f5d58d !important;
-    background-color: #1c5d95 !important;
+.vq {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  box-sizing: border-box;
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  color: #1a2d45;
+}
+
+.vq-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.vq-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #1c5d95;
+}
+
+.vq-eyebrow-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.vq-count {
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #5b6b7f;
+}
+
+.vq-close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #5b6b7f;
+  cursor: pointer;
+
+  &:hover {
+    background: #eef3f8;
+    color: #1a2d45;
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
   }
 }
 
-.custom-list .mat-list-option.mat-focus-indicator {
-  outline: none !important;
-  box-shadow: none !important;
-}
-.custom-list .mat-list-option:focus {
-  outline: none !important;
-  box-shadow: none !important;
-}
-.mat-list-option:focus-visible {
-  outline: none !important;
-}
-.mat-list-option:focus-visible {
-  outline: 2px dashed #00bcd4; /* Customize the focus outline */
-  outline-offset: 4px; /* Adjust spacing between outline and element */
+.vq-question {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.4;
+  word-break: break-word;
 }
 
-::ng-deep .mat-pseudo-checkbox.mat-pseudo-checkbox-checked,
-.mat-pseudo-checkbox.mat-pseudo-checkbox-indeterminate {
-  background: #1c5d95 !important;
+.vq-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
-// ::ng-deep .mat-radio-ripple {
-//   display: none !important;
-// }
-
-::ng-deep .mat-radio-ripple .mat-ripple-element {
-  background-color: rgba(#919296, 0.26) !important;
+.vq--stacked .vq-options {
+  grid-template-columns: 1fr;
 }
 
-.wrap-mat-radio-label {
-  white-space: normal;
+.vq-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 8px 16px;
+  border: 1px solid #b8c9d9;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
+
+  &:hover {
+    border-color: #8aaac8;
+  }
+
+  input {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: #1c5d95;
+    cursor: inherit;
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+  }
 }
-.question-option {
+
+.vq-option--selected {
+  border-color: #1c5d95;
+  background: #eef3f8;
+}
+
+.vq-option--correct {
+  border-color: #357a38;
+  background: #edf7ee;
+}
+
+.vq-option--wrong {
+  border-color: #c62828;
+  background: #fdecea;
+}
+
+.vq-option--disabled {
+  cursor: default;
+
+  &:hover {
+    border-color: #b8c9d9;
+  }
+}
+
+.vq-option-icon {
+  flex-shrink: 0;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.vq-option--correct .vq-option-icon {
+  color: #2e7d32;
+}
+
+.vq-option--wrong .vq-option-icon {
+  color: #c62828;
+}
+
+// The chosen radio is swapped for a result icon but stays in the DOM for the radio group.
+.vq-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  border: 0;
+}
+
+.vq-option-text {
+  font-size: 14px;
+  line-height: 1.4;
   white-space: break-spaces;
+  word-break: break-word;
 }
-.options-container {
+
+.vq-result {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+
+.vq-result--correct {
+  border-color: #b7dfb9;
+  background: #edf7ee;
+  color: #2e6b31;
+}
+
+.vq-result--wrong {
+  border-color: #f3b8b3;
+  background: #fdecea;
+  color: #a12a20;
+}
+
+.vq-result-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.vq-result-info {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.vq-actions {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-}
-.options-container {
-  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
-.option {
-  margin-bottom: 10px;
-}
-
-/* horizontal layout */
-
-.rowView {
-  .options-container {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-  .option {
-    width: 40%;
-  }
-}
-
-.option {
-  margin-right: 10px;
-}
-
-/* vertical layout */
-
-.columnView {
-  .options-container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .option {
-    width: 100%;
-  }
-}
-::ng-deep .cdk-overlay-pane {
-  overflow: auto;
-}
-.quiz-question {
-  font-family: Roboto, sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 12.75px;
-  text-align: left;
-  text-underline-position: from-font;
-  text-decoration-skip-ink: none;
-  overflow-x: auto;
-  margin: 10px 0 10 0 !important;
-  margin-bottom: 5px;
-  color: #000000 !important;
-  @include breakpoint-xs {
-    margin: 0 !important;
-  }
-
-  p {
-    @include breakpoint-xs {
-      margin: 0 !important;
-    }
-  }
-}
-
-correct-option {
-  color: #357a38 !important;
-}
-
-.incorrect-option {
-  color: #f0506e;
-}
-
-.quiz-radio-group {
-  display: inline-flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.quiz-radio-button {
-  margin: 5px;
-  padding: 8px;
-}
-
-.quiz-selected-value {
-  margin: 15px 0;
-}
-
-.margin-bottom-m {
-  margin-bottom: $size-m;
-}
-
-.correct-option {
-  color: #357a38 !important;
-}
-
-.incorrect-option {
-  color: #f0506e;
-}
-
-.question {
-  width: 40%;
-  max-width: 200px;
-  height: auto;
-  border: 2px solid;
-  border-radius: 5px;
-  padding: 4px 0px 4px 0px;
-  word-wrap: break-word;
-  text-align: center;
-}
-
-.answer {
-  width: 40%;
-  max-width: 200px;
-  height: auto;
-  border: 2px solid;
-  border-radius: 5px;
-  padding: 2px 0px 2px 0px;
-  word-wrap: break-word;
-  text-align: center;
-}
-
-.background-well {
-  background: #eee;
-}
-.next-button {
-  cursor: pointer;
-  background: #2e6491 !important;
-  color: #ffffff !important;
-  padding: 8px 32px 8px 32px;
-  border-radius: 50px;
-  font-family: Roboto, sans-serif;
-  font-size: 16px !important;
-  font-weight: 400;
-  line-height: 19px;
-  letter-spacing: 0em;
-  text-align: center !important;
-  border: none !important;
-  height: 40px !important;
-}
-.back-button {
-  cursor: pointer;
-  background: #ffffff !important;
-  padding: 8px 32px 8px 32px;
-  border-radius: 50px;
-  font-family: Roboto, sans-serif;
-  font-size: 16px !important;
-  font-weight: 400;
-  line-height: 19px;
-  letter-spacing: 0em;
-  text-align: center !important;
-  height: 40px !important;
-  color: #1c5d95 !important;
-  border: 1px solid #1c5d95 !important;
-}
-.skip-button {
-  cursor: pointer;
-  background: #ffffff !important;
-  color: #1c5d95 !important;
-  padding: 8px 32px 8px 32px;
-  border-radius: 50px;
-  font-family: Roboto, sans-serif;
-  font-size: 16px !important;
-  font-weight: 400;
-  line-height: 19px;
-  letter-spacing: 0em;
-  text-align: center !important;
-  border: 1px solid !important;
-  height: 40px !important;
-  border-color: #1c5d95 !important;
-}
-.disabled-back-button {
-  background: #bfbfbf !important;
-  color: #808080 !important;
-  cursor: not-allowed !important;
-  border: none !important;
-}
-
-.submit-button {
-  cursor: pointer;
-  background: #1c5d95 !important;
-  color: #ffffff !important;
-  padding: 8px 32px 8px 32px;
-  border-radius: 50px;
-  font-family: Roboto, sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 19px;
-  letter-spacing: 0em;
-  text-align: center;
-  border: none;
+.vq-btn {
+  min-width: 96px;
   height: 40px;
+  padding: 0 20px;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid #133e64;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.vq-btn--primary {
+  border: 1px solid #1c5d95;
+  background: #1c5d95;
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: #174b79;
+    border-color: #174b79;
+  }
+}
+
+.vq-btn--secondary {
+  border: 1px solid #1c5d95;
+  background: #fff;
+  color: #1c5d95;
+
+  &:hover:not(:disabled) {
+    background: #eef3f8;
+  }
 }
 
 @media screen and (max-width: 600px) {
-  .skip-button .back-button .submit-button {
-    cursor: pointer;
-    padding: 8px 22px 8px 22px;
-    border-radius: 50px;
-    font-family: Roboto, sans-serif;
-    font-size: 12px !important;
-    font-weight: 400;
-    line-height: 14px;
-    letter-spacing: 0em;
-    text-align: center !important;
-    border: none !important;
-    height: 30px !important;
+  .vq {
+    padding: 16px;
   }
-  .button-container {
-    gap: 10px !important;
+
+  .vq-options {
+    grid-template-columns: 1fr;
   }
-}
 
-::ng-deep .theme-igot.day-mode .mat-list-option:hover,
-.theme-igot.day-mode .mat-list-option:focus,
-.theme-igot.day-mode .mat-nav-list .mat-list-item:hover,
-.theme-igot.day-mode .mat-nav-list .mat-list-item:focus,
-.theme-igot.day-mode .mat-action-list .mat-list-item:hover,
-.theme-igot.day-mode .mat-action-list .mat-list-item:focus {
-  background: rgba(255, 255, 255, 0.04);
-}
-.questions-header {
-  font-family: Roboto, sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16.41px;
-  text-align: left;
-  text-underline-position: from-font;
-  text-decoration-skip-ink: none;
-  color: #257cc7;
-}
-.question-option {
-  //styleName: Body;
-  font-family: Roboto, sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  letter-spacing: -0.02em;
-  text-align: left;
-  text-underline-position: from-font;
-  text-decoration-skip-ink: none;
-  color: #000000 !important;
-}
-.theme-igot.day-mode .mat-radio-button .mat-radio-container .mat-radio-inner-circle {
-  background-color: #424242 !important;
-}
-.correct-answer {
-  background-color: #e8f4f2 !important;
-  color: #469788 !important;
-}
-.wrong-answer {
-  background-color: #ffdfdd !important;
-  color: #ed2c23 !important;
-}
-.result-message {
-  border-radius: 8px 8px 0px 0px;
-}
-.result-message-container {
-  display: flex;
-  justify-content: end;
-  /* align-items: end; */
-  // width: 50%;
-  flex-direction: column;
-}
-.result-answer-info {
-  border-radius: 0px 0px 8px 8px;
-
-  font-family: Roboto, sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16.41px;
-  letter-spacing: -0.02em;
-  text-align: left;
-  text-underline-position: from-font;
-  text-decoration-skip-ink: none;
-  color: #000000 !important;
-}
-.result-text {
-  font-family: Roboto, sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16.41px;
-  letter-spacing: -0.02em;
-  text-align: left;
-  text-underline-position: from-font;
-  text-decoration-skip-ink: none;
+  .vq-actions .vq-btn {
+    flex: 1 1 auto;
+  }
 }
