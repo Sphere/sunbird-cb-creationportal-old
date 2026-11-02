@@ -32,12 +32,11 @@
     <mat-sidenav [mode]="sidenavMode" class="sidenav" #sidenav [opened]="sidenavOpenDefault">
       <p class="sidenav-heading" i18n>Questions</p>
       <div class="question-grid">
-        <div
-          class="q-cell"
+        <button
+          type="button"
+          class="btn-reset btn-block q-cell"
           *ngFor="let question of quizJson?.questions; let i = index"
           (click)="scroll(i + 1)"
-          (keydown)="isActivationKey($event) && scroll(i + 1)"
-          [attr.tabindex]="0"
           [ngClass]="{
             'q-cell--marked': isQuestionMarked(question?.questionId),
             'q-cell--attempted': !isQuestionMarked(question?.questionId) && isQuestionAttempted(question?.questionId),
@@ -45,7 +44,7 @@
           }"
         >
           {{ i + 1 }}
-        </div>
+        </button>
       </div>
     </mat-sidenav>
 

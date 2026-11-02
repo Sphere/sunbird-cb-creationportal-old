@@ -19,16 +19,19 @@ describe('app-toc accessibility', () => {
   describe('learner banner: the organisation link', () => {
     const template = read('app-learner-banner', 'app-learner-banner.component.html')
 
-    it('is reachable by keyboard, not only by mouse', () => {
-      expect(template).toContain('(keydown)="isActivationKey($event) && showOrgprofile(content?.sourceName)"')
+    // A native <button> now (Sonar: tabindex only on interactive elements). It is
+    // focusable, announced as a button and fires its click on Enter/Space by itself,
+    // which the old span needed tabindex, role and a keydown handler to imitate.
+    it('is a native button, so keyboard and screen readers get it for free', () => {
+      expect(template).toMatch(/<button\s+type="button"[^>]*\(click\)="showOrgprofile\(content\?\.sourceName\)"/)
     })
 
-    it('is focusable', () => {
-      expect(template).toMatch(/\[attr\.tabindex\]="0"/)
-    })
-
-    it('announces itself as a button, since it is a span', () => {
-      expect(template).toContain('role="button"')
+    it('needs no tabindex, role or duplicate keydown', () => {
+      const button = template.slice(
+        template.indexOf('(click)="showOrgprofile'),
+        template.indexOf('</button>', template.indexOf('(click)="showOrgprofile')),
+      )
+      expect(button).not.toMatch(/tabindex|role="button"|\(keydown\)/)
     })
 
     it('still opens the org profile on click', () => {

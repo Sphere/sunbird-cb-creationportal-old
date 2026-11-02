@@ -37,6 +37,10 @@ export class PlayerPdfComponent
   extends WidgetBaseComponent
   implements OnInit, AfterViewInit, OnDestroy, OnChanges, NsWidgetResolver.IWidgetData<any>
 {
+  private static nextId = 0
+  /** Unique per instance, so two players on one page never share a label id. */
+  readonly pageInputId = `player-pdf-page-number-${PlayerPdfComponent.nextId++}`
+
   /** Enter/Space keyboard equivalent for (click) handlers. */
   readonly isActivationKey = isActivationKey
 

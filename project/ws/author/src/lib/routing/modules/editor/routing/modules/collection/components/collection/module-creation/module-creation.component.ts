@@ -115,13 +115,20 @@ import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/l
 
 import { UserIndexConfirmComponent } from '@ws/author/src/lib/modules/shared/components/user-index-confirm/user-index-confirm.component'
 
-import { ContentProgressService } from '@ws-widget/collection'
+import { ContentProgressService, HTML_PACKAGE_TYPE, isHtmlPackage, VIEWER_ROUTE_FROM_MIME } from '@ws-widget/collection'
 
 import moment from 'moment'
 
 import { NewImageCropComponent } from '@ws-widget/utils/src/public-api'
 
 import { isActivationKey, randomInt, stripHtmlTags } from '@ws-widget/utils'
+import {
+  checkZipPackage,
+  HTML_ENTRY_FILE,
+  snapshotFolderUrl,
+  zipPackageMessage,
+} from '@ws/author/src/lib/modules/shared/components/zip-upload-dialogs/zip-package.util'
+import { NO_CONFIG_DEFAULT, configDefault, emptiedFieldValue, isBooleanConfigField } from '@ws/author/src/lib/utils/config-default'
 @Component({
   standalone: false,
   selector: 'ws-author-module-creation',
@@ -183,6 +190,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       icon: 'cbp-assets/icons/scrom_icon.svg',
       type: 'upload',
     },
+    // The HTML learning format is not approved for production yet. Its code stays dormant:
+    // nothing can create a packageType 'html' resource without this entry, so every zip is
+    // treated as SCORM. Re-add { name: 'HTML', icon: 'cbp-assets/icons/html_icon.svg',
+    // type: 'upload' } here to enable it.
   ]
 
   accessList: any[] = [
@@ -203,6 +214,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   isAddOrEdit: boolean = false
   checkCreator = false
   selectedEntryFile: boolean = false
+  /**
+   * Both SCORM and HTML resources are `application/vnd.ekstep.html-archive` zips.
+   * SCORM lets the author pick the entry file; an HTML package always opens at
+   * its root index.html.
+   */
+  zipPackageType: 'scorm' | 'html' = 'scorm'
   fileUploaded: any = []
   isFalse: boolean = false
   parentHierarchy: number[] = []
@@ -369,6 +386,40 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         this.setSettingsPage()
       }
     }
+  }
+
+  // Course Builder "Preview": plays the resource that is open in the builder, or
+  // the course's first resource when none is open. Only a course with no
+  // resources yet falls back to the course contents page.
+  previewResource(): void {
+    const open = this.showAddModuleForm && this.editItem ? this.content : null
+    const target = this.isPlayableResource(open) ? open : this.firstResource((this.courseData && this.courseData.children) || [])
+    if (!target) {
+      this.router.navigateByUrl(`/author/toc/${this.courseData ? this.courseData.identifier : ''}/contents`)
+      return
+    }
+    const route = VIEWER_ROUTE_FROM_MIME(target.mimeType)
+    this.router.navigateByUrl(
+      `/author/viewer/${route}/${target.identifier}?collectionId=${this.courseData.identifier}&collectionType=Course`,
+    )
+  }
+
+  private isPlayableResource(node: any): boolean {
+    return !!node && !!node.identifier && !!node.mimeType && node.contentType !== 'CourseUnit'
+  }
+
+  // Depth-first, in course order, so modules are searched before later siblings.
+  private firstResource(nodes: any[]): any {
+    for (const node of nodes) {
+      if (this.isPlayableResource(node)) {
+        return node
+      }
+      const nested = node && node.children && node.children.length ? this.firstResource(node.children) : null
+      if (nested) {
+        return nested
+      }
+    }
+    return null
   }
 
   // Counts the resource leaves in the course: any node that is not a module
@@ -767,8 +818,14 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         break
     }
   }
+  /** The parent's status; tolerates a parent missing from the loaded content (was a TypeError). */
+  private parentStatus(): string | undefined {
+    const original = this.contentService.originalContent[this.currentParentId]
+    return original ? original.status : this.contentService.getUpdatedMeta(this.currentParentId)?.status
+  }
+
   getAction(): string {
-    switch (this.contentService.originalContent[this.currentParentId].status) {
+    switch (this.parentStatus()) {
       case 'Draft':
       case 'Live':
         return 'sendForReview'
@@ -1599,7 +1656,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
    * in. Was 28 duplicated lines of paired switches; the table lives in the helper.
    */
   getMessage(type: 'success' | 'failure') {
-    return getStatusMessage(this.contentService.originalContent[this.currentParentId].status, type)
+    return getStatusMessage(this.parentStatus() as string, type)
   }
   async changeStatusToDraft(comment: string) {
     //const originalData = this.contentService.getOriginalMeta(this.contentService.parentContent)
@@ -2513,12 +2570,24 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.setContentType(type, 'video')
     } else if (name == 'SCORM v1.1/1.2') {
+      this.zipPackageType = 'scorm'
       this.uploadText = '.zip'
       this.isLinkEnabled = false
       this.isShowDownloadBtnEnabled = false
       this.isAssessmentOrQuizEnabled = false
       this.isPdfOrAudioOrVedioEnabled = true
       this.resourceImg = 'cbp-assets/images/SCROM-img.svg'
+      this.acceptType = '.zip'
+      this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
+      this.setContentType(type, 'zip')
+    } else if (name == 'HTML') {
+      this.zipPackageType = 'html'
+      this.uploadText = '.zip with index.html at the top level'
+      this.isLinkEnabled = false
+      this.isShowDownloadBtnEnabled = false
+      this.isAssessmentOrQuizEnabled = false
+      this.isPdfOrAudioOrVedioEnabled = true
+      this.resourceImg = 'cbp-assets/icons/html_icon.svg'
       this.acceptType = '.zip'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       this.setContentType(type, 'zip')
@@ -2735,14 +2804,17 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
     } else if (content.mimeType === 'application/vnd.ekstep.html-archive') {
+      // Only an HTML resource carries packageType 'html'; anything else (all existing SCORM) is SCORM.
+      this.zipPackageType = isHtmlPackage(content) ? 'html' : 'scorm'
+      const isHtml = this.zipPackageType === 'html'
       this.uploadFileName = content.artifactUrl ? content.artifactUrl.split('/').pop() : ''
-      this.uploadIcon = 'cbp-assets/images/SCROM-img.svg'
-      this.uploadText = '.zip'
+      this.uploadIcon = isHtml ? 'cbp-assets/icons/html_icon.svg' : 'cbp-assets/images/SCROM-img.svg'
+      this.uploadText = isHtml ? '.zip with index.html at the top level' : '.zip'
       this.isShowDownloadBtnEnabled = false
       this.isLinkEnabled = false
       this.isAssessmentOrQuizEnabled = false
       this.isPdfOrAudioOrVedioEnabled = true
-      this.resourceImg = 'cbp-assets/images/SCROM-img.svg'
+      this.resourceImg = isHtml ? 'cbp-assets/icons/html_icon.svg' : 'cbp-assets/images/SCROM-img.svg'
       this.acceptType = '.zip'
       this.valueSvc.isXSmall$.subscribe(isMobile => (this.isMobile = isMobile))
       //this.subAction({ type: 'editContent', identifier: this.content.identifier, nodeClicked: false })
@@ -2876,7 +2948,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
 
   uploadAppIcon(file: File) {
     const formdata = new FormData()
-    const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
+    const fileName = file.name.replaceAll(/[^A-Za-z0-9.]/g, '')
     if (!(IMAGE_SUPPORT_TYPES.indexOf(`.${fileName.toLowerCase().split('.').pop()}`) > -1)) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -3741,6 +3813,10 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       topicName: type.type === 'collection' ? 'Add Module' : 'Resource',
       isAssessment: this.assessment,
       isCorrectAnswerPopUp: this.assessment && !this.isSelfAssessment ? false : undefined,
+      // Saved on create so an HTML draft re-opens as HTML before its zip is uploaded:
+      // packageType marks it as HTML, entryPoint is the page players launch.
+      entryPoint: filetype === 'zip' && this.zipPackageType === 'html' ? `/${HTML_ENTRY_FILE}` : undefined,
+      packageType: filetype === 'zip' && this.zipPackageType === 'html' ? HTML_PACKAGE_TYPE : undefined,
     }
     if (type.type === 'collection') {
       this.storeService.parentData = this.courseData
@@ -3895,7 +3971,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
 
   uploadResourceAppIcon(file: File) {
     const formdata = new FormData()
-    const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
+    const fileName = file.name.replaceAll(/[^A-Za-z0-9.]/g, '')
 
     if (!(IMAGE_SUPPORT_TYPES.indexOf(`.${fileName.toLowerCase().split('.').pop()}`) > -1)) {
       this.snackBar.openFromComponent(NotificationComponent, {
@@ -4100,17 +4176,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
                 meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
               }
             } else {
-              if (this.initService.authConfig[v as keyof IFormMeta] && this.initService.authConfig[v as keyof IFormMeta].defaultValue) {
-                if (v !== 'isIframeSupported') {
-                  meta[v as keyof NSContent.IContentMeta] = JSON.parse(
-                    JSON.stringify(
-                      this.initService.authConfig[v as keyof IFormMeta].defaultValue[
-                        originalMeta.contentType
-                        // tslint:disable-next-line: ter-computed-property-spacing
-                      ][0].value,
-                    ),
-                  )
-                }
+              const fallback = configDefault(this.initService.authConfig, v, originalMeta.contentType)
+              if (fallback !== NO_CONFIG_DEFAULT && v !== 'isIframeSupported') {
+                meta[v as keyof NSContent.IContentMeta] = fallback
               }
             }
           } else if (v === 'versionKey') {
@@ -4149,7 +4217,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     else if (file.type == 'video/m4v') type = '.m4v'
     else type = this.acceptType
 
-    const fileName = file.name.replace(/[^A-Za-z0-9_.]/g, '')
+    const fileName = file.name.replaceAll(/[^A-Za-z0-9_.]/g, '')
     if (fileName.toLowerCase().endsWith(type)) {
       if (
         !fileName.toLowerCase().endsWith('.pdf') &&
@@ -4269,7 +4337,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     if (this.mimeType == 'application/pdf') {
       this.uploadIcon = 'cbp-assets/images/pdf-icon.png'
     } else if (this.mimeType == 'application/vnd.ekstep.html-archive') {
-      this.uploadIcon = 'cbp-assets/images/SCROM-img.svg'
+      this.uploadIcon = this.zipPackageType === 'html' ? 'cbp-assets/icons/html_icon.svg' : 'cbp-assets/images/SCROM-img.svg'
     } else {
       this.uploadIcon = 'cbp-assets/images/video-icon.png'
     }
@@ -4283,22 +4351,38 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
   extractFile() {
     this.errorFileList = []
     this.fileList = []
+    // Reading a large zip takes a moment after "I Agree"; show progress from here.
+    this.loader.changeLoad.next(true)
     zip.useWebWorkers = false
-    ;(zip as any).createReader(new (zip as any).BlobReader(this.file as File), (reader: any) => {
-      reader.getEntries((entry: any[]) => {
-        entry.forEach(element => {
-          // if (element.filename.match(/[^A-Za-z0-9_.\-\/]/g)) {
-          //   this.errorFileList.push(element.filename)
-          // } else if (!element.directory) {
-          this.fileList.push(element.filename)
-          // }
+    ;(zip as any).createReader(
+      new (zip as any).BlobReader(this.file as File),
+      (reader: any) => {
+        reader.getEntries((entry: any[]) => {
+          entry.forEach(element => {
+            // if (element.filename.match(/[^A-Za-z0-9_.\-\/]/g)) {
+            //   this.errorFileList.push(element.filename)
+            // } else if (!element.directory) {
+            this.fileList.push(element.filename)
+            // }
+          })
+          this.processAndShowResult()
         })
-        this.processAndShowResult()
-      })
-    })
+      },
+      () => {
+        this.loader.changeLoad.next(false)
+        this.file = null
+        this.uploadFileName = ''
+        this.snackBar.open('This file could not be read as a zip. Check the file and upload it again.', 'OK', {
+          duration: NOTIFICATION_TIME * 2000,
+        })
+      },
+    )
   }
 
   processAndShowResult() {
+    // Every branch either waits for the author (a dialog or message) or hands
+    // over to triggerUpload, which shows the loader again for the upload.
+    this.loader.changeLoad.next(false)
     if (this.errorFileList.length) {
       this.file = null
       this.dialog.open(this.errorFile, {
@@ -4310,12 +4394,27 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         const error = document.getElementById('errorFiles')
         if (error) {
           for (let i = 0; i < error.children.length; i += 1) {
-            error.children[i].innerHTML = error.children[i].innerHTML.replace(/[^A-Za-z0-9./]/g, match => {
+            error.children[i].innerHTML = error.children[i].innerHTML.replaceAll(/[^A-Za-z0-9./]/g, match => {
               return `<i style=background-color:red;font-weight:bold>${match}</i>`
             })
           }
         }
       })
+      return
+    }
+    const check = checkZipPackage(this.fileList)
+    if (!check.valid) {
+      this.file = null
+      this.uploadFileName = ''
+      this.snackBar.open(zipPackageMessage(check), 'OK', { duration: NOTIFICATION_TIME * 2000 })
+      return
+    }
+    if (this.zipPackageType === 'html') {
+      this.fileUploadCondition.url = HTML_ENTRY_FILE
+      this.entryPoint = `/${HTML_ENTRY_FILE}`
+      this.selectedEntryFile = true
+      this.uploadFileName = (this.file as File).name.replaceAll(/[^A-Za-z0-9_.]/g, '')
+      this.triggerUpload()
     } else {
       const dialogRef = this.dialog.open(this.selectFile, {
         width: this.isMobile ? '90vw' : '600px',
@@ -4332,7 +4431,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           this.fileUploadCondition.url &&
           this.selectedEntryFile
         ) {
-          const fileName = this.fileUploaded.name.replace(/[^A-Za-z0-9_.]/g, '')
+          const fileName = this.fileUploaded.name.replaceAll(/[^A-Za-z0-9_.]/g, '')
           this.uploadFileName = fileName
           // this.assignFileValues(this.fileUploaded, fileName)
           this.triggerUpload()
@@ -4783,6 +4882,9 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         duration: NOTIFICATION_TIME * 1000,
       })
     } else {
+      // Shown from the first request: the update and hierarchy read before the
+      // upload take a few seconds, and the screen looked idle meanwhile.
+      this.loader.changeLoad.next(true)
       this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
       this.storeData()
 
@@ -4832,15 +4934,20 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           this.contentService.resetOriginalMetaWithHierarchy(hierarchyData)
           this.upload()
         } else {
+          this.loader.changeLoad.next(false)
           this.errorMessage()
         }
+      } else {
+        // The save before the upload failed: it used to stop silently here.
+        this.loader.changeLoad.next(false)
+        this.errorMessage()
       }
     }
   }
 
   upload() {
     const formdata = new FormData()
-    formdata.append('content', this.file as Blob, (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''))
+    formdata.append('content', this.file as Blob, (this.file as File).name.replaceAll(/[^A-Za-z0-9_.]/g, ''))
     this.loader.changeLoad.next(true)
     this.uploadService
       .upload(
@@ -4884,9 +4991,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
           this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
           if (this.mimeType === 'application/vnd.ekstep.html-archive' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
             this.fileUploadForm.controls.isExternal.setValue(false)
-            this.fileUploadForm.controls['streamingUrl'].setValue(
-              v ? this.generateStreamUrl(this.fileUploadCondition.url ? this.fileUploadCondition.url : '') : '',
-            )
+            this.fileUploadForm.controls['streamingUrl'].setValue(v ? this.generateStreamUrl(artifactUrl) : '')
             this.fileUploadForm.controls['entryPoint'].setValue(this.entryPoint ? this.entryPoint : '')
             this.fileUploadForm.controls.duration.setValue(this.duration)
           }
@@ -4951,8 +5056,12 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     }
     content.src = URL.createObjectURL(file)
   }
-  generateStreamUrl(fileName: string) {
-    return `${environment.azureHost}/${environment.azureBucket}/html/${this.currentContent}-snapshot/${fileName}`
+  /**
+   * The unzipped package folder, without the entry file: the viewer appends
+   * `entryPoint`, and publish replaces this with the `-latest` folder.
+   */
+  generateStreamUrl(artifactUrl: string): string {
+    return snapshotFolderUrl(this.currentContent, artifactUrl, `${environment.azureHost}/${environment.azureBucket}`)
   }
 
   profanityCheckAPICall(url: string) {
@@ -4977,20 +5086,22 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
         v !== 'versionKey' &&
         JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !== JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])
       ) {
-        if (currentMeta[v] || (this.initService.authConfig[v as keyof IFormMeta].type === 'boolean' && currentMeta[v] === false)) {
+        if (currentMeta[v] || (isBooleanConfigField(this.initService.authConfig, v) && currentMeta[v] === false)) {
           if (v !== 'duration') {
             meta[v] = currentMeta[v]
           }
         } else {
           if (v !== 'duration') {
-            meta[v] = JSON.parse(
-              JSON.stringify(
-                this.initService.authConfig[v as keyof IFormMeta].defaultValue[
-                  originalMeta.contentType
-                  // tslint:disable-next-line: ter-computed-property-spacing
-                ][0].value,
-              ),
+            const value = emptiedFieldValue(
+              this.initService.authConfig,
+              v,
+              originalMeta.contentType,
+              currentMeta[v],
+              originalMeta[v as keyof NSContent.IContentMeta],
             )
+            if (value !== NO_CONFIG_DEFAULT) {
+              meta[v] = value
+            }
           }
         }
       } else if (v === 'versionKey') {

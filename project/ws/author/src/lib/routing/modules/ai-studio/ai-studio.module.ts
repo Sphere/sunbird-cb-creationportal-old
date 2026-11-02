@@ -48,7 +48,7 @@ const AI_STUDIO_API_BASE = '/apis/protected/v8/aiStudio'
  * "Mary-Jane O'Brien".
  */
 function toDisplayName(name: string): string {
-  return name.replace(/[^\s\-']+/g, word => {
+  return name.replaceAll(/[^\s\-']+/g, word => {
     const uniform = word === word.toLowerCase() || word === word.toUpperCase()
     return uniform ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() : word
   })

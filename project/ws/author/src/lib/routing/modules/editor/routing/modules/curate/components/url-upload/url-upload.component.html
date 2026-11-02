@@ -13,15 +13,19 @@
       </div> -->
 
       <div class="margin-top-xl" [ngClass]="{ disable: !isCreatorEnable }">
-        <p class="font-weight-bold margin-remove-bottom" i18n>
-          Link
+        <p class="font-weight-bold margin-remove-bottom">
+          <label for="url-upload-artifact-url" i18n>Link</label>
         </p>
-        <mat-form-field appearance="outline" class="margin-top-xs" style="width: 80%;">
-          <input type="url" matInput formControlName="artifactUrl" i18n-placeholder
-            placeholder="Enter or paste URL here" />
-          <mat-error *ngIf="showError(urlUploadForm.controls.artifactUrl)" i18n>
-            URL is mandatory
-          </mat-error>
+        <mat-form-field appearance="outline" class="margin-top-xs" style="width: 80%">
+          <input
+            id="url-upload-artifact-url"
+            type="url"
+            matInput
+            formControlName="artifactUrl"
+            i18n-placeholder
+            placeholder="Enter or paste URL here"
+          />
+          <mat-error *ngIf="showError(urlUploadForm.controls.artifactUrl)" i18n> URL is mandatory </mat-error>
         </mat-form-field>
       </div>
       <!-- <div class="margin-top-xs">
@@ -36,12 +40,9 @@
         </mat-form-field>
       </div> -->
       <div class="margin-top-xs" [ngClass]="{ disable: !isCreatorEnable }">
-        <p class="font-weight-bold margin-remove-bottom" i18n>
-          Opens in a new tab?
-        </p>
+        <p class="font-weight-bold margin-remove-bottom" i18n>Opens in a new tab?</p>
         <mat-form-field appearance="outline" class="margin-top-xs">
-          <mat-select formControlName="isIframeSupported" placeholder="e.g. Yes"
-            (selectionChange)=isIframeSupportedClicked()>
+          <mat-select formControlName="isIframeSupported" placeholder="e.g. Yes" (selectionChange)="isIframeSupportedClicked()">
             <mat-option [value]="'Yes'" i18n>Yes</mat-option>
             <mat-option [value]="'No'" i18n>No</mat-option>
           </mat-select>

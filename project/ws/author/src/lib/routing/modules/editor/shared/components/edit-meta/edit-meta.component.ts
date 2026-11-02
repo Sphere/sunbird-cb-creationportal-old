@@ -100,6 +100,7 @@ import { isNumber } from 'lodash'
 import _ from 'lodash'
 
 import { EditMetaBaseComponent } from './edit-meta-base.component'
+import { NO_CONFIG_DEFAULT, configDefault, emptiedFieldValue, isBooleanConfigField } from '@ws/author/src/lib/utils/config-default'
 
 @Component({
   standalone: false,
@@ -713,24 +714,17 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
       try {
         if (
           this.contentMeta[v as keyof NSContent.IContentMeta] ||
-          (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' &&
-            this.contentMeta[v as keyof NSContent.IContentMeta] === false)
+          (isBooleanConfigField(this.authInitService.authConfig, v) && this.contentMeta[v as keyof NSContent.IContentMeta] === false)
         ) {
           this.contentForm.controls[v].setValue(this.contentMeta[v as keyof NSContent.IContentMeta])
         } else {
           if (v === 'expiryDate') {
             this.contentForm.controls[v].setValue(new Date(new Date().setMonth(new Date().getMonth() + 60)))
           } else {
-            this.contentForm.controls[v].setValue(
-              JSON.parse(
-                JSON.stringify(
-                  this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                    this.contentMeta.contentType
-                    // tslint:disable-next-line: ter-computed-property-spacing
-                  ][0].value,
-                ),
-              ),
-            )
+            const fallback = configDefault(this.authInitService.authConfig, v, this.contentMeta.contentType)
+            if (fallback !== NO_CONFIG_DEFAULT) {
+              this.contentForm.controls[v].setValue(fallback)
+            }
           }
         }
         //this.contentForm.controls.isIframeSupported.setValue(this.contentMeta.isIframeSupported)
@@ -858,7 +852,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
 
         const meta = <any>{}
         if (this.canExpiry) {
-          currentMeta.expiryDate = `${expiryDate.toISOString().replace(/-/g, '').replace(/:/g, '').split('.')[0]}+0000`
+          currentMeta.expiryDate = `${expiryDate.toISOString().replaceAll(/-/g, '').replaceAll(/:/g, '').split('.')[0]}+0000`
         }
         Object.keys(currentMeta).forEach(v => {
           if (
@@ -875,20 +869,9 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
             ) {
               meta[v as keyof NSContent.IContentMeta] = currentMeta[v as keyof NSContent.IContentMeta]
             } else {
-              if (
-                this.authInitService.authConfig[v as keyof IFormMeta] &&
-                this.authInitService.authConfig[v as keyof IFormMeta].defaultValue
-              ) {
-                if (v !== 'isIframeSupported') {
-                  meta[v as keyof NSContent.IContentMeta] = JSON.parse(
-                    JSON.stringify(
-                      this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                        originalMeta.contentType
-                        // tslint:disable-next-line: ter-computed-property-spacing
-                      ][0].value,
-                    ),
-                  )
-                }
+              const fallback = configDefault(this.authInitService.authConfig, v, originalMeta.contentType)
+              if (fallback !== NO_CONFIG_DEFAULT && v !== 'isIframeSupported') {
+                meta[v as keyof NSContent.IContentMeta] = fallback
               }
             }
           } else if (v === 'versionKey') {
@@ -1144,7 +1127,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
 
   uploadAppIcon(file: File) {
     const formdata = new FormData()
-    const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
+    const fileName = file.name.replaceAll(/[^A-Za-z0-9.]/g, '')
     if (!(IMAGE_SUPPORT_TYPES.indexOf(`.${fileName.toLowerCase().split('.').pop()}`) > -1)) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -1198,7 +1181,7 @@ export class EditMetaComponent extends EditMetaBaseComponent implements OnInit, 
   }
   uploadSourceIcon(file: File) {
     const formdata = new FormData()
-    const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
+    const fileName = file.name.replaceAll(/[^A-Za-z0-9.]/g, '')
     if (!(IMAGE_SUPPORT_TYPES.indexOf(`.${fileName.toLowerCase().split('.').pop()}`) > -1)) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {

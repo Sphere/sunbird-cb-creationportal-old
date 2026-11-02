@@ -6,8 +6,10 @@
 </div>
 <mat-dialog-content>
   <form [formGroup]="userActionForm">
+    <label class="sr-only" for="auth-expiry-comments" i18n>Reason for extending or deleting</label>
     <mat-form-field appearance="fill" class="width-1-1">
       <textarea
+        id="auth-expiry-comments"
         rows="3"
         matInput
         placeholder=" For eg. This content is extended because..."
@@ -40,8 +42,9 @@
           <b i18n>Set New Expiry date</b>
           <br />
         </span>
+        <label class="sr-only" for="auth-expiry-new-date" i18n>New expiry date</label>
         <mat-form-field class="example-full-width">
-          <input matInput formControlName="expiryDate" [min]="minDate" [matDatepicker]="picker" />
+          <input id="auth-expiry-new-date" matInput formControlName="expiryDate" [min]="minDate" [matDatepicker]="picker" />
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>

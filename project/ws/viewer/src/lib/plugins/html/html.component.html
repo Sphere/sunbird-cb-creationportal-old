@@ -1,90 +1,137 @@
-<mat-card class="ws-mat-primary-lite-background-on-day margin-top-s ml-5"
-  *ngIf="showIframeSupportWarning || isIntranetUrl || htmlContent?.isInIntranet">
+<mat-card
+  class="ws-mat-primary-lite-background-on-day margin-top-s ml-5"
+  *ngIf="showIframeSupportWarning || isIntranetUrl || htmlContent?.isInIntranet"
+>
   <mat-card-content>
-    <h2 class="mat-h2" *ngIf="
-        isIntranetUrl || htmlContent?.isInIntranet || htmlContent?.isIframeSupported === 'Maybe'
-      ">
-      <ng-container *ngIf="
+    <h2 class="mat-h2" *ngIf="isIntranetUrl || htmlContent?.isInIntranet || htmlContent?.isIframeSupported === 'Maybe'">
+      <ng-container
+        *ngIf="
           ((isIntranetUrl && htmlContent?.isIframeSupported === 'Maybe') ||
             (htmlContent?.isInIntranet && htmlContent?.isIframeSupported === 'Maybe')) &&
           !isUserInIntranet
-        " i18n>
+        "
+        i18n
+      >
         This content can only be viewed in Intranet.
       </ng-container>
       <ng-container *ngIf="htmlContent?.isIframeSupported === 'Maybe'" i18n>
-        Content may be required to be opened in a new window. If you are unable to view it, Please
-        click on the Open in New Window Button else Dismiss
+        Content may be required to be opened in a new window. If you are unable to view it, Please click on the Open in New Window Button
+        else Dismiss
       </ng-container>
     </h2>
-    <h2 class="mat-h2" *ngIf="
-        isIntranetUrl ||
-        htmlContent?.isInIntranet ||
-        (htmlContent?.isIframeSupported === 'No' || !htmlContent?.isIframeSupported)
-      ">
-      <ng-container *ngIf="
-          ((isIntranetUrl &&
-            (htmlContent?.isIframeSupported === 'No' || !htmlContent?.isIframeSupported)) ||
-            (htmlContent?.isInIntranet &&
-              (htmlContent?.isIframeSupported === 'No' || !htmlContent?.isIframeSupported))) &&
+    <h2
+      class="mat-h2"
+      *ngIf="isIntranetUrl || htmlContent?.isInIntranet || htmlContent?.isIframeSupported === 'No' || !htmlContent?.isIframeSupported"
+    >
+      <ng-container
+        *ngIf="
+          ((isIntranetUrl && (htmlContent?.isIframeSupported === 'No' || !htmlContent?.isIframeSupported)) ||
+            (htmlContent?.isInIntranet && (htmlContent?.isIframeSupported === 'No' || !htmlContent?.isIframeSupported))) &&
           !isUserInIntranet
-        " i18n>This content can only be viewed in Intranet
+        "
+        i18n
+        >This content can only be viewed in Intranet
       </ng-container>
       <ng-container *ngIf="htmlContent?.isIframeSupported === 'Yes' || !htmlContent?.isIframeSupported">
         <span i18n>Content will open in a new window. If you are unable to view it, click on the button below.</span>
-        <a [routerLink]="'/app/info/faq'" [queryParams]="{tab: 'popup'}">
-          <mat-icon matTooltip="How to Disable Pop-ups" class="align-text-top ws-mat-primary-text">help
-          </mat-icon>
+        <a [routerLink]="'/app/info/faq'" [queryParams]="{ tab: 'popup' }">
+          <mat-icon matTooltip="How to Disable Pop-ups" class="align-text-top ws-mat-primary-text">help </mat-icon>
         </a>
       </ng-container>
     </h2>
-    <h2 class="mat-h2" *ngIf="
+    <h2
+      class="mat-h2"
+      *ngIf="
         (isIntranetUrl && htmlContent?.isIframeSupported === 'Yes') ||
         (htmlContent?.isInIntranet && htmlContent?.isIframeSupported === 'Yes')
-      " i18n>
+      "
+      i18n
+    >
       This content can only be viewed in Intranet.
     </h2>
     <mat-divider></mat-divider>
-    <mat-progress-bar mode="determinate"
-      *ngIf="progress > 0 && htmlContent?.isIframeSupported?.toLowerCase() === 'yes'&&htmlContent?.mimeType !== 'application/vnd.ekstep.html-archive'"
-      [value]="progress"></mat-progress-bar>
+    <mat-progress-bar
+      mode="determinate"
+      *ngIf="
+        progress > 0 &&
+        htmlContent?.isIframeSupported?.toLowerCase() === 'yes' &&
+        htmlContent?.mimeType !== 'application/vnd.ekstep.html-archive'
+      "
+      [value]="progress"
+    ></mat-progress-bar>
 
     <div class="flex flex-between padding-top-s" *ngIf="htmlContent?.isIframeSupported !== 'Yes'">
-      <a type="button" [ngClass]="mobAppSvc?.isMobile ? 'block' : 'hidden'" mat-button
-        [href]="this.htmlContent?.artifactUrl" target="_blank" #mobileOpenInNewTab>Open in New Tab</a>
+      <a
+        type="button"
+        [ngClass]="mobAppSvc?.isMobile ? 'block' : 'hidden'"
+        mat-button
+        [href]="this.htmlContent?.artifactUrl"
+        target="_blank"
+        #mobileOpenInNewTab
+        >Open in New Tab</a
+      >
 
-      <button [ngClass]="!mobAppSvc?.isMobile ? 'block' : 'hidden'" mat-raised-button color="primary" type="button" i18n
-        mat-button (click)="openInNewTab()">
+      <button
+        [ngClass]="!mobAppSvc?.isMobile ? 'block' : 'hidden'"
+        mat-raised-button
+        color="primary"
+        type="button"
+        i18n
+        mat-button
+        (click)="openInNewTab()"
+      >
         Open in New Window
       </button>
-      <button type="button" *ngIf="
+      <button
+        type="button"
+        *ngIf="
           htmlContent?.isIframeSupported === 'Maybe' ||
           (isIntranetUrl && htmlContent?.isIframeSupported === 'Yes') ||
           (htmlContent?.isInIntranet && htmlContent?.isIframeSupported === 'Yes')
-        " i18n mat-button (click)="dismiss()">
+        "
+        i18n
+        mat-button
+        (click)="dismiss()"
+      >
         Dismiss
       </button>
     </div>
   </mat-card-content>
 </mat-card>
 
-<h2 class="text-center mat-primary-text margin-top-m load" *ngIf="showIsLoadingMessage" i18n>
-  Please wait! Content requested is loading
-</h2>
-
-<div class="margin-top-m text-center" *ngIf="pageFetchStatus !== 'done'">
-  <h2 *ngIf="pageFetchStatus === 'error'" i18n>
-    Error loading page. Please try refreshing page.
-  </h2>
-  <h2 *ngIf="pageFetchStatus === 'artifactUrlMissing'">
-    <span i18n>There is nothing to play</span> <a class="cursor-pointer ws-mat-primary-text"
-      (click)="backToDetailsPage()"><span i18n>Click here</span></a>
-    <span i18n>to go to details page.</span>
-  </h2>
+<div class="html-loading" *ngIf="showIsLoadingMessage" aria-live="polite">
+  <mat-spinner diameter="28"></mat-spinner>
+  <span i18n>Loading content…</span>
 </div>
 
-<div class="container-v2" *ngIf="htmlContent && htmlContent.isIframeSupported === 'Yes'">
-  <iframe #iframeElem title="HTML Content Viewer" i18n-title [src]="iframeUrl"
-    (load)="onIframeLoadOrError('load',iframeElem,$event)" (error)="onIframeLoadOrError('error')"
-    allow="fullscreen; accelerometer; autoplay; encrypted-media; gyroscope; microphone; camera;"
-    class="html-iframe"></iframe>
+@if (pageFetchStatus === 'error') {
+  <div class="player-state" role="alert">
+    <mat-icon class="player-state-icon" aria-hidden="true">error_outline</mat-icon>
+    <h3 class="player-state-title" i18n>This content could not be loaded</h3>
+    <p class="player-state-text" i18n>Error loading page. Please try refreshing page.</p>
+    <button type="button" class="player-state-btn" (click)="reload()">
+      <mat-icon aria-hidden="true">refresh</mat-icon>
+      <span i18n>Refresh</span>
+    </button>
+  </div>
+} @else if (pageFetchStatus === 'artifactUrlMissing') {
+  <viewer-no-file />
+}
+
+<div
+  class="container-v2"
+  *ngIf="
+    htmlContent && (htmlContent.isIframeSupported === 'Yes' || htmlContent.mimeType === 'application/vnd.ekstep.html-archive') && iframeUrl
+  "
+>
+  <iframe
+    #iframeElem
+    title="HTML Content Viewer"
+    i18n-title
+    [src]="iframeUrl"
+    (load)="onIframeLoadOrError('load', iframeElem, $event)"
+    (error)="onIframeLoadOrError('error')"
+    allow="fullscreen; accelerometer; autoplay; encrypted-media; gyroscope; microphone; camera"
+    class="html-iframe"
+  ></iframe>
 </div>

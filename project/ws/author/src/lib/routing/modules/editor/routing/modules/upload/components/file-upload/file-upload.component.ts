@@ -52,6 +52,12 @@ import { CollectionStoreService } from '../../../collection/services/store.servi
 import { NSApiRequest } from '../../../../../../../../interface/apiRequest'
 
 import { isActivationKey } from '@ws-widget/utils'
+import {
+  checkZipPackage,
+  snapshotFolderUrl,
+  zipPackageMessage,
+} from '@ws/author/src/lib/modules/shared/components/zip-upload-dialogs/zip-package.util'
+import { NO_CONFIG_DEFAULT, configDefault, emptiedFieldValue, isBooleanConfigField } from '@ws/author/src/lib/utils/config-default'
 @Component({
   standalone: false,
   selector: 'ws-auth-file-upload',
@@ -263,7 +269,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
       preview: false,
       url: '',
     }
-    const fileName = file.name.replace(/[^A-Za-z0-9_.]/g, '')
+    const fileName = file.name.replaceAll(/[^A-Za-z0-9_.]/g, '')
     if (
       !fileName.toLowerCase().endsWith('.pdf') &&
       !fileName.toLowerCase().endsWith('.zip') &&
@@ -660,7 +666,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
 
   upload() {
     const formdata = new FormData()
-    formdata.append('content', this.file as Blob, (this.file as File).name.replace(/[^A-Za-z0-9_.]/g, ''))
+    formdata.append('content', this.file as Blob, (this.file as File).name.replaceAll(/[^A-Za-z0-9_.]/g, ''))
     this.loaderService.changeLoad.next(true)
     this.uploadService
       .upload(
@@ -751,9 +757,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
           this.fileUploadForm.controls.mimeType.setValue(this.mimeType)
           if (this.mimeType === 'application/vnd.ekstep.html-archive' && this.file && this.file.name.toLowerCase().endsWith('.zip')) {
             this.fileUploadForm.controls.isExternal.setValue(false)
-            this.fileUploadForm.controls['streamingUrl'].setValue(
-              v ? this.generateStreamUrl(this.fileUploadCondition.url ? this.fileUploadCondition.url : '') : '',
-            )
+            this.fileUploadForm.controls['streamingUrl'].setValue(v ? this.generateStreamUrl(artifactUrl) : '')
             this.fileUploadForm.controls['entryPoint'].setValue(this.entryPoint ? this.entryPoint : '')
           }
 
@@ -819,17 +823,19 @@ export class FileUploadComponent implements OnInit, OnChanges {
         v !== 'versionKey' &&
         JSON.stringify(currentMeta[v as keyof NSContent.IContentMeta]) !== JSON.stringify(originalMeta[v as keyof NSContent.IContentMeta])
       ) {
-        if (currentMeta[v] || (this.authInitService.authConfig[v as keyof IFormMeta].type === 'boolean' && currentMeta[v] === false)) {
+        if (currentMeta[v] || (isBooleanConfigField(this.authInitService.authConfig, v) && currentMeta[v] === false)) {
           meta[v] = currentMeta[v]
         } else {
-          meta[v] = JSON.parse(
-            JSON.stringify(
-              this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                originalMeta.contentType
-                // tslint:disable-next-line: ter-computed-property-spacing
-              ][0].value,
-            ),
+          const value = emptiedFieldValue(
+            this.authInitService.authConfig,
+            v,
+            originalMeta.contentType,
+            currentMeta[v],
+            originalMeta[v as keyof NSContent.IContentMeta],
           )
+          if (value !== NO_CONFIG_DEFAULT) {
+            meta[v] = value
+          }
         }
       } else if (v === 'versionKey') {
         meta[v as keyof NSContent.IContentMeta] = originalMeta[v as keyof NSContent.IContentMeta]
@@ -853,31 +859,48 @@ export class FileUploadComponent implements OnInit, OnChanges {
   extractFile() {
     this.errorFileList = []
     this.fileList = []
+    // Reading a large zip takes a moment; show progress until the result is shown.
+    this.loaderService.changeLoad.next(true)
     zip.useWebWorkers = false
-    ;(zip as any).createReader(new (zip as any).BlobReader(this.file as File), (reader: any) => {
-      reader.getEntries((entry: any[]) => {
-        entry.forEach(element => {
-          // if (element.filename.match(/[^A-Za-z0-9_.\-\/]/g)) {
-          //   this.errorFileList.push(element.filename)
-          // } else if (!element.directory) {
-          this.fileList.push(element.filename)
-          // }
+    ;(zip as any).createReader(
+      new (zip as any).BlobReader(this.file as File),
+      (reader: any) => {
+        reader.getEntries((entry: any[]) => {
+          entry.forEach(element => {
+            // if (element.filename.match(/[^A-Za-z0-9_.\-\/]/g)) {
+            //   this.errorFileList.push(element.filename)
+            // } else if (!element.directory) {
+            this.fileList.push(element.filename)
+            // }
+          })
+          this.processAndShowResult()
         })
-        this.processAndShowResult()
-      })
-    })
+      },
+      () => {
+        this.loaderService.changeLoad.next(false)
+        this.file = null
+        this.snackBar.open('This file could not be read as a zip. Check the file and upload it again.', 'OK', {
+          duration: NOTIFICATION_TIME * 2000,
+        })
+      },
+    )
   }
 
   closeDialog() {
     this.dialog.closeAll()
   }
 
-  generateStreamUrl(fileName: string) {
-    // return `${environment.karmYogi}${environment.scromContentEndpoint}${this.currentContent}-snapshot/${fileName}`
-    return `${environment.azureHost}/${environment.azureBucket}/html/${this.currentContent}-snapshot/${fileName}`
+  /**
+   * The unzipped package folder, without the entry file: the viewer appends
+   * `entryPoint`, and publish replaces this with the `-latest` folder.
+   */
+  generateStreamUrl(artifactUrl: string): string {
+    return snapshotFolderUrl(this.currentContent, artifactUrl, `${environment.azureHost}/${environment.azureBucket}`)
   }
 
   processAndShowResult() {
+    // Each branch below waits for the author, so the reading spinner stops here.
+    this.loaderService.changeLoad.next(false)
     if (this.errorFileList.length) {
       this.file = null
       this.dialog.open(this.errorFile, {
@@ -889,18 +912,24 @@ export class FileUploadComponent implements OnInit, OnChanges {
         const error = document.getElementById('errorFiles')
         if (error) {
           for (let i = 0; i < error.children.length; i += 1) {
-            error.children[i].innerHTML = error.children[i].innerHTML.replace(/[^A-Za-z0-9./]/g, match => {
+            error.children[i].innerHTML = error.children[i].innerHTML.replaceAll(/[^A-Za-z0-9./]/g, match => {
               return `<i style=background-color:red;font-weight:bold>${match}</i>`
             })
           }
         }
       })
-    } else {
-      this.dialog.open(this.selectFile, {
-        width: this.isMobile ? '90vw' : '600px',
-        height: 'auto',
-        panelClass: 'zip-guideline-panel',
-      })
+      return
     }
+    const check = checkZipPackage(this.fileList)
+    if (!check.valid) {
+      this.file = null
+      this.snackBar.open(zipPackageMessage(check), 'OK', { duration: NOTIFICATION_TIME * 2000 })
+      return
+    }
+    this.dialog.open(this.selectFile, {
+      width: this.isMobile ? '90vw' : '600px',
+      height: 'auto',
+      panelClass: 'zip-guideline-panel',
+    })
   }
 }

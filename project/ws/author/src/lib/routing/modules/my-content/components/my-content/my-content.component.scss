@@ -251,8 +251,10 @@
   .mat-nav-container {
     display: flex;
     align-items: center;
-    padding: 14px 16px 14px 0;
-    min-height: 68px;
+    padding: 0 24px 0 0;
+    // Fixed, and equal to the sidebar's "Dashboard" band (.dashboard-txt), so the
+    // two dividers form one line. The heading is two lines (list group + name).
+    height: 88px;
     background: #f3f8fd;
     border-bottom: 1px solid #dce8f3;
     box-sizing: border-box;
@@ -435,7 +437,8 @@ ws-auth-content-card-v2 {
 .currentTab {
   display: flex;
   align-items: center;
-  margin: 0px 0px 0px 24px !important;
+  gap: 10px;
+  margin: 0 !important;
   color: #1c5d95;
   font-family: Roboto, sans-serif;
   font-size: 20px;
@@ -488,7 +491,8 @@ ws-auth-content-card-v2 {
 }
 
 .content-scroll-container {
-  max-height: calc(100vh - 240px);
+  // 20px more than before: the page header grew from 68px to 88px.
+  max-height: calc(100vh - 260px);
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -642,12 +646,12 @@ ws-auth-content-card-v2 {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  // Mirror the main "My Courses : …" header bar: same 68px height, vertically
+  // Mirror the main header bar: same 88px height, vertically
   // centred, full-width bottom divider, anchored at the content top — so both the
   // label and the divider line up across the sidebar and the content header.
   display: flex;
   align-items: center;
-  height: 68px;
+  height: 88px;
   box-sizing: border-box;
   border-bottom: 1px solid #dce8f3;
   line-height: 1;
@@ -788,4 +792,337 @@ ws-auth-content-card-v2 {
 .ai-feature:focus-visible {
   outline: 2px solid #1c5d95;
   outline-offset: -2px;
+}
+
+// ── Page header, toolbar and list states ────────────────────────────────────
+// Text on this page fell back to the browser serif (the result count read as
+// Times); the whole page uses Roboto like the rest of the portal.
+:host {
+  font-family: Roboto, sans-serif;
+}
+
+.page-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-left: 24px;
+  min-width: 0;
+}
+
+.page-eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #5a6a7a;
+}
+
+.page-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 11px;
+  background: #e3edf7;
+  color: #1c5d95;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.lang-btn {
+  color: #1c5d95;
+  font-family: Roboto, sans-serif;
+  font-weight: 500;
+
+  .lang-icon {
+    margin-right: 4px;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.search-icon-btn {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-right: 4px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: #5a6a7a;
+  cursor: pointer;
+
+  &:hover {
+    background: #eef3f8;
+    color: #1a2d45;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 1px;
+  }
+
+  &.search-submit {
+    color: #1c5d95;
+  }
+}
+
+.results-count {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  color: #5a6a7a;
+}
+
+.view-toggle {
+  display: inline-flex;
+  flex: 0 0 auto;
+  padding: 2px;
+  border: 1px solid #d8dde3;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.view-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: #5a6a7a;
+  cursor: pointer;
+
+  &:hover {
+    color: #1a2d45;
+  }
+
+  &.is-active {
+    background: #e3edf7;
+    color: #1c5d95;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 1px;
+  }
+}
+
+.list-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 24px 16px;
+  padding: 40px 24px;
+  border: 1px dashed #d8dde3;
+  border-radius: 12px;
+  background: #fff;
+  text-align: center;
+  font-family: Roboto, sans-serif;
+
+  &.is-error {
+    border-style: solid;
+    border-color: #f3c7c7;
+    background: #fffafa;
+  }
+}
+
+.list-state-art {
+  width: 160px;
+  max-width: 60%;
+  margin-bottom: 8px;
+}
+
+.list-state-icon {
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
+  color: #c62828;
+}
+
+.list-state-title {
+  margin: 0;
+  font-family: Roboto, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #1a2d45;
+}
+
+.list-state-text {
+  max-width: 440px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: #5a6a7a;
+}
+
+.list-state-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  margin-top: 8px;
+  padding: 0 16px;
+  border: 1px solid #b8c9d9;
+  border-radius: 8px;
+  background: #fff;
+  color: #1c5d95;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+
+  &:hover {
+    border-color: #8aaac8;
+  }
+
+  &.is-primary {
+    border-color: #1c5d95;
+    background: #1c5d95;
+    color: #fff;
+
+    &:hover {
+      background: #164b78;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+  }
+}
+
+// ── Alignment ───────────────────────────────────────────────────────────────
+// Heading, toolbar and list rows all start on the same 24px gutter (they sat
+// at three different left edges), and the toolbar controls share one height.
+.content-box {
+  width: 100%;
+}
+
+.search-toolbar {
+  padding: 16px 24px 8px;
+  gap: 16px;
+}
+
+.search-border {
+  height: 44px;
+  max-height: 44px;
+  background: #fff;
+}
+
+.lang-btn {
+  height: 42px;
+  padding: 0 12px 0 14px;
+  white-space: nowrap;
+  border-radius: 22px 0 0 22px;
+}
+
+.view-toggle {
+  margin-left: auto;
+}
+
+.card-view-grid {
+  padding: 8px 24px 24px;
+}
+
+// Language menu: names in title case, the tick in its own column.
+.lang-option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 200px;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  color: #1a2d45;
+
+  &.is-selected {
+    color: #1c5d95;
+    font-weight: 500;
+  }
+}
+
+.lang-option-check {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px !important;
+  font-size: 20px;
+  color: #1c5d95;
+}
+
+// ── Sidebar title ───────────────────────────────────────────────────────────
+// Replaces the small grey "DASHBOARD" label, which looked like a link but went
+// nowhere. Same 88px band as before, so it still lines up with the page header.
+.workspace-head {
+  gap: 12px;
+  padding: 0 16px 0 18px;
+  color: #1a2d45;
+  letter-spacing: 0;
+  text-transform: none;
+  cursor: default;
+
+  &:hover {
+    color: #1a2d45;
+  }
+}
+
+.workspace-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #e3edf7;
+  color: #1c5d95;
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}
+
+.workspace-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.workspace-title {
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #1a2d45;
+}
+
+.workspace-sub {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: #5a6a7a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

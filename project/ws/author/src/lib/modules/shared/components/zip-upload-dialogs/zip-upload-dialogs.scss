@@ -1,0 +1,222 @@
+// Shared by the three zip upload dialog bodies (guidelines / entry file /
+// invalid names). Kept in the components rather than the global stylesheet:
+// the dialogs render in the CDK overlay, and global heading and Material rules
+// there won a specificity fight that left the title as a large serif heading.
+// Component styles are scoped by attribute, so these always apply.
+
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  font-family: Roboto, sans-serif;
+  color: #1a2d45;
+}
+
+.zip-dialog {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  gap: 16px;
+  padding: 24px;
+}
+
+.zip-dialog-header {
+  position: relative;
+  flex: 0 0 auto;
+  padding-right: 40px;
+}
+
+.zip-dialog-title {
+  margin: 0;
+  font-family: Roboto, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  color: #1a2d45;
+}
+
+.zip-dialog-subtitle {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: #5a6a7a;
+}
+
+.zip-dialog-close {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: #5a6a7a;
+  cursor: pointer;
+
+  &:hover {
+    background: #eef3f8;
+    color: #1a2d45;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+  }
+}
+
+.zip-dialog-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.zip-dialog-footer {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+// ── Guidelines checklist ─────────────────────────────────────────────────────
+// One card, one row per point. Margins are reset explicitly so global list and
+// dialog rules can't open up gaps between the rows.
+.zip-guideline-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid #dbe4ee;
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.zip-guideline-item {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 10px 16px;
+  transition: background-color 0.15s ease;
+
+  & + & {
+    border-top: 1px solid #eef3f8;
+  }
+
+  &.is-checked {
+    background: #f7fbfe;
+  }
+
+  &.has-error {
+    background: #fff5f5;
+  }
+}
+
+.zip-guideline-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+
+  input[type='checkbox'] {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    margin: 1px 0 0;
+    accent-color: #1c5d95;
+    cursor: pointer;
+  }
+}
+
+.zip-guideline-error {
+  margin: 4px 0 0 30px;
+  color: #d32f2f;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+// ── Entry file list / invalid names ─────────────────────────────────────────
+.zip-entry-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.zip-entry-list ::ng-deep .mdc-label,
+.zip-invalid-name {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.zip-invalid-name {
+  padding: 6px 0;
+  border-bottom: 1px solid #eef3f8;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 13px;
+}
+
+// ── Buttons ──────────────────────────────────────────────────────────────────
+.zip-btn {
+  min-width: 112px;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+  }
+}
+
+.zip-btn-primary {
+  border: 1px solid #1c5d95;
+  background: #1c5d95;
+  color: #fff;
+
+  &:hover:not([disabled]) {
+    background: #164b78;
+  }
+
+  &[disabled] {
+    border-color: #d5dde6;
+    background: #e8edf2;
+    color: #8a99a8;
+    cursor: not-allowed;
+  }
+}
+
+.zip-btn-secondary {
+  border: 1px solid #b8c9d9;
+  background: #fff;
+  color: #1c5d95;
+
+  &:hover {
+    border-color: #8aaac8;
+  }
+}
+
+@media (max-width: 599px) {
+  .zip-dialog {
+    padding: 16px;
+  }
+
+  .zip-dialog-footer {
+    flex-wrap: wrap;
+  }
+
+  .zip-btn {
+    flex: 1 1 auto;
+  }
+}

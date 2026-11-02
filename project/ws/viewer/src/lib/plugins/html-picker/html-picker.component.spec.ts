@@ -67,8 +67,8 @@ describe('HtmlPickerComponent', () => {
     it('writes the html into the preview frame', () => {
       component.update()
 
-      expect(iframe.src).toContain('javascript')
-      expect(iframe.src).toContain('hi')
+      expect(iframe.srcdoc).toContain('hi')
+      expect(iframe.src).not.toContain('javascript:')
     })
 
     it('is reached through the editor change handler', () => {
@@ -84,16 +84,16 @@ describe('HtmlPickerComponent', () => {
 
       component.update()
 
-      expect(iframe.src).not.toContain('a note')
-      expect(iframe.src).toContain('b')
+      expect(iframe.srcdoc).not.toContain('a note')
+      expect(iframe.srcdoc).toContain('b')
     })
 
-    it('escapes single quotes in the html', () => {
+    it('keeps single quotes in the html as written', () => {
       component.newData = data({ html: "<p class='x'>hi</p>" }) as any
 
       component.update()
 
-      expect(decodeURIComponent(iframe.src)).toContain("\\'")
+      expect(iframe.srcdoc).toContain("<p class='x'>hi</p>")
     })
 
     it('injects the stylesheet into the frame head', () => {
@@ -125,7 +125,7 @@ describe('HtmlPickerComponent', () => {
 
       component.update()
 
-      expect(iframe.src).not.toContain('hi')
+      expect(iframe.srcdoc).not.toContain('hi')
     })
 
     it('omits the stylesheet when the author has turned css off', () => {

@@ -39,7 +39,7 @@ export class LearningCardComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     for (const prop in changes) {
       if (prop === 'content' && this.content.description) {
-        this.content.description = this.content.description.replace(/<br>/g, '')
+        this.content.description = this.content.description.replaceAll(/<br>/g, '')
         this.description = SafeContentService.trustedHtml(this.domSanitizer, this.content.description)
       }
     }

@@ -9,19 +9,25 @@
   }
   <div class="upload-container">
     <div class="header-text">
-      <span class="upload-text" i18n>Upload Certificate</span>
+      <div class="header-titles">
+        <h2 class="upload-text" i18n>Upload Certificate</h2>
+        <!-- Which course this is for, and (while choosing) the artwork spec. The
+             spec was a separate "Accepted Format :SVG; 808 px(h)x1350 px(w)" line. -->
+        <p class="header-sub">
+          @if (data?.name) {
+            <span class="header-course">{{ data?.name }}</span>
+          }
+          @if (!svgText) {
+            <span class="header-spec" i18n>Artwork: SVG, 1350 &times; 808 px</span>
+          }
+        </p>
+      </div>
       @if (!attaching) {
         <button type="button" class="cert-close" aria-label="Close" i18n-aria-label (click)="requestClose()">
           <mat-icon aria-hidden="true">close</mat-icon>
         </button>
       }
     </div>
-    <!-- Only relevant while choosing; once designing, the room goes to the certificate. -->
-    @if (!svgText) {
-      <div>
-        <span class="accepted-format-txt">Accepted Format :SVG; 808 px(h)x1350 px(w)</span>
-      </div>
-    }
 
     <!-- Kept outside the steps so the design choice can reach it however it is shown. -->
     <input
@@ -37,11 +43,16 @@
 
     @if (!svgText) {
       <!-- Start from a ready-made design, or bring your own artwork. -->
-      <section class="cert-start" aria-labelledby="cert-start-title">
+      <section
+        class="cert-start"
+        [attr.aria-labelledby]="
+          startView === 'choose' || startView === 'browse' ? 'cert-start-title-' + startView : 'cert-start-title-default'
+        "
+      >
         @switch (startView) {
           @case ('choose') {
             <!-- Many designs: decide the route first, so the screen is not a wall of cards. -->
-            <h3 id="cert-start-title" class="cert-start-title" i18n>How would you like to create the certificate?</h3>
+            <h3 id="cert-start-title-choose" class="cert-start-title" i18n>How would you like to create the certificate?</h3>
             <p class="cert-start-help" i18n>Either way, you place the learner's details on it in the next step.</p>
             <div class="cert-route-grid">
               <button type="button" class="cert-route-card" (click)="browseTemplates()">
@@ -69,9 +80,11 @@
                 </span>
                 <span class="cert-route-title" i18n>Upload your own design</span>
                 <span class="cert-route-desc" i18n>Use artwork from your design team, saved as SVG at 1350 &times; 808.</span>
+                <!-- Same shape as "Browse designs": the white upload glyph made for a
+                     blue button was invisible here and left a gap before the label. -->
                 <span class="cert-route-cta" aria-hidden="true">
-                  <img alt="" src="cbp-assets/icons/charm_upload.svg" />
                   <span i18n>Upload file</span>
+                  <mat-icon>file_upload</mat-icon>
                 </span>
               </button>
             </div>
@@ -83,11 +96,12 @@
                 <mat-icon aria-hidden="true">arrow_back</mat-icon>
                 <span i18n>Back</span>
               </button>
-              <h3 id="cert-start-title" class="cert-start-title" i18n>Choose a ready-made design</h3>
+              <h3 id="cert-start-title-browse" class="cert-start-title" i18n>Choose a ready-made design</h3>
               <span class="cert-browse-count">{{ filteredTemplates.length }} of {{ templates.length }}</span>
-              <label class="cert-browse-search">
+              <label class="cert-browse-search" for="cert-browse-search-input">
                 <mat-icon aria-hidden="true">search</mat-icon>
                 <input
+                  id="cert-browse-search-input"
                   type="search"
                   class="cert-browse-input"
                   placeholder="Search designs"
@@ -109,7 +123,7 @@
                 }
               </div>
             } @else {
-              <div class="cert-templates-empty" role="status">
+              <div class="cert-templates-empty" aria-live="polite">
                 <mat-icon aria-hidden="true">search_off</mat-icon>
                 <span i18n>No design matches &ldquo;{{ templateFilter }}&rdquo;.</span>
                 <button type="button" class="cert-templates-retry" (click)="clearTemplateFilter()" i18n>Clear search</button>
@@ -122,12 +136,12 @@
           }
           @default {
             <!-- A few designs (or none): everything fits on one screen. -->
-            <h3 id="cert-start-title" class="cert-start-title" i18n>Start from a ready-made design</h3>
+            <h3 id="cert-start-title-default" class="cert-start-title" i18n>Start from a ready-made design</h3>
             <p class="cert-start-help" i18n>
               Every design can be changed: edit the wording, add text, lines or your logo, and place the learner's details.
             </p>
             @if (templatesLoading) {
-              <p class="cert-templates-status" role="status">
+              <p class="cert-templates-status" aria-live="polite">
                 <mat-spinner diameter="16" strokeWidth="2" />
                 <span i18n>Loading the ready-made designs&hellip;</span>
               </p>
@@ -138,7 +152,7 @@
                 <button type="button" class="cert-templates-retry" (click)="loadTemplates()" i18n>Try again</button>
               </p>
             } @else if (!templates.length) {
-              <p class="cert-templates-status" role="status">
+              <p class="cert-templates-status" aria-live="polite">
                 <mat-icon aria-hidden="true">info</mat-icon>
                 <span i18n>No ready-made designs are available yet. Upload your own design to get started.</span>
               </p>
@@ -147,21 +161,17 @@
               @for (template of templates; track template.id) {
                 <ng-container [ngTemplateOutlet]="templateCard" [ngTemplateOutletContext]="{ $implicit: template }" />
               }
-              <div
-                class="upload-block cert-upload-card"
-                role="button"
+              <button
+                type="button"
+                class="btn-reset btn-block upload-block cert-upload-card"
                 aria-label="Upload your own certificate artwork"
                 i18n-aria-label
                 (click)="uploadThumbnail.click()"
-                (keydown)="isActivationKey($event) && uploadThumbnail.click()"
-                [attr.tabindex]="0"
               >
                 <img class="upload-icon" src="cbp-assets/icons/fluent_certificate-24-filled.svg" alt="" />
-                <button class="upload-btn" style="cursor: pointer" tabindex="-1">
-                  <img alt="" src="cbp-assets/icons/charm_upload.svg" /> Upload File
-                </button>
+                <span class="upload-btn" style="cursor: pointer"> <img alt="" src="cbp-assets/icons/charm_upload.svg" /> Upload File </span>
                 <span class="cert-template-desc" i18n>Your own design, as SVG at 1350 x 808</span>
-              </div>
+              </button>
             </div>
             <ng-container [ngTemplateOutlet]="uploadGuide" />
           }
@@ -297,6 +307,13 @@ Inside it, a tall preview or a large certificate pushed Attach below the
 dialog's bottom edge.
 -->
 <mat-dialog-actions class="cert-block">
+  <!-- Says why Attach is unavailable instead of leaving a silent grey button. -->
+  @if (!svgText) {
+    <span class="cert-footer-hint" i18n>Choose or upload a design to continue.</span>
+  }
+  @if (!attaching) {
+    <button type="button" class="cert-cancel-btn" (click)="requestClose()" i18n>Cancel</button>
+  }
   @if (svgText && step === 'place') {
     <button type="button" class="cert-secondary-btn" [disabled]="attaching" (click)="goToPreview()">
       <mat-icon aria-hidden="true">visibility</mat-icon>

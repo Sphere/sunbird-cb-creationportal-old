@@ -1,7 +1,5 @@
 <!-- ══ 1. Publishing Course ════════════════════════════════════════════════ -->
-<mat-dialog-content class="cd-wrap"
-  *ngIf="contentMeta && contentMeta.reviewStatus === 'Reviewed' && contentMeta.status == 'Review'">
-
+<mat-dialog-content class="cd-wrap" *ngIf="contentMeta && contentMeta.reviewStatus === 'Reviewed' && contentMeta.status == 'Review'">
   <div class="cd-header">
     <div class="cd-header-left">
       <span class="cd-header-icon"><mat-icon>publish</mat-icon></span>
@@ -15,9 +13,7 @@
   <div class="cd-body">
     <ws-auth-status-track *ngIf="showNewFlow" [isDialog]="false" [content]="contentMeta"></ws-auth-status-track>
 
-    <p class="cd-note" i18n>
-      Note: Status of all the resources has to be live, before publishing the course.
-    </p>
+    <p class="cd-note" i18n>Note: Status of all the resources has to be live, before publishing the course.</p>
 
     <div class="cd-table-wrap">
       <table class="cd-table">
@@ -60,25 +56,24 @@
       <button mat-stroked-button class="cd-btn-outline" id="refresh" (click)="refreshCourse()">
         <mat-icon>refresh</mat-icon> <span i18n>Refresh</span>
       </button>
-      <button mat-flat-button class="cd-btn-primary"
-        (click)="click('publishResources'); showPublishResourceBtn=true"
-        [disabled]="showPublishResourceBtn" i18n>
+      <button
+        mat-flat-button
+        class="cd-btn-primary"
+        (click)="click('publishResources'); showPublishResourceBtn = true"
+        [disabled]="showPublishResourceBtn"
+        i18n
+      >
         Publish Resources
       </button>
-      <button mat-flat-button class="cd-btn-primary"
-        (click)="publishCourse()" [disabled]="!showPublishCBPBtn" i18n>
+      <button mat-flat-button class="cd-btn-primary" (click)="publishCourse()" [disabled]="!showPublishCBPBtn" i18n>
         <mat-icon>check_circle</mat-icon> Publish Course
       </button>
     </div>
   </div>
-
 </mat-dialog-content>
 
-
 <!-- ══ 2. Reviewing Course ════════════════════════════════════════════════ -->
-<mat-dialog-content class="cd-wrap"
-  *ngIf="contentMeta && contentMeta.reviewStatus == 'InReview' && contentMeta.status === 'Review'">
-
+<mat-dialog-content class="cd-wrap" *ngIf="contentMeta && contentMeta.reviewStatus == 'InReview' && contentMeta.status === 'Review'">
   <div class="cd-header">
     <div class="cd-header-left">
       <span class="cd-header-icon"><mat-icon>rate_review</mat-icon></span>
@@ -96,11 +91,20 @@
     </div>
 
     <form [formGroup]="commentsForm">
-      <mat-form-field appearance="outline" class="cd-field"
-        [ngClass]="{ 'mat-form-field-invalid': showError(commentsForm.controls.comments) }">
+      <mat-form-field
+        appearance="outline"
+        class="cd-field"
+        [ngClass]="{ 'mat-form-field-invalid': showError(commentsForm.controls.comments) }"
+      >
         <mat-label i18n>Comments <span class="cd-req" aria-hidden="true">*</span></mat-label>
-        <textarea matInput formControlName="comments" rows="3"
-          i18n-placeholder placeholder="Describe the outcome of your review..."></textarea>
+        <textarea
+          id="comments-dialog-review-comments"
+          matInput
+          formControlName="comments"
+          rows="3"
+          i18n-placeholder
+          placeholder="Describe the outcome of your review..."
+        ></textarea>
         <mat-hint i18n>e.g. This content is accepted / rejected because...</mat-hint>
         <mat-error *ngIf="showError(commentsForm.controls.comments)" i18n>Comment is mandatory</mat-error>
       </mat-form-field>
@@ -110,23 +114,23 @@
   </div>
 
   <div class="cd-footer">
-    <button mat-stroked-button class="cd-btn-outline" [disabled]="commentsForm?.invalid"
-      (click)="moveCourseToDraft()" i18n>
+    <button mat-stroked-button class="cd-btn-outline" [disabled]="commentsForm?.invalid" (click)="moveCourseToDraft()" i18n>
       <mat-icon>undo</mat-icon> Send back to Creator
     </button>
-    <button mat-flat-button class="cd-btn-primary" [disabled]="commentsForm?.invalid"
-      (click)="submitData()" i18n>
+    <button mat-flat-button class="cd-btn-primary" [disabled]="commentsForm?.invalid" (click)="submitData()" i18n>
       <mat-icon>check</mat-icon> Accept &amp; send to publisher
     </button>
   </div>
-
 </mat-dialog-content>
 
-
 <!-- ══ 3. Send for review ═════════════════════════════════════════════════ -->
-<mat-dialog-content class="cd-wrap"
-  *ngIf="(contentMeta && contentMeta.reviewStatus !== 'Reviewed' || courseEdited === true || contentMeta.status !== 'Review') && contentMeta.status === 'Draft'">
-
+<mat-dialog-content
+  class="cd-wrap"
+  *ngIf="
+    ((contentMeta && contentMeta.reviewStatus !== 'Reviewed') || courseEdited === true || contentMeta.status !== 'Review') &&
+    contentMeta.status === 'Draft'
+  "
+>
   <div class="cd-header">
     <div class="cd-header-left">
       <span class="cd-header-icon"><mat-icon>send</mat-icon></span>
@@ -139,11 +143,20 @@
 
   <div class="cd-body">
     <form [formGroup]="commentsForm">
-      <mat-form-field appearance="outline" class="cd-field"
-        [ngClass]="{ 'mat-form-field-invalid': showError(commentsForm.controls.comments) }">
+      <mat-form-field
+        appearance="outline"
+        class="cd-field"
+        [ngClass]="{ 'mat-form-field-invalid': showError(commentsForm.controls.comments) }"
+      >
         <mat-label i18n>Comments <span class="cd-req" aria-hidden="true">*</span></mat-label>
-        <textarea matInput formControlName="comments" rows="3"
-          i18n-placeholder placeholder="Provide your comments for the reviewer..."></textarea>
+        <textarea
+          id="comments-dialog-send-review-comments"
+          matInput
+          formControlName="comments"
+          rows="3"
+          i18n-placeholder
+          placeholder="Provide your comments for the reviewer..."
+        ></textarea>
         <mat-hint i18n>For example: Please provide a comment about the course...</mat-hint>
         <mat-error *ngIf="showError(commentsForm.controls.comments)" i18n>Comment is mandatory</mat-error>
       </mat-form-field>
@@ -153,13 +166,9 @@
   </div>
 
   <div class="cd-footer">
-    <button mat-dialog-close mat-stroked-button class="cd-btn-cancel" i18n>
-      Cancel
-    </button>
-    <button mat-flat-button class="cd-btn-primary" [disabled]="commentsForm?.invalid"
-      (click)="submitData()" i18n>
+    <button mat-dialog-close mat-stroked-button class="cd-btn-cancel" i18n>Cancel</button>
+    <button mat-flat-button class="cd-btn-primary" [disabled]="commentsForm?.invalid" (click)="submitData()" i18n>
       <mat-icon>send</mat-icon> Send for review
     </button>
   </div>
-
 </mat-dialog-content>

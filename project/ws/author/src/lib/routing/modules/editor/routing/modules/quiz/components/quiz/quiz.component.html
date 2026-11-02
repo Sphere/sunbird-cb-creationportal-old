@@ -58,18 +58,17 @@
       <p class="margin-remove-bottom mat-h3 font-weight-bold" i18n>Language</p>
     </div>
     <div class="flex flex-middle">
-      <p
-        class="p-2"
+      <button
+        type="button"
+        class="btn-reset p-2"
         *ngFor="let content of allContents"
         [ngClass]="{
           'ws-mat-primary-border-bottom-bolder': currentId === content.identifier,
         }"
         (click)="changeContent(content)"
-        (keydown)="isActivationKey($event) && changeContent(content)"
-        [attr.tabindex]="0"
       >
         {{ content.locale | uppercase }}
-      </p>
+      </button>
       <button
         mat-icon-button
         class="small-button padding-remove ws-mat-primary-background mat-elevation-z6 margin-left-s"
@@ -198,7 +197,9 @@
                       >
                         <mat-icon>cloud_download</mat-icon> Download questions
                       </button>
+                      <label class="sr-only" for="quiz-upload-questions-file" i18n>Upload questions spreadsheet</label>
                       <input
+                        id="quiz-upload-questions-file"
                         type="file"
                         accept=".xlsx,.xls"
                         #uploadFile

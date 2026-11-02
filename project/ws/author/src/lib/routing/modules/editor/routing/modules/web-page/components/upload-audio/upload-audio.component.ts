@@ -63,7 +63,7 @@ export class UploadAudioComponent implements OnInit {
   }
 
   onDrop(file: any) {
-    const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
+    const fileName = file.name.replaceAll(/[^A-Za-z0-9.]/g, '')
     if (!fileName.toLowerCase().endsWith('.mp3')) {
       this.snackBar.openFromComponent(NotificationComponent, {
         data: {
@@ -93,7 +93,7 @@ export class UploadAudioComponent implements OnInit {
 
   upload() {
     const formdata = new FormData()
-    formdata.append('content', this.file as Blob, (this.file as File).name.replace(/[^A-Za-z0-9.]/g, ''))
+    formdata.append('content', this.file as Blob, (this.file as File).name.replaceAll(/[^A-Za-z0-9.]/g, ''))
     this.loaderService.changeLoad.next(true)
     this.isUploading = true
     this.uploadService

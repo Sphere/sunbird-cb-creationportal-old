@@ -16,7 +16,6 @@ import { NsAutoComplete } from './user-autocomplete.model'
 
 import { of } from 'rxjs'
 
-
 @Component({
   standalone: false,
   selector: 'ws-widget-user-autocomplete',
@@ -24,6 +23,9 @@ import { of } from 'rxjs'
   styleUrls: ['./user-autocomplete.component.scss'],
 })
 export class UserAutocompleteComponent implements OnInit {
+  private static nextId = 0
+  /** Unique per instance, so two user pickers on one page never share a label id. */
+  readonly searchInputId = `user-autocomplete-search-${UserAutocompleteComponent.nextId++}`
 
   separatorKeysCodes: number[] = [ENTER, COMMA]
   userFormControl = new FormControl()
@@ -65,8 +67,8 @@ export class UserAutocompleteComponent implements OnInit {
             }
             if (this.autocompleteByDepartment) {
               // if (this.configSvc.userProfile) {
-                // const deptName = this.configSvc.userProfile.departmentName || 'ias'
-                return this.userAutocompleteSvc.fetchAutoCompleteByDept(value, this.departments).pipe(catchError(_ => of([])))
+              // const deptName = this.configSvc.userProfile.departmentName || 'ias'
+              return this.userAutocompleteSvc.fetchAutoCompleteByDept(value, this.departments).pipe(catchError(_ => of([])))
               // }
             }
           }
@@ -99,7 +101,7 @@ export class UserAutocompleteComponent implements OnInit {
       this.openSnackBar(selfShareMsg)
       return
     }
-    const userIndex = this.selectedUsers.findIndex(user => (user.wid === selectedWid))
+    const userIndex = this.selectedUsers.findIndex(user => user.wid === selectedWid)
     if (userIndex < 0) {
       this.selectedUsers.push(event.option.value)
       this.addedUser.emit(event.option.value)

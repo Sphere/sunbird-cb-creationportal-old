@@ -156,8 +156,8 @@ export class ResourceDownloadService {
     return (name || '')
       .toString()
       .trim()
-      .replace(/[\\/:*?"<>|]+/g, '_')
-      .replace(/\s+/g, ' ')
+      .replaceAll(/[\\/:*?"<>|]+/g, '_')
+      .replaceAll(/\s+/g, ' ')
       .slice(0, 120)
   }
 

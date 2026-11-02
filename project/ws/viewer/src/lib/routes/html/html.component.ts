@@ -64,16 +64,18 @@ export class HtmlComponent implements OnInit, OnDestroy {
       this.viewerDataSubscription = this.viewerSvc
         .getContent(this.activatedRoute.snapshot.paramMap.get('resourceId') || '')
         .subscribe(async data => {
-          data.artifactUrl = (
-            data.artifactUrl.startsWith('https://')
-              ? data.artifactUrl
-              : data.artifactUrl.startsWith('http://')
+          // A resource with no file uploaded yet has no artifactUrl; the player shows "nothing to play".
+          data.artifactUrl = !data.artifactUrl
+            ? ''
+            : (data.artifactUrl.startsWith('https://')
                 ? data.artifactUrl
-                : `https://${data.artifactUrl}`
-          )
-            .replace(/ /gi, '')
-            .replace(/%20/gi, '')
-            .replace(/\n/gi, '')
+                : data.artifactUrl.startsWith('http://')
+                  ? data.artifactUrl
+                  : `https://${data.artifactUrl}`
+              )
+                .replaceAll(/ /gi, '')
+                .replaceAll(/%20/gi, '')
+                .replaceAll(/\n/gi, '')
           if (this.accessControlSvc.hasAccess(data as any, true)) {
             if (data && data.artifactUrl.indexOf('content-store') >= 0) {
               await this.setS3Cookie(data.identifier)
@@ -95,10 +97,12 @@ export class HtmlComponent implements OnInit, OnDestroy {
           // data.content.data.artifactUrl =
           //   data.content.data.artifactUrl.startsWith('/scorm-player') ?
           //     `/apis/proxies/v8${data.content.data.artifactUrl}` : data.content.data.artifactUrl
+          // A resource with no file uploaded yet has no artifactUrl; the player shows "nothing to play".
+          data.content.data.artifactUrl = data.content.data.artifactUrl || ''
           data.content.data.artifactUrl =
             data.content.data.artifactUrl.indexOf('ScormCoursePlayer') > -1
-              ? `${data.content.data.artifactUrl.replace(/%20/g, '')}&Param1=${this.uuid}`
-              : data.content.data.artifactUrl.replace(/%20/g, '')
+              ? `${data.content.data.artifactUrl.replaceAll(/%20/g, '')}&Param1=${this.uuid}`
+              : data.content.data.artifactUrl.replaceAll(/%20/g, '')
           const tempHtmlData = data.content.data
           if (this.alreadyRaised && this.oldData) {
             this.raiseEvent(WsEvents.EnumTelemetrySubType.Unloaded, this.oldData)

@@ -225,7 +225,7 @@ export class InitService {
   }
 
   get locale(): string {
-    return this.baseHref && this.baseHref.replace(/\//g, '') ? this.baseHref.replace(/\//g, '') : 'en'
+    return this.baseHref && this.baseHref.replaceAll(/\//g, '') ? this.baseHref.replaceAll(/\//g, '') : 'en'
   }
 
   private async fetchAppsConfig(): Promise<NsAppsConfig.IAppsConfig> {

@@ -169,56 +169,173 @@ describe('PlayerVideoComponent', () => {
   })
 
   describe('addTimeUpdateListener', () => {
-    it('registers play and timeupdate handlers and tracks milestones', () => {
-      const c = build({ videoQuestions: [{ timestampInSeconds: 2, question: [{ text: 'Q' }] }] })
-      const el: any = { id: 'v1' }
-      const openSpy = jest.spyOn(c, 'openPopup').mockImplementation(() => undefined)
-      c.addTimeUpdateListener(el)
-      expect(c.videoStates.v1).toBeDefined()
+    const q = (at: any) => ({ timestampInSeconds: at, question: [{ text: `Q@${at}` }] })
+    /** Play the video forward in timeupdate ticks of `step` seconds. */
+    const playTo = (to: number, step = 0.25) => {
+      let t = lastPlayer.currentTime()
+      while (t < to) {
+        t = Math.min(to, t + step)
+        lastPlayer.setCurrentTime(t)
+        lastPlayer.fire('timeupdate')
+      }
+    }
 
-      // fire play -> starts an interval; advance the player time to the milestone
-      lastPlayer.setCurrentTime(2)
-      lastPlayer.fire('play')
-      // the interval callback runs asynchronously; drive it via fake timers
-      jest.useFakeTimers()
-      lastPlayer.fire('play')
-      lastPlayer.setCurrentTime(2)
-      jest.advanceTimersByTime(600)
-      jest.useRealTimers()
-      expect(openSpy).toHaveBeenCalled()
+    it('fires a question when playback crosses its timestamp', () => {
+      const c = build({ videoQuestions: [q(2)] })
+      const openSpy = jest.spyOn(c, 'openPopup').mockImplementation(() => undefined)
+      c.addTimeUpdateListener({ id: 'v1' } as any)
+      playTo(1.9)
+      expect(openSpy).not.toHaveBeenCalled()
+      playTo(2.1)
+      expect(lastPlayer.pause).toHaveBeenCalled()
+      expect(openSpy).toHaveBeenCalledWith([{ text: 'Q@2' }], lastPlayer, 'v1')
+      expect(c.videoStates.v1.currentMilestone).toBe(2)
     })
 
-    it('resets a triggered milestone when the user seeks back before it', () => {
-      const c = build({ videoQuestions: [{ timestampInSeconds: 10 }] })
-      const el: any = { id: 'v2' }
-      c.addTimeUpdateListener(el)
-      c.videoStates.v2.popupTriggered.add(10)
-      lastPlayer.setCurrentTime(3)
+    it('still fires at 3x speed, where a tick can step over the exact second', () => {
+      const c = build({ videoQuestions: [q(5)] })
+      const openSpy = jest.spyOn(c, 'openPopup').mockImplementation(() => undefined)
+      c.addTimeUpdateListener({ id: 'v1' } as any)
+      playTo(7, 0.75) // 0, 0.75 ... 4.5, 5.25: never exactly 5
+      expect(openSpy).toHaveBeenCalledTimes(1)
+    })
+
+    it('accepts a timestamp saved as a string', () => {
+      const c = build({ videoQuestions: [q('3')] })
+      const openSpy = jest.spyOn(c, 'openPopup').mockImplementation(() => undefined)
+      c.addTimeUpdateListener({ id: 'v1' } as any)
+      playTo(3.2)
+      expect(openSpy).toHaveBeenCalledTimes(1)
+    })
+
+    it('fires once per pass, not again while the popup is open or after it closes', () => {
+      const c = build({ videoQuestions: [q(2)] })
+      const openSpy = jest.spyOn(c, 'openPopup').mockImplementation(() => undefined)
+      c.addTimeUpdateListener({ id: 'v1' } as any)
+      playTo(2.2)
       lastPlayer.fire('timeupdate')
-      expect(c.videoStates.v2.popupTriggered.has(10)).toBe(false)
+      c.videoStates.v1.popupOpen = false // dialog closed
+      playTo(4)
+      expect(openSpy).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not fire on a forward seek past the question', () => {
+      const c = build({ videoQuestions: [q(10)] })
+      const openSpy = jest.spyOn(c, 'openPopup').mockImplementation(() => undefined)
+      c.addTimeUpdateListener({ id: 'v1' } as any)
+      lastPlayer.setCurrentTime(30)
+      lastPlayer.fire('timeupdate')
+      expect(openSpy).not.toHaveBeenCalled()
+    })
+
+    it('shows the question again after seeking back before it', () => {
+      const c = build({ videoQuestions: [q(2)] })
+      const openSpy = jest.spyOn(c, 'openPopup').mockImplementation(() => undefined)
+      c.addTimeUpdateListener({ id: 'v2' } as any)
+      playTo(2.2)
+      c.videoStates.v2.popupOpen = false
+      lastPlayer.setCurrentTime(1)
+      lastPlayer.fire('timeupdate')
+      expect(c.videoStates.v2.popupTriggered.has(2)).toBe(false)
+      playTo(2.2)
+      expect(openSpy).toHaveBeenCalledTimes(2)
+    })
+
+    it('skips a milestone with no questions and copes with none at all', () => {
+      const c = build({ videoQuestions: [{ timestampInSeconds: 1, question: [] }] })
+      const openSpy = jest.spyOn(c, 'openPopup').mockImplementation(() => undefined)
+      c.addTimeUpdateListener({ id: 'v1' } as any)
+      playTo(2)
+      expect(openSpy).not.toHaveBeenCalled()
+
+      const none = build({})
+      none.addTimeUpdateListener({ id: 'v3' } as any)
+      expect(() => playTo(2)).not.toThrow()
+    })
+
+    it('registers only once per video element', () => {
+      const c = build({ videoQuestions: [q(2)] })
+      c.addTimeUpdateListener({ id: 'v1' } as any)
+      const calls = videoJsFactory.mock.calls.length
+      c.addTimeUpdateListener({ id: 'v1' } as any)
+      expect(lastPlayer.on).toHaveBeenCalledTimes(1)
+      expect(videoJsFactory.mock.calls.length).toBe(calls)
+    })
+  })
+
+  describe('reviewer question overview', () => {
+    const milestones = [
+      { timestampInSeconds: 10, question: [{ text: 'A' }, { text: 'B' }] },
+      { timestampInSeconds: 20, question: [] },
+      { timestampInSeconds: 40, question: [{ text: 'C' }] },
+    ]
+
+    it('counts only points that hold questions', () => {
+      const c = build({ videoQuestions: milestones })
+      expect(c.questionMilestones.length).toBe(2)
+      expect(c.questionCount).toBe(3)
+      expect(build({}).questionCount).toBe(0)
+    })
+
+    it('pauses, opens the review dialog and jumps when asked', () => {
+      dialog.open = jest.fn(() => ({ afterClosed: () => of({ jumpTo: 40 }) }))
+      const c = build({ videoQuestions: milestones })
+      c.addTimeUpdateListener({ id: 'v1' } as any)
+      const jump = jest.spyOn(c, 'jumpToQuestion')
+      c.openQuestionsReview()
+      expect(lastPlayer.pause).toHaveBeenCalled()
+      expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: { milestones: c.questionMilestones } }))
+      expect(jump).toHaveBeenCalledWith(40)
+    })
+
+    it('does not jump when the dialog is just closed', () => {
+      dialog.open = jest.fn(() => ({ afterClosed: () => of(undefined) }))
+      const c = build({ videoQuestions: milestones })
+      const jump = jest.spyOn(c, 'jumpToQuestion')
+      c.openQuestionsReview()
+      expect(jump).not.toHaveBeenCalled()
+    })
+
+    it('Jump to seeks just before the question and the popup fires again on play', () => {
+      const c = build({ videoQuestions: milestones })
+      const openSpy = jest.spyOn(c, 'openPopup').mockImplementation(() => undefined)
+      c.addTimeUpdateListener({ id: 'v1' } as any)
+      c.videoStates.v1.popupTriggered.add(40)
+      c.videoStates.v1.lastTime = 55
+      c.jumpToQuestion(40)
+      expect(lastPlayer.currentTime()).toBe(38)
+      expect(lastPlayer.play).toHaveBeenCalled()
+      expect(c.videoStates.v1.popupTriggered.has(40)).toBe(false)
+      lastPlayer.setCurrentTime(40.2)
+      lastPlayer.fire('timeupdate')
+      expect(openSpy).toHaveBeenCalledWith([{ text: 'C' }], lastPlayer, 'v1')
+    })
+
+    it('Jump to is a no-op before the player exists', () => {
+      expect(() => build({ videoQuestions: milestones }).jumpToQuestion(10)).not.toThrow()
     })
   })
 
   describe('openPopup', () => {
-    it('opens the dialog and resumes playback after it closes', () => {
-      const afterClosed = of(undefined)
-      dialog.open = jest.fn(() => ({ afterClosed: () => afterClosed }))
+    it('opens the dialog and resumes playback after it closes, without re-registering', () => {
+      dialog.open = jest.fn(() => ({ afterClosed: () => of(undefined) }))
       const c = build()
-      const intervalId = { unsubscribe: jest.fn() }
-      const videoEl = { play: jest.fn() }
-      const listenerSpy = jest.spyOn(c, 'addTimeUpdateListener').mockImplementation(() => undefined)
-      c.openPopup([{ text: 'Q' }], videoEl, intervalId as any)
-      expect(dialog.open).toHaveBeenCalled()
-      expect(dialog.closeAll).toHaveBeenCalled()
-      expect(videoEl.play).toHaveBeenCalled()
-      expect(intervalId.unsubscribe).toHaveBeenCalled()
-      expect(listenerSpy).toHaveBeenCalledWith(videoEl)
+      c.videoStates.v1 = { popupTriggered: new Set(), currentMilestone: 2, lastTime: 2, popupOpen: true }
+      const player = { play: jest.fn() }
+      const listenerSpy = jest.spyOn(c, 'addTimeUpdateListener')
+      c.openPopup([{ text: 'Q' }], player, 'v1')
+      expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: { questions: [{ text: 'Q' }] } }))
+      expect(player.play).toHaveBeenCalled()
+      expect(c.videoStates.v1.popupOpen).toBe(false)
+      expect(listenerSpy).not.toHaveBeenCalled()
     })
 
-    it('does nothing further when the dialog cannot open', () => {
+    it('resumes playback when the dialog cannot open', () => {
       dialog.open = jest.fn(() => null)
       const c = build()
-      expect(() => c.openPopup([], {}, { unsubscribe: jest.fn() } as any)).not.toThrow()
+      const player = { play: jest.fn() }
+      expect(() => c.openPopup([], player)).not.toThrow()
+      expect(player.play).toHaveBeenCalled()
     })
   })
 

@@ -12,13 +12,110 @@
   display: none !important;
 }
 
-.container-v2 {
-  // border: 0;
-  // height: 100%;
-  // left: 0;
-  // position: absolute;
-  // top: 0;
-  // width: 100%;
-  height: -webkit-fill-available;
+// The plugin fills whatever box its host gives it (the player card, or the
+// full window when embedded): messages take their natural height and the
+// content frame takes the rest, so packages never spill under the
+// Previous / Next bar.
+:host {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  min-height: 0;
+}
+
+.container-v2 {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  .html-iframe {
+    border: 0;
+    background: #fff;
+  }
+}
+
+// Laid over the frame rather than above it, so it never takes height away
+// from the content.
+.html-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 16px;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  color: #1a2d45;
+}
+
+.player-state {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 48px 24px;
+  font-family: Roboto, sans-serif;
+  text-align: center;
+  color: #1a2d45;
+}
+
+.player-state-icon {
+  width: 48px;
+  height: 48px;
+  font-size: 48px;
+  color: #8aaac8;
+}
+
+.player-state-title {
+  margin: 8px 0 0;
+  font-family: Roboto, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.player-state-text {
+  max-width: 440px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: #5a6a7a;
+}
+
+.player-state-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  margin-top: 8px;
+  padding: 0 16px;
+  border: 1px solid #b8c9d9;
+  border-radius: 8px;
+  background: #fff;
+  color: #1c5d95;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+
+  &:hover {
+    border-color: #8aaac8;
+    background: #f4f8fc;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+  }
 }

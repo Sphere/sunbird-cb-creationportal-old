@@ -26,8 +26,12 @@
           : widgetData?.intranetMode === 'greyOut' && showIntranetContent,
     }"
     (click)="(showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
-    (keydown)="isActivationKey($event) && (showIntranetContent || !isLiveOrMarkForDeletion) && showSnackbar()"
-    [attr.tabindex]="0"
+    (keydown)="
+      $event.target === $event.currentTarget &&
+        isActivationKey($event) &&
+        (showIntranetContent || !isLiveOrMarkForDeletion) &&
+        showSnackbar()
+    "
   >
     <div
       class="display-contents"
@@ -99,7 +103,7 @@
             </span>
           </div>
           <button mat-icon-button i18n-aria-label aria-label="action items" [matMenuTriggerFor]="cardMenu">
-            <mat-icon>more_vertical</mat-icon>
+            <mat-icon>more_vert</mat-icon>
           </button>
         </div>
       </div>
@@ -416,7 +420,7 @@
             <div class="flex items-center">
               <ng-container [ngTemplateOutlet]="rating"></ng-container>
               <button type="button" mat-icon-button i18n-aria-label [matMenuTriggerFor]="cardMenu">
-                <mat-icon>more_vertical</mat-icon>
+                <mat-icon>more_vert</mat-icon>
               </button>
             </div>
           </div>
@@ -718,7 +722,7 @@
           {{ widgetData.content.sourceName }}
         </div>
         <button type="button" mat-icon-button i18n-aria-label aria-label="action items" [matMenuTriggerFor]="cardMenu">
-          <mat-icon>more_vertical</mat-icon>
+          <mat-icon>more_vert</mat-icon>
         </button>
       </div>
     </div>
@@ -1005,7 +1009,7 @@
             <div class="flex items-center">
               <ng-container [ngTemplateOutlet]="rating"></ng-container>
               <button type="button" mat-icon-button i18n-aria-label aria-label="action items" [matMenuTriggerFor]="cardMenu">
-                <mat-icon>more_vertical</mat-icon>
+                <mat-icon>more_vert</mat-icon>
               </button>
             </div>
           </div>

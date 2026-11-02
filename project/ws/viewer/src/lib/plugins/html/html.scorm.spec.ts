@@ -89,13 +89,16 @@ describe('HtmlComponent (SCORM plumbing)', () => {
       expect(c.pageFetchStatus).toBe('done')
     })
 
-    it('leaves the status alone for a frame load with no target', () => {
+    // The first load marks the page done (so the 3s "still loading?" timer can't
+    // bring the loader back), and a later reload event with no target leaves it so.
+    it('marks the page loaded and keeps it loaded on a reload with no target', () => {
       const c = build()
       const iframe = iframeStub()
       c.pageFetchStatus = 'fetching'
       c.onIframeLoadOrError('load', iframe as any)
+      expect(c.pageFetchStatus).toBe('done')
       iframe.onload({})
-      expect(c.pageFetchStatus).toBe('fetching')
+      expect(c.pageFetchStatus).toBe('done')
     })
 
     it('forwards the original load handler when one was already attached', () => {
@@ -150,12 +153,25 @@ describe('HtmlComponent (SCORM plumbing)', () => {
       expect(domSanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith('/apis/proxies/v8/getContents/content/html/do_2/start.html')
     })
 
-    it('falls back to a fixed offset for any other host', () => {
+    it('finds the storage key on any other host, including path-style S3 urls', () => {
       const c = build()
-      c.htmlContent = { streamingUrl: 'https://some-other-bucket.example.com/x/content/html/do_3/' } as any
-      load(c, 'a.html')
-      const url = domSanitizer.bypassSecurityTrustResourceUrl.mock.calls[0][0]
-      expect(url.startsWith('/apis/proxies/v8/getContents/')).toBe(true)
+      c.htmlContent = { streamingUrl: 'https://s3.ap-south-1.amazonaws.com/sunbirdcontent/content/html/do_3-latest' } as any
+      load(c, '/index.html')
+      expect(domSanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith(
+        '/apis/proxies/v8/getContents/content/html/do_3-latest/index.html',
+      )
+    })
+
+    it('does not append the entry file twice to an older draft url that already ends with it', () => {
+      const c = build()
+      c.htmlContent = {
+        streamingUrl: 'https://sunbirdcontent.s3-ap-south-1.amazonaws.com/content/html/do_4-snapshot/index_lms.html',
+        entryPoint: '/index_lms.html',
+      } as any
+      load(c)
+      expect(domSanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith(
+        '/apis/proxies/v8/getContents/content/html/do_4-snapshot/index_lms.html',
+      )
     })
 
     it('falls back to the content entry point when none was passed', () => {

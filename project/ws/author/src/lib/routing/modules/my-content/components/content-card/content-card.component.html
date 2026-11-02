@@ -37,6 +37,14 @@
           {{ data.name || 'Untitled Content' }}
         </h3>
       </a>
+      <!-- The grid card showed only a title; the list row's key facts were missing. -->
+      <p class="card-meta">
+        <span class="meta-item" *ngIf="data?.publishedOn" i18n>Published {{ data?.publishedOn | date }}</span>
+        <span class="meta-item" *ngIf="!data?.publishedOn && data?.lastUpdatedOn" i18n>Updated {{ data?.lastUpdatedOn | date }}</span>
+        <span *ngIf="data.duration" class="meta-item meta-icon-item" matTooltip="Duration" i18n-matTooltip>
+          <mat-icon class="duration-icon">access_time</mat-icon>{{ data.duration | pipeDurationTransform: 'hms' }}
+        </span>
+      </p>
     </mat-card-content>
     <mat-card-actions>
       <span *ngIf="(data.status && data.status !== 'Draft') || isForRevision" class="course-status-text" [ngClass]="getStatusClass()">
@@ -71,7 +79,8 @@
 </div>
 
 <div class="d-flex" *ngIf="changeView">
-  <div class="item1" *ngIf="data.appIcon">
+  <!-- Self assessments have no thumbnail; the column showed an empty white box. -->
+  <div class="item1" *ngIf="data.appIcon && !hideThumbnail">
     <a
       [ngClass]="{
         pointer: data.contentType !== 'Knowledge Board',
@@ -145,17 +154,19 @@
       >
         {{ CourseStatusName | uppercase }}
       </span>
-      <span class="mr-1 max-width-name"> by {{ data.creator }} </span>
-      <span class="mr-1" *ngIf="data?.publishedOn"> on {{ data?.publishedOn | date }},</span>
-      <span class="mr-1" *ngIf="!data?.publishedOn && data?.lastUpdatedOn"> on {{ data?.lastUpdatedOn | date }},</span>
-      <span class="mr-1" *ngIf="data.viewCount > 0"> {{ data.viewCount }} Views,</span>
-      <span class="mr-1" *ngIf="data.uniqueUsersCount > 0"> {{ data.uniqueUsersCount }} Learners</span>
-      <span *ngIf="data.totalRating" class="flex items-center ml-2 mr-2">
-        <mat-icon class="mr-1" *ngIf="data.totalRating == 5" color="accent">star</mat-icon>
-        <mat-icon class="mr-1" *ngIf="data.totalRating != 5" color="accent">star_half</mat-icon>
+      <!-- One labelled fact per item, separated by a dot (was "on <date>," with
+           trailing commas, which read as an unfinished sentence). -->
+      <span class="meta-item max-width-name" *ngIf="data.creator" i18n>By {{ data.creator }}</span>
+      <span class="meta-item" *ngIf="data?.publishedOn" i18n>Published {{ data?.publishedOn | date }}</span>
+      <span class="meta-item" *ngIf="!data?.publishedOn && data?.lastUpdatedOn" i18n>Updated {{ data?.lastUpdatedOn | date }}</span>
+      <span class="meta-item" *ngIf="data.viewCount > 0" i18n>{{ data.viewCount }} views</span>
+      <span class="meta-item" *ngIf="data.uniqueUsersCount > 0" i18n>{{ data.uniqueUsersCount }} learners</span>
+      <span *ngIf="data.totalRating" class="meta-item meta-icon-item">
+        <mat-icon *ngIf="data.totalRating == 5" color="accent">star</mat-icon>
+        <mat-icon *ngIf="data.totalRating != 5" color="accent">star_half</mat-icon>
         {{ data.totalRating | number: '1.1-1' }}
       </span>
-      <span *ngIf="data.duration" class="flex items-center ml-2 mr-2">
+      <span *ngIf="data.duration" class="meta-item meta-icon-item" matTooltip="Duration" i18n-matTooltip>
         <mat-icon class="duration-icon">access_time</mat-icon>{{ data.duration | pipeDurationTransform: 'hms' }}
       </span>
     </p>
@@ -262,8 +273,10 @@
 </mat-menu>
 <mat-menu #ordinalsLangMenu="matMenu">
   <a mat-menu-item *ngFor="let lang of filteredSubTitles">
-    <span (click)="create(lang.srclang)" (keydown)="isActivationKey($event) && create(lang.srclang)" [attr.tabindex]="0">{{
-      lang.label
-    }}</span>
+    <span
+      (click)="create(lang.srclang)"
+      (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && create(lang.srclang)"
+      >{{ lang.label }}</span
+    >
   </a>
 </mat-menu>

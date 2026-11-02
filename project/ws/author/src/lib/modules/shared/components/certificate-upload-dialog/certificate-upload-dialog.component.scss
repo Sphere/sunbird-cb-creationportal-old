@@ -801,3 +801,137 @@ ws-auth-cert-field-placer {
     margin-left: 0;
   }
 }
+
+// ---- Header, choice cards and footer (clean-up pass) -------------------------
+.upload-main-block {
+  padding: 24px !important;
+}
+
+.header-text {
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.header-titles {
+  min-width: 0;
+}
+
+// An <h2> now, so the global heading styles are reset here.
+.upload-text {
+  display: block;
+  margin: 0;
+  color: #1a2d45;
+  font-family: Roboto, sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+}
+
+.header-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 4px 0 0;
+  color: #5b6b7d;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.header-course {
+  overflow-wrap: anywhere;
+}
+
+// A dot between the course name and the spec when both are shown.
+.header-course + .header-spec::before {
+  content: '·';
+  margin: 0 8px;
+  color: #9aa3af;
+}
+
+.cert-close {
+  flex: 0 0 auto;
+  margin: -6px -8px 0 0;
+}
+
+// Two equal cards across the dialog; they were capped at 880px and left a
+// third of the width empty beside a full-width guide.
+.cert-route-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: none;
+}
+
+.cert-route-card {
+  padding: 16px 20px 20px;
+}
+
+.cert-route-peek {
+  height: 140px;
+}
+
+.cert-route-title {
+  margin-top: 4px;
+  font-size: 17px;
+}
+
+.cert-upload-guide {
+  padding: 16px 20px;
+}
+
+.cert-block {
+  padding: 16px 24px;
+}
+
+.cert-footer-hint {
+  margin-right: auto;
+  color: #5b6b7d;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+}
+
+.cert-cancel-btn {
+  height: 44px;
+  padding: 0 20px;
+  border: 1px solid #b8c9d9;
+  border-radius: 50px;
+  background: #fff;
+  color: #1c5d95;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #8aaac8;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+  }
+}
+
+// Readable while disabled (white on #b8c9d9 failed contrast).
+.add-certificate-btn[disabled] {
+  background: #e3e9ef;
+  color: #7a8a9b;
+}
+
+@media (max-width: 599px) {
+  .upload-main-block {
+    padding: 16px !important;
+  }
+
+  .cert-route-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cert-block {
+    flex-wrap: wrap;
+  }
+
+  .cert-footer-hint {
+    flex-basis: 100%;
+  }
+}

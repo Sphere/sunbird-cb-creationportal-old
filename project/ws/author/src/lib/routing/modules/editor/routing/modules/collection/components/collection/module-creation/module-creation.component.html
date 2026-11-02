@@ -70,8 +70,7 @@
                 <div>
                   <div
                     (click)="editContent(module)"
-                    (keydown)="isActivationKey($event) && editContent(module)"
-                    [attr.tabindex]="0"
+                    (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && editContent(module)"
                     class="left-block-container main"
                     *ngIf="module.primaryCategory === 'Course Unit'"
                     [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
@@ -84,7 +83,9 @@
                     <img *ngIf="editItem !== module.identifier" src="cbp-assets/icons/Vector.svg" alt="dragDrop" class="dragIcon" />
                     <img *ngIf="editItem === module.identifier" src="cbp-assets/icons/Vector_white.svg" alt="dragDrop" class="dragIcon" />
                     <div class="mod-heading">
-                      <h2 class="module-text" style="margin: 0px !important">{{ module.name !== '' ? module.name : 'no title1' }}</h2>
+                      <h2 class="module-text" style="margin: 0px !important">
+                        <button type="button" class="btn-reset">{{ module.name !== '' ? module.name : 'no title1' }}</button>
+                      </h2>
                       <span fxFlex style="flex: 1 1 auto"></span>
                     </div>
                     <div *ngIf="editItem !== module.identifier" class="hide-resource">
@@ -146,8 +147,7 @@
                   <div class="children" *ngIf="module?.children?.length > 0 && showChildrenMap[module.identifier]">
                     <div
                       (click)="editContent(resource)"
-                      (keydown)="isActivationKey($event) && editContent(resource)"
-                      [attr.tabindex]="0"
+                      (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && editContent(resource)"
                       *ngFor="let resource of module.children; index as l; trackBy: trackByIdentifier"
                       class="resource-1"
                       style="cursor: pointer"
@@ -171,14 +171,16 @@
                       </div>
                       <div class="resource-block">
                         <div class="resource-block-display">
-                          <span style="white-space: normal" class="resourse-text">{{ resource.name }} </span>
+                          <span style="white-space: normal" class="resourse-text"
+                            ><button type="button" class="btn-reset">{{ resource.name }}</button>
+                          </span>
                           <span *ngIf="resource.duration > 0" class="resource-duration-txt"
                             >( {{ resource.duration | formatDuration }} )</span
                           >
                         </div>
                         <div class="resource-status-block">
                           <span *ngIf="resource.artifactUrl && resource.mimeType !== 'application/json'" class="resourse-status"
-                            >{{ resource.mimeType | MimeTypePipe }}
+                            >{{ resource.mimeType | MimeTypePipe: resource.packageType }}
                             Updated
                           </span>
                           <span *ngIf="resource.artifactUrl && resource.mimeType == 'application/json'" class="resourse-status"
@@ -214,8 +216,7 @@
                   </button>
                   <div
                     (click)="editContent(module)"
-                    (keydown)="isActivationKey($event) && editContent(module)"
-                    [attr.tabindex]="0"
+                    (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && editContent(module)"
                     *ngIf="module.primaryCategory !== 'Course Unit'"
                     class="heading-resource resource-2"
                     [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
@@ -244,12 +245,14 @@
                     </div>
                     <div class="resource-block">
                       <div class="resource-block-display">
-                        <span title="{{ module.name }}" class="resourse-text" style="white-space: normal">{{ module.name }}</span>
+                        <span title="{{ module.name }}" class="resourse-text" style="white-space: normal"
+                          ><button type="button" class="btn-reset">{{ module.name }}</button></span
+                        >
                         <span *ngIf="module.duration > 0" class="resource-duration-txt">( {{ module.duration | formatDuration }} )</span>
                       </div>
                       <div class="resource-status-block">
                         <span *ngIf="module.artifactUrl && module.mimeType !== 'application/json'" class="resourse-status"
-                          >{{ module.mimeType | MimeTypePipe }}
+                          >{{ module.mimeType | MimeTypePipe: module.packageType }}
                           Updated
                         </span>
                         <span *ngIf="module.artifactUrl && module.mimeType == 'application/json'" class="resourse-status"
@@ -289,27 +292,27 @@
               >
                 <div
                   (click)="editContent(module)"
-                  (keydown)="isActivationKey($event) && editContent(module)"
-                  [attr.tabindex]="0"
+                  (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && editContent(module)"
                   class="module-container"
                   *ngFor="let module of moduleNames; trackBy: trackByIdentifier"
                 >
                   <div class="mod-heading">
                     <h2 class="module-text" style="margin: 0px !important">
-                      {{
-                        module.name !== ''
-                          ? module.name
-                          : 'no
+                      <button type="button" class="btn-reset">
+                        {{
+                          module.name !== ''
+                            ? module.name
+                            : 'no
                     title2'
-                      }}
+                        }}
+                      </button>
                     </h2>
                     <span fxFlex style="flex: 1 1 auto"></span>
                   </div>
                   <div *ngIf="isOnClickOfResourceTypeEnabled">
                     <div
                       (click)="editContent(resource)"
-                      (keydown)="isActivationKey($event) && editContent(resource)"
-                      [attr.tabindex]="0"
+                      (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && editContent(resource)"
                       *ngFor="let resource of resourceNames; trackBy: trackByIdentifier"
                       class="heading-resource resource-3"
                     >
@@ -325,7 +328,9 @@
                         (keydown)="isActivationKey($event) && dragDrop(resource, resource.identifier, 'resource')"
                         >none</mat-icon
                       >
-                      <span class="resourse-text" style="white-space: normal">{{ resource.name }}</span>
+                      <span class="resourse-text" style="white-space: normal"
+                        ><button type="button" class="btn-reset">{{ resource.name }}</button></span
+                      >
                       <span fxFlex style="flex: 1 1 auto"></span>
                     </div>
                   </div>
@@ -346,11 +351,10 @@
             <div *ngIf="isSelfAssessment" class="model-left-create-content div-1 sa-level-list">
               <div class="module-container" *ngFor="let module of courseData?.children; index as i; trackBy: trackByIdentifier">
                 <div>
-                  <div
+                  <button
+                    type="button"
                     (click)="editContent(module)"
-                    (keydown)="isActivationKey($event) && editContent(module)"
-                    [attr.tabindex]="0"
-                    class="left-block-container"
+                    class="btn-reset btn-block left-block-container"
                     *ngIf="module.primaryCategory === 'Course Unit'"
                     [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
                     style="cursor: pointer"
@@ -361,14 +365,13 @@
                       <h2 class="module-text" style="margin: 0px !important">{{ module.name !== '' ? module.name : 'no title1' }}</h2>
                       <span fxFlex style="flex: 1 1 auto"></span>
                     </div>
-                  </div>
+                  </button>
                   <div *ngIf="module?.children?.length > 0">
-                    <div
+                    <button
+                      type="button"
                       (click)="editContent(resource)"
-                      (keydown)="isActivationKey($event) && editContent(resource)"
-                      [attr.tabindex]="0"
                       *ngFor="let resource of module.children; index as l; trackBy: trackByIdentifier"
-                      class="resource-1"
+                      class="btn-reset resource-1"
                       style="cursor: pointer"
                       [ngClass]="editItem === resource.identifier ? 'edit-item' : ''"
                       style="cursor: pointer"
@@ -384,14 +387,13 @@
                         >{{ resource.name }}
                       </span>
                       <span *ngIf="resource.duration > 0" class="resource-duration-txt">( {{ resource.duration | formatDuration }} )</span>
-                    </div>
+                    </button>
                   </div>
-                  <div
+                  <button
+                    type="button"
                     (click)="editContent(module)"
-                    (keydown)="isActivationKey($event) && editContent(module)"
-                    [attr.tabindex]="0"
                     *ngIf="module.primaryCategory !== 'Course Unit'"
-                    class="heading-resource resource-2"
+                    class="btn-reset btn-block heading-resource resource-2"
                     [ngClass]="editItem === module.identifier ? 'edit-item' : ''"
                     style="cursor: pointer"
                   >
@@ -417,7 +419,7 @@
                       >{{ module.name }}</span
                     >
                     <span *ngIf="module.duration > 0" class="resource-duration-txt">( {{ module.duration | formatDuration }} )</span>
-                  </div>
+                  </button>
                 </div>
                 <button
                   [disabled]="hideResource"
@@ -446,27 +448,27 @@
               >
                 <div
                   (click)="editContent(module)"
-                  (keydown)="isActivationKey($event) && editContent(module)"
-                  [attr.tabindex]="0"
+                  (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && editContent(module)"
                   class="module-container"
                   *ngFor="let module of moduleNames; trackBy: trackByIdentifier"
                 >
                   <div class="mod-heading">
                     <h2 class="module-text" style="margin: 0px !important">
-                      {{
-                        module.name !== ''
-                          ? module.name
-                          : 'no
+                      <button type="button" class="btn-reset">
+                        {{
+                          module.name !== ''
+                            ? module.name
+                            : 'no
                     title2'
-                      }}
+                        }}
+                      </button>
                     </h2>
                     <span fxFlex style="flex: 1 1 auto"></span>
                   </div>
                   <div *ngIf="isOnClickOfResourceTypeEnabled">
                     <div
                       (click)="editContent(resource)"
-                      (keydown)="isActivationKey($event) && editContent(resource)"
-                      [attr.tabindex]="0"
+                      (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && editContent(resource)"
                       *ngFor="let resource of resourceNames; trackBy: trackByIdentifier"
                       class="heading-resource resource-3"
                     >
@@ -482,7 +484,9 @@
                         (keydown)="isActivationKey($event) && dragDrop(resource, resource.identifier, 'resource')"
                         >none</mat-icon
                       >
-                      <span class="resourse-text" style="white-space: normal">{{ resource.name }}</span>
+                      <span class="resourse-text" style="white-space: normal"
+                        ><button type="button" class="btn-reset">{{ resource.name }}</button></span
+                      >
                       <span fxFlex style="flex: 1 1 auto"></span>
                     </div>
                   </div>
@@ -515,11 +519,7 @@
               <span class="mc-card-title">{{ isSelfAssessment ? 'Self Assessment Builder' : 'Course Builder' }}</span>
               <span class="mc-card-sub" *ngIf="!isSelfAssessment">Add modules and resources to structure your course</span>
             </div>
-            <button
-              mat-stroked-button
-              class="preview-btn mc-preview-btn"
-              [routerLink]="'/author/toc/' + courseData?.identifier + '/contents'"
-            >
+            <button mat-stroked-button type="button" class="preview-btn mc-preview-btn" (click)="previewResource()">
               <mat-icon>remove_red_eye</mat-icon>
               Preview
             </button>
@@ -636,7 +636,9 @@
               </div>
             </div>
             <div class="module-txt-block mc-form-field-row" *ngIf="content?.contentType === 'Course'">
+              <label class="sr-only" for="mc-course-name" i18n>Name of the course</label>
               <input
+                id="mc-course-name"
                 name="moduleName"
                 type="text"
                 matInput
@@ -653,7 +655,9 @@
               </div>
             </div>
             <div class="module-txt-block mc-form-field-row" *ngIf="content?.contentType === 'CourseUnit' && !isSelfAssessment">
+              <label class="sr-only" for="mc-module-name" i18n>Name of the module</label>
               <input
+                id="mc-module-name"
                 name="moduleName"
                 type="text"
                 matInput
@@ -671,7 +675,9 @@
             </div>
             <div class="module-txt-block mc-form-field-row" *ngIf="content?.contentType === 'Resource' && !isSelfAssessment">
               <div class="mc-input-row">
+                <label class="sr-only" for="mc-resource-name" i18n>Name of the resource</label>
                 <input
+                  id="mc-resource-name"
                   name="moduleName"
                   type="text"
                   matInput
@@ -696,7 +702,9 @@
               </div>
             </div>
             <div class="module-txt-block mc-form-field-row" *ngIf="content?.contentType === 'Collection'">
+              <label class="sr-only" for="mc-collection-name" i18n>Name of the resource</label>
               <input
+                id="mc-collection-name"
                 name="moduleName"
                 type="text"
                 matInput
@@ -720,7 +728,9 @@
             </div>
             <!-- is link enabled -->
             <div class="module-txt-block" *ngIf="isLinkEnabled">
+              <label class="sr-only" for="mc-link-url" i18n>Link</label>
               <input
+                id="mc-link-url"
                 #artifactUrl
                 name="moduleName"
                 type="text"
@@ -746,10 +756,11 @@
                 <div
                   class="mc-upload-card"
                   (click)="pdfFile.click()"
-                  (keydown)="isActivationKey($event) && pdfFile.click()"
-                  [attr.tabindex]="0"
+                  (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && pdfFile.click()"
                 >
+                  <label class="sr-only" for="mc-resource-file" i18n>Upload resource file</label>
                   <input
+                    id="mc-resource-file"
                     #pdfFile
                     (change)="uploadPdf($event.target.files[0]); pdfFile.value = null"
                     style="display: none"
@@ -806,15 +817,15 @@
               </div>
             </div>
             <div class="module-txt-block" *ngIf="isLinkEnabled">
-              <label class="rd-checkbox-item">
-                <input type="checkbox" [(ngModel)]="isNewTab" [checked]="isNewTab" />
+              <label class="rd-checkbox-item" for="mc-open-new-tab">
+                <input id="mc-open-new-tab" type="checkbox" [(ngModel)]="isNewTab" [checked]="isNewTab" />
                 <span>Open link in new tab</span>
               </label>
             </div>
             <!-- Show Correct Answer Popup — Assessment resources only (not quiz / self-assessment / pdf / etc.) -->
             <div class="module-txt-block" *ngIf="isAssessmentResource">
-              <label class="rd-checkbox-item">
-                <input type="checkbox" [(ngModel)]="content.isCorrectAnswerPopUp" />
+              <label class="rd-checkbox-item" for="mc-correct-answer-popup">
+                <input id="mc-correct-answer-popup" type="checkbox" [(ngModel)]="content.isCorrectAnswerPopUp" />
                 <span>Show Correct Answer Popup</span>
               </label>
             </div>
@@ -856,7 +867,9 @@
               <span style="color: #808080" *ngIf="content?.contentType === 'Course'">Course Thumbnail</span>
             </div>
             <div class="mc-thumbnail-row module-txt-block margin-top-s" *ngIf="content?.contentType === 'CourseUnit'">
+              <label class="sr-only" for="mc-module-thumbnail-file" i18n>Upload module thumbnail</label>
               <input
+                id="mc-module-thumbnail-file"
                 type="file"
                 #uploadThumbnail
                 (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null"
@@ -866,8 +879,7 @@
               <div
                 class="mc-thumbnail-upload"
                 (click)="uploadThumbnail.click()"
-                (keydown)="isActivationKey($event) && uploadThumbnail.click()"
-                [attr.tabindex]="0"
+                (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && uploadThumbnail.click()"
               >
                 <ng-container *ngIf="thumbnail">
                   <img alt="Module thumbnail" class="mc-thumbnail-preview" [src]="thumbnail" (error)="changeToDefaultImg($event)" />
@@ -882,7 +894,7 @@
                 </ng-container>
                 <ng-container *ngIf="!thumbnail">
                   <mat-icon class="mc-thumbnail-icon">add_photo_alternate</mat-icon>
-                  <span class="mc-thumbnail-label" i18n>+ Add Thumbnail</span>
+                  <span class="mc-thumbnail-label"><button type="button" class="btn-reset" i18n>+ Add Thumbnail</button></span>
                 </ng-container>
               </div>
               <div class="mc-thumbnail-specs">
@@ -901,7 +913,9 @@
             >
               <span class="duration-text">Duration:</span>
               <!-- <mat-form-field appearance="outline" class="width-55"> -->
+              <label class="sr-only" for="mc-duration-hours" i18n>Duration in hours</label>
               <input
+                id="mc-duration-hours"
                 matInput
                 class="numberInput"
                 [(ngModel)]="hours"
@@ -920,7 +934,9 @@
               <!-- </mat-form-field> -->
               <div class="colon-block">:</div>
               <!-- <mat-form-field appearance="outline" class="width-55"> -->
+              <label class="sr-only" for="mc-duration-minutes" i18n>Duration in minutes</label>
               <input
+                id="mc-duration-minutes"
                 matInput
                 class="numberInput"
                 [(ngModel)]="minutes"
@@ -939,7 +955,9 @@
               <!-- </mat-form-field> -->
               <div class="colon-block">:</div>
               <!-- <mat-form-field appearance="outline" class="width-55"> -->
+              <label class="sr-only" for="mc-duration-seconds" i18n>Duration in seconds</label>
               <input
+                id="mc-duration-seconds"
                 matInput
                 class="numberInput"
                 [(ngModel)]="seconds"
@@ -1027,7 +1045,9 @@
               <form [formGroup]="resourceLinkForm" class="resource-details-form" *ngIf="isLinkEnabled || isAssessmentOrQuizEnabled">
                 <!-- Name of the resource -->
                 <div class="rd-name-row">
+                  <label class="sr-only" for="rd-link-resource-name" i18n>Name of the resource</label>
                   <input
+                    id="rd-link-resource-name"
                     type="text"
                     #name
                     formControlName="name"
@@ -1048,14 +1068,21 @@
                 </div>
 
                 <!-- Show Correct Answer Popup — Assessment resources only (not quiz / self-assessment) -->
-                <label class="rd-checkbox-item" *ngIf="isAssessmentResource">
-                  <input type="checkbox" [(ngModel)]="content.isCorrectAnswerPopUp" [ngModelOptions]="{ standalone: true }" />
+                <label class="rd-checkbox-item" *ngIf="isAssessmentResource" for="rd-correct-answer-popup">
+                  <input
+                    id="rd-correct-answer-popup"
+                    type="checkbox"
+                    [(ngModel)]="content.isCorrectAnswerPopUp"
+                    [ngModelOptions]="{ standalone: true }"
+                  />
                   <span>Show Correct Answer Popup</span>
                 </label>
 
                 <!-- Link URL (link type only) -->
                 <div class="rd-name-row" *ngIf="isLinkEnabled && !isAssessmentOrQuizEnabled">
+                  <label class="sr-only" for="rd-link-url" i18n>Link</label>
                   <input
+                    id="rd-link-url"
                     type="text"
                     #artifactUrl
                     [(ngModel)]="editResourceLinks"
@@ -1074,8 +1101,8 @@
                 </span>
 
                 <!-- Open in new tab (link type only) -->
-                <label class="rd-checkbox-item" *ngIf="isLinkEnabled">
-                  <input type="checkbox" formControlName="isIframeSupported" />
+                <label class="rd-checkbox-item" *ngIf="isLinkEnabled" for="rd-link-new-tab">
+                  <input id="rd-link-new-tab" type="checkbox" formControlName="isIframeSupported" />
                   <span>Open link in new tab</span>
                 </label>
 
@@ -1098,7 +1125,9 @@
                 <!-- Duration (link type only) -->
                 <div class="duration-style" *ngIf="!isAssessmentOrQuizEnabled">
                   <span class="duration-text">Duration:</span>
+                  <label class="sr-only" for="rd-link-duration-hours" i18n>Duration in hours</label>
                   <input
+                    id="rd-link-duration-hours"
                     matInput
                     class="numberInput"
                     [(ngModel)]="hours"
@@ -1115,7 +1144,9 @@
                     "
                   />
                   <div class="colon-block">:</div>
+                  <label class="sr-only" for="rd-link-duration-minutes" i18n>Duration in minutes</label>
                   <input
+                    id="rd-link-duration-minutes"
                     matInput
                     class="numberInput"
                     [(ngModel)]="minutes"
@@ -1133,7 +1164,9 @@
                     "
                   />
                   <div class="colon-block">:</div>
+                  <label class="sr-only" for="rd-link-duration-seconds" i18n>Duration in seconds</label>
                   <input
+                    id="rd-link-duration-seconds"
                     matInput
                     class="numberInput"
                     [(ngModel)]="seconds"
@@ -1161,7 +1194,9 @@
                 <!-- Name row + optional re-upload (video only) -->
                 <div class="rd-pdf-name-row">
                   <div class="rd-name-row" style="flex: 1; min-width: 0">
+                    <label class="sr-only" for="rd-file-resource-name" i18n>Name of the resource</label>
                     <input
+                      id="rd-file-resource-name"
                       type="text"
                       #name
                       formControlName="name"
@@ -1187,10 +1222,11 @@
                     <div
                       class="mc-upload-card"
                       (click)="pdfFile2.click()"
-                      (keydown)="isActivationKey($event) && pdfFile2.click()"
-                      [attr.tabindex]="0"
+                      (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && pdfFile2.click()"
                     >
+                      <label class="sr-only" for="rd-resource-file" i18n>Upload resource file</label>
                       <input
+                        id="rd-resource-file"
                         #pdfFile2
                         (change)="uploadPdf($event.target.files[0]); pdfFile2.value = null"
                         style="display: none"
@@ -1249,8 +1285,8 @@
                     This field is Required
                   </span>
                 </div>
-                <label class="rd-checkbox-item" *ngIf="isLinkEnabled">
-                  <input type="checkbox" formControlName="isIframeSupported" />
+                <label class="rd-checkbox-item" *ngIf="isLinkEnabled" for="rd-file-new-tab">
+                  <input id="rd-file-new-tab" type="checkbox" formControlName="isIframeSupported" />
                   <span>Open link in new tab</span>
                 </label>
                 <!-- <div class="margin-top-m" style="display:flex; flex-direction:row" *ngIf="isShowDownloadBtnEnabled">
@@ -1259,7 +1295,9 @@
               </div> -->
                 <div class="margin-top-m duration-style module-txt-block">
                   <span class="duration-text">Duration:</span><br />
+                  <label class="sr-only" for="rd-file-duration-hours" i18n>Duration in hours</label>
                   <input
+                    id="rd-file-duration-hours"
                     matInput
                     class="numberInput"
                     [(ngModel)]="hours"
@@ -1277,7 +1315,9 @@
                   />
                   <div class="colon-block">:</div>
 
+                  <label class="sr-only" for="rd-file-duration-minutes" i18n>Duration in minutes</label>
                   <input
+                    id="rd-file-duration-minutes"
                     matInput
                     class="numberInput"
                     [(ngModel)]="minutes"
@@ -1296,7 +1336,9 @@
                   />
                   <div class="colon-block">:</div>
 
+                  <label class="sr-only" for="rd-file-duration-seconds" i18n>Duration in seconds</label>
                   <input
+                    id="rd-file-duration-seconds"
                     matInput
                     class="numberInput"
                     [(ngModel)]="seconds"
@@ -1357,31 +1399,27 @@
               <ng-container *ngIf="!isSelfAssessment">
                 <p class="mc-section-label">Learning Format</p>
                 <div class="mc-format-grid">
-                  <div
-                    class="mc-format-item"
+                  <button
+                    type="button"
+                    class="btn-reset mc-format-item"
                     *ngFor="let list of contentList; trackBy: trackByIndex"
                     (click)="createResourseContent(list.name, list.type)"
-                    (keydown)="isActivationKey($event) && createResourseContent(list.name, list.type)"
-                    role="button"
-                    tabindex="0"
                   >
                     <div class="mc-format-icon-box">
                       <img loading="lazy" [src]="list.icon" [alt]="list.name" />
                     </div>
                     <span class="mc-format-label">{{ list.name }}</span>
-                  </div>
+                  </button>
                 </div>
               </ng-container>
 
               <p class="mc-section-label">Assess your Learners</p>
               <div class="mc-assess-grid">
-                <div
-                  class="mc-assess-item"
+                <button
+                  type="button"
+                  class="btn-reset mc-assess-item"
                   *ngFor="let list of accessList; trackBy: trackByIndex"
                   (click)="createResourseContent(list.name, list.type)"
-                  (keydown)="isActivationKey($event) && createResourseContent(list.name, list.type)"
-                  role="button"
-                  tabindex="0"
                 >
                   <div class="mc-assess-item-inner">
                     <div class="mc-format-icon-box">
@@ -1390,7 +1428,7 @@
                     <span class="mc-format-label">{{ list.name }}</span>
                   </div>
                   <p class="mc-assess-help">{{ list.text }}</p>
-                </div>
+                </button>
               </div>
             </div>
           </div>
@@ -1441,20 +1479,19 @@
                   class="tab"
                   [ngClass]="{ 'active-tab': i === activeTabIndex }"
                   (click)="setActiveTab(i)"
-                  (keydown)="isActivationKey($event) && setActiveTab(i)"
-                  [attr.tabindex]="0"
+                  (keydown)="$event.target === $event.currentTarget && isActivationKey($event) && setActiveTab(i)"
                 >
-                  Question {{ i + 1 }}
-                  <img
+                  <button type="button" class="btn-reset">Question {{ i + 1 }}</button>
+                  <button
+                    type="button"
                     *ngIf="videoQuestions.length > 0 && i === activeTabIndex"
-                    class="ml-2"
-                    loading="lazy"
+                    class="btn-reset tab-delete-btn ml-2"
                     (click)="deleteQuestion(i)"
-                    (keydown)="isActivationKey($event) && deleteQuestion(i)"
-                    [attr.tabindex]="0"
-                    src="cbp-assets/icons/bin.svg"
-                    alt="delete-icon"
-                  />
+                    aria-label="Delete question"
+                    i18n-aria-label
+                  >
+                    <img loading="lazy" src="cbp-assets/icons/bin.svg" alt="delete-icon" aria-hidden="true" />
+                  </button>
                 </div>
               </div>
               <div
@@ -1478,7 +1515,9 @@
                     (ngModelChange)="updateTimestampInSeconds(i)"
                   />
                   <div class="colon-block">:</div>
+                  <label class="sr-only" [for]="'vq-timestamp-minutes-' + i" i18n>Timestamp minutes</label>
                   <input
+                    [id]="'vq-timestamp-minutes-' + i"
                     matInput
                     class="numberInput"
                     type="number"
@@ -1491,7 +1530,9 @@
                     (ngModelChange)="updateTimestampInSeconds(i)"
                   />
                   <div class="colon-block">:</div>
+                  <label class="sr-only" [for]="'vq-timestamp-seconds-' + i" i18n>Timestamp seconds</label>
                   <input
+                    [id]="'vq-timestamp-seconds-' + i"
                     matInput
                     class="numberInput"
                     type="number"
@@ -1510,7 +1551,9 @@
                 </span>
                 <div class="mb-2" *ngFor="let subQuestion of question.question; let j = index; trackBy: trackByIndex">
                   <div class="question">
+                    <label class="sr-only" [for]="'vq-question-' + i + '-' + j" i18n>Question</label>
                     <textarea
+                      [id]="'vq-question-' + i + '-' + j"
                       rows="2"
                       matInput
                       [(ngModel)]="subQuestion.text"
@@ -1536,7 +1579,11 @@
                   <div class="mt-1 option-block" *ngFor="let option of subQuestion.options; let k = index; trackBy: trackByIndex">
                     <div class="input-container">
                       <div class="option-container">
+                        <label class="sr-only" [for]="'vq-option-correct-' + i + '-' + j + '-' + k" i18n
+                          >Mark option as correct answer</label
+                        >
                         <input
+                          [id]="'vq-option-correct-' + i + '-' + j + '-' + k"
                           type="radio"
                           name="isCorrect-{{ i }}-{{ j }}"
                           [checked]="option.isCorrect"
@@ -1544,7 +1591,9 @@
                           (keydown)="isActivationKey($event) && setCorrectOption(i, j, k)"
                           class="radio-button"
                         />
+                        <label class="sr-only" [for]="'vq-option-text-' + i + '-' + j + '-' + k" i18n>Option</label>
                         <input
+                          [id]="'vq-option-text-' + i + '-' + j + '-' + k"
                           class="option-input"
                           matInput
                           type="text"
@@ -1554,20 +1603,22 @@
                           autocomplete="off"
                           maxlength="30"
                         />
-                        <img
-                          loading="lazy"
+                        <button
+                          type="button"
+                          class="btn-reset option-delete-icon"
                           (click)="deleteOption(i, j, k)"
-                          (keydown)="isActivationKey($event) && deleteOption(i, j, k)"
-                          [attr.tabindex]="0"
-                          src="cbp-assets/icons/fluent_delete-24-regular.svg"
-                          alt="delete-icon"
-                          class="option-delete-icon"
-                        />
+                          aria-label="Delete option"
+                          i18n-aria-label
+                        >
+                          <img loading="lazy" src="cbp-assets/icons/fluent_delete-24-regular.svg" alt="delete-icon" />
+                        </button>
                       </div>
                       <mat-hint class="mt-hint">{{ option.text.length }}/30</mat-hint>
                     </div>
                     <div class="answer-info-container">
+                      <label class="sr-only" [for]="'vq-option-note-' + i + '-' + j + '-' + k" i18n>Option note</label>
                       <input
+                        [id]="'vq-option-note-' + i + '-' + j + '-' + k"
                         class="option-input option-answerinfo-input pl-0"
                         matInput
                         type="text"

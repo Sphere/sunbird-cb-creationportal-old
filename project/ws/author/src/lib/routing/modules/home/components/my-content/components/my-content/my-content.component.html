@@ -55,7 +55,7 @@
             matTreeNodePadding
           >
             <div class="grid">
-              <h5 class="font-size-m margin-top-xs margin-remove-bottom hand" [attr.tabindex]="0" matTreeNodeToggle>
+              <h5 class="font-size-m margin-top-xs margin-remove-bottom hand" matTreeNodeToggle>
                 {{ node.displayName }}
               </h5>
               <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.displayName">
@@ -187,8 +187,17 @@
               </button>
             </div>
             <div class="width-3-4 pl-2">
+              <label class="sr-only" for="home-my-content-search-input" i18n>Search for content</label>
               <mat-form-field class="w-full" appearance="none" [floatLabel]="'never'">
-                <input type="text" (keyup.enter)="search()" matInput #searchInput name="searchBox" placeholder="Search for content" />
+                <input
+                  id="home-my-content-search-input"
+                  type="text"
+                  (keyup.enter)="search()"
+                  matInput
+                  #searchInput
+                  name="searchBox"
+                  placeholder="Search for content"
+                />
                 <mat-icon matPrefix class="m-auto searchinput flex">search</mat-icon>
               </mat-form-field>
             </div>

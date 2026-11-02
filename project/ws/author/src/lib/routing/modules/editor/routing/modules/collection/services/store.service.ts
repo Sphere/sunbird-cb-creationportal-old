@@ -411,6 +411,9 @@ export class CollectionStoreService {
         // primaryCategory: meta.primaryCategory
         primaryCategory: meta.primaryCategory || 'Learning Resource',
         ownershipType: ['createdFor'],
+        // An HTML package resource carries its marker and fixed entry point from creation.
+        ...(topicObj.entryPoint ? { entryPoint: topicObj.entryPoint } : {}),
+        ...(topicObj.packageType ? { packageType: topicObj.packageType } : {}),
       }
 
       // requestBody.posterImage = parentData.posterImage

@@ -36,6 +36,7 @@ import { map, mergeMap } from 'rxjs/operators'
 import { IFormMeta } from '@ws/author/src/lib/interface/form'
 
 import { AuthInitService } from '@ws/author/src/lib/services/init.service'
+import { NO_CONFIG_DEFAULT, configDefault, emptiedFieldValue, isBooleanConfigField } from '@ws/author/src/lib/utils/config-default'
 
 @Injectable()
 export class MyContentService {
@@ -83,19 +84,16 @@ export class MyContentService {
     return this.readContent(id).pipe(
       mergeMap(content => {
         let requestObj: any = {}
-        Object.keys(this.authInitService.authConfig).forEach(
-          v =>
-            (requestObj[v as any] = content[v as keyof NSContent.IContentMeta]
-              ? content[v as keyof NSContent.IContentMeta]
-              : JSON.parse(
-                  JSON.stringify(
-                    this.authInitService.authConfig[v as keyof IFormMeta].defaultValue[
-                      content.contentType
-                      // tslint:disable-next-line: ter-computed-property-spacing
-                    ][0].value,
-                  ),
-                )),
-        )
+        Object.keys(this.authInitService.authConfig).forEach(v => {
+          if (content[v as keyof NSContent.IContentMeta]) {
+            requestObj[v as any] = content[v as keyof NSContent.IContentMeta]
+            return
+          }
+          const fallback = configDefault(this.authInitService.authConfig, v, content.contentType)
+          if (fallback !== NO_CONFIG_DEFAULT) {
+            requestObj[v as any] = fallback
+          }
+        })
         requestObj = {
           ...requestObj,
           name: '',

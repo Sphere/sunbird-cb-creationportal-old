@@ -688,7 +688,7 @@ const DATE_PATTERNS = [
 export function findHardcodedText(doc: Document, canvas: ICanvasSize, lines: ISnapLine[]): ICertHardcodedText[] {
   const found: ICertHardcodedText[] = []
   doc.querySelectorAll('text').forEach(node => {
-    const text = (node.textContent || '').replace(/\s+/g, ' ').trim()
+    const text = (node.textContent || '').replaceAll(/\s+/g, ' ').trim()
     if (!text) {
       return
     }

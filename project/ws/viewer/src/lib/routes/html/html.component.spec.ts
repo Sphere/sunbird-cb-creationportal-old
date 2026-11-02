@@ -101,6 +101,16 @@ describe('HtmlComponent', () => {
       expect(component.htmlData!.artifactUrl).toContain('Param1=u1')
     })
 
+    it('opens a resource that has no file uploaded yet instead of throwing', async () => {
+      activatedRoute.data = of({ content: { data: content({ artifactUrl: undefined }) } })
+      component = build()
+
+      component.ngOnInit()
+      await flush()
+
+      expect(component.htmlData!.artifactUrl).toBe('')
+    })
+
     it('sets the S3 cookie for content-store artifacts', async () => {
       activatedRoute.data = of({
         content: { data: content({ artifactUrl: 'https://host/content-store/a' }) },
@@ -148,6 +158,16 @@ describe('HtmlComponent', () => {
       expect(component.htmlData).toBeTruthy()
       expect(component.htmlData!.artifactUrl).toBe('https://cdn.example.com/a')
       expect(component.discussionForumWidget!.widgetData.isDisabled).toBe(true)
+    })
+
+    it('previews a resource that has no file uploaded yet instead of throwing', async () => {
+      viewerSvc.getContent.mockReturnValue(of({ identifier: 'do_1', artifactUrl: undefined }))
+      component = build()
+
+      component.ngOnInit()
+      await flush()
+
+      expect(component.htmlData!.artifactUrl).toBe('')
     })
 
     it('skips preview mode when the new design authoring config is on', () => {

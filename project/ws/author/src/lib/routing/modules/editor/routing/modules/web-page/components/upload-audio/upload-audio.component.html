@@ -28,7 +28,9 @@
       [attr.tabindex]="0"
     >
       <span class="font-weight-500" [hidden]="file">
+        <label class="sr-only" for="upload-audio-file-input" i18n>Choose an audio file</label>
         <input
+          id="upload-audio-file-input"
           class="upload-audio"
           type="file"
           accept="audio/mp3,audio/*;capture=microphone"

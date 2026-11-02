@@ -29,9 +29,12 @@ import { RouterModule } from '@angular/router'
 
 import { SharedModule } from '../../../../../author/src/lib/modules/shared/shared.module'
 
+import { NoFileModule } from '../../components/no-file/no-file.module'
+
 @NgModule({
   declarations: [AudioComponent],
   imports: [
+    NoFileModule,
     RouterModule,
     CommonModule,
     MatIconModule,

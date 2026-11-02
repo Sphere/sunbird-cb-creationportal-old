@@ -130,6 +130,8 @@ export namespace NsContent {
     [key: string]: any
     streamingUrl?: string
     entryPoint?: string
+    /** 'html' marks an html-archive as an HTML package; absent means SCORM. */
+    packageType?: string
   }
 
   export interface IContentMinimal {

@@ -18,7 +18,6 @@ import { ICommon } from '../../_models/common.model'
 
 import domToImage from 'dom-to-image'
 
-
 @Component({
   standalone: false,
   selector: 'ws-widget-btn-content-share-dialog',
@@ -41,14 +40,14 @@ export class BtnContentShareDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: { content: NsContent.IContent },
     public shareSvc: WidgetContentShareService,
     public configSvc: ConfigurationsService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     let cUrl = window.location.href
     let id = cUrl.split('/')[5]
     let newUrl = `${document.baseURI}`
     if (newUrl.includes('hi')) {
-      newUrl = newUrl.replace(/hi\//g, '')
+      newUrl = newUrl.replaceAll(/hi\//g, '')
     }
     let url = `https://sphere.aastrika.org/public/toc/overview?courseId=${id}`
 
@@ -72,13 +71,12 @@ export class BtnContentShareDialogComponent implements OnInit {
   }
 
   saveAsImage(code: any) {
-    domToImage.toPng(code.qrcElement.nativeElement)
-      .then((dataUrl: string) => {
-        const link = document.createElement('a')
-        link.download = 'qrcode.png'
-        link.href = dataUrl
-        link.click()
-      })
+    domToImage.toPng(code.qrcElement.nativeElement).then((dataUrl: string) => {
+      const link = document.createElement('a')
+      link.download = 'qrcode.png'
+      link.href = dataUrl
+      link.click()
+    })
   }
 
   updateUsers(users: NsAutoComplete.IUserAutoComplete[]) {
@@ -156,18 +154,17 @@ export class BtnContentShareDialogComponent implements OnInit {
 
   get detailUrl() {
     // let locationOrigin = environment.sitePath ? `https://${environment.sitePath}` : location.origin
-    let locationOrigin = "https://sphere.aastrika.org"
+    let locationOrigin = 'https://sphere.aastrika.org'
     if (this.configSvc.activeLocale && this.configSvc.activeLocale.path) {
       locationOrigin += `/${this.configSvc.activeLocale.path}`
     }
-    locationOrigin = "https://sphere.aastrika.org"
+    locationOrigin = 'https://sphere.aastrika.org'
     switch (this.data.content.contentType) {
       case NsContent.EContentTypes.CHANNEL:
         return `${locationOrigin}${this.data.content.artifactUrl}`
       case NsContent.EContentTypes.KNOWLEDGE_BOARD:
         return `${locationOrigin}/app/knowledge-board/${this.data.content.identifier}`
       case NsContent.EContentTypes.KNOWLEDGE_ARTIFACT:
-
         return `${locationOrigin}/app/toc/${this.data.content.identifier}/overview`
       default:
         return `${locationOrigin}/app/toc/${this.data.content.identifier}/overview`

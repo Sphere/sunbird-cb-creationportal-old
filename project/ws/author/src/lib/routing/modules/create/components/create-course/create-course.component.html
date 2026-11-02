@@ -13,7 +13,14 @@
       <div class="cc-card-body">
         <mat-form-field appearance="outline" class="cc-field" hideRequiredMarker>
           <mat-label>Course Name <span class="cc-req">*</span></mat-label>
-          <input matInput #courseName formControlName="courseName" maxlength="100" placeholder="e.g. Infection Prevention and Control" />
+          <input
+            id="create-course-name"
+            matInput
+            #courseName
+            formControlName="courseName"
+            maxlength="100"
+            placeholder="e.g. Infection Prevention and Control"
+          />
           <mat-hint>{{ courseName.value.length }} / 100 · Use a clear title describing what learners will gain</mat-hint>
           <mat-error *ngIf="createCourseForm.controls.courseName.errors?.required"> Course name is required </mat-error>
         </mat-form-field>
@@ -21,6 +28,7 @@
         <mat-form-field appearance="outline" class="cc-field" hideRequiredMarker>
           <mat-label>Description <span class="cc-req">*</span></mat-label>
           <textarea
+            id="create-course-description"
             matInput
             #courseIntroduction
             maxlength="2000"
@@ -89,6 +97,7 @@
           <mat-form-field appearance="outline" class="sa-field" hideRequiredMarker>
             <mat-label>Competency <span class="cc-req">*</span></mat-label>
             <input
+              id="create-course-competency"
               matInput
               formControlName="proficiency"
               [matAutocomplete]="compAuto"

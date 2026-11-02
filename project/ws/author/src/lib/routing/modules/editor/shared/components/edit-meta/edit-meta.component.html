@@ -71,6 +71,7 @@
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
               <input
+                id="edit-meta-audience"
                 i18n-placeholder
                 placeholder="Add audience..."
                 #audienceView
@@ -102,6 +103,7 @@
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
               <input
+                id="edit-meta-job-profiles"
                 i18n-placeholder
                 placeholder="Add job profile..."
                 #jobProfileView
@@ -130,6 +132,7 @@
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
               <input
+                id="edit-meta-skills"
                 i18n-placeholder
                 formControlName="skills"
                 placeholder="Add skills..."
@@ -167,6 +170,7 @@
               <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
             </mat-chip-row>
             <input
+              id="edit-meta-keywords"
               i18n-placeholder
               [formControl]="keywordsCtrl"
               [matAutocomplete]="auto"
@@ -206,6 +210,7 @@
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
               <input
+                id="edit-meta-reviewers"
                 i18n-placeholder
                 placeholder="Search by email..."
                 #trackContactsView
@@ -242,6 +247,7 @@
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
               <input
+                id="edit-meta-publishers"
                 i18n-placeholder
                 placeholder="Search by email..."
                 #publisherDetailsView
@@ -278,6 +284,7 @@
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
               <input
+                id="edit-meta-curators"
                 i18n-placeholder
                 placeholder="Search by email..."
                 #creatorContactsView
@@ -314,6 +321,7 @@
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
               </mat-chip-row>
               <input
+                id="edit-meta-authors"
                 i18n-placeholder
                 placeholder="Enter name..."
                 #creatorDetailsView
@@ -372,6 +380,7 @@
                 <mat-form-field appearance="outline" class="em-field" [ngClass]="{ 'mat-form-field-invalid': showError('name') }">
                   <mat-label i18n>Course Name <span class="em-req">*</span></mat-label>
                   <input
+                    id="edit-meta-course-name"
                     matInput
                     trim="blur"
                     formControlName="name"
@@ -388,6 +397,7 @@
                 <mat-form-field appearance="outline" class="em-field" [ngClass]="{ 'mat-form-field-invalid': showError('subTitle') }">
                   <mat-label i18n>Subtitle <span class="em-req">*</span></mat-label>
                   <input
+                    id="edit-meta-subtitle"
                     matInput
                     trim="blur"
                     formControlName="subTitle"
@@ -486,21 +496,22 @@
                 </div>
 
                 <!-- Drop zone (no image) -->
-                <div
+                <button
+                  type="button"
                   *ngIf="!contentForm.controls.appIcon.value"
-                  class="em-dropzone"
+                  class="btn-reset btn-block em-dropzone"
                   (click)="uploadThumbnail.click()"
-                  (keydown)="isActivationKey($event) && uploadThumbnail.click()"
-                  [attr.tabindex]="0"
                   (dragover)="$event.preventDefault()"
                   (drop)="$event.preventDefault(); uploadAppIcon($event.dataTransfer.files[0])"
                 >
                   <mat-icon class="em-dz-icon">cloud_upload</mat-icon>
                   <p class="em-dz-title" i18n>Drag & drop or <span class="em-dz-link">browse</span></p>
                   <p class="em-dz-meta" i18n>JPG, PNG · 760 × 400 px · max 1 MB</p>
-                </div>
+                </button>
 
+                <label class="sr-only" for="edit-meta-thumbnail-file" i18n>Upload course thumbnail</label>
                 <input
+                  id="edit-meta-thumbnail-file"
                   type="file"
                   #uploadThumbnail
                   (change)="uploadAppIcon($event.target.files[0]); uploadThumbnail.value = null"

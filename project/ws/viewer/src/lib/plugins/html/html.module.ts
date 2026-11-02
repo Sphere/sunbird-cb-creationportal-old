@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core'
 
 import { CommonModule } from '@angular/common'
 
-
 import { MatCardModule } from '@angular/material/card'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDividerModule } from '@angular/material/divider'
@@ -15,10 +14,12 @@ import { HtmlComponent } from './html.component'
 
 import { RouterModule } from '@angular/router'
 
+import { NoFileModule } from '../../components/no-file/no-file.module'
 
 @NgModule({
   declarations: [HtmlComponent],
   imports: [
+    NoFileModule,
     CommonModule,
     MatCardModule,
     MatButtonModule,
@@ -30,8 +31,6 @@ import { RouterModule } from '@angular/router'
     RouterModule,
     MatTooltipModule,
   ],
-  exports: [
-    HtmlComponent,
-  ],
+  exports: [HtmlComponent],
 })
-export class HtmlModule { }
+export class HtmlModule {}

@@ -1,25 +1,27 @@
 @import 'ws-vars';
 @import 'ws-mixins';
+@import '../player-layout';
 
-.video-layout {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 12px 12px 0;
-  box-sizing: border-box;
-}
+@include player-layout;
 
+// The video sits on a black stage; with no file the stage stays white like
+// every other player.
 .video-player-wrap {
-  width: 100%;
   background: #000;
-  flex-shrink: 0;
-  border-radius: 8px;
-  overflow: hidden;
+
+  &.is-empty {
+    background: #fff;
+  }
 }
 
+// A plain block with the stage's height, so the resolved video widget's own
+// height: 100% fills it (as it did with the old fixed height).
 .video-player {
+  position: relative;
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
-  height: calc(100vh - 180px);
 
   @include breakpoint-xs {
     position: fixed;
@@ -32,21 +34,20 @@
   }
 }
 
-#fullScreenContainer {
-  width: 100%;
-  height: calc(100vh - 180px);
-  min-height: calc(100vh - 180px);
-  position: relative;
-
+// On phones the video is pinned under the top bar (above), so the stage keeps
+// the matching height and Previous / Next follow it.
+.video-player-wrap {
   @include breakpoint-xs {
-    height: 40vh;
-    min-height: 40vh;
+    flex: 0 0 40vh;
   }
-}
 
-.player-nav-links {
-  width: 100%;
-  flex-shrink: 0;
+  &.is-empty .video-player {
+    @include breakpoint-xs {
+      position: static;
+      width: 100%;
+      background: #fff;
+    }
+  }
 }
 
 .video-player-embed {
@@ -64,6 +65,7 @@
   overflow: hidden;
 }
 
-.mat-card, .mat-mdc-card {
+.mat-card,
+.mat-mdc-card {
   box-shadow: none !important;
 }

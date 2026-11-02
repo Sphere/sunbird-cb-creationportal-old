@@ -301,6 +301,33 @@ describe('MultipleChoiceQuestionComponent', () => {
   })
 
   describe('openCkEditor', () => {
+    it('opens the hint editor with a hint saved on the question (e.g. from the Excel upload)', () => {
+      load(
+        mcqQuiz([
+          { text: 'One', isCorrect: true, hint: '<p>Because one</p>' },
+          { text: 'Two', isCorrect: false },
+        ]),
+      )
+      expect(options().at(0).get('hint')!.value).toBe('<p>Because one</p>')
+
+      component.openCkEditor(0)
+
+      expect(dialog.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ data: expect.objectContaining({ content: '<p>Because one</p>' }) }),
+      )
+    })
+
+    it('does not blank saved hints when the form is sent back after an edit', () => {
+      load(
+        mcqQuiz([
+          { text: 'One', isCorrect: true, hint: '<p>Because one</p>' },
+          { text: 'Two', isCorrect: false },
+        ]),
+      )
+      expect(component.quizForm.value.options[0].hint).toBe('<p>Because one</p>')
+    })
+
     it('opens the hint editor seeded with the current hint', () => {
       load()
       options().at(0).get('hint')!.setValue('a hint')

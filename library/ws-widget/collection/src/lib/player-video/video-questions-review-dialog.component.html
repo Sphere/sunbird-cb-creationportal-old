@@ -1,0 +1,69 @@
+<div class="vqr">
+  <header class="vqr-head">
+    <div>
+      <h2 id="vqr-title" class="vqr-title">In-video questions</h2>
+      <p class="vqr-sub">
+        {{ questionCount }} {{ questionCount === 1 ? 'question' : 'questions' }} at {{ milestones.length }}
+        {{ milestones.length === 1 ? 'point' : 'points' }}. Learners see each one when the video reaches it.
+      </p>
+    </div>
+    <button type="button" class="vqr-icon-btn" aria-label="Close" (click)="close()">
+      <mat-icon aria-hidden="true">close</mat-icon>
+    </button>
+  </header>
+
+  <div class="vqr-body">
+    @for (milestone of milestones; track $index) {
+      <section class="vqr-point" [attr.aria-label]="'Questions at ' + formatTime(milestone.timestampInSeconds)">
+        <div class="vqr-point-head">
+          <span class="vqr-time">
+            <mat-icon aria-hidden="true">schedule</mat-icon>
+            {{ formatTime(milestone.timestampInSeconds) }}
+          </span>
+          <button type="button" class="vqr-jump" (click)="jumpTo(milestone)">
+            <mat-icon aria-hidden="true">play_circle_outline</mat-icon>
+            Jump to
+          </button>
+        </div>
+
+        @for (q of milestone.question; track $index; let qi = $index) {
+          <div class="vqr-question">
+            <p class="vqr-q-text">
+              @if (milestone.question!.length > 1) {
+                <span class="vqr-q-num">Q{{ qi + 1 }}.</span>
+              }
+              {{ q.text || 'Question text missing' }}
+            </p>
+            @if (!hasCorrectOption(q.options)) {
+              <p class="vqr-warn">
+                <mat-icon aria-hidden="true">error_outline</mat-icon>
+                No correct option is marked for this question.
+              </p>
+            }
+            <ul class="vqr-options">
+              @for (o of q.options; track $index) {
+                <li class="vqr-option" [class.vqr-option--correct]="o.isCorrect">
+                  <mat-icon class="vqr-mark" aria-hidden="true">{{ o.isCorrect ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                  <div class="vqr-option-body">
+                    <span class="vqr-option-text">
+                      {{ o.text }}
+                      @if (o.isCorrect) {
+                        <span class="vqr-badge">Correct answer</span>
+                      }
+                    </span>
+                    @if (o.answerInfo) {
+                      <span class="vqr-hint">
+                        <mat-icon aria-hidden="true">lightbulb_outline</mat-icon>
+                        <span><strong>Hint shown:</strong> {{ o.answerInfo }}</span>
+                      </span>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </section>
+    }
+  </div>
+</div>

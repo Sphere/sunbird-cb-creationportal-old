@@ -12,7 +12,9 @@
 
     <div class="pdf-page-control">
       <span class="pdf-page-label" *ngIf="!isSmallViewPort" i18n>Page</span>
+      <label class="sr-only" [for]="pageInputId" i18n>Page number</label>
       <input
+        [id]="pageInputId"
         type="number"
         class="pdf-page-input"
         [formControl]="currentPage"

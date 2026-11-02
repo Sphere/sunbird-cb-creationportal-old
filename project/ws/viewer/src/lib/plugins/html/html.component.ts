@@ -19,6 +19,11 @@ import { MobileAppsService } from '../../../../../../../src/app/services/mobile-
 
 import { SCORMAdapterService } from 'project/ws/viewer/src/lib/plugins/html/SCORMAdapter/scormAdapter'
 
+import { packageProxyUrl } from './html-package-url'
+import { HtmlPackageDebugService } from './html-package-debug.service'
+
+const HTML_PACKAGE_TELEMETRY = 'html-archive:telemetry'
+
 // import { Interval, Observable, Subscription } from 'rxjs'
 
 //import { ViewerUtilService } from '../../../../../../../project/ws/viewer/src/lib/viewer-util.service'
@@ -103,6 +108,7 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     //private viewerSvc: ViewerUtilService,
     private activatedRoute: ActivatedRoute,
     private telemetrySvc: TelemetryService,
+    private htmlDebug: HtmlPackageDebugService = new HtmlPackageDebugService(),
   ) {
     ;(window as any).API = this.scormAdapterService
     // if (window.addEventListener) {
@@ -376,16 +382,8 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     }
   }
 
-  // backToDetailsPage() {
-  //   this.router.navigate([
-  //     `/app/toc/${this.htmlContent ? this.htmlContent.identifier : ''}/overview`,
-  //   ])
-  // }
-
-  backToDetailsPage() {
-    this.router.navigate([`/app/toc/${this.htmlContent ? this.htmlContent.identifier : ''}/overview`], {
-      queryParams: { primaryCategory: this.htmlContent ? this.htmlContent.primaryCategory : '' },
-    })
+  reload() {
+    window.location.reload()
   }
 
   raiseTelemetry(data: any) {
@@ -403,6 +401,18 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     if (msg.data && msg.data.type === 'SCORM_API_CALL') {
       console.log('[SCORM Component] Received SCORM API call via postMessage:', msg.data)
       this.handleSCORMApiCallViaMessage(msg.data)
+      return
+    }
+
+    // HTML packages report { type: 'html-archive:telemetry', event: { type, id, extra } }.
+    // The preview only logs it (for authors checking a package); progress is stored by the learner portal.
+    if (msg.data && msg.data.type === HTML_PACKAGE_TELEMETRY && msg.data.event) {
+      const event = msg.data.event
+      console.info('[HTML package]', event.type, event.extra || {})
+      if (this.htmlContent && this.htmlContent.identifier) {
+        this.htmlDebug.record(this.htmlContent.identifier, event)
+      }
+      this.raiseTelemetry({ ...(event.extra || {}), event: event.type, id: event.id })
       return
     }
 
@@ -485,6 +495,10 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
           this.pageFetchStatus = 'done'
         }
       }
+      // Mark the page as loaded now, not only on a later reload: ngOnChanges arms a
+      // 3s "still fetching?" timer, and while the status stayed 'fetching' that timer
+      // brought "Loading content…" back over content that was already playing.
+      this.pageFetchStatus = 'done'
       this.showIsLoadingMessage = false
       console.log('[SCORM] After iframe load - showIsLoadingMessage:', this.showIsLoadingMessage)
     }
@@ -504,30 +518,9 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     this.pageFetchStatus = 'fetching'
 
     if (this.htmlContent && this.htmlContent.streamingUrl) {
-      let streamingUrl = this.htmlContent.streamingUrl
-
-      // Log the original URL for debugging
-      console.log('[SCORM] Original streamingUrl:', streamingUrl)
-
-      // Extract the path part after the domain for all URLs and use proxy
-      if (streamingUrl.includes('https://static.sphere.aastrika.org')) {
-        // CDN domain: extract path after 'https://static.sphere.aastrika.org' (35 chars)
-        streamingUrl = streamingUrl.substring(35)
-      } else if (streamingUrl.includes('https://sunbirdcontent-stage.s3-ap-south-1.amazonaws.com')) {
-        // S3 stage domain: extract path after domain (56 chars)
-        streamingUrl = streamingUrl.substring(56)
-      } else {
-        // Fallback for other S3 or cloud domains
-        streamingUrl = streamingUrl.substring(50)
-      }
-
-      // Ensure path starts with /
-      if (!streamingUrl.startsWith('/')) {
-        streamingUrl = '/' + streamingUrl
-      }
-
+      const streamingUrl = this.htmlContent.streamingUrl
       const entryPoint_processed = entryPoint || this.htmlContent.entryPoint || ''
-      const newUrl = `/apis/proxies/v8/getContents${streamingUrl}${entryPoint_processed}`
+      const newUrl = packageProxyUrl(streamingUrl, entryPoint_processed)
       console.log('[SCORM] Using proxy URL:', newUrl, { streamingUrl, entryPoint: entryPoint_processed })
       this.iframeUrl = SafeContentService.trustedResourceUrl(this.domSanitizer, newUrl)
       this.showIsLoadingMessage = true

@@ -78,6 +78,66 @@ describe('MyContentComponent (my-content module)', () => {
     return { component, mocks, dialogRef }
   }
 
+  describe('list states', () => {
+    it('offers Create only in the drafts lists', () => {
+      const { component } = build()
+      component.status = 'draft'
+      expect(component.isDraftStatus).toBe(true)
+      component.status = 'selfAssessmentDraft'
+      expect(component.isDraftStatus).toBe(true)
+      component.status = 'published'
+      expect(component.isDraftStatus).toBe(false)
+    })
+
+    it("lists the user's authoring roles under My Workspace", () => {
+      const { component } = build({
+        accessService: {
+          userId: 'user-1',
+          hasRole: jest.fn((keys: string[]) => keys.includes('content_creator') || keys.includes('content_reviewer')),
+        },
+      })
+      expect(component.workspaceRoles).toBe('Creator · Reviewer')
+    })
+
+    it('shows no role line when the user has none of the authoring roles', () => {
+      const { component } = build()
+      expect(component.workspaceRoles).toBe('')
+    })
+
+    it('titles the list with the side menu wording', () => {
+      const { component } = build()
+      component.currentStatus = 'Draft'
+      expect(component.pageTitle).toBe('Drafts')
+      component.currentStatus = 'Courses to Pubish'
+      expect(component.pageTitle).toBe('Courses to Publish')
+      component.currentStatus = 'Sent for review'
+      expect(component.pageTitle).toBe('For Review')
+      component.currentStatus = 'Published'
+      expect(component.pageTitle).toBe('Published')
+    })
+
+    it('names the selected language instead of showing its code', () => {
+      const { component } = build()
+      component.allLanguages = [{ name: 'Hindi', value: 'hi' }]
+      component.searchLanguage = 'hi'
+      expect(component.selectedLanguageName).toBe('Hindi')
+      component.searchLanguage = 'kn'
+      expect(component.selectedLanguageName).toBe('KN')
+    })
+
+    it('clears the search box and reloads the full list', () => {
+      const { component } = build()
+      const input = { value: 'html' }
+      component.searchInputElem = { nativeElement: input } as any
+      component.queryFilter = 'html'
+      const fetch = jest.spyOn(component, 'fetchContent').mockImplementation(() => undefined)
+      component.clearSearch()
+      expect(input.value).toBe('')
+      expect(component.queryFilter).toBe('')
+      expect(fetch).toHaveBeenCalledWith(false, false)
+    })
+  })
+
   it('should create and read userId from access service', () => {
     const { component } = build()
     expect(component).toBeTruthy()

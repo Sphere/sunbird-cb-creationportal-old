@@ -5,11 +5,10 @@
 
   <div class="center-block">
     <ng-container *ngFor="let step of steps; let i = index">
-      <div
+      <button
+        type="button"
         (click)="navigate(step.key)"
-        (keydown)="isActivationKey($event) && navigate(step.key)"
-        [attr.tabindex]="0"
-        class="step"
+        class="btn-reset step"
         [class.completed]="step.completed"
         [class.active]="step.activeStep"
         [class.navigating]="isNavigating && navigatingStep === step.key"
@@ -46,7 +45,7 @@
         </ng-container>
 
         <span class="step-label">{{ step.label }}</span>
-      </div>
+      </button>
 
       <div class="step-line" *ngIf="i !== steps.length - 1">
         <svg xmlns="http://www.w3.org/2000/svg" width="60" height="2" viewBox="0 0 60 2" fill="none">

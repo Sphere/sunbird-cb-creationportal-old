@@ -21,7 +21,7 @@
     <p class="cp-section-label">Competency</p>
     <mat-form-field appearance="outline" class="cp-field">
       <mat-label>Search by name or code...</mat-label>
-      <input matInput [formControl]="competencyCtrl" [matAutocomplete]="compAuto" autocomplete="off" />
+      <input id="competency-popup-search" matInput [formControl]="competencyCtrl" [matAutocomplete]="compAuto" autocomplete="off" />
       <mat-autocomplete
         #compAuto="matAutocomplete"
         [displayWith]="displayCompetency"

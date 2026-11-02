@@ -17,44 +17,36 @@
     ></ws-app-filter-display>
   </mat-sidenav>
   <mat-sidenav-content class="sidenav-content" *ngIf="!noContent && searchResults?.result?.length">
-    <div role="link" tabindex="0">
+    <div>
       <span i18n="search route hits showing">Showing </span>
       <span>{{ searchResults.totalHits }} </span>
       <span *ngIf="searchResults.totalHits > 1" i18n="search route hits results">results </span>
       <span *ngIf="searchResults.totalHits <= 1" i18n="search route hits result">result </span>
       <span *ngIf="searchRequest?.lang?.split(',').length > 1"
         ><span i18n>across your preferred languages</span> <span>:&nbsp;</span
-        ><span
-          class="cursor-pointer ws-mat-primary-text"
-          *ngFor="let lang of searchRequest?.lang?.split(',')"
-          (click)="searchLanguage(lang)"
-          (keydown)="isActivationKey($event) && searchLanguage(lang)"
-          [attr.tabindex]="0"
-          >{{ lang | uppercase }}
-        </span>
+        ><ng-container *ngFor="let lang of searchRequest?.lang?.split(',')"
+          ><button type="button" class="btn-reset cursor-pointer ws-mat-primary-text" (click)="searchLanguage(lang)">
+            {{ lang | uppercase }}</button
+          >&ngsp;</ng-container
+        >
       </span>
       <ng-container *ngIf="searchResults?.doYouMean || searchResults?.queryUsed">
         <span>.</span><span>&nbsp;</span>
         <span *ngIf="searchResults?.doYouMean"
           ><span i18n>Did you mean</span><span>&nbsp;“</span
-          ><span
+          ><button
+            type="button"
             [innerHTML]="searchResults?.doYouMean"
             (click)="didYouMeanSearch(searchResults?.doYouMean)"
-            (keydown)="isActivationKey($event) && didYouMeanSearch(searchResults?.doYouMean)"
-            [attr.tabindex]="0"
-            class="cursor-pointer ws-mat-primary-text cursor-pointer"
-          ></span
+            class="btn-reset cursor-pointer ws-mat-primary-text cursor-pointer"
+          ></button
           >” ?</span
         >
         <span *ngIf="searchResults?.queryUsed"
           ><span i18n>Showing results for</span><span>&nbsp;“</span>{{ searchResults?.queryUsed }}”. <span i18n>Search instead for</span>
           <span>&nbsp;“</span
-          ><span
-            class="cursor-pointer ws-mat-primary-text cursor-pointer"
-            (click)="searchInsteadFor()"
-            (keydown)="isActivationKey($event) && searchInsteadFor()"
-            [attr.tabindex]="0"
-            >{{ searchRequestObject.query }}</span
+          ><button type="button" class="btn-reset cursor-pointer ws-mat-primary-text cursor-pointer" (click)="searchInsteadFor()">
+            {{ searchRequestObject.query }}</button
           >”.</span
         >
       </ng-container>

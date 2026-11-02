@@ -1,33 +1,11 @@
-.pdf-layout {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 12px 12px 0;
-  box-sizing: border-box;
-}
+@import '../player-layout';
 
-.pdf-content-wrap {
-  width: 100%;
-  flex: 1;
-  border: 1px solid #DDE8F0;
-  border-radius: 8px 8px 0 0;
-  overflow: hidden;
-  background: #fff;
-}
-
-.player-nav-links {
-  width: 100%;
-  flex-shrink: 0;
-}
-
-.discussion-section {
-  margin-top: 16px;
-}
+@include player-layout;
 
 .discussion-head {
   font-family: Roboto, sans-serif;
   font-size: 16px;
   font-weight: 500;
-  color: #1D2B36;
+  color: #1d2b36;
   margin: 0 0 12px;
 }

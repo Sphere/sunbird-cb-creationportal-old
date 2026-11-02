@@ -95,6 +95,24 @@ export class MyContentComponent implements OnInit, OnDestroy {
     this.dataSource.data = this.filterMenuItems
     this.userId = this.accessService.userId
     this.isAdmin = this.accessService.hasRole(['admin', 'super-admin', 'content-admin', 'editor'])
+    this.workspaceRoles = this.rolesOf()
+  }
+
+  /** The signed-in user's authoring roles, shown under "My Workspace" (e.g. "Creator · Reviewer"). */
+  workspaceRoles = ''
+
+  private rolesOf(): string {
+    const roles: [string[], string][] = [
+      [['content_creator'], 'Creator'],
+      [['content_reviewer'], 'Reviewer'],
+      [['content_publisher'], 'Publisher'],
+      [['external_content_reviewer_live'], 'External Reviewer'],
+      [['admin', 'super-admin', 'content-admin'], 'Admin'],
+    ]
+    return roles
+      .filter(([keys]) => this.accessService.hasRole(keys))
+      .map(([, label]) => label)
+      .join(' · ')
   }
   public sideNavBarOpened = false
   newDesign = true
@@ -1823,6 +1841,45 @@ export class MyContentComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges()
       },
     )
+  }
+
+  /**
+   * The heading shown for the open list. currentStatus also drives which side
+   * menu link is active, so its values stay as they are; this only maps the
+   * spellings that differ from the side menu ("Draft", "Sent for review",
+   * "Courses to Pubish") to the menu's own label.
+   */
+  get pageTitle(): string {
+    const labels: Record<string, string> = {
+      draft: 'Drafts',
+      'sent for review': 'For Review',
+      'courses to pubish': 'Courses to Publish',
+      'courses to publish': 'Courses to Publish',
+      'for revision': 'For Revision',
+      'courses with certificate': 'Courses With Certificate',
+      'courses without certificate': 'Courses Without Certificate',
+    }
+    const status = this.currentStatus || ''
+    return labels[status.toLowerCase()] || status
+  }
+
+  /** The language picker shows the language's name, not its code. */
+  get selectedLanguageName(): string {
+    const match = (this.allLanguages || []).find((l: any) => l && l.value === this.searchLanguage)
+    return match && match.name ? match.name : (this.searchLanguage || '').toUpperCase()
+  }
+
+  /** Drafts are where new items start, so only their empty state offers Create. */
+  get isDraftStatus(): boolean {
+    return this.status === 'draft' || this.status === 'selfAssessmentDraft'
+  }
+
+  clearSearch(): void {
+    if (this.searchInputElem && this.searchInputElem.nativeElement) {
+      this.searchInputElem.nativeElement.value = ''
+    }
+    this.queryFilter = ''
+    this.fetchContent(false, false)
   }
 
   search() {

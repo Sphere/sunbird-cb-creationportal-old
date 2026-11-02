@@ -438,8 +438,8 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
       this.value.emit(
         this.html
           .replace(this.uploadRegex, this.regexUploadReplace)
-          .replace(/ src=\s*['"].*?\/content-store\/(.*?)['"]/gm, ' src="$1"')
-          .replace(/ href=\s*['"].*?\/content-store\/(.*?)['"]/gm, ' href="$1"'),
+          .replaceAll(/ src=\s*['"].*?\/content-store\/(.*?)['"]/gm, ' src="$1"')
+          .replaceAll(/ href=\s*['"].*?\/content-store\/(.*?)['"]/gm, ' href="$1"'),
       )
     } else if (this.doRegex) {
       this.value.emit(this.html.replace(this.uploadRegex, this.regexUploadReplace))
@@ -497,8 +497,8 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
               return
             }
             const form = new FormData()
-            const fileName = file.name.replace(/[^A-Za-z0-9.]/g, '')
-            form.set('content', file, file.name.replace(/[^A-Za-z0-9.]/g, ''))
+            const fileName = file.name.replaceAll(/[^A-Za-z0-9.]/g, '')
+            form.set('content', file, file.name.replaceAll(/[^A-Za-z0-9.]/g, ''))
             this.loaderService.changeLoad.next(true)
             console.log('contentId: this.id, contentType: this.location', this.id, this.location)
 
@@ -698,7 +698,7 @@ export class PlainCKEditorComponent implements AfterViewInit, OnInit, OnDestroy 
               return
             }
             const form = new FormData()
-            form.set('content', file, file.name.replace(/[^A-Za-z0-9.]/g, ''))
+            form.set('content', file, file.name.replaceAll(/[^A-Za-z0-9.]/g, ''))
             this.loaderService.changeLoad.next(true)
             this.uploadService.upload(form, { contentId: this.id, contentType: this.location }).subscribe(
               data => {

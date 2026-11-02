@@ -141,9 +141,9 @@
         <!-- Zoom slider (Angular Material 15+ API) -->
         <div class="nic-zoom-row">
           <mat-icon class="nic-zoom-icon">zoom_in</mat-icon>
-          <span class="nic-zoom-label" i18n>Zoom</span>
+          <label class="nic-zoom-label" for="new-image-crop-zoom" i18n>Zoom</label>
           <mat-slider class="nic-slider" min="1" max="2.5" step="0.1" color="primary">
-            <input matSliderThumb #zoomThumb (input)="zoom({ value: +zoomThumb.value })" />
+            <input id="new-image-crop-zoom" matSliderThumb #zoomThumb (input)="zoom({ value: +zoomThumb.value })" />
           </mat-slider>
         </div>
       </div>

@@ -69,7 +69,9 @@
               <mat-icon aria-hidden="true">image</mat-icon>
               <span i18n>Picture</span>
             </button>
+            <label class="sr-only" for="cert-placer-image-input" i18n>Picture to add</label>
             <input
+              id="cert-placer-image-input"
               #imageInput
               class="cdk-visually-hidden"
               type="file"
@@ -366,8 +368,9 @@
             </select>
 
             <span class="props-label" i18n>Style</span>
-            <label class="props-check">
+            <label class="props-check" for="prop-bold">
               <input
+                id="prop-bold"
                 type="checkbox"
                 [checked]="field.fontWeight === 'bold'"
                 (change)="updateSelected({ fontWeight: $any($event.target).checked ? 'bold' : 'normal' })"
@@ -474,16 +477,18 @@
 
             <span class="props-label" i18n>Style</span>
             <div class="props-checks">
-              <label class="props-check">
+              <label class="props-check" for="deco-bold">
                 <input
+                  id="deco-bold"
                   type="checkbox"
                   [checked]="item.fontWeight === 'bold'"
                   (change)="updateDecoration({ fontWeight: $any($event.target).checked ? 'bold' : 'normal' })"
                 />
                 <span i18n>Bold</span>
               </label>
-              <label class="props-check">
+              <label class="props-check" for="deco-italic">
                 <input
+                  id="deco-italic"
                   type="checkbox"
                   [checked]="item.fontStyle === 'italic'"
                   (change)="updateDecoration({ fontStyle: $any($event.target).checked ? 'italic' : 'normal' })"
@@ -535,8 +540,13 @@
             />
 
             <span class="props-label" i18n>Style</span>
-            <label class="props-check">
-              <input type="checkbox" [checked]="item.dashed" (change)="updateDecoration({ dashed: $any($event.target).checked })" />
+            <label class="props-check" for="deco-dashed">
+              <input
+                id="deco-dashed"
+                type="checkbox"
+                [checked]="item.dashed"
+                (change)="updateDecoration({ dashed: $any($event.target).checked })"
+              />
               <span i18n>Dashed</span>
             </label>
 
