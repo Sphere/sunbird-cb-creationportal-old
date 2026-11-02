@@ -461,10 +461,14 @@ describe('ModuleCreationComponent (resource authoring)', () => {
       expect(component.setContentType).toHaveBeenCalledWith('zip', 'zip')
     })
 
-    it('does not offer the HTML learning format (not approved for production)', () => {
+    it('offers the HTML learning format on stage, after SCORM (demo only, not for production)', () => {
       const names = component.contentList.map((c: any) => c.name)
-      expect(names).not.toContain('HTML')
-      expect(names).toEqual(['Link', 'PDF', 'Audio', 'Video', 'SCORM v1.1/1.2'])
+      expect(names).toEqual(['Link', 'PDF', 'Audio', 'Video', 'SCORM v1.1/1.2', 'HTML'])
+      expect(component.contentList.find((c: any) => c.name === 'HTML')).toEqual({
+        name: 'HTML',
+        icon: 'cbp-assets/icons/html_icon.svg',
+        type: 'upload',
+      })
     })
 
     it('configures an assessment', () => {
