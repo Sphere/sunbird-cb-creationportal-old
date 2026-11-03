@@ -43,6 +43,23 @@ export class ContentCardComponent implements OnInit, OnChanges {
   @Output() action = new EventEmitter<any>()
   isBaseContent: Boolean = true
   isReviewerOrPublisher: Boolean = false
+
+  /**
+   * The date on the card. A published or retired course shows when it was published
+   * (lastPublishedOn); any other course shows when it was last updated. lastUpdatedOn alone
+   * also moves with background updates to a published course, so it must never be read as its
+   * publish date. (publishedOn, which the card used before, is not in the search index.)
+   */
+  get cardDate(): { label: 'Published' | 'Updated'; date: string } | null {
+    const d = this.data
+    if (!d) {
+      return null
+    }
+    if (['Live', 'Retired', 'Unpublished'].includes(d.status) && d.lastPublishedOn) {
+      return { label: 'Published', date: d.lastPublishedOn }
+    }
+    return d.lastUpdatedOn ? { label: 'Updated', date: d.lastUpdatedOn } : null
+  }
   constructor(
     private accessService: AccessControlService,
     private authInitService: AuthInitService,
