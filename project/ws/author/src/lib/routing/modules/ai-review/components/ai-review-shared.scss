@@ -1,0 +1,380 @@
+// AI review visual system, shared by the page and the report. Its own look inside CBP (an
+// AI feature), kept restrained: the deep header and the one primary button carry the
+// cyan → blue → violet accent; everything else is flat tints on white cards. AA contrast
+// on all text (white on the accent gradient is 5:1 or more), visible focus, and no motion
+// for anyone who turns it off in their OS.
+
+$air-font: Roboto, 'Helvetica Neue', Arial, sans-serif;
+$air-ink: #0b1530;
+$air-text: #172036;
+$air-muted: #5b6478;
+$air-line: #e4e8f2;
+// Input tokens are CBP's (CLAUDE.md §7).
+$air-border: #b8c9d9;
+$air-border-hover: #8aaac8;
+$air-focus: #1c5d95;
+$air-surface: #fff;
+$air-canvas: #f5f7fc;
+$air-primary: #3b5bdb;
+$air-violet: #7c3aed;
+$air-cyan: #0891b2;
+$air-green: #15803d;
+$air-amber: #9a3412;
+$air-red: #c2410c;
+$air-danger: #b91c1c;
+$air-ai-gradient: linear-gradient(120deg, #0e7490 0%, #1d4ed8 45%, #6d28d9 100%);
+$air-hero: radial-gradient(60% 120% at 85% 0%, rgba(124, 58, 237, 0.55) 0%, transparent 60%),
+  radial-gradient(50% 100% at 0% 100%, rgba(6, 182, 212, 0.35) 0%, transparent 60%),
+  linear-gradient(135deg, #0b1530 0%, #14254f 60%, #1e1b4b 100%);
+
+:host {
+  display: block;
+  font-family: $air-font;
+  color: $air-text;
+  // File names, URLs and e-mails in AI notes have no spaces; let them break, never overflow.
+  overflow-wrap: anywhere;
+}
+
+// CBP's global typography styles headings with their own font; class selectors win.
+.air-title,
+.air-section-title,
+.air-resource-title,
+.air-subtitle,
+.air-block-title {
+  font-family: $air-font;
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+
+.air-card {
+  background: $air-surface;
+  border: 1px solid $air-line;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px -16px rgba(15, 23, 42, 0.18);
+  padding: 24px;
+  margin-bottom: 16px;
+  // `backwards`, not `both`: a held transform would keep a stacking context on every card,
+  // and an open dropdown would sit under the next card.
+  animation: air-rise 0.3s ease-out backwards;
+}
+
+@keyframes air-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.air-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// Motion is decoration only; switch it off for anyone who asks the OS to.
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.air-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.air-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0 0 16px;
+
+  .air-card-head & {
+    margin: 0;
+  }
+
+  &--small {
+    font-size: 16px;
+  }
+
+  ws-auth-air-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: $air-primary;
+  }
+}
+
+.air-muted {
+  color: $air-muted;
+}
+
+.air-small {
+  font-size: 14px;
+}
+
+.air-error {
+  color: $air-danger;
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+.air-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: $air-amber;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 14px;
+  margin: 0 0 16px;
+
+  ws-auth-air-icon {
+    flex-shrink: 0;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.air-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  // Short labels stay on one line; a long one wraps instead of pushing its row wider.
+  white-space: normal;
+  overflow-wrap: normal;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  background: #eef2ff;
+  color: $air-primary;
+
+  &--sm {
+    padding: 2px 8px;
+    font-size: 12px;
+  }
+
+  &--done,
+  &--green,
+  &--covered,
+  &--yes {
+    background: #dcfce7;
+    color: $air-green;
+  }
+
+  &--partial,
+  &--amber,
+  &--na {
+    background: #ffedd5;
+    color: $air-amber;
+  }
+
+  &--failed,
+  &--red,
+  &--missing,
+  &--no,
+  &--cancelled {
+    background: #fee2e2;
+    color: $air-danger;
+  }
+}
+
+.air-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.air-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: $air-font;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 24px;
+  min-height: 40px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+
+  ws-auth-air-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+
+  &--primary {
+    background: $air-ai-gradient;
+    color: #fff;
+    box-shadow: 0 2px 6px -2px rgba(29, 78, 216, 0.45);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 6px 14px -6px rgba(29, 78, 216, 0.55);
+    }
+  }
+
+  &--lg {
+    min-height: 48px;
+    padding: 12px 32px;
+    font-size: 16px;
+  }
+
+  &--secondary {
+    background: #fff;
+    color: $air-primary;
+    border-color: #c7d2fe;
+
+    &:hover:not(:disabled) {
+      background: #eef2ff;
+    }
+  }
+
+  &--text {
+    background: none;
+    color: $air-primary;
+    padding: 4px 8px;
+    min-height: 0;
+  }
+
+  &--danger {
+    background: #fff;
+    color: $air-danger;
+    border-color: #fecaca;
+
+    &:hover:not(:disabled) {
+      background: #fef2f2;
+    }
+  }
+}
+
+.air-details {
+  margin-top: 16px;
+  font-size: 14px;
+
+  summary {
+    cursor: pointer;
+    color: $air-primary;
+    font-weight: 500;
+  }
+}
+
+.air-plain-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+
+  li {
+    padding: 8px 0;
+    border-bottom: 1px solid $air-line;
+  }
+}
+
+// A tinted action that is clearly a button without competing with the primary one.
+.air-btn--soft {
+  background: #f5f3ff;
+  color: $air-violet;
+  border-color: #ddd6fe;
+
+  &:hover:not(:disabled) {
+    background: #ede9fe;
+    border-color: #c4b5fd;
+  }
+}
+
+.air-btn--ghost {
+  background: transparent;
+  color: $air-muted;
+  border-color: transparent;
+
+  &:hover:not(:disabled) {
+    background: #eef1f8;
+    color: $air-text;
+  }
+}
+
+// One colour per kind of resource, so a list scans at a glance: a flat tint with the
+// icon in the kind's colour (the kind is also always written beside it).
+.air-kind-tile {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: #475569;
+  background: #f1f5f9;
+
+  &--video {
+    color: #4338ca;
+    background: #eef2ff;
+  }
+
+  &--pdf {
+    color: #be123c;
+    background: #ffe4e6;
+  }
+
+  &--quiz {
+    color: #b45309;
+    background: #fef3c7;
+  }
+
+  &--assessment {
+    color: #047857;
+    background: #d1fae5;
+  }
+
+  &--audio {
+    color: #0e7490;
+    background: #cffafe;
+  }
+
+  &--off {
+    background: #f1f5f9;
+    color: #94a3b8;
+  }
+}
+
+.air-kind-line {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: $air-muted;
+}
+
+// Text that says something is missing or will not happen as the user may expect (page and report).
+.air-hint--warn {
+  color: $air-amber;
+}

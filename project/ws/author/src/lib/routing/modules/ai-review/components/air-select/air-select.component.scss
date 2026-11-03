@@ -1,0 +1,159 @@
+@use '../ai-review-shared' as *;
+
+:host {
+  position: relative;
+  display: block;
+}
+
+.air-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid $air-border;
+  border-radius: 8px;
+  background: #fff;
+  font-family: $air-font;
+  font-size: 14px;
+  color: $air-text;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: $air-border-hover;
+  }
+
+  // CBP's focus: a 2px #1C5D95 border (the second pixel as a shadow, so nothing shifts).
+  &:focus-visible,
+  &--open {
+    outline: none;
+    border-color: $air-focus;
+    box-shadow: 0 0 0 1px $air-focus;
+  }
+
+  &--invalid {
+    border-color: $air-amber;
+  }
+}
+
+.air-select-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+
+  &--placeholder {
+    color: $air-muted;
+    font-weight: 400;
+  }
+}
+
+.air-select-chevron {
+  color: $air-muted;
+  transition: transform 0.2s ease;
+
+  .air-select-trigger--open & {
+    transform: rotate(180deg);
+    color: $air-primary;
+  }
+}
+
+.air-select-panel {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  min-width: min(320px, calc(100vw - 32px));
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid $air-line;
+  box-shadow: 0 16px 32px -16px rgba(15, 23, 42, 0.35);
+  overflow: hidden;
+  animation: air-pop 0.14s ease-out;
+}
+
+.air-select-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid $air-line;
+  color: $air-muted;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: none;
+    font-family: $air-font;
+    font-size: 14px;
+    color: $air-text;
+    background: transparent;
+    padding: 4px 0;
+  }
+}
+
+.air-select-list {
+  max-height: 280px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+}
+
+.air-select-empty {
+  padding: 12px;
+  font-size: 14px;
+  color: $air-muted;
+}
+
+@keyframes air-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+.air-select-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  color: $air-text;
+
+  // The tint alone is too faint to see; a bar on the left marks the option clearly.
+  &--active {
+    background: #eef2ff;
+    box-shadow: inset 3px 0 0 $air-primary;
+  }
+
+  &--selected {
+    color: $air-primary;
+    font-weight: 600;
+  }
+}
+
+.air-select-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.air-select-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: $air-muted;
+}

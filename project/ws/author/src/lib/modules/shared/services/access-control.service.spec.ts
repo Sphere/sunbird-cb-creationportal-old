@@ -182,6 +182,26 @@ describe('AccessControlService', () => {
     })
   })
 
+  describe('isCourseMember', () => {
+    it("is true for the course's creator, its reviewers and its publishers", () => {
+      const svc = make()
+      expect(svc.isCourseMember({ createdBy: 'u1' })).toBe(true)
+      expect(svc.isCourseMember({ createdBy: 'x', reviewerIDs: ['a', 'u1'] })).toBe(true)
+      expect(svc.isCourseMember({ createdBy: 'x', publisherIDs: ['u1'] })).toBe(true)
+    })
+
+    it('is false for anyone else, whatever their role', () => {
+      expect(make(['content_reviewer', 'content_publisher']).isCourseMember({ createdBy: 'x', reviewerIDs: ['a'], publisherIDs: [] })).toBe(false)
+      expect(make().isCourseMember(null)).toBe(false)
+      expect(make().isCourseMember({ createdBy: 'x', reviewerIDs: 'u1' as unknown as string[] })).toBe(false)
+    })
+
+    it('is false without a signed-in user', () => {
+      const svc = new AccessControlService({ userRoles: new Set(), userProfile: null } as any, '/en/')
+      expect(svc.isCourseMember({ createdBy: '' })).toBe(false)
+    })
+  })
+
   describe('hasAccess', () => {
     it('lets an editor through', () => {
       expect(makeFull({ userRoles: ['editor'] }).hasAccess(meta({ status: 'Live' }))).toBe(true)

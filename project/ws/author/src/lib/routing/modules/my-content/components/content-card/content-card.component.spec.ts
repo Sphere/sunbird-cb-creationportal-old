@@ -47,6 +47,11 @@ describe('ContentCardComponent', () => {
       defaultLogo: 'logo.png',
       hasRole: jest.fn().mockReturnValue(false),
       hasAccess: jest.fn().mockReturnValue(true),
+      // Mirrors AccessControlService.isCourseMember for user u1.
+      isCourseMember: jest.fn(
+        (m: { createdBy?: string; reviewerIDs?: string[]; publisherIDs?: string[] } | null) =>
+          !!m && (m.createdBy === 'u1' || (m.reviewerIDs || []).includes('u1') || (m.publisherIDs || []).includes('u1')),
+      ),
     }
     authInitService = { editCourse: jest.fn() }
     router = { url: '/author/my-content?status=draft', navigateByUrl: jest.fn() }
@@ -63,6 +68,25 @@ describe('ContentCardComponent', () => {
 
   it('should be created', () => {
     expect(component).toBeTruthy()
+  })
+
+  describe('publishedDate', () => {
+    it('shows a live course its real publish date, never the last background update', () => {
+      component.data = card({ status: 'Live', lastPublishedOn: '2024-03-05T14:41:37.228+0000', lastUpdatedOn: '2026-11-02T23:33:03.902+0000' })
+      expect(component.publishedDate).toBe('2024-03-05T14:41:37.228+0000')
+    })
+
+    it('prefers publishedOn when the content has it', () => {
+      component.data = card({ status: 'Live', publishedOn: '2025-01-01', lastPublishedOn: '2024-01-01' })
+      expect(component.publishedDate).toBe('2025-01-01')
+    })
+
+    it('gives no publish date to a draft copy, so its card shows "Updated"', () => {
+      component.data = card({ status: 'Draft', lastPublishedOn: '2024-03-05T14:41:37.228+0000', lastUpdatedOn: '2026-11-03' })
+      expect(component.publishedDate).toBeNull()
+      component.data = undefined
+      expect(component.publishedDate).toBeNull()
+    })
   })
 
   describe('ngOnInit', () => {
@@ -355,6 +379,21 @@ describe('ContentCardComponent', () => {
       expect(withData().showMenuItem('lang')).toBe(true)
       accessService.hasAccess.mockReturnValue(false)
       expect(withData().showMenuItem('lang')).toBe(false)
+    })
+
+    it('offers AI review on a course to its creator', () => {
+      expect(withData({ contentType: 'Course', createdBy: 'u1' }).showMenuItem('aiReview')).toBe(true)
+    })
+
+    it('offers AI review to the reviewers and publishers added to the course', () => {
+      expect(withData({ contentType: 'Course', createdBy: 'x', reviewerIDs: ['u1'] }).showMenuItem('aiReview')).toBe(true)
+      expect(withData({ contentType: 'Course', createdBy: 'x', publisherIDs: ['u1'] }).showMenuItem('aiReview')).toBe(true)
+    })
+
+    it('does not offer AI review to anyone else, whatever their role, or on anything but a course', () => {
+      accessService.hasRole.mockReturnValue(true)
+      expect(withData({ contentType: 'Course', createdBy: 'someone-else' }).showMenuItem('aiReview')).toBe(false)
+      expect(withData({ contentType: 'Resource', createdBy: 'u1' }).showMenuItem('aiReview')).toBe(false)
     })
 
     it('refuses an unknown menu item', () => {

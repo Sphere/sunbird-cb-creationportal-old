@@ -1,0 +1,322 @@
+<!-- The course as a whole -->
+@if (summary(); as s) {
+  <section class="air-card">
+    <h2 class="air-section-title"><ws-auth-air-icon name="chart" /> <ng-container i18n>Course summary</ng-container></h2>
+    <div class="air-score-grid">
+      @if (s.addie) {
+        <div class="air-score air-score--{{ s.addie.band || 'none' }}">
+          <span class="air-ring" [style.--pct]="s.addie.scorePct ?? 0" role="img" [attr.aria-label]="(s.addie.scorePct ?? 0) + ' percent'">
+            <span class="air-ring-value"><b>{{ s.addie.scorePct ?? '—' }}</b><small>%</small></span>
+          </span>
+          <span class="air-score-body">
+            <span class="air-score-label" i18n>CBP / ADDIE checklist</span>
+            <span class="air-score-main">{{ s.addie.yes }} / {{ s.addie.applicable }} <ng-container i18n>indicators met</ng-container></span>
+            @if (s.addie.bandMessage) {
+              <span class="air-chip air-chip--{{ s.addie.band }}">{{ s.addie.bandMessage }}</span>
+            }
+          </span>
+        </div>
+      }
+      @if (s.domain) {
+        <div class="air-score air-score--domain">
+          <span class="air-ring" [style.--pct]="s.domain.scorePct ?? 0" role="img" [attr.aria-label]="s.domain.yes + ' of ' + s.domain.applicable">
+            <span class="air-ring-value" [class.air-ring-value--long]="('' + s.domain.yes + s.domain.applicable).length > 3"><b>{{ s.domain.yes }}</b><small>/{{ s.domain.applicable }}</small></span>
+          </span>
+          <span class="air-score-body">
+            <span class="air-score-label" i18n>Domain review</span>
+            @if (judgedAgainst(); as against) {
+              <span class="air-score-main">{{ against }}</span>
+            }
+            @if (role()?.activities?.length) {
+              <span class="air-small air-muted" i18n>Judged against { role()!.activities.length, plural, =1 {the 1 FRAC activity} other {the {{ role()!.activities.length }} FRAC activities} } of {{ role()!.positionName }} that need it (see coverage)</span>
+            } @else if (roleNote()) {
+              <span class="air-small air-hint--warn">{{ roleNote() }}</span>
+            }
+            @if (coverageCounts(); as cc) {
+              <span class="air-small air-muted">{{ cc.covered }} <ng-container i18n>covered</ng-container> · {{ cc.partial }} <ng-container i18n>partial</ng-container> · {{ cc.missing }} <ng-container i18n>missing</ng-container></span>
+            }
+          </span>
+        </div>
+      }
+      <div class="air-score air-score--plain">
+        <span class="air-big-num">{{ s.reviewed }}</span>
+        <span class="air-score-body">
+          <span class="air-score-label" i18n>Resources reviewed</span>
+          <span class="air-small air-muted">
+            @if (s.failed) {
+              {{ s.failed }} <ng-container i18n>could not be reviewed</ng-container> ·
+            }
+            {{ s.skipped.length }} <ng-container i18n>not included</ng-container>
+          </span>
+        </span>
+      </div>
+    </div>
+
+    @if (s.coverage.length) {
+      <h3 class="air-subtitle" i18n>Coverage of the competency level(s) judged</h3>
+      <div class="air-table-wrap">
+        <table class="air-table">
+          <thead>
+            <tr>
+              <th scope="col" i18n>What the level needs</th>
+              <th scope="col" i18n>Status</th>
+              <th scope="col" i18n>Covered by</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of s.coverage; track row.component) {
+              <tr>
+                <td>{{ row.component }}</td>
+                <td>
+                  <span class="air-chip air-chip--{{ row.status }}">
+                    <ws-auth-air-icon [name]="coverageIcon(row.status)" [size]="14" /> {{ row.status }}
+                  </span>
+                </td>
+                <td class="air-muted">{{ row.coveredBy.join(', ') || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    @if (s.commonGaps.length) {
+      <h3 class="air-subtitle" i18n>Most common gaps</h3>
+      <ul class="air-gaps">
+        @for (g of s.commonGaps; track g.id) {
+          <li>
+            <span class="air-gap-id">{{ g.id }}</span>
+            <span class="air-gap-text">{{ g.text }}</span>
+            <span class="air-gap-count">{{ g.count }}<span class="air-visually-hidden" i18n>{ g.count, plural, =1 { resource} other { resources} }</span></span>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (s.skipped.length) {
+      <details class="air-details">
+        <summary i18n>Not included ({{ s.skipped.length }})</summary>
+        <ul class="air-plain-list">
+          @for (k of s.skipped; track k.contentId) {
+            <li>{{ k.name }} <span class="air-muted">— {{ k.reason }}</span></li>
+          }
+        </ul>
+      </details>
+    }
+  </section>
+}
+
+<!-- Each resource -->
+@for (row of rows(); track row.item.contentId) {
+  <section class="air-card air-resource-card">
+    <div class="air-card-head">
+      <h3 class="air-resource-title"><span class="air-kind-tile air-kind-tile--{{ kindOf(row.item) }}"><ws-auth-air-icon [name]="kindMeta(kindOf(row.item)).icon" /></span><span><span class="air-kind-line">{{ kindLine(kindOf(row.item), row.item.mimeType) }}</span>{{ row.item.name }}</span></h3>
+      <span class="air-head-chips">
+        @if (row.addie; as a) {
+          <span class="air-chip air-chip--{{ a.score.band || 'none' }}">ADDIE {{ a.score.scorePct ?? '—' }}%</span>
+        }
+        @if (row.domain; as d) {
+          <span class="air-chip air-chip--violet">Domain {{ d.score.yes }}/{{ d.score.applicable }}</span>
+        }
+        @if (row.item.result?.cached) {
+          <span class="air-chip air-chip--muted" title="Unchanged since that review, so its result is shown again at no cost">
+            <ws-auth-air-icon name="history" [size]="14" />
+            @if (row.item.result?.cachedAt) {
+              <ng-container i18n>Unchanged · reviewed {{ row.item.result?.cachedAt | date: 'MMM d' }}</ng-container>
+            } @else {
+              <ng-container i18n>Reused</ng-container>
+            }
+          </span>
+        }
+      </span>
+    </div>
+
+    @if (row.item.status === 'failed' || row.item.status === 'cancelled') {
+      <p class="air-error">{{ row.item.error || 'This resource could not be reviewed.' }}</p>
+    }
+
+    <!-- Domain -->
+    @if (row.domain; as d) {
+      <div class="air-domain">
+        <span class="air-block-title"><ws-auth-air-icon name="expert" /> <ng-container i18n>Domain review</ng-container></span>
+        @if (d.summary) {
+          <p class="air-text">{{ d.summary }}</p>
+        }
+        @if (d.levelFit) {
+          <p class="air-levelfit air-levelfit--{{ d.levelFit.verdict }}">
+            <strong>{{ levelFitLabel(d.levelFit.verdict) }}</strong>
+            @if (d.levelFit.rationale) {
+              — {{ d.levelFit.rationale }}
+            }
+          </p>
+        }
+        @if (d.coverage.length) {
+          <ul class="air-coverage">
+            @for (c of d.coverage; track c.component) {
+              <li>
+                <button type="button" class="air-cov-row" (click)="openCoverage(row.item, c)">
+                  <span class="air-cov-icon air-cov-icon--{{ c.status }}"><ws-auth-air-icon [name]="coverageIcon(c.status)" [size]="18" /><span class="air-visually-hidden">{{ c.status }}:</span></span>
+                  <span class="air-cov-text">
+                    {{ c.component }}
+                    @if (c.evidence) {
+                      <span class="air-muted air-small"> — {{ c.evidence }}</span>
+                    }
+                  </span>
+                  <ws-auth-air-icon class="air-open-arrow" name="openNew" [size]="16" />
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+    @if (row.domainError) {
+      <p class="air-pass-error">
+        <ws-auth-air-icon name="error" />
+        <span><ng-container i18n>Domain review could not run:</ng-container> {{ row.domainError }}</span>
+      </p>
+    }
+
+    <!-- Quiz / assessment: each question -->
+    @if (row.item.result?.questionsError) {
+      <p class="air-pass-error">
+        <ws-auth-air-icon name="error" />
+        <span><ng-container i18n>Question check could not run:</ng-container> {{ row.item.result?.questionsError }}</span>
+      </p>
+    }
+    @if (row.item.result?.questions?.length) {
+      <div class="air-questions">
+        <span class="air-block-title"><ws-auth-air-icon name="quiz" /> <ng-container i18n>Questions</ng-container>
+          <span class="air-chip air-chip--sm" [class.air-chip--red]="questionIssues(row.item).length" [class.air-chip--green]="!questionIssues(row.item).length">
+            {{ questionIssues(row.item).length }} / {{ row.item.result?.questions?.length }} <ng-container i18n>need attention</ng-container>
+          </span>
+        </span>
+        <ul class="air-indicators">
+          @for (q of questionIssues(row.item); track q.n) {
+            <li>
+              <button type="button" class="air-indicator air-indicator--no air-indicator--open" (click)="openQuestion(row.item, q)">
+                <span class="air-gap-id">Q{{ q.n }}</span>
+                <span class="air-indicator-body">
+                  <span class="air-indicator-text">{{ q.question }}</span>
+                  @for (issue of q.issues; track $index) {
+                    <span class="air-note air-note--issue">{{ issue }}</span>
+                  }
+                  @if (q.fix) {
+                    <span class="air-fix"><b i18n>Fix:</b> {{ q.fix }}</span>
+                  }
+                </span>
+                <ws-auth-air-icon class="air-open-arrow" name="openNew" [size]="16" />
+              </button>
+            </li>
+          } @empty {
+            <li class="air-indicator air-indicator--yes"><span class="air-indicator-body" i18n>Every question checks out: answer keys, options and hints.</span></li>
+          }
+        </ul>
+      </div>
+    }
+
+    <!-- ADDIE -->
+    @if (row.addie; as a) {
+      <div class="air-addie">
+        <span class="air-block-title"><ws-auth-air-icon name="checklist" /> <ng-container i18n>CBP / ADDIE checklist</ng-container></span>
+        @if (a.summary) {
+          <p class="air-text">{{ a.summary }}</p>
+        }
+        <div class="air-area-row">
+          @for (area of a.score.areas; track area.area) {
+            <span class="air-area">
+              <span class="air-area-name">{{ area.area }}</span>
+              <span class="air-area-bar" aria-hidden="true">
+                <span [style.width.%]="area.applicable ? (area.yes / area.applicable) * 100 : 0"></span>
+              </span>
+              <strong>{{ area.yes }}/{{ area.applicable }}</strong>
+            </span>
+          }
+        </div>
+
+        @if (notMet(a.score); as missing) {
+          @if (missing.length) {
+            <span class="air-block-title air-block-title--small" i18n>Not met ({{ missing.length }})</span>
+            <ul class="air-indicators">
+              @for (it of missing; track it.id) {
+                <li>
+                  <button type="button" class="air-indicator air-indicator--no air-indicator--open" (click)="openIndicator(row.item, it)">
+                    <span class="air-gap-id">{{ it.id }}</span>
+                    <span class="air-indicator-body">
+                      <span class="air-indicator-text">
+                        {{ it.text }}
+                        @if (it.borderline) {
+                          <span class="air-chip air-chip--sm air-chip--amber" title="The reviewer was not sure about this one. Check it yourself." i18n>Borderline</span>
+                        }
+                        @if (it.page || it.atSec !== undefined) {
+                          <span class="air-at"><ws-auth-air-icon [name]="it.page ? 'pdf' : 'timer'" [size]="14" /> {{ it.page ? 'page ' + it.page : it.at }}</span>
+                        }
+                      </span>
+                      @if (it.note) {
+                        <span class="air-note">{{ it.note }}</span>
+                      }
+                      @if (it.fix) {
+                        <span class="air-fix"><b i18n>Fix:</b> {{ it.fix }}</span>
+                      }
+                    </span>
+                    <ws-auth-air-icon class="air-open-arrow" name="openNew" [size]="16" />
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        }
+
+        <button
+          type="button"
+          class="air-btn air-btn--text"
+          [attr.aria-expanded]="isExpanded(row.item.contentId)"
+          (click)="toggle(row.item.contentId)"
+        >
+          @if (isExpanded(row.item.contentId)) {
+            <ng-container i18n>Hide all indicators</ng-container>
+          } @else {
+            <ng-container i18n>Show all {{ a.score.total }} indicators</ng-container>
+          }
+        </button>
+
+        @if (isExpanded(row.item.contentId)) {
+          @for (area of a.score.areas; track area.area) {
+            <span class="air-block-title air-block-title--small">{{ area.area }}</span>
+            <ul class="air-indicators">
+              @for (it of area.items; track it.id) {
+                <li>
+                  <button type="button" class="air-indicator air-indicator--{{ it.verdict }} air-indicator--open" (click)="openIndicator(row.item, it)">
+                    <span class="air-gap-id">{{ it.id }}</span>
+                    <span class="air-indicator-body">
+                      <span class="air-indicator-text">
+                        {{ it.text }}
+                        <span class="air-chip air-chip--sm air-chip--{{ it.verdict }}">{{ verdictLabel(it.verdict) }}</span>
+                        @if (it.page || it.atSec !== undefined) {
+                          <span class="air-at"><ws-auth-air-icon [name]="it.page ? 'pdf' : 'timer'" [size]="14" /> {{ it.page ? 'page ' + it.page : it.at }}</span>
+                        }
+                      </span>
+                      @if (it.note) {
+                        <span class="air-note">{{ it.note }}</span>
+                      }
+                    </span>
+                    <ws-auth-air-icon class="air-open-arrow" name="openNew" [size]="16" />
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        }
+      </div>
+    }
+    @if (row.addieError) {
+      <p class="air-pass-error">
+        <ws-auth-air-icon name="error" />
+        <span><ng-container i18n>Checklist could not run:</ng-container> {{ row.addieError }}</span>
+      </p>
+    }
+  </section>
+}
+
+<!-- An issue opened in place: the resource at that moment or page, with the finding and fix. -->
+<ws-auth-air-evidence #evidence />

@@ -1,0 +1,93 @@
+<dialog #dialog class="air-ev" aria-labelledby="air-ev-title" (close)="onClosed()" (click)="onDialogClick($event)">
+  @if (evidence(); as e) {
+    <div class="air-ev-panel">
+      <header class="air-ev-head">
+        <span class="air-kind-tile air-kind-tile--{{ kind() }}"><ws-auth-air-icon [name]="meta().icon" /></span>
+        <span class="air-ev-resource">
+          <span class="air-kind-line">{{ line() }}</span>
+          <span class="air-ev-name" [title]="e.item.name">{{ e.item.name }}</span>
+        </span>
+        <button type="button" class="air-ev-close" (click)="close()" aria-label="Close">
+          <ws-auth-air-icon name="close" />
+        </button>
+      </header>
+
+      <div class="air-ev-body">
+        <!-- The resource, at the moment or page -->
+        <div class="air-ev-media">
+          @if (videoSrc(); as src) {
+            @if (mediaError()) {
+              <div class="air-ev-nopreview" role="status">
+                <p i18n>The video could not be loaded. Check your connection, or open the file in a new tab.</p>
+              </div>
+            } @else {
+              <video class="air-ev-video" controls playsinline preload="metadata" [src]="src" (error)="mediaError.set(true)">
+                <ng-container i18n>Your browser cannot play this video.</ng-container>
+              </video>
+            }
+          } @else if (pdfSrc(); as src) {
+            <iframe class="air-ev-pdf" [src]="src" [title]="e.item.name"></iframe>
+          } @else if (kind() === 'quiz' || kind() === 'assessment') {
+            <div class="air-ev-question">
+              @if (e.code) {
+                <span class="air-ev-qnum">{{ e.code }}</span>
+              }
+              <p>{{ e.title }}</p>
+            </div>
+          } @else {
+            <div class="air-ev-nopreview">
+              <ws-auth-air-icon [name]="meta().icon" [size]="32" />
+              <p i18n>No preview for this resource.</p>
+            </div>
+          }
+          @if (where()) {
+            <span class="air-ev-where">
+              <ws-auth-air-icon [name]="e.page ? 'pdf' : 'timer'" [size]="16" />
+              @if (e.page) {
+                <ng-container i18n>Opened at {{ where() }}</ng-container>
+              } @else {
+                <ng-container i18n>Starts at {{ where() }}</ng-container>
+              }
+            </span>
+          }
+        </div>
+
+        <!-- The finding -->
+        <section class="air-ev-detail">
+          <span class="air-ev-source">{{ e.source }}</span>
+          <h2 class="air-ev-title" id="air-ev-title">
+            @if (e.code) {
+              <span class="air-ev-code">{{ e.code }}</span>
+            }
+            {{ e.title }}
+          </h2>
+          <span class="air-chip air-chip--{{ verdictTone(e.verdict) }}">{{ verdictLabel(e.verdict) }}</span>
+
+          @if (e.notes.length) {
+            <div class="air-ev-block">
+              <span class="air-ev-label" i18n>What the reviewer saw</span>
+              @for (note of e.notes; track $index) {
+                <p class="air-ev-note">{{ note }}</p>
+              }
+            </div>
+          }
+          @if (e.fix) {
+            <div class="air-ev-block air-ev-fix">
+              <span class="air-ev-label" i18n>Suggested fix</span>
+              <p>{{ e.fix }}</p>
+            </div>
+          }
+        </section>
+      </div>
+
+      <footer class="air-ev-foot">
+        @if (fileUrl(); as url) {
+          <a class="air-btn air-btn--ghost" [href]="url" target="_blank" rel="noopener noreferrer">
+            <ws-auth-air-icon name="openNew" [size]="18" /> <ng-container i18n>Open file in a new tab</ng-container>
+          </a>
+        }
+        <button type="button" class="air-btn air-btn--secondary" (click)="close()" i18n>Close</button>
+      </footer>
+    </div>
+  }
+</dialog>

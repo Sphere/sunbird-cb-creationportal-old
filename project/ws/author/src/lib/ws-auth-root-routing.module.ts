@@ -35,6 +35,15 @@ const routes: Routes = [
     component: ReviewerChecklist,
   },
   {
+    // AI review of a course, opened from the course page. The service checks that the
+    // user is this course's creator, a reviewer or a publisher; the roles here only keep
+    // the page away from people who could never pass that check.
+    path: 'ai-review',
+    loadChildren: () => import('./routing/modules/ai-review/ai-review.module').then(u => u.AiReviewModule),
+    data: { requiredRoles: ['content_creator', 'content_reviewer', 'content_publisher'] },
+    canActivate: [GeneralGuard],
+  },
+  {
     path: 'editor',
     loadChildren: () => import('./routing/modules/editor/editor.module').then(u => u.EditorModule),
     data: {

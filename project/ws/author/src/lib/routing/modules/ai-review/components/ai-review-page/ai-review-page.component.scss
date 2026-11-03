@@ -1,0 +1,1627 @@
+@use '../ai-review-shared' as *;
+
+:host {
+  background: $air-canvas;
+  min-height: 100%;
+}
+
+
+.air-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+// ---- Banner -------------------------------------------------------------------------
+
+.air-hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 24px 32px;
+  border-radius: 16px;
+  background: $air-hero;
+  color: #fff;
+  box-shadow: 0 12px 32px -20px rgba(30, 27, 75, 0.7);
+
+  // A faint grid fading in from the left: depth without an image request.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: linear-gradient(90deg, transparent 20%, #000 75%);
+    pointer-events: none;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (max-width: 900px) {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 20px;
+  }
+}
+
+.air-hero-main {
+  min-width: 0;
+}
+
+.air-hero-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.air-back {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateX(-2px);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(165, 243, 252, 0.7);
+    outline-offset: 2px;
+  }
+}
+
+// "AI Course Review" with its mark: a gradient disc whose colours turn slowly.
+.air-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 16px 0 6px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #e0e7ff;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(8px);
+}
+
+.air-mark {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: #fff;
+  background: conic-gradient(from 200deg, #22d3ee, #6366f1, #a78bfa, #22d3ee);
+  box-shadow: 0 0 10px rgba(129, 140, 248, 0.5);
+  animation: air-turn 8s linear infinite;
+
+  // Keep the sparkle upright while the disc turns.
+  ws-auth-air-icon {
+    animation: air-turn 8s linear infinite reverse;
+  }
+}
+
+@keyframes air-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.air-title {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+  color: #fff;
+  overflow-wrap: anywhere;
+
+  @media (max-width: 600px) {
+    font-size: 24px;
+  }
+}
+
+.air-advisory {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  margin: 8px 0 0;
+  color: rgba(224, 231, 255, 0.8);
+}
+
+// Set up → Review → Report
+.air-steps {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.air-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(224, 231, 255, 0.55);
+  font-size: 14px;
+  font-weight: 600;
+
+  & + &::before {
+    content: '';
+    width: 40px;
+    height: 2px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.18);
+    margin-right: 8px;
+
+    // Short connectors on a phone, so the three steps stay on one line.
+    @media (max-width: 480px) {
+      width: 16px;
+      margin-right: 0;
+    }
+  }
+
+  &--done {
+    color: #e0e7ff;
+
+    + .air-step::before {
+      background: linear-gradient(90deg, #22d3ee, #818cf8);
+    }
+  }
+
+  &--current {
+    color: #fff;
+  }
+}
+
+.air-step-dot {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.05);
+
+  .air-step--done & {
+    background: linear-gradient(135deg, #06b6d4, #6366f1);
+    border-color: transparent;
+    color: #fff;
+  }
+
+  .air-step--current & {
+    background: #fff;
+    color: $air-ink;
+    border-color: #fff;
+    box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.3);
+  }
+}
+
+// The constellation and core on the right of the banner.
+.air-hero-art {
+  position: relative;
+  height: 200px;
+
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+// Everything is centred in the art area; each layer is a circle of its own size.
+.air-orb-glow,
+.air-orb-track,
+.air-orb-ring,
+.air-orb {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+// A soft light behind the orb, no hard edges.
+.air-orb-glow {
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(129, 140, 248, 0.35) 0%, rgba(124, 58, 237, 0.12) 45%, transparent 70%);
+}
+
+// A faint static circle the ring travels along.
+.air-orb-track {
+  width: 132px;
+  height: 132px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// One thin arc, fading from cyan to nothing, turning slowly; quicker while a review runs.
+// Motion here is calm and composited (transform only), and off under reduced motion.
+.air-orb-ring {
+  width: 132px;
+  height: 132px;
+  background: conic-gradient(from 300deg, transparent 0deg, rgba(103, 232, 249, 0.9) 70deg, transparent 140deg);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+  animation: air-orbit 14s linear infinite;
+
+  .air-hero-art--busy & {
+    animation-duration: 4s;
+  }
+}
+
+@keyframes air-orbit {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.air-orb {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  color: #fff;
+  background: radial-gradient(circle at 32% 28%, #c7d2fe 0%, #818cf8 30%, #6366f1 55%, #4c1d95 100%);
+  box-shadow: 0 0 32px rgba(129, 140, 248, 0.4), inset 0 -6px 16px rgba(30, 27, 75, 0.45), inset 0 4px 10px rgba(255, 255, 255, 0.35);
+  animation: air-orb-breathe 5s ease-in-out infinite;
+}
+
+// The orb is centred with a translate, so the breath keeps it.
+@keyframes air-orb-breathe {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+}
+
+// ---- Layout -------------------------------------------------------------------------
+
+.air-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.air-side {
+  // Below CBP's fixed 72px top bar (and the downtime banner when one shows), and
+  // scrollable on its own so a long history can be read to the end.
+  position: sticky;
+  top: calc(72px + var(--downtime-banner-offset, 0px) + 16px);
+  max-height: calc(100vh - 72px - var(--downtime-banner-offset, 0px) - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  @media (max-width: 1024px) {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+.air-state {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  &--error {
+    color: $air-danger;
+
+    p {
+      margin: 0;
+      flex: 1;
+    }
+  }
+}
+
+.air-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px dashed $air-border;
+  color: $air-muted;
+
+  p {
+    margin: 0;
+  }
+
+  &--side {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.air-empty-art {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  color: $air-primary;
+  background: #eef2ff;
+  animation: air-float 4s ease-in-out infinite;
+}
+
+@keyframes air-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+// ---- Step 1: set up -----------------------------------------------------------------
+
+.air-num {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: $air-primary;
+}
+
+.air-kind-counts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.air-kind-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #eef2ff;
+  color: #4338ca;
+
+  &--pdf {
+    background: #ffe4e6;
+    color: #be123c;
+  }
+
+  &--quiz {
+    background: #fef3c7;
+    color: #b45309;
+  }
+
+  &--assessment {
+    background: #d1fae5;
+    color: #047857;
+  }
+}
+
+.air-resource-list,
+.air-history,
+.air-pipelines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.air-resource-list {
+  display: grid;
+  gap: 8px;
+
+  &--off {
+    margin-top: 12px;
+  }
+}
+
+.air-resource {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border: 1px solid $air-line;
+  border-radius: 12px;
+  background: #fff;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: #c7d2fe;
+  }
+
+  &--off {
+    background: $air-canvas;
+  }
+}
+
+.air-resource-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.air-resource-name {
+  font-size: 16px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.air-duration {
+  font-size: 12px;
+  font-weight: 600;
+  color: $air-muted;
+  background: $air-canvas;
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.air-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 16px;
+}
+
+.air-choice {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  border: 1px solid $air-border;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  // The native checkbox stays for keyboards and screen readers; the tick shows the state.
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  &:focus-within {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+
+  &:hover {
+    border-color: $air-border-hover;
+  }
+
+  &--on {
+    border: 2px solid $air-primary;
+    padding: 15px;
+    background: #f8faff;
+  }
+
+  &--disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+.air-choice-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  background: #eef2ff;
+  color: $air-primary;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  .air-choice--on & {
+    background: $air-primary;
+    color: #fff;
+  }
+}
+
+.air-choice-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.air-choice-check {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid $air-border;
+  color: transparent;
+  flex-shrink: 0;
+
+  .air-choice--on & {
+    border-color: $air-primary;
+    background: $air-primary;
+    color: #fff;
+  }
+}
+
+.air-judged {
+  margin-top: 16px;
+  border-radius: 12px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  padding: 16px 24px;
+}
+
+.air-judged-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0e7490;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.air-positions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.air-pos {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #c7d2fe;
+  font-weight: 500;
+}
+
+.air-field-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.air-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 280px;
+  margin-bottom: 16px;
+
+  &--narrow {
+    flex: 0 1 240px;
+  }
+}
+
+.air-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.air-required {
+  color: $air-danger;
+}
+
+.air-hint {
+  font-size: 12px;
+  color: $air-muted;
+
+  &--right {
+    align-self: flex-end;
+  }
+}
+
+.module-input {
+  font-family: $air-font;
+  font-size: 14px;
+  color: $air-text;
+  border: 1px solid $air-border;
+  border-radius: 8px;
+  padding: 8px 16px;
+  min-height: 40px;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: #6b7280;
+  }
+
+  &:hover {
+    border-color: $air-border-hover;
+  }
+
+  // CBP's focus: a 2px #1C5D95 border (the second pixel as a shadow, so nothing shifts).
+  &:focus {
+    outline: none;
+    border-color: $air-focus;
+    box-shadow: 0 0 0 1px $air-focus;
+  }
+}
+
+.air-textarea {
+  resize: vertical;
+  min-height: 88px;
+}
+
+input[type='radio'] {
+  accent-color: $air-primary;
+  width: 18px;
+  height: 18px;
+}
+
+// Plain / FRAC as a segmented choice.
+.air-segment {
+  border: 0;
+  padding: 0;
+  margin: 8px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 8px;
+
+  legend {
+    margin-bottom: 8px;
+  }
+}
+
+.air-segment-option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 8px;
+  row-gap: 2px;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid $air-border;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  // Level with the title, not floating beside the description.
+  input {
+    grid-row: span 2;
+    align-self: start;
+    margin: 3px 0 0;
+  }
+
+  span {
+    color: $air-muted;
+  }
+
+  &--on {
+    border-color: $air-primary;
+    box-shadow: 0 0 0 1px $air-primary;
+    background: #f8faff;
+  }
+
+  &:focus-within {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+}
+
+// "Watch videos in full" as a switch, still a real checkbox for keyboards and readers.
+.air-switch {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 44px;
+    height: 26px;
+    margin: 0;
+  }
+
+  input:focus-visible + .air-switch-track {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+
+  input:checked + .air-switch-track {
+    background: $air-primary;
+
+    &::after {
+      transform: translateX(18px);
+    }
+  }
+}
+
+.air-switch-track {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  background: #cbd5e1;
+  transition: background 0.2s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease;
+  }
+}
+
+.air-switch-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+// The launch bar: the one primary action, at the end of the form where the choices above
+// it lead. It does not follow the page, so it never covers the form.
+.air-launch {
+  margin-top: 8px;
+  padding: 16px 24px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid $air-line;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px -16px rgba(15, 23, 42, 0.18);
+
+  @media (max-width: 600px) {
+    padding: 16px;
+
+    .air-btn--primary {
+      width: 100%;
+    }
+  }
+}
+
+.air-launch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.air-launch-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.air-launch-count {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+// ---- Step 2: review running ---------------------------------------------------------
+
+// A thin accent line along the top of the card while work is happening, with a light that
+// travels along it (a moving overlay, so nothing repaints).
+.air-live {
+  position: relative;
+  overflow: hidden;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+
+  &::before {
+    background: $air-ai-gradient;
+    opacity: 0.85;
+  }
+
+  &::after {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    transform: translateX(-100%);
+    animation: air-shimmer 2.8s ease-in-out infinite;
+  }
+}
+
+.air-live-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.air-live-text {
+  flex: 1 1 200px;
+  min-width: 0;
+
+  .air-section-title {
+    margin: 0;
+  }
+}
+
+// The review is thinking: a round core with the sparkle, and a gradient arc turning around
+// it on the same centre (a masked conic gradient, so the arc fades out at its tail).
+.air-scanner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+}
+
+.air-scanner-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(14, 116, 144, 0.15) 60deg, #0e7490 200deg, #6d28d9 300deg, transparent 360deg);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  animation: air-turn 1.2s linear infinite;
+}
+
+.air-scanner-core {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: $air-primary;
+  background: #eef2ff;
+  box-shadow: inset 0 0 0 1px #c7d2fe;
+}
+
+.air-latest {
+  margin: 4px 0 0;
+}
+
+.air-live-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $air-violet;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  white-space: nowrap;
+}
+
+.air-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $air-violet;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
+}
+
+.air-queue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: $air-primary;
+  background: #eef2ff;
+  border-radius: 12px;
+  padding: 8px 16px;
+  margin: 0 0 16px;
+}
+
+.air-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.air-progress {
+  flex: 1;
+  height: 10px;
+  background: #e9edf7;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+// Filled by scaling, not by width, so a step forward is a cheap composited move. A soft
+// light passes along the filled part while work goes on.
+.air-progress-bar {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  background: $air-ai-gradient;
+  transform-origin: left center;
+  transition: transform 0.5s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transform: translateX(-100%);
+    animation: air-shimmer 2.2s ease-in-out infinite;
+  }
+}
+
+@keyframes air-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.air-progress-pct {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-width: 44px;
+  text-align: right;
+}
+
+.air-pipelines {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.air-pipeline {
+  border: 1px solid $air-line;
+  border-radius: 12px;
+  padding: 16px;
+  background: #fff;
+  transition: border-color 0.2s ease;
+
+  &--running {
+    border-color: #c4b5fd;
+  }
+
+  &--failed,
+  &--cancelled {
+    border-color: #fecaca;
+  }
+}
+
+.air-pipeline-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.air-pipeline-title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  > * {
+    min-width: 0;
+  }
+}
+
+.air-pipeline-name {
+  font-weight: 600;
+}
+
+.air-pipeline-status {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: $air-canvas;
+  color: $air-muted;
+  white-space: nowrap;
+
+  &--running {
+    background: #f5f3ff;
+    color: $air-violet;
+  }
+
+  &--done {
+    background: #dcfce7;
+    color: $air-green;
+  }
+
+  &--failed,
+  &--cancelled {
+    background: #fee2e2;
+    color: $air-danger;
+  }
+}
+
+.air-pipeline-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.air-pstep {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: $air-muted;
+  background: $air-canvas;
+  transition: background 0.3s ease, color 0.3s ease;
+
+  &--done {
+    color: $air-green;
+    background: #f0fdf4;
+  }
+
+  &--active {
+    position: relative;
+    overflow: hidden;
+    color: $air-violet;
+    background: #f5f3ff;
+    font-weight: 600;
+
+    // A soft light passing across the step that is happening now.
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+      transform: translateX(-100%);
+      animation: air-shimmer 2.4s ease-in-out infinite;
+    }
+  }
+}
+
+.air-pstep-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #e2e8f0;
+  color: #64748b;
+
+  .air-pstep--done & {
+    background: $air-green;
+    color: #fff;
+  }
+
+  .air-pstep--active & {
+    position: relative;
+    background: $air-violet;
+    color: #fff;
+
+    // A ring that grows and fades from the mark: "working on this now".
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid $air-violet;
+      animation: air-ping 1.8s ease-out infinite;
+    }
+  }
+}
+
+@keyframes air-ping {
+  from {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+.air-pipeline-stage {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: $air-violet;
+}
+
+.air-live-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid $air-line;
+
+  p {
+    margin: 0;
+  }
+}
+
+// ---- Step 3: report header ----------------------------------------------------------
+
+.air-report-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+
+  .air-section-title {
+    margin: 0;
+  }
+}
+
+.air-report-text {
+  flex: 1 1 200px;
+  min-width: 0;
+
+  p {
+    margin: 2px 0 0;
+  }
+}
+
+.air-report-badge {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: #047857;
+  background: #d1fae5;
+  animation: air-pop-in 0.3s ease-out backwards;
+
+  &--partial {
+    color: #b45309;
+    background: #fef3c7;
+  }
+
+  &--failed,
+  &--cancelled {
+    color: $air-danger;
+    background: #fee2e2;
+  }
+}
+
+@keyframes air-pop-in {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+}
+
+// ---- Past reviews -------------------------------------------------------------------
+
+.air-history {
+  display: grid;
+  gap: 8px;
+}
+
+.air-history-item {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid $air-line;
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-family: $air-font;
+  color: $air-text;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: $air-border-hover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+
+  &--active {
+    border-color: $air-primary;
+    box-shadow: inset 3px 0 0 $air-primary;
+    background: #f8faff;
+  }
+}
+
+.air-history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  > * {
+    min-width: 0;
+  }
+}
+
+.air-history-date {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.air-history-scores {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.air-mini {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: #eef2ff;
+  color: $air-primary;
+
+  &--green {
+    background: #dcfce7;
+    color: $air-green;
+  }
+
+  &--amber {
+    background: #ffedd5;
+    color: $air-amber;
+  }
+
+  &--loading {
+    display: block;
+    height: 64px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, $air-canvas, #eef1f8, $air-canvas);
+  }
+
+  &--red {
+    background: #fee2e2;
+    color: $air-danger;
+  }
+
+  &--violet {
+    background: #f5f3ff;
+    color: $air-violet;
+  }
+}
+
+// Why an option is unavailable, inside its card.
+.air-choice-why {
+  color: $air-amber;
+  font-weight: 500;
+}
+
+
+// Step headings take focus when a step changes; the focus ring is not needed there.
+#air-step-heading:focus {
+  outline: none;
+}
+
+// A resource that will reuse its earlier result: unchanged, so not reviewed (or paid for) again.
+.air-reused {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: $air-green;
+  background: #dcfce7;
+  border-radius: 999px;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+// The level a part of a self-assessment course covers.
+.air-level-tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0e7490;
+  background: #ecfeff;
+  border: 1px solid #a5f3fc;
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+// "As mapped on the course": shown in place of the Level dropdown, in the same frame.
+.air-static-field {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid $air-line;
+  border-radius: 8px;
+  background: $air-canvas;
+  font-size: 14px;
+  font-weight: 500;
+  color: $air-muted;
+}
+
+// The competencies a course maps, each with its levels.
+.air-mapped {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #bae6fd;
+    font-size: 14px;
+    color: $air-text;
+  }
+
+  ws-auth-air-icon {
+    color: #0e7490;
+  }
+}
+
+// While pages and questions are being counted.
+.air-duration--counting {
+  color: $air-muted;
+  font-weight: 500;
+  font-style: italic;
+}
+
+// The FRAC role check: the chosen position's activities the content is judged against.
+.air-role {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #bae6fd;
+
+  p {
+    margin: 8px 0 0;
+  }
+}
+
+.air-role-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0e7490;
+}
+
+// Position → Role → Activity: each level labelled with a small tag, activities hanging off
+// their role on a line, so it reads as FRAC's hierarchy at a glance.
+.air-role-position {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 15px;
+}
+
+.air-role-tag {
+  display: inline-block;
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  &--position {
+    color: #4338ca;
+    background: #eef2ff;
+  }
+
+  &--role {
+    color: #0e7490;
+    background: #cffafe;
+  }
+
+  &--activity {
+    color: #047857;
+    background: #d1fae5;
+  }
+}
+
+.air-role-tree {
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+// Each role is a <details>: the summary row is the role, the list its activities.
+.air-role-group {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px 12px;
+
+  &[open] > .air-role-node .air-role-chevron {
+    transform: rotate(180deg);
+  }
+}
+
+.air-role-node {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+}
+
+.air-role-chevron {
+  margin-left: auto;
+  color: #64748b;
+  transition: transform 0.2s ease;
+}
+
+.air-role-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+// The activities of one role, joined to it by a line on the left.
+.air-role-list {
+  list-style: none;
+  margin: 8px 0 0 12px;
+  padding: 0 0 0 16px;
+  border-left: 2px solid #bae6fd;
+  display: grid;
+  gap: 8px;
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: $air-canvas;
+  }
+}
+
+.air-role-activity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.air-role-next {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #f0f9ff;
+  font-size: 14px;
+
+  ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+    display: grid;
+    gap: 4px;
+  }
+}
+
+.air-role-next-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #0e7490;
+}
+
+// "Counting the pages and questions", above the resource list while it runs.
+.air-measuring {
+  margin-bottom: 16px;
+}
+
+.air-role ws-auth-air-busy {
+  margin-top: 8px;
+}
+
+// Offline: one calm line at the top of the page, not an error.
+.air-offline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  color: $air-amber;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+}
+
+// Plain style: the four checks, in the same box as FRAC's role check.
+.air-plain-checks {
+  margin: 12px 0 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.air-plain-next {
+  margin: 8px 0 0;
+}

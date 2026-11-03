@@ -1,0 +1,23 @@
+<div class="air-busy air-busy--{{ size() }}" role="status" aria-live="polite">
+  <span class="air-busy-mark" aria-hidden="true">
+    <span class="air-busy-ring"></span>
+    <span class="air-busy-core"><ws-auth-air-icon name="sparkle" [size]="size() === 'md' ? 20 : 14" /></span>
+  </span>
+  <span class="air-busy-text">
+    <span class="air-busy-label">{{ label() }}…</span>
+    <span class="air-busy-meta">
+      @if (detail()) {
+        <span>{{ detail() }}</span>
+      }
+      <span class="air-busy-time" [class.air-busy-time--slow]="slow()">
+        {{ elapsedText() }}
+        @if (slow()) {
+          · <ng-container i18n>taking longer than usual</ng-container>
+        } @else if (typicalSec()) {
+          · <ng-container i18n>usually under {{ typicalSec() }} s</ng-container>
+        }
+      </span>
+    </span>
+    <span class="air-busy-track" aria-hidden="true"><span></span></span>
+  </span>
+</div>

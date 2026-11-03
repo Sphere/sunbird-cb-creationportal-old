@@ -1,0 +1,109 @@
+@use '../ai-review-shared' as *;
+
+:host {
+  position: relative;
+  display: block;
+}
+
+// The same field as .module-input: CBP's border, hover and 2px focus.
+.air-combo-field {
+  display: flex;
+  align-items: center;
+  border: 1px solid $air-border;
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: $air-border-hover;
+  }
+
+  &:focus-within,
+  &--open {
+    border-color: $air-focus;
+    box-shadow: 0 0 0 1px $air-focus;
+  }
+}
+
+.air-combo-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  padding: 8px 0 8px 16px;
+  font-family: $air-font;
+  font-size: 14px;
+  color: $air-text;
+
+  &::placeholder {
+    color: #6b7280;
+  }
+}
+
+.air-combo-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  color: $air-muted;
+  cursor: pointer;
+}
+
+.air-combo-chevron {
+  transition: transform 0.2s ease;
+
+  .air-combo-field--open & {
+    transform: rotate(180deg);
+    color: $air-primary;
+  }
+}
+
+.air-combo-list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid $air-line;
+  box-shadow: 0 16px 32px -16px rgba(15, 23, 42, 0.35);
+}
+
+.air-combo-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  color: $air-text;
+
+  &--active {
+    background: #eef2ff;
+    box-shadow: inset 3px 0 0 $air-primary;
+  }
+
+  &--selected {
+    color: $air-primary;
+    font-weight: 600;
+  }
+}
+
+.air-combo-empty {
+  padding: 12px;
+  font-size: 14px;
+  color: $air-muted;
+}

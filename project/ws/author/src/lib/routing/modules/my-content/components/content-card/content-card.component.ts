@@ -43,6 +43,22 @@ export class ContentCardComponent implements OnInit, OnChanges {
   @Output() action = new EventEmitter<any>()
   isBaseContent: Boolean = true
   isReviewerOrPublisher: Boolean = false
+
+  /**
+   * When the course was published, for the card's "Published …" line. The search index
+   * carries this as lastPublishedOn (publishedOn is kept for content that has it). Only for
+   * a live course: a draft copy of a published course carries the old date, and its card
+   * shows "Updated …" instead. lastUpdatedOn alone changes with any background update, so it
+   * must never be read as a publish date.
+   */
+  get publishedDate(): string | null {
+    const d = this.data
+    if (!d) {
+      return null
+    }
+    return d.publishedOn || (d.status === 'Live' && d.lastPublishedOn) || null
+  }
+
   constructor(
     private accessService: AccessControlService,
     private authInitService: AuthInitService,
@@ -213,6 +229,11 @@ export class ContentCardComponent implements OnInit, OnChanges {
         break
       case 'lang':
         returnValue = this.accessService.hasAccess({ ...this.data, status: 'Draft' })
+        break
+      case 'aiReview':
+        // Courses only, for their creator and the reviewers and publishers added to them.
+        // The service makes the same check against the course.
+        returnValue = this.data.contentType === 'Course' && this.accessService.isCourseMember(this.data)
         break
     }
     return returnValue

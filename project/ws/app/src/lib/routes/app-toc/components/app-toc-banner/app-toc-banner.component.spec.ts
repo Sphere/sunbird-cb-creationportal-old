@@ -69,7 +69,11 @@ describe('AppTocBannerComponent', () => {
     }
     utilitySvc = { isMobile: false }
     mobileAppsSvc = { sendViewerData: jest.fn() }
-    authAccessService = { hasRole: jest.fn().mockReturnValue(false), hasAccess: jest.fn().mockReturnValue(false) }
+    authAccessService = {
+      hasRole: jest.fn().mockReturnValue(false),
+      hasAccess: jest.fn().mockReturnValue(false),
+      isCourseMember: jest.fn().mockReturnValue(false),
+    }
     cdr = { detectChanges: jest.fn() }
     resourceDownloadSvc = {
       hasDownloadableResources: jest.fn().mockReturnValue(true),
@@ -618,6 +622,41 @@ describe('AppTocBannerComponent', () => {
     it('gotoReviewerChecklist does nothing without content', () => {
       component.gotoReviewerChecklist()
       expect(router.navigate).not.toHaveBeenCalled()
+    })
+
+    it('gotoAiReview opens the AI review page for the course', () => {
+      component.content = content()
+      component.gotoAiReview()
+      expect(router.navigate).toHaveBeenCalledWith(['/author/ai-review', 'do_1'])
+    })
+
+    it('gotoAiReview does nothing without content', () => {
+      component.gotoAiReview()
+      expect(router.navigate).not.toHaveBeenCalled()
+    })
+
+    describe('canAiReview', () => {
+      it("is offered to the course's creator, reviewers and publishers", () => {
+        authAccessService.isCourseMember.mockReturnValue(true)
+        component.content = content({ reviewerIDs: ['u1'] })
+        expect(component.canAiReview).toBe(true)
+        expect(authAccessService.isCourseMember).toHaveBeenCalledWith(component.content)
+      })
+
+      it('is not offered to someone not added to the course, whatever their role', () => {
+        component.isReviewer = true
+        component.isPublisher = true
+        component.content = content({ createdBy: 'someone-else' })
+        expect(component.canAiReview).toBe(false)
+      })
+
+      it('is only offered on courses', () => {
+        authAccessService.isCourseMember.mockReturnValue(true)
+        component.content = content({ contentType: 'Resource' })
+        expect(component.canAiReview).toBe(false)
+        component.content = null
+        expect(component.canAiReview).toBe(false)
+      })
     })
 
     it('showOrgprofile navigates to the org details page', () => {

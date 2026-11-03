@@ -39,8 +39,11 @@
       </a>
       <!-- The grid card showed only a title; the list row's key facts were missing. -->
       <p class="card-meta">
-        <span class="meta-item" *ngIf="data?.publishedOn" i18n>Published {{ data?.publishedOn | date }}</span>
-        <span class="meta-item" *ngIf="!data?.publishedOn && data?.lastUpdatedOn" i18n>Updated {{ data?.lastUpdatedOn | date }}</span>
+        @if (publishedDate; as published) {
+          <span class="meta-item" i18n>Published {{ published | date }}</span>
+        } @else if (data?.lastUpdatedOn) {
+          <span class="meta-item" i18n>Updated {{ data?.lastUpdatedOn | date }}</span>
+        }
         <span *ngIf="data.duration" class="meta-item meta-icon-item" matTooltip="Duration" i18n-matTooltip>
           <mat-icon class="duration-icon">access_time</mat-icon>{{ data.duration | pipeDurationTransform: 'hms' }}
         </span>
@@ -157,8 +160,11 @@
       <!-- One labelled fact per item, separated by a dot (was "on <date>," with
            trailing commas, which read as an unfinished sentence). -->
       <span class="meta-item max-width-name" *ngIf="data.creator" i18n>By {{ data.creator }}</span>
-      <span class="meta-item" *ngIf="data?.publishedOn" i18n>Published {{ data?.publishedOn | date }}</span>
-      <span class="meta-item" *ngIf="!data?.publishedOn && data?.lastUpdatedOn" i18n>Updated {{ data?.lastUpdatedOn | date }}</span>
+      @if (publishedDate; as published) {
+        <span class="meta-item" i18n>Published {{ published | date }}</span>
+      } @else if (data?.lastUpdatedOn) {
+        <span class="meta-item" i18n>Updated {{ data?.lastUpdatedOn | date }}</span>
+      }
       <span class="meta-item" *ngIf="data.viewCount > 0" i18n>{{ data.viewCount }} views</span>
       <span class="meta-item" *ngIf="data.uniqueUsersCount > 0" i18n>{{ data.uniqueUsersCount }} learners</span>
       <span *ngIf="data.totalRating" class="meta-item meta-icon-item">
@@ -225,6 +231,12 @@
     <mat-icon>check_circle</mat-icon>
     <span i18n>Reviewer Checklist</span>
   </a>
+  @if (showMenuItem('aiReview')) {
+    <a mat-menu-item [routerLink]="'/author/ai-review/' + data.identifier">
+      <mat-icon>auto_awesome</mat-icon>
+      <span i18n>AI Review</span>
+    </a>
+  }
   <!-- <a *ngIf="showMenuItem('unpublish')" mat-menu-item (click)="takeAction('unpublish')">
     <mat-icon>reply</mat-icon> -->
   <!-- <span i18n>Unpublish content</span> -->

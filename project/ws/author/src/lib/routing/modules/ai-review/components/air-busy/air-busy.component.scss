@@ -1,0 +1,120 @@
+@use '../ai-review-shared' as *;
+
+:host {
+  display: block;
+}
+
+.air-busy {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+
+  &--md {
+    gap: 16px;
+  }
+}
+
+// The same mark as the running review: a round core and a gradient arc turning around it.
+.air-busy-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+
+  .air-busy--md & {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.air-busy-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(14, 116, 144, 0.15) 60deg, #0e7490 200deg, #6d28d9 300deg, transparent 360deg);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  animation: air-turn 1.2s linear infinite;
+}
+
+.air-busy-core {
+  display: grid;
+  place-items: center;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  border-radius: 50%;
+  color: $air-primary;
+  background: #eef2ff;
+}
+
+.air-busy-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.air-busy-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: $air-text;
+
+  .air-busy--md & {
+    font-size: 16px;
+  }
+}
+
+.air-busy-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-size: 12px;
+  color: $air-muted;
+}
+
+.air-busy-time {
+  font-variant-numeric: tabular-nums;
+
+  &--slow {
+    color: $air-amber;
+  }
+}
+
+// An indeterminate bar: a short light moving along a thin track, so the wait reads as work.
+.air-busy-track {
+  position: relative;
+  display: block;
+  height: 3px;
+  margin-top: 4px;
+  max-width: 240px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e9edf7;
+
+  span {
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    border-radius: 999px;
+    background: $air-ai-gradient;
+    animation: air-busy-slide 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes air-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes air-busy-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}

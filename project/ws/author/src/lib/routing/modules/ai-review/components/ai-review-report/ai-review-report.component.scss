@@ -1,0 +1,547 @@
+@use '../ai-review-shared' as *;
+
+// ---- Course summary -----------------------------------------------------------------
+
+.air-score-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.air-score {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid $air-line;
+  background: #fff;
+}
+
+.air-score-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+
+  // Band messages are sentences; let them wrap rather than clip.
+  .air-chip {
+    white-space: normal;
+    line-height: 1.35;
+  }
+}
+
+.air-score-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $air-muted;
+}
+
+.air-score-main {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+// A ring that fills to the score. The colour follows the band; Domain uses the violet accent.
+.air-ring {
+  --pct: 0;
+  --ring: #{$air-primary};
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(var(--ring) calc(var(--pct) * 1%), #e9edf7 0);
+}
+
+.air-score--green .air-ring {
+  --ring: #{$air-green};
+}
+
+.air-score--amber .air-ring {
+  --ring: #{$air-amber};
+}
+
+.air-score--red .air-ring {
+  --ring: #{$air-danger};
+}
+
+.air-score--domain .air-ring {
+  --ring: #{$air-violet};
+}
+
+// One line: the number and its unit side by side, centred in the ring.
+.air-ring-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: #fff;
+  line-height: 74px;
+
+  b {
+    font-size: 26px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  small {
+    font-size: 13px;
+    font-weight: 600;
+    color: $air-muted;
+    margin-left: 1px;
+  }
+
+  // "120/135" would not fit the ring at full size.
+  &--long b {
+    font-size: 20px;
+  }
+}
+
+.air-big-num {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+  font-size: 32px;
+  font-weight: 700;
+  color: $air-primary;
+  background: #eef2ff;
+}
+
+.air-subtitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 24px 0 8px;
+}
+
+.air-table-wrap {
+  overflow-x: auto;
+  border: 1px solid $air-line;
+  border-radius: 12px;
+}
+
+.air-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th,
+  td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid $air-line;
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  th {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: $air-muted;
+    background: $air-canvas;
+  }
+}
+
+.air-gaps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: $air-canvas;
+    font-size: 14px;
+  }
+}
+
+.air-gap-id {
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 13px;
+  color: $air-primary;
+  min-width: 32px;
+}
+
+.air-gap-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.air-gap-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: $air-danger;
+  background: #fee2e2;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+// ---- Each resource ------------------------------------------------------------------
+
+.air-resource-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  min-width: 0;
+
+  > span:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-wrap: anywhere;
+  }
+}
+
+.air-questions {
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+
+  .air-block-title {
+    gap: 8px;
+
+    ws-auth-air-icon {
+      color: #b45309;
+    }
+  }
+}
+
+.air-head-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.air-chip--violet {
+  background: #f5f3ff;
+  color: $air-violet;
+}
+
+.air-chip--muted {
+  background: $air-canvas;
+  color: $air-muted;
+}
+
+.air-block-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+
+  ws-auth-air-icon {
+    color: $air-primary;
+  }
+
+  &--small {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 16px 0 8px;
+    color: $air-muted;
+  }
+}
+
+.air-text {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+
+.air-domain {
+  position: relative;
+  border-radius: 12px;
+  padding: 16px 16px 8px;
+  margin-bottom: 16px;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+
+  .air-block-title ws-auth-air-icon {
+    color: $air-violet;
+  }
+}
+
+.air-levelfit {
+  font-size: 14px;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+
+  &--fits {
+    color: $air-green;
+  }
+
+  &--below,
+  &--above,
+  &--mixed {
+    color: $air-amber;
+  }
+}
+
+.air-coverage {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  font-size: 14px;
+
+  li {
+    display: flex;
+    gap: 8px;
+    padding: 8px 0;
+    border-top: 1px solid rgba(124, 58, 237, 0.12);
+  }
+}
+
+.air-cov-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  margin-top: 1px;
+
+  &--covered {
+    color: $air-green;
+  }
+
+  &--partial {
+    color: $air-amber;
+  }
+
+  &--missing {
+    color: $air-danger;
+  }
+}
+
+.air-pass-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: $air-danger;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.air-area-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.air-area {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  row-gap: 6px;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: $air-canvas;
+}
+
+.air-area-name {
+  color: $air-muted;
+}
+
+.air-area-bar {
+  grid-column: 1 / -1;
+  height: 6px;
+  border-radius: 999px;
+  background: #e2e8f5;
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: $air-primary;
+  }
+}
+
+.air-indicators {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.air-indicator {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid $air-line;
+  border-left-width: 4px;
+  font-size: 14px;
+
+  &--no {
+    border-left-color: $air-danger;
+  }
+
+  &--yes {
+    border-left-color: $air-green;
+  }
+
+  &--na {
+    border-left-color: #cbd5e1;
+  }
+}
+
+.air-indicator-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.air-indicator-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-weight: 500;
+}
+
+.air-note {
+  color: $air-muted;
+
+  // One issue per line, each with a small dot (a list cannot sit inside a button).
+  &--issue {
+    position: relative;
+    padding-left: 16px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 0.6em;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+  }
+}
+
+.air-fix {
+  color: $air-green;
+  font-weight: 500;
+
+  b {
+    font-weight: 700;
+  }
+}
+
+// ---- Clickable findings: each opens the resource at that point ----------------------
+
+.air-indicator--open,
+.air-cov-row {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px -8px rgba(59, 91, 219, 0.5);
+
+    .air-open-arrow {
+      opacity: 1;
+      color: $air-primary;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+}
+
+.air-indicator--open {
+  align-items: flex-start;
+
+  .air-indicator-body {
+    flex: 1;
+  }
+}
+
+.air-cov-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.85);
+  }
+}
+
+.air-cov-text {
+  flex: 1;
+  min-width: 0;
+}
+
+// Rows in the coverage list are buttons now; the list item only spaces them.
+.air-coverage li {
+  padding: 0;
+}
+
+.air-open-arrow {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: $air-muted;
+  opacity: 0.45;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.air-at {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: $air-violet;
+  background: #f5f3ff;
+}
+
+.air-indicators li {
+  list-style: none;
+}
