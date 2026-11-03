@@ -1481,6 +1481,16 @@ export class MyContentComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * The order of the list, newest first. A list of only published or retired courses goes by
+   * when each was published (lastPublishedOn); any other list by when each was last updated.
+   * lastUpdatedOn also moves with background updates, so it would reshuffle published courses.
+   */
+  listSortField(): 'lastPublishedOn' | 'lastUpdatedOn' {
+    const published = ['Live', 'Retired', 'Unpublished']
+    return this.fetchStatus().every(s => published.includes(s)) ? 'lastPublishedOn' : 'lastUpdatedOn'
+  }
+
   fetchStatus() {
     switch (this.status) {
       case 'draft':
@@ -1579,7 +1589,7 @@ export class MyContentComponent implements OnInit, OnDestroy {
         // },
         filters: <any>{},
         // pageNo: loadMoreFlag ? this.pagination.offset : 0,
-        sort_by: { lastUpdatedOn: 'desc' },
+        sort_by: { [this.listSortField()]: 'desc' },
         // pageSize: this.pagination.limit,
         facets: ['primaryCategory', 'mimeType'],
         // pageNo: loadMoreFlag ? this.pagination.offset : 0,
