@@ -304,6 +304,23 @@ describe('MyContentComponent (my-content module)', () => {
       expect(component.cdr.detectChanges).toHaveBeenCalled()
     })
 
+    it('orders published and retired lists by publish date, every other list by last update', () => {
+      const { component, mocks } = build()
+      component.newDesign = false
+      mocks.myContSvc.fetchContent.mockReturnValue(of({ result: { content: [], count: 0 } }))
+      const sortFor = (status: string) => {
+        component.status = status
+        component.fetchContent(false)
+        return mocks.myContSvc.fetchContent.mock.calls.at(-1)[0].request.sort_by
+      }
+      expect(sortFor('published')).toEqual({ lastPublishedOn: 'desc' })
+      expect(sortFor('selfPublishedCourse')).toEqual({ lastPublishedOn: 'desc' })
+      expect(sortFor('unpublished')).toEqual({ lastPublishedOn: 'desc' })
+      expect(sortFor('draft')).toEqual({ lastUpdatedOn: 'desc' })
+      expect(sortFor('inreview')).toEqual({ lastUpdatedOn: 'desc' })
+      expect(sortFor('publish')).toEqual({ lastUpdatedOn: 'desc' })
+    })
+
     it('filters out prevStatus Review items for draft status', () => {
       const { component, mocks } = build()
       // The prevStatus filter reads data.result.content, which only the legacy
