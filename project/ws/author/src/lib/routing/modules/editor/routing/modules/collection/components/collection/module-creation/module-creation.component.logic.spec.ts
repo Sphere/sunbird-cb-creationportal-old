@@ -1,6 +1,9 @@
 import { FormBuilder } from '@angular/forms'
 import { BehaviorSubject, Subject, of } from 'rxjs'
 
+import JSZip from 'jszip'
+
+import { HtmlPackageCheckDialogComponent } from '@ws/author/src/lib/modules/shared/components/zip-upload-dialogs/html-package-check-dialog.component'
 import { ModuleCreationComponent } from './module-creation.component'
 
 /**
@@ -537,7 +540,7 @@ describe('ModuleCreationComponent (logic)', () => {
 
     it('clears self-assessment when the course is not a competency course', () => {
       const courseContent = { identifier: 'course1', name: 'C', competency: false, children: [] }
-      editorService.readcontentV3.mockReturnValue(of({ identifier: 'course1' }))
+      editorService.readcontentV3.mockReturnValue(of({ identifier: 'course1', children: [] }))
       storeService.lexIdMap = new Map([['id1', [1]]])
       activateRoute = {
         parent: {
@@ -554,7 +557,7 @@ describe('ModuleCreationComponent (logic)', () => {
 
     it('selects the freshly created node when the editor reports one', () => {
       const courseContent = { identifier: 'course1', name: 'C', children: [] }
-      editorService.readcontentV3.mockReturnValue(of({ identifier: 'course1' }))
+      editorService.readcontentV3.mockReturnValue(of({ identifier: 'course1', children: [] }))
       editorService.newCreatedLexid = 'newLex'
       storeService.lexIdMap = new Map<any, any>([
         ['id1', [1]],
@@ -1547,9 +1550,9 @@ describe('ModuleCreationComponent (logic)', () => {
       expect(trigger).toHaveBeenCalled()
     })
 
-    it('uploads an HTML package straight away with index.html as its entry point', () => {
+    it('checks an HTML package before uploading it', () => {
       const comp = build()
-      const trigger = jest.spyOn(comp, 'triggerUpload').mockResolvedValue(undefined as any)
+      const check = jest.spyOn(comp, 'checkHtmlPackageThenUpload').mockResolvedValue(undefined)
       comp.zipPackageType = 'html'
       comp.errorFileList = []
       comp.fileList = ['index.html', 'css/', 'css/site.css']
@@ -1557,12 +1560,78 @@ describe('ModuleCreationComponent (logic)', () => {
 
       comp.processAndShowResult()
 
-      expect(dialog.open).not.toHaveBeenCalled()
-      expect(comp.entryPoint).toBe('/index.html')
-      expect(comp.fileUploadCondition.url).toBe('index.html')
-      expect(comp.selectedEntryFile).toBe(true)
-      expect(comp.uploadFileName).toBe('mysite.zip')
-      expect(trigger).toHaveBeenCalled()
+      expect(check).toHaveBeenCalledWith(comp.file)
+    })
+
+    describe('the HTML package check', () => {
+      const TELEMETRY =
+        "postMessage({ type: 'html-archive:telemetry', event: { type: 'PROGRESS', extra: { pct: 100 } } }, '*'); postMessage({ type: 'html-archive:telemetry', event: { type: 'STATE' } }, '*')"
+      const zipOf = async (files: Record<string, string>, name = 'my site.zip') => {
+        const zip = new JSZip()
+        Object.keys(files).forEach(f => zip.file(f, files[f]))
+        const bytes = await zip.generateAsync({ type: 'uint8array' })
+        return new File([bytes], name)
+      }
+      const ready = (comp: any) => {
+        comp.zipPackageType = 'html'
+        return jest.spyOn(comp, 'triggerUpload').mockResolvedValue(undefined as any)
+      }
+
+      it('uploads a package that passes every check straight away, with index.html as its entry point', async () => {
+        const comp = build()
+        const trigger = ready(comp)
+        await comp.checkHtmlPackageThenUpload(await zipOf({ 'index.html': `<script>${TELEMETRY}</script>` }))
+
+        expect(dialog.open).not.toHaveBeenCalled()
+        expect(snackBar.open).toHaveBeenCalledWith(expect.stringContaining('Package check passed'), 'OK', expect.anything())
+        expect(comp.entryPoint).toBe('/index.html')
+        expect(comp.fileUploadCondition.url).toBe('index.html')
+        expect(comp.selectedEntryFile).toBe(true)
+        expect(comp.uploadFileName).toBe('mysite.zip')
+        expect(trigger).toHaveBeenCalled()
+        expect(loader.changeLoad.next).toHaveBeenLastCalledWith(false)
+      })
+
+      it('shows what to check and uploads only if the author chooses to', async () => {
+        const comp = build()
+        const trigger = ready(comp)
+        const file = await zipOf({ 'index.html': '<p>No progress here</p>' })
+
+        dialog.open.mockReturnValue({ afterClosed: () => of(false) })
+        comp.file = file
+        await comp.checkHtmlPackageThenUpload(file)
+        const [component, config] = dialog.open.mock.calls[0]
+        expect(component).toBe(HtmlPackageCheckDialogComponent)
+        expect(config.data.report.warnings).toBeGreaterThan(0)
+        expect(config.data.fileName).toBe('my site.zip')
+        expect(trigger).not.toHaveBeenCalled()
+        expect(comp.file).toBeNull()
+
+        dialog.open.mockReturnValue({ afterClosed: () => of(true) })
+        await comp.checkHtmlPackageThenUpload(file)
+        expect(trigger).toHaveBeenCalledTimes(1)
+      })
+
+      it('never uploads a package with a problem that stops it working', async () => {
+        const comp = build()
+        const trigger = ready(comp)
+        dialog.open.mockReturnValue({ afterClosed: () => of(true) })
+        await comp.checkHtmlPackageThenUpload(await zipOf({ 'index.html': `<script>${TELEMETRY}</script>`, 'intro.swf': 'x' }))
+
+        expect(dialog.open.mock.calls[0][1].data.report.blocking).toBe(1)
+        expect(trigger).not.toHaveBeenCalled()
+        expect(comp.uploadFileName).toBe('')
+      })
+
+      it('still uploads when the extra checks cannot read the file', async () => {
+        const comp = build()
+        const trigger = ready(comp)
+        await comp.checkHtmlPackageThenUpload(new File(['not a zip'], 'a.zip'))
+
+        expect(dialog.open).not.toHaveBeenCalled()
+        expect(snackBar.open).not.toHaveBeenCalled()
+        expect(trigger).toHaveBeenCalled()
+      })
     })
 
     it.each([

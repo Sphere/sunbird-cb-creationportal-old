@@ -67,6 +67,7 @@ import { CertFieldPlacerComponent } from './components/certificate-upload-dialog
 import { LoaderCardComponent } from './components/loader-card/loader-card.component'
 import { ZipGuidelinesComponent } from './components/zip-upload-dialogs/zip-guidelines.component'
 import { ZipEntryFileComponent } from './components/zip-upload-dialogs/zip-entry-file.component'
+import { HtmlPackageCheckDialogComponent } from './components/zip-upload-dialogs/html-package-check-dialog.component'
 import { ZipInvalidNamesComponent } from './components/zip-upload-dialogs/zip-invalid-names.component'
 
 import { CommentsViewComponent } from './components/comments-view/comments-view.component'
@@ -127,6 +128,7 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     CertFieldPlacerComponent,
     ZipGuidelinesComponent,
     ZipEntryFileComponent,
+    HtmlPackageCheckDialogComponent,
     ZipInvalidNamesComponent,
     LoaderCardComponent,
     IprDialogComponent,
@@ -217,6 +219,7 @@ import { ProgressStepperComponent } from './components/progress-stepper/progress
     CertificateDialogComponent,
     ZipGuidelinesComponent,
     ZipEntryFileComponent,
+    HtmlPackageCheckDialogComponent,
     ZipInvalidNamesComponent,
     LoaderCardComponent,
     CompetencyPopupComponent,
