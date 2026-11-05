@@ -190,10 +190,13 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       icon: 'cbp-assets/icons/scrom_icon.svg',
       type: 'upload',
     },
-    // The HTML learning format is not approved for production yet. Its code stays dormant:
-    // nothing can create a packageType 'html' resource without this entry, so every zip is
-    // treated as SCORM. Re-add { name: 'HTML', icon: 'cbp-assets/icons/html_icon.svg',
-    // type: 'upload' } here to enable it.
+    // The HTML learning format (packageType 'html'). Without this entry nothing can create an
+    // HTML resource and every zip is treated as SCORM.
+    {
+      name: 'HTML',
+      icon: 'cbp-assets/icons/html_icon.svg',
+      type: 'upload',
+    },
   ]
 
   accessList: any[] = [
