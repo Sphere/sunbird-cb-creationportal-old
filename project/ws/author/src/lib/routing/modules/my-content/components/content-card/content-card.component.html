@@ -39,8 +39,13 @@
       </a>
       <!-- The grid card showed only a title; the list row's key facts were missing. -->
       <p class="card-meta">
-        <span class="meta-item" *ngIf="data?.publishedOn" i18n>Published {{ data?.publishedOn | date }}</span>
-        <span class="meta-item" *ngIf="!data?.publishedOn && data?.lastUpdatedOn" i18n>Updated {{ data?.lastUpdatedOn | date }}</span>
+        @if (cardDate; as when) {
+          @if (when.label === 'Published') {
+            <span class="meta-item" i18n>Published {{ when.date | date }}</span>
+          } @else {
+            <span class="meta-item" i18n>Updated {{ when.date | date }}</span>
+          }
+        }
         <span *ngIf="data.duration" class="meta-item meta-icon-item" matTooltip="Duration" i18n-matTooltip>
           <mat-icon class="duration-icon">access_time</mat-icon>{{ data.duration | pipeDurationTransform: 'hms' }}
         </span>
@@ -157,8 +162,13 @@
       <!-- One labelled fact per item, separated by a dot (was "on <date>," with
            trailing commas, which read as an unfinished sentence). -->
       <span class="meta-item max-width-name" *ngIf="data.creator" i18n>By {{ data.creator }}</span>
-      <span class="meta-item" *ngIf="data?.publishedOn" i18n>Published {{ data?.publishedOn | date }}</span>
-      <span class="meta-item" *ngIf="!data?.publishedOn && data?.lastUpdatedOn" i18n>Updated {{ data?.lastUpdatedOn | date }}</span>
+      @if (cardDate; as when) {
+        @if (when.label === 'Published') {
+          <span class="meta-item" i18n>Published {{ when.date | date }}</span>
+        } @else {
+          <span class="meta-item" i18n>Updated {{ when.date | date }}</span>
+        }
+      }
       <span class="meta-item" *ngIf="data.viewCount > 0" i18n>{{ data.viewCount }} views</span>
       <span class="meta-item" *ngIf="data.uniqueUsersCount > 0" i18n>{{ data.uniqueUsersCount }} learners</span>
       <span *ngIf="data.totalRating" class="meta-item meta-icon-item">

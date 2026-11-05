@@ -71,6 +71,68 @@ window.top.postMessage(&#123;
             <span i18n>Reached 100%</span>
           </li>
         </ul>
+
+        @if (report().typeCounts.length) {
+          <ul class="debug-types" aria-label="Events by type" i18n-aria-label>
+            @for (t of report().typeCounts; track t.kind + t.type) {
+              <li class="debug-type" [class.is-other]="t.kind === 'other'">
+                <span class="debug-type-name">{{ t.type }}</span>
+                <span class="debug-type-count">{{ t.count }}</span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      @if (report().otherCount) {
+        <p class="debug-callout" role="note">
+          <mat-icon aria-hidden="true">info</mat-icon>
+          <span i18n
+            >{{ report().otherCount }} message(s) arrived in another format, not <code>html-archive:telemetry</code>. They are shown in the
+            log, marked "other", but the player does not count them as progress.</span
+          >
+        </p>
+      }
+
+      <section class="debug-steps" aria-label="Where progress was reported" i18n-aria-label>
+        <h3 class="debug-section-title">
+          <span i18n>Where progress was reported</span>
+          <span class="debug-section-note" i18n>oldest first · each PROGRESS event</span>
+        </h3>
+        @if (report().progressSteps.length) {
+          <div class="debug-steps-scroll">
+            <table class="debug-steps-table">
+              <thead>
+                <tr>
+                  <th scope="col" i18n>Time</th>
+                  <th scope="col" i18n>Progress</th>
+                  <th scope="col" i18n>Change</th>
+                  <th scope="col" i18n>Learner was at</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (step of report().progressSteps; track step.at + '-' + $index) {
+                  <tr>
+                    <td>{{ step.at | date: 'HH:mm:ss' }}</td>
+                    <td class="debug-steps-pct">{{ step.pct === null ? 'no pct' : step.pct + '%' }}</td>
+                    <td
+                      class="debug-steps-change"
+                      [class.is-up]="step.change !== null && step.change > 0"
+                      [class.is-down]="step.change !== null && step.change < 0"
+                    >
+                      {{ step.change === null ? '—' : (step.change > 0 ? '+' : '') + step.change + '%' }}
+                    </td>
+                    <td>{{ step.where || 'not given' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <p class="debug-steps-empty" i18n>
+            No PROGRESS event yet. The package has not said how far the learner is, so completion will not be recorded.
+          </p>
+        }
       </section>
 
       <section class="debug-log" aria-label="Event log" i18n-aria-label>
@@ -80,9 +142,17 @@ window.top.postMessage(&#123;
         </h3>
         <ol class="debug-events">
           @for (row of report().rows; track trackRow($index, row)) {
-            <li class="debug-event">
+            <li class="debug-event" [class.is-other]="row.kind === 'other'">
               <div class="debug-event-head">
-                <span class="debug-event-type">{{ row.type }}</span>
+                <span class="debug-event-tags">
+                  <span class="debug-event-type">{{ row.type }}</span>
+                  @if (row.kind === 'other') {
+                    <span class="debug-event-other" i18n>other · not counted</span>
+                  }
+                  @if (row.headline) {
+                    <span class="debug-event-headline">{{ row.headline }}</span>
+                  }
+                </span>
                 <time class="debug-event-time">{{ row.at | date: 'HH:mm:ss' }}</time>
               </div>
               @if (row.fields.length) {

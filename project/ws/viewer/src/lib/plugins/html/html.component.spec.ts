@@ -195,6 +195,29 @@ describe('HtmlComponent', () => {
     info.mockRestore()
   })
 
+  it('receiveMessage keeps other messages from the package, and only from the package, for the Debug dialog', () => {
+    const c = build()
+    c.htmlContent = { identifier: 'id1' } as any
+    const frame = { parent: null as unknown } as any
+    const nested = { parent: frame } as any
+    frame.parent = { parent: undefined } as any
+    frame.parent.parent = frame.parent // the page itself is its own parent
+    c.iframeElem = { nativeElement: { contentWindow: frame } } as any
+    const debug = (c as any).htmlDebug
+
+    c.receiveMessage({ data: { event: 'quizDone', score: 4 }, source: frame })
+    c.receiveMessage({ data: { type: 'tick' }, source: nested })
+    c.receiveMessage({ data: { type: 'extension-noise' }, source: frame.parent })
+    c.receiveMessage({ data: { type: 'no-source' } })
+
+    expect(debug.eventsFor('id1').map((e: any) => [e.type, e.kind])).toEqual([
+      ['quizDone', 'other'],
+      ['tick', 'other'],
+    ])
+    // still raised as telemetry, as before
+    expect(events.raiseInteractTelemetry).toHaveBeenCalledWith('quizDone', 'scrom', expect.objectContaining({ contentId: 'id1' }))
+  })
+
   it('receiveMessage falls back to message/id when there is no data payload', () => {
     const c = build()
     c.htmlContent = { identifier: 'id1' } as any

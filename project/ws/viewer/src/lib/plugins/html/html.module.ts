@@ -1,3 +1,4 @@
+import { SkeletonModule } from '@ws-widget/utils'
 import { NgModule } from '@angular/core'
 
 import { CommonModule } from '@angular/common'
@@ -19,6 +20,7 @@ import { NoFileModule } from '../../components/no-file/no-file.module'
 @NgModule({
   declarations: [HtmlComponent],
   imports: [
+    SkeletonModule,
     NoFileModule,
     CommonModule,
     MatCardModule,

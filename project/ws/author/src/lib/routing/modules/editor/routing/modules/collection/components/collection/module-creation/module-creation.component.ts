@@ -128,6 +128,11 @@ import {
   snapshotFolderUrl,
   zipPackageMessage,
 } from '@ws/author/src/lib/modules/shared/components/zip-upload-dialogs/zip-package.util'
+import { IHtmlPackageReport, inspectHtmlPackage } from '@ws/author/src/lib/modules/shared/components/zip-upload-dialogs/html-package-check'
+import {
+  HtmlPackageCheckDialogComponent,
+  IHtmlPackageCheckDialogData,
+} from '@ws/author/src/lib/modules/shared/components/zip-upload-dialogs/html-package-check-dialog.component'
 import { NO_CONFIG_DEFAULT, configDefault, emptiedFieldValue, isBooleanConfigField } from '@ws/author/src/lib/utils/config-default'
 @Component({
   standalone: false,
@@ -190,8 +195,8 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       icon: 'cbp-assets/icons/scrom_icon.svg',
       type: 'upload',
     },
-    // Enabled on the stage branch only, for the client demo. The HTML learning format is not
-    // approved for production: this entry must not reach main or a release branch.
+    // The HTML learning format (packageType 'html'). Without this entry nothing can create an
+    // HTML resource and every zip is treated as SCORM.
     {
       name: 'HTML',
       icon: 'cbp-assets/icons/html_icon.svg',
@@ -4382,6 +4387,60 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
     )
   }
 
+  /**
+   * Checks an HTML package in the browser before it is uploaded (see html-package-check):
+   * a problem that stops it working blocks the upload; anything else is shown, and the
+   * author decides. A package that passes everything uploads straight away.
+   */
+  async checkHtmlPackageThenUpload(file: File): Promise<void> {
+    this.loader.changeLoad.next(true)
+    let report: IHtmlPackageReport | null = null
+    try {
+      report = await inspectHtmlPackage(file)
+    } catch {
+      // zip.js read it just now, so the upload itself is fine; only the extra checks are skipped.
+      report = null
+    } finally {
+      this.loader.changeLoad.next(false)
+    }
+    if (!report || (!report.blocking && !report.warnings)) {
+      if (report) {
+        this.snackBar.open('Package check passed: it reports progress and saves where the learner left off.', 'OK', {
+          duration: NOTIFICATION_TIME * 1000,
+        })
+      }
+      this.uploadHtmlPackage(file)
+      return
+    }
+    const checked = report
+    this.dialog
+      .open<HtmlPackageCheckDialogComponent, IHtmlPackageCheckDialogData, boolean>(HtmlPackageCheckDialogComponent, {
+        width: this.isMobile ? '95vw' : '640px',
+        maxWidth: '95vw',
+        data: { report: checked, fileName: file.name },
+        panelClass: 'zip-guideline-panel',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe(upload => {
+        if (upload === true && !checked.blocking) {
+          this.uploadHtmlPackage(file)
+        } else {
+          this.file = null
+          this.uploadFileName = ''
+        }
+      })
+  }
+
+  /** An HTML package always opens at index.html, so there is no entry-file step. */
+  private uploadHtmlPackage(file: File): void {
+    this.fileUploadCondition.url = HTML_ENTRY_FILE
+    this.entryPoint = `/${HTML_ENTRY_FILE}`
+    this.selectedEntryFile = true
+    this.uploadFileName = file.name.replaceAll(/[^A-Za-z0-9_.]/g, '')
+    this.triggerUpload()
+  }
+
   processAndShowResult() {
     // Every branch either waits for the author (a dialog or message) or hands
     // over to triggerUpload, which shows the loader again for the upload.
@@ -4413,11 +4472,7 @@ export class ModuleCreationComponent implements OnInit, OnChanges, AfterViewInit
       return
     }
     if (this.zipPackageType === 'html') {
-      this.fileUploadCondition.url = HTML_ENTRY_FILE
-      this.entryPoint = `/${HTML_ENTRY_FILE}`
-      this.selectedEntryFile = true
-      this.uploadFileName = (this.file as File).name.replaceAll(/[^A-Za-z0-9_.]/g, '')
-      this.triggerUpload()
+      void this.checkHtmlPackageThenUpload(this.file as File)
     } else {
       const dialogRef = this.dialog.open(this.selectFile, {
         width: this.isMobile ? '90vw' : '600px',

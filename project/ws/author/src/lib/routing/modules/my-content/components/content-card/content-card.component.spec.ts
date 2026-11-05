@@ -65,6 +65,39 @@ describe('ContentCardComponent', () => {
     expect(component).toBeTruthy()
   })
 
+  describe('cardDate', () => {
+    const PUBLISHED = '2025-05-20T09:35:38.934+0000'
+    const UPDATED = '2026-11-02T23:33:04.189+0000'
+
+    it('shows a published course its publish date, never a later background update', () => {
+      component.data = card({ status: 'Live', lastPublishedOn: PUBLISHED, lastUpdatedOn: UPDATED })
+      expect(component.cardDate).toEqual({ label: 'Published', date: PUBLISHED })
+    })
+
+    it('shows a retired or unpublished course when it was published', () => {
+      component.data = card({ status: 'Retired', lastPublishedOn: PUBLISHED, lastUpdatedOn: UPDATED })
+      expect(component.cardDate).toEqual({ label: 'Published', date: PUBLISHED })
+      component.data = card({ status: 'Unpublished', lastPublishedOn: PUBLISHED, lastUpdatedOn: UPDATED })
+      expect(component.cardDate).toEqual({ label: 'Published', date: PUBLISHED })
+    })
+
+    it('shows any other course when it was last updated, even if an earlier version was published', () => {
+      component.data = card({ status: 'Draft', lastPublishedOn: PUBLISHED, lastUpdatedOn: UPDATED })
+      expect(component.cardDate).toEqual({ label: 'Updated', date: UPDATED })
+      component.data = card({ status: 'Review', lastUpdatedOn: UPDATED })
+      expect(component.cardDate).toEqual({ label: 'Updated', date: UPDATED })
+    })
+
+    it('falls back to the update date when a published course has no publish date, and shows nothing without dates', () => {
+      component.data = card({ status: 'Live', lastUpdatedOn: UPDATED })
+      expect(component.cardDate).toEqual({ label: 'Updated', date: UPDATED })
+      component.data = card({ status: 'Draft' })
+      expect(component.cardDate).toBeNull()
+      component.data = undefined
+      expect(component.cardDate).toBeNull()
+    })
+  })
+
   describe('ngOnInit', () => {
     it('falls back to the placeholder thumbnail', () => {
       component.ngOnInit()

@@ -50,6 +50,32 @@ describe('HtmlPackageDebugDialogComponent', () => {
     expect(el.querySelectorAll('.debug-event').length).toBe(1)
   })
 
+  it('shows where progress was reported, counts by type, and marks messages in another format', () => {
+    const fixture = create()
+    debug.record('do_h', { type: 'PROGRESS', extra: { pct: 20, section: 's1', phase: 'video' } })
+    debug.record('do_h', { type: 'PROGRESS', extra: { pct: 60, section: 's3', phase: 'quiz' } })
+    debug.recordOther('do_h', { event: 'quizDone' })
+    fixture.detectChanges()
+
+    const el: HTMLElement = fixture.nativeElement
+    const rows = Array.from(el.querySelectorAll('.debug-steps-table tbody tr')).map(tr => tr.textContent!.replace(/\s+/g, ' ').trim())
+    expect(rows.length).toBe(2)
+    expect(rows[1]).toContain('60%')
+    expect(rows[1]).toContain('+40%')
+    expect(rows[1]).toContain('section s3 · phase quiz')
+    expect(el.querySelectorAll('.debug-type').length).toBe(2)
+    expect(el.querySelector('.debug-callout')!.textContent).toContain('1 message(s) arrived in another format')
+    expect(el.querySelector('.debug-event.is-other')!.textContent).toContain('other · not counted')
+    expect(el.textContent).toContain('60% · section s3 · phase quiz')
+  })
+
+  it('says when the package has not reported progress at all', () => {
+    const fixture = create()
+    debug.record('do_h', { type: 'STATE', extra: {} })
+    fixture.detectChanges()
+    expect((fixture.nativeElement as HTMLElement).querySelector('.debug-steps-empty')!.textContent).toContain('No PROGRESS event yet')
+  })
+
   it('clears the log and closes', () => {
     const fixture = create()
     debug.record('do_h', { type: 'VIDEO_START' })

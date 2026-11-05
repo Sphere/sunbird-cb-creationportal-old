@@ -461,7 +461,7 @@ describe('ModuleCreationComponent (resource authoring)', () => {
       expect(component.setContentType).toHaveBeenCalledWith('zip', 'zip')
     })
 
-    it('offers the HTML learning format on stage, after SCORM (demo only, not for production)', () => {
+    it('offers the HTML learning format, after SCORM', () => {
       const names = component.contentList.map((c: any) => c.name)
       expect(names).toEqual(['Link', 'PDF', 'Audio', 'Video', 'SCORM v1.1/1.2', 'HTML'])
       expect(component.contentList.find((c: any) => c.name === 'HTML')).toEqual({

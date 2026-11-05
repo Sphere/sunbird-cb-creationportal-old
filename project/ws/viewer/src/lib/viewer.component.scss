@@ -76,3 +76,12 @@
 .sidenavContent::-webkit-scrollbar {
   width: 6px !important;
 }
+
+// Shimmer while the viewer loads the content.
+.viewer-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1100px;
+  padding: 24px;
+}

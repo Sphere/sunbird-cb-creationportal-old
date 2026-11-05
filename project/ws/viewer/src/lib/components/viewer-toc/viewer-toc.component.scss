@@ -215,3 +215,31 @@ a.disabled {
   margin: 0;
   padding: 0;
 }
+
+// Shimmer while the contents load, matching the real items: same padding and dividers.
+// Two classes, so it wins over the shimmer group's own default gap.
+.toc-skeleton.ws-skeleton-group {
+  gap: 0;
+}
+
+.toc-skeleton-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 24px;
+  border-bottom: 1px solid #e6edf3;
+}
+
+.toc-skeleton-meta,
+.toc-skeleton-stats {
+  display: flex;
+  align-items: center;
+}
+
+.toc-skeleton-meta {
+  gap: 10px;
+}
+
+.toc-skeleton-stats {
+  gap: 18px;
+}

@@ -92,9 +92,29 @@
 
 <!-- Loading Template -->
 <ng-template #Loading>
-  <div *ngIf="!isErrorOccurred" class="flex flex-center">
-    <mat-spinner></mat-spinner>
-  </div>
+  @if (!isErrorOccurred) {
+    <!-- The contents list as it loads: each item a title, then its type icon and duration,
+         and every third one the round stat badges a quiz or assessment shows. -->
+    <ws-skeleton-group class="toc-skeleton" label="Loading the contents…" i18n-label>
+      @for (row of [1, 2, 3, 4, 5, 6]; track row) {
+        <div class="toc-skeleton-item">
+          <ws-skeleton shape="line" [width]="row % 2 ? '38%' : '52%'" height="18px" />
+          @if (row % 3 === 0) {
+            <div class="toc-skeleton-stats">
+              <ws-skeleton shape="circle" height="88px" />
+              <ws-skeleton shape="circle" height="88px" />
+              <ws-skeleton shape="circle" height="88px" />
+            </div>
+          } @else {
+            <div class="toc-skeleton-meta">
+              <ws-skeleton shape="line" width="22px" height="22px" radius="4px" />
+              <ws-skeleton shape="line" width="44px" height="14px" />
+            </div>
+          }
+        </div>
+      }
+    </ws-skeleton-group>
+  }
   <div *ngIf="isErrorOccurred" class="flex flex-center">
     <h2 i18n class="mat-sub-heading">Unsupported Collection Type</h2>
   </div>

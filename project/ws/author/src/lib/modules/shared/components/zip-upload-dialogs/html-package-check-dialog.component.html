@@ -1,0 +1,96 @@
+<div class="pkg-check" role="document">
+  <header class="pkg-head">
+    <span class="pkg-head-icon" [class.is-block]="data.report.blocking" aria-hidden="true">
+      <mat-icon>{{ data.report.blocking ? 'error' : 'assignment_late' }}</mat-icon>
+    </span>
+    <div class="pkg-head-text">
+      <h2 class="pkg-title" mat-dialog-title>{{ heading() }}</h2>
+      <p class="pkg-sub"><span i18n>Package check</span> · {{ data.fileName }} · {{ data.report.fileCount }} <span i18n>files</span></p>
+    </div>
+  </header>
+
+  <div class="pkg-body">
+    @if (blocking().length) {
+      <section class="pkg-group" aria-labelledby="pkg-block">
+        <h3 class="pkg-group-title is-block" id="pkg-block" i18n>Must be fixed</h3>
+        <ul class="pkg-list">
+          @for (f of blocking(); track trackFinding($index, f)) {
+            <li class="pkg-item is-block">
+              <mat-icon class="pkg-item-icon" aria-hidden="true">cancel</mat-icon>
+              <ng-container [ngTemplateOutlet]="finding" [ngTemplateOutletContext]="{ $implicit: f }" />
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (warnings().length) {
+      <section class="pkg-group" aria-labelledby="pkg-warn">
+        <h3 class="pkg-group-title is-warn" id="pkg-warn" i18n>Worth checking</h3>
+        <ul class="pkg-list">
+          @for (f of warnings(); track trackFinding($index, f)) {
+            <li class="pkg-item is-warn">
+              <mat-icon class="pkg-item-icon" aria-hidden="true">warning</mat-icon>
+              <ng-container [ngTemplateOutlet]="finding" [ngTemplateOutletContext]="{ $implicit: f }" />
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (passed().length) {
+      <section class="pkg-group">
+        <button type="button" class="pkg-passed-toggle" [attr.aria-expanded]="showPassed()" (click)="showPassed.set(!showPassed())">
+          <mat-icon aria-hidden="true">{{ showPassed() ? 'expand_less' : 'expand_more' }}</mat-icon>
+          <span>{{ passed().length }} <ng-container i18n>checks passed</ng-container></span>
+        </button>
+        @if (showPassed()) {
+          <ul class="pkg-list">
+            @for (f of passed(); track trackFinding($index, f)) {
+              <li class="pkg-item is-pass">
+                <mat-icon class="pkg-item-icon" aria-hidden="true">check_circle</mat-icon>
+                <ng-container [ngTemplateOutlet]="finding" [ngTemplateOutletContext]="{ $implicit: f }" />
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    }
+
+    @if (data.report.partial) {
+      <p class="pkg-note" i18n>Some large files were too big to read in the browser, so a few checks looked at part of the package only.</p>
+    }
+    <p class="pkg-note" i18n>
+      After upload, open the resource in preview and use its Debug button to see the progress it reports and whether it reaches 100%.
+    </p>
+  </div>
+
+  <footer class="pkg-foot">
+    <button type="button" class="pkg-btn" [class.pkg-btn-primary]="data.report.blocking" (click)="chooseAnother()" i18n>
+      Choose another file
+    </button>
+    @if (!data.report.blocking) {
+      <button type="button" class="pkg-btn pkg-btn-primary" (click)="upload()" i18n>Upload anyway</button>
+    }
+  </footer>
+</div>
+
+<ng-template #finding let-f>
+  <div class="pkg-item-text">
+    <p class="pkg-item-title">{{ f.title }}</p>
+    <p class="pkg-item-detail">{{ f.detail }}</p>
+    @if (f.fix) {
+      <p class="pkg-item-fix"><span i18n>How to fix:</span> {{ f.fix }}</p>
+    }
+    @if (f.files?.length) {
+      <ul class="pkg-files">
+        @for (file of f.files; track file) {
+          <li>{{ file }}</li>
+        }
+        @if (f.moreFiles) {
+          <li class="pkg-files-more">… <ng-container i18n>and</ng-container> {{ f.moreFiles }} <ng-container i18n>more</ng-container></li>
+        }
+      </ul>
+    }
+  </div>
+</ng-template>

@@ -99,10 +99,24 @@
   </mat-card-content>
 </mat-card>
 
-<div class="html-loading" *ngIf="showIsLoadingMessage" aria-live="polite">
-  <mat-spinner diameter="28"></mat-spinner>
-  <span i18n>Loading content…</span>
-</div>
+@if (showIsLoadingMessage) {
+  <!-- Shaped like a typical lesson page: title bar, media, text and actions. -->
+  <ws-skeleton-group class="html-loading" label="Loading content…" i18n-label>
+    <!-- The title band across the top, with its badge. -->
+    <div class="html-loading-band">
+      <ws-skeleton shape="line" width="34%" height="22px" />
+      <ws-skeleton shape="pill" width="84px" height="30px" />
+    </div>
+    <ws-skeleton shape="line" width="26%" height="26px" />
+    <ws-skeleton shape="block" class="html-loading-media" />
+    <ws-skeleton shape="line" width="62%" />
+    <ws-skeleton shape="line" width="44%" />
+    <div class="html-loading-actions">
+      <ws-skeleton shape="pill" width="140px" height="44px" />
+      <ws-skeleton shape="line" width="96px" height="18px" />
+    </div>
+  </ws-skeleton-group>
+}
 
 @if (pageFetchStatus === 'error') {
   <div class="player-state" role="alert">

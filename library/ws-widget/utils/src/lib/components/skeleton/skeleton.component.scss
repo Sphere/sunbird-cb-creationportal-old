@@ -1,0 +1,65 @@
+// Shimmer placeholders. Every shape shares one light sweep across the viewport
+// (background-attachment: fixed), so a whole layout shimmers together instead of
+// each block flickering on its own.
+
+:host(.ws-skeleton) {
+  display: block;
+  flex: none;
+  max-width: 100%;
+  border-radius: 6px;
+  background-color: #e9eef3;
+  background-image: linear-gradient(100deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.65) 50%, rgba(255, 255, 255, 0) 70%);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  animation: ws-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+:host(.ws-skeleton--block) {
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+}
+
+:host(.ws-skeleton--circle) {
+  border-radius: 50%;
+}
+
+:host(.ws-skeleton--pill) {
+  border-radius: 999px;
+}
+
+// A column of shapes with even spacing by default. The page adds its own padding or
+// position through a class; rows that sit side by side go in a flex row inside it.
+:host(.ws-skeleton-group) {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ws-skeleton-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes ws-skeleton-shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host(.ws-skeleton) {
+    animation: none;
+    background-image: none;
+  }
+}

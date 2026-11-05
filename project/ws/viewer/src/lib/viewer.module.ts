@@ -1,4 +1,5 @@
-﻿import { NgModule } from '@angular/core'
+import { SkeletonModule } from '@ws-widget/utils'
+import { NgModule } from '@angular/core'
 
 import { CommonModule } from '@angular/common'
 
@@ -62,6 +63,7 @@ import { AppTocModule } from '@ws/app'
 @NgModule({
   declarations: [ViewerComponent, ViewerTocComponent, ReviewDialogComponent, HtmlPackageDebugDialogComponent],
   imports: [
+    SkeletonModule,
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
