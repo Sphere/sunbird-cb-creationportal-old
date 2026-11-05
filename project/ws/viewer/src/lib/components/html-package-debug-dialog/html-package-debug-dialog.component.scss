@@ -167,8 +167,130 @@
 }
 
 // ── Event log ───────────────────────────────────────────────────────────────
-.debug-log {
+.debug-log,
+.debug-steps {
   margin-top: 20px;
+}
+
+// Counts per event type, under the checks.
+.debug-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.debug-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px 2px 8px;
+  border: 1px solid #dde8f0;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+
+  &.is-other {
+    border-style: dashed;
+    color: #8a5a00;
+  }
+}
+
+.debug-type-name {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 500;
+}
+
+.debug-type-count {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #eef3f8;
+  text-align: center;
+  font-weight: 500;
+}
+
+.debug-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #f3dfb0;
+  border-radius: 8px;
+  background: #fff8e6;
+  color: #6b4a00;
+  font-size: 14px;
+
+  mat-icon {
+    flex: none;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  code {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 12px;
+  }
+}
+
+// Where each PROGRESS event was triggered.
+.debug-steps-scroll {
+  overflow-x: auto;
+  border: 1px solid #dde8f0;
+  border-radius: 8px;
+}
+
+.debug-steps-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th {
+    padding: 8px 12px;
+    background: #f7fbfe;
+    color: #5a6a7a;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 8px 12px;
+    border-top: 1px solid #eef3f8;
+    color: #1a2d45;
+  }
+}
+
+.debug-steps-pct {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.debug-steps-change {
+  white-space: nowrap;
+  color: #5a6a7a;
+
+  &.is-up {
+    color: #2e7d32;
+  }
+
+  &.is-down {
+    color: #b3261e;
+  }
+}
+
+.debug-steps-empty {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px dashed #dde8f0;
+  border-radius: 8px;
+  color: #5a6a7a;
+  font-size: 14px;
 }
 
 .debug-section-title {
@@ -208,6 +330,32 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+}
+
+.debug-event-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  min-width: 0;
+}
+
+.debug-event-headline {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a2d45;
+}
+
+.debug-event-other {
+  padding: 2px 8px;
+  border: 1px dashed #e0b860;
+  border-radius: 4px;
+  color: #8a5a00;
+  font-size: 12px;
+}
+
+.debug-event.is-other {
+  background: #fffcf3;
 }
 
 .debug-event-type {

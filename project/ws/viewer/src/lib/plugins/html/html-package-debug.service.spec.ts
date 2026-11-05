@@ -82,6 +82,50 @@ describe('HtmlPackageDebugService', () => {
     expect(service.report('do_1').completed).toBe(true)
   })
 
+  it('lists where each PROGRESS was reported, oldest first, with the change from the one before', () => {
+    service.record('do_1', { type: 'PROGRESS', extra: { pct: 0, section: 's1', phase: 'video' } })
+    service.record('do_1', { type: 'STATE', extra: { state: { a: 1 } } })
+    service.record('do_1', { type: 'PROGRESS', extra: { pct: 40, section: 's2', phase: 'quiz' } })
+    service.record('do_1', { type: 'PROGRESS', extra: { section: 's2' } })
+    service.record('do_1', { type: 'PROGRESS', extra: { pct: 30 } })
+    expect(service.report('do_1').progressSteps.map(({ pct, change, where }) => ({ pct, change, where }))).toEqual([
+      { pct: 0, change: null, where: 'section s1 · phase video' },
+      { pct: 40, change: 40, where: 'section s2 · phase quiz' },
+      { pct: null, change: null, where: 'section s2' },
+      { pct: 30, change: -10, where: null },
+    ])
+  })
+
+  it('counts events by type and gives PROGRESS rows a headline', () => {
+    service.record('do_1', { type: 'STATE', extra: {} })
+    service.record('do_1', { type: 'PROGRESS', extra: { pct: 40, section: 's2' } })
+    service.record('do_1', { type: 'STATE', extra: {} })
+    const report = service.report('do_1')
+    expect(report.typeCounts).toEqual([
+      { type: 'STATE', kind: 'telemetry', count: 2 },
+      { type: 'PROGRESS', kind: 'telemetry', count: 1 },
+    ])
+    expect(report.rows.map(r => r.headline)).toEqual([null, '40% · section s2', null])
+  })
+
+  it('keeps messages in another format apart: shown, but never counted as progress or state', () => {
+    service.recordOther('do_1', { type: 'PROGRESS', pct: 90 })
+    service.recordOther('do_1', { event: 'quizDone', score: 4 })
+    service.recordOther('do_1', 'ready')
+    const report = service.report('do_1')
+    expect(report.otherCount).toBe(3)
+    expect(report.progress).toBeNull()
+    expect(report.reportsProgress).toBe(false)
+    expect(report.progressSteps).toEqual([])
+    expect(report.rows.map(r => [r.type, r.kind, r.headline])).toEqual([
+      ['MESSAGE', 'other', null],
+      ['quizDone', 'other', null],
+      ['PROGRESS', 'other', null],
+    ])
+    expect(report.rows[0].fields).toEqual([{ key: 'value', text: 'ready' }])
+    expect(service.summary('do_1')).toContain('(other message) quizDone')
+  })
+
   it('emits changes and clears a package log', () => {
     const seen: string[] = []
     service.changes$.subscribe(id => seen.push(id))

@@ -416,6 +416,12 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
       return
     }
 
+    // Any other message from the package itself is kept for the Debug dialog, so an author can
+    // see it talks, just not in the html-archive:telemetry format the player counts as progress.
+    if (msg.data && this.isFromPackage(msg.source) && this.htmlContent && this.htmlContent.identifier) {
+      this.htmlDebug.recordOther(this.htmlContent.identifier, msg.data)
+    }
+
     // Handle messages for telemetry
     if (msg.data) {
       this.raiseTelemetry(msg.data)
@@ -425,6 +431,28 @@ export class HtmlComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
         id: msg.id,
       })
     }
+  }
+
+  /**
+   * Whether a message came from the package's own iframe, or a frame inside it (a package may
+   * nest its player). Other windows on the page (extensions, other widgets) are ignored.
+   */
+  private isFromPackage(source: unknown): boolean {
+    const frame = this.iframeElem && this.iframeElem.nativeElement && this.iframeElem.nativeElement.contentWindow
+    if (!frame || !source) {
+      return false
+    }
+    let current = source as Window
+    for (let depth = 0; depth < 10 && current; depth++) {
+      if (current === frame) {
+        return true
+      }
+      if (current.parent === current) {
+        return false
+      }
+      current = current.parent
+    }
+    return false
   }
 
   openInNewTab() {
