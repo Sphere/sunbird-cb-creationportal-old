@@ -2,6 +2,7 @@ import type * as Xlsx from 'xlsx'
 import {
   IAiReview,
   IAiReviewAddie,
+  IAiReviewAlignment,
   IAiReviewCompetencyContext,
   IAiReviewDomain,
   IAiReviewHtmlPackage,
@@ -78,6 +79,44 @@ const domainOf = (item: IAiReviewItem): IAiReviewDomain | null =>
   item.result && item.result.domain && !isPassError(item.result.domain) ? item.result.domain : null
 
 const VERDICT: Record<string, string> = { yes: 'Met', no: 'Not met', na: 'N/A' }
+const FIT: Record<string, string> = {
+  aligned: 'Fits the course',
+  partial: 'Partly fits the course',
+  off_topic: 'Off topic for this course',
+}
+const DELIVERS: Record<string, string> = {
+  delivers: 'Delivers what its description promises',
+  partly: 'Partly delivers what its description promises',
+  does_not: 'Does not deliver what its description promises',
+}
+
+/** The course-level alignment verdict, for the PDF; '' when it was not asked for. */
+function alignmentHtml(review: IAiReview): string {
+  const a = review.result?.alignment
+  if (!a) {
+    return ''
+  }
+  if (isPassError(a)) {
+    return `<h2>Does it deliver what the course says?</h2><p class="err">The course alignment check could not run: ${esc(a.error)}</p>`
+  }
+  const promises = a.promises.length
+    ? `<table><thead><tr><th>What the description promises</th><th>Status</th><th>Delivered by</th></tr></thead><tbody>${a.promises
+        .map(
+          pr =>
+            `<tr><td>${esc(pr.promise)}</td><td><span class="mark ${esc(pr.status)}">${COVERAGE_MARK[pr.status] || ''}</span> ${esc(pr.status)}</td><td>${esc(
+              pr.coveredBy.join(', ') || '—',
+            )}</td></tr>`,
+        )
+        .join('')}</tbody></table>`
+    : ''
+  const offTopic = a.offTopic.length
+    ? `<h4>Off topic for this course</h4><ul>${a.offTopic.map(o => `<li><b>${esc(o.name)}</b> — ${esc(o.why)}</li>`).join('')}</ul>`
+    : ''
+  const fixes = a.fixes.length ? `<h4>What to change</h4><ul>${a.fixes.map(f => `<li class="fix">${esc(f)}</li>`).join('')}</ul>` : ''
+  return `<h2>Does it deliver what the course says?</h2><div class="align"><p class="verdict ${esc(a.verdict)}"><b>${esc(DELIVERS[a.verdict] || a.verdict)}.</b> ${esc(
+    a.summary,
+  )}</p>${a.nameNote ? `<p>Name: <b>${a.nameFits ? 'fits' : 'does not fit'}</b> — ${esc(a.nameNote)}</p>` : ''}${promises}${offTopic}${fixes}</div>`
+}
 const COVERAGE_MARK: Record<string, string> = { covered: '✓', partial: '◐', missing: '✗' }
 
 /** The words a report uses: a course and its resources, or the user's own uploaded files. */
@@ -165,6 +204,16 @@ function resourceHtml(item: IAiReviewItem, words: ReportWords): string {
     parts.push(
       `<p class="muted">Unchanged since ${r.cachedAt ? 'its review on ' + esc(new Date(r.cachedAt).toLocaleDateString()) : 'an earlier review'}: that result is shown again.</p>`,
     )
+  }
+  if (r?.alignment && !isPassError(r.alignment)) {
+    const al = r.alignment
+    parts.push(
+      `<p class="fit ${esc(al.verdict)}"><b>${esc(FIT[al.verdict] || al.verdict)}</b>${al.note ? ` — ${esc(al.note)}` : ''}${
+        al.teaches.length ? `<br><span class="muted">Teaches: ${esc(al.teaches.join(' · '))}</span>` : ''
+      }${al.fix ? `<br><span class="fix">→ ${esc(al.fix)}</span>` : ''}</p>`,
+    )
+  } else if (r?.alignment && isPassError(r.alignment)) {
+    parts.push(`<p class="err">The course alignment check could not run: ${esc(r.alignment.error)}</p>`)
   }
   if (domain) {
     parts.push(`<div class="domain"><h4>Domain review</h4>`)
@@ -262,7 +311,7 @@ export function buildReportHtml(review: IAiReview, generatedAt: Date = new Date(
               )
               .join('')}</tbody></table>`
           : ''
-      }${
+      }${alignmentHtml(review)}${
         s.commonGaps.length
           ? `<h2>Most common gaps</h2><ul class="items">${s.commonGaps.map(g => `<li><b>${esc(g.id)}</b> ${esc(g.text)} <span class="muted">×${esc(g.count)}</span></li>`).join('')}</ul>`
           : ''
@@ -291,6 +340,8 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:6px 8px;
 .resource{border:1px solid #e4e8f2;border-radius:12px;padding:14px;margin-top:14px;page-break-inside:avoid}
 .rhead{display:flex;justify-content:space-between;gap:8px}.kind{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#7c3aed;font-weight:700}
 .chip{display:inline-block;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:700;margin-left:4px;background:#eef2ff;color:#3b5bdb}.chip.green{background:#dcfce7;color:#15803d}.chip.amber{background:#ffedd5;color:#b45309}.chip.red{background:#fee2e2;color:#b91c1c}.chip.violet{background:#f5f3ff;color:#7c3aed}
+.align{background:#f5f3ff;border-radius:10px;padding:10px 14px}.verdict.delivers{color:#15803d}.verdict.partly{color:#b45309}.verdict.does_not{color:#b91c1c}
+.fit{margin:8px 0 0;padding:6px 10px;border-radius:8px;border-left:3px solid #b45309;background:#fafafa}.fit.aligned{border-left-color:#15803d}.fit.off_topic{border-left-color:#b91c1c}
 .pkg{margin:8px 0 0;padding:6px 10px;border-radius:8px;background:#f5f7fc;font-size:12px}.pkg.warn{color:#b45309}
 .domain{background:#f5f3ff;border-radius:10px;padding:8px 12px;margin-top:8px}.cov{list-style:none;padding:0;margin:0}.cov li{padding:3px 0}
 footer{margin-top:20px;font-size:10px;color:#5b6478;text-align:center}
@@ -431,6 +482,33 @@ export function buildWorkbookSheets(review: IAiReview): Record<string, (string |
     }
   })
 
+  const alignment: (string | number)[][] = []
+  const a = s?.alignment
+  if (a && !isPassError(a)) {
+    alignment.push(
+      ['Course verdict', DELIVERS[a.verdict] || a.verdict],
+      ['Summary', a.summary],
+      ['Name', `${a.nameFits ? 'Fits' : 'Does not fit'} — ${a.nameNote}`],
+      [],
+    )
+    alignment.push(['What the description promises', 'Status', 'Delivered by'])
+    a.promises.forEach(pr => alignment.push([pr.promise, pr.status, pr.coveredBy.join(', ')]))
+    if (a.fixes.length) {
+      alignment.push([], ['What to change'])
+      a.fixes.forEach(f => alignment.push([f]))
+    }
+    alignment.push([])
+  }
+  const fitRows = review.items
+    .map(item => ({ item, al: item.result?.alignment }))
+    .filter((x): x is { item: IAiReviewItem; al: IAiReviewAlignment } => !!x.al && !isPassError(x.al))
+  if (fitRows.length) {
+    alignment.push([words.one === 'file' ? 'File' : 'Resource', 'Fit', 'Teaches', 'Note', 'Suggested fix'])
+    fitRows.forEach(({ item, al }) =>
+      alignment.push([item.name, FIT[al.verdict] || al.verdict, al.teaches.join('; '), al.note, al.fix || '']),
+    )
+  }
+
   const coverage: (string | number)[][] = [['What the level needs', 'Status', 'Covered by']]
   ;(s?.coverage || []).forEach(row => coverage.push([row.component, row.status, row.coveredBy.join(', ')]))
 
@@ -440,6 +518,9 @@ export function buildWorkbookSheets(review: IAiReview): Record<string, (string |
   }
   if (packages.length > 1) {
     sheets['HTML packages'] = packages
+  }
+  if (alignment.length) {
+    sheets['Course alignment'] = alignment
   }
   return sheets
 }

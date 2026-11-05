@@ -339,6 +339,49 @@ describe('AiReviewReportComponent', () => {
       expect(el.querySelector('dialog')!.textContent).toMatch(/Could not reach the AI review service|connection/)
     })
 
+    it('shows whether the course delivers what it says, and how each resource fits', () => {
+      fixture.componentRef.setInput(
+        'review',
+        review({
+          options: {
+            ...review().options,
+            alignment: true,
+            courseBrief: { name: 'Eclampsia care', subtitle: '', description: 'Manage eclampsia and refer.' },
+          },
+          result: {
+            ...review().result!,
+            fit: { aligned: 1, partial: 0, offTopic: 0 },
+            alignment: {
+              model: 'c',
+              verdict: 'partly',
+              nameFits: true,
+              nameNote: 'Clear.',
+              promises: [{ promise: 'Refer the same day', status: 'missing', coveredBy: [] }],
+              offTopic: [],
+              fixes: ['Add a referral module'],
+              summary: 'Covers management, not referral.',
+              costUsd: 0.04,
+            },
+          },
+          items: [
+            item({
+              result: {
+                ...item().result!,
+                alignment: { model: 'g', verdict: 'aligned', teaches: ['MgSO4 dosing'], serves: [], note: 'On topic.', costUsd: 0 },
+              },
+            }),
+          ],
+        }),
+      )
+      fixture.detectChanges()
+      const text = el.textContent || ''
+      expect(text).toContain('Partly delivers what its description promises')
+      expect(text).toContain('Refer the same day')
+      expect(text).toContain('Add a referral module')
+      expect(text).toContain('Fits the course')
+      expect(text).toContain('MgSO4 dosing')
+    })
+
     it('opens a coverage line and a question too', () => {
       ;(el.querySelector('button.air-cov-row') as HTMLButtonElement).click()
       fixture.detectChanges()

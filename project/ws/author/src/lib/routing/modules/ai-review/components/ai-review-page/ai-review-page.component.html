@@ -200,7 +200,9 @@
           <h2 class="air-section-title"><span class="air-num">2</span> <ng-container i18n>About the learners</ng-container></h2>
           <div class="air-field-row">
             <div class="air-field">
-              <span class="air-label" id="air-audience-label" i18n>Audience</span>
+              <span class="air-label" id="air-audience-label"
+                ><ng-container i18n>Audience</ng-container> <span class="air-required">*</span></span
+              >
               <ws-auth-air-combobox
                 labelledBy="air-audience-label"
                 placeholder="Pick a position or type who the course is for"
@@ -271,7 +273,43 @@
               </span>
               <span class="air-choice-check" aria-hidden="true"><ws-auth-air-icon name="check" [size]="16" /></span>
             </label>
+            <label class="air-choice" [class.air-choice--on]="alignment()" [class.air-choice--disabled]="!canAlign()">
+              <input
+                type="checkbox"
+                [checked]="alignment()"
+                [disabled]="!canAlign()"
+                (change)="alignment.set($any($event.target).checked)"
+              />
+              <span class="air-choice-icon" aria-hidden="true"><ws-auth-air-icon name="target" [size]="22" /></span>
+              <span class="air-choice-text">
+                <strong i18n>Course alignment</strong>
+                <span class="air-muted air-small" i18n
+                  >Checks that each resource, and the course as a whole, delivers what the course name and description promise.</span
+                >
+                @if (briefProblem()) {
+                  <span class="air-choice-why air-small"><ws-auth-air-icon name="info" [size]="14" /> {{ briefProblem() }}</span>
+                }
+              </span>
+              <span class="air-choice-check" aria-hidden="true"><ws-auth-air-icon name="check" [size]="16" /></span>
+            </label>
           </div>
+
+          @if (alignment() && brief(); as b) {
+            <!-- What the alignment check judges against: the course's own words. -->
+            <div class="air-brief">
+              <span class="air-judged-label"
+                ><ws-auth-air-icon name="read" [size]="16" /> <ng-container i18n>Checked against the course's own words</ng-container></span
+              >
+              <p class="air-brief-name">{{ b.name }}</p>
+              @if (b.subtitle) {
+                <p class="air-brief-sub">{{ b.subtitle }}</p>
+              }
+              <p class="air-brief-text">{{ b.description }}</p>
+              <span class="air-hint" i18n
+                >From Course Settings (name, subtitle and Course Description). Change them there to check against other words.</span
+              >
+            </div>
+          }
 
           @if (domain()) {
             <div class="air-judged">

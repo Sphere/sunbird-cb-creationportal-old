@@ -2,6 +2,19 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { AiReviewDomainStyle, IAiReviewRoleCheck } from '../../models/ai-review.model'
 
 /** "Levels 1–2" / "Level 3" for a FRAC activity, or '' when it names none. */
+/**
+ * "ANM has no activity in FRAC that needs A, B and C. The content may be aimed at a different
+ * position." as its parts, for a service that sends only the note; null for any other note.
+ * The competencies stay one piece: a competency's own name can hold commas.
+ */
+export function parseNoActivity(note: string): { position: string; competencies: string[] } | null {
+  const m = /^(.+?) has no activity in FRAC that needs (.+?)\. The content may be aimed at a different position\.?$/.exec(note.trim())
+  if (!m) {
+    return null
+  }
+  return { position: m[1].trim(), competencies: [m[2].trim()] }
+}
+
 export function activityLevels(levels: readonly number[]): string {
   if (!levels.length) {
     return ''
@@ -71,5 +84,7 @@ export class AirRoleCheckComponent {
   readonly waiting = input('')
 
   readonly summary = computed(() => summariseRole(this.check()))
+  /** The service's "no activity" note, split into its position and competencies; null for any other note. */
+  readonly noActivity = computed(() => this.check()?.roleGap || parseNoActivity(this.check()?.roleNote || ''))
   readonly activityLevels = activityLevels
 }

@@ -127,10 +127,21 @@ export async function readQuizSheet(file: Blob, kind: 'quiz' | 'assessment'): Pr
 }
 
 /** What a review with these options costs: each file's base, plus the parts switched on. */
-export function estimateFor(parts: readonly IAiReviewEstimateParts[], o: { addie: boolean; domain: boolean; watch: boolean }): number {
-  if (!o.addie && !o.domain) {
+/** The course-level alignment verdict, once per review (keep in step with the service's cost model). */
+export const COURSE_ALIGNMENT_USD = 0.05
+
+/** What a review of these parts costs with these options, the course-level alignment verdict included. */
+export function estimateFor(
+  parts: readonly IAiReviewEstimateParts[],
+  o: { addie: boolean; domain: boolean; watch: boolean; alignment?: boolean },
+): number {
+  if (!o.addie && !o.domain && !o.alignment) {
     return 0
   }
-  const total = parts.reduce((sum, p) => sum + p.base + (o.addie ? p.addie : 0) + (o.domain ? p.domain : 0) + (o.watch ? p.watch : 0), 0)
+  const total = parts.reduce(
+    (sum, p) =>
+      sum + p.base + (o.addie ? p.addie : 0) + (o.domain ? p.domain : 0) + (o.watch ? p.watch : 0) + (o.alignment ? p.alignment || 0 : 0),
+    o.alignment && parts.length ? COURSE_ALIGNMENT_USD : 0,
+  )
   return Math.round(total * 100) / 100
 }

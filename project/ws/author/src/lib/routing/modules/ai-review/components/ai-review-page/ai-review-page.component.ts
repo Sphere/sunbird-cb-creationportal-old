@@ -31,6 +31,7 @@ import {
 } from '../../models/ai-review.model'
 import { AiReviewService } from '../../services/ai-review.service'
 import { formatDuration, kindFromMime, kindLine, kindMeta, pipelineProgress } from '../../utils/resource-kind'
+import { estimateFor } from '../../utils/upload-files'
 import { isUnclear, statusLabel, watchReview } from '../../utils/review-run'
 import { AirSelectOption } from '../air-select/air-select.component'
 
@@ -119,6 +120,8 @@ export class AiReviewPageComponent implements OnInit {
   // Setup choices
   readonly addie = signal(true)
   readonly domain = signal(true)
+  /** Check the content against the course's own name and description. Off until chosen. */
+  readonly alignment = signal(false)
   readonly watch = signal(true)
   readonly domainStyle = signal<AiReviewDomainStyle>('plain')
   readonly competencyId = signal<string | null>(null)
@@ -371,15 +374,23 @@ export class AiReviewPageComponent implements OnInit {
     if (!resources.length || parts.length !== resources.length) {
       return this.preview()?.estimateUsd || 0
     }
-    if (!this.addie() && !this.domain()) {
-      return 0
-    }
-    const total = parts.reduce(
-      (sum, p) => sum + p.base + (this.addie() ? p.addie : 0) + (this.domain() ? p.domain : 0) + (this.watch() ? p.watch : 0),
-      0,
-    )
-    return Math.round(total * 100) / 100
+    return estimateFor(parts, { addie: this.addie(), domain: this.domain(), watch: this.watch(), alignment: this.alignment() })
   })
+
+  /** What the alignment check judges against: the course's name, subtitle and description. */
+  readonly brief = computed(() => this.preview()?.course.brief || null)
+  /** Why the alignment check cannot run for this course, or ''. */
+  readonly briefProblem = computed(() => {
+    const preview = this.preview()
+    if (!preview) {
+      return ''
+    }
+    if (!preview.course.brief) {
+      return 'This server cannot check alignment with the course description yet.'
+    }
+    return preview.course.briefProblem || ''
+  })
+  readonly canAlign = computed(() => !!this.preview() && !this.briefProblem())
 
   /** The per-resource limits, as one line: "Videos up to 30 min · PDFs up to 320 pages · …". */
   readonly limitsNote = computed(() => {
@@ -404,8 +415,14 @@ export class AiReviewPageComponent implements OnInit {
     if (!this.online()) {
       return "You're offline. Reconnect to the internet to start a review."
     }
-    if (!this.addie() && !this.domain()) {
-      return 'Pick at least one review: the ADDIE checklist, the domain review, or both.'
+    if (!this.addie() && !this.domain() && !this.alignment()) {
+      return 'Pick at least one review: the ADDIE checklist, the domain review or the course alignment check.'
+    }
+    if (this.alignment() && !this.canAlign()) {
+      return this.briefProblem()
+    }
+    if (!this.audience().trim()) {
+      return 'Pick the audience: who the content is for (a position from the list, or type your own).'
     }
     if (this.domain() && !this.allMapped() && !this.selectedCompetency()) {
       return 'This course has no competency set. Pick one to judge against, or untick Domain review.'
@@ -439,7 +456,7 @@ export class AiReviewPageComponent implements OnInit {
   readonly currentStepIndex = computed(() => STEPS.findIndex(s => s.id === this.currentStep()))
 
   /** The cadre the expert judges the content for: the audience, or the default when it is empty. */
-  readonly judgedFor = computed(() => this.audience().trim() || this.preview()?.defaults.audience || '')
+  readonly judgedFor = computed(() => this.audience().trim() || 'the audience you pick above')
   /** The FRAC position the audience names, when it is one from the list (its code links its activities). */
   readonly position = computed(() => {
     const name = this.audience().trim().toLowerCase()
@@ -635,7 +652,8 @@ export class AiReviewPageComponent implements OnInit {
     this.levelMode.set(
       levelled ? 'perResource' : mappedCount > 1 ? 'courseMapping' : levelsOf(first).length > 1 ? 'courseLevels' : 'single',
     )
-    this.audience.set(preview.defaults.audience)
+    // The audience is left for the reviewer to pick: a guessed default would judge the
+    // content for the wrong learners without anyone choosing it.
     this.language.set(preview.defaults.language)
     this.domainStyle.set(preview.defaults.domainStyle)
   }
@@ -697,6 +715,7 @@ export class AiReviewPageComponent implements OnInit {
     return {
       addie: this.addie(),
       domain,
+      alignment: this.alignment(),
       watch: this.watch(),
       domainStyle: this.domainStyle(),
       competencyId: domain && !this.allMapped() ? this.selectedCompetency()?.competencyId || null : null,
@@ -840,6 +859,7 @@ export class AiReviewPageComponent implements OnInit {
     if (o) {
       this.addie.set(o.addie !== false)
       this.domain.set(!!o.domain && this.canJudge())
+      this.alignment.set(!!o.alignment && this.canAlign())
       this.watch.set(o.watch !== false)
       if (o.domainStyle) {
         this.domainStyle.set(o.domainStyle)

@@ -58,6 +58,9 @@ export const CHECK_RETRY_MS = 1500
 /** The longest title a review of files may have (the service's limit). */
 export const MAX_TITLE = 150
 
+/** The shortest course description the alignment check can judge against (the service's limit). */
+export const MIN_BRIEF_DESCRIPTION = 30
+
 /**
  * Where a file is, from picked to ready. `waiting`: in line for a free upload slot.
  * `rejected`: it cannot be reviewed (nothing to retry). `failed`: it could not be sent or
@@ -187,6 +190,11 @@ export class AiReviewFilesPageComponent implements OnInit {
   // ---- setup choices ----
   readonly addie = signal(true)
   readonly domain = signal(true)
+  /** Check the files against the course they are meant for, as the user describes it. */
+  readonly alignment = signal(false)
+  readonly briefName = signal('')
+  readonly briefSubtitle = signal('')
+  readonly briefDescription = signal('')
   readonly watch = signal(true)
   readonly domainStyle = signal<AiReviewDomainStyle>('plain')
   readonly competencyId = signal<string | null>(null)
@@ -269,7 +277,7 @@ export class AiReviewFilesPageComponent implements OnInit {
     const name = this.audience().trim().toLowerCase()
     return (name && (this.context()?.positionList || []).find(p => p.name.trim().toLowerCase() === name && p.code)) || null
   })
-  readonly judgedFor = computed(() => this.audience().trim() || this.context()?.defaults.audience || '')
+  readonly judgedFor = computed(() => this.audience().trim() || 'the audience you pick above')
 
   /** The title used when the user gives none: the file's name, or the first and a count. */
   readonly defaultTitle = computed(() => {
@@ -286,7 +294,7 @@ export class AiReviewFilesPageComponent implements OnInit {
       this.ready()
         .map(e => e.checked?.estimate)
         .filter((p): p is IAiReviewEstimateParts => !!p),
-      { addie: this.addie(), domain: this.domain(), watch: this.watch() && this.hasVideos() },
+      { addie: this.addie(), domain: this.domain(), watch: this.watch() && this.hasVideos(), alignment: this.alignment() },
     ),
   )
 
@@ -306,8 +314,17 @@ export class AiReviewFilesPageComponent implements OnInit {
 
   /** What the choices are missing, before thinking about the files (the role check needs only these). */
   private readonly settingsMessage = computed(() => {
-    if (!this.addie() && !this.domain()) {
-      return 'Pick at least one review: the ADDIE checklist, the domain review, or both.'
+    if (!this.addie() && !this.domain() && !this.alignment()) {
+      return 'Pick at least one review: the ADDIE checklist, the domain review or the course alignment check.'
+    }
+    if (!this.audience().trim()) {
+      return 'Pick the audience: who the content is for (a position from the list, or type your own).'
+    }
+    if (this.alignment() && !this.briefName().trim()) {
+      return 'Enter the name of the course these files are for, or untick Course alignment.'
+    }
+    if (this.alignment() && this.briefDescription().trim().length < MIN_BRIEF_DESCRIPTION) {
+      return `Describe the course these files are for (its objectives, audience and outcomes; at least ${MIN_BRIEF_DESCRIPTION} characters), or untick Course alignment.`
     }
     if (this.domain() && !this.competencyId()) {
       return 'Pick a competency to judge the files against, or untick Domain review.'
@@ -358,7 +375,7 @@ export class AiReviewFilesPageComponent implements OnInit {
   /** The settings to check the FRAC role for, or null when there is nothing to check. */
   private readonly roleRequest = computed(() =>
     !this.review() && this.enabled() && this.domain() && this.domainStyle() === 'frac' && !this.settingsMessage()
-      ? JSON.stringify(this.buildOptions())
+      ? JSON.stringify({ ...this.buildOptions(), alignment: false, brief: null })
       : null,
   )
 
@@ -482,7 +499,6 @@ export class AiReviewFilesPageComponent implements OnInit {
           const first = !this.context()
           this.context.set(ctx)
           if (first) {
-            this.audience.set(ctx.defaults.audience)
             this.language.set(ctx.defaults.language)
             this.domainStyle.set(ctx.defaults.domainStyle)
             this.domain.set(ctx.competencyCatalog.length > 0)
@@ -912,9 +928,14 @@ export class AiReviewFilesPageComponent implements OnInit {
 
   buildOptions(): IAiReviewOptions {
     const domain = this.domain()
+    const alignment = this.alignment()
     return {
       addie: this.addie(),
       domain,
+      alignment,
+      brief: alignment
+        ? { name: this.briefName().trim(), subtitle: this.briefSubtitle().trim(), description: this.briefDescription().trim() }
+        : null,
       watch: this.watch(),
       domainStyle: this.domainStyle(),
       competencyId: domain ? this.competencyId() : null,
@@ -1030,6 +1051,13 @@ export class AiReviewFilesPageComponent implements OnInit {
     if (o) {
       this.addie.set(o.addie !== false)
       this.domain.set(!!o.domain && this.canJudge())
+      this.alignment.set(!!o.alignment)
+      const b = o.courseBrief || o.brief
+      if (b) {
+        this.briefName.set(b.name)
+        this.briefSubtitle.set(b.subtitle || '')
+        this.briefDescription.set(b.description)
+      }
       this.watch.set(o.watch !== false)
       if (o.domainStyle) {
         this.domainStyle.set(o.domainStyle)

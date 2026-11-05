@@ -290,7 +290,9 @@
             <h2 class="air-section-title"><span class="air-num">2</span> <ng-container i18n>About the learners</ng-container></h2>
             <div class="air-field-row">
               <div class="air-field">
-                <span class="air-label" id="air-audience-label" i18n>Audience</span>
+                <span class="air-label" id="air-audience-label"
+                  ><ng-container i18n>Audience</ng-container> <span class="air-required">*</span></span
+                >
                 <ws-auth-air-combobox
                   labelledBy="air-audience-label"
                   placeholder="Pick a position or type who the files are for"
@@ -363,7 +365,60 @@
                 </span>
                 <span class="air-choice-check" aria-hidden="true"><ws-auth-air-icon name="check" [size]="16" /></span>
               </label>
+              <label class="air-choice" [class.air-choice--on]="alignment()">
+                <input type="checkbox" [checked]="alignment()" (change)="alignment.set($any($event.target).checked)" />
+                <span class="air-choice-icon" aria-hidden="true"><ws-auth-air-icon name="target" [size]="22" /></span>
+                <span class="air-choice-text">
+                  <strong i18n>Course alignment</strong>
+                  <span class="air-muted air-small" i18n
+                    >Checks that the files deliver what the course they are for promises. Describe that course below.</span
+                  >
+                </span>
+                <span class="air-choice-check" aria-hidden="true"><ws-auth-air-icon name="check" [size]="16" /></span>
+              </label>
             </div>
+
+            @if (alignment()) {
+              <!-- The course the files are meant for: what the alignment check judges against. -->
+              <div class="air-brief air-brief--form">
+                <span class="air-judged-label"
+                  ><ws-auth-air-icon name="read" [size]="16" /> <ng-container i18n>The course these files are for</ng-container></span
+                >
+                <label class="air-field">
+                  <span class="air-label"><ng-container i18n>Course name</ng-container> <span class="air-required">*</span></span>
+                  <input
+                    class="module-input"
+                    maxlength="300"
+                    [value]="briefName()"
+                    (input)="briefName.set($any($event.target).value)"
+                    placeholder="e.g. Safe pregnancy for ASHAs"
+                    i18n-placeholder
+                  />
+                </label>
+                <label class="air-field">
+                  <span class="air-label" i18n>Subtitle</span>
+                  <input
+                    class="module-input"
+                    maxlength="500"
+                    [value]="briefSubtitle()"
+                    (input)="briefSubtitle.set($any($event.target).value)"
+                  />
+                </label>
+                <label class="air-field">
+                  <span class="air-label"><ng-container i18n>Course description</ng-container> <span class="air-required">*</span></span>
+                  <textarea
+                    class="module-input air-textarea"
+                    rows="4"
+                    maxlength="6000"
+                    [value]="briefDescription()"
+                    (input)="briefDescription.set($any($event.target).value)"
+                    placeholder="Its objectives, who it is for and what learners will be able to do"
+                    i18n-placeholder
+                  ></textarea>
+                  <span class="air-hint air-hint--right">{{ briefDescription().length }}/6000</span>
+                </label>
+              </div>
+            }
 
             @if (domain()) {
               <div class="air-judged">

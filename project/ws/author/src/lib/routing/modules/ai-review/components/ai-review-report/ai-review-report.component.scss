@@ -623,3 +623,130 @@
 .air-indicators li {
   list-style: none;
 }
+
+// ---- Course alignment ----------------------------------------------------------------
+
+.air-align {
+  margin: 24px 0 8px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+}
+
+.air-align-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0;
+  color: $air-violet;
+}
+
+.air-align-verdict {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+
+  &--delivers {
+    color: $air-green;
+  }
+
+  &--partly {
+    color: $air-amber;
+  }
+
+  &--does_not {
+    color: $air-danger;
+  }
+}
+
+.air-align-fit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.air-align-name {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.air-align-promise {
+  display: flex;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+.air-align-fixes li {
+  color: $air-green;
+  font-weight: 500;
+}
+
+.air-chip--green {
+  background: #dcfce7;
+  color: $air-green;
+}
+
+.air-chip--amber {
+  background: #ffedd5;
+  color: $air-amber;
+}
+
+.air-chip--red {
+  background: #fee2e2;
+  color: $air-danger;
+}
+
+// A resource's fit with the course description.
+.air-fit {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid $air-line;
+  border-left-width: 4px;
+  font-size: 14px;
+
+  p {
+    margin: 0 0 4px;
+  }
+
+  &--aligned {
+    border-left-color: $air-green;
+  }
+
+  &--partial {
+    border-left-color: $air-amber;
+  }
+
+  &--off_topic {
+    border-left-color: $air-danger;
+  }
+}
+
+.air-fit-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.air-brief-name {
+  margin: 8px 0 0;
+  font-weight: 600;
+}
+
+.air-brief-sub {
+  margin: 0;
+  color: $air-muted;
+}
+
+.air-brief-text {
+  margin: 4px 0 0;
+  white-space: pre-line;
+  line-height: 1.55;
+}

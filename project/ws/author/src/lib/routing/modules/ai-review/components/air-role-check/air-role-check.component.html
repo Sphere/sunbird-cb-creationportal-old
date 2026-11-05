@@ -64,7 +64,29 @@
         </ul>
       </div>
     } @else if (check()?.roleNote) {
-      <p class="air-hint air-hint--warn">{{ check()!.roleNote }}</p>
+      <!-- The role could not be checked: what was found, what to do, and what still runs. -->
+      <div class="air-role-notice" role="status">
+        <span class="air-role-notice-icon" aria-hidden="true"><ws-auth-air-icon name="warning" [size]="18" /></span>
+        <div class="air-role-notice-body">
+          @if (noActivity(); as na) {
+            <p class="air-role-notice-title" i18n>No activity of {{ na.position }} in FRAC needs this competency</p>
+            <div class="air-role-notice-chips" aria-label="Competencies judged">
+              @for (c of na.competencies; track c) {
+                <span class="air-role-chip">{{ c }}</span>
+              }
+            </div>
+            <p class="air-role-notice-what" i18n>What you can do</p>
+            <ul class="air-role-notice-list">
+              <li i18n>Pick the position the course is really for in <strong>Audience</strong> above.</li>
+              <li i18n>Or switch the style to <strong>Plain</strong>, which does not use FRAC roles.</li>
+            </ul>
+          } @else {
+            <p class="air-role-notice-title" i18n>The role's activities could not be checked</p>
+            <p class="air-role-notice-text">{{ check()!.roleNote }}</p>
+          }
+          <p class="air-role-notice-foot" i18n>You can still start: the domain review then checks the competency level only.</p>
+        </div>
+      </div>
     } @else if (waiting()) {
       <p class="air-hint" i18n>{{ waiting() }} Then the activities of {{ positionName() }} that need it are shown here.</p>
     }

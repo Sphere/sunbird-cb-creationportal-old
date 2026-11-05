@@ -127,7 +127,7 @@ describe('AiReviewFilesPageComponent', () => {
   let query: Record<string, string>
   let n: number
 
-  const create = (): AiReviewFilesPageComponent => {
+  const create = (pickAudience = true): AiReviewFilesPageComponent => {
     TestBed.configureTestingModule({
       providers: [
         { provide: AiReviewService, useValue: api },
@@ -137,6 +137,10 @@ describe('AiReviewFilesPageComponent', () => {
     })
     const c = TestBed.runInInjectionContext(() => new AiReviewFilesPageComponent())
     c.ngOnInit()
+    // The audience starts empty and Start needs one: picked here as a user would.
+    if (pickAudience) {
+      c.audience.set('ANM / ASHA frontline health workers')
+    }
     return c
   }
 
@@ -168,9 +172,9 @@ describe('AiReviewFilesPageComponent', () => {
 
   describe('opening the page', () => {
     it('loads the setup and the past reviews, taking the defaults', () => {
-      const c = create()
+      const c = create(false)
       expect(c.enabled()).toBe(true)
-      expect(c.audience()).toBe('ANM / ASHA frontline health workers')
+      expect(c.audience()).toBe('')
       expect(c.domain()).toBe(true)
       expect(c.maxFiles()).toBe(4)
       expect(api.uploadHistory).toHaveBeenCalled()
@@ -625,7 +629,7 @@ describe('AiReviewFilesPageComponent', () => {
       expect(c.validationMessage()).toBe('')
       c.addie.set(false)
       c.domain.set(false)
-      expect(c.validationMessage()).toBe('Pick at least one review: the ADDIE checklist, the domain review, or both.')
+      expect(c.validationMessage()).toBe('Pick at least one review: the ADDIE checklist, the domain review or the course alignment check.')
       c.online.set(false)
       expect(c.validationMessage()).toBe("You're offline. Reconnect to the internet to start a review.")
     })
@@ -661,6 +665,8 @@ describe('AiReviewFilesPageComponent', () => {
       expect(api.startUploadReview).toHaveBeenCalledWith('bp and 1 more', ['u1', 'u2'], {
         addie: true,
         domain: true,
+        alignment: false,
+        brief: null,
         watch: true,
         domainStyle: 'plain',
         competencyId: 'C1',
@@ -708,6 +714,45 @@ describe('AiReviewFilesPageComponent', () => {
       c.addFiles([file('bp.mp4')])
       c.start()
       expect(c.startError()).toBe('Limit reached.')
+    })
+
+    it('checks the files against the course they are for, which the user must describe', () => {
+      const c = create()
+      c.addie.set(false)
+      c.domain.set(false)
+      c.addFiles([file('bp.mp4')])
+      c.alignment.set(true)
+      expect(c.validationMessage()).toBe('Enter the name of the course these files are for, or untick Course alignment.')
+      c.briefName.set('  Eclampsia care  ')
+      c.briefDescription.set('Too short.')
+      expect(c.validationMessage()).toMatch(/at least 30 characters/)
+      c.briefDescription.set('Teaches ANMs to manage severe pre-eclampsia and eclampsia, and to refer the same day.')
+      expect(c.validationMessage()).toBe('')
+      c.start()
+      expect(api.startUploadReview.mock.calls[0][2]).toMatchObject({
+        addie: false,
+        domain: false,
+        alignment: true,
+        brief: {
+          name: 'Eclampsia care',
+          subtitle: '',
+          description: 'Teaches ANMs to manage severe pre-eclampsia and eclampsia, and to refer the same day.',
+        },
+      })
+    })
+
+    it('adds the alignment reads and the course verdict to the estimate only when chosen', () => {
+      api.checkUploads.mockImplementation((ids: string[]) =>
+        of({
+          uploads: [checked(ids[0], { estimate: { base: 0.01, addie: 0.05, domain: 0.1, watch: 0.2, alignment: 0.02 } })],
+          estimateUsd: 0,
+        }),
+      )
+      const c = create()
+      c.addFiles([file('bp.mp4')])
+      const without = c.estimateUsd()
+      c.alignment.set(true)
+      expect(c.estimateUsd()).toBe(Math.round((without + 0.02 + 0.05) * 100) / 100)
     })
 
     it("uses the user's title, cut to the service's limit", () => {

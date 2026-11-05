@@ -6,6 +6,8 @@ import { formatDuration, kindFromMime, kindLine, kindMeta } from '../../utils/re
 import {
   IAiReview,
   IAiReviewAddie,
+  IAiReviewAlignment,
+  IAiReviewCourseAlignment,
   IAiReviewCoverageRow,
   IAiReviewDomain,
   IAiReviewItem,
@@ -40,6 +42,8 @@ export interface IReportRow {
   addieError: string
   domain: IAiReviewDomain | null
   domainError: string
+  alignment: IAiReviewAlignment | null
+  alignmentError: string
 }
 
 export function toReportRow(item: IAiReviewItem): IReportRow {
@@ -52,7 +56,31 @@ export function toReportRow(item: IAiReviewItem): IReportRow {
     addieError: r && isPassError(r.addie) ? r.addie.error : '',
     domain,
     domainError: r && isPassError(r.domain) ? r.domain.error : '',
+    alignment: r && r.alignment && !isPassError(r.alignment) ? r.alignment : null,
+    alignmentError: r && r.alignment && isPassError(r.alignment) ? r.alignment.error : '',
   }
+}
+
+/** A resource's fit with the course description, in words. */
+export function fitLabel(verdict: string): string {
+  return (
+    ({ aligned: 'Fits the course', partial: 'Partly fits the course', off_topic: 'Off topic for this course' } as Record<string, string>)[
+      verdict
+    ] || verdict
+  )
+}
+
+/** The course's verdict against its description, in words. */
+export function deliversLabel(verdict: string): string {
+  return (
+    (
+      {
+        delivers: 'Delivers what its description promises',
+        partly: 'Partly delivers what its description promises',
+        does_not: 'Does not deliver what its description promises',
+      } as Record<string, string>
+    )[verdict] || verdict
+  )
 }
 
 /** The indicators a resource did not meet, in checklist order. */
@@ -75,6 +103,19 @@ export class AiReviewReportComponent {
   readonly review = input.required<IAiReview>()
 
   readonly summary = computed(() => this.review().result)
+  /** The course-level alignment verdict, or its error, or null when not asked for. */
+  readonly courseAlignment = computed<IAiReviewCourseAlignment | null>(() => {
+    const a = this.summary()?.alignment
+    return a && !isPassError(a) ? a : null
+  })
+  readonly courseAlignmentError = computed(() => {
+    const a = this.summary()?.alignment
+    return a && isPassError(a) ? a.error : ''
+  })
+  /** The words the course was checked against. */
+  readonly brief = computed(() => this.review().options?.courseBrief || null)
+  readonly fitLabel = fitLabel
+  readonly deliversLabel = deliversLabel
   /** Course and resources, or the user's own files. */
   readonly words = computed(() => reportWords(this.review()))
   readonly rows = computed(() =>

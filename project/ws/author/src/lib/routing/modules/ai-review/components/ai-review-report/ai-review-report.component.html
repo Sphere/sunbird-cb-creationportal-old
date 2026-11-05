@@ -100,6 +100,85 @@
       </div>
     }
 
+    <!-- Does the course deliver what its name and description say? -->
+    @if (courseAlignment(); as a) {
+      <div class="air-align">
+        <h3 class="air-subtitle air-align-title">
+          <ws-auth-air-icon name="target" [size]="18" /> <ng-container i18n>Does it deliver what the course says?</ng-container>
+        </h3>
+        <p class="air-align-verdict air-align-verdict--{{ a.verdict }}">{{ deliversLabel(a.verdict) }}</p>
+        @if (a.summary) {
+          <p class="air-text">{{ a.summary }}</p>
+        }
+        @if (s.fit; as f) {
+          <p class="air-align-fit air-small">
+            <ng-container i18n>Each {{ words().one }}:</ng-container>
+            <span class="air-chip air-chip--green">{{ f.aligned }} fit</span>
+            <span class="air-chip air-chip--amber">{{ f.partial }} partly</span>
+            <span class="air-chip air-chip--red">{{ f.offTopic }} off topic</span>
+          </p>
+        }
+        @if (a.nameNote) {
+          <p class="air-align-name">
+            <ws-auth-air-icon [name]="a.nameFits ? 'checkCircle' : 'warning'" [size]="16" />
+            <span
+              ><b>{{ a.nameFits ? 'The name fits.' : 'The name does not fit.' }}</b> {{ a.nameNote }}</span
+            >
+          </p>
+        }
+        @if (a.promises.length) {
+          <ul class="air-coverage air-align-promises" aria-label="What the description promises">
+            @for (pr of a.promises; track $index) {
+              <li class="air-align-promise">
+                <span class="air-cov-icon air-cov-icon--{{ pr.status }}"
+                  ><ws-auth-air-icon [name]="coverageIcon(pr.status)" [size]="16"
+                /></span>
+                <span class="air-cov-text">
+                  {{ pr.promise }}
+                  @if (pr.coveredBy.length) {
+                    <span class="air-muted"> — {{ pr.coveredBy.join(', ') }}</span>
+                  }
+                </span>
+              </li>
+            }
+          </ul>
+        }
+        @if (a.offTopic.length) {
+          <p class="air-block-title air-block-title--small" i18n>Off topic for this course</p>
+          <ul class="air-plain-list">
+            @for (o of a.offTopic; track o.name) {
+              <li>
+                <b>{{ o.name }}</b> <span class="air-muted">— {{ o.why }}</span>
+              </li>
+            }
+          </ul>
+        }
+        @if (a.fixes.length) {
+          <p class="air-block-title air-block-title--small" i18n>What to change</p>
+          <ul class="air-plain-list air-align-fixes">
+            @for (f of a.fixes; track $index) {
+              <li>{{ f }}</li>
+            }
+          </ul>
+        }
+        @if (brief(); as b) {
+          <details class="air-details">
+            <summary i18n>The course's words it was checked against</summary>
+            <p class="air-brief-name">{{ b.name }}</p>
+            @if (b.subtitle) {
+              <p class="air-brief-sub">{{ b.subtitle }}</p>
+            }
+            <p class="air-brief-text">{{ b.description }}</p>
+          </details>
+        }
+      </div>
+    } @else if (courseAlignmentError()) {
+      <p class="air-pass-error">
+        <ws-auth-air-icon name="error" />
+        <span><ng-container i18n>The course alignment check could not run:</ng-container> {{ courseAlignmentError() }}</span>
+      </p>
+    }
+
     @if (s.commonGaps.length) {
       <h3 class="air-subtitle" i18n>Most common gaps</h3>
       <ul class="air-gaps">
@@ -254,6 +333,30 @@
       <p class="air-pass-error">
         <ws-auth-air-icon name="error" />
         <span><ng-container i18n>Domain review could not run:</ng-container> {{ row.domainError }}</span>
+      </p>
+    }
+
+    <!-- Fit with the course's name and description -->
+    @if (row.alignment; as al) {
+      <div class="air-fit air-fit--{{ al.verdict }}">
+        <p class="air-fit-head">
+          <ws-auth-air-icon name="target" [size]="16" /> <b>{{ fitLabel(al.verdict) }}</b>
+          @if (al.note) {
+            <span class="air-muted"> — {{ al.note }}</span>
+          }
+        </p>
+        @if (al.teaches.length) {
+          <p class="air-small"><span class="air-muted" i18n>Teaches:</span> {{ al.teaches.join(' · ') }}</p>
+        }
+        @if (al.fix) {
+          <p class="air-fix air-small">→ {{ al.fix }}</p>
+        }
+      </div>
+    }
+    @if (row.alignmentError) {
+      <p class="air-pass-error">
+        <ws-auth-air-icon name="error" />
+        <span><ng-container i18n>The course alignment check could not run:</ng-container> {{ row.alignmentError }}</span>
       </p>
     }
 

@@ -52,11 +52,58 @@ export interface IAiReviewEstimateParts {
   addie: number
   domain: number
   watch: number
+  /** Fit with the course's name and description (absent from an older service). */
+  alignment?: number
+}
+
+/** The course's own words its content is checked against (the alignment check). */
+export interface IAiReviewCourseBrief {
+  name: string
+  subtitle?: string
+  /** Plain text: the "Course Description" from Course Settings. */
+  description: string
+  source?: 'course' | 'user'
+}
+
+export type AiReviewAlignmentVerdict = 'aligned' | 'partial' | 'off_topic'
+
+/** One resource against the course's name and description. */
+export interface IAiReviewAlignment {
+  model: string
+  verdict: AiReviewAlignmentVerdict
+  teaches: string[]
+  serves: string[]
+  note: string
+  fix?: string
+  costUsd: number
+}
+
+/** The course as a whole against its name and description. */
+export interface IAiReviewCourseAlignment {
+  model: string
+  verdict: 'delivers' | 'partly' | 'does_not'
+  nameFits: boolean
+  nameNote: string
+  promises: { promise: string; status: AiReviewCoverageStatus; coveredBy: string[] }[]
+  offTopic: { name: string; why: string }[]
+  fixes: string[]
+  summary: string
+  costUsd: number
 }
 
 export interface IAiReviewPreview {
   /** `selfAssessment`: metadata `competency: true`; each part is one level of the competency. */
-  course: { id: string; name: string; status: string; versionKey: string; selfAssessment?: boolean }
+  course: {
+    id: string
+    name: string
+    status: string
+    versionKey: string
+    selfAssessment?: boolean
+    /** What the alignment check judges against (absent from an older service). */
+    brief?: IAiReviewCourseBrief
+    /** Why the alignment check cannot run (no name or description), or null when it can. */
+    briefProblem?: string | null
+  }
   resources: IAiReviewResource[]
   competencies: IAiReviewCompetency[]
   /** Every competency in the dictionary (absent from an older service). */
@@ -97,6 +144,10 @@ export type AiReviewLevelMode = 'single' | 'perResource' | 'courseLevels' | 'cou
 export interface IAiReviewOptions {
   addie: boolean
   domain: boolean
+  /** Check the content against the course's name and description. */
+  alignment?: boolean
+  /** A review of uploaded files: the course they are meant for, as the user describes it. */
+  brief?: IAiReviewCourseBrief | null
   watch: boolean
   domainStyle: AiReviewDomainStyle
   competencyId: string | null
@@ -132,6 +183,8 @@ export interface IAiReviewRole {
 export interface IAiReviewRoleCheck {
   role: IAiReviewRole | null
   roleNote: string | null
+  /** When the position has no activity needing the judged competencies: who and which (absent from an older service). */
+  roleGap?: { position: string; competencies: string[] } | null
 }
 
 export interface IAiReviewCreateResult {
@@ -250,6 +303,8 @@ export interface IAiReviewItemReport {
   watched: { model: string; chars: number; costUsd: number } | null
   addie: IAiReviewAddie | IAiReviewPassError | null
   domain: IAiReviewDomain | IAiReviewPassError | null
+  /** Fit with the course's name and description, when that check was asked for. */
+  alignment?: IAiReviewAlignment | IAiReviewPassError | null
   costUsd: number
   cached: boolean
   /** When a reused result was first made (the resource is unchanged since then). */
@@ -297,6 +352,10 @@ export interface IAiReviewCourseSummary {
   domain: { yes: number; applicable: number; scorePct: number | null } | null
   coverage: { component: string; status: AiReviewCoverageStatus; coveredBy: string[] }[]
   commonGaps: { id: string; text: string; count: number }[]
+  /** How many resources fit the course's description; null when not checked. */
+  fit?: { aligned: number; partial: number; offTopic: number } | null
+  /** The course as a whole against its name and description. */
+  alignment?: IAiReviewCourseAlignment | IAiReviewPassError | null
   costUsd: number
 }
 
@@ -327,6 +386,8 @@ export interface IAiReview {
     /** FRAC style: the position's activities the content was judged against, or why not. */
     role?: IAiReviewRole | null
     roleNote?: string | null
+    /** With `alignment`: the brief the content was checked against. */
+    courseBrief?: IAiReviewCourseBrief | null
   }
   progress: { done: number; total: number }
   /** Reviews ahead of this one in the queue; 0 once it is running. */

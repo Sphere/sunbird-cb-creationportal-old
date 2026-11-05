@@ -87,7 +87,8 @@ describe('AiReviewPageComponent', () => {
   let query: Record<string, string>
   let hidden: boolean
 
-  const create = (): AiReviewPageComponent => {
+  /** The page as a user finds it, with an audience picked (it starts empty, and Start needs one). */
+  const create = (pickAudience = true): AiReviewPageComponent => {
     TestBed.configureTestingModule({
       providers: [
         { provide: AiReviewService, useValue: api },
@@ -98,7 +99,11 @@ describe('AiReviewPageComponent', () => {
         },
       ],
     })
-    return TestBed.runInInjectionContext(() => new AiReviewPageComponent())
+    const c = TestBed.runInInjectionContext(() => new AiReviewPageComponent())
+    if (pickAudience) {
+      c.audience.set('ANM / ASHA frontline health workers')
+    }
+    return c
   }
 
   beforeEach(() => {
@@ -179,7 +184,7 @@ describe('AiReviewPageComponent', () => {
 
   describe('setup', () => {
     it('loads the course and fills the defaults from it', () => {
-      const c = create()
+      const c = create(false)
       c.ngOnInit()
 
       expect(api.preview).toHaveBeenCalledWith('do_1')
@@ -187,10 +192,12 @@ describe('AiReviewPageComponent', () => {
       expect(c.domain()).toBe(true)
       expect(c.competencyId()).toBe('C1')
       expect(c.level()).toBe(2)
-      expect(c.audience()).toBe('ANM / ASHA frontline health workers')
+      // Left for the reviewer to pick, never guessed.
+      expect(c.audience()).toBe('')
       expect(c.reviewable().map(r => r.contentId)).toEqual(['do_v'])
       expect(c.notReviewable().map(r => r.contentId)).toEqual(['do_p'])
-      expect(c.validationMessage()).toBe('')
+      // Nothing is missing but the audience, which the reviewer picks.
+      expect(c.validationMessage()).toMatch(/^Pick the audience/)
     })
 
     it('turns Domain review off on a course with no competency', () => {
@@ -517,6 +524,7 @@ describe('AiReviewPageComponent', () => {
       expect(c.buildOptions()).toEqual({
         addie: true,
         domain: true,
+        alignment: false,
         watch: true,
         domainStyle: 'plain',
         competencyId: 'C1',
@@ -531,6 +539,75 @@ describe('AiReviewPageComponent', () => {
       c.domain.set(false)
       expect(c.buildOptions().competencyId).toBeNull()
       expect(c.buildOptions().level).toBeNull()
+    })
+  })
+
+  describe('audience', () => {
+    it('starts empty and must be picked before the review can start', () => {
+      const c = create(false)
+      c.ngOnInit()
+      expect(c.audience()).toBe('')
+      expect(c.validationMessage()).toBe('Pick the audience: who the content is for (a position from the list, or type your own).')
+      expect(c.judgedFor()).toBe('the audience you pick above')
+      c.audience.set('ANM')
+      expect(c.validationMessage()).toBe('')
+    })
+  })
+
+  describe('course alignment', () => {
+    const brief = {
+      name: 'Eclampsia care',
+      subtitle: 'For ANMs',
+      description: 'Teaches ANMs to manage severe pre-eclampsia and eclampsia, and to refer the same day.',
+    }
+
+    it('is off until chosen, and can be the only review', () => {
+      api.preview.mockReturnValue(
+        of(preview({ course: { id: 'do_1', name: 'Eclampsia care', status: 'Draft', versionKey: '1', brief, briefProblem: null } })),
+      )
+      const c = create()
+      c.ngOnInit()
+      expect(c.alignment()).toBe(false)
+      expect(c.canAlign()).toBe(true)
+      c.addie.set(false)
+      c.domain.set(false)
+      expect(c.validationMessage()).toBe('Pick at least one review: the ADDIE checklist, the domain review or the course alignment check.')
+      c.alignment.set(true)
+      expect(c.validationMessage()).toBe('')
+      expect(c.buildOptions()).toMatchObject({ addie: false, domain: false, alignment: true })
+      expect(c.brief()).toEqual(brief)
+    })
+
+    it('cannot be chosen for a course without a description, and says where to add one', () => {
+      const problem =
+        'Add the course description in Course Settings (its objectives, audience and key learning outcomes) to check the content against it.'
+      api.preview.mockReturnValue(
+        of(
+          preview({
+            course: {
+              id: 'do_1',
+              name: 'Eclampsia care',
+              status: 'Draft',
+              versionKey: '1',
+              brief: { ...brief, description: '' },
+              briefProblem: problem,
+            },
+          }),
+        ),
+      )
+      const c = create()
+      c.ngOnInit()
+      expect(c.canAlign()).toBe(false)
+      expect(c.briefProblem()).toBe(problem)
+      c.alignment.set(true)
+      expect(c.validationMessage()).toBe(problem)
+    })
+
+    it('says so on a server that cannot check it yet', () => {
+      const c = create()
+      c.ngOnInit()
+      expect(c.canAlign()).toBe(false)
+      expect(c.briefProblem()).toMatch(/cannot check alignment/)
     })
   })
 
@@ -1179,14 +1256,14 @@ describe('AiReviewPageComponent', () => {
     })
   })
 
-  it('judges for the audience picked, and the default audience while it is empty', () => {
+  it('judges for the audience picked, and never shows a guessed one while it is empty', () => {
     const c = create()
     c.ngOnInit()
     expect(c.judgedFor()).toBe('ANM / ASHA frontline health workers')
     c.audience.set('ANM')
     expect(c.judgedFor()).toBe('ANM')
     c.audience.set('  ')
-    expect(c.judgedFor()).toBe('ANM / ASHA frontline health workers')
+    expect(c.judgedFor()).toBe('the audience you pick above')
   })
 
   it('labels statuses and durations for people', () => {

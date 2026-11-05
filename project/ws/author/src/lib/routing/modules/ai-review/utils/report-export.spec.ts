@@ -320,3 +320,55 @@ describe('HTML packages in the exports', () => {
     expect(buildWorkbookSheets(review())['HTML packages']).toBeUndefined()
   })
 })
+
+describe('course alignment in the exports', () => {
+  const aligned = () =>
+    review({
+      result: {
+        ...review().result!,
+        alignment: {
+          model: 'c',
+          verdict: 'does_not',
+          nameFits: false,
+          nameNote: 'Says pregnancy, teaches nutrition.',
+          promises: [{ promise: 'Danger signs', status: 'missing', coveredBy: [] }],
+          offTopic: [{ name: 'Diet', why: 'Nutrition' }],
+          fixes: ['Add danger signs'],
+          summary: 'Off target.',
+          costUsd: 0,
+        },
+      },
+      items: [
+        item({
+          result: {
+            ...item().result!,
+            alignment: {
+              model: 'g',
+              verdict: 'off_topic',
+              teaches: ['Diet'],
+              serves: [],
+              note: 'Nutrition only.',
+              fix: 'Move it',
+              costUsd: 0,
+            },
+          },
+        }),
+      ],
+    })
+
+  it('puts the verdict, the promises and each resource fit in the PDF', () => {
+    const html = buildReportHtml(aligned())
+    expect(html).toContain('Does not deliver what its description promises.')
+    expect(html).toContain('<td>Danger signs</td>')
+    expect(html).toContain('Off topic for this course')
+    expect(html).toContain('→ Move it')
+  })
+
+  it('gives it its own Excel sheet', () => {
+    const sheet = buildWorkbookSheets(aligned())['Course alignment']
+    expect(sheet[0]).toEqual(['Course verdict', 'Does not deliver what its description promises'])
+    expect(sheet).toContainEqual(['Danger signs', 'missing', ''])
+    expect(sheet).toContainEqual(['BP video', 'Off topic for this course', 'Diet', 'Nutrition only.', 'Move it'])
+    expect(buildWorkbookSheets(review())['Course alignment']).toBeUndefined()
+  })
+})
