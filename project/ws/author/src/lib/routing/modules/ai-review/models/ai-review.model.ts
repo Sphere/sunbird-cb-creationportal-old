@@ -215,6 +215,20 @@ export interface IAiReviewQuestionFinding {
   fix?: string
 }
 
+/** What an interactive HTML package holds, as the reviewer found it. */
+export interface IAiReviewHtmlPackage {
+  files: number
+  pages: number
+  videos: { path: string; durationSec: number | null }[]
+  images: number
+  stills: number
+  questions: number
+  /** Whether it reports learner progress (PROGRESS); without it completion is never recorded. */
+  reportsProgress: boolean
+  /** Whether it saves where the learner left off (STATE). */
+  savesState: boolean
+}
+
 export interface IAiReviewItemReport {
   contentId: string
   name: string
@@ -229,6 +243,8 @@ export interface IAiReviewItemReport {
   questions?: IAiReviewQuestionFinding[]
   /** Quizzes and assessments: why the question check could not run. */
   questionsError?: string
+  /** Interactive HTML packages: what the package holds. */
+  htmlPackage?: IAiReviewHtmlPackage
   transcriptChars: number
   transcriptEngine: string | null
   watched: { model: string; chars: number; costUsd: number } | null
@@ -341,7 +357,7 @@ export interface IAiReviewHistoryEntry {
 // ---- files reviewed on their own (not part of a course) ------------------------------------
 
 export type AiReviewSource = 'course' | 'upload'
-export type AiReviewUploadKind = 'video' | 'pdf' | 'quiz' | 'assessment'
+export type AiReviewUploadKind = 'video' | 'pdf' | 'quiz' | 'assessment' | 'html'
 
 /** The file review's setup screen: whether it is on, the dictionary, positions, accepted files. */
 export interface IAiReviewUploadContext {

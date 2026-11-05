@@ -40,7 +40,7 @@
       >
         <div class="air-progress-bar" [style.transform]="'scaleX(' + progressPct() / 100 + ')'"></div>
       </div>
-      <span class="air-progress-pct">{{ progressPct() }}%</span>
+      <span class="air-progress-pct">{{ shownPct() }}%</span>
     </div>
     <p class="air-muted air-small" i18n>{{ r.progress.done }} of {{ r.progress.total }} {{ unit() }} finished</p>
 

@@ -7,7 +7,9 @@ describe('resource kinds', () => {
     expect(kindMeta('pdf').steps.map(s => s.label)).toEqual(['Download', 'Read pages', 'Score'])
     expect(kindMeta('quiz').steps.map(s => s.label)).toEqual(['Load questions', 'Check each question', 'Score'])
     expect(kindMeta('assessment')).toMatchObject({ label: 'Assessment', icon: 'assessment' })
-    expect(kindMeta('html').steps).toEqual([])
+    // HTML packages are reviewed; SCORM, which shares their mimetype, is not yet.
+    expect(kindMeta('html').steps).toHaveLength(3)
+    expect(kindMeta('scorm').steps).toEqual([])
   })
 
   it('falls back to a generic resource', () => {
@@ -21,7 +23,9 @@ describe('resource kinds', () => {
     expect(kindFromMime('application/pdf')).toBe('pdf')
     expect(kindFromMime('application/json')).toBe('quiz')
     expect(kindFromMime('audio/mpeg')).toBe('audio')
-    expect(kindFromMime('application/vnd.ekstep.html-archive')).toBe('html')
+    // The service classifies every HTML resource, so an unclassified html-archive is SCORM.
+    expect(kindFromMime('application/vnd.ekstep.html-archive')).toBe('scorm')
+    expect(kindFromMime('text/html')).toBe('html')
     expect(kindFromMime('text/x-url')).toBe('link')
     expect(kindFromMime(undefined)).toBe('other')
   })
@@ -33,6 +37,23 @@ describe('resource kinds', () => {
     expect(kindLine('assessment', 'application/json')).toBe('Assessment')
     expect(kindLine(null, undefined)).toBe('Resource')
     expect(kindMeta('quiz').plural).toBe('Quizzes')
+  })
+
+  it('names an HTML package once, and SCORM as SCORM, without "· HTML"', () => {
+    expect(kindLine('html', 'application/vnd.ekstep.html-archive')).toBe('Interactive (HTML)')
+    // An uploaded package names its file format, like "Video · MP4".
+    expect(kindLine('html', 'application/zip')).toBe('Interactive (HTML) · ZIP')
+    expect(kindLine('scorm', 'application/vnd.ekstep.html-archive')).toBe('SCORM package')
+  })
+
+  it("follows an HTML package's review through its three steps, from the reviewer's own stage messages", () => {
+    expect(kindMeta('html').steps.map(s => s.label)).toEqual(['Download & unpack', 'Read pages & videos', 'Score'])
+    const at = (stage: string) => pipelineProgress({ status: 'running', stage })
+    expect(at('Downloading the package…')).toBe(0)
+    expect(at('Unpacking and reading the pages…')).toBe(1)
+    expect(at('Transcribing, watching and framing 2 videos…')).toBe(1)
+    expect(at('Reading the images…')).toBe(1)
+    expect(at('Scoring 47 indicators and checking 8 questions…')).toBe(2)
   })
 
   it('names the file format', () => {

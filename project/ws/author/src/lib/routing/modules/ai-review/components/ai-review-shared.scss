@@ -23,6 +23,12 @@ $air-amber: #9a3412;
 $air-red: #c2410c;
 $air-danger: #b91c1c;
 $air-ai-gradient: linear-gradient(120deg, #0e7490 0%, #1d4ed8 45%, #6d28d9 100%);
+// Motion: one easing and three durations for every AI review screen. Things move when
+// something happens (arrive, fill, complete), and only one thing loops while waiting.
+$air-ease: cubic-bezier(0.22, 1, 0.36, 1);
+$air-dur-fast: 160ms;
+$air-dur: 280ms;
+$air-dur-slow: 480ms;
 $air-hero:
   radial-gradient(60% 120% at 85% 0%, rgba(124, 58, 237, 0.55) 0%, transparent 60%),
   radial-gradient(50% 100% at 0% 100%, rgba(6, 182, 212, 0.35) 0%, transparent 60%),
@@ -58,13 +64,43 @@ $air-hero:
   margin-bottom: 16px;
   // `backwards`, not `both`: a held transform would keep a stacking context on every card,
   // and an open dropdown would sit under the next card.
-  animation: air-rise 0.3s ease-out backwards;
+  animation: air-rise $air-dur-slow $air-ease backwards;
+
+  // Cards arrive one after another, top to bottom, not all at once.
+  @for $i from 2 through 6 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{($i - 1) * 60}ms;
+    }
+  }
 }
 
 @keyframes air-rise {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(10px);
+  }
+}
+
+// Angular scopes keyframe names to each component, so the shared ones live here, where every
+// AI review stylesheet picks them up through @use.
+@keyframes air-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// A one-time confirmation: a mark that has just completed settles into place.
+@keyframes air-settle {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 
@@ -220,9 +256,19 @@ $air-hero:
   cursor: pointer;
   border: 1px solid transparent;
   transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    background-color 0.15s ease;
+    transform $air-dur-fast $air-ease,
+    box-shadow $air-dur-fast $air-ease,
+    background-color $air-dur-fast $air-ease,
+    border-color $air-dur-fast $air-ease;
+
+  // A slight lift under the pointer, a press when clicked.
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+  }
 
   ws-auth-air-icon {
     font-size: 18px;
@@ -390,4 +436,39 @@ $air-hero:
 // because the progress and report headings live in their own component.
 #air-step-heading:focus {
   outline: none;
+}
+
+// A button that reads as a link inside a sentence ("Get a fresh link").
+.air-link-btn {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: $air-primary;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:disabled {
+    color: $air-muted;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+// Start joined a review already running: said once, above the progress.
+.air-joined {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #eef2ff;
+  color: $air-primary;
 }

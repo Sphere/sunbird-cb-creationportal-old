@@ -4,6 +4,7 @@ import {
   buildWorkbookSheets,
   esc,
   judgedAgainst,
+  packageLine,
   levelText,
   openPrintableReport,
   reportFileName,
@@ -269,5 +270,53 @@ describe('report export', () => {
       const failed = review({ source: 'upload', items: [item({ status: 'failed', error: null, result: null })] })
       expect(buildReportHtml(failed)).toContain('This file could not be reviewed.')
     })
+  })
+})
+
+describe('HTML packages in the exports', () => {
+  const pkg = {
+    files: 9,
+    pages: 4,
+    videos: [{ path: 'a.mp4', durationSec: 90 }],
+    images: 3,
+    stills: 8,
+    questions: 30,
+    reportsProgress: false,
+    savesState: true,
+  }
+  const withPackage = () =>
+    review({
+      items: [
+        item({
+          contentId: 'do_z',
+          name: 'ASHA module',
+          kind: 'html',
+          mimeType: 'application/vnd.ekstep.html-archive',
+          result: { ...item().result!, kind: 'html', durationSec: 90, htmlPackage: pkg },
+        }),
+      ],
+    })
+
+  it('says what a package holds and whether it reports progress, in one line', () => {
+    expect(packageLine(pkg, 90)).toBe(
+      '4 pages · 1 video (1 min 30 s) · 3 images · 30 questions. Reports learner progress: no (completion is not recorded). Saves where the learner left off: yes.',
+    )
+    expect(packageLine({ ...pkg, pages: 1, videos: [], images: 0, questions: 0, reportsProgress: true, savesState: false })).toBe(
+      '1 page. Reports learner progress: yes. Saves where the learner left off: no.',
+    )
+  })
+
+  it('puts it in the PDF under the package, as a warning when progress is not reported', () => {
+    const html = buildReportHtml(withPackage())
+    expect(html).toContain('<p class="pkg warn">4 pages · 1 video')
+  })
+
+  it('gives packages their own Excel sheet, only when there are any', () => {
+    const sheets = buildWorkbookSheets(withPackage())
+    expect(sheets['HTML packages']).toEqual([
+      ['Resource', 'Pages', 'Videos', 'Video time', 'Images', 'Questions', 'Reports progress', 'Saves the learner’s place'],
+      ['ASHA module', 4, 1, '1 min 30 s', 3, 30, 'No — completion is not recorded', 'Yes'],
+    ])
+    expect(buildWorkbookSheets(review())['HTML packages']).toBeUndefined()
   })
 })

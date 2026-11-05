@@ -3,31 +3,21 @@
 // The live progress and the report head, moved here from the course review page so the
 // review of uploaded files shows them the same way.
 
-// A thin accent line along the top of the card while work is happening, with a light that
-// travels along it (a moving overlay, so nothing repaints).
+// A thin accent line along the top of the card while work is happening. Still: the scanner
+// beside the heading is the one moving indicator on the screen.
 .air-live {
   position: relative;
   overflow: hidden;
 
-  &::before,
-  &::after {
+  &::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-  }
-
-  &::before {
     background: $air-ai-gradient;
     opacity: 0.85;
-  }
-
-  &::after {
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-    transform: translateX(-100%);
-    animation: air-shimmer 2.8s ease-in-out infinite;
   }
 }
 
@@ -72,7 +62,8 @@
     transparent 360deg
   );
   mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
-  animation: air-turn 1.2s linear infinite;
+  // The one loop while a review runs: "working on it".
+  animation: air-turn 1.4s linear infinite;
 }
 
 .air-scanner-core {
@@ -148,22 +139,8 @@
   border-radius: 999px;
   background: $air-ai-gradient;
   transform-origin: left center;
-  transition: transform 0.5s ease;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-    transform: translateX(-100%);
-    animation: air-shimmer 2.2s ease-in-out infinite;
-  }
-}
-
-@keyframes air-shimmer {
-  to {
-    transform: translateX(100%);
-  }
+  // Glides to each new value; the percentage beside it counts up in step.
+  transition: transform 0.7s $air-ease;
 }
 
 .air-progress-pct {
@@ -268,8 +245,8 @@
   color: $air-muted;
   background: $air-canvas;
   transition:
-    background 0.3s ease,
-    color 0.3s ease;
+    background-color $air-dur $air-ease,
+    color $air-dur $air-ease;
 
   &--done {
     color: $air-green;
@@ -277,21 +254,9 @@
   }
 
   &--active {
-    position: relative;
-    overflow: hidden;
     color: $air-violet;
     background: #f5f3ff;
     font-weight: 600;
-
-    // A soft light passing across the step that is happening now.
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-      transform: translateX(-100%);
-      animation: air-shimmer 2.4s ease-in-out infinite;
-    }
   }
 }
 
@@ -305,36 +270,17 @@
   background: #e2e8f0;
   color: #64748b;
 
+  // A finished step confirms itself once: the tick settles into place.
   .air-pstep--done & {
     background: $air-green;
     color: #fff;
+    animation: air-settle 0.42s $air-ease backwards;
   }
 
+  // The step happening now: a still half-filled ring, "under way".
   .air-pstep--active & {
-    position: relative;
-    background: $air-violet;
+    background: conic-gradient($air-violet 0 50%, #ddd6fe 50% 100%);
     color: #fff;
-
-    // A ring that grows and fades from the mark: "working on this now".
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 2px solid $air-violet;
-      animation: air-ping 1.8s ease-out infinite;
-    }
-  }
-}
-
-@keyframes air-ping {
-  from {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  to {
-    transform: scale(1.7);
-    opacity: 0;
   }
 }
 
@@ -391,7 +337,7 @@
   border-radius: 12px;
   color: #047857;
   background: #d1fae5;
-  animation: air-pop-in 0.3s ease-out backwards;
+  animation: air-settle 0.5s $air-ease backwards;
 
   &--partial {
     color: #b45309;
@@ -402,13 +348,6 @@
   &--cancelled {
     color: $air-danger;
     background: #fee2e2;
-  }
-}
-
-@keyframes air-pop-in {
-  from {
-    transform: scale(0.85);
-    opacity: 0;
   }
 }
 

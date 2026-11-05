@@ -81,6 +81,9 @@
       }
 
       @if (review(); as r) {
+        @if (joinedNote()) {
+          <p class="air-hint air-joined" role="status"><ws-auth-air-icon name="info" [size]="16" /> {{ joinedNote() }}</p>
+        }
         <ws-auth-air-review-run [review]="r" unit="files" (cancelled)="follow($event)" (again)="newReview()" />
       }
 
@@ -138,8 +141,8 @@
               <span class="air-drop-text">
                 <strong id="air-drop-title" i18n>Drag files here, or choose them</strong>
                 <span class="air-small air-muted" id="air-drop-help" i18n>
-                  Videos (MP4, MOV, M4V, WEBM, MKV) · PDFs · quiz or assessment sheets in the Course Builder Excel template. Up to
-                  {{ maxFiles() }} files.
+                  Videos (MP4, MOV, M4V, WEBM, MKV) · PDFs · quiz or assessment sheets in the Course Builder Excel template · interactive
+                  HTML packages (.zip, with index.html at the top). Up to {{ maxFiles() }} files.
                 </span>
               </span>
               <input
@@ -165,7 +168,10 @@
             @if (entries().length) {
               <ul class="air-files" aria-label="Files added">
                 @for (e of entries(); track e.key) {
-                  <li class="air-file air-file--{{ e.state }}">
+                  <li
+                    class="air-file air-file--{{ e.state }}"
+                    [attr.aria-busy]="e.state === 'reading' || e.state === 'signing' || e.state === 'uploading' || e.state === 'checking'"
+                  >
                     <span class="air-kind-tile air-kind-tile--{{ e.state === 'rejected' || e.state === 'failed' ? 'off' : e.kind }}">
                       <ws-auth-air-icon [name]="kindMeta(e.kind).icon" />
                     </span>
@@ -178,13 +184,17 @@
                         }
                       </span>
                       @if (e.state === 'uploading' || e.state === 'signing' || e.state === 'checking') {
+                        <!-- Uploading has a percentage; preparing and checking do not, so they are indeterminate. -->
                         <span
                           class="air-file-bar"
                           role="progressbar"
-                          [attr.aria-label]="'Uploading ' + e.name"
+                          [attr.aria-label]="
+                            (e.state === 'uploading' ? 'Uploading ' : e.state === 'checking' ? 'Checking ' : 'Preparing ') + e.name
+                          "
                           aria-valuemin="0"
                           aria-valuemax="100"
-                          [attr.aria-valuenow]="e.progress"
+                          [attr.aria-valuenow]="e.state === 'uploading' ? e.progress : null"
+                          [attr.aria-valuetext]="e.state === 'uploading' ? e.progress + '%' : stateLabel(e)"
                           [class.air-file-bar--checking]="e.state !== 'uploading'"
                         >
                           <span class="air-file-bar-fill" [style.width.%]="e.state === 'uploading' ? e.progress : 100"></span>

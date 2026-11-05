@@ -6,6 +6,8 @@ import { IAiReview, IAiReviewHistoryEntry, IAiReviewPreview } from '../../models
 import { AiReviewService } from '../../services/ai-review.service'
 import {
   AiReviewPageComponent,
+  JOINED_COURSE_REVIEW,
+  STARTED_AFTER_ALL,
   MEASURE_TIMEOUT_MS,
   POLL_FAST_MS,
   POLL_SLOW_MS,
@@ -573,6 +575,44 @@ describe('AiReviewPageComponent', () => {
       expect(api.start).not.toHaveBeenCalled()
     })
 
+    it('says so when Start joined a review already running, instead of starting another', () => {
+      api.start.mockReturnValue(of({ reviewId: 'r9', created: false, estimateUsd: 0.12 }))
+      const c = create()
+      c.ngOnInit()
+      c.start()
+      expect(c.joinedNote()).toBe(JOINED_COURSE_REVIEW)
+      expect(api.get).toHaveBeenCalledWith('r9')
+    })
+
+    it('after an unclear failure, follows the review if it had started after all, keeping the form as it was', () => {
+      const c = create()
+      c.ngOnInit()
+      c.context.set('rural PHC')
+      api.start.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 504 })))
+      api.preview.mockReturnValue(of(preview({ activeReviewId: 'r7' })))
+      api.history.mockClear()
+      c.start()
+      expect(api.history).toHaveBeenCalled()
+      expect(api.get).toHaveBeenCalledWith('r7')
+      expect(c.startError()).toBe('')
+      expect(c.joinedNote()).toBe(STARTED_AFTER_ALL)
+      expect(c.context()).toBe('rural PHC')
+    })
+
+    it('after a clear refusal, looks for nothing', () => {
+      const c = create()
+      c.ngOnInit()
+      api.preview.mockClear()
+      api.start.mockReturnValue(
+        throwError(
+          () => new HttpErrorResponse({ status: 400, error: { error: { code: 'NOTHING_TO_REVIEW', message: 'Nothing to review.' } } }),
+        ),
+      )
+      c.start()
+      expect(api.preview).not.toHaveBeenCalled()
+      expect(c.startError()).toBe('Nothing to review.')
+    })
+
     it('follows a review already running on the course instead of offering a new one', () => {
       api.preview.mockReturnValue(of(preview({ activeReviewId: 'r5' })))
       const c = create()
@@ -619,6 +659,32 @@ describe('AiReviewPageComponent', () => {
       expect(c.isFinished()).toBe(true)
     })
 
+    it("does not ask again for a review that is gone or not the user's", () => {
+      api.get.mockReturnValue(
+        throwError(
+          () => new HttpErrorResponse({ status: 404, error: { error: { code: 'NOT_FOUND', message: 'This review could not be found.' } } }),
+        ),
+      )
+      const c = create()
+      c.follow('r1')
+      jest.advanceTimersByTime(2000 * 4)
+      expect(api.get).toHaveBeenCalledTimes(1)
+      expect(c.pollError()).toBe('This review could not be found.')
+    })
+
+    it('clears the review on screen when another is opened, so its report never shows under the new one', () => {
+      const next = new Subject<IAiReview>()
+      const c = create()
+      c.follow('r1')
+      expect(c.review()?.id).toBe('r1')
+      api.get.mockReturnValue(next)
+      c.follow('r2')
+      expect(c.review()).toBeNull()
+      expect(c.following()).toBe(true)
+      next.next(review({ id: 'r2', status: 'done' }))
+      expect(c.review()?.id).toBe('r2')
+    })
+
     it('retries a failed read before giving up', () => {
       api.get.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 502 })))
       const c = create()
@@ -634,8 +700,14 @@ describe('AiReviewPageComponent', () => {
     it('goes back to the setup form for another review', () => {
       const c = create()
       c.follow('r1')
+      c.pollError.set('Lost track of this review.')
       c.newReview()
       expect(c.review()).toBeNull()
+      expect(c.pollError()).toBe('')
+      // Nothing left to follow: reconnecting does not reopen the old review.
+      api.get.mockClear()
+      c.retryFollow()
+      expect(api.get).not.toHaveBeenCalled()
       expect(router.navigate).toHaveBeenLastCalledWith([], expect.objectContaining({ queryParams: { review: null } }))
     })
 

@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, input, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, input, signal, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { AiReviewService } from '../../services/ai-review.service'
 import { judgedAgainst, reportWords } from '../../utils/report-export'
-import { kindFromMime, kindLine, kindMeta } from '../../utils/resource-kind'
+import { formatDuration, kindFromMime, kindLine, kindMeta } from '../../utils/resource-kind'
 import {
   IAiReview,
   IAiReviewAddie,
@@ -103,13 +105,39 @@ export class AiReviewReportComponent {
   readonly notMet = notMet
   readonly kindMeta = kindMeta
   readonly kindLine = kindLine
+  readonly duration = formatDuration
 
   private readonly evidence = viewChild<AirEvidenceComponent>('evidence')
+  private readonly api = inject(AiReviewService)
+  private readonly destroyRef = inject(DestroyRef)
+
+  /** Items read again for fresh file links, by content id; used for every later open too. */
+  private readonly fresh = signal<ReadonlyMap<string, IAiReviewItem>>(new Map())
+
+  /** The item with its freshest link. */
+  private latest(item: IAiReviewItem): IAiReviewItem {
+    return this.fresh().get(item.contentId) || item
+  }
+
+  /** Reads the review again for new signed file links, and puts the one open back on screen. */
+  refreshLinks(item: IAiReviewItem): void {
+    this.api
+      .get(this.review().id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: review => {
+          this.fresh.set(new Map(review.items.map(i => [i.contentId, i])))
+          this.evidence()?.replaceItem(this.latest(item))
+        },
+        error: err =>
+          this.evidence()?.refreshFailed(AiReviewService.errorMessage(err, 'A fresh link could not be fetched just now. Try again.')),
+      })
+  }
 
   /** Opens a checklist indicator in place: the resource at its moment or page, and the fix. */
   openIndicator(item: IAiReviewItem, indicator: IAiReviewScoredItem): void {
     this.evidence()?.open({
-      item,
+      item: this.latest(item),
       code: indicator.id,
       source: 'CBP / ADDIE checklist',
       title: indicator.text,
@@ -124,7 +152,7 @@ export class AiReviewReportComponent {
 
   openQuestion(item: IAiReviewItem, question: IAiReviewQuestionFinding): void {
     this.evidence()?.open({
-      item,
+      item: this.latest(item),
       code: `Q${question.n}`,
       source: 'Question check',
       title: question.question,
@@ -136,7 +164,7 @@ export class AiReviewReportComponent {
 
   openCoverage(item: IAiReviewItem, row: IAiReviewCoverageRow): void {
     this.evidence()?.open({
-      item,
+      item: this.latest(item),
       code: '',
       source: 'Domain review · coverage of the level',
       title: row.component,

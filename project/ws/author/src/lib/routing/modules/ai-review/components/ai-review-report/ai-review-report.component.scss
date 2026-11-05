@@ -48,8 +48,16 @@
 }
 
 // A ring that fills to the score. The colour follows the band; Domain uses the violet accent.
+// Registered, so the ring's fill can animate from empty to its score when the report opens.
+@property --pct {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
 .air-ring {
   --pct: 0;
+  animation: air-ring-fill 1.1s $air-ease 0.2s backwards;
   --ring: #{$air-primary};
   flex-shrink: 0;
   width: 96px;
@@ -247,6 +255,41 @@
   flex-wrap: wrap;
 }
 
+// An HTML package's contents and whether it reports to the platform, under its title.
+.air-package {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border: 1px solid $air-line;
+  border-radius: 10px;
+  background: $air-canvas;
+  font-size: 14px;
+}
+
+.air-package-facts {
+  color: $air-text;
+  font-weight: 500;
+}
+
+.air-package-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: $air-muted;
+
+  &--ok {
+    color: $air-green;
+  }
+
+  &--warn {
+    color: $air-amber;
+    font-weight: 500;
+  }
+}
+
 .air-chip--violet {
   background: #f5f3ff;
   color: $air-violet;
@@ -393,6 +436,29 @@
     height: 100%;
     border-radius: 999px;
     background: $air-primary;
+    // Each bar grows to its value once, one after another.
+    transform-origin: left center;
+    animation: air-bar-grow 0.8s $air-ease 0.3s backwards;
+  }
+}
+
+.air-area:nth-child(2) .air-area-bar span {
+  animation-delay: 0.4s;
+}
+
+.air-area:nth-child(3) .air-area-bar span {
+  animation-delay: 0.5s;
+}
+
+@keyframes air-ring-fill {
+  from {
+    --pct: 0;
+  }
+}
+
+@keyframes air-bar-grow {
+  from {
+    transform: scaleX(0);
   }
 }
 

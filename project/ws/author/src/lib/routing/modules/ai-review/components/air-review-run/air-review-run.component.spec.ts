@@ -134,6 +134,42 @@ describe('AirReviewRunComponent', () => {
     })
   })
 
+  describe('the percentage beside the bar', () => {
+    const at = (done: number) => review({ progress: { done, total: 4 } } as Partial<IAiReview>)
+    afterEach(() => {
+      delete (window as Partial<Window>).matchMedia
+      jest.restoreAllMocks()
+    })
+
+    it('counts up to the new value frame by frame instead of jumping', () => {
+      ;(window as Partial<Window>).matchMedia = jest.fn().mockReturnValue({ matches: false }) as never
+      const frames: FrameRequestCallback[] = []
+      jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => frames.push(cb))
+      jest.spyOn(window.performance, 'now').mockReturnValue(0)
+      show(at(2))
+      expect(c.progressPct()).toBe(50)
+      expect(c.shownPct()).toBe(0)
+      // Run frames as a browser would, 100 ms apart, until none are left. (Angular's own
+      // scheduler also asks for frames, so the queue is not only the count's.)
+      const seen: number[] = []
+      for (let now = 100; frames.length && now <= 2000; now += 100) {
+        frames.shift()!(now)
+        seen.push(c.shownPct())
+      }
+      expect(seen.some(v => v > 0 && v < 50)).toBe(true)
+      expect(seen).toEqual([...seen].sort((x, y) => x - y)) // only ever counts up
+      expect(c.shownPct()).toBe(50)
+    })
+
+    it('goes straight to the value for anyone who asked for less motion', () => {
+      ;(window as Partial<Window>).matchMedia = jest.fn().mockReturnValue({ matches: true }) as never
+      const raf = jest.spyOn(window, 'requestAnimationFrame')
+      show(at(3))
+      expect(c.shownPct()).toBe(75)
+      expect(raf).not.toHaveBeenCalled()
+    })
+  })
+
   describe('once it ends', () => {
     it('heads the report by how the review ended', () => {
       show(review({ status: 'done' }))

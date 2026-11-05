@@ -1,5 +1,8 @@
 import { CommonModule } from '@angular/common'
+import { HttpErrorResponse } from '@angular/common/http'
 import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { of, throwError } from 'rxjs'
+import { AiReviewService } from '../../services/ai-review.service'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { IAiReview, IAiReviewItem, IAiReviewScore } from '../../models/ai-review.model'
 import { AirEvidenceComponent } from '../air-evidence/air-evidence.component'
@@ -12,7 +15,14 @@ const score = (): IAiReviewScore => ({
       area: 'Content Quality',
       items: [
         { id: 'C1', text: 'Accurate content', verdict: 'yes', note: '' },
-        { id: 'C2', text: 'Cuff placement shown correctly', verdict: 'no', note: 'Cuff over clothing', fix: 'Place the cuff on bare skin', borderline: true },
+        {
+          id: 'C2',
+          text: 'Cuff placement shown correctly',
+          verdict: 'no',
+          note: 'Cuff over clothing',
+          fix: 'Place the cuff on bare skin',
+          borderline: true,
+        },
       ],
       yes: 1,
       applicable: 2,
@@ -35,6 +45,9 @@ const score = (): IAiReviewScore => ({
   bandMessage: 'Needs significant revision',
   failedIds: ['C2'],
 })
+
+/** Reads the review again for fresh file links. */
+const reviewApi = { get: jest.fn() }
 
 const item = (over: Partial<IAiReviewItem> = {}): IAiReviewItem => ({
   contentId: 'do_v',
@@ -145,7 +158,12 @@ describe('AiReviewReportComponent', () => {
     let el: HTMLElement
 
     beforeEach(() => {
-      TestBed.configureTestingModule({ imports: [CommonModule], declarations: [AiReviewReportComponent, AirEvidenceComponent, AirIconComponent], schemas: [NO_ERRORS_SCHEMA] })
+      TestBed.configureTestingModule({
+        imports: [CommonModule],
+        declarations: [AiReviewReportComponent, AirEvidenceComponent, AirIconComponent],
+        providers: [{ provide: AiReviewService, useValue: reviewApi }],
+        schemas: [NO_ERRORS_SCHEMA],
+      })
       fixture = TestBed.createComponent(AiReviewReportComponent)
       fixture.componentRef.setInput('review', review())
       fixture.detectChanges()
@@ -213,20 +231,112 @@ describe('AiReviewReportComponent', () => {
       expect(text).not.toContain('Severe range?')
       expect(fixture.componentInstance.questionIssues(quiz).map(q => q.n)).toEqual([3])
 
-      const clean = { ...quiz, result: { ...quiz.result!, questions: [{ n: 1, question: 'Severe range?', verdict: 'ok' as const, issues: [] }] } }
+      const clean = {
+        ...quiz,
+        result: { ...quiz.result!, questions: [{ n: 1, question: 'Severe range?', verdict: 'ok' as const, issues: [] }] },
+      }
       fixture.componentRef.setInput('review', review({ items: [clean] }))
       fixture.detectChanges()
       expect(el.textContent).toContain('Every question checks out')
     })
 
+    it('shows what an HTML package holds, and warns when it does not report progress', () => {
+      const pkg = (reportsProgress: boolean, savesState: boolean) =>
+        item({
+          kind: 'html',
+          mimeType: 'application/vnd.ekstep.html-archive',
+          result: {
+            ...item().result!,
+            kind: 'html',
+            durationSec: 190,
+            htmlPackage: {
+              files: 12,
+              pages: 6,
+              videos: [
+                { path: 'a.mp4', durationSec: 120 },
+                { path: 'b.mp4', durationSec: 70 },
+              ],
+              images: 9,
+              stills: 24,
+              questions: 8,
+              reportsProgress,
+              savesState,
+            },
+          },
+        })
+      fixture.componentRef.setInput('review', review({ items: [pkg(false, true)] }))
+      fixture.detectChanges()
+      const row = el.querySelector('.air-package')!
+      expect(row.textContent!.replace(/\s+/g, ' ')).toContain('6 pages · 2 videos (3 min 10 s) · 9 images · 8 questions')
+      expect(row.querySelector('.air-package-flag--warn')!.textContent).toContain('Does not report progress, so completion is not recorded')
+      expect(row.textContent).toContain('Saves where the learner left off')
+
+      fixture.componentRef.setInput('review', review({ items: [pkg(true, false)] }))
+      fixture.detectChanges()
+      const ok = el.querySelector('.air-package')!
+      expect(ok.querySelector('.air-package-flag--ok')!.textContent).toContain('Reports learner progress')
+      expect(ok.textContent).toContain('Learners start from the beginning each time')
+    })
+
     it('opens an issue in place, at its moment', () => {
-      const issue = Array.from(el.querySelectorAll('button.air-indicator--open')).find(b => /Cuff placement/.test(b.textContent || '')) as HTMLButtonElement
+      const issue = Array.from(el.querySelectorAll('button.air-indicator--open')).find(b =>
+        /Cuff placement/.test(b.textContent || ''),
+      ) as HTMLButtonElement
       issue.click()
       fixture.detectChanges()
       const dialog = el.querySelector('dialog')!
       expect(dialog.hasAttribute('open')).toBe(true)
       expect(dialog.textContent).toContain('Cuff placement shown correctly')
       expect(dialog.textContent).toContain('Place the cuff on bare skin')
+    })
+
+    it('gets a fresh link for a file whose link expired, and keeps it for later issues', () => {
+      const fresh = 'https://bucket.s3.amazonaws.com/v.mp4?X-Amz-Signature=new'
+      reviewApi.get.mockReturnValue(of(review({ items: [item({ artifactUrl: fresh })] })))
+      fixture.componentRef.setInput(
+        'review',
+        review({ items: [item({ artifactUrl: 'https://bucket.s3.amazonaws.com/v.mp4?X-Amz-Signature=old' })] }),
+      )
+      fixture.detectChanges()
+      const issue = Array.from(el.querySelectorAll('button.air-indicator--open')).find(b =>
+        /Cuff placement/.test(b.textContent || ''),
+      ) as HTMLButtonElement
+      issue.click()
+      fixture.detectChanges()
+      el.querySelector('video')!.dispatchEvent(new Event('error'))
+      fixture.detectChanges()
+      const button = Array.from(el.querySelectorAll('dialog button')).find(b =>
+        /Get a fresh link/.test(b.textContent || ''),
+      ) as HTMLButtonElement
+      button.click()
+      fixture.detectChanges()
+      expect(reviewApi.get).toHaveBeenCalledWith('r1')
+      expect(el.querySelector('video')!.getAttribute('src')).toContain('X-Amz-Signature=new')
+      // The next issue opened uses the fresh link too.
+      fixture.componentInstance.openCoverage(item(), { component: 'Proteinuria', status: 'missing', evidence: 'at 0:05' })
+      fixture.detectChanges()
+      expect(el.querySelector('video')!.getAttribute('src')).toContain('X-Amz-Signature=new')
+    })
+
+    it('says so when a fresh link cannot be fetched', () => {
+      reviewApi.get.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 0 })))
+      fixture.componentRef.setInput(
+        'review',
+        review({ items: [item({ artifactUrl: 'https://bucket.s3.amazonaws.com/v.mp4?X-Amz-Signature=old' })] }),
+      )
+      fixture.detectChanges()
+      const issue = Array.from(el.querySelectorAll('button.air-indicator--open')).find(b =>
+        /Cuff placement/.test(b.textContent || ''),
+      ) as HTMLButtonElement
+      issue.click()
+      fixture.detectChanges()
+      el.querySelector('video')!.dispatchEvent(new Event('error'))
+      fixture.detectChanges()
+      ;(
+        Array.from(el.querySelectorAll('dialog button')).find(b => /Get a fresh link/.test(b.textContent || '')) as HTMLButtonElement
+      ).click()
+      fixture.detectChanges()
+      expect(el.querySelector('dialog')!.textContent).toMatch(/Could not reach the AI review service|connection/)
     })
 
     it('opens a coverage line and a question too', () => {
@@ -251,6 +361,7 @@ describe('AiReviewReportComponent', () => {
   })
 
   it('labels verdicts, coverage and level fit', () => {
+    TestBed.configureTestingModule({ providers: [{ provide: AiReviewService, useValue: reviewApi }] })
     const c = TestBed.runInInjectionContext(() => new AiReviewReportComponent())
     expect(c.verdictLabel('yes')).toBe('Met')
     expect(c.verdictLabel('no')).toBe('Not met')

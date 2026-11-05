@@ -82,6 +82,9 @@
 
       @if (review(); as r) {
         <!-- Steps 2 and 3: the review running, then its report (shared with the file review) -->
+        @if (joinedNote()) {
+          <p class="air-hint air-joined" role="status"><ws-auth-air-icon name="info" [size]="16" /> {{ joinedNote() }}</p>
+        }
         <ws-auth-air-review-run [review]="r" unit="resources" (cancelled)="follow($event)" (again)="newReview()" />
       }
 

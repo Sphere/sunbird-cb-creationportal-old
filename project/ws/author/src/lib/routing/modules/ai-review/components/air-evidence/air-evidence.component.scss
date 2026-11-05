@@ -242,3 +242,23 @@
     text-decoration: none;
   }
 }
+
+// The way to a fresh link when a signed file link has expired.
+.air-ev-refresh {
+  margin-top: 8px;
+}
+
+.air-ev-pdf-help {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: $air-muted;
+}
+
+.air-ev-refresh-error {
+  color: $air-danger;
+  font-size: 13px;
+}

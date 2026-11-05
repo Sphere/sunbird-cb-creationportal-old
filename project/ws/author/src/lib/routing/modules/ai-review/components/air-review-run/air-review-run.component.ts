@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common'
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, input, output, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, output, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { saveAs } from 'file-saver'
 import { AI_REVIEW_FINAL_STATUSES, IAiReview } from '../../models/ai-review.model'
@@ -56,6 +56,17 @@ export class AirReviewRunComponent {
   readonly progressPct = computed(() => {
     const p = this.review().progress
     return p.total ? Math.round((p.done / p.total) * 100) : 0
+  })
+
+  /**
+   * The percentage shown: it counts up to the new value in step with the bar instead of
+   * jumping. Straight to the value for anyone who has asked for less motion.
+   */
+  readonly shownPct = signal(0)
+  private pctFrame = 0
+  private readonly countPct = effect(() => {
+    const target = this.progressPct()
+    untracked(() => this.countTo(target))
   })
 
   /** One short line for screen readers, announced only when it changes (not every poll). */
@@ -127,11 +138,38 @@ export class AirReviewRunComponent {
       Object.keys(sheets).forEach(name => XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheets[name]), name))
       const data = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
       saveAs(new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), reportFileName(r, 'xlsx'))
-    } catch (err) {
-      console.error('AI review Excel export failed', err)
+    } catch {
       this.exportError.set('Could not create the Excel file. Please try again.')
     } finally {
       this.exporting.set(null)
     }
   }
+
+  private countTo(target: number): void {
+    const win = this.document.defaultView
+    const from = this.shownPct()
+    if (this.pctFrame && win) {
+      win.cancelAnimationFrame(this.pctFrame)
+      this.pctFrame = 0
+    }
+    const still = !win || !win.requestAnimationFrame || !win.matchMedia || win.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (still || from === target) {
+      this.shownPct.set(target)
+      return
+    }
+    const start = win.performance.now()
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / 700)
+      const eased = 1 - Math.pow(1 - t, 3)
+      this.shownPct.set(Math.round(from + (target - from) * eased))
+      this.pctFrame = t < 1 ? win.requestAnimationFrame(step) : 0
+    }
+    this.pctFrame = win.requestAnimationFrame(step)
+    if (!this.pctCleanup) {
+      this.pctCleanup = true
+      this.destroyRef.onDestroy(() => this.pctFrame && win.cancelAnimationFrame(this.pctFrame))
+    }
+  }
+
+  private pctCleanup = false
 }

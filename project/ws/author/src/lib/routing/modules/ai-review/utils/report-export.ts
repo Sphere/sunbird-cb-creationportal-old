@@ -4,10 +4,11 @@ import {
   IAiReviewAddie,
   IAiReviewCompetencyContext,
   IAiReviewDomain,
+  IAiReviewHtmlPackage,
   IAiReviewItem,
   isPassError,
 } from '../models/ai-review.model'
-import { kindLine, kindMeta } from './resource-kind'
+import { formatDuration, kindLine, kindMeta } from './resource-kind'
 
 /**
  * The two report downloads, built from the review's data:
@@ -122,6 +123,26 @@ export function reportFileName(review: Pick<IAiReview, 'courseName'>, ext: strin
   return `AI-review-${base}.${ext}`
 }
 
+/**
+ * What an interactive HTML package holds and whether it reports to the platform, as one line:
+ * "4 pages · 1 video (1 min 30 s) · 3 images · 30 questions. Reports learner progress: no
+ * (completion is not recorded). Saves where the learner left off: yes."
+ */
+export function packageLine(p: IAiReviewHtmlPackage, durationSec?: number | null): string {
+  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`
+  const holds = [
+    plural(p.pages, 'page', 'pages'),
+    p.videos.length ? `${plural(p.videos.length, 'video', 'videos')}${durationSec ? ` (${formatDuration(durationSec)})` : ''}` : '',
+    p.images ? plural(p.images, 'image', 'images') : '',
+    p.questions ? plural(p.questions, 'question', 'questions') : '',
+  ]
+    .filter(Boolean)
+    .join(' · ')
+  return `${holds}. Reports learner progress: ${p.reportsProgress ? 'yes' : 'no (completion is not recorded)'}. Saves where the learner left off: ${
+    p.savesState ? 'yes' : 'no'
+  }.`
+}
+
 function resourceHtml(item: IAiReviewItem, words: ReportWords): string {
   const addie = addieOf(item)
   const domain = domainOf(item)
@@ -134,6 +155,9 @@ function resourceHtml(item: IAiReviewItem, words: ReportWords): string {
   parts.push(
     `<section class="resource"><div class="rhead"><div><div class="kind">${esc(kindLine(item.kind, item.mimeType))}</div><h3>${esc(item.name)}</h3></div><div>${chips}</div></div>`,
   )
+  if (r?.htmlPackage) {
+    parts.push(`<p class="pkg${r.htmlPackage.reportsProgress ? '' : ' warn'}">${esc(packageLine(r.htmlPackage, r.durationSec))}</p>`)
+  }
   if (item.status === 'failed' || item.status === 'cancelled') {
     parts.push(`<p class="err">${esc(item.error || `This ${words.one} could not be reviewed.`)}</p>`)
   }
@@ -267,6 +291,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:6px 8px;
 .resource{border:1px solid #e4e8f2;border-radius:12px;padding:14px;margin-top:14px;page-break-inside:avoid}
 .rhead{display:flex;justify-content:space-between;gap:8px}.kind{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#7c3aed;font-weight:700}
 .chip{display:inline-block;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:700;margin-left:4px;background:#eef2ff;color:#3b5bdb}.chip.green{background:#dcfce7;color:#15803d}.chip.amber{background:#ffedd5;color:#b45309}.chip.red{background:#fee2e2;color:#b91c1c}.chip.violet{background:#f5f3ff;color:#7c3aed}
+.pkg{margin:8px 0 0;padding:6px 10px;border-radius:8px;background:#f5f7fc;font-size:12px}.pkg.warn{color:#b45309}
 .domain{background:#f5f3ff;border-radius:10px;padding:8px 12px;margin-top:8px}.cov{list-style:none;padding:0;margin:0}.cov li{padding:3px 0}
 footer{margin-top:20px;font-size:10px;color:#5b6478;text-align:center}
 @media print{.tip{display:none}body{padding:0}}
@@ -378,12 +403,43 @@ export function buildWorkbookSheets(review: IAiReview): Record<string, (string |
     )
   })
 
+  const packages: (string | number)[][] = [
+    [
+      words.one === 'file' ? 'File' : 'Resource',
+      'Pages',
+      'Videos',
+      'Video time',
+      'Images',
+      'Questions',
+      'Reports progress',
+      'Saves the learner’s place',
+    ],
+  ]
+  review.items.forEach(item => {
+    const p = item.result?.htmlPackage
+    if (p) {
+      packages.push([
+        item.name,
+        p.pages,
+        p.videos.length,
+        item.result?.durationSec ? formatDuration(item.result.durationSec) : '',
+        p.images,
+        p.questions,
+        p.reportsProgress ? 'Yes' : 'No — completion is not recorded',
+        p.savesState ? 'Yes' : 'No',
+      ])
+    }
+  })
+
   const coverage: (string | number)[][] = [['What the level needs', 'Status', 'Covered by']]
   ;(s?.coverage || []).forEach(row => coverage.push([row.component, row.status, row.coveredBy.join(', ')]))
 
   const sheets: Record<string, (string | number)[][]> = { Summary: summary, Checklist: checklist, Coverage: coverage }
   if (questions.length > 1) {
     sheets['Questions'] = questions
+  }
+  if (packages.length > 1) {
+    sheets['HTML packages'] = packages
   }
   return sheets
 }

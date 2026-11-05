@@ -19,6 +19,7 @@ import {
   tap,
   throwError,
   timeout,
+  timer,
 } from 'rxjs'
 import {
   AI_REVIEW_FINAL_STATUSES,
@@ -35,7 +36,7 @@ import {
 } from '../../models/ai-review.model'
 import { AiReviewService } from '../../services/ai-review.service'
 import { formatDuration, kindMeta } from '../../utils/resource-kind'
-import { statusLabel, watchReview } from '../../utils/review-run'
+import { isTransient, isUnclear, statusLabel, watchReview } from '../../utils/review-run'
 import { ACCEPT_ATTRIBUTE, estimateFor, fileProblem, formatBytes, kindForFile, readQuizSheet } from '../../utils/upload-files'
 import { AirSelectOption } from '../air-select/air-select.component'
 import {
@@ -81,10 +82,22 @@ export interface UploadEntry {
   warning: string | null
   /** The service's check, once it is ready: its size and estimate. */
   checked: IAiReviewCheckedUpload | null
+  /**
+   * The file reached storage. Trying again then only asks the service to check it again: a
+   * large file is never sent twice because its check failed.
+   */
+  stored: boolean
 }
 
 /** The states in which a file is still on its way, so Start waits for it. */
 const IN_FLIGHT: ReadonlySet<UploadState> = new Set<UploadState>(['reading', 'waiting', 'signing', 'uploading', 'checking'])
+
+/** A check the service could not finish yet; its message is the service's own reason. */
+export class CheckPendingError extends Error {}
+
+/** Start found these same files, with these settings, already being reviewed: that review is shown. */
+export const JOINED_FILE_REVIEW =
+  'These files were already being reviewed with these settings, so you are following that review instead of starting another.'
 
 /** A storage failure, told apart from the review service's own errors (they are worded differently). */
 export class StorageUploadError extends Error {
@@ -185,6 +198,10 @@ export class AiReviewFilesPageComponent implements OnInit {
 
   readonly starting = signal(false)
   readonly startError = signal('')
+  /** Said when Start joined a review already running, instead of starting (and paying for) another. */
+  readonly joinedNote = signal('')
+  /** Files dropped or picked before the page knew what it accepts: added once it does. */
+  private early: File[] = []
 
   readonly review = signal<IAiReview | null>(null)
   readonly pollError = signal('')
@@ -313,7 +330,7 @@ export class AiReviewFilesPageComponent implements OnInit {
       return "You're offline. Reconnect to the internet to start a review."
     }
     if (!this.entries().length) {
-      return 'Add the files to review: videos, PDFs, or quiz and assessment Excel sheets.'
+      return 'Add the files to review: videos, PDFs, interactive HTML packages (.zip), or quiz and assessment Excel sheets.'
     }
     if (this.inFlight().length) {
       return 'Wait for the files to finish uploading and being checked.'
@@ -471,10 +488,14 @@ export class AiReviewFilesPageComponent implements OnInit {
             this.domain.set(ctx.competencyCatalog.length > 0)
           }
           this.loadingContext.set(false)
+          this.addEarlyFiles()
         },
         error: err => {
           this.contextError.set(AiReviewService.errorMessage(err, 'Could not load the file review just now.'))
           this.loadingContext.set(false)
+          if (this.early.length) {
+            this.addNote.set('The files you added are kept and will be added once the page loads. Use Try again above.')
+          }
         },
       })
   }
@@ -529,9 +550,32 @@ export class AiReviewFilesPageComponent implements OnInit {
     this.addFiles(Array.from(event.dataTransfer?.files || []))
   }
 
+  /** Files added before the page had loaded: added now, or the user is told why not. */
+  private addEarlyFiles(): void {
+    const files = this.early
+    this.early = []
+    if (!files.length) {
+      return
+    }
+    if (!this.enabled()) {
+      this.addNote.set('Reviewing your own files is not switched on for this server, so the files were not added.')
+      return
+    }
+    this.addFiles(files)
+  }
+
   /** Adds files to the list (up to the limit, no duplicates) and starts sending them. */
   addFiles(picked: File[]): void {
-    if (!picked.length || !this.enabled()) {
+    if (!picked.length) {
+      return
+    }
+    // Dropped while the page is still loading: kept, and added once it knows what it accepts.
+    if (!this.context()) {
+      this.early = [...this.early, ...picked]
+      this.addNote.set(`${picked.length === 1 ? 'Your file' : `${picked.length} files`} will be added as soon as the page has loaded.`)
+      return
+    }
+    if (!this.enabled()) {
       return
     }
     const known = new Set([...this.files.values()].map(f => `${f.name}|${f.size}|${f.lastModified}`))
@@ -565,6 +609,7 @@ export class AiReviewFilesPageComponent implements OnInit {
         problem,
         warning: null,
         checked: null,
+        stored: false,
       }
     })
     this.entries.update(list => [...list, ...added])
@@ -641,58 +686,86 @@ export class AiReviewFilesPageComponent implements OnInit {
             map(() => signed.uploadId),
           ),
         ),
-        tap(() => this.patch(key, { state: 'checking', progress: 100 })),
+        tap(() => this.patch(key, { state: 'checking', progress: 100, stored: true })),
         switchMap(uploadId => this.checkUntilSettled(uploadId)),
       )
-      .subscribe({
-        next: checked =>
-          this.patch(
-            key,
-            checked.status === 'ready'
-              ? { state: 'ready', checked, problem: null }
-              : { state: 'rejected', checked, problem: checked.reason || 'This file cannot be reviewed.' },
-          ),
-        error: err => {
-          this.patch(key, {
-            state: 'failed',
-            checked: null,
-            problem:
-              err instanceof StorageUploadError
-                ? storageMessage(err.cause)
-                : AiReviewService.errorMessage(err, 'This file could not be uploaded. Try again.'),
-          })
-          this.uploads.delete(key)
-          this.pump()
-        },
-        complete: () => {
-          this.uploads.delete(key)
-          this.pump()
-        },
-      })
+      .subscribe(this.settle(key, 'This file could not be uploaded. Try again.'))
     // A call that already ended (an error before any request) has nothing left to cancel.
     if (!sub.closed) {
       this.uploads.set(key, sub)
     }
   }
 
-  /** The service's check of one upload; asked again a few times while storage has not shown it yet. */
+  /** What to do with a file's check when it ends: ready, refused with the reason, or failed with it. */
+  private settle(key: number, fallback: string) {
+    return {
+      next: (checked: IAiReviewCheckedUpload) =>
+        this.patch(
+          key,
+          checked.status === 'ready'
+            ? { state: 'ready', checked, problem: null }
+            : { state: 'rejected', checked, problem: checked.reason || 'This file cannot be reviewed.' },
+        ),
+      error: (err: unknown) => {
+        this.patch(key, {
+          state: 'failed',
+          checked: null,
+          problem:
+            err instanceof StorageUploadError
+              ? storageMessage(err.cause)
+              : err instanceof CheckPendingError
+                ? err.message
+                : AiReviewService.errorMessage(err, fallback),
+        })
+        this.uploads.delete(key)
+        this.pump()
+      },
+      complete: () => {
+        this.uploads.delete(key)
+        this.pump()
+      },
+    }
+  }
+
+  /**
+   * The service's check of one upload. Asked again, a little later each time, while the file
+   * has not arrived in storage or is still being checked, and after a passing failure (no
+   * connection, a gateway timeout); a refusal (403, 400) is final. When it gives up, the error
+   * carries the service's own reason, which the row shows.
+   */
   private checkUntilSettled(uploadId: string): Observable<IAiReviewCheckedUpload> {
     return defer(() => this.api.checkUploads([uploadId])).pipe(
       map(res => {
         const found = res.uploads.find(u => u.uploadId === uploadId)
         if (!found || found.status === 'pending') {
-          throw new Error('The file has not arrived in storage yet. Try again.')
+          throw new CheckPendingError(found?.reason || 'The file has not arrived in storage yet. Try again.')
         }
         return found
       }),
-      retry({ count: CHECK_RETRIES, delay: CHECK_RETRY_MS }),
+      retry({
+        count: CHECK_RETRIES,
+        delay: (err, attempt) =>
+          err instanceof CheckPendingError || isTransient(err) ? timer(CHECK_RETRY_MS * attempt) : throwError(() => err),
+      }),
     )
   }
 
-  /** Sends a file that failed again. */
+  /**
+   * Tries a failed file again. One already in storage is only checked again; one that never
+   * arrived is sent again (and a sheet that could not be read is read again).
+   */
   retryFile(key: number): void {
     const entry = this.entry(key)
     if (!entry || entry.state !== 'failed') {
+      return
+    }
+    if (entry.stored && entry.uploadId) {
+      const uploadId = entry.uploadId
+      this.patch(key, { state: 'checking', problem: null, progress: 100 })
+      const sub = this.checkUntilSettled(uploadId).subscribe(this.settle(key, 'This file could not be checked. Try again.'))
+      if (!sub.closed) {
+        this.uploads.set(key, sub)
+      }
       return
     }
     this.patch(key, { state: this.bodies.has(key) ? 'waiting' : 'reading', problem: null, progress: 0 })
@@ -746,8 +819,9 @@ export class AiReviewFilesPageComponent implements OnInit {
     if (!uploadId) {
       return
     }
-    // `checked` is kept, so the question count stays on screen while the service answers.
-    this.patch(key, { kind, state: 'checking', problem: null, warning: null })
+    // `checked` is kept, so the question count stays on screen while the service answers, and
+    // so is the sheet's own warning (rows it skipped): the questions sent are the same.
+    this.patch(key, { kind, state: 'checking', problem: null })
     const sub = this.api.changeUploadKind(uploadId, kind).subscribe({
       next: checked =>
         this.patch(
@@ -800,7 +874,7 @@ export class AiReviewFilesPageComponent implements OnInit {
       case 'uploading':
         return `Uploading · ${entry.progress}%`
       case 'checking':
-        return 'Checking the file…'
+        return entry.stored ? 'Checking the file…' : 'Checking…'
       case 'ready':
         return 'Ready'
       case 'rejected':
@@ -859,6 +933,7 @@ export class AiReviewFilesPageComponent implements OnInit {
     }
     this.starting.set(true)
     this.startError.set('')
+    this.joinedNote.set('')
     const ids = this.ready()
       .map(e => e.uploadId)
       .filter((id): id is string => !!id)
@@ -869,12 +944,23 @@ export class AiReviewFilesPageComponent implements OnInit {
       .subscribe({
         next: res => {
           this.starting.set(false)
+          if (!res.created) {
+            this.joinedNote.set(JOINED_FILE_REVIEW)
+          }
           this.follow(res.reviewId)
           this.loadHistory()
         },
         error: err => {
           this.starting.set(false)
-          this.startError.set(AiReviewService.errorMessage(err))
+          this.startError.set(
+            isUnclear(err)
+              ? `${AiReviewService.errorMessage(err)} If it had started, it is in Past reviews below; Start again shows that review rather than starting another.`
+              : AiReviewService.errorMessage(err),
+          )
+          // The review may have started anyway: Past reviews shows it.
+          if (isUnclear(err)) {
+            this.loadHistory()
+          }
         },
       })
   }
@@ -886,6 +972,12 @@ export class AiReviewFilesPageComponent implements OnInit {
     this.pollError.set('')
     this.followedId = reviewId
     this.pollSub?.unsubscribe()
+    // Another review than the one on screen: clear it, so its report is never shown under the
+    // new one's address while the new one loads.
+    if (this.review() && this.review()?.id !== reviewId) {
+      this.review.set(null)
+      this.joinedNote.set('')
+    }
     this.following.set(!this.review())
     this.pollSub = watchReview(
       () => this.api.get(reviewId),
@@ -955,6 +1047,7 @@ export class AiReviewFilesPageComponent implements OnInit {
     this.review.set(null)
     this.pollError.set('')
     this.startError.set('')
+    this.joinedNote.set('')
     this.router.navigate([], { relativeTo: this.route, queryParams: { review: null }, queryParamsHandling: 'merge', replaceUrl: true })
   }
 
@@ -962,7 +1055,8 @@ export class AiReviewFilesPageComponent implements OnInit {
     return statusLabel(status, 'files')
   }
 
+  /** Back to My Content's drafts, where the user's own unfinished content is. */
   back(): void {
-    this.router.navigate(['/author/my-content'])
+    this.router.navigate(['/author/my-content'], { queryParams: { status: 'draft' } })
   }
 }

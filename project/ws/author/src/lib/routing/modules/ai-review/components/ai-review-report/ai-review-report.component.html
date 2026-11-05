@@ -170,6 +170,43 @@
       </span>
     </div>
 
+    <!-- What an interactive HTML package holds, and whether it reports to the platform. -->
+    @if (row.item.result?.htmlPackage; as p) {
+      <div class="air-package">
+        <span class="air-package-facts">
+          {{ p.pages }} {{ p.pages === 1 ? 'page' : 'pages' }}
+          @if (p.videos.length) {
+            · {{ p.videos.length }} {{ p.videos.length === 1 ? 'video' : 'videos' }}
+            @if (row.item.result?.durationSec) {
+              ({{ duration(row.item.result?.durationSec) }})
+            }
+          }
+          @if (p.images) {
+            · {{ p.images }} {{ p.images === 1 ? 'image' : 'images' }}
+          }
+          @if (p.questions) {
+            · {{ p.questions }} {{ p.questions === 1 ? 'question' : 'questions' }}
+          }
+        </span>
+        <span class="air-package-flag" [class.air-package-flag--ok]="p.reportsProgress" [class.air-package-flag--warn]="!p.reportsProgress">
+          <ws-auth-air-icon [name]="p.reportsProgress ? 'checkCircle' : 'warning'" [size]="16" />
+          @if (p.reportsProgress) {
+            <ng-container i18n>Reports learner progress</ng-container>
+          } @else {
+            <ng-container i18n>Does not report progress, so completion is not recorded</ng-container>
+          }
+        </span>
+        <span class="air-package-flag" [class.air-package-flag--ok]="p.savesState">
+          <ws-auth-air-icon [name]="p.savesState ? 'checkCircle' : 'info'" [size]="16" />
+          @if (p.savesState) {
+            <ng-container i18n>Saves where the learner left off</ng-container>
+          } @else {
+            <ng-container i18n>Learners start from the beginning each time</ng-container>
+          }
+        </span>
+      </div>
+    }
+
     @if (row.item.status === 'failed' || row.item.status === 'cancelled') {
       <p class="air-error">{{ row.item.error || 'This ' + words().one + ' could not be reviewed.' }}</p>
     }
@@ -385,4 +422,4 @@
 }
 
 <!-- An issue opened in place: the resource at that moment or page, with the finding and fix. -->
-<ws-auth-air-evidence #evidence />
+<ws-auth-air-evidence #evidence (refresh)="refreshLinks($event)" />

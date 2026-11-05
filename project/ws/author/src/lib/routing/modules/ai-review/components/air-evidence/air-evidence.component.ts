@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, output, signal, viewChild } from '@angular/core'
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
 import { IAiReviewItem } from '../../models/ai-review.model'
 import { kindFromMime, kindLine, kindMeta } from '../../utils/resource-kind'
@@ -110,8 +110,44 @@ export class AirEvidenceComponent {
   /** True when the video failed to load (offline, slow, or gone), so the pop-up says so. */
   readonly mediaError = signal(false)
 
+  /**
+   * Asks for a fresh link to the file: an uploaded file's link is signed and lasts an hour, so a
+   * report left open longer cannot play it. The report reads the review again and calls
+   * {@link replaceItem}, or {@link refreshFailed}.
+   */
+  readonly refresh = output<IAiReviewItem>()
+  readonly refreshing = signal(false)
+  readonly refreshError = signal('')
+
+  askFresh(): void {
+    const e = this.evidence()
+    if (!e || this.refreshing()) {
+      return
+    }
+    this.refreshing.set(true)
+    this.refreshError.set('')
+    this.refresh.emit(e.item)
+  }
+
+  /** The same finding, with the resource's fresh link. */
+  replaceItem(item: IAiReviewItem): void {
+    const e = this.evidence()
+    this.refreshing.set(false)
+    if (e && e.item.contentId === item.contentId) {
+      this.mediaError.set(false)
+      this.evidence.set({ ...e, item })
+    }
+  }
+
+  refreshFailed(message: string): void {
+    this.refreshing.set(false)
+    this.refreshError.set(message)
+  }
+
   open(evidence: AirEvidence): void {
     this.mediaError.set(false)
+    this.refreshing.set(false)
+    this.refreshError.set('')
     this.evidence.set(evidence)
     // A modal dialog traps focus but not scrolling: hold the page still behind it.
     this.document.documentElement.style.overflow = 'hidden'
@@ -163,6 +199,10 @@ export class AirEvidenceComponent {
   }
 
   verdictTone(verdict: AirEvidence['verdict']): string {
-    return verdict === 'yes' || verdict === 'ok' || verdict === 'covered' ? 'green' : verdict === 'partial' || verdict === 'na' ? 'amber' : 'red'
+    return verdict === 'yes' || verdict === 'ok' || verdict === 'covered'
+      ? 'green'
+      : verdict === 'partial' || verdict === 'na'
+        ? 'amber'
+        : 'red'
   }
 }

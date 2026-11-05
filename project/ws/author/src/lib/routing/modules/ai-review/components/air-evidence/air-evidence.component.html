@@ -18,7 +18,21 @@
           @if (videoSrc(); as src) {
             @if (mediaError()) {
               <div class="air-ev-nopreview" role="status">
-                <p i18n>The video could not be loaded. Check your connection, or open the file in a new tab.</p>
+                <p i18n>
+                  The video could not be loaded. If this report has been open a while, its link may have expired; otherwise check your
+                  connection.
+                </p>
+                <button type="button" class="air-btn air-btn--secondary air-ev-refresh" [disabled]="refreshing()" (click)="askFresh()">
+                  <ws-auth-air-icon name="refresh" [size]="16" />
+                  @if (refreshing()) {
+                    <ng-container i18n>Getting a fresh link…</ng-container>
+                  } @else {
+                    <ng-container i18n>Get a fresh link</ng-container>
+                  }
+                </button>
+                @if (refreshError()) {
+                  <p class="air-ev-refresh-error">{{ refreshError() }}</p>
+                }
               </div>
             } @else {
               <video class="air-ev-video" controls playsinline preload="metadata" [src]="src" (error)="mediaError.set(true)">
@@ -27,6 +41,20 @@
             }
           } @else if (pdfSrc(); as src) {
             <iframe class="air-ev-pdf" [src]="src" [title]="e.item.name"></iframe>
+            <!-- An iframe reports no load error, so the way out is always offered. -->
+            <p class="air-ev-pdf-help">
+              <ng-container i18n>PDF not showing? Its link may have expired.</ng-container>
+              <button type="button" class="air-link-btn" [disabled]="refreshing()" (click)="askFresh()">
+                @if (refreshing()) {
+                  <ng-container i18n>Getting a fresh link…</ng-container>
+                } @else {
+                  <ng-container i18n>Get a fresh link</ng-container>
+                }
+              </button>
+              @if (refreshError()) {
+                <span class="air-ev-refresh-error">{{ refreshError() }}</span>
+              }
+            </p>
           } @else if (kind() === 'quiz' || kind() === 'assessment') {
             <div class="air-ev-question">
               @if (e.code) {

@@ -10,10 +10,14 @@ import {
   AiReviewFilesPageComponent,
   CHECK_RETRIES,
   CHECK_RETRY_MS,
+  JOINED_FILE_REVIEW,
   StorageUploadError,
   UPLOAD_CONCURRENCY,
   storageMessage,
 } from './ai-review-files-page.component'
+
+/** Every wait of the check's retries, which grow by CHECK_RETRY_MS each time. */
+const ALL_CHECK_RETRIES_MS = (CHECK_RETRY_MS * CHECK_RETRIES * (CHECK_RETRIES + 1)) / 2
 
 jest.mock('file-saver', () => ({ saveAs: jest.fn() }))
 jest.mock('xlsx', () => ({ utils: {}, read: jest.fn() }))
@@ -45,6 +49,7 @@ const context = (over: Partial<IAiReviewUploadContext> = {}): IAiReviewUploadCon
     pdf: { extensions: ['.pdf'], maxBytes: 300 * MB },
     quiz: { extensions: ['.xlsx'], maxBytes: 5 * MB },
     assessment: { extensions: ['.xlsx'], maxBytes: 5 * MB },
+    html: { extensions: ['.zip'], maxBytes: 200 * MB },
   },
   limits: { maxVideoMinutes: 30, maxActivePerUser: 2, maxUploadFiles: 4 },
   ...over,
@@ -319,16 +324,67 @@ describe('AiReviewFilesPageComponent', () => {
       c.addFiles([file('bp.mp4')])
       expect(c.entries()[0].state).toBe('checking')
       expect(c.stateLabel(c.entries()[0])).toBe('Checking the file…')
-      jest.advanceTimersByTime(CHECK_RETRY_MS * 2)
+      // A little longer each time: 1.5 s, then 3 s.
+      jest.advanceTimersByTime(CHECK_RETRY_MS * 3)
       expect(c.entries()[0].state).toBe('ready')
     })
 
-    it(`gives up after ${CHECK_RETRIES} more checks`, () => {
-      api.checkUploads.mockReturnValue(of({ uploads: [checked('u1', { status: 'pending' })], estimateUsd: 0 }))
+    it(`gives up after ${CHECK_RETRIES} more checks, saying why in the service's words`, () => {
+      api.checkUploads.mockReturnValue(
+        of({
+          uploads: [checked('u1', { status: 'pending', reason: 'Still being checked. This takes a moment for a large file.' })],
+          estimateUsd: 0,
+        }),
+      )
       const c = create()
       c.addFiles([file('bp.mp4')])
-      jest.advanceTimersByTime(CHECK_RETRY_MS * (CHECK_RETRIES + 1))
-      expect(c.entries()[0]).toMatchObject({ state: 'failed', problem: 'This file could not be uploaded. Try again.' })
+      jest.advanceTimersByTime(ALL_CHECK_RETRIES_MS)
+      expect(api.checkUploads).toHaveBeenCalledTimes(CHECK_RETRIES + 1)
+      expect(c.entries()[0]).toMatchObject({ state: 'failed', problem: 'Still being checked. This takes a moment for a large file.' })
+    })
+
+    it('does not ask again after a refusal that will not change (403)', () => {
+      api.checkUploads.mockReturnValue(
+        throwError(() => new HttpErrorResponse({ status: 403, error: { error: { code: 'FORBIDDEN', message: 'Not your file.' } } })),
+      )
+      const c = create()
+      c.addFiles([file('bp.mp4')])
+      jest.advanceTimersByTime(ALL_CHECK_RETRIES_MS)
+      expect(api.checkUploads).toHaveBeenCalledTimes(1)
+      expect(c.entries()[0]).toMatchObject({ state: 'failed', problem: 'Not your file.' })
+    })
+
+    it('asks again after a gateway timeout, which may pass', () => {
+      api.checkUploads
+        .mockReturnValueOnce(throwError(() => new HttpErrorResponse({ status: 504 })))
+        .mockImplementation((ids: string[]) => of({ uploads: [checked(ids[0])], estimateUsd: 0 }))
+      const c = create()
+      c.addFiles([file('bp.mp4')])
+      jest.advanceTimersByTime(CHECK_RETRY_MS)
+      expect(c.entries()[0].state).toBe('ready')
+    })
+
+    it('tries a file already in storage again by checking it, never by sending it again', () => {
+      api.checkUploads.mockReturnValue(of({ uploads: [checked('u1', { status: 'pending' })], estimateUsd: 0 }))
+      const c = create()
+      c.addFiles([file('big.mp4')])
+      jest.advanceTimersByTime(ALL_CHECK_RETRIES_MS)
+      expect(c.entries()[0]).toMatchObject({ state: 'failed', stored: true, uploadId: 'u1' })
+      api.checkUploads.mockImplementation((ids: string[]) => of({ uploads: [checked(ids[0])], estimateUsd: 0 }))
+      c.retryFile(c.entries()[0].key)
+      expect(c.entries()[0].state).toBe('ready')
+      expect(api.signUploads).toHaveBeenCalledTimes(1)
+      expect(api.uploadFile).toHaveBeenCalledTimes(1)
+    })
+
+    it('sends a file again when it never reached storage', () => {
+      api.uploadFile.mockReturnValueOnce(throwError(() => new HttpErrorResponse({ status: 0 })))
+      const c = create()
+      c.addFiles([file('bp.mp4')])
+      expect(c.entries()[0]).toMatchObject({ state: 'failed', stored: false })
+      c.retryFile(c.entries()[0].key)
+      expect(api.uploadFile).toHaveBeenCalledTimes(2)
+      expect(c.entries()[0].state).toBe('ready')
     })
 
     it('stops an upload when its file is removed, and starts the next', () => {
@@ -363,6 +419,31 @@ describe('AiReviewFilesPageComponent', () => {
       const busy = new Event('beforeunload', { cancelable: true })
       window.dispatchEvent(busy)
       expect(busy.defaultPrevented).toBe(true)
+    })
+  })
+
+  describe('files added before the page has loaded', () => {
+    it('keeps them and adds them once it knows what it accepts', () => {
+      const ctx = new Subject<IAiReviewUploadContext>()
+      api.uploadContext.mockReturnValue(ctx)
+      const c = create()
+      c.addFiles([file('bp.mp4')])
+      expect(c.entries()).toHaveLength(0)
+      expect(c.addNote()).toBe('Your file will be added as soon as the page has loaded.')
+      ctx.next(context())
+      expect(c.entries()).toHaveLength(1)
+      expect(c.entries()[0].state).toBe('ready')
+    })
+
+    it('says so when file review turns out to be switched off', () => {
+      const ctx = new Subject<IAiReviewUploadContext>()
+      api.uploadContext.mockReturnValue(ctx)
+      const c = create()
+      c.addFiles([file('a.mp4'), file('b.pdf')])
+      expect(c.addNote()).toBe('2 files will be added as soon as the page has loaded.')
+      ctx.next(context({ enabled: false }))
+      expect(c.entries()).toHaveLength(0)
+      expect(c.addNote()).toMatch(/not switched on for this server/)
     })
   })
 
@@ -509,12 +590,32 @@ describe('AiReviewFilesPageComponent', () => {
       await flush()
       expect(c.entries()[0].state).toBe('ready')
     })
+
+    it("keeps the sheet's own warning when it is switched between quiz and assessment", async () => {
+      ;(readQuizSheet as jest.Mock).mockResolvedValue({
+        sheet: {},
+        body: new Blob(['{}']),
+        error: null,
+        warning: '2 rows had no question and were skipped.',
+      })
+      api.checkUploads.mockImplementation((ids: string[]) =>
+        of({ uploads: [checked(ids[0], { kind: 'quiz', questions: 14 })], estimateUsd: 0 }),
+      )
+      const c = create()
+      c.addFiles([file('mcq.xlsx')])
+      await flush()
+      expect(c.entries()[0]).toMatchObject({ state: 'ready', warning: '2 rows had no question and were skipped.' })
+      c.setSheetKind(c.entries()[0].key, 'assessment')
+      expect(c.entries()[0]).toMatchObject({ kind: 'assessment', state: 'ready', warning: '2 rows had no question and were skipped.' })
+    })
   })
 
   describe('setting up and starting', () => {
     it('says what is missing, in order', () => {
       const c = create()
-      expect(c.validationMessage()).toBe('Add the files to review: videos, PDFs, or quiz and assessment Excel sheets.')
+      expect(c.validationMessage()).toBe(
+        'Add the files to review: videos, PDFs, interactive HTML packages (.zip), or quiz and assessment Excel sheets.',
+      )
       c.addFiles([file('bp.mp4')])
       expect(c.validationMessage()).toBe('Pick a competency to judge the files against, or untick Domain review.')
       c.selectCompetency('C2')
@@ -573,6 +674,40 @@ describe('AiReviewFilesPageComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith([], expect.objectContaining({ queryParams: { review: 'r1' } }))
       expect(c.review()?.id).toBe('r1')
       expect(api.uploadHistory).toHaveBeenCalledTimes(3)
+    })
+
+    it('says so when Start joined a review of the same files already running', () => {
+      api.startUploadReview.mockReturnValue(of({ reviewId: 'r4', created: false, estimateUsd: 0.36 }))
+      const c = create()
+      c.domain.set(false)
+      c.addFiles([file('bp.mp4')])
+      c.start()
+      expect(c.joinedNote()).toBe(JOINED_FILE_REVIEW)
+      // Opening another review later clears the note.
+      c.newReview()
+      expect(c.joinedNote()).toBe('')
+    })
+
+    it('after an unclear failure, reads Past reviews again and says where a started review would be', () => {
+      api.startUploadReview.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 0 })))
+      const c = create()
+      c.domain.set(false)
+      c.addFiles([file('bp.mp4')])
+      api.uploadHistory.mockClear()
+      c.start()
+      expect(api.uploadHistory).toHaveBeenCalled()
+      expect(c.startError()).toMatch(/If it had started, it is in Past reviews below/)
+    })
+
+    it('after a clear refusal, says only the reason', () => {
+      api.startUploadReview.mockReturnValue(
+        throwError(() => new HttpErrorResponse({ status: 429, error: { error: { code: 'DAILY_LIMIT', message: 'Limit reached.' } } })),
+      )
+      const c = create()
+      c.domain.set(false)
+      c.addFiles([file('bp.mp4')])
+      c.start()
+      expect(c.startError()).toBe('Limit reached.')
     })
 
     it("uses the user's title, cut to the service's limit", () => {
@@ -708,7 +843,7 @@ describe('AiReviewFilesPageComponent', () => {
       const c = create()
       expect(c.statusLabel('partial')).toBe('Done — some files could not be reviewed')
       c.back()
-      expect(router.navigate).toHaveBeenCalledWith(['/author/my-content'])
+      expect(router.navigate).toHaveBeenCalledWith(['/author/my-content'], { queryParams: { status: 'draft' } })
     })
 
     it('shows a failed history read', () => {

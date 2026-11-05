@@ -48,7 +48,14 @@ const KINDS: Record<string, ResourceKindMeta> = {
     icon: 'audio',
     steps: [{ label: 'Download', icon: 'download' }, { label: 'Transcribe', icon: 'audio' }, SCORE],
   },
-  html: { label: 'Interactive (HTML)', plural: 'Interactive (HTML)', icon: 'code', steps: [] },
+  html: {
+    label: 'Interactive (HTML)',
+    plural: 'Interactive (HTML)',
+    icon: 'code',
+    steps: [{ label: 'Download & unpack', icon: 'download' }, { label: 'Read pages & videos', icon: 'read' }, SCORE],
+  },
+  /** Shares the HTML mimetype but reports through SCORM; not reviewed yet. */
+  scorm: { label: 'SCORM package', plural: 'SCORM packages', icon: 'code', steps: [] },
   link: { label: 'Web link', plural: 'Web links', icon: 'link', steps: [] },
 }
 
@@ -73,6 +80,11 @@ export function kindFromMime(mimeType: string | null | undefined): string {
   }
   if (m.startsWith('audio/')) {
     return 'audio'
+  }
+  // The service gives every HTML resource its kind, so an html-archive it left unclassified
+  // is a SCORM package.
+  if (m === 'application/vnd.ekstep.html-archive') {
+    return 'scorm'
   }
   if (m.includes('html')) {
     return 'html'
@@ -116,7 +128,9 @@ export function formatOf(mimeType: string | null | undefined): string {
 export function kindLine(kind: string | null | undefined, mimeType: string | null | undefined): string {
   const label = kindMeta(kind).label
   const format = formatOf(mimeType)
-  return format && format !== 'JSON' && format.toLowerCase() !== label.toLowerCase() ? `${label} · ${format}` : label
+  // "Interactive (HTML)" already says HTML, and a SCORM package is not "SCORM package · HTML".
+  const said = label.toLowerCase().includes((format || '').toLowerCase()) || kind === 'scorm'
+  return format && format !== 'JSON' && !said ? `${label} · ${format}` : label
 }
 
 /**

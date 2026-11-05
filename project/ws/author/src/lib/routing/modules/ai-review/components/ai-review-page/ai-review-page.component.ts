@@ -31,14 +31,23 @@ import {
 } from '../../models/ai-review.model'
 import { AiReviewService } from '../../services/ai-review.service'
 import { formatDuration, kindFromMime, kindLine, kindMeta, pipelineProgress } from '../../utils/resource-kind'
-import { statusLabel, watchReview } from '../../utils/review-run'
+import { isUnclear, statusLabel, watchReview } from '../../utils/review-run'
 import { AirSelectOption } from '../air-select/air-select.component'
 
 export { pipelineProgress } from '../../utils/resource-kind'
 export { POLL_FAST_MS, POLL_SLOW_MS, nextPollDelay } from '../../utils/review-run'
 
 /** How long the setup screen waits for the FRAC role check, and for the page and question count. */
-export const ROLE_CHECK_TIMEOUT_MS = 45000
+/**
+ * Longer than uiproxy waits for the FRAC role check (45 s), which is longer than the service
+ * takes at most (two 20 s tries): the service's own answer, or uiproxy's, always comes first.
+ */
+export const ROLE_CHECK_TIMEOUT_MS = 50000
+
+/** Start found this course already being reviewed (by anyone): that review is shown. */
+export const JOINED_COURSE_REVIEW = 'This course was already being reviewed, so you are following that review instead of starting another.'
+/** Start's answer was lost, but the review had started: it is shown. */
+export const STARTED_AFTER_ALL = 'The review had started after all; here it is.'
 export const MEASURE_TIMEOUT_MS = 120000
 
 /** Settle time before asking which resources are unchanged, so typing does not fire a call per key. */
@@ -121,6 +130,8 @@ export class AiReviewPageComponent implements OnInit {
 
   readonly starting = signal(false)
   readonly startError = signal('')
+  /** Said when Start joined a review already running, instead of starting (and paying for) another. */
+  readonly joinedNote = signal('')
 
   readonly review = signal<IAiReview | null>(null)
   readonly pollError = signal('')
@@ -704,19 +715,49 @@ export class AiReviewPageComponent implements OnInit {
     }
     this.starting.set(true)
     this.startError.set('')
+    this.joinedNote.set('')
     this.api
       .start(this.courseId, this.buildOptions())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: res => {
           this.starting.set(false)
+          if (!res.created) {
+            this.joinedNote.set(JOINED_COURSE_REVIEW)
+          }
           this.follow(res.reviewId)
           this.loadHistory()
         },
         error: err => {
           this.starting.set(false)
           this.startError.set(AiReviewService.errorMessage(err))
+          if (isUnclear(err)) {
+            this.findStartedReview()
+          }
         },
+      })
+  }
+
+  /**
+   * After Start failed with no clear answer (the connection dropped, a gateway timed out), the
+   * review may have started anyway. The course's running review, if there is one, is followed,
+   * and Past reviews is read again, so the user never starts (and pays for) a second one. The
+   * settings on the form are left as they are.
+   */
+  private findStartedReview(): void {
+    this.loadHistory()
+    this.api
+      .preview(this.courseId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: preview => {
+          if (preview.activeReviewId && !this.review()) {
+            this.startError.set('')
+            this.joinedNote.set(STARTED_AFTER_ALL)
+            this.follow(preview.activeReviewId)
+          }
+        },
+        error: () => undefined,
       })
   }
 
@@ -732,6 +773,12 @@ export class AiReviewPageComponent implements OnInit {
     this.followedId = reviewId
     if (this.pollSub) {
       this.pollSub.unsubscribe()
+    }
+    // Another review than the one on screen: clear it, so its report is never shown under the
+    // new one's address while the new one loads.
+    if (this.review() && this.review()?.id !== reviewId) {
+      this.review.set(null)
+      this.joinedNote.set('')
     }
     this.following.set(!this.review())
     this.pollSub = this.poll(reviewId)
@@ -786,6 +833,9 @@ export class AiReviewPageComponent implements OnInit {
       this.pollSub.unsubscribe()
       this.pollSub = null
     }
+    this.followedId = null
+    this.pollError.set('')
+    this.joinedNote.set('')
     const o = this.review()?.options
     if (o) {
       this.addie.set(o.addie !== false)

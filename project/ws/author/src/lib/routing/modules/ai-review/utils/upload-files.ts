@@ -10,9 +10,11 @@ import { xlsxApi } from './report-export'
 export const VIDEO_EXTENSIONS = ['.mp4', '.mov', '.m4v', '.webm', '.mkv']
 export const PDF_EXTENSIONS = ['.pdf']
 export const SHEET_EXTENSIONS = ['.xlsx', '.xls']
+/** An interactive HTML package: the zip, with index.html at the top. */
+export const HTML_EXTENSIONS = ['.zip']
 
 /** What the file input offers: every kind the review takes. */
-export const ACCEPT_ATTRIBUTE = [...VIDEO_EXTENSIONS, ...PDF_EXTENSIONS, ...SHEET_EXTENSIONS].join(',')
+export const ACCEPT_ATTRIBUTE = [...VIDEO_EXTENSIONS, ...PDF_EXTENSIONS, ...SHEET_EXTENSIONS, ...HTML_EXTENSIONS].join(',')
 
 export const extOf = (name: string): string => {
   const i = name.lastIndexOf('.')
@@ -34,6 +36,9 @@ export function kindForFile(name: string): AiReviewUploadKind | null {
   if (SHEET_EXTENSIONS.includes(ext)) {
     return 'quiz'
   }
+  if (HTML_EXTENSIONS.includes(ext)) {
+    return 'html'
+  }
   return null
 }
 
@@ -53,7 +58,7 @@ export function formatBytes(bytes: number | null | undefined): string {
 export function fileProblem(file: { name: string; size: number }, accepted: IAiReviewUploadContext['accepted'] | null): string | null {
   const kind = kindForFile(file.name)
   if (!kind) {
-    return 'Not a file the review takes. Add a video (MP4, MOV, M4V, WEBM, MKV), a PDF, or a quiz or assessment Excel sheet.'
+    return 'Not a file the review takes. Add a video (MP4, MOV, M4V, WEBM, MKV), a PDF, an interactive HTML package (.zip), or a quiz or assessment Excel sheet.'
   }
   if (!file.size) {
     return 'This file is empty.'

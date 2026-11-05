@@ -29,6 +29,7 @@ const accepted: IAiReviewUploadContext['accepted'] = {
   pdf: { extensions: ['.pdf'], maxBytes: 300 * MB },
   quiz: { extensions: ['.xlsx', '.xls'], maxBytes: 5 * MB },
   assessment: { extensions: ['.xlsx', '.xls'], maxBytes: 5 * MB },
+  html: { extensions: ['.zip'], maxBytes: 200 * MB },
 }
 
 describe('upload files', () => {
@@ -48,7 +49,8 @@ describe('upload files', () => {
     expect(kindForFile('quiz.xlsx')).toBe('quiz')
     expect(kindForFile('old.xls')).toBe('quiz')
     expect(kindForFile('slides.pptx')).toBeNull()
-    expect(ACCEPT_ATTRIBUTE.split(',')).toEqual(expect.arrayContaining(['.mp4', '.pdf', '.xlsx']))
+    expect(kindForFile('ASHA part 1.ZIP')).toBe('html')
+    expect(ACCEPT_ATTRIBUTE.split(',')).toEqual(expect.arrayContaining(['.mp4', '.pdf', '.xlsx', '.zip']))
   })
 
   it('writes sizes people read at a glance', () => {

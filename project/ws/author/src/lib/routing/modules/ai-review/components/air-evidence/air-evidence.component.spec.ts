@@ -81,14 +81,21 @@ describe('AirEvidenceComponent', () => {
       el().querySelector('video')!.dispatchEvent(new Event('error'))
       fixture.detectChanges()
       expect(el().querySelector('video')).toBeNull()
-      expect(el().textContent).toContain('The video could not be loaded. Check your connection, or open the file in a new tab.')
+      expect(el().textContent).toContain('The video could not be loaded. If this report has been open a while, its link may have expired')
       component.open(evidence())
       fixture.detectChanges()
       expect(el().querySelector('video')).toBeTruthy()
     })
 
     it('opens a PDF on the page', () => {
-      component.open(evidence({ item: item({ kind: 'pdf', mimeType: 'application/pdf', artifactUrl: 'https://cdn.example/n.pdf' }), atSec: undefined, at: 'page 3', page: 3 }))
+      component.open(
+        evidence({
+          item: item({ kind: 'pdf', mimeType: 'application/pdf', artifactUrl: 'https://cdn.example/n.pdf' }),
+          atSec: undefined,
+          at: 'page 3',
+          page: 3,
+        }),
+      )
       fixture.detectChanges()
       expect(el().querySelector('video')).toBeNull()
       expect(el().querySelector('iframe')!.getAttribute('src')).toBe('https://cdn.example/n.pdf#page=3')

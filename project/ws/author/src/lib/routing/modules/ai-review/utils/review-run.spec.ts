@@ -1,6 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http'
 import { Observable, of, throwError } from 'rxjs'
 import { IAiReview } from '../models/ai-review.model'
-import { POLL_FAST_MS, POLL_SLOW_MS, nextPollDelay, statusLabel, watchReview } from './review-run'
+import { POLL_FAST_MS, POLL_RETRY_MS, POLL_SLOW_MS, isTransient, isUnclear, nextPollDelay, statusLabel, watchReview } from './review-run'
 
 const at = (status: IAiReview['status'], queuePosition = 0): IAiReview => ({ id: 'r1', status, queuePosition }) as IAiReview
 
@@ -59,5 +60,30 @@ describe('review run', () => {
     watchReview(read, document, () => true).subscribe(r => seen.push(r.status))
     jest.advanceTimersByTime(2000 * 3)
     expect(seen).toEqual(['done'])
+  })
+
+  it('tells a failure that may pass from one that will not', () => {
+    expect(isTransient(new HttpErrorResponse({ status: 0 }))).toBe(true)
+    expect(isTransient(new HttpErrorResponse({ status: 429 }))).toBe(true)
+    expect(isTransient(new HttpErrorResponse({ status: 504 }))).toBe(true)
+    expect(isTransient(new HttpErrorResponse({ status: 403 }))).toBe(false)
+    expect(isTransient(new HttpErrorResponse({ status: 404 }))).toBe(false)
+    expect(isTransient(new Error('timeout'))).toBe(true)
+  })
+
+  it('counts only no answer or a server failure as unclear, never a refusal', () => {
+    expect(isUnclear(new HttpErrorResponse({ status: 0 }))).toBe(true)
+    expect(isUnclear(new HttpErrorResponse({ status: 502 }))).toBe(true)
+    expect(isUnclear(new HttpErrorResponse({ status: 429 }))).toBe(false)
+    expect(isUnclear(new HttpErrorResponse({ status: 400 }))).toBe(false)
+  })
+
+  it("stops at once for a review that is gone or not the user's", () => {
+    const read = jest.fn((): Observable<IAiReview> => throwError(() => new HttpErrorResponse({ status: 403 })))
+    let failed: unknown = null
+    watchReview(read, document, () => true).subscribe({ error: e => (failed = e) })
+    jest.advanceTimersByTime(POLL_RETRY_MS * 4)
+    expect(read).toHaveBeenCalledTimes(1)
+    expect((failed as HttpErrorResponse).status).toBe(403)
   })
 })
