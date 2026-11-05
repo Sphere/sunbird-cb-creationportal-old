@@ -1,13 +1,24 @@
 <section *ngIf="isNotEmbed">
-  <viewer-viewer-top-bar *ngIf="fullScreenContainer" [forPreview]="forPreview" [frameReference]="fullScreenContainer"
-    (toggle)="toggleSideBar()" (fsState)="fullScreenState($event)" [screenContent]="content">
+  <viewer-viewer-top-bar
+    *ngIf="fullScreenContainer"
+    [forPreview]="forPreview"
+    [frameReference]="fullScreenContainer"
+    (toggle)="toggleSideBar()"
+    (fsState)="fullScreenState($event)"
+    [screenContent]="content"
+  >
   </viewer-viewer-top-bar>
-  <viewer-viewer-top-bar *ngIf="!fullScreenContainer" [forPreview]="forPreview" [frameReference]="fullScreenContainer"
-    (toggle)="toggleSideBar()" [screenContent]="content">
+  <viewer-viewer-top-bar
+    *ngIf="!fullScreenContainer"
+    [forPreview]="forPreview"
+    [frameReference]="fullScreenContainer"
+    (toggle)="toggleSideBar()"
+    [screenContent]="content"
+  >
   </viewer-viewer-top-bar>
   <div class="review-block" *ngIf="isReviewer">
     <div class="info-msg">
-      <img loading="lazy" src="\cbp-assets\icons\simple-icons_codereview.svg" alt="review icon" class="review-icon">
+      <img loading="lazy" src="\cbp-assets\icons\simple-icons_codereview.svg" alt="review icon" class="review-icon" />
       <span class="mode-block" i18n>You are in review mode</span>
     </div>
   </div>
@@ -21,15 +32,11 @@
             <mat-card-title i18n>Looks like we are having some issues in our content.</mat-card-title>
             <mat-card-content>
               <div class="mat-caption">
-                <ng-container i18n>
-                  Debug Message: This content is of a different mimeType (
-                </ng-container>
+                <ng-container i18n> Debug Message: This content is of a different mimeType ( </ng-container>
                 <ng-container>
                   {{ error?.mimeType }}
                 </ng-container>
-                <ng-container i18n>
-                  )
-                </ng-container>
+                <ng-container i18n> ) </ng-container>
               </div>
               <div>
                 <strong i18n>Possible Link: </strong>
@@ -56,19 +63,27 @@
           </mat-card>
         </div>
       </section>
-      <section *ngIf="status === 'pending'">
-        <mat-spinner></mat-spinner>
-      </section>
+      @if (status === 'pending') {
+        <ws-skeleton-group class="viewer-skeleton" label="Loading…" i18n-label>
+          <ws-skeleton shape="line" width="40%" height="24px" />
+          <ws-skeleton shape="block" />
+          <ws-skeleton shape="line" width="64%" />
+          <ws-skeleton shape="line" width="48%" />
+        </ws-skeleton-group>
+      }
       <router-outlet (activate)="getContentData($event)"></router-outlet>
     </mat-sidenav-content>
 
-    <mat-sidenav style="border: none !important;"
-      [ngClass]="isTypeOfCollection?'viewer-sidenav':'viewer-sidenav-standalone'" position="end"
-      [opened]="sideNavBarOpened" [mode]="mode">
+    <mat-sidenav
+      style="border: none !important"
+      [ngClass]="isTypeOfCollection ? 'viewer-sidenav' : 'viewer-sidenav-standalone'"
+      position="end"
+      [opened]="sideNavBarOpened"
+      [mode]="mode"
+    >
       <!--<mat-tab-group>
               <mat-tab *ngIf="isTypeOfCollection" i18n-label label="Contents"> -->
-      <viewer-viewer-toc [forPreview]="forPreview" (hidenav)="minimizeBar()">
-      </viewer-viewer-toc>
+      <viewer-viewer-toc [forPreview]="forPreview" (hidenav)="minimizeBar()"> </viewer-viewer-toc>
       <!--</mat-tab>
               <mat-tab i18n-label label="Details"> -->
       <!-- <ws-widget-player-brief [forPreview]="forPreview" [content]="content"></ws-widget-player-brief> -->
@@ -76,7 +91,6 @@
             </mat-tab-group> -->
     </mat-sidenav>
   </mat-sidenav-container>
-
 </section>
 <div class="full-height-width-iframe" *ngIf="!isNotEmbed">
   <router-outlet></router-outlet>

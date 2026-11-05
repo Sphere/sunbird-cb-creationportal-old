@@ -13,6 +13,11 @@ export * from './lib/components/image-crop/image-crop.module'
 
 export * from './lib/components/new-image-crop/new-image-crop.module'
 
+// shimmer placeholders for loading states
+export * from './lib/components/skeleton/skeleton.component'
+
+export * from './lib/components/skeleton/skeleton.module'
+
 export * from './lib/constants/features.enum'
 
 export * from './lib/constants/instances.enum'
