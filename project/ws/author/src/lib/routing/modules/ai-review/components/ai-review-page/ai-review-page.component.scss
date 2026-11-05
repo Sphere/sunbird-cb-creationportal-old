@@ -5,7 +5,6 @@
   min-height: 100%;
 }
 
-
 .air-page {
   max-width: 1400px;
   margin: 0 auto;
@@ -33,7 +32,8 @@
     content: '';
     position: absolute;
     inset: 0;
-    background-image: linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
     background-size: 28px 28px;
     mask-image: linear-gradient(90deg, transparent 20%, #000 75%);
@@ -72,7 +72,9 @@
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.15s ease;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
 
   &:hover {
     background: rgba(255, 255, 255, 0.14);
@@ -287,7 +289,10 @@
   height: 76px;
   color: #fff;
   background: radial-gradient(circle at 32% 28%, #c7d2fe 0%, #818cf8 30%, #6366f1 55%, #4c1d95 100%);
-  box-shadow: 0 0 32px rgba(129, 140, 248, 0.4), inset 0 -6px 16px rgba(30, 27, 75, 0.45), inset 0 4px 10px rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 0 32px rgba(129, 140, 248, 0.4),
+    inset 0 -6px 16px rgba(30, 27, 75, 0.45),
+    inset 0 4px 10px rgba(255, 255, 255, 0.35);
   animation: air-orb-breathe 5s ease-in-out infinite;
 }
 
@@ -322,6 +327,8 @@
   top: calc(72px + var(--downtime-banner-offset, 0px) + 16px);
   max-height: calc(100vh - 72px - var(--downtime-banner-offset, 0px) - 32px);
   overflow-y: auto;
+  // Never a sideways scrollbar: the panel's content always fits its width.
+  overflow-x: hidden;
   overscroll-behavior: contain;
 
   @media (max-width: 1024px) {
@@ -340,9 +347,11 @@
   &--error {
     color: $air-danger;
 
+    // A basis, so in a narrow card (the side panel) the button wraps under the message
+    // instead of squeezing it into a column a few words wide.
     p {
       margin: 0;
-      flex: 1;
+      flex: 1 1 220px;
     }
   }
 }
@@ -510,7 +519,9 @@
   padding: 16px;
   cursor: pointer;
   background: #fff;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 
   // The native checkbox stays for keyboards and screen readers; the tick shows the state.
   input {
@@ -550,7 +561,9 @@
   flex-shrink: 0;
   background: #eef2ff;
   color: $air-primary;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 
   .air-choice--on & {
     background: $air-primary;
@@ -667,7 +680,9 @@
   background: #fff;
   width: 100%;
   box-sizing: border-box;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 
   &::placeholder {
     color: #6b7280;
@@ -721,7 +736,9 @@ input[type='radio'] {
   border: 1px solid $air-border;
   background: #fff;
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 
   // Level with the title, not floating beside the description.
   input {
@@ -816,7 +833,9 @@ input[type='radio'] {
   border-radius: 16px;
   background: #fff;
   border: 1px solid $air-line;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px -16px rgba(15, 23, 42, 0.18);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 12px 32px -16px rgba(15, 23, 42, 0.18);
 
   @media (max-width: 600px) {
     padding: 16px;
@@ -850,415 +869,23 @@ input[type='radio'] {
 
 // ---- Step 2: review running ---------------------------------------------------------
 
-// A thin accent line along the top of the card while work is happening, with a light that
-// travels along it (a moving overlay, so nothing repaints).
-.air-live {
-  position: relative;
-  overflow: hidden;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-  }
-
-  &::before {
-    background: $air-ai-gradient;
-    opacity: 0.85;
-  }
-
-  &::after {
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-    transform: translateX(-100%);
-    animation: air-shimmer 2.8s ease-in-out infinite;
-  }
-}
-
-.air-live-head {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.air-live-text {
-  flex: 1 1 200px;
-  min-width: 0;
-
-  .air-section-title {
-    margin: 0;
-  }
-}
-
-// The review is thinking: a round core with the sparkle, and a gradient arc turning around
-// it on the same centre (a masked conic gradient, so the arc fades out at its tail).
-.air-scanner {
-  position: relative;
+.air-history {
   display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 56px;
-  height: 56px;
-}
-
-.air-scanner-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg, transparent 0deg, rgba(14, 116, 144, 0.15) 60deg, #0e7490 200deg, #6d28d9 300deg, transparent 360deg);
-  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
-  animation: air-turn 1.2s linear infinite;
-}
-
-.air-scanner-core {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  color: $air-primary;
-  background: #eef2ff;
-  box-shadow: inset 0 0 0 1px #c7d2fe;
-}
-
-.air-latest {
-  margin: 4px 0 0;
-}
-
-.air-live-chip {
-  display: inline-flex;
-  align-items: center;
+  // minmax(0, …): a long review name must shorten with an ellipsis, not widen the panel.
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  color: $air-violet;
-  background: #f5f3ff;
-  border: 1px solid #ddd6fe;
-  white-space: nowrap;
-}
+  list-style: none;
+  margin: 0;
+  padding: 0;
 
-.air-live-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: $air-violet;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
-}
-
-.air-queue {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: $air-primary;
-  background: #eef2ff;
-  border-radius: 12px;
-  padding: 8px 16px;
-  margin: 0 0 16px;
-}
-
-.air-progress-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.air-progress {
-  flex: 1;
-  height: 10px;
-  background: #e9edf7;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-// Filled by scaling, not by width, so a step forward is a cheap composited move. A soft
-// light passes along the filled part while work goes on.
-.air-progress-bar {
-  position: relative;
-  overflow: hidden;
-  height: 100%;
-  width: 100%;
-  border-radius: 999px;
-  background: $air-ai-gradient;
-  transform-origin: left center;
-  transition: transform 0.5s ease;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-    transform: translateX(-100%);
-    animation: air-shimmer 2.2s ease-in-out infinite;
-  }
-}
-
-@keyframes air-shimmer {
-  to {
-    transform: translateX(100%);
-  }
-}
-
-.air-progress-pct {
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  min-width: 44px;
-  text-align: right;
-}
-
-.air-pipelines {
-  display: grid;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.air-pipeline {
-  border: 1px solid $air-line;
-  border-radius: 12px;
-  padding: 16px;
-  background: #fff;
-  transition: border-color 0.2s ease;
-
-  &--running {
-    border-color: #c4b5fd;
-  }
-
-  &--failed,
-  &--cancelled {
-    border-color: #fecaca;
-  }
-}
-
-.air-pipeline-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.air-pipeline-title {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-
-  > * {
+  > li {
     min-width: 0;
   }
 }
 
-.air-pipeline-name {
-  font-weight: 600;
-}
-
-.air-pipeline-status {
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: $air-canvas;
-  color: $air-muted;
-  white-space: nowrap;
-
-  &--running {
-    background: #f5f3ff;
-    color: $air-violet;
-  }
-
-  &--done {
-    background: #dcfce7;
-    color: $air-green;
-  }
-
-  &--failed,
-  &--cancelled {
-    background: #fee2e2;
-    color: $air-danger;
-  }
-}
-
-.air-pipeline-steps {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  list-style: none;
-  margin: 12px 0 0;
-  padding: 0;
-
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.air-pstep {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  color: $air-muted;
-  background: $air-canvas;
-  transition: background 0.3s ease, color 0.3s ease;
-
-  &--done {
-    color: $air-green;
-    background: #f0fdf4;
-  }
-
-  &--active {
-    position: relative;
-    overflow: hidden;
-    color: $air-violet;
-    background: #f5f3ff;
-    font-weight: 600;
-
-    // A soft light passing across the step that is happening now.
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-      transform: translateX(-100%);
-      animation: air-shimmer 2.4s ease-in-out infinite;
-    }
-  }
-}
-
-.air-pstep-mark {
-  display: inline-grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  background: #e2e8f0;
-  color: #64748b;
-
-  .air-pstep--done & {
-    background: $air-green;
-    color: #fff;
-  }
-
-  .air-pstep--active & {
-    position: relative;
-    background: $air-violet;
-    color: #fff;
-
-    // A ring that grows and fades from the mark: "working on this now".
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 2px solid $air-violet;
-      animation: air-ping 1.8s ease-out infinite;
-    }
-  }
-}
-
-@keyframes air-ping {
-  from {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  to {
-    transform: scale(1.7);
-    opacity: 0;
-  }
-}
-
-.air-pipeline-stage {
-  margin: 8px 0 0;
-  font-size: 13px;
-  color: $air-violet;
-}
-
-.air-live-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid $air-line;
-
-  p {
-    margin: 0;
-  }
-}
-
-// ---- Step 3: report header ----------------------------------------------------------
-
-.air-report-top {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-
-  .air-section-title {
-    margin: 0;
-  }
-}
-
-.air-report-text {
-  flex: 1 1 200px;
-  min-width: 0;
-
-  p {
-    margin: 2px 0 0;
-  }
-}
-
-.air-report-badge {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  color: #047857;
-  background: #d1fae5;
-  animation: air-pop-in 0.3s ease-out backwards;
-
-  &--partial {
-    color: #b45309;
-    background: #fef3c7;
-  }
-
-  &--failed,
-  &--cancelled {
-    color: $air-danger;
-    background: #fee2e2;
-  }
-}
-
-@keyframes air-pop-in {
-  from {
-    transform: scale(0.85);
-    opacity: 0;
-  }
-}
-
-// ---- Past reviews -------------------------------------------------------------------
-
-.air-history {
-  display: grid;
-  gap: 8px;
-}
-
 .air-history-item {
   width: 100%;
+  min-width: 0;
   text-align: left;
   display: flex;
   flex-direction: column;
@@ -1270,7 +897,9 @@ input[type='radio'] {
   cursor: pointer;
   font-family: $air-font;
   color: $air-text;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 
   &:hover {
     border-color: $air-border-hover;
@@ -1353,12 +982,6 @@ input[type='radio'] {
   font-weight: 500;
 }
 
-
-// Step headings take focus when a step changes; the focus ring is not needed there.
-#air-step-heading:focus {
-  outline: none;
-}
-
 // A resource that will reuse its earlier result: unchanged, so not reviewed (or paid for) again.
 .air-reused {
   display: inline-flex;
@@ -1432,171 +1055,9 @@ input[type='radio'] {
   font-style: italic;
 }
 
-// The FRAC role check: the chosen position's activities the content is judged against.
-.air-role {
-  margin-top: 16px;
-  padding: 16px;
-  border-radius: 12px;
-  background: #fff;
-  border: 1px solid #bae6fd;
-
-  p {
-    margin: 8px 0 0;
-  }
-}
-
-.air-role-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #0e7490;
-}
-
-// Position → Role → Activity: each level labelled with a small tag, activities hanging off
-// their role on a line, so it reads as FRAC's hierarchy at a glance.
-.air-role-position {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  font-size: 15px;
-}
-
-.air-role-tag {
-  display: inline-block;
-  flex-shrink: 0;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-
-  &--position {
-    color: #4338ca;
-    background: #eef2ff;
-  }
-
-  &--role {
-    color: #0e7490;
-    background: #cffafe;
-  }
-
-  &--activity {
-    color: #047857;
-    background: #d1fae5;
-  }
-}
-
-.air-role-tree {
-  margin-top: 12px;
-  display: grid;
-  gap: 12px;
-}
-
-// Each role is a <details>: the summary row is the role, the list its activities.
-.air-role-group {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 8px 12px;
-
-  &[open] > .air-role-node .air-role-chevron {
-    transform: rotate(180deg);
-  }
-}
-
-.air-role-node {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0;
-  cursor: pointer;
-  list-style: none;
-
-  &::-webkit-details-marker {
-    display: none;
-  }
-
-  &:focus-visible {
-    outline: 2px solid #1c5d95;
-    outline-offset: 2px;
-    border-radius: 6px;
-  }
-}
-
-.air-role-chevron {
-  margin-left: auto;
-  color: #64748b;
-  transition: transform 0.2s ease;
-}
-
-.air-role-name {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-// The activities of one role, joined to it by a line on the left.
-.air-role-list {
-  list-style: none;
-  margin: 8px 0 0 12px;
-  padding: 0 0 0 16px;
-  border-left: 2px solid #bae6fd;
-  display: grid;
-  gap: 8px;
-
-  li {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    background: $air-canvas;
-  }
-}
-
-.air-role-activity {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.air-role-next {
-  margin-top: 16px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  background: #f0f9ff;
-  font-size: 14px;
-
-  ul {
-    margin: 8px 0 0;
-    padding-left: 20px;
-    display: grid;
-    gap: 4px;
-  }
-}
-
-.air-role-next-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 700;
-  color: #0e7490;
-}
-
 // "Counting the pages and questions", above the resource list while it runs.
 .air-measuring {
   margin-bottom: 16px;
-}
-
-.air-role ws-auth-air-busy {
-  margin-top: 8px;
 }
 
 // Offline: one calm line at the top of the page, not an error.
@@ -1611,17 +1072,4 @@ input[type='radio'] {
   color: $air-amber;
   background: #fff7ed;
   border: 1px solid #fed7aa;
-}
-
-// Plain style: the four checks, in the same box as FRAC's role check.
-.air-plain-checks {
-  margin: 12px 0 0;
-  padding-left: 20px;
-  display: grid;
-  gap: 6px;
-  font-size: 14px;
-}
-
-.air-plain-next {
-  margin: 8px 0 0;
 }

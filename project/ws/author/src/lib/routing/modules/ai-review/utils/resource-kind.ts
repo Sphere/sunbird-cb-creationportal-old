@@ -139,3 +139,13 @@ export function pipelineProgress(item: { status: string; stage: string | null })
   }
   return 0
 }
+
+/** "12 min 30 s", "45 s", or '' when the length is not known. */
+export function formatDuration(sec: number | null | undefined): string {
+  if (sec === null || sec === undefined) {
+    return ''
+  }
+  const m = Math.floor(sec / 60)
+  const s = Math.round(sec % 60)
+  return m ? (s ? `${m} min ${s} s` : `${m} min`) : `${s} s`
+}

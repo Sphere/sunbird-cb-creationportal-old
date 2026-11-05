@@ -206,6 +206,9 @@
   gap: 12px;
   font-size: 18px;
   font-weight: 600;
+  // Set here: the global heading line height left a line's gap between the type, the
+  // name and a wrapped name.
+  line-height: 1.35;
   margin: 0;
   min-width: 0;
 
@@ -213,7 +216,12 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    min-width: 0;
     overflow-wrap: anywhere;
+  }
+
+  .air-kind-line {
+    line-height: 1.4;
   }
 }
 
@@ -473,7 +481,9 @@
   color: inherit;
   background: #fff;
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 
   &:hover {
     box-shadow: 0 4px 12px -8px rgba(59, 91, 219, 0.5);
@@ -527,7 +537,9 @@
   margin-top: 2px;
   color: $air-muted;
   opacity: 0.45;
-  transition: opacity 0.15s ease, color 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease;
 }
 
 .air-at {

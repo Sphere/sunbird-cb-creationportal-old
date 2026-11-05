@@ -21,7 +21,9 @@
   color: $air-text;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 
   &:hover {
     border-color: $air-border-hover;
@@ -46,11 +48,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: 500;
+  // The chosen value at the weight of text typed in the inputs beside it (the Audience
+  // combobox, the notes): bold here made one field look different from its neighbours.
+  font-weight: 400;
 
   &--placeholder {
     color: $air-muted;
-    font-weight: 400;
   }
 }
 

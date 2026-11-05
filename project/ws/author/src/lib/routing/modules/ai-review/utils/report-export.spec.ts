@@ -1,5 +1,16 @@
 import { IAiReview, IAiReviewItem } from '../models/ai-review.model'
-import { buildReportHtml, buildWorkbookSheets, esc, judgedAgainst, levelText, openPrintableReport, reportFileName, roleSummary, xlsxApi } from './report-export'
+import {
+  buildReportHtml,
+  buildWorkbookSheets,
+  esc,
+  judgedAgainst,
+  levelText,
+  openPrintableReport,
+  reportFileName,
+  reportWords,
+  roleSummary,
+  xlsxApi,
+} from './report-export'
 
 const score = {
   areas: [
@@ -100,7 +111,14 @@ const review = (over: Partial<IAiReview> = {}): IAiReview =>
   }) as IAiReview
 
 describe('what a review was judged against', () => {
-  const ctx = (level: number, levelLabel: string, label = 'Eclampsia') => ({ competencyId: 'C', label, level, levelLabel, levelDescription: '', cadre: '' })
+  const ctx = (level: number, levelLabel: string, label = 'Eclampsia') => ({
+    competencyId: 'C',
+    label,
+    level,
+    levelLabel,
+    levelDescription: '',
+    cadre: '',
+  })
 
   it('always shows the level number', () => {
     expect(levelText(ctx(3, 'Proficient'))).toBe('Level 3 · Proficient')
@@ -112,17 +130,28 @@ describe('what a review was judged against', () => {
 
   it('says each part was judged at its own level, and the level for parts without one', () => {
     const options = { levelMode: 'perResource', competency: ctx(1, 'Aware'), levels: { '2': ctx(2, 'Plans'), '1': ctx(1, 'Aware') } }
-    expect(judgedAgainst(options as never)).toBe('Eclampsia · Each part at its own level (Levels 1, 2); parts without one at Level 1 · Aware')
+    expect(judgedAgainst(options as never)).toBe(
+      'Eclampsia · Each part at its own level (Levels 1, 2); parts without one at Level 1 · Aware',
+    )
     expect(judgedAgainst({ ...options, competency: null } as never)).toBe('Eclampsia · Each part at its own level (Levels 1, 2)')
   })
 })
 
 describe('the FRAC role in exports', () => {
-  const role = { positionCode: 'ANM', positionName: 'ANM', totalActivities: 12, activities: [{ role: 'R', activity: 'Identify pregnancy', description: '', competency: 'E', levels: [1] }] }
+  const role = {
+    positionCode: 'ANM',
+    positionName: 'ANM',
+    totalActivities: 12,
+    activities: [{ role: 'R', activity: 'Identify pregnancy', description: '', competency: 'E', levels: [1] }],
+  }
 
   it('names the position and the activities checked, or why none were', () => {
-    expect(roleSummary({ domain: true, domainStyle: 'frac', role } as never)).toBe('ANM: 1 FRAC activity needs the competency judged: Identify pregnancy')
-    expect(roleSummary({ domain: true, domainStyle: 'frac', role: null, roleNote: 'No position was picked' } as never)).toBe('No position was picked')
+    expect(roleSummary({ domain: true, domainStyle: 'frac', role } as never)).toBe(
+      'ANM: 1 FRAC activity needs the competency judged: Identify pregnancy',
+    )
+    expect(roleSummary({ domain: true, domainStyle: 'frac', role: null, roleNote: 'No position was picked' } as never)).toBe(
+      'No position was picked',
+    )
     expect(roleSummary({ domain: true, domainStyle: 'plain', role } as never)).toBe('')
   })
 })
@@ -150,7 +179,7 @@ describe('report export', () => {
   it('makes a safe file name in any script', () => {
     expect(reportFileName({ courseName: 'Eclampsia care / ANM' }, 'pdf')).toBe('AI-review-Eclampsia_care_ANM.pdf')
     expect(reportFileName({ courseName: 'एक्लेम्पसिया' }, 'xlsx')).toMatch(/^AI-review-.+\.xlsx$/)
-    expect(reportFileName({ courseName: '' }, 'pdf')).toBe('AI-review-course.pdf')
+    expect(reportFileName({ courseName: '' }, 'pdf')).toBe('AI-review-review.pdf')
   })
 
   describe('the PDF document', () => {
@@ -194,7 +223,16 @@ describe('report export', () => {
     const sheets = buildWorkbookSheets(review())
     expect(Object.keys(sheets)).toEqual(['Summary', 'Checklist', 'Coverage', 'Questions'])
     expect(sheets['Summary']).toContainEqual(['ADDIE score %', 50])
-    expect(sheets['Checklist']).toContainEqual(['BP video', 'Video', 'Content Quality', 'C2', 'Cuff placement', 'Not met', 'Over clothing', 'Bare arm'])
+    expect(sheets['Checklist']).toContainEqual([
+      'BP video',
+      'Video',
+      'Content Quality',
+      'C2',
+      'Cuff placement',
+      'Not met',
+      'Over clothing',
+      'Bare arm',
+    ])
     expect(sheets['Coverage']).toContainEqual(['Proteinuria', 'missing', ''])
     expect(sheets['Questions']).toContainEqual(['Final assessment', 1, 'Dose?', 'Needs attention', 'Key marks 4 mg', 'Mark 4 g'])
   })
@@ -202,5 +240,34 @@ describe('report export', () => {
   it('leaves the questions sheet out when there are none', () => {
     const sheets = buildWorkbookSheets(review({ items: [item()], result: null }))
     expect(Object.keys(sheets)).toEqual(['Summary', 'Checklist', 'Coverage'])
+  })
+
+  describe('a review of uploaded files', () => {
+    const files = review({ source: 'upload', courseId: null, courseName: 'BP drafts', title: 'BP drafts' })
+
+    it('is worded for files, not a course', () => {
+      expect(reportWords(files)).toMatchObject({ summary: 'Summary', one: 'file', Many: 'Files', nameLabel: 'Review' })
+      expect(reportWords(review())).toMatchObject({ summary: 'Course summary', one: 'resource', Many: 'Resources', nameLabel: 'Course' })
+      const html = buildReportHtml(files, new Date('2026-10-31T11:00:00Z'))
+      expect(html).toContain('AI File Review · advisory')
+      expect(html).toContain('<h2>Each file</h2>')
+      expect(html).toContain('<div class="lbl">Files</div>')
+      expect(html).toContain('it changes nothing in CBP')
+      expect(html).not.toContain('Each resource')
+      expect(html).not.toContain('does not change the course')
+    })
+
+    it('labels the Excel sheets for files too', () => {
+      const sheets = buildWorkbookSheets(files)
+      expect(sheets['Summary'][0]).toEqual(['Review', 'BP drafts'])
+      expect(sheets['Summary']).toContainEqual(['Files reviewed', 2])
+      expect(sheets['Checklist'][0][0]).toBe('File')
+      expect(sheets['Questions'][0][0]).toBe('File')
+    })
+
+    it('says a failed file could not be reviewed', () => {
+      const failed = review({ source: 'upload', items: [item({ status: 'failed', error: null, result: null })] })
+      expect(buildReportHtml(failed)).toContain('This file could not be reviewed.')
+    })
   })
 })

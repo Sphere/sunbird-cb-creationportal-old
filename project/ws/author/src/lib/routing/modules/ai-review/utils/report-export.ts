@@ -1,5 +1,12 @@
 import type * as Xlsx from 'xlsx'
-import { IAiReview, IAiReviewAddie, IAiReviewCompetencyContext, IAiReviewDomain, IAiReviewItem, isPassError } from '../models/ai-review.model'
+import {
+  IAiReview,
+  IAiReviewAddie,
+  IAiReviewCompetencyContext,
+  IAiReviewDomain,
+  IAiReviewItem,
+  isPassError,
+} from '../models/ai-review.model'
 import { kindLine, kindMeta } from './resource-kind'
 
 /**
@@ -72,13 +79,50 @@ const domainOf = (item: IAiReviewItem): IAiReviewDomain | null =>
 const VERDICT: Record<string, string> = { yes: 'Met', no: 'Not met', na: 'N/A' }
 const COVERAGE_MARK: Record<string, string> = { covered: '✓', partial: '◐', missing: '✗' }
 
+/** The words a report uses: a course and its resources, or the user's own uploaded files. */
+export interface ReportWords {
+  /** The hero's eyebrow. */
+  eyebrow: string
+  /** The summary heading. */
+  summary: string
+  /** What the review is named by: "Course", or "Review" for uploaded files. */
+  nameLabel: string
+  one: string
+  many: string
+  /** "Resources" / "Files", for a heading or a column. */
+  Many: string
+  footer: string
+}
+
+export function reportWords(review: Pick<IAiReview, 'source'>): ReportWords {
+  return review.source === 'upload'
+    ? {
+        eyebrow: 'AI File Review · advisory',
+        summary: 'Summary',
+        nameLabel: 'Review',
+        one: 'file',
+        many: 'files',
+        Many: 'Files',
+        footer: 'Advisory AI review of uploaded files — it changes nothing in CBP.',
+      }
+    : {
+        eyebrow: 'AI Course Review · advisory',
+        summary: 'Course summary',
+        nameLabel: 'Course',
+        one: 'resource',
+        many: 'resources',
+        Many: 'Resources',
+        footer: 'Advisory AI review — it does not change the course or its review.',
+      }
+}
+
 /** A safe file name from the course name. */
 export function reportFileName(review: Pick<IAiReview, 'courseName'>, ext: string): string {
-  const base = (review.courseName || 'course').replace(/[^\p{L}\p{N}._-]+/gu, '_').slice(0, 60) || 'course'
+  const base = (review.courseName || 'review').replace(/[^\p{L}\p{N}._-]+/gu, '_').slice(0, 60) || 'review'
   return `AI-review-${base}.${ext}`
 }
 
-function resourceHtml(item: IAiReviewItem): string {
+function resourceHtml(item: IAiReviewItem, words: ReportWords): string {
   const addie = addieOf(item)
   const domain = domainOf(item)
   const r = item.result
@@ -91,10 +135,12 @@ function resourceHtml(item: IAiReviewItem): string {
     `<section class="resource"><div class="rhead"><div><div class="kind">${esc(kindLine(item.kind, item.mimeType))}</div><h3>${esc(item.name)}</h3></div><div>${chips}</div></div>`,
   )
   if (item.status === 'failed' || item.status === 'cancelled') {
-    parts.push(`<p class="err">${esc(item.error || 'This resource could not be reviewed.')}</p>`)
+    parts.push(`<p class="err">${esc(item.error || `This ${words.one} could not be reviewed.`)}</p>`)
   }
   if (r?.cached) {
-    parts.push(`<p class="muted">Unchanged since ${r.cachedAt ? 'its review on ' + esc(new Date(r.cachedAt).toLocaleDateString()) : 'an earlier review'}: that result is shown again.</p>`)
+    parts.push(
+      `<p class="muted">Unchanged since ${r.cachedAt ? 'its review on ' + esc(new Date(r.cachedAt).toLocaleDateString()) : 'an earlier review'}: that result is shown again.</p>`,
+    )
   }
   if (domain) {
     parts.push(`<div class="domain"><h4>Domain review</h4>`)
@@ -108,7 +154,10 @@ function resourceHtml(item: IAiReviewItem): string {
       parts.push(
         '<ul class="cov">' +
           domain.coverage
-            .map(c => `<li><span class="mark ${esc(c.status)}">${COVERAGE_MARK[c.status] || ''}</span> ${esc(c.component)}${c.evidence ? ` <i>— ${esc(c.evidence)}</i>` : ''}</li>`)
+            .map(
+              c =>
+                `<li><span class="mark ${esc(c.status)}">${COVERAGE_MARK[c.status] || ''}</span> ${esc(c.component)}${c.evidence ? ` <i>— ${esc(c.evidence)}</i>` : ''}</li>`,
+            )
             .join('') +
           '</ul>',
       )
@@ -137,7 +186,10 @@ function resourceHtml(item: IAiReviewItem): string {
     if (addie.summary) {
       parts.push(`<p>${esc(addie.summary)}</p>`)
     }
-    const missing = addie.score.areas.reduce((acc, a) => acc.concat(a.items.filter(i => i.verdict === 'no')), [] as typeof addie.score.areas[0]['items'])
+    const missing = addie.score.areas.reduce(
+      (acc, a) => acc.concat(a.items.filter(i => i.verdict === 'no')),
+      [] as (typeof addie.score.areas)[0]['items'],
+    )
     if (missing.length) {
       parts.push('<ul class="items">')
       missing.forEach(i => {
@@ -159,6 +211,7 @@ function resourceHtml(item: IAiReviewItem): string {
 /** The whole report as a self-contained, print-ready HTML document. */
 export function buildReportHtml(review: IAiReview, generatedAt: Date = new Date()): string {
   const s = review.result
+  const words = reportWords(review)
   const c = review.options && review.options.competency
   const summary = s
     ? `<div class="cards">${
@@ -170,10 +223,11 @@ export function buildReportHtml(review: IAiReview, generatedAt: Date = new Date(
       }${
         s.domain
           ? `<div class="card"><div class="lbl">Domain review</div><div class="big">${esc(s.domain.yes)}/${esc(s.domain.applicable)}</div><div>${
-              esc(judgedAgainst(review.options)) + (roleSummary(review.options) ? `<div class="muted">${esc(roleSummary(review.options))}</div>` : '')
+              esc(judgedAgainst(review.options)) +
+              (roleSummary(review.options) ? `<div class="muted">${esc(roleSummary(review.options))}</div>` : '')
             }</div></div>`
           : ''
-      }<div class="card"><div class="lbl">Resources</div><div class="big">${esc(s.reviewed)}</div><div>reviewed${s.failed ? ` · ${esc(s.failed)} could not be reviewed` : ''} · ${esc(s.skipped.length)} not included</div></div></div>${
+      }<div class="card"><div class="lbl">${words.Many}</div><div class="big">${esc(s.reviewed)}</div><div>reviewed${s.failed ? ` · ${esc(s.failed)} could not be reviewed` : ''} · ${esc(s.skipped.length)} not included</div></div></div>${
         s.coverage.length
           ? `<h2>Coverage of the competency level</h2><table><thead><tr><th>What the level needs</th><th>Status</th><th>Covered by</th></tr></thead><tbody>${s.coverage
               .map(
@@ -190,7 +244,10 @@ export function buildReportHtml(review: IAiReview, generatedAt: Date = new Date(
           : ''
       }`
     : ''
-  const resources = review.items.filter(i => i.status !== 'skipped').map(resourceHtml).join('')
+  const resources = review.items
+    .filter(i => i.status !== 'skipped')
+    .map(i => resourceHtml(i, words))
+    .join('')
   return `<!doctype html><html><head><meta charset="utf-8"><title>${esc(reportFileName(review, 'pdf').replace(/\.pdf$/, ''))}</title><style>
 @page{size:A4;margin:16mm 14mm}
 *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -214,12 +271,12 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:6px 8px;
 footer{margin-top:20px;font-size:10px;color:#5b6478;text-align:center}
 @media print{.tip{display:none}body{padding:0}}
 </style></head><body>
-<div class="hero"><div class="eyebrow">AI Course Review · advisory</div><h1>${esc(review.courseName)}</h1><p>Started by ${esc(review.requestedBy.name || 'a user')} · ${esc(
+<div class="hero"><div class="eyebrow">${esc(words.eyebrow)}</div><h1>${esc(review.courseName)}</h1><p>Started by ${esc(review.requestedBy.name || 'a user')} · ${esc(
     new Date(review.createdAt).toLocaleString(),
   )}</p></div>
 <div class="tip">To save this report, choose <b>Save as PDF</b> as the destination in the print dialog.</div>
-${summary}${resources ? '<h2>Each resource</h2>' + resources : ''}
-<footer>Advisory AI review — it does not change the course or its review. Generated ${esc(generatedAt.toLocaleString())}.</footer>
+${summary}${resources ? `<h2>Each ${words.one}</h2>` + resources : ''}
+<footer>${esc(words.footer)} Generated ${esc(generatedAt.toLocaleString())}.</footer>
 </body></html>`
 }
 
@@ -261,14 +318,19 @@ export function xlsxApi(mod: unknown): typeof Xlsx {
 export function buildWorkbookSheets(review: IAiReview): Record<string, (string | number)[][]> {
   const s = review.result
   const c = review.options && review.options.competency
+  const words = reportWords(review)
   const summary: (string | number)[][] = [
-    ['Course', review.courseName],
+    [words.nameLabel, review.courseName],
     ['Started by', review.requestedBy.name || ''],
     ['Started at', new Date(review.createdAt).toLocaleString()],
     ['Status', review.status],
   ]
   if (s && s.addie) {
-    summary.push(['ADDIE score %', s.addie.scorePct ?? ''], ['Indicators met', `${s.addie.yes} / ${s.addie.applicable}`], ['Band', s.addie.bandMessage || ''])
+    summary.push(
+      ['ADDIE score %', s.addie.scorePct ?? ''],
+      ['Indicators met', `${s.addie.yes} / ${s.addie.applicable}`],
+      ['Band', s.addie.bandMessage || ''],
+    )
   }
   if (s && s.domain) {
     summary.push(['Domain score', `${s.domain.yes} / ${s.domain.applicable}`])
@@ -280,20 +342,35 @@ export function buildWorkbookSheets(review: IAiReview): Record<string, (string |
     summary.push(['FRAC role checked', roleSummary(review.options)])
   }
   if (s) {
-    summary.push(['Resources reviewed', s.reviewed], ['Could not be reviewed', s.failed || 0], ['Not included', s.skipped.length])
+    summary.push([`${words.Many} reviewed`, s.reviewed], ['Could not be reviewed', s.failed || 0], ['Not included', s.skipped.length])
   }
   const reused = review.items.filter(i => i.result?.cached)
   if (reused.length) {
     summary.push(['Unchanged, earlier result shown', reused.map(i => i.name).join('; ')])
   }
 
-  const checklist: (string | number)[][] = [['Resource', 'Type', 'Area', 'ID', 'Indicator', 'Verdict', 'Note', 'Suggested fix']]
-  const questions: (string | number)[][] = [['Resource', 'Q', 'Question', 'Verdict', 'Issues', 'Suggested fix']]
+  const checklist: (string | number)[][] = [
+    [words.one === 'file' ? 'File' : 'Resource', 'Type', 'Area', 'ID', 'Indicator', 'Verdict', 'Note', 'Suggested fix'],
+  ]
+  const questions: (string | number)[][] = [
+    [words.one === 'file' ? 'File' : 'Resource', 'Q', 'Question', 'Verdict', 'Issues', 'Suggested fix'],
+  ]
   review.items.forEach(item => {
     const addie = addieOf(item)
     if (addie) {
       addie.score.areas.forEach(area =>
-        area.items.forEach(i => checklist.push([item.name, kindMeta(item.kind).label, area.area, i.id, i.text, VERDICT[i.verdict] || i.verdict, i.note || '', i.fix || ''])),
+        area.items.forEach(i =>
+          checklist.push([
+            item.name,
+            kindMeta(item.kind).label,
+            area.area,
+            i.id,
+            i.text,
+            VERDICT[i.verdict] || i.verdict,
+            i.note || '',
+            i.fix || '',
+          ]),
+        ),
       )
     }
     ;(item.result?.questions || []).forEach(q =>

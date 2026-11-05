@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal, viewChild } from '@angular/core'
-import { judgedAgainst } from '../../utils/report-export'
+import { judgedAgainst, reportWords } from '../../utils/report-export'
 import { kindFromMime, kindLine, kindMeta } from '../../utils/resource-kind'
 import {
   IAiReview,
@@ -73,7 +73,13 @@ export class AiReviewReportComponent {
   readonly review = input.required<IAiReview>()
 
   readonly summary = computed(() => this.review().result)
-  readonly rows = computed(() => this.review().items.filter(i => i.status !== 'skipped').map(toReportRow))
+  /** Course and resources, or the user's own files. */
+  readonly words = computed(() => reportWords(this.review()))
+  readonly rows = computed(() =>
+    this.review()
+      .items.filter(i => i.status !== 'skipped')
+      .map(toReportRow),
+  )
   readonly competency = computed(() => this.review().options.competency)
   /** What the domain review judged against, as one line (also in the PDF and Excel). */
   readonly judgedAgainst = computed(() => judgedAgainst(this.review().options))

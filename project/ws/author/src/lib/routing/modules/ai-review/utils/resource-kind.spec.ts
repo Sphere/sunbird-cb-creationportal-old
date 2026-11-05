@@ -1,4 +1,4 @@
-import { formatOf, kindFromMime, kindLine, kindMeta, pipelineProgress } from './resource-kind'
+import { formatDuration, formatOf, kindFromMime, kindLine, kindMeta, pipelineProgress } from './resource-kind'
 
 describe('resource kinds', () => {
   it('describes each kind with a label, an icon and its review steps', () => {
@@ -52,5 +52,13 @@ describe('resource kinds', () => {
     expect(pipelineProgress({ status: 'running', stage: 'Checking each question and its answer…' })).toBe(1)
     expect(pipelineProgress({ status: 'running', stage: 'Scoring and judging against the competency…' })).toBe(2)
     expect(pipelineProgress({ status: 'done', stage: null })).toBe(3)
+  })
+
+  it('writes a length as minutes and seconds', () => {
+    expect(formatDuration(36)).toBe('36 s')
+    expect(formatDuration(120)).toBe('2 min')
+    expect(formatDuration(750)).toBe('12 min 30 s')
+    expect(formatDuration(null)).toBe('')
+    expect(formatDuration(undefined)).toBe('')
   })
 })

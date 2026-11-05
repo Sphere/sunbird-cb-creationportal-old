@@ -1,0 +1,95 @@
+@if (domainStyle() === 'frac') {
+  <div class="air-role" aria-live="polite">
+    <span class="air-role-title"><ws-auth-air-icon name="expert" [size]="16" /> <ng-container i18n>Role check (FRAC)</ng-container></span>
+    @if (!positionName()) {
+      <p class="air-hint air-hint--warn" i18n>
+        Pick a position in Audience above to check the role's activities. Without one, FRAC checks the competency level only.
+      </p>
+    } @else if (checking()) {
+      <ws-auth-air-busy [label]="'Reading the roles and activities of ' + positionName()" detail="From FRAC" [typicalSec]="10" />
+    } @else if (summary(); as rs) {
+      <p class="air-visually-hidden">{{ rs.lead }}</p>
+      <!-- Position → Role → Activity, each level labelled, as FRAC links them. -->
+      <div class="air-role-position">
+        <span class="air-role-tag air-role-tag--position" i18n>Position</span>
+        <strong>{{ rs.position }}</strong>
+        <span class="air-muted air-small" i18n>
+          {rs.count, plural, =1 {1 activity needs} other {{{ rs.count }} activities need}} {{ rs.need }}
+        </span>
+      </div>
+      <div class="air-role-tree">
+        @for (g of rs.groups; track g.role) {
+          <!-- One collapsible section per role: open when there are few, so many roles stay compact. -->
+          <details class="air-role-group" [open]="rs.groups.length <= 2">
+            <summary class="air-role-node">
+              <span class="air-role-tag air-role-tag--role" i18n>Role</span>
+              <span class="air-role-name">{{ g.role || 'No role named in FRAC' }}</span>
+              <span class="air-muted air-small" i18n>{g.activities.length, plural,
+                =1 {1 activity}
+                other {{{ g.activities.length }} activities}
+              }</span>
+              <ws-auth-air-icon class="air-role-chevron" name="chevronDown" [size]="18" />
+            </summary>
+            <ul class="air-role-list" [attr.aria-label]="'Activities of the role ' + g.role">
+              @for (a of g.activities; track a.activity + a.competency) {
+                <li>
+                  <span class="air-role-tag air-role-tag--activity" i18n>Activity</span>
+                  <span class="air-role-activity">
+                    {{ a.activity }}
+                    @if (rs.showCompetency || activityLevels(a.levels)) {
+                      <span class="air-muted air-small">
+                        @if (rs.showCompetency) {
+                          needs {{ a.competency }}
+                        }
+                        @if (activityLevels(a.levels); as lv) {
+                          {{ rs.showCompetency ? 'at' : 'needs it at' }} {{ lv }}
+                        }
+                      </span>
+                    }
+                  </span>
+                </li>
+              }
+            </ul>
+          </details>
+        }
+      </div>
+      <div class="air-role-next">
+        <span class="air-role-next-title"
+          ><ws-auth-air-icon name="info" [size]="16" /> <ng-container i18n>What happens next</ng-container></span
+        >
+        <ul>
+          <li i18n><strong>Role fit</strong>: does {{ each() }} prepare {{ rs.position }} to do these activities?</li>
+          <li i18n><strong>Activity realism</strong>: is the skill shown the way {{ rs.position }} does these activities on the job?</li>
+          <li i18n><strong>In the report</strong>: each activity is marked covered, partly covered or missing, with what covers it.</li>
+        </ul>
+      </div>
+    } @else if (check()?.roleNote) {
+      <p class="air-hint air-hint--warn">{{ check()!.roleNote }}</p>
+    } @else if (waiting()) {
+      <p class="air-hint" i18n>{{ waiting() }} Then the activities of {{ positionName() }} that need it are shown here.</p>
+    }
+  </div>
+} @else {
+  <!-- Plain has nothing to look up: say plainly what the expert will check. -->
+  <div class="air-role">
+    <span class="air-role-title"
+      ><ws-auth-air-icon name="expert" [size]="16" /> <ng-container i18n>What the expert checks (Plain)</ng-container></span
+    >
+    <ul class="air-plain-checks">
+      <li i18n><strong>Right topic</strong>: the content belongs to the competency being judged.</li>
+      <li i18n><strong>Teaches the level</strong>: it covers what the level description names, with nothing essential skipped or wrong.</li>
+      <li i18n><strong>Accurate practice</strong>: protocols, thresholds, steps and tools match standard Indian public-health practice.</li>
+      <li i18n>
+        <strong>Right for {{ audience().trim() || 'the learners' }}</strong
+        >: depth, language and safety points suit them, shown in their real work setting.
+      </li>
+    </ul>
+    <div class="air-role-next">
+      <span class="air-role-next-title"><ws-auth-air-icon name="info" [size]="16" /> <ng-container i18n>In the report</ng-container></span>
+      <p class="air-plain-next" i18n>
+        Each point of the level description is marked covered, partly covered or missing, with what covers it. To also check the role's
+        activities in FRAC, choose FRAC.
+      </p>
+    </div>
+  </div>
+}

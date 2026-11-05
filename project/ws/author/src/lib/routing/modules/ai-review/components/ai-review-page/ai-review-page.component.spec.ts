@@ -1,7 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router'
-import { saveAs } from 'file-saver'
 import { NEVER, Subject, of, throwError } from 'rxjs'
 import { IAiReview, IAiReviewHistoryEntry, IAiReviewPreview } from '../../models/ai-review.model'
 import { AiReviewService } from '../../services/ai-review.service'
@@ -25,8 +24,26 @@ jest.mock('xlsx', () => ({
 const preview = (over: Partial<IAiReviewPreview> = {}): IAiReviewPreview => ({
   course: { id: 'do_1', name: 'Eclampsia care', status: 'Draft', versionKey: '1' },
   resources: [
-    { contentId: 'do_v', name: 'BP video', kind: 'video', mimeType: 'video/mp4', durationSec: 36, path: [], reviewable: true, skipReason: null },
-    { contentId: 'do_p', name: 'Notes', kind: null, mimeType: 'application/pdf', durationSec: null, path: [], reviewable: false, skipReason: 'PDFs come next' },
+    {
+      contentId: 'do_v',
+      name: 'BP video',
+      kind: 'video',
+      mimeType: 'video/mp4',
+      durationSec: 36,
+      path: [],
+      reviewable: true,
+      skipReason: null,
+    },
+    {
+      contentId: 'do_p',
+      name: 'Notes',
+      kind: null,
+      mimeType: 'application/pdf',
+      durationSec: null,
+      path: [],
+      reviewable: false,
+      skipReason: 'PDFs come next',
+    },
   ],
   competencies: [
     { competencyId: 'C1', name: 'Eclampsia', level: 2 },
@@ -98,7 +115,6 @@ describe('AiReviewPageComponent', () => {
       fracRole: jest.fn().mockReturnValue(of({ role: null, roleNote: null })),
     }
     router = { navigate: jest.fn() }
-    ;(saveAs as unknown as jest.Mock).mockClear()
   })
 
   afterEach(() => {
@@ -135,27 +151,20 @@ describe('AiReviewPageComponent', () => {
       expect(c.currentStep()).toBe('report')
     })
 
-    it('separates the resources being reviewed from those left out', () => {
-      api.get.mockReturnValue(
-        of(
-          review({
-            status: 'running',
-            items: [
-              { contentId: 'a', name: 'A', kind: 'video', status: 'running', stage: null, skipReason: null, error: null, result: null },
-              { contentId: 'b', name: 'B', kind: 'pdf', status: 'skipped', stage: null, skipReason: 'Later', error: null, result: null },
-            ],
-          }),
-        ),
-      )
-      const c = create()
-      c.follow('r1')
-      expect(c.runningItems().map(i => i.contentId)).toEqual(['a'])
-      expect(c.skippedItems().map(i => i.contentId)).toEqual(['b'])
-    })
-
     it("keeps the review's line in Past reviews current while it runs", () => {
       api.history.mockReturnValue(
-        of([{ id: 'r1', status: 'queued', requestedBy: { id: 'u1', name: 'Asha' }, progress: { done: 0, total: 2 }, summary: null, costUsd: 0, createdAt: '', finishedAt: null }]),
+        of([
+          {
+            id: 'r1',
+            status: 'queued',
+            requestedBy: { id: 'u1', name: 'Asha' },
+            progress: { done: 0, total: 2 },
+            summary: null,
+            costUsd: 0,
+            createdAt: '',
+            finishedAt: null,
+          },
+        ]),
       )
       api.get.mockReturnValue(of(review({ status: 'running', progress: { done: 1, total: 2 } })))
       const c = create()
@@ -195,7 +204,14 @@ describe('AiReviewPageComponent', () => {
 
     it('lets a course with no competency be judged against one picked from the dictionary, at its own levels', () => {
       const catalog = [
-        { competencyId: 'K9', name: 'Birth planning', levels: [{ level: 1, label: 'Aware' }, { level: 2, label: 'Plans with the family' }] },
+        {
+          competencyId: 'K9',
+          name: 'Birth planning',
+          levels: [
+            { level: 1, label: 'Aware' },
+            { level: 2, label: 'Plans with the family' },
+          ],
+        },
       ]
       api.preview.mockReturnValue(of(preview({ competencies: [], competencyCatalog: catalog })))
       const c = create()
@@ -239,8 +255,28 @@ describe('AiReviewPageComponent', () => {
             course: { id: 'do_1', name: 'Self assessment', status: 'Draft', versionKey: '1', selfAssessment: true },
             competencies: [{ competencyId: 'C1', name: 'Eclampsia', level: null }],
             resources: [
-              { contentId: 'q1', name: 'Level 1 : Aware', kind: 'quiz', mimeType: 'application/json', durationSec: null, path: [], reviewable: true, skipReason: null, level: 1 },
-              { contentId: 'q2', name: 'Level 2 : Plans', kind: 'quiz', mimeType: 'application/json', durationSec: null, path: [], reviewable: true, skipReason: null, level: 2 },
+              {
+                contentId: 'q1',
+                name: 'Level 1 : Aware',
+                kind: 'quiz',
+                mimeType: 'application/json',
+                durationSec: null,
+                path: [],
+                reviewable: true,
+                skipReason: null,
+                level: 1,
+              },
+              {
+                contentId: 'q2',
+                name: 'Level 2 : Plans',
+                kind: 'quiz',
+                mimeType: 'application/json',
+                durationSec: null,
+                path: [],
+                reviewable: true,
+                skipReason: null,
+                level: 2,
+              },
             ],
           }),
         ),
@@ -262,7 +298,9 @@ describe('AiReviewPageComponent', () => {
     })
 
     it('judges a course mapped at several levels against all of them by default', () => {
-      api.preview.mockReturnValue(of(preview({ competencies: [{ competencyId: 'P1', name: 'Pregnancy Identification', level: 1, levels: [1, 2] }] })))
+      api.preview.mockReturnValue(
+        of(preview({ competencies: [{ competencyId: 'P1', name: 'Pregnancy Identification', level: 1, levels: [1, 2] }] })),
+      )
       const c = create()
       c.ngOnInit()
       expect(c.competencyOptions()[0]).toMatchObject({ value: 'P1', hint: 'On this course · Levels 1, 2' })
@@ -437,7 +475,9 @@ describe('AiReviewPageComponent', () => {
 
     it('updates the estimate as options are switched', () => {
       const est = { base: 0.01, addie: 0.04, domain: 0.09, watch: 0.03 }
-      api.preview.mockReturnValue(of(preview({ estimateUsd: 9.99, resources: preview().resources.map(r => (r.reviewable ? { ...r, estimate: est } : r)) })))
+      api.preview.mockReturnValue(
+        of(preview({ estimateUsd: 9.99, resources: preview().resources.map(r => (r.reviewable ? { ...r, estimate: est } : r)) })),
+      )
       const c = create()
       c.ngOnInit()
       expect(c.estimateUsd()).toBe(0.17)
@@ -507,7 +547,10 @@ describe('AiReviewPageComponent', () => {
 
     it("shows the service's refusal", () => {
       api.start.mockReturnValue(
-        throwError(() => new HttpErrorResponse({ status: 429, error: { error: { code: 'DAILY_LIMIT', message: "You have reached today's limit." } } })),
+        throwError(
+          () =>
+            new HttpErrorResponse({ status: 429, error: { error: { code: 'DAILY_LIMIT', message: "You have reached today's limit." } } }),
+        ),
       )
       const c = create()
       c.ngOnInit()
@@ -550,7 +593,7 @@ describe('AiReviewPageComponent', () => {
       expect(api.get).toHaveBeenCalledTimes(1)
 
       jest.advanceTimersByTime(POLL_FAST_MS)
-      expect(c.progressPct()).toBe(50)
+      expect(c.review()?.progress).toEqual({ done: 1, total: 2 })
 
       api.history.mockClear()
       jest.advanceTimersByTime(POLL_FAST_MS)
@@ -588,65 +631,6 @@ describe('AiReviewPageComponent', () => {
   })
 
   describe('actions', () => {
-    it('cancels and keeps following the review', () => {
-      api.get.mockReturnValue(of(review({ status: 'running' })))
-      const c = create()
-      c.follow('r1')
-      api.get.mockReturnValue(of(review({ status: 'cancelled' })))
-      c.cancel()
-      expect(api.cancel).toHaveBeenCalledWith('r1')
-      expect(c.review()?.status).toBe('cancelled')
-      expect(c.cancelling()).toBe(false)
-    })
-
-    it('reports a failed cancel', () => {
-      api.get.mockReturnValue(of(review({ status: 'running' })))
-      api.cancel.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })))
-      const c = create()
-      c.follow('r1')
-      c.cancel()
-      expect(c.pollError()).toBe('Could not cancel the review.')
-    })
-
-    it('opens the report as a print-ready page for Save as PDF', () => {
-      const doc = { open: jest.fn(), write: jest.fn(), close: jest.fn() }
-      const fake = { document: doc, focus: jest.fn(), print: jest.fn() }
-      const open = jest.spyOn(window, 'open').mockReturnValue(fake as unknown as Window)
-      const c = create()
-      c.follow('r1')
-      c.downloadPdf()
-      expect(open).toHaveBeenCalledWith('', '_blank')
-      expect(doc.write).toHaveBeenCalledWith(expect.stringContaining('Eclampsia care'))
-      jest.advanceTimersByTime(300)
-      expect(fake.print).toHaveBeenCalled()
-      expect(c.exportError()).toBe('')
-      open.mockRestore()
-    })
-
-    it('says so when the browser blocks the report window', () => {
-      const open = jest.spyOn(window, 'open').mockReturnValue(null)
-      const c = create()
-      c.follow('r1')
-      c.downloadPdf()
-      expect(c.exportError()).toMatch(/blocked the report window/)
-      open.mockRestore()
-    })
-
-    it('exports the checklist to Excel under the course name', async () => {
-      const c = create()
-      c.follow('r1')
-      await c.downloadExcel()
-      expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'AI-review-Eclampsia_care.xlsx')
-      expect(c.exporting()).toBeNull()
-    })
-
-    it('does nothing to export without a review', async () => {
-      const c = create()
-      c.downloadPdf()
-      await c.downloadExcel()
-      expect(saveAs).not.toHaveBeenCalled()
-    })
-
     it('goes back to the setup form for another review', () => {
       const c = create()
       c.follow('r1')
@@ -705,22 +689,6 @@ describe('AiReviewPageComponent', () => {
       expect(c.review()).toBeNull()
       expect(c.pollError()).toBeTruthy()
     })
-
-    it('heads the report by how the review ended', () => {
-      const c = create()
-      c.follow('r1')
-      expect(c.reportHeading()).toBe('Report ready')
-      c.review.set(review({ status: 'failed' }))
-      expect(c.reportHeading()).toBe('Review failed')
-      c.review.set(review({ status: 'cancelled' }))
-      expect(c.reportHeading()).toBe('Review cancelled')
-    })
-
-    it('words progress once for screen readers', () => {
-      const c = create()
-      c.review.set(review({ status: 'running', progress: { done: 1, total: 3 } }))
-      expect(c.progressText()).toBe('1 of 3 resources reviewed · Reviewing')
-    })
   })
 
   describe('unchanged resources', () => {
@@ -777,9 +745,33 @@ describe('AiReviewPageComponent', () => {
   describe('what the setup screen claims', () => {
     it('leaves out a resource measured past a size limit, saying why', () => {
       api.preview.mockReturnValue(
-        of(preview({ resources: [{ contentId: 'do_p', name: 'Big', kind: 'pdf', mimeType: 'application/pdf', durationSec: null, path: [], reviewable: true, skipReason: null }] })),
+        of(
+          preview({
+            resources: [
+              {
+                contentId: 'do_p',
+                name: 'Big',
+                kind: 'pdf',
+                mimeType: 'application/pdf',
+                durationSec: null,
+                path: [],
+                reviewable: true,
+                skipReason: null,
+              },
+            ],
+          }),
+        ),
       )
-      api.measure.mockReturnValue(of([{ contentId: 'do_p', pages: 400, estimate: { base: 0, addie: 0.24, domain: 3.35, watch: 0 }, skipReason: 'This PDF has 400 pages' }]))
+      api.measure.mockReturnValue(
+        of([
+          {
+            contentId: 'do_p',
+            pages: 400,
+            estimate: { base: 0, addie: 0.24, domain: 3.35, watch: 0 },
+            skipReason: 'This PDF has 400 pages',
+          },
+        ]),
+      )
       const c = create()
       c.ngOnInit()
       expect(c.reviewable()).toEqual([])
@@ -788,7 +780,16 @@ describe('AiReviewPageComponent', () => {
     })
 
     it('chooses the competency the course maps at a level, not one listed without a level', () => {
-      api.preview.mockReturnValue(of(preview({ competencies: [{ competencyId: 'A', name: 'A', level: null, levels: [] }, { competencyId: 'B', name: 'B', level: 2, levels: [2] }] })))
+      api.preview.mockReturnValue(
+        of(
+          preview({
+            competencies: [
+              { competencyId: 'A', name: 'A', level: null, levels: [] },
+              { competencyId: 'B', name: 'B', level: 2, levels: [2] },
+            ],
+          }),
+        ),
+      )
       const c = create()
       c.ngOnInit()
       expect(c.buildOptions()).toMatchObject({ competencyId: 'B', level: 2 })
@@ -817,8 +818,30 @@ describe('AiReviewPageComponent', () => {
             course: { id: 'do_1', name: 'SA', status: 'Draft', versionKey: '1', selfAssessment: true },
             competencies: [{ competencyId: 'C1', name: 'E', level: null, levels: [] }],
             resources: [
-              { contentId: 'q1', name: 'Level 1 : A', kind: 'quiz', mimeType: 'application/json', durationSec: null, path: [], reviewable: true, skipReason: null, level: 1, estimate: { base: 0.2, addie: 0.04, domain: 0.15, watch: 0 } },
-              { contentId: 'q0', name: 'Intro quiz', kind: 'quiz', mimeType: 'application/json', durationSec: null, path: [], reviewable: true, skipReason: null, level: null, estimate: { base: 0.2, addie: 0.04, domain: 0.15, watch: 0 } },
+              {
+                contentId: 'q1',
+                name: 'Level 1 : A',
+                kind: 'quiz',
+                mimeType: 'application/json',
+                durationSec: null,
+                path: [],
+                reviewable: true,
+                skipReason: null,
+                level: 1,
+                estimate: { base: 0.2, addie: 0.04, domain: 0.15, watch: 0 },
+              },
+              {
+                contentId: 'q0',
+                name: 'Intro quiz',
+                kind: 'quiz',
+                mimeType: 'application/json',
+                durationSec: null,
+                path: [],
+                reviewable: true,
+                skipReason: null,
+                level: null,
+                estimate: { base: 0.2, addie: 0.04, domain: 0.15, watch: 0 },
+              },
             ],
           }),
         ),
@@ -855,9 +878,13 @@ describe('AiReviewPageComponent', () => {
       )
 
       c.selectCompetency('UP-C2')
-      expect(c.competencyHint()).toBe('Only this course competency is judged at its mapped levels (1, 2, 3, 4). To include the others, pick "All competencies on the course".')
+      expect(c.competencyHint()).toBe(
+        'Only this course competency is judged at its mapped levels (1, 2, 3, 4). To include the others, pick "All competencies on the course".',
+      )
       c.setLevel('2')
-      expect(c.competencyHint()).toBe('Only this course competency is judged at Level 2. To include the others, pick "All competencies on the course".')
+      expect(c.competencyHint()).toBe(
+        'Only this course competency is judged at Level 2. To include the others, pick "All competencies on the course".',
+      )
 
       c.selectCompetency('AM')
       expect(c.competencyHint()).toBe(
@@ -870,7 +897,9 @@ describe('AiReviewPageComponent', () => {
       c.ngOnInit()
       // The default fixture: one course competency at Level 2.
       c.preview.update(p => p && { ...p, competencies: [{ competencyId: 'C1', name: 'Eclampsia', level: 2, levels: [2] }] })
-      expect(c.competencyHint()).toBe("The course's competency is chosen for you at its mapped level (2). Pick another to judge against a different one.")
+      expect(c.competencyHint()).toBe(
+        "The course's competency is chosen for you at its mapped level (2). Pick another to judge against a different one.",
+      )
     })
   })
 
@@ -883,9 +912,23 @@ describe('AiReviewPageComponent', () => {
       positionCode: 'ANM',
       positionName: 'ANM',
       totalActivities: 12,
-      activities: [{ role: 'Antenatal care provider', activity: 'Identify pregnancy at first visit', description: '', competency: 'Eclampsia', levels: [1, 2] }],
+      activities: [
+        {
+          role: 'Antenatal care provider',
+          activity: 'Identify pregnancy at first visit',
+          description: '',
+          competency: 'Eclampsia',
+          levels: [1, 2],
+        },
+      ],
     }
-    const withPositions = () => preview({ positionList: [{ code: 'ANM', name: 'ANM' }, { code: 'SN', name: 'Staff Nurse' }] })
+    const withPositions = () =>
+      preview({
+        positionList: [
+          { code: 'ANM', name: 'ANM' },
+          { code: 'SN', name: 'Staff Nurse' },
+        ],
+      })
 
     it('takes the position code from the audience picked, and only from the list', () => {
       api.preview.mockReturnValue(of(withPositions()))
@@ -912,18 +955,19 @@ describe('AiReviewPageComponent', () => {
       settle()
       expect(api.fracRole).toHaveBeenCalledWith('do_1', expect.objectContaining({ domainStyle: 'frac', positionCode: 'ANM' }))
       expect(c.roleCheck()).toEqual({ role, roleNote: null })
-      expect(c.roleSummary()).toEqual({
-        lead: 'In FRAC, 1 activity of ANM needs this competency. The content is judged against it:',
-        groups: [{ role: 'Antenatal care provider', activities: [{ activity: 'Identify pregnancy at first visit', competency: 'Eclampsia', levels: [1, 2] }] }],
-        showCompetency: false,
-        position: 'ANM',
-        count: 1,
-        need: 'this competency',
-      })
       expect(c.roleChecking()).toBe(false)
-      expect(c.activityLevels([2, 1])).toBe('Levels 1–2')
-      expect(c.activityLevels([3])).toBe('Level 3')
-      expect(c.activityLevels([])).toBe('')
+    })
+
+    it('names the setting still missing in the role panel, only in the FRAC style', () => {
+      api.preview.mockReturnValue(of(withPositions()))
+      const c = create()
+      c.ngOnInit()
+      c.domainStyle.set('frac')
+      c.levelMode.set('single')
+      c.level.set(null)
+      expect(c.roleWaiting()).toMatch(/needs a level/)
+      c.domainStyle.set('plain')
+      expect(c.roleWaiting()).toBe('')
     })
 
     it('gives up on a slow FRAC read with a note, instead of waiting forever', () => {
@@ -952,30 +996,6 @@ describe('AiReviewPageComponent', () => {
     })
   })
 
-  describe('role check wording', () => {
-    it('groups activities under their role, and names the competency only when several are judged', () => {
-      const c = create()
-      const act = (role: string, activity: string, competency = 'Pregnancy identification') => ({ role, activity, description: '', competency, levels: [] })
-      c.roleCheck.set({
-        role: { positionCode: 'ANM_UP', positionName: 'ANM_UP', totalActivities: 6, activities: [act('Antenatal', 'Detect pregnancy'), act('Antenatal', 'Ensure early registration'), act('Referral', 'Link HRP')] },
-        roleNote: null,
-      })
-      expect(c.roleSummary()!.lead).toBe('In FRAC, 3 activities of ANM_UP need this competency. The content is judged against them:')
-      expect(c.roleSummary()!.groups.map(g => [g.role, g.activities.length])).toEqual([
-        ['Antenatal', 2],
-        ['Referral', 1],
-      ])
-      expect(c.roleSummary()!.showCompetency).toBe(false)
-
-      c.roleCheck.set({
-        role: { positionCode: 'X', positionName: 'ASHA', totalActivities: 2, activities: [act('R', 'A1'), act('R', 'A2', 'Antenatal care')] },
-        roleNote: null,
-      })
-      expect(c.roleSummary()!.lead).toBe('In FRAC, 2 activities of ASHA need these competencies. The content is judged against them:')
-      expect(c.roleSummary()!.showCompetency).toBe(true)
-    })
-  })
-
   describe('review again', () => {
     it('starts from the settings of the review on screen', () => {
       const c = create()
@@ -983,12 +1003,34 @@ describe('AiReviewPageComponent', () => {
       c.review.set(
         review({
           status: 'done',
-          options: { addie: false, domain: true, watch: false, domainStyle: 'frac', competencyId: 'C1', level: 3, levelMode: 'single', audience: 'Staff Nurse', language: 'hi', context: 'rural', competency: null } as IAiReview['options'],
+          options: {
+            addie: false,
+            domain: true,
+            watch: false,
+            domainStyle: 'frac',
+            competencyId: 'C1',
+            level: 3,
+            levelMode: 'single',
+            audience: 'Staff Nurse',
+            language: 'hi',
+            context: 'rural',
+            competency: null,
+          } as IAiReview['options'],
         }),
       )
       c.newReview()
       expect(c.review()).toBeNull()
-      expect(c.buildOptions()).toMatchObject({ addie: false, domain: true, watch: false, domainStyle: 'frac', competencyId: 'C1', level: 3, audience: 'Staff Nurse', language: 'hi', context: 'rural' })
+      expect(c.buildOptions()).toMatchObject({
+        addie: false,
+        domain: true,
+        watch: false,
+        domainStyle: 'frac',
+        competencyId: 'C1',
+        level: 3,
+        audience: 'Staff Nurse',
+        language: 'hi',
+        context: 'rural',
+      })
     })
   })
 
@@ -996,8 +1038,28 @@ describe('AiReviewPageComponent', () => {
     const withDocs = () =>
       preview({
         resources: [
-          { contentId: 'do_p', name: 'Notes', kind: 'pdf', mimeType: 'application/pdf', durationSec: 600, path: [], reviewable: true, skipReason: null, estimate: { base: 0, addie: 0.055, domain: 0.39, watch: 0 } },
-          { contentId: 'do_q', name: 'Quiz', kind: 'quiz', mimeType: 'application/json', durationSec: 600, path: [], reviewable: true, skipReason: null, estimate: { base: 0.2, addie: 0.04, domain: 0.15, watch: 0 } },
+          {
+            contentId: 'do_p',
+            name: 'Notes',
+            kind: 'pdf',
+            mimeType: 'application/pdf',
+            durationSec: 600,
+            path: [],
+            reviewable: true,
+            skipReason: null,
+            estimate: { base: 0, addie: 0.055, domain: 0.39, watch: 0 },
+          },
+          {
+            contentId: 'do_q',
+            name: 'Quiz',
+            kind: 'quiz',
+            mimeType: 'application/json',
+            durationSec: 600,
+            path: [],
+            reviewable: true,
+            skipReason: null,
+            estimate: { base: 0.2, addie: 0.04, domain: 0.15, watch: 0 },
+          },
         ],
       })
 

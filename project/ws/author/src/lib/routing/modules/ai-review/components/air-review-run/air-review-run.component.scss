@@ -1,0 +1,415 @@
+@use '../ai-review-shared' as *;
+
+// The live progress and the report head, moved here from the course review page so the
+// review of uploaded files shows them the same way.
+
+// A thin accent line along the top of the card while work is happening, with a light that
+// travels along it (a moving overlay, so nothing repaints).
+.air-live {
+  position: relative;
+  overflow: hidden;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+
+  &::before {
+    background: $air-ai-gradient;
+    opacity: 0.85;
+  }
+
+  &::after {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    transform: translateX(-100%);
+    animation: air-shimmer 2.8s ease-in-out infinite;
+  }
+}
+
+.air-live-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.air-live-text {
+  flex: 1 1 200px;
+  min-width: 0;
+
+  .air-section-title {
+    margin: 0;
+  }
+}
+
+// The review is thinking: a round core with the sparkle, and a gradient arc turning around
+// it on the same centre (a masked conic gradient, so the arc fades out at its tail).
+.air-scanner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+}
+
+.air-scanner-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(14, 116, 144, 0.15) 60deg,
+    #0e7490 200deg,
+    #6d28d9 300deg,
+    transparent 360deg
+  );
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  animation: air-turn 1.2s linear infinite;
+}
+
+.air-scanner-core {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: $air-primary;
+  background: #eef2ff;
+  box-shadow: inset 0 0 0 1px #c7d2fe;
+}
+
+.air-latest {
+  margin: 4px 0 0;
+}
+
+.air-live-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $air-violet;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  white-space: nowrap;
+}
+
+.air-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $air-violet;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
+}
+
+.air-queue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: $air-primary;
+  background: #eef2ff;
+  border-radius: 12px;
+  padding: 8px 16px;
+  margin: 0 0 16px;
+}
+
+.air-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.air-progress {
+  flex: 1;
+  height: 10px;
+  background: #e9edf7;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+// Filled by scaling, not by width, so a step forward is a cheap composited move. A soft
+// light passes along the filled part while work goes on.
+.air-progress-bar {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  background: $air-ai-gradient;
+  transform-origin: left center;
+  transition: transform 0.5s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transform: translateX(-100%);
+    animation: air-shimmer 2.2s ease-in-out infinite;
+  }
+}
+
+@keyframes air-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.air-progress-pct {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-width: 44px;
+  text-align: right;
+}
+
+.air-pipelines {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.air-pipeline {
+  border: 1px solid $air-line;
+  border-radius: 12px;
+  padding: 16px;
+  background: #fff;
+  transition: border-color 0.2s ease;
+
+  &--running {
+    border-color: #c4b5fd;
+  }
+
+  &--failed,
+  &--cancelled {
+    border-color: #fecaca;
+  }
+}
+
+.air-pipeline-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.air-pipeline-title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  > * {
+    min-width: 0;
+  }
+}
+
+.air-pipeline-name {
+  font-weight: 600;
+}
+
+.air-pipeline-status {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: $air-canvas;
+  color: $air-muted;
+  white-space: nowrap;
+
+  &--running {
+    background: #f5f3ff;
+    color: $air-violet;
+  }
+
+  &--done {
+    background: #dcfce7;
+    color: $air-green;
+  }
+
+  &--failed,
+  &--cancelled {
+    background: #fee2e2;
+    color: $air-danger;
+  }
+}
+
+.air-pipeline-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.air-pstep {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: $air-muted;
+  background: $air-canvas;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+
+  &--done {
+    color: $air-green;
+    background: #f0fdf4;
+  }
+
+  &--active {
+    position: relative;
+    overflow: hidden;
+    color: $air-violet;
+    background: #f5f3ff;
+    font-weight: 600;
+
+    // A soft light passing across the step that is happening now.
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+      transform: translateX(-100%);
+      animation: air-shimmer 2.4s ease-in-out infinite;
+    }
+  }
+}
+
+.air-pstep-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #e2e8f0;
+  color: #64748b;
+
+  .air-pstep--done & {
+    background: $air-green;
+    color: #fff;
+  }
+
+  .air-pstep--active & {
+    position: relative;
+    background: $air-violet;
+    color: #fff;
+
+    // A ring that grows and fades from the mark: "working on this now".
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid $air-violet;
+      animation: air-ping 1.8s ease-out infinite;
+    }
+  }
+}
+
+@keyframes air-ping {
+  from {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+.air-pipeline-stage {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: $air-violet;
+}
+
+.air-live-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid $air-line;
+
+  p {
+    margin: 0;
+  }
+}
+
+// ---- Step 3: report header ----------------------------------------------------------
+
+.air-report-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+
+  .air-section-title {
+    margin: 0;
+  }
+}
+
+.air-report-text {
+  flex: 1 1 200px;
+  min-width: 0;
+
+  p {
+    margin: 2px 0 0;
+  }
+}
+
+.air-report-badge {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: #047857;
+  background: #d1fae5;
+  animation: air-pop-in 0.3s ease-out backwards;
+
+  &--partial {
+    color: #b45309;
+    background: #fef3c7;
+  }
+
+  &--failed,
+  &--cancelled {
+    color: $air-danger;
+    background: #fee2e2;
+  }
+}
+
+@keyframes air-pop-in {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+}
+
+// ---- Past reviews -------------------------------------------------------------------

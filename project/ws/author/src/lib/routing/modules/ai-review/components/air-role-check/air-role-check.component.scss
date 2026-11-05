@@ -1,0 +1,179 @@
+@use '../ai-review-shared' as *;
+
+// The role check panel, moved here from the course review page so the review of uploaded
+// files shows it the same way.
+
+// The FRAC role check: the chosen position's activities the content is judged against.
+.air-role {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #bae6fd;
+
+  p {
+    margin: 8px 0 0;
+  }
+}
+
+.air-role-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0e7490;
+}
+
+// Position → Role → Activity: each level labelled with a small tag, activities hanging off
+// their role on a line, so it reads as FRAC's hierarchy at a glance.
+.air-role-position {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 15px;
+}
+
+.air-role-tag {
+  display: inline-block;
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  &--position {
+    color: #4338ca;
+    background: #eef2ff;
+  }
+
+  &--role {
+    color: #0e7490;
+    background: #cffafe;
+  }
+
+  &--activity {
+    color: #047857;
+    background: #d1fae5;
+  }
+}
+
+.air-role-tree {
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+// Each role is a <details>: the summary row is the role, the list its activities.
+.air-role-group {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px 12px;
+
+  &[open] > .air-role-node .air-role-chevron {
+    transform: rotate(180deg);
+  }
+}
+
+.air-role-node {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+}
+
+.air-role-chevron {
+  margin-left: auto;
+  color: #64748b;
+  transition: transform 0.2s ease;
+}
+
+.air-role-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+// The activities of one role, joined to it by a line on the left.
+.air-role-list {
+  list-style: none;
+  margin: 8px 0 0 12px;
+  padding: 0 0 0 16px;
+  border-left: 2px solid #bae6fd;
+  display: grid;
+  gap: 8px;
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: $air-canvas;
+  }
+}
+
+.air-role-activity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.air-role-next {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #f0f9ff;
+  font-size: 14px;
+
+  ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+    display: grid;
+    gap: 4px;
+  }
+}
+
+.air-role-next-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #0e7490;
+}
+
+.air-role ws-auth-air-busy {
+  margin-top: 8px;
+}
+
+// Plain style: the four checks, in the same box as FRAC's role check.
+.air-plain-checks {
+  margin: 12px 0 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.air-plain-next {
+  margin: 8px 0 0;
+}

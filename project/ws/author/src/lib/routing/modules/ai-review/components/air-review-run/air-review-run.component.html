@@ -1,0 +1,157 @@
+@let r = review();
+<!-- Running -->
+@if (isRunning()) {
+  <section class="air-card air-live">
+    <p class="air-visually-hidden" aria-live="polite">{{ progressText() }}</p>
+    <div class="air-live-head">
+      <span class="air-scanner" aria-hidden="true">
+        <span class="air-scanner-ring"></span>
+        <span class="air-scanner-core"><ws-auth-air-icon name="sparkle" [size]="22" /></span>
+      </span>
+      <div class="air-live-text">
+        <h2 class="air-section-title" id="air-step-heading" tabindex="-1">{{ runningHeading() }}</h2>
+        <p class="air-muted air-small air-latest">{{ r.latestLog }}</p>
+      </div>
+      <span class="air-live-chip">
+        <span class="air-live-dot" aria-hidden="true"></span>
+        {{ statusLabel(r.status) }}
+      </span>
+    </div>
+
+    @if (r.status === 'queued' && r.queuePosition > 0) {
+      <p class="air-queue">
+        <ws-auth-air-icon name="history" [size]="18" />
+        <span i18n
+          >{r.queuePosition, plural, =1 {1 review is} other {{{ r.queuePosition }} reviews are}} ahead of this one. It starts
+          automatically.</span
+        >
+      </p>
+    }
+
+    <div class="air-progress-row">
+      <div
+        class="air-progress"
+        role="progressbar"
+        [attr.aria-valuenow]="progressPct()"
+        [attr.aria-valuetext]="progressText()"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-label="Review progress"
+      >
+        <div class="air-progress-bar" [style.transform]="'scaleX(' + progressPct() / 100 + ')'"></div>
+      </div>
+      <span class="air-progress-pct">{{ progressPct() }}%</span>
+    </div>
+    <p class="air-muted air-small" i18n>{{ r.progress.done }} of {{ r.progress.total }} {{ unit() }} finished</p>
+
+    <ul class="air-pipelines">
+      @for (item of runningItems(); track item.contentId) {
+        <li class="air-pipeline air-pipeline--{{ item.status }}">
+          <div class="air-pipeline-head">
+            <span class="air-kind-tile air-kind-tile--{{ kindOf(item) }}"><ws-auth-air-icon [name]="kindMeta(kindOf(item)).icon" /></span>
+            <span class="air-pipeline-title">
+              <span class="air-pipeline-name">{{ item.name }}</span>
+              <span class="air-kind-line">{{ kindLine(kindOf(item), item.mimeType) }}</span>
+            </span>
+            <span class="air-pipeline-status air-pipeline-status--{{ item.status }}">{{ statusLabel(item.status) }}</span>
+          </div>
+          <ol class="air-pipeline-steps" [attr.aria-label]="item.name + ' progress'">
+            @for (step of kindMeta(kindOf(item)).steps; track step.label; let i = $index) {
+              <li
+                class="air-pstep"
+                [class.air-pstep--done]="i < pipelineProgress(item)"
+                [class.air-pstep--active]="item.status === 'running' && i === pipelineProgress(item)"
+              >
+                <span class="air-pstep-mark">
+                  @if (i < pipelineProgress(item)) {
+                    <ws-auth-air-icon name="check" [size]="14" />
+                  } @else {
+                    <ws-auth-air-icon [name]="step.icon" [size]="14" />
+                  }
+                </span>
+                <span>{{ step.label }}</span>
+              </li>
+            }
+          </ol>
+          @if (item.status === 'running' && item.stage) {
+            <p class="air-pipeline-stage">{{ item.stage }}</p>
+          }
+          @if (item.error) {
+            <p class="air-error air-small">{{ item.error }}</p>
+          }
+        </li>
+      }
+    </ul>
+
+    @if (skippedItems().length) {
+      <details class="air-details">
+        <summary i18n>{skippedItems().length, plural, =1 {1 is} other {{{ skippedItems().length }} are}} not included</summary>
+        <ul class="air-plain-list">
+          @for (item of skippedItems(); track item.contentId) {
+            <li>
+              {{ item.name }} <span class="air-muted">— {{ item.skipReason }}</span>
+            </li>
+          }
+        </ul>
+      </details>
+    }
+
+    <div class="air-live-foot">
+      <p class="air-muted air-small" i18n>You can leave this page. The review keeps running and you can come back to it.</p>
+      <button type="button" class="air-btn air-btn--danger" [disabled]="cancelling()" (click)="cancel()">
+        <ws-auth-air-icon name="close" [size]="18" />
+        @if (cancelling()) {
+          <ng-container i18n>Cancelling…</ng-container>
+        } @else {
+          <ng-container i18n>Cancel review</ng-container>
+        }
+      </button>
+    </div>
+    @if (cancelError()) {
+      <p class="air-error" role="alert">{{ cancelError() }}</p>
+    }
+  </section>
+}
+
+<!-- The report -->
+@if (isFinished()) {
+  <section class="air-card air-report-head">
+    <div class="air-report-top">
+      <span class="air-report-badge air-report-badge--{{ r.status }}" aria-hidden="true">
+        <ws-auth-air-icon [name]="r.status === 'failed' || r.status === 'cancelled' ? 'error' : 'check'" [size]="26" />
+      </span>
+      <div class="air-report-text" role="status">
+        <h2 class="air-section-title" id="air-step-heading" tabindex="-1">{{ reportHeading() }}</h2>
+        <p class="air-muted air-small" i18n>Started by {{ r.requestedBy.name || 'a user' }} on {{ r.createdAt | date: 'medium' }}</p>
+      </div>
+      <span class="air-chip air-chip--{{ r.status }}">{{ statusLabel(r.status) }}</span>
+    </div>
+    @if (r.error) {
+      <p class="air-error" role="alert">{{ r.error }}</p>
+    }
+    <div class="air-actions">
+      @if (r.status !== 'cancelled') {
+        <button type="button" class="air-btn air-btn--primary" (click)="downloadPdf()">
+          <ws-auth-air-icon name="pdf" [size]="18" /> <ng-container i18n>Download PDF</ng-container>
+        </button>
+        <button type="button" class="air-btn air-btn--secondary" [disabled]="exporting() === 'excel'" (click)="downloadExcel()">
+          <ws-auth-air-icon name="table" [size]="18" />
+          @if (exporting() === 'excel') {
+            <ng-container i18n>Preparing…</ng-container>
+          } @else {
+            <ng-container i18n>Download Excel</ng-container>
+          }
+        </button>
+      }
+      <button type="button" class="air-btn air-btn--soft" (click)="again.emit()">
+        <ws-auth-air-icon name="refresh" [size]="18" /> <ng-container i18n>Review again</ng-container>
+      </button>
+    </div>
+    @if (exportError()) {
+      <p class="air-error" role="alert">{{ exportError() }}</p>
+    }
+  </section>
+  @if (r.status !== 'cancelled') {
+    <ws-auth-ai-review-report [review]="r" />
+  }
+}

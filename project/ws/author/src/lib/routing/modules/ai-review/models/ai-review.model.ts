@@ -13,12 +13,7 @@ export type AiReviewDomainStyle = 'plain' | 'frac'
 export type AiReviewLanguage = 'auto' | 'hi' | 'en' | 'mr' | 'bn'
 
 /** The states after which a review never changes again. */
-export const AI_REVIEW_FINAL_STATUSES: ReadonlySet<AiReviewStatus> = new Set<AiReviewStatus>([
-  'done',
-  'partial',
-  'failed',
-  'cancelled',
-])
+export const AI_REVIEW_FINAL_STATUSES: ReadonlySet<AiReviewStatus> = new Set<AiReviewStatus>(['done', 'partial', 'failed', 'cancelled'])
 
 export interface IAiReviewCompetency {
   competencyId: string
@@ -300,7 +295,12 @@ export interface IAiReviewCompetencyContext {
 
 export interface IAiReview {
   id: string
-  courseId: string
+  /** 'upload': uploaded files reviewed on their own (no course). Absent from an older service. */
+  source?: AiReviewSource
+  /** What the user named a review of uploaded files. */
+  title?: string
+  /** Null for a review of uploaded files. */
+  courseId: string | null
   courseName: string
   status: AiReviewStatus
   requestedBy: { id: string; name: string | null }
@@ -338,6 +338,68 @@ export interface IAiReviewHistoryEntry {
 }
 
 /** The service's error body: `{ error: { code, message } }`. */
+// ---- files reviewed on their own (not part of a course) ------------------------------------
+
+export type AiReviewSource = 'course' | 'upload'
+export type AiReviewUploadKind = 'video' | 'pdf' | 'quiz' | 'assessment'
+
+/** The file review's setup screen: whether it is on, the dictionary, positions, accepted files. */
+export interface IAiReviewUploadContext {
+  /** False until storage is set up on the server: the page says so instead of failing later. */
+  enabled: boolean
+  competencyCatalog: IAiReviewCatalogCompetency[]
+  positionList: { code: string; name: string }[]
+  lookupErrors: string[]
+  defaults: { audience: string; language: AiReviewLanguage; domainStyle: AiReviewDomainStyle }
+  /** Per kind: the extensions of the file the user picks, and the most one file may be. */
+  accepted: Record<AiReviewUploadKind, { extensions: string[]; maxBytes: number }>
+  limits: IAiReviewLimits & { maxUploadFiles: number }
+}
+
+/** How to send one file to storage: a signed form (POST) or a signed raw body (PUT). */
+export interface IAiReviewSignedUpload {
+  method: 'POST' | 'PUT'
+  url: string
+  fields: Record<string, string>
+  headers: Record<string, string>
+  expiresAt: string
+}
+
+export interface IAiReviewSignedFile {
+  uploadId: string
+  fileName: string
+  kind: AiReviewUploadKind
+  /** The type the file must be sent as (a quiz is sent as the questions, in JSON). */
+  contentType: string
+  maxBytes: number
+  upload: IAiReviewSignedUpload
+}
+
+/** An uploaded file as the service sees it: not there yet, ready (and measured), or refused. */
+export interface IAiReviewCheckedUpload {
+  uploadId: string
+  fileName: string
+  kind: AiReviewUploadKind
+  status: 'pending' | 'ready' | 'rejected'
+  reason: string | null
+  bytes: number | null
+  durationSec?: number
+  pages?: number
+  questions?: number
+  estimate: IAiReviewEstimateParts | null
+}
+
+export interface IAiReviewUploadHistoryEntry {
+  id: string
+  title: string
+  status: AiReviewStatus
+  progress: { done: number; total: number }
+  summary: IAiReviewCourseSummary | null
+  costUsd: number | string | null
+  createdAt: string
+  finishedAt: string | null
+}
+
 export interface IAiReviewErrorBody {
   error?: { code?: string; message?: string }
 }

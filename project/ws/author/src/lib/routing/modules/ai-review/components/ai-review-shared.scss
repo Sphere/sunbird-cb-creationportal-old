@@ -23,7 +23,8 @@ $air-amber: #9a3412;
 $air-red: #c2410c;
 $air-danger: #b91c1c;
 $air-ai-gradient: linear-gradient(120deg, #0e7490 0%, #1d4ed8 45%, #6d28d9 100%);
-$air-hero: radial-gradient(60% 120% at 85% 0%, rgba(124, 58, 237, 0.55) 0%, transparent 60%),
+$air-hero:
+  radial-gradient(60% 120% at 85% 0%, rgba(124, 58, 237, 0.55) 0%, transparent 60%),
   radial-gradient(50% 100% at 0% 100%, rgba(6, 182, 212, 0.35) 0%, transparent 60%),
   linear-gradient(135deg, #0b1530 0%, #14254f 60%, #1e1b4b 100%);
 
@@ -50,7 +51,9 @@ $air-hero: radial-gradient(60% 120% at 85% 0%, rgba(124, 58, 237, 0.55) 0%, tran
   background: $air-surface;
   border: 1px solid $air-line;
   border-radius: 16px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px -16px rgba(15, 23, 42, 0.18);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 12px 32px -16px rgba(15, 23, 42, 0.18);
   padding: 24px;
   margin-bottom: 16px;
   // `backwards`, not `both`: a held transform would keep a stacking context on every card,
@@ -216,7 +219,10 @@ $air-hero: radial-gradient(60% 120% at 85% 0%, rgba(124, 58, 237, 0.55) 0%, tran
   min-height: 40px;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
 
   ws-auth-air-icon {
     font-size: 18px;
@@ -377,4 +383,11 @@ $air-hero: radial-gradient(60% 120% at 85% 0%, rgba(124, 58, 237, 0.55) 0%, tran
 // Text that says something is missing or will not happen as the user may expect (page and report).
 .air-hint--warn {
   color: $air-amber;
+}
+
+// Step headings take focus when a step changes, so screen readers announce the new step.
+// That focus comes from code, not the keyboard, so no ring is drawn. Here, not in one page,
+// because the progress and report headings live in their own component.
+#air-step-heading:focus {
+  outline: none;
 }

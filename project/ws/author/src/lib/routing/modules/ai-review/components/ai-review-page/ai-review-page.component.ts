@@ -2,26 +2,18 @@ import { DOCUMENT } from '@angular/common'
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, effect, inject, signal } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router } from '@angular/router'
-import { saveAs } from 'file-saver'
 import {
-  EMPTY,
   Observable,
   Subscription,
   TimeoutError,
   catchError,
   debounceTime,
-  defer,
   distinctUntilChanged,
-  expand,
-  filter,
   fromEvent,
   of,
-  retry,
-  startWith,
   switchMap,
-  take,
   timeout,
-  timer,
+  tap,
 } from 'rxjs'
 import {
   AI_REVIEW_FINAL_STATUSES,
@@ -38,15 +30,12 @@ import {
   IAiReviewRoleCheck,
 } from '../../models/ai-review.model'
 import { AiReviewService } from '../../services/ai-review.service'
-import { buildWorkbookSheets, openPrintableReport, reportFileName, xlsxApi } from '../../utils/report-export'
-import { kindFromMime, kindLine, kindMeta, pipelineProgress } from '../../utils/resource-kind'
+import { formatDuration, kindFromMime, kindLine, kindMeta, pipelineProgress } from '../../utils/resource-kind'
+import { statusLabel, watchReview } from '../../utils/review-run'
 import { AirSelectOption } from '../air-select/air-select.component'
 
 export { pipelineProgress } from '../../utils/resource-kind'
-
-/** Poll every 3 s while a review moves; every 10 s while it waits behind others. */
-export const POLL_FAST_MS = 3000
-export const POLL_SLOW_MS = 10000
+export { POLL_FAST_MS, POLL_SLOW_MS, nextPollDelay } from '../../utils/review-run'
 
 /** How long the setup screen waits for the FRAC role check, and for the page and question count. */
 export const ROLE_CHECK_TIMEOUT_MS = 45000
@@ -81,11 +70,6 @@ export const STEPS: { id: AiReviewStep; label: string }[] = [
   { id: 'review', label: 'Review' },
   { id: 'report', label: 'Report' },
 ]
-
-/** How long to wait before the next status read. */
-export function nextPollDelay(review: Pick<IAiReview, 'status' | 'queuePosition'>): number {
-  return review.status === 'queued' && review.queuePosition > 2 ? POLL_SLOW_MS : POLL_FAST_MS
-}
 
 /**
  * AI review of one course: set up, follow progress, read the report, and see past reviews.
@@ -140,9 +124,6 @@ export class AiReviewPageComponent implements OnInit {
 
   readonly review = signal<IAiReview | null>(null)
   readonly pollError = signal('')
-  readonly cancelling = signal(false)
-  readonly exporting = signal<'pdf' | 'excel' | null>(null)
-  readonly exportError = signal('')
 
   readonly history = signal<IAiReviewHistoryEntry[]>([])
   readonly historyError = signal('')
@@ -167,7 +148,9 @@ export class AiReviewPageComponent implements OnInit {
   readonly roleChecking = signal(false)
   /** The settings to check the role for, or null outside the FRAC style. */
   private readonly roleRequest = computed(() =>
-    !this.review() && this.preview() && this.domain() && this.domainStyle() === 'frac' && !this.validationMessage() ? JSON.stringify(this.buildOptions()) : null,
+    !this.review() && this.preview() && this.domain() && this.domainStyle() === 'frac' && !this.validationMessage()
+      ? JSON.stringify(this.buildOptions())
+      : null,
   )
 
   private readonly reuseRequest = computed(() =>
@@ -233,7 +216,9 @@ export class AiReviewPageComponent implements OnInit {
     }
     const own = this.competencies().find(c => c.competencyId === selected.competencyId)
     if (!own) {
-      const back = this.competencies().length ? ` To go back, pick ${several ? 'one of the course\'s competencies or "All competencies on the course"' : 'the course\'s competency'}.` : ''
+      const back = this.competencies().length
+        ? ` To go back, pick ${several ? 'one of the course\'s competencies or "All competencies on the course"' : "the course's competency"}.`
+        : ''
       return `This competency is not mapped on the course, so pick the level to judge against.${back}`
     }
     // The level part follows the Level field: all the mapped levels, or the one picked.
@@ -260,7 +245,15 @@ export class AiReviewPageComponent implements OnInit {
     const own = this.competencies()
     const ownIds = new Set(own.map(c => c.competencyId))
     const all: AirSelectOption[] =
-      this.mapped().length > 1 ? [{ value: ALL_MAPPED, label: 'All competencies on the course', hint: `${this.mapped().length} competencies, each at its mapped levels` }] : []
+      this.mapped().length > 1
+        ? [
+            {
+              value: ALL_MAPPED,
+              label: 'All competencies on the course',
+              hint: `${this.mapped().length} competencies, each at its mapped levels`,
+            },
+          ]
+        : []
     return [
       ...all,
       ...own.map(c => {
@@ -268,7 +261,12 @@ export class AiReviewPageComponent implements OnInit {
         return {
           value: c.competencyId,
           label: c.name || c.competencyId,
-          hint: levels.length > 1 ? `On this course · Levels ${levels.join(', ')}` : levels.length ? `On this course · Level ${levels[0]}` : 'On this course · no level mapped',
+          hint:
+            levels.length > 1
+              ? `On this course · Levels ${levels.join(', ')}`
+              : levels.length
+                ? `On this course · Level ${levels[0]}`
+                : 'On this course · no level mapped',
         }
       }),
       ...this.catalog()
@@ -278,7 +276,13 @@ export class AiReviewPageComponent implements OnInit {
   })
   /** The levels the parts of a self-assessment course carry, in order ([] for any other course). */
   readonly partLevels = computed(() =>
-    [...new Set(this.reviewable().map(r => r.level).filter((l): l is number => typeof l === 'number'))].sort((a, b) => a - b),
+    [
+      ...new Set(
+        this.reviewable()
+          .map(r => r.level)
+          .filter((l): l is number => typeof l === 'number'),
+      ),
+    ].sort((a, b) => a - b),
   )
   /**
    * The selected competency's own levels with their names (1-5 when they are not known). A
@@ -293,7 +297,9 @@ export class AiReviewPageComponent implements OnInit {
     const own = this.competencies().find(c => c.competencyId === id)
     const courseLevels = levelsOf(own)
     const all: AirSelectOption[] =
-      courseLevels.length > 1 ? [{ value: COURSE_LEVELS, label: 'All course levels', hint: `Levels ${courseLevels.join(', ')}, together` }] : []
+      courseLevels.length > 1
+        ? [{ value: COURSE_LEVELS, label: 'All course levels', hint: `Levels ${courseLevels.join(', ')}, together` }]
+        : []
     return [
       ...each,
       ...all,
@@ -303,7 +309,9 @@ export class AiReviewPageComponent implements OnInit {
     ]
   })
   /** Parts with no "Level N" of their own, in 'each part at its own level' mode. */
-  readonly unlevelledParts = computed(() => (this.levelMode() === 'perResource' ? this.reviewable().filter(r => typeof r.level !== 'number') : []))
+  readonly unlevelledParts = computed(() =>
+    this.levelMode() === 'perResource' ? this.reviewable().filter(r => typeof r.level !== 'number') : [],
+  )
   /** True when the level shown is one of the choices (a course level the dictionary lacks is not). */
   readonly levelKnown = computed(() => {
     const v = this.levelValue()
@@ -404,6 +412,9 @@ export class AiReviewPageComponent implements OnInit {
     return ''
   })
 
+  /** Why the FRAC role check cannot run yet (a competency or level to pick), or ''. */
+  readonly roleWaiting = computed(() => (this.domain() && this.domainStyle() === 'frac' ? this.validationMessage() : ''))
+
   readonly isRunning = computed(() => {
     const r = this.review()
     return !!r && !AI_REVIEW_FINAL_STATUSES.has(r.status)
@@ -415,27 +426,6 @@ export class AiReviewPageComponent implements OnInit {
   /** Where the user is: setting up, watching a review run, or reading its report. */
   readonly currentStep = computed<AiReviewStep>(() => (this.isFinished() ? 'report' : this.isRunning() ? 'review' : 'setup'))
   readonly currentStepIndex = computed(() => STEPS.findIndex(s => s.id === this.currentStep()))
-
-  /** The resources being reviewed, and those the review leaves out, while it runs. */
-  readonly runningItems = computed(() => (this.review()?.items || []).filter(i => i.status !== 'skipped'))
-  readonly skippedItems = computed(() => (this.review()?.items || []).filter(i => i.status === 'skipped'))
-
-  readonly progressPct = computed(() => {
-    const r = this.review()
-    return r && r.progress.total ? Math.round((r.progress.done / r.progress.total) * 100) : 0
-  })
-
-  /** One short line for screen readers, announced only when it changes (not every poll). */
-  readonly progressText = computed(() => {
-    const r = this.review()
-    return r ? `${r.progress.done} of ${r.progress.total} resources reviewed · ${this.statusLabel(r.status)}` : ''
-  })
-
-  /** The report heading, true to how the review ended. */
-  readonly reportHeading = computed(() => {
-    const status = this.review()?.status
-    return status === 'failed' ? 'Review failed' : status === 'cancelled' ? 'Review cancelled' : 'Report ready'
-  })
 
   /** The cadre the expert judges the content for: the audience, or the default when it is empty. */
   readonly judgedFor = computed(() => this.audience().trim() || this.preview()?.defaults.audience || '')
@@ -474,14 +464,15 @@ export class AiReviewPageComponent implements OnInit {
     // The FRAC role check follows the position, competency and level as they settle.
     toObservable(this.roleRequest)
       .pipe(
-        debounceTime(REUSE_CHECK_DEBOUNCE_MS),
         distinctUntilChanged(),
+        // Busy from the moment a setting changes, not only once it settles: otherwise the
+        // panel shows the previous answer (or nothing) for the debounce.
+        tap(request => this.roleChecking.set(!!request)),
+        debounceTime(REUSE_CHECK_DEBOUNCE_MS),
         switchMap(request => {
           if (!request) {
-            this.roleChecking.set(false)
             return of(null)
           }
-          this.roleChecking.set(true)
           return this.api.fracRole(this.courseId, JSON.parse(request) as IAiReviewOptions).pipe(
             timeout(ROLE_CHECK_TIMEOUT_MS),
             catchError(err =>
@@ -501,50 +492,6 @@ export class AiReviewPageComponent implements OnInit {
         this.roleChecking.set(false)
         this.roleCheck.set(check)
       })
-  }
-
-  /**
-   * The role check in reading order: one sentence, then the activities grouped under their
-   * role. Only the activities FRAC maps to the judged competency are shown: the position's
-   * other activities are not this course's job, so they are neither listed nor counted.
-   * The competency is named on an activity only when several are judged.
-   */
-  readonly roleSummary = computed(() => {
-    const role = this.roleCheck()?.role
-    if (!role || !role.activities.length) {
-      return null
-    }
-    const competencies = [...new Set(role.activities.map(a => a.competency))]
-    const n = role.activities.length
-    const need = competencies.length > 1 ? 'these competencies' : 'this competency'
-    const lead = `In FRAC, ${n === 1 ? '1 activity' : `${n} activities`} of ${role.positionName} ${n === 1 ? 'needs' : 'need'} ${need}. The content is judged against ${n === 1 ? 'it' : 'them'}:`
-    const groups: { role: string; activities: { activity: string; competency: string; levels: number[] }[] }[] = []
-    for (const a of role.activities) {
-      let g = groups.find(x => x.role === a.role)
-      if (!g) {
-        g = { role: a.role, activities: [] }
-        groups.push(g)
-      }
-      g.activities.push({ activity: a.activity, competency: a.competency, levels: a.levels })
-    }
-    return {
-      lead,
-      groups,
-      showCompetency: competencies.length > 1,
-      position: role.positionName,
-      count: n,
-      need,
-    }
-  })
-
-  /** "Levels 1–2" / "Level 3" for a FRAC activity, or '' when it names none. */
-  activityLevels(levels: number[]): string {
-    if (!levels.length) {
-      return ''
-    }
-    const sorted = [...levels].sort((a, b) => a - b)
-    const run = sorted.every((l, i) => i === 0 || l === sorted[i - 1] + 1)
-    return sorted.length === 1 ? `Level ${sorted[0]}` : run ? `Levels ${sorted[0]}–${sorted[sorted.length - 1]}` : `Levels ${sorted.join(', ')}`
   }
 
   /**
@@ -674,7 +621,9 @@ export class AiReviewPageComponent implements OnInit {
     const levelled = !!preview.course.selfAssessment && preview.resources.some(r => r.reviewable && typeof r.level === 'number')
     // A course that maps several competencies is judged against all of them, each at its levels.
     const mappedCount = preview.competencies.filter(c => levelsOf(c).length).length
-    this.levelMode.set(levelled ? 'perResource' : mappedCount > 1 ? 'courseMapping' : levelsOf(first).length > 1 ? 'courseLevels' : 'single')
+    this.levelMode.set(
+      levelled ? 'perResource' : mappedCount > 1 ? 'courseMapping' : levelsOf(first).length > 1 ? 'courseLevels' : 'single',
+    )
     this.audience.set(preview.defaults.audience)
     this.language.set(preview.defaults.language)
     this.domainStyle.set(preview.defaults.domainStyle)
@@ -816,62 +765,16 @@ export class AiReviewPageComponent implements OnInit {
   }
 
   /**
-   * Reads the review now, then again after each delay, until it reaches a final state.
-   * Paused while the tab is hidden, so a forgotten tab costs nothing. A failed read is
-   * retried a few times before giving up, since one dropped request is not a lost review.
+   * Reads the review now, then again after each delay, until it reaches a final state:
+   * paused while the tab is hidden or the browser is offline, a failed read retried (the
+   * same polling the file review uses).
    */
   poll(reviewId: string): Observable<IAiReview> {
-    const read = defer(() => this.api.get(reviewId)).pipe(retry({ count: 3, delay: 2000 }))
-    return read.pipe(
-      expand(review =>
-        AI_REVIEW_FINAL_STATUSES.has(review.status)
-          ? EMPTY
-          : timer(nextPollDelay(review)).pipe(
-              switchMap(() => this.whenVisible()),
-              switchMap(() => this.whenOnline()),
-              switchMap(() => read),
-            ),
-      ),
+    return watchReview(
+      () => this.api.get(reviewId),
+      this.document,
+      () => this.online(),
     )
-  }
-
-  /** Emits once, as soon as the browser is online (immediately if it is): offline, polling waits. */
-  private whenOnline(): Observable<unknown> {
-    const win = this.document.defaultView
-    if (!win || this.online()) {
-      return of(null)
-    }
-    return fromEvent(win, 'online').pipe(take(1))
-  }
-
-  /** Emits once, as soon as the page is visible (immediately if it already is). */
-  private whenVisible(): Observable<unknown> {
-    return fromEvent(this.document, 'visibilitychange').pipe(
-      startWith(null),
-      filter(() => !this.document.hidden),
-      take(1),
-    )
-  }
-
-  cancel(): void {
-    const r = this.review()
-    if (!r || this.cancelling()) {
-      return
-    }
-    this.cancelling.set(true)
-    this.api
-      .cancel(r.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.cancelling.set(false)
-          this.follow(r.id)
-        },
-        error: err => {
-          this.cancelling.set(false)
-          this.pollError.set(AiReviewService.errorMessage(err, 'Could not cancel the review.'))
-        },
-      })
   }
 
   /**
@@ -910,64 +813,15 @@ export class AiReviewPageComponent implements OnInit {
     return resource.kind || kindFromMime(resource.mimeType)
   }
 
-  /** Opens the report as a print-ready page; the browser saves it as a PDF. */
-  downloadPdf(): void {
-    const r = this.review()
-    if (!r) {
-      return
-    }
-    this.exportError.set('')
-    if (!openPrintableReport(r, this.document.defaultView || window)) {
-      this.exportError.set('Your browser blocked the report window. Allow pop-ups for this site, then try again.')
-    }
-  }
-
-  /** Every verdict, coverage line and question finding, as an Excel workbook. */
-  async downloadExcel(): Promise<void> {
-    const r = this.review()
-    if (!r || this.exporting()) {
-      return
-    }
-    this.exporting.set('excel')
-    this.exportError.set('')
-    try {
-      const XLSX = xlsxApi(await import('xlsx'))
-      const wb = XLSX.utils.book_new()
-      const sheets = buildWorkbookSheets(r)
-      Object.keys(sheets).forEach(name => XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheets[name]), name))
-      const data = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
-      saveAs(new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), reportFileName(r, 'xlsx'))
-    } catch (err) {
-      console.error('AI review Excel export failed', err)
-      this.exportError.set('Could not create the Excel file. Please try again.')
-    } finally {
-      this.exporting.set(null)
-    }
-  }
-
   backToCourse(): void {
     this.router.navigate(['/author/toc', this.courseId, 'overview'])
   }
 
   statusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      queued: 'Waiting to start',
-      running: 'Reviewing',
-      done: 'Done',
-      partial: 'Done — some resources could not be reviewed',
-      failed: 'Failed',
-      cancelled: 'Cancelled',
-      skipped: 'Not included',
-    }
-    return labels[status] || status
+    return statusLabel(status)
   }
 
   formatDuration(sec: number | null): string {
-    if (sec === null || sec === undefined) {
-      return ''
-    }
-    const m = Math.floor(sec / 60)
-    const s = Math.round(sec % 60)
-    return m ? (s ? `${m} min ${s} s` : `${m} min`) : `${s} s`
+    return formatDuration(sec)
   }
 }
