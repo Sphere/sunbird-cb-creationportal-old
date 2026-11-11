@@ -120,6 +120,18 @@ describe('AiReviewService', () => {
     expect(http.expectOne(`${AI_REVIEW_API_BASE}/reviews/r1`).request.method).toBe('DELETE')
   })
 
+  it("reads the account's own reviews, treating a missing list as none", () => {
+    let list: unknown[] | null = null
+    service.pastReviews().subscribe(res => (list = res))
+    const req = http.expectOne(`${AI_REVIEW_API_BASE}/reviews/mine`)
+    expect(req.request.method).toBe('GET')
+    req.flush({ reviews: [{ id: 'r1', source: 'course' }] })
+    expect(list).toEqual([{ id: 'r1', source: 'course' }])
+    service.pastReviews().subscribe(res => (list = res))
+    http.expectOne(`${AI_REVIEW_API_BASE}/reviews/mine`).flush({})
+    expect(list).toEqual([])
+  })
+
   it('treats a missing list as empty', () => {
     let list: unknown[] | null = null
     service.history('do_1').subscribe(res => (list = res))

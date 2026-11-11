@@ -166,6 +166,18 @@ describe('report summary', () => {
     expect(inShortOf({ ...review(), result: null }, { one: 'file', many: 'files' }, 0)).toEqual([])
   })
 
+  it('leads with the course verdict, which weighs both reviews, and drops the checklist-only message', () => {
+    const r = review()
+    const withVerdict = {
+      ...r,
+      result: { ...r.result!, verdict: { band: 'red' as const, message: 'Does not yet teach the competency level as required.' } },
+    }
+    const lines = inShortOf(withVerdict, { one: 'resource', many: 'resources' }, 5)
+    expect(lines[0]).toBe('Does not yet teach the competency level as required.')
+    expect(lines[2]).toBe('CBP checklist: 98% — 80 of the 82 checks that apply are met.')
+    expect(lines.join(' ')).not.toContain('ship it')
+  })
+
   it('explains why a resource is scored on fewer points than the checklist has', () => {
     expect(scoreNote(47, 'file')).toContain('The CBP checklist has 47 points.')
     expect(scoreNote(47, 'file')).toContain('a quiz has no visuals or narration to judge')

@@ -96,12 +96,12 @@ export const STEPS: { id: AiReviewStep; label: string }[] = [
  */
 @Component({
   standalone: false,
-  selector: 'ws-auth-ai-review-page',
-  templateUrl: './ai-review-page.component.html',
-  styleUrls: ['./ai-review-page.component.scss'],
+  selector: 'ws-auth-ai-review-course-page',
+  templateUrl: './ai-review-course-page.component.html',
+  styleUrls: ['./ai-review-course-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AiReviewPageComponent implements OnInit {
+export class AiReviewCoursePageComponent implements OnInit {
   private readonly api = inject(AiReviewService)
   private readonly viewer = inject(AIR_VIEWER, { optional: true })
   /** Who started a past review: their name, "You" for your own, or nothing when unknown. */

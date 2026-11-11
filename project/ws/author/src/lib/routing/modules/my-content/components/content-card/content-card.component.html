@@ -236,7 +236,7 @@
     <span i18n>Reviewer Checklist</span>
   </a>
   @if (showMenuItem('aiReview')) {
-    <a mat-menu-item [routerLink]="'/author/ai-review/' + data.identifier">
+    <a mat-menu-item [routerLink]="['/author/ai-review/courses', data.identifier]">
       <!-- The sparkle drawn inline: the bundled Material Icons font predates "auto_awesome". -->
       <mat-icon aria-hidden="true">
         <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" focusable="false">

@@ -392,7 +392,7 @@ export function buildReportHtml(review: IAiReview, generatedAt: Date = new Date(
               total
                 ? `<div class="muted">${esc(total)}-point checklist, added up over ${esc(s.reviewed)} ${s.reviewed === 1 ? words.one : words.many}</div>`
                 : ''
-            }<div class="muted">${esc(s.addie.bandMessage || '')}</div></div>`
+            }${s.verdict ? '' : `<div class="muted">${esc(s.addie.bandMessage || '')}</div>`}</div>`
           : ''
       }${
         s.domain
@@ -586,7 +586,7 @@ export function buildWorkbookSheets(review: IAiReview): Record<string, (string |
     summary.push(
       ['CBP checklist %', s.addie.scorePct ?? ''],
       ['CBP checks met', `${s.addie.yes} of ${s.addie.applicable} (added up over every ${words.one})`],
-      ['Band', s.addie.bandMessage || ''],
+      [s.verdict ? 'Verdict' : 'Band', s.verdict?.message || s.addie.bandMessage || ''],
     )
   }
   if (s && s.domain) {

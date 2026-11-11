@@ -559,34 +559,33 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
             </mat-list-item>
           </mat-list>
         </mat-expansion-panel>
+        <!-- AI Review: one item, styled like the section headers above, that opens Past reviews
+             (every review this account started, with New review at the top). Course reviews
+             start from the course itself (its page, or its menu here). For creators, reviewers
+             and publishers, as the accordion's allowAuthor gate; the service checks the caller
+             itself on every call. -->
+        <mat-expansion-panel
+          #panelAi
+          class="no-shadow ai-review-panel"
+          style="cursor: pointer"
+          hideToggle
+          [expanded]="false"
+          (opened)="openAiReview(); panelAi.close()"
+        >
+          <mat-expansion-panel-header class="left-panel-header" [attr.aria-current]="isAiReviewRoute ? 'page' : null">
+            <mat-panel-title class="main-block">
+              <!-- The AI mark (AI Studio's sparkles): one large spark and two small ones. -->
+              <svg [ngClass]="{ iconActive: isAiReviewRoute }" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M10 5L11.8 11.2L18 13L11.8 14.8L10 21L8.2 14.8L2 13L8.2 11.2ZM18 1.5L19 4L21.5 5L19 6L18 8.5L17 6L14.5 5L17 4ZM19.5 15.5L20.2 17.3L22 18L20.2 18.7L19.5 20.5L18.8 18.7L17 18L18.8 17.3Z"
+                  fill="#808080"
+                />
+              </svg>
+              <span class="font-weight-500 head-content-block" [ngClass]="{ manageCourseActive: isAiReviewRoute }" i18n>AI Review</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
       </mat-accordion>
-      <!-- AI review of the user's own files (a video, PDF or quiz sheet not yet in a course).
-           For creators, reviewers and publishers: the same people allowAuthor admits. The
-           service checks the caller itself and shows each user only their own file reviews. -->
-      <a
-        *ngIf="allowAuthor"
-        class="ai-review-link"
-        routerLink="/author/ai-review/files"
-        routerLinkActive="is-active"
-        #airLink="routerLinkActive"
-        [attr.aria-current]="airLink.isActive ? 'page' : null"
-      >
-        <!-- An inline glyph like the other section icons (a page with a check): the bundled
-             Material Icons font has no fact_check, which rendered as an empty box. -->
-        <svg class="ai-review-link__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5ZM14 3v5h5M9 14.5l2 2 4-4.5"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-        <span class="ai-review-link__text">
-          <span class="ai-review-link__label" i18n>AI Review</span>
-          <span class="ai-review-link__sub" i18n>Check your files before adding them</span>
-        </span>
-      </a>
       <!-- Its own accordion, outside the allowAuthor one above.
            allowAuthor is content_creator / content_reviewer / content_publisher,
            and someone whose only grant is an AI Studio role holds none of the

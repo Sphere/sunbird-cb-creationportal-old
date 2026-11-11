@@ -1,0 +1,283 @@
+@use '../ai-review-shared' as *;
+
+// Past reviews: laid out as My Workspace lists courses (a picture, the name, what was found
+// and the details), in AI Studio's look. The title carries the count; New review sits at the
+// top right, as "Create a new course" does.
+
+.air-past-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+  flex-wrap: wrap;
+}
+
+.air-past-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.air-past-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 34px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  color: $air-primary-deep;
+  background: $air-primary-soft;
+  border: 1px solid rgba(47, 122, 239, 0.22);
+}
+
+.air-past-new {
+  text-decoration: none;
+  margin-bottom: 4px;
+}
+
+.air-past-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  .air-covtabs {
+    margin-bottom: 0;
+  }
+}
+
+.air-past-search {
+  position: relative;
+  flex: 1 1 260px;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+
+  ws-auth-air-icon {
+    position: absolute;
+    left: 13px;
+    color: $air-muted;
+    pointer-events: none;
+  }
+
+  .module-input {
+    padding-left: 38px;
+  }
+}
+
+.air-past-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+
+  > li + li {
+    border-top: 1px solid $air-line;
+  }
+}
+
+// One review: the whole row opens its report.
+.air-past-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 12px;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color $air-dur-fast $air-ease;
+
+  &:hover:not(.air-past-row--loading) {
+    background: rgba(47, 122, 239, 0.05);
+
+    .air-past-open {
+      opacity: 1;
+
+      ws-auth-air-icon {
+        transform: translateX(3px);
+      }
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+
+  &--loading {
+    cursor: default;
+  }
+}
+
+// The picture, at the size the course list uses.
+.air-past-thumb {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 120px;
+  height: 90px;
+  border-radius: 12px;
+  overflow: hidden;
+  color: #3b4fe0;
+  background: color-mix(in srgb, #3b4fe0 9%, #fff);
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  // A file review has no course picture: AI Studio's violet tile.
+  &--files {
+    color: #7c3aed;
+    background: color-mix(in srgb, #7c3aed 10%, #fff);
+  }
+
+  &.air-mini--loading {
+    display: block;
+  }
+
+  @media (max-width: 560px) {
+    width: 80px;
+    height: 60px;
+  }
+}
+
+.air-past-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.air-past-name {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: $air-ink;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.air-past-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  .air-chip--sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .air-mini {
+    padding: 2px 9px;
+    white-space: nowrap;
+  }
+}
+
+// A review still running: the dot breathes, as on the progress screen.
+.air-past-live {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2f7aef;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: rgba(47, 122, 239, 0.35);
+    animation: air-halo 1.2s $air-ease infinite;
+  }
+}
+
+// The details line, as the course list's "By … · Updated … · 22m 5s".
+.air-past-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-size: 14px;
+  color: $air-muted;
+}
+
+.air-past-open {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $air-primary-deep;
+  opacity: 0.7;
+  transition: opacity $air-dur-fast $air-ease;
+
+  ws-auth-air-icon {
+    transition: transform $air-dur-fast $air-ease;
+  }
+
+  @media (max-width: 760px) {
+    display: none;
+  }
+}
+
+// Loading: the shimmer in the row's own shape.
+.air-past-lines {
+  flex: 1;
+  display: grid;
+  gap: 10px;
+
+  > span {
+    display: block;
+    height: 16px;
+    border-radius: 8px;
+
+    &:first-child {
+      width: 60%;
+      height: 20px;
+    }
+
+    &:last-child {
+      width: 40%;
+    }
+  }
+}
+
+.air-past-empty-title {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: $air-ink;
+}
+
+.air-past-cta {
+  margin-top: 12px;
+  text-decoration: none;
+}
+
+.air-past-none {
+  display: block;
+  margin: 8px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .air-past-live::after {
+    animation: none;
+  }
+}

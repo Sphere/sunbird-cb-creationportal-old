@@ -627,7 +627,7 @@ describe('AppTocBannerComponent', () => {
     it('gotoAiReview opens the AI review page for the course', () => {
       component.content = content()
       component.gotoAiReview()
-      expect(router.navigate).toHaveBeenCalledWith(['/author/ai-review', 'do_1'])
+      expect(router.navigate).toHaveBeenCalledWith(['/author/ai-review/courses', 'do_1'])
     })
 
     it('gotoAiReview does nothing without content', () => {

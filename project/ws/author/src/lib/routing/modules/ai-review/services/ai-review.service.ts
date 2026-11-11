@@ -8,6 +8,7 @@ import {
   IAiReviewCreateResult,
   IAiReviewErrorBody,
   IAiReviewHistoryEntry,
+  IAiReviewPastReview,
   IAiReviewOptions,
   IAiReviewPreview,
   IAiReviewResourceSize,
@@ -77,6 +78,11 @@ export class AiReviewService {
     return this.http
       .get<{ reviews: IAiReviewHistoryEntry[] }>(`${AI_REVIEW_API_BASE}/reviews`, { params: { courseId } })
       .pipe(map(res => res.reviews || []))
+  }
+
+  /** Every review this account started, of courses and of its files, newest first. */
+  pastReviews(): Observable<IAiReviewPastReview[]> {
+    return this.http.get<{ reviews: IAiReviewPastReview[] }>(`${AI_REVIEW_API_BASE}/reviews/mine`).pipe(map(res => res.reviews || []))
   }
 
   cancel(reviewId: string): Observable<{ cancelled: boolean }> {

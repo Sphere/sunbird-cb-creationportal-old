@@ -106,6 +106,9 @@ export function inShortOf(review: Pick<IAiReview, 'result' | 'items'>, words: { 
   }
   const n = (k: number, one: string, many: string) => `${k} ${k === 1 ? one : many}`
   const lines: string[] = [
+    // The verdict first: it weighs both reviews, where the checklist's band message alone used
+    // to say "ship it" beside a red domain review.
+    ...(s.verdict?.message ? [s.verdict.message] : []),
     `${n(s.reviewed, words.one, words.many)} reviewed` +
       (s.failed ? `; ${s.failed} could not be reviewed` : '') +
       (s.skipped.length ? `; ${s.skipped.length} left out (listed below)` : '') +
@@ -114,7 +117,7 @@ export function inShortOf(review: Pick<IAiReview, 'result' | 'items'>, words: { 
   if (s.addie) {
     lines.push(
       `CBP checklist: ${s.addie.scorePct ?? '—'}% — ${s.addie.yes} of the ${s.addie.applicable} checks that apply are met` +
-        (s.addie.bandMessage ? ` (${s.addie.bandMessage.replace(/[.\s]+$/, '')}).` : '.'),
+        (s.addie.bandMessage && !s.verdict ? ` (${s.addie.bandMessage.replace(/[.\s]+$/, '')}).` : '.'),
     )
   }
   const cc = coverageCountsOf(review)

@@ -6,7 +6,7 @@
     @if (inShort().length) {
       <ul class="air-inshort" aria-label="In short">
         @for (line of inShort(); track $index) {
-          <li>{{ line }}</li>
+          <li [class]="$first && s.verdict ? 'air-inshort-verdict air-inshort-verdict--' + s.verdict.band : ''">{{ line }}</li>
         }
       </ul>
     }
@@ -29,7 +29,7 @@
                 {{ s.reviewed === 1 ? words().one : words().many }}</span
               >
             }
-            @if (s.addie.bandMessage) {
+            @if (s.addie.bandMessage && !s.verdict) {
               <span class="air-chip air-chip--{{ s.addie.band }}">{{ s.addie.bandMessage }}</span>
             }
           </span>

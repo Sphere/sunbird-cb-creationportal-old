@@ -473,7 +473,8 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
 
   gotoAiReview(): void {
     if (this.content) {
-      this.router.navigate(['/author/ai-review', this.content.identifier])
+      // The AI review of a course: /author/ai-review/courses/<courseId> (author's ai-review/utils/routes.ts).
+      this.router.navigate(['/author/ai-review/courses', this.content.identifier])
     }
   }
 

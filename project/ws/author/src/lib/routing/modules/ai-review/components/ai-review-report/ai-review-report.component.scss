@@ -1069,6 +1069,24 @@
   li + li {
     margin-top: 4px;
   }
+
+  // The course verdict: the line a reader acts on, in its band's colour.
+  .air-inshort-verdict {
+    font-weight: 600;
+    color: var(--air-ink, #0f172a);
+
+    &--green {
+      color: #1e7a3c;
+    }
+
+    &--amber {
+      color: #8f6206;
+    }
+
+    &--red {
+      color: #b42318;
+    }
+  }
 }
 
 .air-restable {

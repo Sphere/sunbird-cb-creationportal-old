@@ -5,16 +5,16 @@ import { NEVER, Observable, Subject, of, throwError } from 'rxjs'
 import { IAiReview, IAiReviewCheckedUpload, IAiReviewSignedFile, IAiReviewUploadContext } from '../../models/ai-review.model'
 import { AiReviewService } from '../../services/ai-review.service'
 import { readQuizSheet } from '../../utils/upload-files'
-import { REUSE_CHECK_DEBOUNCE_MS } from '../ai-review-page/ai-review-page.component'
+import { REUSE_CHECK_DEBOUNCE_MS } from '../ai-review-course-page/ai-review-course-page.component'
 import {
-  AiReviewFilesPageComponent,
+  AiReviewNewPageComponent,
   CHECK_RETRIES,
   CHECK_RETRY_MS,
   JOINED_FILE_REVIEW,
   StorageUploadError,
   UPLOAD_CONCURRENCY,
   storageMessage,
-} from './ai-review-files-page.component'
+} from './ai-review-new-page.component'
 
 /** Every wait of the check's retries, which grow by CHECK_RETRY_MS each time. */
 const ALL_CHECK_RETRIES_MS = (CHECK_RETRY_MS * CHECK_RETRIES * (CHECK_RETRIES + 1)) / 2
@@ -121,13 +121,13 @@ const flush = async (): Promise<void> => {
   await Promise.resolve()
 }
 
-describe('AiReviewFilesPageComponent', () => {
+describe('AiReviewNewPageComponent', () => {
   let api: Record<string, jest.Mock>
   let router: { navigate: jest.Mock }
   let query: Record<string, string>
   let n: number
 
-  const create = (pickAudience = true): AiReviewFilesPageComponent => {
+  const create = (pickAudience = true): AiReviewNewPageComponent => {
     TestBed.configureTestingModule({
       providers: [
         { provide: AiReviewService, useValue: api },
@@ -135,7 +135,7 @@ describe('AiReviewFilesPageComponent', () => {
         { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(query) } } },
       ],
     })
-    const c = TestBed.runInInjectionContext(() => new AiReviewFilesPageComponent())
+    const c = TestBed.runInInjectionContext(() => new AiReviewNewPageComponent())
     c.ngOnInit()
     // The audience starts empty and Start needs one: picked here as a user would.
     if (pickAudience) {
@@ -916,7 +916,7 @@ describe('AiReviewFilesPageComponent', () => {
       const c = create()
       expect(c.statusLabel('partial')).toBe('Done — some files could not be reviewed')
       c.back()
-      expect(router.navigate).toHaveBeenCalledWith(['/author/my-content'], { queryParams: { status: 'draft' } })
+      expect(router.navigate).toHaveBeenCalledWith(['/author/ai-review'])
     })
 
     it('shows a failed history read', () => {

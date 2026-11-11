@@ -5,7 +5,7 @@ import { NEVER, Subject, of, throwError } from 'rxjs'
 import { IAiReview, IAiReviewHistoryEntry, IAiReviewPreview } from '../../models/ai-review.model'
 import { AiReviewService } from '../../services/ai-review.service'
 import {
-  AiReviewPageComponent,
+  AiReviewCoursePageComponent,
   JOINED_COURSE_REVIEW,
   STARTED_AFTER_ALL,
   MEASURE_TIMEOUT_MS,
@@ -15,7 +15,7 @@ import {
   ROLE_CHECK_TIMEOUT_MS,
   nextPollDelay,
   pipelineProgress,
-} from './ai-review-page.component'
+} from './ai-review-course-page.component'
 
 jest.mock('file-saver', () => ({ saveAs: jest.fn() }))
 jest.mock('xlsx', () => ({
@@ -81,14 +81,14 @@ const review = (over: Partial<IAiReview> = {}): IAiReview =>
     ...over,
   }) as IAiReview
 
-describe('AiReviewPageComponent', () => {
+describe('AiReviewCoursePageComponent', () => {
   let api: Record<string, jest.Mock>
   let router: { navigate: jest.Mock }
   let query: Record<string, string>
   let hidden: boolean
 
   /** The page as a user finds it, with an audience picked (it starts empty, and Start needs one). */
-  const create = (pickAudience = true): AiReviewPageComponent => {
+  const create = (pickAudience = true): AiReviewCoursePageComponent => {
     TestBed.configureTestingModule({
       providers: [
         { provide: AiReviewService, useValue: api },
@@ -99,7 +99,7 @@ describe('AiReviewPageComponent', () => {
         },
       ],
     })
-    const c = TestBed.runInInjectionContext(() => new AiReviewPageComponent())
+    const c = TestBed.runInInjectionContext(() => new AiReviewCoursePageComponent())
     if (pickAudience) {
       c.audience.set('ANM / ASHA frontline health workers')
     }
@@ -1367,8 +1367,10 @@ describe('the AI Studio look of the review pages', () => {
   const fs = require('fs') as typeof import('fs')
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const path = require('path') as typeof import('path')
-  const read = (rel: string) => fs.readFileSync(path.join(__dirname, rel), 'utf8')
-  const pages = ['ai-review-page.component.html', '../ai-review-files-page/ai-review-files-page.component.html']
+  // Whitespace folded to single spaces: Prettier re-wraps long template lines, and a sentence
+  // split over two lines must still be found.
+  const read = (rel: string) => fs.readFileSync(path.join(__dirname, rel), 'utf8').replace(/\s+/g, ' ')
+  const pages = ['ai-review-course-page.component.html', '../ai-review-new-page/ai-review-new-page.component.html']
 
   it.each(pages)('shows past reviews as AI Studio history rows (%s)', file => {
     const html = read(file)
@@ -1423,21 +1425,21 @@ describe('the AI Studio look of the review pages', () => {
   })
 
   it('points to Course Details, where the course name, description and competencies are edited', () => {
-    const html = read('ai-review-page.component.html')
+    const html = read('ai-review-course-page.component.html')
     expect(html).not.toContain('Course Settings')
     expect(html).toContain('From Course Details: the name and subtitle (Basic Information) and the Course Description.')
     expect(html).toContain('Add a competency in Course Details (the Competencies card) to turn this on.')
   })
 
   it('keeps the page from scrolling sideways, and repaints nothing on scroll', () => {
-    const scss = read('ai-review-page.component.scss')
+    const scss = read('ai-review-course-page.component.scss')
     expect(scss).toContain('overflow-x: clip;')
     expect(scss).not.toContain('background-attachment: fixed')
     expect(scss).toContain('inset: -40px 0 auto;')
   })
 
   it('gives the gradient title room for Devanagari letters that rise above the line', () => {
-    const title = read('ai-review-page.component.scss').split('.air-title {')[1].split('\n}')[0]
+    const title = read('ai-review-course-page.component.scss').split('.air-title {')[1].split('\n}')[0]
     expect(title).toContain('background-clip: text;')
     expect(title).toContain('line-height: 1.4;')
     expect(title).toContain('padding: 0.12em 0 0.08em;')

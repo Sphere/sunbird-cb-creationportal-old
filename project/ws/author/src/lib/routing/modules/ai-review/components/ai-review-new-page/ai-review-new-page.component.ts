@@ -1,3 +1,4 @@
+import { AI_REVIEW_HOME } from '../../utils/routes'
 import { AI_REVIEW_FRAC_ENABLED } from '../../utils/features'
 import { fixFor, jumpTo } from '../../utils/jump-to'
 import { DOCUMENT } from '@angular/common'
@@ -49,7 +50,7 @@ import {
   REUSE_CHECK_DEBOUNCE_MS,
   ROLE_CHECK_TIMEOUT_MS,
   STEPS,
-} from '../ai-review-page/ai-review-page.component'
+} from '../ai-review-course-page/ai-review-course-page.component'
 
 /** Files sent to storage at once: enough to keep the line busy, few enough to show progress. */
 export const UPLOAD_CONCURRENCY = 3
@@ -155,12 +156,12 @@ function kindSummary(
  */
 @Component({
   standalone: false,
-  selector: 'ws-auth-ai-review-files-page',
-  templateUrl: './ai-review-files-page.component.html',
-  styleUrls: ['../ai-review-page/ai-review-page.component.scss', './ai-review-files-page.component.scss'],
+  selector: 'ws-auth-ai-review-new-page',
+  templateUrl: './ai-review-new-page.component.html',
+  styleUrls: ['../ai-review-course-page/ai-review-course-page.component.scss', './ai-review-new-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AiReviewFilesPageComponent implements OnInit {
+export class AiReviewNewPageComponent implements OnInit {
   private readonly api = inject(AiReviewService)
   private readonly route = inject(ActivatedRoute)
   private readonly router = inject(Router)
@@ -1157,7 +1158,8 @@ export class AiReviewFilesPageComponent implements OnInit {
   }
 
   /** Back to My Content's drafts, where the user's own unfinished content is. */
+  /** Back to Past reviews, where New review is opened from. */
   back(): void {
-    this.router.navigate(['/author/my-content'], { queryParams: { status: 'draft' } })
+    this.router.navigate([AI_REVIEW_HOME])
   }
 }

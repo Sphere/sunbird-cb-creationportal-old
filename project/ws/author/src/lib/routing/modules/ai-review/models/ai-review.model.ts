@@ -366,7 +366,12 @@ export interface IAiReviewCourseSummary {
   failed: number
   skipped: { contentId: string; name: string; reason: string }[]
   addie: { scorePct: number | null; band: AiReviewBand | null; bandMessage: string | null; yes: number; applicable: number } | null
-  domain: { yes: number; applicable: number; scorePct: number | null } | null
+  domain: { yes: number; applicable: number; scorePct: number | null; band?: AiReviewBand | null } | null
+  /**
+   * The course's one verdict, from the checklist and the domain review together. Absent on
+   * reviews made before it existed: those show the checklist's own band message.
+   */
+  verdict?: { band: AiReviewBand; message: string } | null
   coverage: { component: string; status: AiReviewCoverageStatus; coveredBy: string[] }[]
   commonGaps: { id: string; text: string; count: number }[]
   /** How many resources fit the course's description; null when not checked. */
@@ -429,6 +434,24 @@ export interface IAiReviewHistoryEntry {
   progress: { done: number; total: number }
   summary: IAiReviewCourseSummary | null
   costUsd: number | string | null
+  createdAt: string
+  finishedAt: string | null
+}
+
+/** One review in Past reviews: of a course, or of the user's own files. */
+export interface IAiReviewPastReview {
+  id: string
+  source: AiReviewSource
+  /** The course reviewed; null for a review of files. */
+  courseId: string | null
+  /** The course's name, or the name given to a file review. */
+  name: string
+  /** The course's picture, as the course list shows it; null for files or when unknown. */
+  thumbnail?: string | null
+  status: AiReviewStatus
+  requestedBy: { id: string; name: string | null }
+  progress: { done: number; total: number }
+  summary: IAiReviewCourseSummary | null
   createdAt: string
   finishedAt: string | null
 }

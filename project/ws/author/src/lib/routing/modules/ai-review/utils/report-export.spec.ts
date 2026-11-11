@@ -313,6 +313,21 @@ describe('report export', () => {
     expect(sheets['Questions']).toContainEqual(['Final assessment', 1, 'Dose?', 'Needs attention', 'Key marks 4 mg', 'Mark 4 g'])
   })
 
+  it('shows the course verdict, which weighs both reviews, in place of the checklist-only band', () => {
+    const base = review()
+    const judged = review({
+      result: { ...base.result!, verdict: { band: 'red', message: 'Does not yet teach the competency level as required.' } },
+    })
+    const sheets = buildWorkbookSheets(judged)
+    expect(sheets['Summary']).toContainEqual(['Verdict', 'Does not yet teach the competency level as required.'])
+    expect(sheets['Summary']).not.toContainEqual(['Band', 'Needs significant revision'])
+    const html = buildReportHtml(judged)
+    expect(html).toContain('Does not yet teach the competency level as required.')
+    expect(html).not.toContain('<div class="muted">Needs significant revision</div>')
+    // A review from before the verdict existed keeps its band.
+    expect(buildWorkbookSheets(base)['Summary']).toContainEqual(['Band', 'Needs significant revision'])
+  })
+
   it('leaves the questions sheet out when there are none', () => {
     const sheets = buildWorkbookSheets(review({ items: [item()], result: null }))
     expect(Object.keys(sheets)).toEqual(['Summary', 'Checklist', 'Coverage'])

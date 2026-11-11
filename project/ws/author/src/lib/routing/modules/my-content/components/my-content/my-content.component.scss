@@ -727,68 +727,6 @@ ws-auth-content-card-v2 {
 /* AI Review: one link, laid out like a section header (glyph, then the name). */
 /* Lined up with the section headers above: the glyph where theirs sits (12px header padding +
    5px title margin) and the name where theirs starts; the same divider as between panels. */
-.ai-review-link {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  min-height: 56px;
-  padding: 8px 12px 8px 17px;
-  border-top: 1px solid #e8ecf0;
-  background: #f7f7f7;
-  color: #3a4a5c;
-  text-decoration: none;
-  cursor: pointer;
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
-
-  &:hover {
-    background: rgba(28, 93, 149, 0.06);
-  }
-  &:focus-visible {
-    outline: 2px solid #1c5d95;
-    outline-offset: -2px;
-  }
-  &.is-active {
-    color: #1c5d95;
-  }
-}
-.ai-review-link__icon {
-  flex: none;
-  width: 20px;
-  height: 20px;
-  color: #8a96a3;
-  transition: color 0.15s ease;
-  .ai-review-link:hover & {
-    color: #1c5d95;
-  }
-  .ai-review-link.is-active & {
-    color: #1c5d95;
-  }
-}
-.ai-review-link__text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-.ai-review-link__label {
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.1px;
-  color: #3a4a5c;
-  .ai-review-link.is-active & {
-    color: #1c5d95;
-    font-weight: 600;
-  }
-}
-.ai-review-link__sub {
-  font-size: 12px;
-  color: #6b7785;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .ai-menu {
   display: flex;
   flex-direction: column;
@@ -1190,4 +1128,10 @@ ws-auth-content-card-v2 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+// AI Review: a section header with no list under it (clicking opens Past reviews), so its
+// panel never shows an empty body.
+.ai-review-panel ::ng-deep .mat-expansion-panel-content {
+  display: none;
 }

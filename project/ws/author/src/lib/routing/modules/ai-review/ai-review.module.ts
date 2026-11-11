@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common'
 import { NgModule, inject } from '@angular/core'
 import { ConfigurationsService } from '@ws-widget/utils'
 import { RouterModule, Routes } from '@angular/router'
-import { AiReviewFilesPageComponent } from './components/ai-review-files-page/ai-review-files-page.component'
-import { AiReviewPageComponent } from './components/ai-review-page/ai-review-page.component'
+import { AiReviewNewPageComponent } from './components/ai-review-new-page/ai-review-new-page.component'
+import { AiReviewHistoryPageComponent } from './components/ai-review-history-page/ai-review-history-page.component'
+import { AiReviewCoursePageComponent } from './components/ai-review-course-page/ai-review-course-page.component'
 import { AiReviewReportComponent } from './components/ai-review-report/ai-review-report.component'
 import { AirBusyComponent } from './components/air-busy/air-busy.component'
 import { AirComboboxComponent } from './components/air-combobox/air-combobox.component'
@@ -16,12 +17,19 @@ import { AiReviewService } from './services/ai-review.service'
 import { AIR_VIEWER } from './utils/review-run'
 
 /**
- * /author/ai-review/files — the user's own files; /author/ai-review/:courseId — a course.
- * `?review=<id>` opens a particular review. `files` comes first so it is not read as a course id.
+ * The AI review's addresses (see utils/routes.ts):
+ *   /author/ai-review — Past reviews; /author/ai-review/new — a review of the user's own files;
+ *   /author/ai-review/courses/:courseId — a course's review. `?review=<id>` opens one review.
+ * The addresses used before redirect here (query parameters are kept), so old links still work.
  */
 const routes: Routes = [
-  { path: 'files', component: AiReviewFilesPageComponent },
-  { path: ':courseId', component: AiReviewPageComponent },
+  { path: '', pathMatch: 'full', component: AiReviewHistoryPageComponent },
+  { path: 'new', component: AiReviewNewPageComponent },
+  { path: 'courses/:courseId', component: AiReviewCoursePageComponent },
+  // Earlier addresses.
+  { path: 'mine', redirectTo: '', pathMatch: 'full' },
+  { path: 'files', redirectTo: 'new', pathMatch: 'full' },
+  { path: ':courseId', redirectTo: 'courses/:courseId', pathMatch: 'full' },
 ]
 
 /**
@@ -30,8 +38,9 @@ const routes: Routes = [
  */
 @NgModule({
   declarations: [
-    AiReviewFilesPageComponent,
-    AiReviewPageComponent,
+    AiReviewNewPageComponent,
+    AiReviewHistoryPageComponent,
+    AiReviewCoursePageComponent,
     AiReviewReportComponent,
     AirBusyComponent,
     AirComboboxComponent,
