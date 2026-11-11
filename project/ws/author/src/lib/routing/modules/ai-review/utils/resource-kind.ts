@@ -154,6 +154,27 @@ export function pipelineProgress(item: { status: string; stage: string | null })
   return 0
 }
 
+/**
+ * How far one resource is, 0 to 1, from its real steps: finished (or failed, or cancelled)
+ * counts whole; one under way counts its finished steps and half the one in progress (or,
+ * while downloading, how much of the file has arrived); one waiting counts nothing.
+ */
+export function itemFraction(item: { status: string; stage: string | null }, steps = 3): number {
+  if (item.status === 'done' || item.status === 'failed' || item.status === 'cancelled') {
+    return 1
+  }
+  if (item.status !== 'running') {
+    return 0
+  }
+  const step = Math.max(0, pipelineProgress(item))
+  // While the file downloads, the service says how much has arrived ("…45% · 38 of 84 MB").
+  const downloaded = step === 0 ? /(\d{1,3})%/.exec(item.stage || '') : null
+  if (downloaded) {
+    return Math.min(1, Number(downloaded[1]) / 100) / steps
+  }
+  return Math.min(steps - 0.5, step + 0.5) / steps
+}
+
 /** "12 min 30 s", "45 s", or '' when the length is not known. */
 export function formatDuration(sec: number | null | undefined): string {
   if (sec === null || sec === undefined) {

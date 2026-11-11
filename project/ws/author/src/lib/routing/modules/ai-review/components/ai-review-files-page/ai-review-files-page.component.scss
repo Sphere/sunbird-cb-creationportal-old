@@ -30,7 +30,7 @@
 
   &--over {
     border-color: $air-primary;
-    background: #eef2ff;
+    background: #e8efff;
   }
 
   // Once files are added, the zone gets out of their way.
@@ -97,8 +97,8 @@
 
   &--rejected,
   &--failed {
-    border-color: #fecaca;
-    background: #fffafa;
+    border-color: #f2b8b0;
+    background: #fef3f2;
   }
 }
 
@@ -260,7 +260,7 @@
   }
 
   &--on {
-    background: #eef2ff;
+    background: #e8efff;
     color: $air-primary;
   }
 
@@ -335,4 +335,20 @@
     transition: none;
     animation: none !important;
   }
+}
+
+// A file left out of this review: still uploaded and listed, plainly not included.
+.air-file--left-out {
+  background: $air-canvas;
+
+  .air-kind-tile,
+  .air-file-main {
+    opacity: 0.5;
+  }
+}
+
+// Keeps rows that cannot be chosen (uploading, refused) lined up with the ticked ones.
+.air-pick-space {
+  flex-shrink: 0;
+  width: 20px;
 }

@@ -61,8 +61,12 @@ export class AiReviewService {
   }
 
   /** Starts a review, or joins the one already running on this course. */
-  start(courseId: string, options: IAiReviewOptions): Observable<IAiReviewCreateResult> {
-    return this.http.post<IAiReviewCreateResult>(`${AI_REVIEW_API_BASE}/reviews`, { courseId, options })
+  /** @param contentIds - the resources chosen; omitted, every reviewable resource is reviewed. */
+  start(courseId: string, options: IAiReviewOptions, contentIds?: string[] | null): Observable<IAiReviewCreateResult> {
+    return this.http.post<IAiReviewCreateResult>(
+      `${AI_REVIEW_API_BASE}/reviews`,
+      contentIds ? { courseId, options, contentIds } : { courseId, options },
+    )
   }
 
   get(reviewId: string): Observable<IAiReview> {

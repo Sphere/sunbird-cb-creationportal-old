@@ -11,6 +11,8 @@ export type AiReviewBand = 'green' | 'amber' | 'red'
 export type AiReviewCoverageStatus = 'covered' | 'partial' | 'missing'
 export type AiReviewDomainStyle = 'plain' | 'frac'
 export type AiReviewLanguage = 'auto' | 'hi' | 'en' | 'mr' | 'bn'
+/** The language the review is written in: the content's own, English, Hindi, or both. */
+export type AiReviewReportLanguage = 'content' | 'en' | 'hi' | 'both'
 
 /** The states after which a review never changes again. */
 export const AI_REVIEW_FINAL_STATUSES: ReadonlySet<AiReviewStatus> = new Set<AiReviewStatus>(['done', 'partial', 'failed', 'cancelled'])
@@ -60,7 +62,7 @@ export interface IAiReviewEstimateParts {
 export interface IAiReviewCourseBrief {
   name: string
   subtitle?: string
-  /** Plain text: the "Course Description" from Course Settings. */
+  /** Plain text: the "Course Description" from Course Details. */
   description: string
   source?: 'course' | 'user'
 }
@@ -158,6 +160,8 @@ export interface IAiReviewOptions {
   positionCode?: string | null
   audience: string
   language: AiReviewLanguage
+  /** The language the review is written in (absent on older reviews: English). */
+  reportLanguage?: AiReviewReportLanguage
   context: string
 }
 
@@ -201,6 +205,8 @@ export interface IAiReviewScoredItem {
   note: string
   fix?: string
   borderline?: boolean
+  /** Why it is doubted (the service's guard): shown with it, for a person to check. */
+  check?: string
   /** Where the evidence is, when it is at one place: "0:12" or "page 3". */
   at?: string
   /** Videos: the second to open the video at. */
@@ -266,6 +272,9 @@ export interface IAiReviewQuestionFinding {
   /** What is wrong: a wrong answer key, a weak distractor, a misleading hint… */
   issues: string[]
   fix?: string
+  /** The service's guard doubts it: shown for a person to check, with why. */
+  borderline?: boolean
+  check?: string
 }
 
 /** What an interactive HTML package holds, as the reviewer found it. */
@@ -300,11 +309,15 @@ export interface IAiReviewItemReport {
   htmlPackage?: IAiReviewHtmlPackage
   transcriptChars: number
   transcriptEngine: string | null
+  /** A video with no sound track: reviewed on what it shows. */
+  noSound?: boolean
   watched: { model: string; chars: number; costUsd: number } | null
   addie: IAiReviewAddie | IAiReviewPassError | null
   domain: IAiReviewDomain | IAiReviewPassError | null
   /** Fit with the course's name and description, when that check was asked for. */
   alignment?: IAiReviewAlignment | IAiReviewPassError | null
+  /** Every AI call this resource cost (sent while detailed costs are on). */
+  usage?: IAiReviewUsageLine[]
   costUsd: number
   cached: boolean
   /** When a reused result was first made (the resource is unchanged since then). */
@@ -321,6 +334,10 @@ export interface IAiReviewResourceSize {
   error?: string
   /** Past a size limit: it will not be reviewed, and this says why. */
   skipReason?: string
+  /** A video's real length. */
+  durationSec?: number
+  /** A video: whether it has a sound track (a silent one is reviewed on what it shows). */
+  audio?: boolean
 }
 
 /** A resource unchanged since a review with the same settings: its result is reused, free. */
@@ -356,6 +373,8 @@ export interface IAiReviewCourseSummary {
   fit?: { aligned: number; partial: number; offTopic: number } | null
   /** The course as a whole against its name and description. */
   alignment?: IAiReviewCourseAlignment | IAiReviewPassError | null
+  /** The course-level AI calls (the alignment verdict). */
+  usage?: IAiReviewUsageLine[]
   costUsd: number
 }
 
@@ -461,6 +480,8 @@ export interface IAiReviewCheckedUpload {
   reason: string | null
   bytes: number | null
   durationSec?: number
+  /** A video: whether it has a sound track (a silent one is reviewed on what it shows). */
+  audio?: boolean
   pages?: number
   questions?: number
   estimate: IAiReviewEstimateParts | null
@@ -484,4 +505,17 @@ export interface IAiReviewErrorBody {
 /** True when a pass result is the error placeholder rather than a report. */
 export function isPassError(x: unknown): x is IAiReviewPassError {
   return typeof x === 'object' && x !== null && typeof (x as { error?: unknown }).error === 'string'
+}
+
+/** One provider, model and step of a review's AI calls: how many, how many tokens, what it cost. */
+export interface IAiReviewUsageLine {
+  provider: 'gemini' | 'anthropic' | 'elevenlabs'
+  model: string
+  step: string
+  calls: number
+  inputTokens: number
+  outputTokens: number
+  cachedTokens: number
+  audioSec: number
+  costUsd: number
 }

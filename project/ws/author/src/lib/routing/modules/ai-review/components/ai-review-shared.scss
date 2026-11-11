@@ -1,38 +1,85 @@
-// AI review visual system, shared by the page and the report. Its own look inside CBP (an
-// AI feature), kept restrained: the deep header and the one primary button carry the
-// cyan → blue → violet accent; everything else is flat tints on white cards. AA contrast
-// on all text (white on the accent gradient is 5:1 or more), visible focus, and no motion
-// for anyone who turns it off in their OS.
+// AI review visual system, shared by the page and the report. It follows AI Studio
+// (aastrika-ai-service/frontend: ui/theme.css and the Assessment look), so the two AI
+// features in CBP read as one product: a light page lit by a soft aurora, near-white
+// "glass" cards with a blue rim, slate text, and the blue gradient kept for the primary
+// action and the title. AA contrast on all text, visible focus, and no motion for anyone
+// who turns it off in their OS. Everything follows AI Studio, its typeface (Inter) included.
 
-$air-font: Roboto, 'Helvetica Neue', Arial, sans-serif;
-$air-ink: #0b1530;
-$air-text: #172036;
-$air-muted: #5b6478;
-$air-line: #e4e8f2;
-// Input tokens are CBP's (CLAUDE.md §7).
-$air-border: #b8c9d9;
-$air-border-hover: #8aaac8;
-$air-focus: #1c5d95;
+// AI Studio's typeface (--aastrika-font), loaded in src/index.html.
+$air-font:
+  'Inter',
+  -apple-system,
+  BlinkMacSystemFont,
+  'Segoe UI',
+  system-ui,
+  sans-serif;
+// Slate ramp, as AI Studio: headings near-black with a blue cast, body a step lighter.
+$air-ink: #0f172a;
+$air-text: #0f172a;
+$air-text-2: #475569;
+$air-muted: #64748b;
+$air-line: #e2e8f0;
+$air-line-2: #cbd5e1;
+// Inputs are AI Studio's wells: a faint fill, a hairline edge, the accent on focus.
+$air-border: #cbd5e1;
+$air-border-hover: #94a3b8;
+$air-focus: #2f7aef;
 $air-surface: #fff;
-$air-canvas: #f5f7fc;
-$air-primary: #3b5bdb;
+$air-surface-2: #f8fafc;
+$air-canvas: #f4f7fc;
+// AI Studio's AI blue (--as-ai / --as-ai-2), and a deeper shade for text on tints.
+$air-primary: #2f5fe8;
+$air-primary-deep: #1e3fae;
+$air-primary-soft: #e8efff;
 $air-violet: #7c3aed;
 $air-cyan: #0891b2;
-$air-green: #15803d;
-$air-amber: #9a3412;
+$air-green: #1e7a3c;
+$air-amber: #8f6206;
 $air-red: #c2410c;
-$air-danger: #b91c1c;
-$air-ai-gradient: linear-gradient(120deg, #0e7490 0%, #1d4ed8 45%, #6d28d9 100%);
+$air-danger: #b42318;
+$air-ai-gradient: linear-gradient(135deg, #2f45d6, #2f7aef);
+// The lift on a card AI Studio is built around: a lit top edge, a hairline, a blue-tinted fall.
+$air-lift:
+  inset 0 1px 0 rgba(255, 255, 255, 0.9),
+  0 1px 2px rgba(15, 23, 42, 0.04),
+  0 24px 48px -28px rgba(59, 79, 224, 0.4);
+// The rim drawn round a card: white at the top-left, fading into the AI blue.
+$air-rim: linear-gradient(150deg, rgba(255, 255, 255, 0.95), rgba(47, 122, 239, 0.3) 55%, rgba(59, 79, 224, 0.38));
+// AI Studio's tinted tile (.as-tile): a soft gradient in the tone, a hairline ring in it and
+// a lit top edge. One tone per kind of resource, from AI Studio's tone set, so a list scans
+// at a glance (the kind is also always written beside it).
+@mixin air-tile($tone) {
+  color: $tone;
+  background: linear-gradient(150deg, color-mix(in srgb, #{$tone} 20%, #fff), color-mix(in srgb, #{$tone} 6%, #fff) 70%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, #{$tone} 22%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+// AI Studio's tones (--as-blue, --as-violet, …).
+$air-tone-blue: #2563eb;
+$air-tone-violet: #7c3aed;
+$air-tone-green: #059669;
+$air-tone-orange: #ea580c;
+$air-tone-amber: #d97706;
+$air-tone-red: #dc2626;
+$air-tone-cyan: #0891b2;
+$air-tone-slate: #64748b;
+
 // Motion: one easing and three durations for every AI review screen. Things move when
 // something happens (arrive, fill, complete), and only one thing loops while waiting.
 $air-ease: cubic-bezier(0.22, 1, 0.36, 1);
 $air-dur-fast: 160ms;
 $air-dur: 280ms;
 $air-dur-slow: 480ms;
-$air-hero:
-  radial-gradient(60% 120% at 85% 0%, rgba(124, 58, 237, 0.55) 0%, transparent 60%),
-  radial-gradient(50% 100% at 0% 100%, rgba(6, 182, 212, 0.35) 0%, transparent 60%),
-  linear-gradient(135deg, #0b1530 0%, #14254f 60%, #1e1b4b 100%);
+// AI Studio's aurora: soft cyan, indigo and pink light behind the top of the page, blurred,
+// so the page reads as a calm business tool with the blue controls as the strong colour.
+$air-aurora:
+  radial-gradient(34% 50% at 88% 4%, rgba(236, 72, 153, 0.13), transparent 70%),
+  radial-gradient(40% 60% at 64% 0%, rgba(79, 70, 229, 0.22), transparent 72%),
+  radial-gradient(38% 55% at 34% 2%, rgba(6, 182, 212, 0.17), transparent 70%),
+  radial-gradient(30% 26% at 4% 62%, rgba(6, 182, 212, 0.1), transparent 70%),
+  radial-gradient(30% 26% at 96% 80%, rgba(79, 70, 229, 0.11), transparent 70%);
 
 :host {
   display: block;
@@ -53,18 +100,36 @@ $air-hero:
   color: inherit;
 }
 
+// A card is AI Studio's glass sheet: near-white over the aurora, lit along the top, with a
+// thin blue rim (drawn by ::after, so the border box stays 1px and nothing shifts). No
+// backdrop blur: it would give every card a stacking context and an open dropdown would sit
+// under the next card.
 .air-card {
-  background: $air-surface;
-  border: 1px solid $air-line;
-  border-radius: 16px;
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 12px 32px -16px rgba(15, 23, 42, 0.18);
+  position: relative;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(255, 255, 255, 0.9));
+  border: 1px solid transparent;
+  border-radius: 18px;
+  box-shadow: $air-lift;
   padding: 24px;
   margin-bottom: 16px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    background: $air-rim;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
   // `backwards`, not `both`: a held transform would keep a stacking context on every card,
   // and an open dropdown would sit under the next card.
-  animation: air-rise $air-dur-slow $air-ease backwards;
+  animation: air-rise 320ms $air-ease backwards;
 
   // Cards arrive one after another, top to bottom, not all at once.
   @for $i from 2 through 6 {
@@ -74,10 +139,59 @@ $air-hero:
   }
 }
 
+// AI Studio's aa-rise: 6px over its slow duration, on its curve.
 @keyframes air-rise {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(6px);
+  }
+}
+
+// AI Studio's aa-shimmer: the light that passes over something still loading.
+@keyframes air-shimmer {
+  to {
+    background-position: 200% 0;
+  }
+}
+
+// AI Studio's menu drop (rp-drop).
+@keyframes air-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+// AI Studio's as-halo and as-spark: the glow behind a spinner breathes; its sparkle pulses.
+@keyframes air-halo {
+  50% {
+    opacity: 0.45;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes air-spark {
+  50% {
+    transform: scale(1.18);
+    opacity: 0.8;
+  }
+}
+
+// AI Studio's generate button: a light sweeps across it and a soft glow breathes round it.
+@keyframes air-sweep-light {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  60%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes air-glow {
+  50% {
+    opacity: 1;
   }
 }
 
@@ -149,11 +263,15 @@ $air-hero:
     font-size: 16px;
   }
 
-  ws-auth-air-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    color: $air-primary;
+  // The icon sits in AI Studio's small tinted tile.
+  > ws-auth-air-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    flex-shrink: 0;
+    @include air-tile($air-tone-blue);
   }
 }
 
@@ -176,8 +294,8 @@ $air-hero:
   align-items: center;
   gap: 8px;
   color: $air-amber;
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
+  background: #fef6e7;
+  border: 1px solid #f2d9a0;
   border-radius: 12px;
   padding: 8px 16px;
   font-size: 14px;
@@ -203,8 +321,8 @@ $air-hero:
   font-size: 13px;
   font-weight: 600;
   line-height: 1.2;
-  background: #eef2ff;
-  color: $air-primary;
+  background: $air-primary-soft;
+  color: $air-primary-deep;
 
   &--sm {
     padding: 2px 8px;
@@ -215,15 +333,15 @@ $air-hero:
   &--green,
   &--covered,
   &--yes {
-    background: #dcfce7;
-    color: $air-green;
+    background: #e6f4ea;
+    color: #1e7a3c;
   }
 
   &--partial,
   &--amber,
   &--na {
-    background: #ffedd5;
-    color: $air-amber;
+    background: #fef6e7;
+    color: #8f6206;
   }
 
   &--failed,
@@ -231,8 +349,8 @@ $air-hero:
   &--missing,
   &--no,
   &--cancelled {
-    background: #fee2e2;
-    color: $air-danger;
+    background: #fbe9e7;
+    color: #a3271f;
   }
 }
 
@@ -250,8 +368,8 @@ $air-hero:
   font-family: $air-font;
   font-size: 14px;
   font-weight: 600;
-  border-radius: 8px;
-  padding: 8px 24px;
+  border-radius: 12px;
+  padding: 8px 20px;
   min-height: 40px;
   cursor: pointer;
   border: 1px solid transparent;
@@ -277,7 +395,7 @@ $air-hero:
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.55;
     cursor: not-allowed;
   }
 
@@ -286,29 +404,89 @@ $air-hero:
     outline-offset: 2px;
   }
 
+  // AI Studio's generate button: the blue gradient, a lit top edge, a shadow in its own colour.
   &--primary {
     background: $air-ai-gradient;
     color: #fff;
-    box-shadow: 0 2px 6px -2px rgba(29, 78, 216, 0.45);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 10px 26px -12px rgba(59, 79, 224, 0.8);
 
     &:hover:not(:disabled) {
-      box-shadow: 0 6px 14px -6px rgba(29, 78, 216, 0.55);
+      filter: brightness(1.06);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        0 14px 30px -12px rgba(59, 79, 224, 0.85);
+    }
+
+    // A disabled primary keeps its hue and stays legible (AI Studio's waiting state).
+    &:disabled {
+      opacity: 1;
+      background: color-mix(in srgb, #2f7aef 8%, #fff);
+      color: color-mix(in srgb, $air-primary-deep 70%, $air-muted);
+      border-color: color-mix(in srgb, #2f7aef 22%, transparent);
+      box-shadow: none;
     }
   }
 
+  // The page's one big action, as AI Studio's Generate: it glows and a light passes over it
+  // while it can be pressed, and its sparkle pulses.
   &--lg {
     min-height: 48px;
-    padding: 12px 32px;
+    padding: 12px 28px;
     font-size: 16px;
   }
 
+  &--primary.air-btn--lg {
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      box-shadow:
+        0 14px 34px -10px rgba(47, 122, 239, 0.7),
+        0 0 0 5px rgba(47, 122, 239, 0.14);
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      // Moved with transform, as AI Studio's aa-go sheen: composited, no repaint per frame.
+      background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+      transform: translateX(-100%);
+    }
+
+    &:not(:disabled)::before {
+      animation: air-glow 3.2s $air-ease infinite;
+    }
+
+    &:not(:disabled)::after {
+      animation: air-sweep-light 2.8s ease-in-out infinite;
+    }
+
+    &:not(:disabled) ws-auth-air-icon {
+      animation: air-spark 2.4s $air-ease infinite;
+    }
+  }
+
+  // AI Studio's ghost button: white, a slate edge, ink text; the blue is kept for the primary.
   &--secondary {
-    background: #fff;
-    color: $air-primary;
-    border-color: #c7d2fe;
+    background: $air-surface;
+    color: $air-ink;
+    border-color: $air-line-2;
+    box-shadow: 0 6px 16px -12px rgba(15, 23, 42, 0.35);
 
     &:hover:not(:disabled) {
-      background: #eef2ff;
+      background: $air-surface-2;
+      border-color: $air-border-hover;
     }
   }
 
@@ -322,10 +500,10 @@ $air-hero:
   &--danger {
     background: #fff;
     color: $air-danger;
-    border-color: #fecaca;
+    border-color: #f2b8b0;
 
     &:hover:not(:disabled) {
-      background: #fef2f2;
+      background: #fef3f2;
     }
   }
 }
@@ -354,9 +532,9 @@ $air-hero:
 
 // A tinted action that is clearly a button without competing with the primary one.
 .air-btn--soft {
-  background: #f5f3ff;
+  background: #f3f0ff;
   color: $air-violet;
-  border-color: #ddd6fe;
+  border-color: #ddd3fb;
 
   &:hover:not(:disabled) {
     background: #ede9fe;
@@ -370,13 +548,11 @@ $air-hero:
   border-color: transparent;
 
   &:hover:not(:disabled) {
-    background: #eef1f8;
+    background: #f1f5f9;
     color: $air-text;
   }
 }
 
-// One colour per kind of resource, so a list scans at a glance: a flat tint with the
-// icon in the kind's colour (the kind is also always written beside it).
 .air-kind-tile {
   display: inline-grid;
   place-items: center;
@@ -384,37 +560,34 @@ $air-hero:
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  color: #475569;
-  background: #f1f5f9;
+  @include air-tile($air-tone-slate);
 
   &--video {
-    color: #4338ca;
-    background: #eef2ff;
+    @include air-tile($air-tone-blue);
   }
 
   &--pdf {
-    color: #be123c;
-    background: #ffe4e6;
+    @include air-tile($air-tone-red);
   }
 
   &--quiz {
-    color: #b45309;
-    background: #fef3c7;
+    @include air-tile($air-tone-amber);
   }
 
   &--assessment {
-    color: #047857;
-    background: #d1fae5;
+    @include air-tile($air-tone-green);
   }
 
   &--audio {
-    color: #0e7490;
-    background: #cffafe;
+    @include air-tile($air-tone-cyan);
+  }
+
+  &--html {
+    @include air-tile($air-tone-violet);
   }
 
   &--off {
-    background: #f1f5f9;
-    color: #94a3b8;
+    @include air-tile(#94a3b8);
   }
 }
 
@@ -469,6 +642,234 @@ $air-hero:
   margin: 0 0 12px;
   padding: 8px 12px;
   border-radius: 8px;
-  background: #eef2ff;
-  color: $air-primary;
+  background: $air-primary-soft;
+  color: $air-primary-deep;
+}
+
+// The checkbox for every AI review screen: a rounded square that fills with the primary colour
+// and shows a white tick. Still a native checkbox underneath, so keyboards, screen readers and
+// form state work as usual.
+.air-check {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 2px solid $air-border;
+  border-radius: 6px;
+  background: #fff center / 14px 14px no-repeat;
+  cursor: pointer;
+  transition:
+    background-color $air-dur-fast $air-ease,
+    border-color $air-dur-fast $air-ease,
+    box-shadow $air-dur-fast $air-ease;
+
+  &:hover {
+    border-color: $air-primary;
+  }
+
+  &:checked {
+    border-color: $air-primary;
+    background-color: $air-primary;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+    animation: air-check-in $air-dur-fast $air-ease;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(47, 122, 239, 0.25);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+@keyframes air-check-in {
+  from {
+    transform: scale(0.85);
+  }
+}
+
+// A section the user was just taken to: a soft ring that fades, so the eye finds it.
+.air-flash {
+  animation: air-flash 1.6s $air-ease;
+}
+
+@keyframes air-flash {
+  0%,
+  35% {
+    box-shadow: 0 0 0 4px rgba(47, 122, 239, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 4px rgba(47, 122, 239, 0);
+  }
+}
+
+// The fix for a blocked Start, at the end of its warning.
+.air-warning-fix {
+  margin-left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
+  color: $air-amber;
+  font-weight: 700;
+}
+
+// "3 of 4 resources ready to review · Change selection"
+.air-launch-change {
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+// Filter tabs (coverage, issues, the preview): shared so every AI review screen draws them alike.
+// AI Studio's tabs (.as-tabs): a quiet tinted track holding the choices; the one chosen is
+// a white tab lifted off it, its count in the deep blue.
+.air-covtabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 3px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid $air-line;
+}
+
+.air-covtab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 9px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: $air-text-2;
+  cursor: pointer;
+  transition:
+    background-color $air-dur-fast $air-ease,
+    color $air-dur-fast $air-ease,
+    box-shadow $air-dur-fast $air-ease;
+
+  &:hover:not(:disabled):not(.air-covtab--on) {
+    color: $air-ink;
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+
+  &--on {
+    font-weight: 650;
+    color: $air-ink;
+    background: $air-surface;
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.08),
+      0 0 0 1px rgba(15, 23, 42, 0.06);
+  }
+}
+
+// AI Studio's tab count.
+.air-covtab-n {
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: $air-primary-deep;
+  background: $air-surface;
+  border: 1px solid rgba(47, 122, 239, 0.25);
+}
+
+// ---- A video with no sound: left out, with what to do --------------------------------------
+
+.air-nosound {
+  display: flex;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 16px 20px;
+  border: 1px solid #f2d9a0;
+  border-radius: 12px;
+  color: #6b4a05;
+  background: linear-gradient(90deg, #fef6e7, #fffaf0);
+}
+
+.air-nosound-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: #fff;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+.air-nosound-body {
+  min-width: 0;
+}
+
+.air-nosound-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.air-nosound-text {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.air-nosound-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    background: #fef6e7;
+  }
+}
+
+// A message with an icon: the icon stays level with the first line when the words wrap,
+// instead of sliding to the middle of a two- or three-line message. `:host` outranks each
+// page's own `align-items: center` on these rows.
+:host {
+  .air-offline,
+  .air-warning,
+  .air-joined,
+  .air-reused,
+  .air-files-note,
+  .air-tofix-none,
+  .air-export-done,
+  .air-advisory,
+  .air-pass-error {
+    align-items: flex-start;
+
+    > ws-auth-air-icon {
+      margin-top: 0.15em;
+    }
+  }
 }

@@ -1,3 +1,4 @@
+import { AI_REVIEW_FRAC_ENABLED } from '../../utils/features'
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core'
 import { AiReviewDomainStyle, IAiReviewRoleCheck } from '../../models/ai-review.model'
 
@@ -56,7 +57,7 @@ export function summariseRole(check: IAiReviewRoleCheck | null | undefined) {
 }
 
 /**
- * What the domain expert checks, shown under the Style choice. Plain: the four checks. FRAC:
+ * What the domain expert checks, shown under the Style choice. Plain: its six checks, in four lines. FRAC:
  * the chosen position's roles and activities that need the competency (read from FRAC), or
  * why there are none. Shared by the course review and the review of uploaded files.
  */
@@ -87,4 +88,6 @@ export class AirRoleCheckComponent {
   /** The service's "no activity" note, split into its position and competencies; null for any other note. */
   readonly noActivity = computed(() => this.check()?.roleGap || parseNoActivity(this.check()?.roleNote || ''))
   readonly activityLevels = activityLevels
+  /** Names the style in the heading only when there is a choice of style. */
+  readonly fracEnabled = AI_REVIEW_FRAC_ENABLED
 }

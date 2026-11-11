@@ -1,3 +1,5 @@
+import { AI_REVIEW_FRAC_ENABLED } from '../../utils/features'
+import { fixFor, jumpTo } from '../../utils/jump-to'
 import { DOCUMENT } from '@angular/common'
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, effect, inject, signal } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
@@ -25,6 +27,7 @@ import {
   AI_REVIEW_FINAL_STATUSES,
   AiReviewDomainStyle,
   AiReviewLanguage,
+  AiReviewReportLanguage,
   AiReviewUploadKind,
   IAiReview,
   IAiReviewCheckedUpload,
@@ -37,7 +40,7 @@ import {
 import { AiReviewService } from '../../services/ai-review.service'
 import { formatDuration, kindMeta } from '../../utils/resource-kind'
 import { isTransient, isUnclear, statusLabel, watchReview } from '../../utils/review-run'
-import { ACCEPT_ATTRIBUTE, estimateFor, fileProblem, formatBytes, kindForFile, readQuizSheet } from '../../utils/upload-files'
+import { ACCEPT_ATTRIBUTE, estimateFor, fileProblem, formatBytes, kindForFile, partsCost, readQuizSheet } from '../../utils/upload-files'
 import { AirSelectOption } from '../air-select/air-select.component'
 import {
   AiReviewStep,
@@ -169,7 +172,6 @@ export class AiReviewFilesPageComponent implements OnInit {
   readonly formatBytes = formatBytes
   readonly formatDuration = formatDuration
   readonly accept = ACCEPT_ATTRIBUTE
-  readonly languageOptions: AirSelectOption[] = LANGUAGES
   readonly maxTitle = MAX_TITLE
 
   readonly context = signal<IAiReviewUploadContext | null>(null)
@@ -195,12 +197,17 @@ export class AiReviewFilesPageComponent implements OnInit {
   readonly briefName = signal('')
   readonly briefSubtitle = signal('')
   readonly briefDescription = signal('')
+  /** Videos are always watched in full (no longer a choice); kept as the request's option. */
   readonly watch = signal(true)
+  /** Whether the Plain/FRAC choice is offered (utils/features.ts); hidden, every review is Plain. */
+  readonly fracEnabled = AI_REVIEW_FRAC_ENABLED
   readonly domainStyle = signal<AiReviewDomainStyle>('plain')
   readonly competencyId = signal<string | null>(null)
   readonly level = signal<number | null>(null)
   readonly audience = signal('')
   readonly language = signal<AiReviewLanguage>('auto')
+  /** The language the review is written in: English for now, whatever the content's language. */
+  readonly reportLanguage = signal<AiReviewReportLanguage>('en')
   readonly notes = signal('')
   readonly title = signal('')
 
@@ -231,10 +238,17 @@ export class AiReviewFilesPageComponent implements OnInit {
   readonly enabled = computed(() => !!this.context()?.enabled)
   readonly maxFiles = computed(() => this.context()?.limits.maxUploadFiles || 20)
   readonly ready = computed(() => this.entries().filter(e => e.state === 'ready'))
+  /** Uploaded videos with no sound: still reviewed, on what they show, and the user told so. */
+  readonly silentFiles = computed(() => this.ready().filter(e => e.checked?.audio === false))
+  /** Files the user unticked: they stay uploaded and listed, but are left out of this review. */
+  readonly excluded = signal<ReadonlySet<number>>(new Set())
+  /** The ready files this review will cover. */
+  readonly chosen = computed(() => this.ready().filter(e => !this.excluded().has(e.key)))
+  readonly allChosen = computed(() => this.chosen().length === this.ready().length)
   readonly inFlight = computed(() => this.entries().filter(e => IN_FLIGHT.has(e.state)))
   readonly unusable = computed(() => this.entries().filter(e => e.state === 'rejected' || e.state === 'failed'))
-  readonly kindCounts = computed(() => kindSummary(this.ready()))
-  readonly hasVideos = computed(() => this.entries().some(e => e.kind === 'video'))
+  readonly kindCounts = computed(() => kindSummary(this.chosen()))
+  readonly hasVideos = computed(() => this.chosen().some(e => e.kind === 'video' || e.kind === 'html'))
 
   /** One line for screen readers, changed only when a file settles (not on every progress tick). */
   readonly uploadStatus = computed(() => {
@@ -281,7 +295,7 @@ export class AiReviewFilesPageComponent implements OnInit {
 
   /** The title used when the user gives none: the file's name, or the first and a count. */
   readonly defaultTitle = computed(() => {
-    const files = this.ready()
+    const files = this.chosen()
     if (!files.length) {
       return ''
     }
@@ -291,10 +305,16 @@ export class AiReviewFilesPageComponent implements OnInit {
 
   readonly estimateUsd = computed(() =>
     estimateFor(
-      this.ready()
+      this.chosen()
         .map(e => e.checked?.estimate)
         .filter((p): p is IAiReviewEstimateParts => !!p),
-      { addie: this.addie(), domain: this.domain(), watch: this.watch() && this.hasVideos(), alignment: this.alignment() },
+      {
+        addie: this.addie(),
+        domain: this.domain(),
+        watch: this.watch() && this.hasVideos(),
+        alignment: this.alignment(),
+        domainStyle: this.domainStyle(),
+      },
     ),
   )
 
@@ -355,8 +375,11 @@ export class AiReviewFilesPageComponent implements OnInit {
     if (!this.ready().length) {
       return 'None of these files can be reviewed. Remove them and add others.'
     }
-    if (this.ready().length > this.maxFiles()) {
-      return `One review covers up to ${this.maxFiles()} files. Remove ${this.ready().length - this.maxFiles()}.`
+    if (!this.chosen().length) {
+      return 'Tick at least one file to review.'
+    }
+    if (this.chosen().length > this.maxFiles()) {
+      return `One review covers up to ${this.maxFiles()} files. Untick ${this.chosen().length - this.maxFiles()}.`
     }
     return this.settingsMessage()
   })
@@ -500,7 +523,7 @@ export class AiReviewFilesPageComponent implements OnInit {
           this.context.set(ctx)
           if (first) {
             this.language.set(ctx.defaults.language)
-            this.domainStyle.set(ctx.defaults.domainStyle)
+            this.domainStyle.set(AI_REVIEW_FRAC_ENABLED ? ctx.defaults.domainStyle : 'plain')
             this.domain.set(ctx.competencyCatalog.length > 0)
           }
           this.loadingContext.set(false)
@@ -798,6 +821,11 @@ export class AiReviewFilesPageComponent implements OnInit {
     this.uploads.delete(key)
     this.bodies.delete(key)
     this.files.delete(key)
+    if (this.excluded().has(key)) {
+      const next = new Set(this.excluded())
+      next.delete(key)
+      this.excluded.set(next)
+    }
     this.entries.update(list => list.filter(e => e.key !== key))
     this.addNote.set('')
     this.pump()
@@ -862,6 +890,39 @@ export class AiReviewFilesPageComponent implements OnInit {
       complete: () => this.uploads.delete(key),
     })
     this.uploads.set(key, sub)
+  }
+
+  isChosen(key: number): boolean {
+    return !this.excluded().has(key)
+  }
+
+  /** Puts a ready file in or out of this review; it stays uploaded either way. */
+  toggleFile(key: number, on: boolean): void {
+    const next = new Set(this.excluded())
+    if (on) {
+      next.delete(key)
+    } else {
+      next.add(key)
+    }
+    this.excluded.set(next)
+  }
+
+  chooseAll(on: boolean): void {
+    this.excluded.set(on ? new Set() : new Set(this.ready().map(e => e.key)))
+  }
+
+  /** A ready file's estimated cost with the reviews chosen now; null until it is checked. */
+  fileCost(entry: UploadEntry): number | null {
+    const p = entry.state === 'ready' ? entry.checked?.estimate : null
+    return p
+      ? partsCost(p, {
+          addie: this.addie(),
+          domain: this.domain(),
+          watch: this.watch() && entry.kind !== 'pdf',
+          alignment: this.alignment(),
+          domainStyle: this.domainStyle(),
+        })
+      : null
   }
 
   /** "12 min 30 s · 24 pages · 18 questions": what the check measured. */
@@ -944,6 +1005,7 @@ export class AiReviewFilesPageComponent implements OnInit {
       positionCode: this.position()?.code || null,
       audience: this.audience().trim(),
       language: this.language(),
+      reportLanguage: this.reportLanguage(),
       context: this.notes().trim(),
     }
   }
@@ -955,7 +1017,7 @@ export class AiReviewFilesPageComponent implements OnInit {
     this.starting.set(true)
     this.startError.set('')
     this.joinedNote.set('')
-    const ids = this.ready()
+    const ids = this.chosen()
       .map(e => e.uploadId)
       .filter((id): id is string => !!id)
     const title = (this.title().trim() || this.defaultTitle()).slice(0, MAX_TITLE)
@@ -1058,9 +1120,9 @@ export class AiReviewFilesPageComponent implements OnInit {
         this.briefSubtitle.set(b.subtitle || '')
         this.briefDescription.set(b.description)
       }
-      this.watch.set(o.watch !== false)
+      this.watch.set(true)
       if (o.domainStyle) {
-        this.domainStyle.set(o.domainStyle)
+        this.domainStyle.set(AI_REVIEW_FRAC_ENABLED ? o.domainStyle : 'plain')
       }
       if (o.competencyId) {
         this.competencyId.set(o.competencyId)
@@ -1070,6 +1132,9 @@ export class AiReviewFilesPageComponent implements OnInit {
       if (o.language) {
         this.language.set(o.language)
       }
+      if (o.reportLanguage) {
+        this.reportLanguage.set(o.reportLanguage)
+      }
       this.notes.set(o.context ?? '')
     }
     this.review.set(null)
@@ -1077,6 +1142,14 @@ export class AiReviewFilesPageComponent implements OnInit {
     this.startError.set('')
     this.joinedNote.set('')
     this.router.navigate([], { relativeTo: this.route, queryParams: { review: null }, queryParamsHandling: 'merge', replaceUrl: true })
+  }
+
+  /** Where a blocked Start can take the user to fix it, or null. */
+  readonly fix = computed(() => fixFor(this.validationMessage(), 'air-files-pick', 'file'))
+
+  /** Scrolls to a section and puts the focus in it (the resource list, the audience). */
+  goTo(id: string): void {
+    jumpTo(this.document, id)
   }
 
   statusLabel(status: string): string {

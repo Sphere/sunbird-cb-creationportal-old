@@ -1,4 +1,4 @@
-import { formatDuration, formatOf, kindFromMime, kindLine, kindMeta, pipelineProgress } from './resource-kind'
+import { formatDuration, formatOf, itemFraction, kindFromMime, kindLine, kindMeta, pipelineProgress } from './resource-kind'
 
 describe('resource kinds', () => {
   it('describes each kind with a label, an icon and its review steps', () => {
@@ -81,5 +81,26 @@ describe('resource kinds', () => {
     expect(formatDuration(750)).toBe('12 min 30 s')
     expect(formatDuration(null)).toBe('')
     expect(formatDuration(undefined)).toBe('')
+  })
+})
+
+describe('how far one resource is', () => {
+  const at = (status: string, stage: string | null = null) => itemFraction({ status, stage })
+  it('counts finished, failed and cancelled as whole, waiting as nothing', () => {
+    expect(at('done')).toBe(1)
+    expect(at('failed')).toBe(1)
+    expect(at('cancelled')).toBe(1)
+    expect(at('queued')).toBe(0)
+  })
+  it('counts the steps done and half the one under way', () => {
+    expect(at('running', 'Downloading the video…')).toBeCloseTo(0.5 / 3)
+    expect(at('running', 'Taking frames, transcribing and watching the video…')).toBeCloseTo(1.5 / 3)
+    expect(at('running', 'Scoring the checklist and judging against the competency…')).toBeCloseTo(2.5 / 3)
+  })
+  it('moves with the download while the file arrives', () => {
+    expect(at('running', 'Downloading the video… 45% · 38 of 84 MB')).toBeCloseTo(0.45 / 3)
+    expect(at('running', 'Downloading the video… 0% · 0.1 of 84 MB')).toBe(0)
+    // A size the server did not give: the step counts half, as before.
+    expect(at('running', 'Downloading the video… 38 MB')).toBeCloseTo(0.5 / 3)
   })
 })

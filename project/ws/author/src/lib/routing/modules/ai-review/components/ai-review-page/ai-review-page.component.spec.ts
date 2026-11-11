@@ -404,7 +404,7 @@ describe('AiReviewPageComponent', () => {
       expect(c.validationMessage()).toBe('')
       const many = Array.from({ length: 3 }, (_, i) => ({ ...c.reviewable()[0], contentId: `do_v${i}` }))
       c.preview.update(p => p && { ...p, resources: many, limits: { ...p.limits, maxResourcesPerReview: 2 } })
-      expect(c.validationMessage()).toMatch(/3 resources to review; one review covers up to 2/)
+      expect(c.validationMessage()).toMatch(/3 resources are chosen; one review covers up to 2/)
     })
 
     it('lists the per-resource limits the service sends, and only those', () => {
@@ -533,12 +533,76 @@ describe('AiReviewPageComponent', () => {
         positionCode: null,
         audience: 'ANM / ASHA frontline health workers',
         language: 'auto',
+        reportLanguage: 'en',
         context: 'rural clinics',
       })
 
       c.domain.set(false)
       expect(c.buildOptions().competencyId).toBeNull()
       expect(c.buildOptions().level).toBeNull()
+    })
+  })
+
+  describe('choosing the resources', () => {
+    const two = () =>
+      preview({
+        resources: [
+          {
+            contentId: 'do_v',
+            name: 'BP video',
+            kind: 'video',
+            mimeType: 'video/mp4',
+            durationSec: 36,
+            path: [],
+            reviewable: true,
+            skipReason: null,
+            estimate: { base: 0.01, addie: 0.05, domain: 0.1, watch: 0.02 },
+          },
+          {
+            contentId: 'do_q',
+            name: 'Quiz',
+            kind: 'quiz',
+            mimeType: 'application/json',
+            durationSec: null,
+            path: [],
+            reviewable: true,
+            skipReason: null,
+            estimate: { base: 0.12, addie: 0.04, domain: 0.08, watch: 0 },
+          },
+        ],
+      })
+
+    it("reviews everything by default, and shows each resource's cost with the reviews chosen", () => {
+      api.preview.mockReturnValue(of(two()))
+      const c = create()
+      c.ngOnInit()
+      expect(c.allSelected()).toBe(true)
+      expect(c.resourceCost(c.reviewable()[0])).toBe(0.18)
+      expect(c.estimateUsd()).toBe(0.42)
+      c.watch.set(false)
+      expect(c.resourceCost(c.reviewable()[0])).toBe(0.16)
+    })
+
+    it('leaves a resource out of the total and of Start, and sends only the chosen ones', () => {
+      api.preview.mockReturnValue(of(two()))
+      const c = create()
+      c.ngOnInit()
+      c.toggleResource('do_q', false)
+      expect(c.selected().map(r => r.contentId)).toEqual(['do_v'])
+      expect(c.estimateUsd()).toBe(0.18)
+      c.start()
+      expect(api.start).toHaveBeenCalledWith('do_1', c.buildOptions(), ['do_v'])
+    })
+
+    it('sends no list when everything is chosen, and needs at least one', () => {
+      api.preview.mockReturnValue(of(two()))
+      const c = create()
+      c.ngOnInit()
+      c.selectAll(false)
+      expect(c.validationMessage()).toBe('Tick at least one resource to review.')
+      c.selectAll(true)
+      c.start()
+      expect(api.start).toHaveBeenCalledWith('do_1', c.buildOptions(), null)
     })
   })
 
@@ -580,7 +644,7 @@ describe('AiReviewPageComponent', () => {
 
     it('cannot be chosen for a course without a description, and says where to add one', () => {
       const problem =
-        'Add the course description in Course Settings (its objectives, audience and key learning outcomes) to check the content against it.'
+        'Add the course description in Course Details (its objectives, audience and key learning outcomes) to check the content against it.'
       api.preview.mockReturnValue(
         of(
           preview({
@@ -617,7 +681,7 @@ describe('AiReviewPageComponent', () => {
       c.ngOnInit()
       c.start()
 
-      expect(api.start).toHaveBeenCalledWith('do_1', c.buildOptions())
+      expect(api.start).toHaveBeenCalledWith('do_1', c.buildOptions(), null)
       expect(router.navigate).toHaveBeenCalledWith([], expect.objectContaining({ queryParams: { review: 'r1' }, replaceUrl: true }))
       expect(api.get).toHaveBeenCalledWith('r1')
       expect(c.review()?.status).toBe('done')
@@ -1172,8 +1236,10 @@ describe('AiReviewPageComponent', () => {
       expect(c.buildOptions()).toMatchObject({
         addie: false,
         domain: true,
-        watch: false,
-        domainStyle: 'frac',
+        // Videos are always watched in full now, even when the earlier review had it off.
+        watch: true,
+        // FRAC is hidden for now (utils/features.ts): an earlier FRAC review runs again as Plain.
+        domainStyle: 'plain',
         competencyId: 'C1',
         level: 3,
         audience: 'Staff Nurse',
@@ -1211,6 +1277,25 @@ describe('AiReviewPageComponent', () => {
           },
         ],
       })
+
+    it('keeps a video with no sound in the review, and says above the list that it is judged on what it shows', () => {
+      api.measure.mockReturnValue(
+        of([
+          {
+            contentId: 'do_v',
+            durationSec: 36,
+            audio: false,
+            estimate: { base: 0, addie: 0.03, domain: 0.08, watch: 0.01 },
+          },
+        ]),
+      )
+      const c = create()
+      c.ngOnInit()
+      expect(c.reviewable().map(r => r.contentId)).toEqual(['do_v'])
+      expect(c.selected().map(r => r.contentId)).toEqual(['do_v'])
+      expect(c.silentVideos().map(r => r.contentId)).toEqual(['do_v'])
+      expect(c.silentVideos().map(r => r.name)).toEqual(['BP video'])
+    })
 
     it('counts them after the preview, and prices the review at those sizes', () => {
       api.preview.mockReturnValue(of(withDocs()))
@@ -1250,9 +1335,9 @@ describe('AiReviewPageComponent', () => {
       expect(c.estimateUsd()).toBe(0.84)
     })
 
-    it('does not count anything for a course of videos only', () => {
+    it('checks a course of videos only too, for whether each video has sound', () => {
       create().ngOnInit()
-      expect(api.measure).not.toHaveBeenCalled()
+      expect(api.measure).toHaveBeenCalledWith('do_1')
     })
   })
 
@@ -1274,5 +1359,87 @@ describe('AiReviewPageComponent', () => {
     expect(c.formatDuration(125)).toBe('2 min 5 s')
     expect(c.formatDuration(600)).toBe('10 min')
     expect(c.formatDuration(null)).toBe('')
+  })
+})
+
+describe('the AI Studio look of the review pages', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const fs = require('fs') as typeof import('fs')
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const path = require('path') as typeof import('path')
+  const read = (rel: string) => fs.readFileSync(path.join(__dirname, rel), 'utf8')
+  const pages = ['ai-review-page.component.html', '../ai-review-files-page/ai-review-files-page.component.html']
+
+  it.each(pages)('shows past reviews as AI Studio history rows (%s)', file => {
+    const html = read(file)
+    expect(html).toContain('class="air-history-ico"')
+    expect(html).toContain('class="air-history-body"')
+    expect(html).toContain('<span class="air-history-go" aria-hidden="true"><ws-auth-air-icon name="arrowRight" [size]="16" /></span>')
+    expect(html).toContain('>CBP {{ h.summary.addie.scorePct }}%<')
+    expect(html).toContain('>Domain {{ d.yes }}/{{ d.applicable }}<')
+    expect(html).not.toContain('>ADDIE {{')
+  })
+
+  it.each(pages)('has the light AI Studio masthead, without the old orb (%s)', file => {
+    const html = read(file)
+    expect(html).toContain('class="air-hero"')
+    expect(html).not.toContain('air-hero-art')
+  })
+
+  it.each(pages)('draws the step tick at the size its dot centres (%s)', file => {
+    expect(read(file)).toMatch(
+      /<span class="air-step-dot">\s*@if \(i < currentStepIndex\(\)\) \{\s*<ws-auth-air-icon name="check" \[size\]="13" \/>/,
+    )
+  })
+
+  it.each(pages)('no longer asks for the spoken language or whether to watch videos (%s)', file => {
+    const html = read(file)
+    expect(html).not.toContain('Spoken language')
+    expect(html).not.toContain('Watch videos in full')
+    expect(html).not.toContain('air-switch')
+  })
+
+  it.each(pages)('says plainly what Plain and FRAC each check (%s)', file => {
+    const html = read(file)
+    expect(html).toContain('<b>Is it correct?</b> A senior clinician checks it teaches what this level describes')
+    // Plain judges depth and work setting against the audience (D5, D6), not just tone.
+    expect(html).toContain('at the right depth for your audience and in their real work setting.')
+    expect(html).not.toContain('tone only')
+    expect(html).toContain('<b>Is it pitched right for the role?</b> A FRAC expert checks it sits at this level')
+    // Without activities for this competency, D5 and D6 fall back to the audience.
+    expect(html).toContain('prepares the position for its FRAC activities (when it has none for this competency: suits your audience).')
+    // FRAC checks clinical accuracy itself (D7), so it is covered with the checklist off.
+    expect(html).toContain('Says which level it really fits. It also checks protocols, thresholds and doses are correct.')
+    expect(html).not.toContain('does not check clinical accuracy')
+  })
+
+  it.each(pages)('hides the Plain/FRAC choice while FRAC is not offered, keeping it behind the switch (%s)', file => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { AI_REVIEW_FRAC_ENABLED } = require('../../utils/features') as typeof import('../../utils/features')
+    expect(AI_REVIEW_FRAC_ENABLED).toBe(false)
+    const html = read(file)
+    expect(html).toMatch(/@if \(fracEnabled\) \{\s*<fieldset class="air-segment">/)
+    expect(html).toContain('} @else if (position() && fracEnabled) {')
+  })
+
+  it('points to Course Details, where the course name, description and competencies are edited', () => {
+    const html = read('ai-review-page.component.html')
+    expect(html).not.toContain('Course Settings')
+    expect(html).toContain('From Course Details: the name and subtitle (Basic Information) and the Course Description.')
+    expect(html).toContain('Add a competency in Course Details (the Competencies card) to turn this on.')
+  })
+
+  it('keeps the page from scrolling sideways, and repaints nothing on scroll', () => {
+    const scss = read('ai-review-page.component.scss')
+    expect(scss).toContain('overflow-x: clip;')
+    expect(scss).not.toContain('background-attachment: fixed')
+    expect(scss).toContain('inset: -40px 0 auto;')
+  })
+
+  it('gives the gradient title room for Devanagari letters that rise above the line', () => {
+    const title = read('ai-review-page.component.scss').split('.air-title {')[1].split('\n}')[0]
+    expect(title).toContain('background-clip: text;')
+    expect(title).toContain('line-height: 1.4;')
+    expect(title).toContain('padding: 0.12em 0 0.08em;')
   })
 })

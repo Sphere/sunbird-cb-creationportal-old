@@ -184,11 +184,59 @@ describe('AiReviewReportComponent', () => {
       expect(fixture.componentInstance.coverageCounts()).toBeNull()
     })
 
-    it('shows coverage, recurring gaps and what was not reviewed', () => {
+    it('shows coverage of the level, and what was left out', () => {
       const text = el.textContent || ''
+      expect(text).toContain('Is the competency level taught?')
       expect(text).toContain('Proteinuria check')
-      expect(text).toContain('Cuff placement shown correctly')
+      expect(text).toContain('Left out of the review (1)')
       expect(text).toContain('PDFs come next')
+      // No separate "repeated gaps" or course-wide issue list: each finding is listed once.
+      expect(text).not.toContain('Checklist gaps that repeat')
+      expect(text).not.toContain('Issues to fix')
+      // Once per review that raised it: the fixture gives the checklist and the expert review the same score.
+      expect(text.split('Cuff placement shown correctly').length - 1).toBe(2)
+    })
+
+    it('scores each resource in a table, with the course total underneath', () => {
+      const table = el.querySelector('table.air-restable')!
+      const rows = Array.from(table.querySelectorAll('tbody tr')).map(r => r.textContent!.replace(/\s+/g, ' ').trim())
+      expect(rows[0]).toContain('BP video')
+      expect(rows[0]).toContain('1 of 2')
+      expect(rows[0]).toContain('3 of 6')
+      expect(rows[1]).toContain('Broken video')
+      expect(rows[1]).toContain('Could not be reviewed')
+      const total = table.querySelector('tfoot')!.textContent!.replace(/\s+/g, ' ')
+      expect(total).toContain('Total')
+      expect(total).toContain('1 of 2')
+      expect(total).toContain('50%')
+      expect(el.querySelector('.air-restable-note')!.textContent).toContain('The CBP checklist has 47 points.')
+      expect(fixture.componentInstance.checklistTotal()).toBe(47)
+    })
+
+    it('sums the report up in a few plain sentences', () => {
+      const lines = fixture.componentInstance.inShort()
+      expect(lines[0]).toBe('1 resource reviewed; 1 could not be reviewed; 1 left out (listed below).')
+      expect(lines[1]).toBe('CBP checklist: 50% — 1 of the 2 checks that apply are met (Needs significant revision).')
+      expect(lines[2]).toBe('Competency level: 0 of 1 parts fully taught, 0 partly, 1 missing.')
+      expect(lines[3]).toMatch(/^\d+ things to fix, listed under each resource below\.$/)
+      fixture.componentRef.setInput('review', review({ result: null }))
+      expect(fixture.componentInstance.inShort()).toEqual([])
+    })
+
+    it("lists each resource's fixes once, grouped, leaving level coverage to the competency card", () => {
+      const groups = fixture.componentInstance.fixGroups().get('do_v')!
+      expect(groups.map(g => g.source)).toEqual(['checklist', 'domain'])
+      expect(groups[0].issues[0]).toMatchObject({ id: 'C2', borderline: true })
+      expect(fixture.componentInstance.fixCount('do_v')).toBe(2)
+      expect(fixture.componentInstance.fixCount('do_x')).toBe(0)
+      expect(fixture.componentInstance.totalFixes()).toBe(2)
+    })
+
+    it('goes to a resource from its name in the table', () => {
+      const target = el.querySelector('#air-res-do_v') as HTMLElement
+      target.scrollIntoView = jest.fn()
+      ;(el.querySelector('.air-restable-name') as HTMLButtonElement).click()
+      expect(target.scrollIntoView).toHaveBeenCalled()
     })
 
     it('shows each resource with its fixes, and a failed resource with its error', () => {
@@ -196,6 +244,39 @@ describe('AiReviewReportComponent', () => {
       expect(text).toContain('Fix: Place the cuff on bare skin')
       expect(text).toContain('Borderline')
       expect(text).toContain('Pitched below the level')
+      // A finding the guard doubts says why, for a person to check.
+      fixture.componentRef.setInput(
+        'review',
+        review({
+          items: [
+            item({
+              result: {
+                ...item().result!,
+                addie: {
+                  model: 'g',
+                  score: {
+                    ...score(),
+                    areas: [
+                      {
+                        ...score().areas[0]!,
+                        items: [{ ...score().areas[0]!.items[1]!, check: 'It points to 9:40, which is past the end of the video.' }],
+                      },
+                    ],
+                  },
+                  summary: '',
+                  costUsd: 0,
+                },
+              },
+            }),
+          ],
+        }),
+      )
+      fixture.detectChanges()
+      expect(el.querySelector('.air-check-why')!.textContent).toContain(
+        'Check by hand: It points to 9:40, which is past the end of the video.',
+      )
+      // FRAC says which level the content really fits.
+      expect(text).toContain('best fits Level 1')
       expect(text).toContain('Download timed out')
       expect(text).toContain('Reused')
       expect(text).not.toContain('Skipped')
@@ -224,7 +305,7 @@ describe('AiReviewReportComponent', () => {
       fixture.componentRef.setInput('review', review({ items: [quiz] }))
       fixture.detectChanges()
       const text = el.textContent || ''
-      expect(text).toContain('1 / 2')
+      expect(text).toContain('1 of 2')
       expect(text).toContain('Q3')
       expect(text).toContain('Two options are correct')
       expect(text).toContain('Fix: Change option C')
@@ -383,9 +464,24 @@ describe('AiReviewReportComponent', () => {
     })
 
     it('opens a coverage line and a question too', () => {
-      ;(el.querySelector('button.air-cov-row') as HTMLButtonElement).click()
+      ;(el.querySelector('button.air-source') as HTMLButtonElement).click()
       fixture.detectChanges()
       expect(el.querySelector('dialog')!.textContent).toContain('Domain review · coverage of the level')
+    })
+
+    it('opens any indicator of the full checklist in place, with its note or without one', () => {
+      fixture.componentInstance.toggle('do_v')
+      fixture.detectChanges()
+      const open = (text: string) =>
+        (
+          Array.from(el.querySelectorAll('button.air-indicator--open')).find(b => (b.textContent || '').includes(text)) as HTMLButtonElement
+        ).click()
+      open('Captions')
+      fixture.detectChanges()
+      expect(el.querySelector('dialog')!.textContent).toContain('Captions')
+      open('Accurate content')
+      fixture.detectChanges()
+      expect(el.querySelector('dialog')!.textContent).toContain('Accurate content')
     })
 
     it('expands every indicator on request', () => {

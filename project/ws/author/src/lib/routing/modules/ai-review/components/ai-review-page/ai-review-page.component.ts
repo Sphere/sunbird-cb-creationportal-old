@@ -1,3 +1,5 @@
+import { AI_REVIEW_FRAC_ENABLED } from '../../utils/features'
+import { fixFor, jumpTo } from '../../utils/jump-to'
 import { DOCUMENT } from '@angular/common'
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, effect, inject, signal } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
@@ -19,9 +21,11 @@ import {
   AI_REVIEW_FINAL_STATUSES,
   AiReviewDomainStyle,
   AiReviewLanguage,
+  AiReviewReportLanguage,
   AiReviewLevelMode,
   IAiReview,
   IAiReviewEstimateParts,
+  IAiReviewResource,
   IAiReviewHistoryEntry,
   IAiReviewOptions,
   IAiReviewCompetency,
@@ -31,8 +35,8 @@ import {
 } from '../../models/ai-review.model'
 import { AiReviewService } from '../../services/ai-review.service'
 import { formatDuration, kindFromMime, kindLine, kindMeta, pipelineProgress } from '../../utils/resource-kind'
-import { estimateFor } from '../../utils/upload-files'
-import { isUnclear, statusLabel, watchReview } from '../../utils/review-run'
+import { estimateFor, partsCost } from '../../utils/upload-files'
+import { AIR_VIEWER, isUnclear, requesterName, statusLabel, watchReview } from '../../utils/review-run'
 import { AirSelectOption } from '../air-select/air-select.component'
 
 export { pipelineProgress } from '../../utils/resource-kind'
@@ -99,6 +103,12 @@ export const STEPS: { id: AiReviewStep; label: string }[] = [
 })
 export class AiReviewPageComponent implements OnInit {
   private readonly api = inject(AiReviewService)
+  private readonly viewer = inject(AIR_VIEWER, { optional: true })
+  /** Who started a past review: their name, "You" for your own, or nothing when unknown. */
+  readonly startedBy = (h: Pick<IAiReviewHistoryEntry, 'requestedBy'>): string => {
+    const v = this.viewer?.() ?? null
+    return h.requestedBy?.id && v && h.requestedBy.id === v.id ? 'You' : requesterName(h, v)
+  }
   private readonly route = inject(ActivatedRoute)
   private readonly router = inject(Router)
   private readonly destroyRef = inject(DestroyRef)
@@ -108,8 +118,6 @@ export class AiReviewPageComponent implements OnInit {
   readonly pipelineProgress = pipelineProgress
   readonly kindMeta = kindMeta
   readonly kindLine = kindLine
-
-  readonly languageOptions: AirSelectOption[] = LANGUAGES
 
   courseId = ''
 
@@ -122,13 +130,18 @@ export class AiReviewPageComponent implements OnInit {
   readonly domain = signal(true)
   /** Check the content against the course's own name and description. Off until chosen. */
   readonly alignment = signal(false)
+  /** Videos are always watched in full (no longer a choice); kept as the request's option. */
   readonly watch = signal(true)
+  /** Whether the Plain/FRAC choice is offered (utils/features.ts); hidden, every review is Plain. */
+  readonly fracEnabled = AI_REVIEW_FRAC_ENABLED
   readonly domainStyle = signal<AiReviewDomainStyle>('plain')
   readonly competencyId = signal<string | null>(null)
   readonly level = signal<number | null>(null)
   readonly levelMode = signal<AiReviewLevelMode>('single')
   readonly audience = signal('')
   readonly language = signal<AiReviewLanguage>('auto')
+  /** The language the review is written in: English for now, whatever the content's language. */
+  readonly reportLanguage = signal<AiReviewReportLanguage>('en')
   readonly context = signal('')
 
   readonly starting = signal(false)
@@ -154,7 +167,7 @@ export class AiReviewPageComponent implements OnInit {
    * that review was made. Their earlier result is reused: not reviewed again, and free.
    */
   readonly reused = signal<ReadonlyMap<string, string>>(new Map())
-  readonly reusedCount = computed(() => this.reviewable().filter(r => this.reused().has(r.contentId)).length)
+  readonly reusedCount = computed(() => this.selected().filter(r => this.reused().has(r.contentId)).length)
 
   /** The settings to check for reuse, or null while there is nothing that could start. */
   /** The FRAC role check for the settings now: the position's activities, or why none. */
@@ -183,7 +196,14 @@ export class AiReviewPageComponent implements OnInit {
     }),
   )
   readonly reviewable = computed(() => this.resources().filter(r => r.reviewable))
+  /** Resources the user unticked: listed, but left out of this review. All are in by default. */
+  readonly excluded = signal<ReadonlySet<string>>(new Set())
+  /** The resources this review will cover. */
+  readonly selected = computed(() => this.reviewable().filter(r => !this.excluded().has(r.contentId)))
+  readonly allSelected = computed(() => this.selected().length === this.reviewable().length)
   readonly notReviewable = computed(() => this.resources().filter(r => !r.reviewable))
+  /** Videos found to have no sound: still reviewed, on what they show, and the creator told so. */
+  readonly silentVideos = computed(() => this.reviewable().filter(r => this.sizes().get(r.contentId)?.audio === false))
   /** Lookups that failed: their lists are empty because they could not be read, not because there is nothing. */
   readonly lookupFailed = computed(() => new Set(this.preview()?.lookupErrors || []))
   /** The course's own competencies (the default), and every competency in the dictionary. */
@@ -337,7 +357,7 @@ export class AiReviewPageComponent implements OnInit {
     return mode === 'perResource' ? EACH_PART : mode === 'courseLevels' ? COURSE_LEVELS : this.level() ? String(this.level()) : null
   })
   /** "Watch videos in full" only matters when there is a video to watch. */
-  readonly hasVideos = computed(() => this.reviewable().some(r => this.kindOf(r) === 'video'))
+  readonly hasVideos = computed(() => this.selected().some(r => this.kindOf(r) === 'video'))
   /** Reviewable resources grouped by kind, for the summary chips: "2 Videos · 1 PDF". */
   readonly kindCounts = computed(() => {
     const counts = new Map<string, number>()
@@ -354,28 +374,66 @@ export class AiReviewPageComponent implements OnInit {
    * figure for a service that sends no breakdown.
    */
   readonly estimateUsd = computed(() => {
-    const all = this.reviewable()
+    const all = this.selected()
     const reused = this.reused()
     // An unchanged resource reuses its earlier result, so it adds nothing.
     const resources = all.filter(r => !reused.has(r.contentId))
-    if (all.length && !resources.length) {
+    if (!all.length || !resources.length) {
       return 0
     }
-    // At the measured size once known, else at the size the service assumed.
-    const sizes = this.sizes()
-    // A part with no level of its own and no fallback level gets no domain review, so no domain cost.
-    const noDomain = new Set(this.levelMode() === 'perResource' && !this.level() ? this.unlevelledParts().map(r => r.contentId) : [])
-    const parts = resources
-      .map(r => {
-        const p = sizes.get(r.contentId)?.estimate || r.estimate
-        return p && noDomain.has(r.contentId) ? { ...p, domain: 0 } : p
-      })
-      .filter((p): p is IAiReviewEstimateParts => !!p)
-    if (!resources.length || parts.length !== resources.length) {
+    const parts = resources.map(r => this.partsOf(r)).filter((p): p is IAiReviewEstimateParts => !!p)
+    if (parts.length !== resources.length) {
       return this.preview()?.estimateUsd || 0
     }
-    return estimateFor(parts, { addie: this.addie(), domain: this.domain(), watch: this.watch(), alignment: this.alignment() })
+    return estimateFor(parts, this.costOptions())
   })
+
+  /** The reviews switched on, as the estimate counts them. */
+  private readonly costOptions = computed(() => ({
+    addie: this.addie(),
+    domain: this.domain(),
+    watch: this.watch(),
+    alignment: this.alignment(),
+    domainStyle: this.domainStyle(),
+  }))
+
+  /**
+   * A resource's cost parts: at its measured size once known, else at the size the service
+   * assumed. A part with no level of its own and no fallback level gets no domain review.
+   */
+  private partsOf(r: IAiReviewResource): IAiReviewEstimateParts | null {
+    const p = this.sizes().get(r.contentId)?.estimate || r.estimate
+    const noDomain = this.levelMode() === 'perResource' && !this.level() && typeof r.level !== 'number'
+    return p ? (noDomain ? { ...p, domain: 0 } : p) : null
+  }
+
+  /** One resource's estimated cost with the reviews switched on now; 0 when its earlier result is reused; null when unknown. */
+  resourceCost(r: IAiReviewResource): number | null {
+    if (this.reused().has(r.contentId)) {
+      return 0
+    }
+    const p = this.partsOf(r)
+    return p ? partsCost(p, this.costOptions()) : null
+  }
+
+  isSelected(contentId: string): boolean {
+    return !this.excluded().has(contentId)
+  }
+
+  /** Puts a resource in or out of this review. */
+  toggleResource(contentId: string, on: boolean): void {
+    const next = new Set(this.excluded())
+    if (on) {
+      next.delete(contentId)
+    } else {
+      next.add(contentId)
+    }
+    this.excluded.set(next)
+  }
+
+  selectAll(on: boolean): void {
+    this.excluded.set(on ? new Set() : new Set(this.reviewable().map(r => r.contentId)))
+  }
 
   /** What the alignment check judges against: the course's name, subtitle and description. */
   readonly brief = computed(() => this.preview()?.course.brief || null)
@@ -433,9 +491,12 @@ export class AiReviewPageComponent implements OnInit {
     if (!this.reviewable().length) {
       return 'This course has no resources that can be reviewed yet (videos, PDFs, quizzes or assessments with an uploaded file).'
     }
+    if (!this.selected().length) {
+      return 'Tick at least one resource to review.'
+    }
     const max = this.preview()?.limits?.maxResourcesPerReview
-    if (max && this.reviewable().length > max) {
-      return `This course has ${this.reviewable().length} resources to review; one review covers up to ${max}. Split the course, or ask an administrator to raise the limit.`
+    if (max && this.selected().length > max) {
+      return `${this.selected().length} resources are chosen; one review covers up to ${max}. Untick some, or ask an administrator to raise the limit.`
     }
     return ''
   })
@@ -602,7 +663,8 @@ export class AiReviewPageComponent implements OnInit {
    * the assumed size.
    */
   private loadSizes(): void {
-    if (!this.reviewable().some(r => this.kindOf(r) !== 'video')) {
+    // Every course: a PDF's pages, a quiz's questions, and whether each video has sound.
+    if (!this.reviewable().length) {
       return
     }
     this.measuring.set(true)
@@ -655,7 +717,7 @@ export class AiReviewPageComponent implements OnInit {
     // The audience is left for the reviewer to pick: a guessed default would judge the
     // content for the wrong learners without anyone choosing it.
     this.language.set(preview.defaults.language)
-    this.domainStyle.set(preview.defaults.domainStyle)
+    this.domainStyle.set(AI_REVIEW_FRAC_ENABLED ? preview.defaults.domainStyle : 'plain')
   }
 
   loadHistory(): void {
@@ -724,6 +786,7 @@ export class AiReviewPageComponent implements OnInit {
       positionCode: this.position()?.code || null,
       audience: this.audience().trim(),
       language: this.language(),
+      reportLanguage: this.reportLanguage(),
       context: this.context().trim(),
     }
   }
@@ -736,7 +799,7 @@ export class AiReviewPageComponent implements OnInit {
     this.startError.set('')
     this.joinedNote.set('')
     this.api
-      .start(this.courseId, this.buildOptions())
+      .start(this.courseId, this.buildOptions(), this.allSelected() ? null : this.selected().map(r => r.contentId))
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: res => {
@@ -860,9 +923,9 @@ export class AiReviewPageComponent implements OnInit {
       this.addie.set(o.addie !== false)
       this.domain.set(!!o.domain && this.canJudge())
       this.alignment.set(!!o.alignment && this.canAlign())
-      this.watch.set(o.watch !== false)
+      this.watch.set(true)
       if (o.domainStyle) {
-        this.domainStyle.set(o.domainStyle)
+        this.domainStyle.set(AI_REVIEW_FRAC_ENABLED ? o.domainStyle : 'plain')
       }
       this.levelMode.set(o.levelMode || 'single')
       this.competencyId.set(o.competencyId ?? this.competencyId())
@@ -870,6 +933,9 @@ export class AiReviewPageComponent implements OnInit {
       this.audience.set(o.audience ?? this.audience())
       if (o.language) {
         this.language.set(o.language)
+      }
+      if (o.reportLanguage) {
+        this.reportLanguage.set(o.reportLanguage)
       }
       this.context.set(o.context ?? '')
     }
@@ -885,6 +951,14 @@ export class AiReviewPageComponent implements OnInit {
 
   backToCourse(): void {
     this.router.navigate(['/author/toc', this.courseId, 'overview'])
+  }
+
+  /** Where a blocked Start can take the user to fix it, or null. */
+  readonly fix = computed(() => fixFor(this.validationMessage(), 'air-resources', 'resource'))
+
+  /** Scrolls to a section and puts the focus in it (the resource list, the audience). */
+  goTo(id: string): void {
+    jumpTo(this.document, id)
   }
 
   statusLabel(status: string): string {

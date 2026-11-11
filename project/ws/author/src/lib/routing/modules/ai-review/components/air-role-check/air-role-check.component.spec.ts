@@ -80,13 +80,19 @@ describe('role check', () => {
 
     it('shows the Plain checks for the audience typed', () => {
       set({ domainStyle: 'plain', audience: 'ANM' })
-      expect(text()).toContain('What the expert checks (Plain)')
+      // With FRAC hidden there is no choice of style, so the heading names none, and nothing says to pick FRAC.
+      expect(text()).toContain('What the expert checks')
+      expect(text()).not.toContain('(Plain)')
+      expect(text()).not.toContain('choose FRAC')
       expect(text()).toContain('Right for ANM')
     })
 
     it('asks for a position, then shows the roles and activities, saying what each file is judged on', () => {
       set({ domainStyle: 'frac' })
       expect(text()).toContain('Pick a position in Audience above')
+      // Without a position FRAC still judges level fit and coverage, and role fit against the audience.
+      expect(text()).toContain('FRAC still judges the level fit and coverage, and judges role fit against your audience.')
+      expect(text()).not.toContain('competency level only')
       set({
         positionName: 'ANM_UP',
         check: check([act('Antenatal', 'Detect pregnancy', 'Pregnancy identification', [1, 2])]),
@@ -95,11 +101,15 @@ describe('role check', () => {
       expect(text()).toContain('Detect pregnancy')
       expect(text()).toContain('needs it at Levels 1–2')
       expect(text()).toContain('does each file prepare ANM_UP')
+      expect(text()).toContain('Accurate practice: are protocols, thresholds, doses and steps correct for Indian public health?')
     })
 
     it('shows why there are no activities', () => {
       set({ domainStyle: 'frac', positionName: 'ANM', check: { role: null, roleNote: 'The FRAC role data could not be read just now.' } })
       expect(text()).toContain('The FRAC role data could not be read just now.')
+      expect(text()).toContain(
+        'You can still start: FRAC then judges the level fit and coverage, and judges role fit against your audience instead of the activities.',
+      )
     })
 
     it('says what to pick when the check cannot run yet, instead of an empty panel', () => {

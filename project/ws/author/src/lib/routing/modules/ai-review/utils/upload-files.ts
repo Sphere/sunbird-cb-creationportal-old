@@ -130,10 +130,29 @@ export async function readQuizSheet(file: Blob, kind: 'quiz' | 'assessment'): Pr
 /** The course-level alignment verdict, once per review (keep in step with the service's cost model). */
 export const COURSE_ALIGNMENT_USD = 0.05
 
+/**
+ * A FRAC domain review's extra over Plain, per resource: the expert also reads the competency's
+ * other levels and the position's activities (keep in step with the service's fracDomainUsd).
+ */
+export const FRAC_DOMAIN_USD = 0.01
+
+/** What one resource costs with these options (the course-level alignment verdict is not one resource's). */
+export function partsCost(
+  p: IAiReviewEstimateParts,
+  o: { addie: boolean; domain: boolean; watch: boolean; alignment?: boolean; domainStyle?: string },
+): number {
+  if (!o.addie && !o.domain && !o.alignment) {
+    return 0
+  }
+  const domain = o.domain ? p.domain + (o.domainStyle === 'frac' ? FRAC_DOMAIN_USD : 0) : 0
+  const usd = p.base + (o.addie ? p.addie : 0) + domain + (o.watch ? p.watch : 0) + (o.alignment ? p.alignment || 0 : 0)
+  return Math.round(usd * 1000) / 1000
+}
+
 /** What a review of these parts costs with these options, the course-level alignment verdict included. */
 export function estimateFor(
   parts: readonly IAiReviewEstimateParts[],
-  o: { addie: boolean; domain: boolean; watch: boolean; alignment?: boolean },
+  o: { addie: boolean; domain: boolean; watch: boolean; alignment?: boolean; domainStyle?: string },
 ): number {
   if (!o.addie && !o.domain && !o.alignment) {
     return 0

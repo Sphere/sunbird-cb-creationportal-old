@@ -1,7 +1,18 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { Observable, of, throwError } from 'rxjs'
 import { IAiReview } from '../models/ai-review.model'
-import { POLL_FAST_MS, POLL_RETRY_MS, POLL_SLOW_MS, isTransient, isUnclear, nextPollDelay, statusLabel, watchReview } from './review-run'
+import {
+  POLL_FAST_MS,
+  POLL_RETRY_MS,
+  POLL_SLOW_MS,
+  isTransient,
+  isUnclear,
+  nextPollDelay,
+  requesterName,
+  statusLabel,
+  watchReview,
+  withRequesterName,
+} from './review-run'
 
 const at = (status: IAiReview['status'], queuePosition = 0): IAiReview => ({ id: 'r1', status, queuePosition }) as IAiReview
 
@@ -85,5 +96,32 @@ describe('review run', () => {
     jest.advanceTimersByTime(POLL_RETRY_MS * 4)
     expect(read).toHaveBeenCalledTimes(1)
     expect((failed as HttpErrorResponse).status).toBe(403)
+  })
+})
+
+describe('who started a review', () => {
+  const me = { id: 'u1', name: 'Asha Rao' }
+  const by = (id: string, name: string) => ({ requestedBy: { id, name } })
+
+  it('uses the name sent with the request when there is one', () => {
+    expect(requesterName(by('u2', 'Ravi'), me)).toBe('Ravi')
+  })
+
+  it('names your own review from your profile when the request carried no name', () => {
+    expect(requesterName(by('u1', ''), me)).toBe('Asha Rao')
+    expect(requesterName(by('u1', ''), { id: 'u1', name: '' })).toBe('you')
+  })
+
+  it("falls back for someone else's review with no name, or with no one signed in", () => {
+    expect(requesterName(by('u2', ''), me, 'a user')).toBe('a user')
+    expect(requesterName(by('u1', ''), null, 'a user')).toBe('a user')
+  })
+
+  it('names the requester in a download, but never as "you"', () => {
+    expect(withRequesterName(by('u1', ''), me).requestedBy.name).toBe('Asha Rao')
+    const unnamed = by('u1', '')
+    expect(withRequesterName(unnamed, { id: 'u1', name: '' })).toBe(unnamed)
+    const named = by('u2', 'Ravi')
+    expect(withRequesterName(named, me)).toBe(named)
   })
 })

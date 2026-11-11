@@ -3,7 +3,8 @@
     <span class="air-role-title"><ws-auth-air-icon name="expert" [size]="16" /> <ng-container i18n>Role check (FRAC)</ng-container></span>
     @if (!positionName()) {
       <p class="air-hint air-hint--warn" i18n>
-        Pick a position in Audience above to check the role's activities. Without one, FRAC checks the competency level only.
+        Pick a position in Audience above to check the role's activities. Without one, FRAC still judges the level fit and coverage, and
+        judges role fit against your audience.
       </p>
     } @else if (checking()) {
       <ws-auth-air-busy [label]="'Reading the roles and activities of ' + positionName()" detail="From FRAC" [typicalSec]="10" />
@@ -60,6 +61,7 @@
         <ul>
           <li i18n><strong>Role fit</strong>: does {{ each() }} prepare {{ rs.position }} to do these activities?</li>
           <li i18n><strong>Activity realism</strong>: is the skill shown the way {{ rs.position }} does these activities on the job?</li>
+          <li i18n><strong>Accurate practice</strong>: are protocols, thresholds, doses and steps correct for Indian public health?</li>
           <li i18n><strong>In the report</strong>: each activity is marked covered, partly covered or missing, with what covers it.</li>
         </ul>
       </div>
@@ -84,7 +86,10 @@
             <p class="air-role-notice-title" i18n>The role's activities could not be checked</p>
             <p class="air-role-notice-text">{{ check()!.roleNote }}</p>
           }
-          <p class="air-role-notice-foot" i18n>You can still start: the domain review then checks the competency level only.</p>
+          <p class="air-role-notice-foot" i18n>
+            You can still start: FRAC then judges the level fit and coverage, and judges role fit against your audience instead of the
+            activities.
+          </p>
         </div>
       </div>
     } @else if (waiting()) {
@@ -95,8 +100,13 @@
   <!-- Plain has nothing to look up: say plainly what the expert will check. -->
   <div class="air-role">
     <span class="air-role-title"
-      ><ws-auth-air-icon name="expert" [size]="16" /> <ng-container i18n>What the expert checks (Plain)</ng-container></span
-    >
+      ><ws-auth-air-icon name="expert" [size]="16" />
+      @if (fracEnabled) {
+        <ng-container i18n>What the expert checks (Plain)</ng-container>
+      } @else {
+        <ng-container i18n>What the expert checks</ng-container>
+      }
+    </span>
     <ul class="air-plain-checks">
       <li i18n><strong>Right topic</strong>: the content belongs to the competency being judged.</li>
       <li i18n><strong>Teaches the level</strong>: it covers what the level description names, with nothing essential skipped or wrong.</li>
@@ -108,9 +118,13 @@
     </ul>
     <div class="air-role-next">
       <span class="air-role-next-title"><ws-auth-air-icon name="info" [size]="16" /> <ng-container i18n>In the report</ng-container></span>
-      <p class="air-plain-next" i18n>
-        Each point of the level description is marked covered, partly covered or missing, with what covers it. To also check the role's
-        activities in FRAC, choose FRAC.
+      <p class="air-plain-next">
+        <ng-container i18n
+          >Each point of the level description is marked covered, partly covered or missing, with what covers it.</ng-container
+        >
+        @if (fracEnabled) {
+          <ng-container i18n>To also check the role's activities in FRAC, choose FRAC.</ng-container>
+        }
       </p>
     </div>
   </div>

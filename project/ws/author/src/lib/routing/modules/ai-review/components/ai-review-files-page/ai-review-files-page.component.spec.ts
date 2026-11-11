@@ -675,6 +675,7 @@ describe('AiReviewFilesPageComponent', () => {
         positionCode: 'ANM',
         audience: 'ANM',
         language: 'auto',
+        reportLanguage: 'en',
         context: 'rural PHC',
       })
       expect(router.navigate).toHaveBeenCalledWith([], expect.objectContaining({ queryParams: { review: 'r1' } }))
@@ -753,6 +754,31 @@ describe('AiReviewFilesPageComponent', () => {
       const without = c.estimateUsd()
       c.alignment.set(true)
       expect(c.estimateUsd()).toBe(Math.round((without + 0.02 + 0.05) * 100) / 100)
+    })
+
+    it('reviews only the ticked files; an unticked one stays uploaded and adds no cost', () => {
+      const c = create()
+      c.domain.set(false)
+      c.addFiles([file('a.mp4'), file('b.mp4')])
+      const both = c.estimateUsd()
+      const second = c.entries()[1]
+      expect(c.fileCost(second)).toBe(0.26)
+      c.toggleFile(second.key, false)
+      expect(c.chosen().map(e => e.name)).toEqual(['a.mp4'])
+      expect(c.estimateUsd()).toBeLessThan(both)
+      expect(c.entries()).toHaveLength(2)
+      c.start()
+      expect(api.startUploadReview.mock.calls[0][1]).toEqual(['u1'])
+    })
+
+    it('needs at least one ticked file, and forgets the tick of a removed file', () => {
+      const c = create()
+      c.domain.set(false)
+      c.addFiles([file('a.mp4')])
+      c.chooseAll(false)
+      expect(c.validationMessage()).toBe('Tick at least one file to review.')
+      c.removeFile(c.entries()[0].key)
+      expect(c.excluded().size).toBe(0)
     })
 
     it("uses the user's title, cut to the service's limit", () => {
@@ -838,12 +864,14 @@ describe('AiReviewFilesPageComponent', () => {
       c.newReview()
       expect(c.review()).toBeNull()
       expect(c.entries()).toHaveLength(1)
-      expect(c.domainStyle()).toBe('frac')
+      // FRAC is hidden for now (utils/features.ts): an earlier FRAC review runs again as Plain.
+      expect(c.domainStyle()).toBe('plain')
       expect(c.competencyId()).toBe('C2')
       expect(c.level()).toBe(1)
       expect(c.language()).toBe('hi')
       expect(c.notes()).toBe('rural PHC')
-      expect(c.watch()).toBe(false)
+      // Videos are always watched in full now, even when the earlier review had it off.
+      expect(c.watch()).toBe(true)
       expect(router.navigate).toHaveBeenLastCalledWith([], expect.objectContaining({ queryParams: { review: null } }))
     })
 

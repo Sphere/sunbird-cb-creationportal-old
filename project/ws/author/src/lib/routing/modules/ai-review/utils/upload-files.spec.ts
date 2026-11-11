@@ -1,5 +1,15 @@
 import { IAiReviewUploadContext } from '../models/ai-review.model'
-import { ACCEPT_ATTRIBUTE, estimateFor, extOf, fileProblem, formatBytes, kindForFile, readQuizSheet } from './upload-files'
+import {
+  ACCEPT_ATTRIBUTE,
+  estimateFor,
+  extOf,
+  FRAC_DOMAIN_USD,
+  fileProblem,
+  formatBytes,
+  kindForFile,
+  partsCost,
+  readQuizSheet,
+} from './upload-files'
 
 const sheetRows = { current: [] as unknown[][] }
 const readFails = { current: false }
@@ -121,5 +131,15 @@ describe('upload files', () => {
       expect(read.warning).toMatch(/Only the first 500 rows/)
       expect(read.sheet.questions).toHaveLength(500)
     })
+  })
+})
+
+describe('the FRAC extra in an estimate', () => {
+  it('adds the FRAC domain extra only when the domain review runs in FRAC', () => {
+    const p = { base: 0.01, addie: 0.02, domain: 0.05, watch: 0.03 }
+    const on = { addie: true, domain: true, watch: true }
+    expect(partsCost(p, { ...on, domainStyle: 'frac' })).toBeCloseTo(partsCost(p, on) + FRAC_DOMAIN_USD, 6)
+    expect(partsCost(p, { ...on, domainStyle: 'plain' })).toBe(partsCost(p, on))
+    expect(partsCost(p, { ...on, domain: false, domainStyle: 'frac' })).toBe(partsCost(p, { ...on, domain: false }))
   })
 })

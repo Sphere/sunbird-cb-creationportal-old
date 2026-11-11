@@ -6,7 +6,8 @@ import {
   judgedAgainst,
   packageLine,
   levelText,
-  openPrintableReport,
+  buildReportPage,
+  openReportTab,
   reportFileName,
   reportWords,
   roleSummary,
@@ -186,13 +187,21 @@ describe('report export', () => {
   describe('the PDF document', () => {
     const html = buildReportHtml(review(), new Date('2026-10-31T11:00:00Z'))
 
-    it('carries the summary, coverage, gaps and each resource', () => {
+    it('carries the summary, the score by resource, coverage and each resource', () => {
       expect(html).toContain('Needs significant revision')
       expect(html).toContain('Eclampsia · Level 2')
+      expect(html).toContain('<ul class="inshort">')
+      expect(html).toContain('<h2>Score by resource</h2>')
+      expect(html).toContain('<td><b>Total</b></td>')
+      expect(html).toContain('<h2>Is the competency level taught?</h2>')
       expect(html).toContain('Proteinuria')
-      expect(html).toContain('→ Bare arm')
+      // Each finding once, in its resource's "To fix" list; no separate repeated-gaps section.
+      expect(html).not.toContain('Checklist gaps that repeat')
+      expect(html).toContain('Fix: Bare arm')
+      expect(html).toContain('<h4 class="tofix">To fix')
+      expect(html).toContain('The CBP checklist has 47 points.')
       expect(html).toContain('Domain review could not run: timed out')
-      expect(html).toContain('Questions (1 of 2 need attention)')
+      expect(html).toContain('Questions that need attention <span class="muted">· 1 of 2</span>')
       expect(html).toContain('Key marks 4 mg')
       expect(html).not.toContain('Case study</h3>')
     })
@@ -208,22 +217,88 @@ describe('report export', () => {
     })
   })
 
-  it('opens the document and prints it, or reports a blocked window', () => {
-    jest.useFakeTimers()
+  it('says why a doubted finding needs checking by hand', () => {
+    const r = review()
+    r.items = [
+      item({
+        result: {
+          ...item().result!,
+          addie: {
+            model: 'g',
+            score: {
+              ...score,
+              areas: [
+                {
+                  ...score.areas[0]!,
+                  items: [{ ...score.areas[0]!.items[1]!, borderline: true, check: 'It quotes words that are not in the transcript.' }],
+                },
+              ],
+            },
+            summary: '',
+            costUsd: 0,
+          },
+        },
+      }),
+    ]
+    expect(buildReportHtml(r)).toContain('<span class="check">Check by hand: It quotes words that are not in the transcript.</span>')
+  })
+
+  it('says which level the content really fits, as FRAC judged it', () => {
+    const r = review()
+    r.items = [
+      item({
+        result: {
+          ...item().result!,
+          domain: {
+            model: 'c',
+            style: 'frac',
+            score: { ...score, yes: 3, applicable: 6 },
+            coverage: [],
+            levelFit: { verdict: 'below', bestFitLevel: 2, rationale: 'Recall only' },
+            summary: 'Basic.',
+            costUsd: 0,
+          },
+        },
+      }),
+    ]
+    expect(buildReportHtml(r)).toContain('<b>Pitched below the level</b> · best fits Level 2 — Recall only')
+  })
+
+  it('says near the top which videos had no sound and were reviewed on what they show', () => {
+    const r = review()
+    r.items = [...r.items, item({ contentId: 'do_m', name: 'Silent demo', result: { ...item().result!, noSound: true } })]
+    const html = buildReportHtml(r)
+    expect(html).toContain('<div class="nosound"><b>1 video has no sound.</b><p>It was reviewed on what it shows')
+    expect(html).toContain('<li>Silent demo</li>')
+    expect(html.indexOf('class="nosound"')).toBeLessThan(html.indexOf('<h2>Each'))
+    expect(buildReportHtml(review())).not.toContain('class="nosound"')
+  })
+
+  it('opens the web page in a new tab, or reports a blocked tab', () => {
     const doc = { open: jest.fn(), write: jest.fn(), close: jest.fn() }
     const win = { document: doc, focus: jest.fn(), print: jest.fn() }
-    expect(openPrintableReport(review(), { open: () => win as unknown as Window })).toBe(true)
-    expect(doc.write).toHaveBeenCalled()
-    jest.advanceTimersByTime(300)
-    expect(win.print).toHaveBeenCalled()
-    expect(openPrintableReport(review(), { open: () => null })).toBe(false)
-    jest.useRealTimers()
+    expect(openReportTab(review(), { open: () => win as unknown as Window })).toBe(true)
+    expect(doc.write).toHaveBeenCalledWith(expect.stringContaining('<main class="page">'))
+    expect(win.print).not.toHaveBeenCalled()
+    expect(openReportTab(review(), { open: () => null })).toBe(false)
+  })
+
+  it('makes the web page a readable, responsive sheet with the same content as the PDF', () => {
+    const at = new Date('2026-10-31T11:00:00Z')
+    const page = buildReportPage(review(), at)
+    expect(page).toContain('name="viewport"')
+    expect(page).toContain('<body class="web"><main class="page">')
+    expect(page).toContain('@media (max-width:760px)')
+    // Nothing about a print dialog any more.
+    expect(page).not.toContain('Save as PDF')
+    const body = (html: string) => html.slice(html.indexOf('<body'), html.indexOf('</body>')).replace(/<body[^>]*>|<\/?main[^>]*>/g, '')
+    expect(body(page)).toBe(body(buildReportHtml(review(), at)))
   })
 
   it('builds one sheet per view, with every checklist verdict and question', () => {
     const sheets = buildWorkbookSheets(review())
     expect(Object.keys(sheets)).toEqual(['Summary', 'Checklist', 'Coverage', 'Questions'])
-    expect(sheets['Summary']).toContainEqual(['ADDIE score %', 50])
+    expect(sheets['Summary']).toContainEqual(['CBP checklist %', 50])
     expect(sheets['Checklist']).toContainEqual([
       'BP video',
       'Video',
@@ -252,7 +327,8 @@ describe('report export', () => {
       const html = buildReportHtml(files, new Date('2026-10-31T11:00:00Z'))
       expect(html).toContain('AI File Review · advisory')
       expect(html).toContain('<h2>Each file</h2>')
-      expect(html).toContain('<div class="lbl">Files</div>')
+      expect(html).toContain('<h2>Score by file</h2>')
+      expect(html).toContain('<th>File</th>')
       expect(html).toContain('it changes nothing in CBP')
       expect(html).not.toContain('Each resource')
       expect(html).not.toContain('does not change the course')
@@ -370,5 +446,131 @@ describe('course alignment in the exports', () => {
     expect(sheet).toContainEqual(['Danger signs', 'missing', ''])
     expect(sheet).toContainEqual(['BP video', 'Off topic for this course', 'Diet', 'Nutrition only.', 'Move it'])
     expect(buildWorkbookSheets(review())['Course alignment']).toBeUndefined()
+  })
+})
+
+describe('the HTML and PDF report, on unusual reviews', () => {
+  const line = (step: string, costUsd: number) => ({
+    provider: 'gemini' as const,
+    model: 'm',
+    step,
+    calls: 1,
+    inputTokens: 10,
+    outputTokens: 5,
+    cachedTokens: 0,
+    audioSec: 0,
+    costUsd,
+  })
+  const domain = (over: Record<string, unknown> = {}) => ({
+    model: 'c',
+    style: 'frac' as const,
+    score: { ...score, yes: 3, applicable: 6 },
+    coverage: [],
+    levelFit: { verdict: 'mixed' as const, bestFitLevel: null, rationale: '' },
+    summary: 'Expert words.',
+    costUsd: 0,
+    ...over,
+  })
+
+  it('handles every resource state: errors, reuse, packages, silence, fit and a clean quiz', () => {
+    const r = review({
+      options: {
+        competency: null,
+        levelMode: 'perResource',
+        levels: { '2': { competencyId: 'C', label: 'BP', level: 2, levelLabel: '', levelDescription: '', cadre: '' } },
+        domainStyle: 'frac',
+        domain: true,
+        role: { positionName: 'ANM', activities: [{ role: 'ANC', activity: 'Detect HRP', competency: 'BP', levels: [2] }] },
+      } as never,
+      items: [
+        // Every pass failed, and the result was reused from an earlier review with no date.
+        item({
+          contentId: 'e',
+          name: 'Errors',
+          result: {
+            ...item().result!,
+            addie: { error: 'checklist down' },
+            domain: { error: 'expert down' },
+            alignment: { error: 'fit down' },
+            questionsError: 'quiz down',
+            cached: true,
+          } as never,
+        }),
+        // A package that reports progress; off topic for the course; a level fit with no rationale.
+        item({
+          contentId: 'p',
+          name: 'Package',
+          kind: 'html',
+          result: {
+            ...item().result!,
+            kind: 'html',
+            domain: domain(),
+            alignment: { model: 'g', verdict: 'off_topic', teaches: [], serves: [], note: '', costUsd: 0 },
+            htmlPackage: { files: 1, pages: 1, videos: [], images: 0, stills: 0, questions: 0, reportsProgress: true, savesState: true },
+          } as never,
+        }),
+        // Two silent videos.
+        item({ contentId: 's1', name: 'Silent one', result: { ...item().result!, noSound: true } }),
+        item({ contentId: 's2', name: 'Silent two', result: { ...item().result!, noSound: true } }),
+        // A quiz whose every question checks out.
+        item({
+          contentId: 'q',
+          name: 'Clean quiz',
+          kind: 'quiz',
+          result: {
+            ...item().result!,
+            kind: 'quiz',
+            addie: null,
+            domain: null,
+            questions: [{ n: 1, question: 'Q', verdict: 'ok', issues: [] }],
+          } as never,
+        }),
+        // A resource that failed with no reason given.
+        item({ contentId: 'f', name: 'Failed', status: 'failed', error: null, result: null }),
+      ],
+      result: {
+        reviewed: 5,
+        failed: 1,
+        skipped: [],
+        addie: null,
+        domain: { yes: 3, applicable: 6, scorePct: 50 },
+        coverage: [{ component: 'BP', status: 'covered', coveredBy: ['Package'] }],
+        commonGaps: [],
+        alignment: { error: 'course fit down' },
+        costUsd: 0.2,
+        usage: [line('claude course alignment', 0.05)],
+      } as never,
+    })
+    r.items[1]!.result!.usage = [line('gemini checklist', 0.02)]
+    const html = buildReportHtml(r)
+    expect(html).toContain('Checklist could not run: checklist down')
+    expect(html).toContain('Domain review could not run: expert down')
+    expect(html).toContain('The course alignment check could not run: fit down')
+    expect(html).toContain('Question check could not run: quiz down')
+    expect(html).toContain('Unchanged since an earlier review')
+    expect(html).toContain('<p class="pkg">')
+    expect(html).toContain('Off topic for this course')
+    expect(html).toContain('<b>Pitched at mixed levels</b></p>')
+    expect(html).toContain('2 videos have no sound.')
+    expect(html).toContain('Every question checks out')
+    expect(html).toContain('This resource could not be reviewed.')
+    expect(html).toContain('Each part at its own level')
+    expect(html).toContain('ANM: 1 FRAC activity needs the competency judged: Detect HRP')
+    // Judged per part, with no single competency: the coverage says so in general words.
+    expect(html).toContain('<h2>Is the competency level taught?</h2>')
+    // The cost table: a reused resource costs nothing, and the course-level call has its own group.
+    expect(html).toContain('reused · $0')
+    expect(html).toContain('The course as a whole')
+    // No checklist: no checklist card, no checklist column.
+    expect(html).not.toContain('<th class="num">CBP checklist</th>')
+  })
+
+  it('has no summary before the review has one, and names what it was judged against only when it can', () => {
+    const html = buildReportHtml(review({ result: null }))
+    expect(html).not.toContain('<h2>Score by')
+    expect(judgedAgainst(null)).toBe('')
+    expect(judgedAgainst({ levelMode: 'perResource', levels: {} } as never)).toBe('Each part at its own level')
+    expect(roleSummary({ domainStyle: 'frac', domain: true, role: null, roleNote: 'No activities.' } as never)).toBe('No activities.')
+    expect(roleSummary({ domainStyle: 'frac', domain: true } as never)).toBe('')
   })
 })

@@ -9,7 +9,7 @@
   padding: 16px;
   border-radius: 12px;
   background: #fff;
-  border: 1px solid #bae6fd;
+  border: 1px solid #c3e6f1;
 
   p {
     margin: 8px 0 0;
@@ -22,7 +22,7 @@
   gap: 8px;
   font-size: 14px;
   font-weight: 700;
-  color: #0e7490;
+  color: #0891b2;
 }
 
 // Position → Role → Activity: each level labelled with a small tag, activities hanging off
@@ -47,18 +47,18 @@
   text-transform: uppercase;
 
   &--position {
-    color: #4338ca;
-    background: #eef2ff;
+    color: #2563eb;
+    background: #e8efff;
   }
 
   &--role {
-    color: #0e7490;
-    background: #cffafe;
+    color: #0891b2;
+    background: #d7f1f7;
   }
 
   &--activity {
-    color: #047857;
-    background: #d1fae5;
+    color: #1e7a3c;
+    background: #e6f4ea;
   }
 }
 
@@ -93,7 +93,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid #1c5d95;
+    outline: 2px solid #2f7aef;
     outline-offset: 2px;
     border-radius: 6px;
   }
@@ -115,7 +115,7 @@
   list-style: none;
   margin: 8px 0 0 12px;
   padding: 0 0 0 16px;
-  border-left: 2px solid #bae6fd;
+  border-left: 2px solid #c3e6f1;
   display: grid;
   gap: 8px;
 
@@ -142,7 +142,7 @@
   margin-top: 16px;
   padding: 12px 16px;
   border-radius: 8px;
-  background: #f0f9ff;
+  background: #f0f7ff;
   font-size: 14px;
 
   ul {
@@ -158,7 +158,7 @@
   align-items: center;
   gap: 8px;
   font-weight: 700;
-  color: #0e7490;
+  color: #0891b2;
 }
 
 .air-role ws-auth-air-busy {
@@ -185,8 +185,8 @@
   align-items: flex-start;
   padding: 12px 16px;
   border-radius: 10px;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
+  background: #fef6e7;
+  border: 1px solid #f2d9a0;
 }
 
 .air-role-notice-icon {
@@ -196,8 +196,8 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: #fef3c7;
-  color: #b45309;
+  background: #fef6e7;
+  color: #8f6206;
 }
 
 .air-role-notice-body {
@@ -212,14 +212,14 @@
 .air-role-notice-title {
   font-size: 15px;
   font-weight: 600;
-  color: #92400e;
+  color: #8f6206;
   line-height: 1.4;
 }
 
 .air-role-notice-body .air-role-notice-text {
   margin-top: 4px;
   font-size: 14px;
-  color: #172036;
+  color: #0f172a;
 }
 
 .air-role-notice-chips {
@@ -235,7 +235,7 @@
   font-size: 13px;
   font-weight: 500;
   background: #fff;
-  border: 1px solid #fcd34d;
+  border: 1px solid #f2d9a0;
   color: #78350f;
 }
 
@@ -245,7 +245,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #92400e;
+  color: #8f6206;
 }
 
 .air-role-notice-list {
@@ -253,7 +253,7 @@
   padding-left: 18px;
   font-size: 14px;
   line-height: 1.6;
-  color: #172036;
+  color: #0f172a;
 }
 
 .air-role-notice-body .air-role-notice-foot {

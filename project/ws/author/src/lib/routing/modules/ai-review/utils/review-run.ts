@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { EMPTY, Observable, defer, expand, filter, fromEvent, of, retry, startWith, switchMap, take, throwError, timer } from 'rxjs'
+import { InjectionToken } from '@angular/core'
 import { AI_REVIEW_FINAL_STATUSES, IAiReview } from '../models/ai-review.model'
 
 /** Poll every 3 s while a review moves; every 10 s while it waits behind others. */
@@ -91,4 +92,38 @@ export function watchReview(read: () => Observable<IAiReview>, doc: Document, is
           ),
     ),
   )
+}
+
+/** The signed-in user, as the AI review screens need them: their id and display name. */
+export interface AiReviewViewer {
+  id: string
+  name: string
+}
+
+/**
+ * Who is signed in, provided by the module from CBP's profile. A token (not the profile
+ * service itself) keeps the components free of the shared utils library.
+ */
+export const AIR_VIEWER = new InjectionToken<() => AiReviewViewer | null>('AIR_VIEWER')
+
+/**
+ * Who started a review, in words. The name sent with the request when there is one; for the
+ * viewer's own review, their CBP profile name (the request's name is left out when the
+ * sign-in token has none or it is not plain ASCII); else `fallback`.
+ */
+export function requesterName(review: Pick<IAiReview, 'requestedBy'>, viewer: AiReviewViewer | null, fallback = ''): string {
+  const r = review.requestedBy
+  if (r?.name) {
+    return r.name
+  }
+  if (viewer && r?.id && r.id === viewer.id) {
+    return viewer.name || 'you'
+  }
+  return fallback
+}
+
+/** The review with its requester named, for the downloads (which may be passed on: never "you"). */
+export function withRequesterName<T extends Pick<IAiReview, 'requestedBy'>>(review: T, viewer: AiReviewViewer | null): T {
+  const name = requesterName(review, viewer)
+  return name && name !== 'you' && name !== review.requestedBy?.name ? { ...review, requestedBy: { ...review.requestedBy, name } } : review
 }

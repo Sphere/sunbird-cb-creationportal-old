@@ -9,19 +9,28 @@
 .air-combo-field {
   display: flex;
   align-items: center;
-  border: 1px solid $air-border;
-  border-radius: 8px;
-  background: #fff;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid $air-line;
+  border-radius: 12px;
+  background: $air-surface-2;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition:
+    border-color $air-dur-fast $air-ease,
+    box-shadow $air-dur-fast $air-ease,
+    background-color $air-dur-fast $air-ease;
 
   &:hover {
-    border-color: $air-border-hover;
+    border-color: $air-line-2;
   }
 
+  // AI Studio's focus: the well fills to white, the accent on its edge, a soft ring round it.
   &:focus-within,
   &--open {
+    outline: none;
+    background: #fff;
     border-color: $air-focus;
-    box-shadow: 0 0 0 1px $air-focus;
+    box-shadow:
+      0 0 0 3px rgba(47, 122, 239, 0.14),
+      0 2px 8px -2px rgba(47, 122, 239, 0.22);
   }
 }
 
@@ -38,7 +47,7 @@
   color: $air-text;
 
   &::placeholder {
-    color: #6b7280;
+    color: #64748b;
   }
 }
 
@@ -74,10 +83,15 @@
   margin: 0;
   padding: 4px;
   list-style: none;
-  border-radius: 12px;
-  background: #fff;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
   border: 1px solid $air-line;
-  box-shadow: 0 16px 32px -16px rgba(15, 23, 42, 0.35);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  box-shadow:
+    0 24px 48px -20px rgba(15, 23, 42, 0.35),
+    0 2px 6px rgba(15, 23, 42, 0.06);
+  animation: air-drop 0.16s ease-out both;
 }
 
 .air-combo-option {
@@ -92,13 +106,13 @@
   color: $air-text;
 
   &--active {
-    background: #eef2ff;
-    box-shadow: inset 3px 0 0 $air-primary;
+    background: rgba(47, 122, 239, 0.07);
   }
 
   &--selected {
-    color: $air-primary;
+    color: $air-primary-deep;
     font-weight: 600;
+    background: rgba(47, 122, 239, 0.1);
   }
 }
 

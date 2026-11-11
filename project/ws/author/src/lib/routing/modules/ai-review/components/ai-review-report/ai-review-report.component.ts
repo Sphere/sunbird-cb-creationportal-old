@@ -2,6 +2,11 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, input
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { AiReviewService } from '../../services/ai-review.service'
 import { judgedAgainst, reportWords } from '../../utils/report-export'
+import { coverageSources, locateText, placeLabel } from '../../utils/report-detail'
+import { costBreakdown, providerLabel, stepLabel, tokensLabel, usd } from '../../utils/usage'
+import { Issue, ISSUE_SOURCES } from '../../utils/issues'
+import { checklistTotalOf, coverageCountsOf, fixCountOf, fixGroupsOf, inShortOf, scoreNote, scoreRowsOf } from '../../utils/report-summary'
+export type { FixGroup } from '../../utils/report-summary'
 import { formatDuration, kindFromMime, kindLine, kindMeta } from '../../utils/resource-kind'
 import {
   IAiReview,
@@ -19,21 +24,7 @@ import {
 import { AirEvidenceComponent } from '../air-evidence/air-evidence.component'
 import { AirIconName } from '../air-icon/air-icon.component'
 
-/**
- * A time or page written in free text ("Shown at 0:10", "on page 3"), for findings that
- * carry no location field of their own, such as coverage evidence.
- */
-export function locateText(text: string): { at?: string; atSec?: number; page?: number } {
-  const page = text.match(/\bpages?\s+(\d{1,4})\b/i)
-  if (page) {
-    return { at: `page ${Number(page[1])}`, page: Number(page[1]) }
-  }
-  const time = text.match(/\b(?:(\d{1,2}):)?([0-5]?\d):([0-5]\d)\b/)
-  if (time) {
-    return { at: time[0], atSec: Number(time[1] || 0) * 3600 + Number(time[2]) * 60 + Number(time[3]) }
-  }
-  return {}
-}
+export { locateText } from '../../utils/report-detail'
 
 /** One resource, with its two passes split into a report or the error that replaced it. */
 export interface IReportRow {
@@ -131,14 +122,74 @@ export class AiReviewReportComponent {
   readonly roleNote = computed(() => (this.review().options?.domainStyle === 'frac' ? this.review().options.roleNote || '' : ''))
 
   /** How much of the competency level the course covers, for the summary card. */
-  readonly coverageCounts = computed(() => {
-    const coverage = this.summary()?.coverage || []
-    if (!coverage.length) {
-      return null
-    }
-    const count = (status: string) => coverage.filter(c => c.status === status).length
-    return { covered: count('covered'), partial: count('partial'), missing: count('missing') }
+  readonly coverageCounts = computed(() => coverageCountsOf(this.review()))
+
+  /** Each course-level coverage component's sources: which resources cover it, with their evidence. */
+  readonly coverageDetail = computed(
+    () => new Map((this.summary()?.coverage || []).map(c => [c.component, coverageSources(this.review(), c.component)])),
+  )
+  readonly placeLabel = placeLabel
+  /** Each resource's own findings, each once, grouped (shared with the HTML, PDF and Excel). */
+  readonly fixGroups = computed(() => fixGroupsOf(this.review(), this.words().one))
+
+  /** How many things to fix in one resource. */
+  fixCount(contentId: string): number {
+    return fixCountOf(this.fixGroups(), contentId)
+  }
+
+  /** The checklist's full length (47), read from a resource that was scored. */
+  readonly checklistTotal = computed(() => checklistTotalOf(this.review()))
+  /** One row per resource for the score table, with the course total underneath. */
+  readonly scoreRows = computed(() => scoreRowsOf(this.review(), this.fixGroups()))
+  readonly totalFixes = computed(() => this.scoreRows().reduce((n, r) => n + r.fixes, 0))
+  /** The report in three or four plain sentences, at the top. */
+  readonly inShort = computed(() => inShortOf(this.review(), this.words(), this.totalFixes()))
+  readonly scoreNote = computed(() => scoreNote(this.checklistTotal(), this.words().one))
+
+  /** Scrolls to one resource's block. */
+  jumpTo(contentId: string): void {
+    document.getElementById(`air-res-${contentId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  /** Opens an issue in place: the resource at its moment or page, with the finding and fix. */
+  openIssue(x: Issue): void {
+    this.evidence()?.open({
+      item: this.latest(x.item),
+      code: x.id,
+      source: ISSUE_SOURCES[x.source],
+      title: x.what,
+      verdict: x.tone,
+      notes: x.finding ? x.finding.split('\n') : [],
+      fix: x.fix || undefined,
+      at: x.place.at,
+      atSec: x.place.atSec,
+      page: x.place.page,
+    })
+  }
+
+  /** Which coverage statuses the list shows. */
+  readonly coverageFilter = signal<'all' | 'missing' | 'partial' | 'covered'>('all')
+  readonly coverageShown = computed(() => {
+    const f = this.coverageFilter()
+    const rows = this.summary()?.coverage || []
+    return f === 'all' ? rows : rows.filter(r => r.status === f)
   })
+  /** Every AI call, by resource, provider, model and step; null when the service sends only totals. */
+  readonly costs = computed(() => costBreakdown(this.review()))
+  /** The review's estimate, which an older service sends as a string. */
+  readonly estimateUsd = computed(() => Number(this.review().estimateUsd) || 0)
+  readonly stepLabel = stepLabel
+  readonly providerLabel = providerLabel
+  readonly tokensLabel = tokensLabel
+  readonly usd = usd
+
+  /** Opens one resource's evidence for a course-level coverage component. */
+  openCoverageSource(component: string, contentId: string): void {
+    const src = (this.coverageDetail().get(component) || []).find(x => x.item.contentId === contentId)
+    if (src) {
+      this.openCoverage(src.item, src.row)
+    }
+  }
 
   /** Resources whose full indicator list is open. */
   private readonly expanded = signal<ReadonlySet<string>>(new Set())
@@ -188,18 +239,6 @@ export class AiReviewReportComponent {
       at: indicator.at,
       atSec: indicator.atSec,
       page: indicator.page,
-    })
-  }
-
-  openQuestion(item: IAiReviewItem, question: IAiReviewQuestionFinding): void {
-    this.evidence()?.open({
-      item: this.latest(item),
-      code: `Q${question.n}`,
-      source: 'Question check',
-      title: question.question,
-      verdict: question.verdict,
-      notes: question.issues,
-      fix: question.fix,
     })
   }
 

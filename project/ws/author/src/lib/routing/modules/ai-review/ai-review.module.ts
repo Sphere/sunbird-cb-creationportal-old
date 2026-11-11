@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { NgModule } from '@angular/core'
+import { NgModule, inject } from '@angular/core'
+import { ConfigurationsService } from '@ws-widget/utils'
 import { RouterModule, Routes } from '@angular/router'
 import { AiReviewFilesPageComponent } from './components/ai-review-files-page/ai-review-files-page.component'
 import { AiReviewPageComponent } from './components/ai-review-page/ai-review-page.component'
@@ -12,6 +13,7 @@ import { AirReviewRunComponent } from './components/air-review-run/air-review-ru
 import { AirRoleCheckComponent } from './components/air-role-check/air-role-check.component'
 import { AirSelectComponent } from './components/air-select/air-select.component'
 import { AiReviewService } from './services/ai-review.service'
+import { AIR_VIEWER } from './utils/review-run'
 
 /**
  * /author/ai-review/files — the user's own files; /author/ai-review/:courseId — a course.
@@ -40,6 +42,23 @@ const routes: Routes = [
     AirSelectComponent,
   ],
   imports: [CommonModule, RouterModule.forChild(routes)],
-  providers: [AiReviewService],
+  providers: [
+    AiReviewService,
+    {
+      // Who is signed in, read when needed (the profile loads after sign-in).
+      provide: AIR_VIEWER,
+      useFactory: () => {
+        const config = inject(ConfigurationsService)
+        return () => {
+          const p = config.userProfile
+          if (!p || !p.userId) {
+            return null
+          }
+          const name = [p.firstName, p.lastName].filter(Boolean).join(' ').trim() || (p.userName || '').trim()
+          return { id: p.userId, name }
+        }
+      },
+    },
+  ],
 })
 export class AiReviewModule {}

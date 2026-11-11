@@ -27,7 +27,7 @@
           >
             <span class="air-step-dot">
               @if (i < currentStepIndex()) {
-                <ws-auth-air-icon name="check" [size]="16" />
+                <ws-auth-air-icon name="check" [size]="13" />
               } @else {
                 {{ i + 1 }}
               }
@@ -36,14 +36,6 @@
           </li>
         }
       </ol>
-    </div>
-
-    <!-- One calm orb with a soft glow and a single slow ring; decoration only. -->
-    <div class="air-hero-art" [class.air-hero-art--busy]="isRunning()" aria-hidden="true">
-      <span class="air-orb-glow"></span>
-      <span class="air-orb-track"></span>
-      <span class="air-orb-ring"></span>
-      <span class="air-orb"><ws-auth-air-icon name="sparkle" [size]="30" /></span>
     </div>
   </header>
 
@@ -101,7 +93,7 @@
 
       <!-- Step 1: set up -->
       @if (!review() && !following() && preview(); as p) {
-        <section class="air-card">
+        <section class="air-card" id="air-resources">
           <div class="air-card-head">
             <h2 class="air-section-title" id="air-step-heading" tabindex="-1">
               <span class="air-num">1</span> <ng-container i18n>What will be reviewed</ng-container>
@@ -118,55 +110,91 @@
           @if (measuring()) {
             <ws-auth-air-busy
               class="air-measuring"
-              label="Counting the pages and questions"
-              detail="So each resource shows its size and the estimate uses it"
+              label="Checking each file"
+              detail="Pages, questions, and whether each video has sound, so the estimate is right and nothing is reviewed that cannot be"
               [typicalSec]="20"
             />
           }
           @if (reviewable().length) {
+            <!-- Choose what to review: everything is ticked; untick to leave a resource out. -->
+            <div class="air-pick-bar">
+              <span class="air-pick-count" aria-live="polite">
+                @if (allSelected()) {
+                  <ng-container i18n>All {{ reviewable().length }} resources will be reviewed</ng-container>
+                } @else {
+                  <ng-container i18n>{{ selected().length }} of {{ reviewable().length }} resources will be reviewed</ng-container>
+                }
+              </span>
+              <span class="air-pick-actions">
+                <button type="button" class="air-link-btn" [disabled]="allSelected()" (click)="selectAll(true)" i18n>Select all</button>
+                <span class="air-pick-sep" aria-hidden="true">·</span>
+                <button type="button" class="air-link-btn" [disabled]="!selected().length" (click)="selectAll(false)" i18n>Clear</button>
+              </span>
+            </div>
             <ul class="air-resource-list">
               @for (res of reviewable(); track res.contentId) {
-                <li class="air-resource">
-                  <span class="air-kind-tile air-kind-tile--{{ kindOf(res) }}"
-                    ><ws-auth-air-icon [name]="kindMeta(kindOf(res)).icon"
-                  /></span>
-                  <span class="air-resource-text">
-                    <span class="air-resource-name">{{ res.name }}</span>
-                    <span class="air-kind-line">
-                      {{ kindLine(kindOf(res), res.mimeType) }}
-                      @if (res.path.length) {
-                        · {{ res.path.join(' › ') }}
+                <li>
+                  <label class="air-resource air-resource--pick" [class.air-resource--left-out]="!isSelected(res.contentId)">
+                    <input
+                      type="checkbox"
+                      class="air-check"
+                      [checked]="isSelected(res.contentId)"
+                      (change)="toggleResource(res.contentId, $any($event.target).checked)"
+                      [attr.aria-label]="'Review ' + res.name"
+                    />
+                    <span class="air-kind-tile air-kind-tile--{{ kindOf(res) }}"
+                      ><ws-auth-air-icon [name]="kindMeta(kindOf(res)).icon"
+                    /></span>
+                    <span class="air-resource-text">
+                      <span class="air-resource-name">{{ res.name }}</span>
+                      <span class="air-kind-line">
+                        {{ kindLine(kindOf(res), res.mimeType) }}
+                        @if (res.path.length) {
+                          · {{ res.path.join(' › ') }}
+                        }
+                      </span>
+                    </span>
+                    @if (res.level) {
+                      <span class="air-level-tag" i18n>Level {{ res.level }}</span>
+                    }
+                    @if (reused().get(res.contentId); as reviewedAt) {
+                      <span
+                        class="air-reused"
+                        [title]="
+                          'Unchanged since its review on ' + (reviewedAt | date: 'medium') + '. That result is shown again, at no cost.'
+                        "
+                      >
+                        <ws-auth-air-icon name="history" [size]="14" />
+                        <ng-container i18n>Unchanged · reviewed {{ reviewedAt | date: 'MMM d' }}</ng-container>
+                      </span>
+                    }
+                    @if (kindOf(res) === 'video') {
+                      @if (res.durationSec) {
+                        <span class="air-duration" title="Video length">{{ formatDuration(res.durationSec) }}</span>
+                      }
+                    } @else if (sizeLabel(res.contentId); as size) {
+                      <span class="air-duration" [title]="'Everything is read: ' + size">{{ size }}</span>
+                    } @else if (sizeUnknown(res.contentId)) {
+                      <span
+                        class="air-duration air-duration--counting"
+                        title="It will still be reviewed in full; the estimate assumes a typical size."
+                        i18n
+                        >Couldn't count</span
+                      >
+                    }
+                    <!-- Its estimated cost with the reviews chosen below; nothing when left out. -->
+                    <span class="air-cost" [class.air-cost--off]="!isSelected(res.contentId)">
+                      @if (!isSelected(res.contentId)) {
+                        <ng-container i18n>Left out</ng-container>
+                      } @else if (resourceCost(res); as usd) {
+                        ~{{ usd | currency: 'USD' : 'symbol' : '1.2-2' }}
+                      } @else if (resourceCost(res) === 0) {
+                        <ng-container i18n>No cost</ng-container>
+                      } @else {
+                        —
                       }
                     </span>
-                  </span>
-                  @if (res.level) {
-                    <span class="air-level-tag" i18n>Level {{ res.level }}</span>
-                  }
-                  @if (reused().get(res.contentId); as reviewedAt) {
-                    <span
-                      class="air-reused"
-                      [title]="
-                        'Unchanged since its review on ' + (reviewedAt | date: 'medium') + '. That result is shown again, at no cost.'
-                      "
-                    >
-                      <ws-auth-air-icon name="history" [size]="14" />
-                      <ng-container i18n>Unchanged · reviewed {{ reviewedAt | date: 'MMM d' }}</ng-container>
-                    </span>
-                  }
-                  @if (kindOf(res) === 'video') {
-                    @if (res.durationSec) {
-                      <span class="air-duration" title="Video length">{{ formatDuration(res.durationSec) }}</span>
-                    }
-                  } @else if (sizeLabel(res.contentId); as size) {
-                    <span class="air-duration" [title]="'Everything is read: ' + size">{{ size }}</span>
-                  } @else if (sizeUnknown(res.contentId)) {
-                    <span
-                      class="air-duration air-duration--counting"
-                      title="It will still be reviewed in full; the estimate assumes a typical size."
-                      i18n
-                      >Couldn't count</span
-                    >
-                  }
+                  </label>
                 </li>
               }
             </ul>
@@ -174,6 +202,27 @@
             <div class="air-empty">
               <ws-auth-air-icon name="document" [size]="28" />
               <p i18n>No resource in this course can be reviewed yet. Add a video, PDF, quiz or assessment, then come back.</p>
+            </div>
+          }
+          @if (silentVideos().length) {
+            <div class="air-nosound" role="note">
+              <span class="air-nosound-icon" aria-hidden="true"><ws-auth-air-icon name="warning" [size]="20" /></span>
+              <div class="air-nosound-body">
+                <p class="air-nosound-title" i18n>
+                  {silentVideos().length, plural, =1 {1 video has no sound} other {{{ silentVideos().length }} videos have no sound}}
+                </p>
+                <p class="air-nosound-text" i18n>
+                  {silentVideos().length, plural, =1 {It will be} other {They will be}} reviewed on what
+                  {silentVideos().length, plural, =1 {it shows} other {they show}}: the pictures and on-screen text. There is no narration
+                  to check, so learners only get what is on screen. If they need a spoken explanation, add a voice-over and upload the new
+                  video.
+                </p>
+                <ul class="air-nosound-list">
+                  @for (v of silentVideos(); track $index) {
+                    <li><ws-auth-air-icon name="video" [size]="14" /> {{ v.name }}</li>
+                  }
+                </ul>
+              </div>
             </div>
           }
           @if (notReviewable().length) {
@@ -199,7 +248,7 @@
         <section class="air-card">
           <h2 class="air-section-title"><span class="air-num">2</span> <ng-container i18n>About the learners</ng-container></h2>
           <div class="air-field-row">
-            <div class="air-field">
+            <div class="air-field" id="air-audience">
               <span class="air-label" id="air-audience-label"
                 ><ng-container i18n>Audience</ng-container> <span class="air-required">*</span></span
               >
@@ -218,15 +267,6 @@
                 <span class="air-hint" i18n>Pick a position from the list or type your own. Used to judge tone and fit.</span>
               }
             </div>
-            <div class="air-field air-field--narrow">
-              <span class="air-label" id="air-language-label" i18n>Spoken language</span>
-              <ws-auth-air-select
-                labelledBy="air-language-label"
-                [options]="languageOptions"
-                [value]="language()"
-                (valueChange)="language.set($any($event))"
-              />
-            </div>
           </div>
           <label class="air-field">
             <span class="air-label" i18n>Anything the reviewer should know (optional)</span>
@@ -238,6 +278,10 @@
               [value]="context()"
               (input)="context.set($any($event.target).value)"
             ></textarea>
+            <span class="air-hint" i18n
+              >What the content itself does not show, so it is not marked down unfairly: where it was filmed, what another module covers, a
+              local protocol you follow. Only the AI reviewers read it.</span
+            >
             <span class="air-hint air-hint--right">{{ context().length }}/1200</span>
           </label>
         </section>
@@ -266,7 +310,9 @@
                   >A subject expert judges the content against the competency and level chosen below.</span
                 >
                 @if (!canJudge()) {
-                  <span class="air-choice-why air-small" i18n>Add a competency in Course Settings to turn this on.</span>
+                  <span class="air-choice-why air-small" i18n
+                    >Add a competency in Course Details (the Competencies card) to turn this on.</span
+                  >
                 } @else if (!competencies().length) {
                   <span class="air-choice-why air-small" i18n>This course has no competency set — pick one below to judge against.</span>
                 }
@@ -306,7 +352,8 @@
               }
               <p class="air-brief-text">{{ b.description }}</p>
               <span class="air-hint" i18n
-                >From Course Settings (name, subtitle and Course Description). Change them there to check against other words.</span
+                >From Course Details: the name and subtitle (Basic Information) and the Course Description. Change them there to check
+                against other words.</span
               >
             </div>
           }
@@ -392,47 +439,64 @@
               <!-- Who the content is judged for: the audience chosen above, passed to the expert as the cadre. -->
               <p class="air-positions">
                 <span class="air-muted" i18n>Judged for</span>
-                <span class="air-pos">{{ judgedFor() }}</span>
-                @if (position()) {
+                @if (audience().trim()) {
+                  <span class="air-pos">{{ judgedFor() }}</span>
+                } @else {
+                  <span class="air-pos air-pos--empty" i18n>Not picked yet</span>
+                }
+                @if (!audience().trim()) {
+                  <span class="air-muted air-small" i18n>(pick it in Audience above)</span>
+                } @else if (position() && fracEnabled) {
                   <span class="air-muted air-small" i18n>(FRAC position, from Audience above)</span>
                 } @else {
                   <span class="air-muted air-small" i18n>(from Audience above)</span>
                 }
               </p>
-              <fieldset class="air-segment">
-                <legend class="air-label" i18n>Style</legend>
-                <label class="air-segment-option" [class.air-segment-option--on]="domainStyle() === 'plain'">
-                  <input
-                    type="radio"
-                    name="domainStyle"
-                    value="plain"
-                    [checked]="domainStyle() === 'plain'"
-                    (change)="domainStyle.set('plain')"
-                  />
-                  <strong i18n>Plain</strong>
-                  <span class="air-small" i18n>Does the content teach the level correctly, with accurate clinical practice?</span>
-                </label>
-                <label class="air-segment-option" [class.air-segment-option--on]="domainStyle() === 'frac'">
-                  <input
-                    type="radio"
-                    name="domainStyle"
-                    value="frac"
-                    [checked]="domainStyle() === 'frac'"
-                    (change)="domainStyle.set('frac')"
-                  />
-                  <strong i18n>FRAC</strong>
-                  @if (allMapped() || levelMode() === 'courseLevels') {
+              <!-- The Plain/FRAC choice: hidden while FRAC is not offered (utils/features.ts). -->
+              @if (fracEnabled) {
+                <fieldset class="air-segment">
+                  <legend class="air-label" i18n>How the subject expert judges it</legend>
+                  <label class="air-segment-option" [class.air-segment-option--on]="domainStyle() === 'plain'">
+                    <input
+                      type="radio"
+                      name="domainStyle"
+                      value="plain"
+                      [checked]="domainStyle() === 'plain'"
+                      (change)="domainStyle.set('plain')"
+                    />
+                    <strong i18n>Plain</strong>
                     <span class="air-small" i18n
-                      >A FRAC competency expert checks it is pitched within the mapped levels, not below or above them, and covers them
-                      fully.</span
+                      ><b>Is it correct?</b> A senior clinician checks it teaches what this level describes, with correct protocols,
+                      thresholds and steps for Indian public health, at the right depth for your audience and in their real work
+                      setting.</span
                     >
-                  } @else {
-                    <span class="air-small" i18n
-                      >A FRAC competency expert checks it is pitched at this level, not below or above it, and covers it fully.</span
-                    >
-                  }
-                </label>
-              </fieldset>
+                  </label>
+                  <label class="air-segment-option" [class.air-segment-option--on]="domainStyle() === 'frac'">
+                    <input
+                      type="radio"
+                      name="domainStyle"
+                      value="frac"
+                      [checked]="domainStyle() === 'frac'"
+                      (change)="domainStyle.set('frac')"
+                    />
+                    <strong i18n>FRAC</strong>
+                    @if (allMapped() || levelMode() === 'courseLevels') {
+                      <span class="air-small" i18n
+                        ><b>Is it pitched right for the role?</b> A FRAC expert checks it sits within the mapped levels (not below or above
+                        them), stays within them, and prepares the position for its FRAC activities (when it has none for this competency:
+                        suits your audience). Says which level it really fits. It also checks protocols, thresholds and doses are
+                        correct.</span
+                      >
+                    } @else {
+                      <span class="air-small" i18n
+                        ><b>Is it pitched right for the role?</b> A FRAC expert checks it sits at this level (not below or above), stays
+                        within it, and prepares the position for its FRAC activities (when it has none for this competency: suits your
+                        audience). Says which level it really fits. It also checks protocols, thresholds and doses are correct.</span
+                      >
+                    }
+                  </label>
+                </fieldset>
+              }
               <ws-auth-air-role-check
                 [domainStyle]="domainStyle()"
                 [positionName]="position()?.name || null"
@@ -443,42 +507,36 @@
               />
             </div>
           }
-
-          @if (hasVideos()) {
-            <label class="air-switch">
-              <input
-                type="checkbox"
-                role="switch"
-                [checked]="watch()"
-                [attr.aria-checked]="watch()"
-                (change)="watch.set($any($event.target).checked)"
-              />
-              <span class="air-switch-track" aria-hidden="true"></span>
-              <span class="air-switch-text">
-                <span i18n>Watch videos in full</span>
-                <span class="air-muted air-small" i18n
-                  >The AI also watches each video in motion, to judge demonstrations and technique. Takes a little longer. PDFs, quizzes and
-                  assessments are always read in full.</span
-                >
-              </span>
-            </label>
-          }
         </section>
 
         <section class="air-launch">
           @if (validationMessage()) {
-            <p class="air-warning" role="status"><ws-auth-air-icon name="warning" [size]="18" /> {{ validationMessage() }}</p>
+            <p class="air-warning" role="status">
+              <ws-auth-air-icon name="warning" [size]="18" /> <span>{{ validationMessage() }}</span>
+              @if (fix(); as f) {
+                <button type="button" class="air-link-btn air-warning-fix" (click)="goTo(f.id)">{{ f.label }} →</button>
+              }
+            </p>
           }
           @if (startError()) {
             <p class="air-error" role="alert">{{ startError() }}</p>
           }
           <div class="air-launch-row">
             <div class="air-launch-meta">
-              <span class="air-launch-count"
-                ><ng-container i18n
-                  >{reviewable().length, plural, =1 {1 resource} other {{{ reviewable().length }} resources}} ready to review</ng-container
-                ></span
-              >
+              <span class="air-launch-count">
+                @if (selected().length === reviewable().length) {
+                  <ng-container i18n
+                    >{selected().length, plural, =1 {1 resource} other {{{ selected().length }} resources}} ready to review</ng-container
+                  >
+                } @else {
+                  <ng-container i18n>{{ selected().length }} of {{ reviewable().length }} resources ready to review</ng-container>
+                }
+                @if (reviewable().length > 1) {
+                  <button type="button" class="air-link-btn air-launch-change" (click)="goTo('air-resources')" i18n>
+                    Change selection
+                  </button>
+                }
+              </span>
               @if (estimateUsd()) {
                 <span class="air-muted air-small" aria-live="polite" i18n
                   >Estimated AI cost: about {{ estimateUsd() | currency: 'USD' }}</span
@@ -486,7 +544,7 @@
               }
               @if (reusedCount()) {
                 <span class="air-muted air-small" aria-live="polite">
-                  @if (reusedCount() === reviewable().length) {
+                  @if (reusedCount() === selected().length) {
                     <ng-container i18n
                       >Nothing has changed since the last review with these settings — its results are shown again, at no
                       cost.</ng-container
@@ -558,31 +616,35 @@
                   [attr.aria-current]="review()?.id === h.id ? 'true' : null"
                   (click)="follow(h.id)"
                 >
-                  <span class="air-history-row">
-                    <span class="air-history-date">{{ h.createdAt | date: 'MMM d, h:mm a' }}</span>
-                    <span class="air-chip air-chip--sm air-chip--{{ h.status }}">{{ statusLabel(h.status) }}</span>
-                  </span>
-                  @if (h.summary) {
-                    <span class="air-history-scores">
-                      @if (h.summary.addie && h.summary.addie.scorePct !== null) {
-                        <span
-                          class="air-mini air-mini--{{ h.summary.addie.band }}"
-                          [attr.title]="'ADDIE checklist: ' + h.summary.addie.scorePct + '% of the quality indicators that apply are met'"
-                          >ADDIE {{ h.summary.addie.scorePct }}%</span
-                        >
-                      }
-                      @if (h.summary.domain; as d) {
-                        <span
-                          class="air-mini air-mini--violet"
-                          [attr.title]="'Domain review: ' + d.yes + ' of ' + d.applicable + ' subject-expert checks met'"
-                          >Domain {{ d.yes }}/{{ d.applicable }} met</span
-                        >
-                      }
+                  <span class="air-history-ico" aria-hidden="true"><ws-auth-air-icon name="sparkle" [size]="16" /></span>
+                  <span class="air-history-body">
+                    <span class="air-history-row">
+                      <span class="air-history-date">{{ h.createdAt | date: 'MMM d, h:mm a' }}</span>
+                      <span class="air-chip air-chip--sm air-chip--{{ h.status }}">{{ statusLabel(h.status) }}</span>
                     </span>
-                  }
-                  @if (h.requestedBy.name) {
-                    <span class="air-muted air-small">{{ h.requestedBy.name }}</span>
-                  }
+                    @if (h.summary) {
+                      <span class="air-history-scores">
+                        @if (h.summary.addie && h.summary.addie.scorePct !== null) {
+                          <span
+                            class="air-mini air-mini--{{ h.summary.addie.band }}"
+                            [attr.title]="'CBP checklist: ' + h.summary.addie.scorePct + '% of the quality indicators that apply are met'"
+                            >CBP {{ h.summary.addie.scorePct }}%</span
+                          >
+                        }
+                        @if (h.summary.domain; as d) {
+                          <span
+                            class="air-mini air-mini--violet"
+                            [attr.title]="'Domain review: ' + d.yes + ' of ' + d.applicable + ' domain checks met'"
+                            >Domain {{ d.yes }}/{{ d.applicable }}</span
+                          >
+                        }
+                      </span>
+                    }
+                    @if (startedBy(h); as who) {
+                      <span class="air-muted air-small">{{ who }}</span>
+                    }
+                  </span>
+                  <span class="air-history-go" aria-hidden="true"><ws-auth-air-icon name="arrowRight" [size]="16" /></span>
                 </button>
               </li>
             }
