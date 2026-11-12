@@ -50,7 +50,7 @@
         <input
           class="module-input"
           type="search"
-          placeholder="Search by course or review name"
+          placeholder="Search by name or competency"
           [value]="query()"
           (input)="query.set($any($event.target).value)"
         />
@@ -96,12 +96,7 @@
       <ul class="air-past-list">
         @for (r of shown(); track r.id) {
           <li>
-            <button
-              type="button"
-              class="air-past-row"
-              (click)="open(r)"
-              [attr.aria-label]="'Open the AI review of ' + (r.name || 'this review')"
-            >
+            <button type="button" class="air-past-row" (click)="open(r)" [attr.aria-label]="rowLabel(r)">
               <span class="air-past-thumb" [class.air-past-thumb--files]="r.source === 'upload'">
                 @if (r.thumbnail && !brokenThumbs().has(r.id)) {
                   <img [src]="r.thumbnail" alt="" loading="lazy" (error)="thumbFailed(r.id)" />
@@ -125,6 +120,9 @@
                     @if (r.summary.domain; as d) {
                       <span class="air-mini air-mini--violet">Domain {{ d.yes }}/{{ d.applicable }}</span>
                     }
+                  }
+                  @for (j of r.judgedAgainst ?? []; track j.code + j.label) {
+                    <span class="air-mini air-mini--competency" [attr.title]="competencyInFull(j)">{{ competencyChip(j) }}</span>
                   }
                 </span>
                 <span class="air-past-meta">

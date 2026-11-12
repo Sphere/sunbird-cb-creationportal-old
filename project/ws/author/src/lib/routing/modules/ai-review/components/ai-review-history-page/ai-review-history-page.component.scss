@@ -188,6 +188,13 @@
     padding: 2px 9px;
     white-space: nowrap;
   }
+
+  // What it was judged against: the setup's teal "Judged against" card, as a chip.
+  .air-mini--competency {
+    border-color: rgba(15, 118, 110, 0.25);
+    background: #e6f6f4;
+    color: #0f766e;
+  }
 }
 
 // A review still running: the dot breathes, as on the progress screen.

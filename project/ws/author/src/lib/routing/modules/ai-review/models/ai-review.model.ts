@@ -452,8 +452,19 @@ export interface IAiReviewPastReview {
   requestedBy: { id: string; name: string | null }
   progress: { done: number; total: number }
   summary: IAiReviewCourseSummary | null
+  /** The competencies and levels it was judged against; [] for checklist only. Absent from an older service. */
+  judgedAgainst?: IAiReviewJudgedAgainst[]
   createdAt: string
   finishedAt: string | null
+}
+
+/** One competency a review was judged against, at its levels. */
+export interface IAiReviewJudgedAgainst {
+  code: string
+  label: string
+  levels: number[]
+  /** The level's own name, when the review was judged at one level. */
+  levelLabel: string | null
 }
 
 /** The service's error body: `{ error: { code, message } }`. */

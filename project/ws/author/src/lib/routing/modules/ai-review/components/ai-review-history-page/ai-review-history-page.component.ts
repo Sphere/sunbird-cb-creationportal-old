@@ -1,13 +1,34 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Router } from '@angular/router'
-import { AiReviewSource, IAiReviewPastReview } from '../../models/ai-review.model'
+import { AiReviewSource, IAiReviewJudgedAgainst, IAiReviewPastReview } from '../../models/ai-review.model'
 import { AiReviewService } from '../../services/ai-review.service'
 import { statusLabel } from '../../utils/review-run'
 import { AI_REVIEW_NEW, aiReviewCourse } from '../../utils/routes'
 
 /** What the list shows: every review, or only one kind. */
 export type PastReviewFilter = 'all' | AiReviewSource
+
+/** "Level 4", "Levels 1–3" when consecutive, else "Levels 1, 3". */
+export function levelsWords(levels: readonly number[]): string {
+  const l = [...new Set(levels)].sort((a, b) => a - b)
+  if (!l.length) return ''
+  if (l.length === 1) return `Level ${l[0]}`
+  const consecutive = l.every((v, i) => i === 0 || v === l[i - 1] + 1)
+  return consecutive ? `Levels ${l[0]}–${l[l.length - 1]}` : `Levels ${l.join(', ')}`
+}
+
+/** The chip: "C18 · Level 4" (the label stands in when there is no code). */
+export function competencyChip(j: IAiReviewJudgedAgainst): string {
+  return [j.code || j.label, levelsWords(j.levels)].filter(Boolean).join(' · ')
+}
+
+/** In full, for the tooltip and screen readers: "C18 Awareness on basket of choice, Level 4: Screens client". */
+export function competencyInFull(j: IAiReviewJudgedAgainst): string {
+  const name = [j.code, j.label].filter(Boolean).join(' ')
+  const level = levelsWords(j.levels)
+  return [name, level && (j.levelLabel ? `${level}: ${j.levelLabel}` : level)].filter(Boolean).join(', ')
+}
 
 /**
  * Past reviews ("AI Review" > "Past reviews" in My Workspace): every review this account started, of courses and of its own files, newest
@@ -44,9 +65,20 @@ export class AiReviewHistoryPageComponent implements OnInit {
   readonly shown = computed(() => {
     const q = this.query().trim().toLowerCase()
     return this.reviews().filter(
-      r => (this.filter() === 'all' || r.source === this.filter()) && (!q || (r.name || '').toLowerCase().includes(q)),
+      r =>
+        (this.filter() === 'all' || r.source === this.filter()) &&
+        (!q || [r.name, ...(r.judgedAgainst ?? []).flatMap(j => [j.code, j.label])].some(t => (t || '').toLowerCase().includes(q))),
     )
   })
+
+  readonly competencyChip = competencyChip
+  readonly competencyInFull = competencyInFull
+
+  /** The row's name for screen readers, with what it was judged against. */
+  rowLabel(r: IAiReviewPastReview): string {
+    const judged = (r.judgedAgainst ?? []).map(competencyInFull).join('; ')
+    return `Open the AI review of ${r.name || 'this review'}${judged ? `, judged against ${judged}` : ''}`
+  }
 
   readonly tabs: { id: PastReviewFilter; label: string }[] = [
     { id: 'all', label: 'All' },

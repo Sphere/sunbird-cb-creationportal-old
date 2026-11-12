@@ -5,7 +5,7 @@ import { Router } from '@angular/router'
 import { of, throwError } from 'rxjs'
 import { IAiReviewPastReview } from '../../models/ai-review.model'
 import { AiReviewService } from '../../services/ai-review.service'
-import { AiReviewHistoryPageComponent } from './ai-review-history-page.component'
+import { AiReviewHistoryPageComponent, competencyChip, competencyInFull, levelsWords } from './ai-review-history-page.component'
 
 const entry = (over: Partial<IAiReviewPastReview> = {}): IAiReviewPastReview => ({
   id: 'r1',
@@ -79,6 +79,42 @@ describe('AiReviewHistoryPageComponent', () => {
     fixture.detectChanges()
     expect(el().textContent).toContain('No reviews match')
     expect(c.countOf('all')).toBe(3)
+  })
+
+  it('shows the competency code and level each review was judged against, and finds by them', () => {
+    const basket = { code: 'C18', label: 'Awareness on basket of choice', levels: [4], levelLabel: 'Screens client' }
+    start([
+      entry({ judgedAgainst: [basket] }),
+      entry({
+        id: 'r2',
+        name: 'Newborn care',
+        judgedAgainst: [{ code: 'C7', label: 'Newborn care', levels: [1, 2, 3], levelLabel: null }],
+      }),
+      // Checklist only, and an older service that sends no field.
+      entry({ id: 'r3', name: 'No competency', judgedAgainst: [] }),
+      entry({ id: 'r4', name: 'Older service' }),
+    ])
+    const chips = Array.from(el().querySelectorAll('.air-mini--competency'))
+    expect(chips.map(x => x.textContent!.trim())).toEqual(['C18 · Level 4', 'C7 · Levels 1–3'])
+    expect(chips[0].getAttribute('title')).toBe('C18 Awareness on basket of choice, Level 4: Screens client')
+    const row = el().querySelector('button.air-past-row')!
+    expect(row.getAttribute('aria-label')).toBe(
+      'Open the AI review of Pregnancy identification, judged against C18 Awareness on basket of choice, Level 4: Screens client',
+    )
+    expect(el().querySelectorAll('button.air-past-row')[3].getAttribute('aria-label')).toBe('Open the AI review of Older service')
+    c.query.set('c18')
+    expect(c.shown().map(r => r.id)).toEqual(['r1'])
+    c.query.set('basket of choice')
+    expect(c.shown().map(r => r.id)).toEqual(['r1'])
+  })
+
+  it('words levels and competencies', () => {
+    expect(levelsWords([])).toBe('')
+    expect(levelsWords([5])).toBe('Level 5')
+    expect(levelsWords([3, 1, 2])).toBe('Levels 1–3')
+    expect(levelsWords([1, 3])).toBe('Levels 1, 3')
+    expect(competencyChip({ code: '', label: 'Basket', levels: [2], levelLabel: null })).toBe('Basket · Level 2')
+    expect(competencyInFull({ code: 'C7', label: 'ANC', levels: [1, 3], levelLabel: null })).toBe('C7 ANC, Levels 1, 3')
   })
 
   it("opens a course review on its course's page, and a file review on the files page", () => {

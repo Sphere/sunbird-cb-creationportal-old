@@ -123,6 +123,24 @@ export function keepBlocksWhole(root: HTMLElement, pageHeight: number = PAGE.hei
   return pushed
 }
 
+/**
+ * html2canvas finds where text sits by laying a 1x1 image beside a line of sample text and
+ * reading the image's offset. The portal's Tailwind base styles make every `img` a block, so
+ * that image drops below the text and every line of the PDF was drawn about a line too low:
+ * text sank under its pills, header rows and heading rules. While the PDF is drawn, this puts
+ * only html2canvas's own measuring image back inline (it is matched by its exact source, so no
+ * image of the portal is touched). Returns the undo.
+ */
+export const HTML2CANVAS_PROBE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+
+export function keepTextOnItsBaseline(doc: Document): () => void {
+  const style = doc.createElement('style')
+  style.setAttribute('data-air-pdf', 'baseline')
+  style.textContent = `img[src="${HTML2CANVAS_PROBE}"]{display:inline !important;vertical-align:baseline !important}`
+  doc.head.appendChild(style)
+  return () => style.remove()
+}
+
 interface Html2Pdf extends PromiseLike<unknown> {
   set(options: Record<string, unknown>): Html2Pdf
   from(source: HTMLElement): Html2Pdf
@@ -159,6 +177,20 @@ export async function downloadReportPdf(
   }
   el.style.position = ''
   el.style.left = ''
+  const restore = keepTextOnItsBaseline(doc)
+  try {
+    await drawAndSave(html2pdf, el, review, onStep)
+  } finally {
+    restore()
+  }
+}
+
+async function drawAndSave(
+  html2pdf: () => Html2Pdf,
+  el: HTMLElement,
+  review: IAiReview,
+  onStep: (step: ExportStep) => void,
+): Promise<void> {
   const worker = html2pdf()
     .set({
       margin: [MARGIN.top, MARGIN.right, MARGIN.bottom, MARGIN.left],
