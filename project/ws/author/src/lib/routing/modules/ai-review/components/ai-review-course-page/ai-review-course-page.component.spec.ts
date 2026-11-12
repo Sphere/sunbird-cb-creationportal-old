@@ -482,6 +482,19 @@ describe('AiReviewCoursePageComponent', () => {
       expect(api.get).toHaveBeenCalledWith('r9')
     })
 
+    it("never shows another course's review, or a file review, under this course", () => {
+      query = { review: 'r9' }
+      api.get.mockReturnValue(of(review({ status: 'done', courseId: 'do_other' })))
+      const c = create()
+      c.ngOnInit()
+      expect(c.review()).toBeNull()
+      expect(c.pollError()).toMatch(/different course/)
+      api.get.mockReturnValue(of(review({ status: 'done', courseId: null, source: 'upload' })))
+      c.follow('r10')
+      expect(c.review()).toBeNull()
+      expect(c.pollError()).toMatch(/uploaded files/)
+    })
+
     it('updates the estimate as options are switched', () => {
       const est = { base: 0.01, addie: 0.04, domain: 0.09, watch: 0.03 }
       api.preview.mockReturnValue(
@@ -850,6 +863,23 @@ describe('AiReviewCoursePageComponent', () => {
       c.retryFollow()
       expect(api.get).not.toHaveBeenCalled()
       expect(router.navigate).toHaveBeenLastCalledWith([], expect.objectContaining({ queryParams: { review: null } }))
+    })
+
+    it('starts another review with the resources the last one left out still left out', () => {
+      const pdf = { ...preview().resources[1], reviewable: true, kind: 'pdf', skipReason: null }
+      api.preview.mockReturnValue(of(preview({ resources: [preview().resources[0], pdf] })))
+      const items = [
+        { contentId: 'do_v', name: 'BP video', kind: 'video', status: 'done', stage: null, skipReason: null, error: null, result: null },
+      ]
+      api.get.mockReturnValue(
+        of(review({ status: 'done', options: { watch: false, addie: true } as IAiReview['options'], items: items as never })),
+      )
+      const c = create()
+      c.ngOnInit()
+      c.follow('r1')
+      c.newReview()
+      expect(c.excluded().has('do_p')).toBe(true)
+      expect(c.excluded().has('do_v')).toBe(false)
     })
 
     it('goes back to the course page', () => {

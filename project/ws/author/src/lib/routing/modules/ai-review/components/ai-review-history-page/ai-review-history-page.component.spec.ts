@@ -67,6 +67,14 @@ describe('AiReviewHistoryPageComponent', () => {
     expect(rows[0]).toContain('Open report')
   })
 
+  it('says when the list is full, so older reviews are not taken as gone', () => {
+    start([entry()])
+    expect(el().textContent).not.toContain('Showing your latest')
+    TestBed.resetTestingModule()
+    start(Array.from({ length: 50 }, (_, i) => entry({ id: `r${i}` })))
+    expect(el().textContent).toContain('Showing your latest 50 reviews.')
+  })
+
   it('filters by kind and finds by name', () => {
     start([entry(), entry({ id: 'r2', source: 'upload', courseId: null, name: 'BP drafts' }), entry({ id: 'r3', name: 'Newborn care' })])
     c.filter.set('upload')
@@ -139,8 +147,10 @@ describe('AiReviewHistoryPageComponent', () => {
     expect(course!.querySelector('img')!.getAttribute('src')).toBe('https://bucket/c.png')
     expect(course!.querySelector('.air-past-meta')!.textContent!.replace(/\s+/g, ' ')).toContain('Course·3 resources')
     expect(course!.textContent).toContain('By Asha')
+    // A review of files has no picture: a grey tile of the same shape, so titles line up.
     expect(files!.querySelector('img')).toBeNull()
-    expect(files!.querySelector('.air-past-thumb--files')).not.toBeNull()
+    expect(files!.querySelector('.air-past-thumb--files')!.getAttribute('aria-hidden')).toBe('true')
+    expect(course!.querySelector('.air-past-thumb:not(.air-past-thumb--files) img')).not.toBeNull()
   })
 
   it('shows the icon instead of a course picture that will not load', () => {

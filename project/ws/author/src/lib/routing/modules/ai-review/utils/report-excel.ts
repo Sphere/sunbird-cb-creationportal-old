@@ -1,7 +1,7 @@
 import type ExcelJSType from 'exceljs'
 import { IAiReview, IAiReviewAddie, IAiReviewAlignment, IAiReviewDomain, IAiReviewItem, isPassError } from '../models/ai-review.model'
 import { coverageSources, locateText, Place, placeLabel, placeLink } from './report-detail'
-import { buildWorkbookSheets, judgedAgainst, levelText, reportWords, roleSummary } from './report-export'
+import { buildWorkbookSheets, judgedAgainst, levelText, mediaNotes, reportWords, roleSummary } from './report-export'
 import { kindLine, kindMeta } from './resource-kind'
 import { costBreakdown, providerLabel, stepLabel } from './usage'
 import { checklistTotalOf, fixGroupsOf, inShortOf, scoreNote, scoreRowsOf } from './report-summary'
@@ -63,6 +63,41 @@ const TONE: Record<string, [string, string]> = {
   red: [C.red, C.redBg],
   Done: [C.green, C.greenBg],
   'Could not be reviewed': [C.red, C.redBg],
+  Covered: [C.green, C.greenBg],
+  'Pitched at the right level': [C.green, C.greenBg],
+  'Pitched below the level': [C.amber, C.amberBg],
+  'Pitched above the level': [C.amber, C.amberBg],
+  'Pitched at mixed levels': [C.amber, C.amberBg],
+  'Could not run': [C.red, C.redBg],
+}
+
+/** The words the screen and the PDF use, so the workbook reads the same. */
+const LEVEL_FIT_LABEL: Record<string, string> = {
+  fits: 'Pitched at the right level',
+  below: 'Pitched below the level',
+  above: 'Pitched above the level',
+  mixed: 'Pitched at mixed levels',
+}
+const COVERAGE_LABEL: Record<string, string> = { covered: 'Covered', partial: 'Partial', missing: 'Missing' }
+
+/** Why a resource was not (fully) reviewed: its own error and each check that could not run. */
+function problemsOf(item: IAiReviewItem): string {
+  const r = item.result
+  const passes: [string, unknown][] = [
+    ['Checklist', r?.addie],
+    ['Domain review', r?.domain],
+    ['Course alignment', r?.alignment],
+  ]
+  return [
+    item.error || '',
+    ...passes.filter(([, p]) => isPassError(p)).map(([label, p]) => `${label}: ${(p as { error: string }).error}`),
+    r?.questionsError ? `Question check: ${r.questionsError}` : '',
+    ...mediaNotes(item)
+      .filter(n => n.tone === 'error')
+      .map(n => n.text),
+  ]
+    .filter(Boolean)
+    .join('\n')
 }
 
 const VERDICT: Record<string, string> = { yes: 'Met', no: 'Not met', na: 'N/A' }
@@ -177,7 +212,12 @@ export async function buildExcelWorkbook(
           '',
         ])
         tone(row, 5)
-        link(row, 9, 'Open', x.source === 'question' || x.source === 'noSound' ? null : placeLink(x.item, x.place))
+        link(
+          row,
+          9,
+          'Open',
+          x.source === 'question' || x.source === 'answerKey' || x.source === 'noSound' ? null : placeLink(x.item, x.place),
+        )
       }
     }
   }
@@ -197,6 +237,7 @@ export async function buildExcelWorkbook(
     { header: 'Questions needing attention', width: 14 },
     { header: 'Checklist summary', width: 60 },
     { header: 'Domain summary', width: 60 },
+    { header: 'Could not run', width: 50 },
     { header: 'Cost (USD)', width: 11 },
     { header: 'Open', width: 10 },
   ])
@@ -211,19 +252,20 @@ export async function buildExcelWorkbook(
       item.status === 'done' ? 'Done' : 'Could not be reviewed',
       a ? (a.score.scorePct ?? '') : '',
       d ? `${d.score.yes}/${d.score.applicable}` : '',
-      d?.levelFit?.verdict || '',
+      d?.levelFit ? LEVEL_FIT_LABEL[d.levelFit.verdict] || d.levelFit.verdict : '',
       al ? FIT[al.verdict] || al.verdict : '',
       qs ? `${qs.filter(q => q.verdict === 'issue').length} of ${qs.length}` : '',
       a?.summary || '',
       d?.summary || '',
+      problemsOf(item),
       item.result?.costUsd ?? '',
       '',
     ])
     tone(row, 3)
     tone(row, 6)
     tone(row, 7)
-    row.getCell(11).numFmt = '$0.00'
-    link(row, 12, 'Open', placeLink(item))
+    row.getCell(12).numFmt = '$0.00'
+    link(row, 13, 'Open', placeLink(item))
   }
 
   // ---- Checklist: every verdict ----------------------------------------------------------
@@ -281,7 +323,7 @@ export async function buildExcelWorkbook(
         'Level fit',
         '',
         `Best fit: Level ${d.levelFit.bestFitLevel ?? '—'}`,
-        d.levelFit.verdict,
+        LEVEL_FIT_LABEL[d.levelFit.verdict] || d.levelFit.verdict,
         d.levelFit.rationale,
         '',
         '',
@@ -303,12 +345,22 @@ export async function buildExcelWorkbook(
           '',
         ])
         tone(row, 5)
-        link(row, 9, 'Open', placeLink(item, placeOf(i)))
+        link(row, 9, 'Open', i.verdict === 'na' ? null : placeLink(item, placeOf(i)))
       }),
     )
     d.coverage.forEach(c => {
       const place = locateText(c.evidence || '')
-      const row = addRow(domain, [item.name, 'Coverage', '', c.component, c.status, c.evidence, '', placeLabel(place), ''])
+      const row = addRow(domain, [
+        item.name,
+        'Coverage',
+        '',
+        c.component,
+        COVERAGE_LABEL[c.status] || c.status,
+        c.evidence,
+        '',
+        placeLabel(place),
+        '',
+      ])
       tone(row, 5)
       link(row, 9, 'Open', placeLink(item, place))
     })
@@ -324,7 +376,7 @@ export async function buildExcelWorkbook(
   for (const c of s?.coverage || []) {
     const sources = coverageSources(review, c.component)
     const evidence = sources.map(x => `${x.item.name} (${x.row.status}): ${x.row.evidence || '—'}`).join('\n')
-    const row = addRow(coverage, [c.component, c.status, c.coveredBy.join(', ') || '—', evidence])
+    const row = addRow(coverage, [c.component, COVERAGE_LABEL[c.status] || c.status, c.coveredBy.join(', ') || '—', evidence])
     tone(row, 2)
   }
 
@@ -346,8 +398,8 @@ export async function buildExcelWorkbook(
     })
     return ws
   }
-  copy('Questions', [30, 6, 60, 16, 60, 50], [4])
-  copy('Course alignment', [50, 30, 40, 50, 46])
+  copy('Questions', [30, 6, 60, 16, 60, 50, 18], [4])
+  copy('Course alignment', [16, 40, 16, 70, 46])
   copy('HTML packages', [34, 8, 8, 12, 8, 10, 30, 24])
 
   // ---- Costs: every AI call, while the service sends them ------------------------------------
@@ -425,13 +477,17 @@ export async function buildExcelWorkbook(
   const inShort = inShortOf(review, words, totalFixes)
   if (inShort.length) {
     const row = kv('In short', inShort.join('\n'))
-    row.height = 18 * inShort.length + 4
+    // Tall enough for the wrapped lines too (the column holds about 70 characters a line).
+    row.height = 16 * inShort.reduce((n, l) => n + Math.max(1, Math.ceil(l.length / 70)), 0) + 6
   }
   const checklistTotal = checklistTotalOf(review)
   if (s?.addie) {
     kv(
       'CBP / ADDIE checklist',
-      `${s.addie.scorePct ?? '—'}% · ${s.addie.yes} of ${s.addie.applicable} checks met${checklistTotal ? ` (${checklistTotal}-point checklist, added up over ${s.reviewed} ${s.reviewed === 1 ? words.one : words.many})` : ''} · ${s.addie.bandMessage || ''}`,
+      `${s.addie.scorePct ?? '—'}% · ${s.addie.yes} of ${s.addie.applicable} checks met${checklistTotal ? ` (${checklistTotal}-point checklist, added up over ${s.reviewed} ${s.reviewed === 1 ? words.one : words.many})` : ''}${
+        // With a course verdict the band message is left out, as on screen: the two can disagree.
+        !s.verdict && s.addie.bandMessage ? ` · ${s.addie.bandMessage}` : ''
+      }`,
       s.addie.band || undefined,
     )
   }
@@ -459,6 +515,17 @@ export async function buildExcelWorkbook(
       `${{ delivers: 'Delivers', partly: 'Partly delivers', does_not: 'Does not deliver' }[al.verdict]} what its description promises. ${al.summary}`,
       al.verdict === 'delivers' ? 'green' : al.verdict === 'partly' ? 'amber' : 'red',
     )
+  }
+  if (s?.alignment && isPassError(s.alignment)) {
+    kv('Course alignment', `Could not run: ${s.alignment.error}`, 'red')
+  }
+  if (review.error) {
+    kv('Review problem', review.error, 'red')
+  }
+  const notRun = items.map(i => ({ name: i.name, why: problemsOf(i) })).filter(x => x.why)
+  if (notRun.length) {
+    const row = kv('Not fully reviewed', notRun.map(x => `${x.name}: ${x.why.replace(/\n/g, '; ')}`).join('\n'), 'amber')
+    row.height = 32 * notRun.length + 4
   }
   if (s?.skipped.length) {
     kv('Left out of the review', s.skipped.map(k => `${k.name} (${k.reason})`).join('\n'))
@@ -531,7 +598,10 @@ export async function buildExcelWorkbook(
     row.getCell(2).alignment = { wrapText: true, vertical: 'top' }
   }
   if (review.source === 'upload') {
-    const note = summary.addRow(['', 'Links to uploaded files are signed and work for about an hour after the download.'])
+    const note = summary.addRow([
+      '',
+      'Links to uploaded files are signed: they stop working about an hour after the report was last opened in the portal. Open the report there again for links that work.',
+    ])
     note.getCell(2).font = { italic: true, color: { argb: C.muted } }
   }
   const foot = summary.addRow(['', `${words.footer} Generated ${generatedAt.toLocaleString()}.`])

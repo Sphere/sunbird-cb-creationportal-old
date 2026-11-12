@@ -26,6 +26,32 @@ import {
  * against. Matches the /apis/protected/v8 convention every other authoring call uses.
  */
 export const AI_REVIEW_API_BASE = '/apis/protected/v8/courseReview'
+/**
+ * An HTML package's files, for the report's preview. Outside the session on purpose: the package
+ * runs sandboxed, so its own requests carry no session cookie; the signed token authorises them.
+ */
+export const AI_REVIEW_PACKAGE_BASE = '/apis/public/v8/courseReview/package'
+
+/**
+ * An HTML package's first page, served by the review service from the reviewed zip. The link
+ * itself is the authorisation (a signed token for this one item), because a frame cannot send
+ * the API's headers; every part is encoded so none can change the path.
+ */
+export function packagePreviewUrl(reviewId: string, contentId: string, token: string): string {
+  const e = encodeURIComponent
+  return `${AI_REVIEW_PACKAGE_BASE}/${e(reviewId)}/${e(contentId)}/${e(token)}/index.html`
+}
+
+/** The review with a preview link on each HTML package that has a token. */
+export function withPackageUrls(review: IAiReview): IAiReview {
+  if (!review || !Array.isArray(review.items)) {
+    return review
+  }
+  return {
+    ...review,
+    items: review.items.map(i => (i.packageToken ? { ...i, packageUrl: packagePreviewUrl(review.id, i.contentId, i.packageToken) } : i)),
+  }
+}
 
 const enc = encodeURIComponent
 
@@ -44,7 +70,7 @@ export class AiReviewService {
   fracRole(courseId: string, options: IAiReviewOptions): Observable<IAiReviewRoleCheck> {
     return this.http
       .post<IAiReviewRoleCheck>(`${AI_REVIEW_API_BASE}/courses/${enc(courseId)}/frac`, { options })
-      .pipe(map(res => ({ role: res?.role ?? null, roleNote: res?.roleNote ?? null })))
+      .pipe(map(res => ({ role: res?.role ?? null, roleNote: res?.roleNote ?? null, roleGap: res?.roleGap ?? null })))
   }
 
   /** The pages of each PDF and the questions of each quiz or assessment (nothing is spent). */
@@ -71,7 +97,7 @@ export class AiReviewService {
   }
 
   get(reviewId: string): Observable<IAiReview> {
-    return this.http.get<IAiReview>(`${AI_REVIEW_API_BASE}/reviews/${enc(reviewId)}`)
+    return this.http.get<IAiReview>(`${AI_REVIEW_API_BASE}/reviews/${enc(reviewId)}`).pipe(map(withPackageUrls))
   }
 
   history(courseId: string): Observable<IAiReviewHistoryEntry[]> {
@@ -146,7 +172,7 @@ export class AiReviewService {
   uploadFracRole(options: IAiReviewOptions): Observable<IAiReviewRoleCheck> {
     return this.http
       .post<IAiReviewRoleCheck>(`${AI_REVIEW_API_BASE}/uploads/frac`, { options })
-      .pipe(map(res => ({ role: res?.role ?? null, roleNote: res?.roleNote ?? null })))
+      .pipe(map(res => ({ role: res?.role ?? null, roleNote: res?.roleNote ?? null, roleGap: res?.roleGap ?? null })))
   }
 
   startUploadReview(title: string, uploadIds: string[], options: IAiReviewOptions): Observable<IAiReviewCreateResult> {
@@ -182,8 +208,20 @@ export class AiReviewService {
           ? "You're offline. Reconnect to the internet and try again."
           : 'Could not reach the AI review service. Check your connection and try again.'
       }
+      // A gateway (Kong, uiproxy) answers these without the service's body: say what happened.
+      if (error.status === 429) {
+        return 'Too many AI review requests just now. Wait a minute, then try again.'
+      }
+      if (error.status === 401) {
+        return 'Your session has ended. Sign in again, then try again.'
+      }
+      if (error.status === 413) {
+        return 'That is too large to send to the AI review service.'
+      }
       if (error.status === 403) {
-        return "Only this course's creator, reviewers and publishers can run an AI review of it."
+        return /\/uploads(\/|\?|$)/.test(error.url || '')
+          ? 'Only the person who uploaded these files can see or review them.'
+          : "Only this course's creator, reviewers and publishers can run an AI review of it."
       }
       if (error.status === 408 || error.status === 504) {
         return 'The AI review service took too long to answer. Try again in a moment.'

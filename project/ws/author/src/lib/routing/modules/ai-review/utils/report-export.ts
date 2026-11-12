@@ -8,6 +8,7 @@ import {
   IAiReviewDomain,
   IAiReviewHtmlPackage,
   IAiReviewItem,
+  IAiReviewPassError,
   isPassError,
 } from '../models/ai-review.model'
 import { formatDuration, kindLine, kindMeta } from './resource-kind'
@@ -177,7 +178,12 @@ export function reportWords(review: Pick<IAiReview, 'source'>): ReportWords {
 
 /** A safe file name from the course name. */
 export function reportFileName(review: Pick<IAiReview, 'courseName'>, ext: string): string {
-  const base = (review.courseName || 'review').replace(/[^\p{L}\p{N}._-]+/gu, '_').slice(0, 60) || 'review'
+  // \p{M} keeps the vowel signs and virama of Devanagari and other scripts: without it "नमस्ते" lost them.
+  const base =
+    (review.courseName || 'review')
+      .replace(/[^\p{L}\p{M}\p{N}._-]+/gu, '_')
+      .replace(/^_+|_+$/g, '')
+      .slice(0, 60) || 'review'
   return `AI-review-${base}.${ext}`
 }
 
@@ -202,6 +208,54 @@ export function packageLine(p: IAiReviewHtmlPackage, durationSec?: number | null
 }
 
 /** One resource's "To fix" list: each finding once, grouped, as on the report screen. */
+/**
+ * What the report must say about how a video was taken in, when not all of it was: speech that
+ * could not be transcribed, a watch pass that failed, or no one speaking. Shared by the screen,
+ * the PDF and the workbook.
+ */
+export function mediaNotes(item: Pick<IAiReviewItem, 'result'>): { tone: 'error' | 'info'; text: string }[] {
+  const r = item.result
+  const out: { tone: 'error' | 'info'; text: string }[] = []
+  if (r?.transcriptError) {
+    out.push({ tone: 'error', text: `The speech could not be transcribed (${r.transcriptError}), so the narration was not reviewed.` })
+  }
+  if (r?.watchError) {
+    out.push({ tone: 'error', text: `Watching the video failed (${r.watchError}): it was reviewed from its frames and transcript only.` })
+  }
+  if (r?.noSpeech) {
+    out.push({ tone: 'info', text: 'No one speaks in this video, so it was reviewed on what it shows.' })
+  }
+  return out
+}
+
+const DEMAND: Record<string, string> = { recall: 'Recall a fact', apply: 'Apply it' }
+
+/** How many questions only ask to recall a fact, as one line; '' when the check did not say. */
+export function recallLine(item: Pick<IAiReviewItem, 'result'>): string {
+  const qs = item.result?.questions || []
+  const rated = qs.filter(q => q.demand)
+  if (!rated.length) {
+    return ''
+  }
+  const recall = rated.filter(q => q.demand === 'recall').length
+  const apply = rated.length - recall
+  return `${recall} of ${rated.length} questions only ask the learner to recall a fact; ${apply} ${apply === 1 ? 'asks' : 'ask'} them to apply it.`
+}
+
+/** Whether one of the resource's checks ran and failed (so "nothing to fix" would mislead). */
+function passFailed(item: IAiReviewItem): boolean {
+  const r = item.result
+  return (
+    !!r &&
+    (isPassError(r.addie) ||
+      isPassError(r.domain) ||
+      isPassError(r.alignment) ||
+      !!r.questionsError ||
+      !!r.transcriptError ||
+      !!r.watchError)
+  )
+}
+
 function fixListHtml(item: IAiReviewItem, groups: FixGroup[]): string {
   const n = groups.reduce((k, g) => k + g.issues.length, 0)
   const body = groups
@@ -221,9 +275,9 @@ function fixListHtml(item: IAiReviewItem, groups: FixGroup[]): string {
     })
     .join('')
   const allOk = !!item.result?.questions?.length && !item.result.questions.some(q => q.verdict === 'issue')
-  return `<h4 class="tofix">To fix <span class="n${n ? '' : ' none'}">${n}</span></h4>${body || '<p class="ok">Nothing to fix here.</p>'}${
+  return `<h4 class="tofix">To fix <span class="n${n ? '' : ' none'}">${n}</span></h4>${body || (passFailed(item) ? '<p class="check">No issues from the checks that ran. Some checks could not run, so this resource is not fully reviewed.</p>' : '<p class="ok">Nothing to fix here.</p>')}${
     allOk ? '<p class="ok">Every question checks out: answer keys, options and hints.</p>' : ''
-  }`
+  }${recallLine(item) ? `<p class="muted">${esc(recallLine(item))}</p>` : ''}`
 }
 
 const LEVEL_FIT: Record<string, string> = {
@@ -295,6 +349,9 @@ function resourceHtml(item: IAiReviewItem, words: ReportWords, groups: FixGroup[
   }
   if (r?.questionsError) {
     parts.push(`<p class="err">Question check could not run: ${esc(r.questionsError)}</p>`)
+  }
+  for (const line of mediaNotes(item)) {
+    parts.push(`<p class="${line.tone === 'error' ? 'err' : 'check'}">${esc(line.text)}</p>`)
   }
   if (addie) {
     parts.push(
@@ -368,9 +425,9 @@ export function buildReportHtml(review: IAiReview, generatedAt: Date = new Date(
                   ? `<td class="num muted" colspan="${cols - 1}">Could not be reviewed</td>`
                   : `${
                       s.addie
-                        ? `<td class="num">${r.addie ? `<b>${esc(r.addie.yes)}</b> of ${esc(r.addie.applicable)}${pct(r.addie.band, r.addie.pct)}` : '—'}</td>`
+                        ? `<td class="num">${r.addie ? `<b>${esc(r.addie.yes)}</b> of ${esc(r.addie.applicable)}${pct(r.addie.band, r.addie.pct)}` : r.addieFailed ? '<span class="err">Could not score</span>' : '—'}</td>`
                         : ''
-                    }${s.domain ? `<td class="num">${r.domain ? `<b>${esc(r.domain.yes)}</b> of ${esc(r.domain.applicable)}` : '—'}</td>` : ''}<td class="num">${
+                    }${s.domain ? `<td class="num">${r.domain ? `<b>${esc(r.domain.yes)}</b> of ${esc(r.domain.applicable)}` : r.domainFailed ? '<span class="err">Could not score</span>' : '—'}</td>` : ''}<td class="num">${
                       r.fixes ? `<span class="chip red">${esc(r.fixes)}</span>` : '0'
                     }</td>`
               }</tr>`,
@@ -438,7 +495,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.3;color:#0f172a;letter-spacing:0}
 .hero{position:relative;overflow:hidden;border-radius:18px;padding:20px 24px;color:#0f172a;border:1px solid #e2e8f0;background:radial-gradient(40% 120% at 70% 0%,rgba(79,70,229,.16),transparent 70%),radial-gradient(38% 110% at 30% 0%,rgba(6,182,212,.13),transparent 70%),radial-gradient(30% 90% at 95% 10%,rgba(236,72,153,.10),transparent 70%),#fff}
 .hero::before{content:'';position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(135deg,#2f45d6,#2f7aef)}
 .hero .eyebrow{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#1e3fae}
-.hero h1{margin:6px 0 4px;font-size:20px;letter-spacing:-.02em;color:#0f172a}.hero p{color:#475569;font-size:11.5px}
+.hero h1{margin:6px 0 4px;font-size:20px;letter-spacing:0;color:#0f172a}.hero p{color:#475569;font-size:11.5px}
 h2{font-size:14px;margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid #e2e8f0}
 h3{font-size:14px;margin:2px 0 0}
 h4{font-size:12px;margin:14px 0 6px;text-transform:uppercase;letter-spacing:.06em;color:#64748b}
@@ -466,7 +523,7 @@ td.num,th.num{text-align:right;white-space:nowrap}
 .check{color:#8f6206}
 .fixgrp{margin:10px 0 6px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#64748b}.ok{color:#15803d}
 .at{display:inline-block;height:16px;line-height:16px;padding:0 6px;border-radius:8px;background:#f5f3ff;color:#7c3aed;font-size:10px;font-weight:700;vertical-align:top}
-.note{color:#64748b}.fix{color:#15803d;font-weight:500}.err{color:#b91c1c}
+.note{color:#64748b}.fix{color:#15803d;font-weight:500}.note,.fix,.found span:last-child,.check{white-space:pre-line}.err{color:#b91c1c}
 .resource{border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin-top:14px;page-break-inside:avoid}
 .rhead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
 .rtitle{flex:1;min-width:0}.chips{flex:none;display:flex;gap:4px;padding-top:2px}
@@ -616,7 +673,7 @@ export function buildWorkbookSheets(review: IAiReview): Record<string, (string |
     [words.one === 'file' ? 'File' : 'Resource', 'Type', 'Area', 'ID', 'Indicator', 'Verdict', 'Note', 'Suggested fix'],
   ]
   const questions: (string | number)[][] = [
-    [words.one === 'file' ? 'File' : 'Resource', 'Q', 'Question', 'Verdict', 'Issues', 'Suggested fix'],
+    [words.one === 'file' ? 'File' : 'Resource', 'Q', 'Question', 'Verdict', 'Issues', 'Suggested fix', 'Asks the learner to'],
   ]
   review.items.forEach(item => {
     const addie = addieOf(item)
@@ -637,7 +694,15 @@ export function buildWorkbookSheets(review: IAiReview): Record<string, (string |
       )
     }
     ;(item.result?.questions || []).forEach(q =>
-      questions.push([item.name, q.n, q.question, q.verdict === 'ok' ? 'OK' : 'Needs attention', q.issues.join('; '), q.fix || '']),
+      questions.push([
+        item.name,
+        q.n,
+        q.question,
+        q.verdict === 'ok' ? 'OK' : 'Needs attention',
+        q.issues.join('; '),
+        q.fix || '',
+        DEMAND[q.demand || ''] || '',
+      ]),
     )
   })
 
@@ -669,35 +734,50 @@ export function buildWorkbookSheets(review: IAiReview): Record<string, (string |
     }
   })
 
+  // One table with a real header row (it is frozen and filtered in the workbook): the course's
+  // verdict, name, promises, off-topic resources and changes, then each resource's fit; a check
+  // that could not run is a row of its own, with why.
   const alignment: (string | number)[][] = []
   const a = s?.alignment
-  if (a && !isPassError(a)) {
-    alignment.push(
-      ['Course verdict', DELIVERS[a.verdict] || a.verdict],
-      ['Summary', a.summary],
-      ['Name', `${a.nameFits ? 'Fits' : 'Does not fit'} — ${a.nameNote}`],
-      [],
-    )
-    alignment.push(['What the description promises', 'Status', 'Delivered by'])
-    a.promises.forEach(pr => alignment.push([pr.promise, pr.status, pr.coveredBy.join(', ')]))
-    if (a.fixes.length) {
-      alignment.push([], ['What to change'])
-      a.fixes.forEach(f => alignment.push([f]))
-    }
-    alignment.push([])
-  }
   const fitRows = review.items
     .map(item => ({ item, al: item.result?.alignment }))
-    .filter((x): x is { item: IAiReviewItem; al: IAiReviewAlignment } => !!x.al && !isPassError(x.al))
-  if (fitRows.length) {
-    alignment.push([words.one === 'file' ? 'File' : 'Resource', 'Fit', 'Teaches', 'Note', 'Suggested fix'])
-    fitRows.forEach(({ item, al }) =>
-      alignment.push([item.name, FIT[al.verdict] || al.verdict, al.teaches.join('; '), al.note, al.fix || '']),
-    )
+    .filter((x): x is { item: IAiReviewItem; al: IAiReviewAlignment | IAiReviewPassError } => !!x.al)
+  if (a || fitRows.length) {
+    alignment.push(['Part', 'What', 'Status', 'Detail', 'Suggested fix'])
   }
+  if (a && isPassError(a)) {
+    alignment.push(['Course', 'Alignment check', 'Could not run', a.error, ''])
+  } else if (a && !isPassError(a)) {
+    alignment.push(['Course', 'Verdict', DELIVERS[a.verdict] || a.verdict, a.summary, ''])
+    alignment.push(['Course', 'Name', a.nameFits ? 'Fits' : 'Does not fit', a.nameNote || '', ''])
+    a.promises.forEach(pr =>
+      alignment.push([
+        'Promise',
+        pr.promise,
+        COVERAGE_LABEL[pr.status] || pr.status,
+        pr.coveredBy.length ? `Delivered by: ${pr.coveredBy.join(', ')}` : '',
+        '',
+      ]),
+    )
+    ;(a.offTopic || []).forEach(o => alignment.push(['Off topic', o.name, 'Off topic', o.why, '']))
+    a.fixes.forEach(f => alignment.push(['What to change', '', '', '', f]))
+  }
+  fitRows.forEach(({ item, al }) =>
+    alignment.push(
+      isPassError(al)
+        ? [words.One, item.name, 'Could not run', al.error, '']
+        : [
+            words.One,
+            item.name,
+            FIT[al.verdict] || al.verdict,
+            [al.teaches.length ? `Teaches: ${al.teaches.join('; ')}` : '', al.note].filter(Boolean).join('\n'),
+            al.fix || '',
+          ],
+    ),
+  )
 
   const coverage: (string | number)[][] = [['What the level needs', 'Status', 'Covered by']]
-  ;(s?.coverage || []).forEach(row => coverage.push([row.component, row.status, row.coveredBy.join(', ')]))
+  ;(s?.coverage || []).forEach(row => coverage.push([row.component, COVERAGE_LABEL[row.status] || row.status, row.coveredBy.join(', ')]))
 
   const sheets: Record<string, (string | number)[][]> = { Summary: summary, Checklist: checklist, Coverage: coverage }
   if (questions.length > 1) {
@@ -706,7 +786,7 @@ export function buildWorkbookSheets(review: IAiReview): Record<string, (string |
   if (packages.length > 1) {
     sheets['HTML packages'] = packages
   }
-  if (alignment.length) {
+  if (alignment.length > 1) {
     sheets['Course alignment'] = alignment
   }
   return sheets

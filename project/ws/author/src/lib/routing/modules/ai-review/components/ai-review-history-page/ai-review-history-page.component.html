@@ -97,13 +97,21 @@
         @for (r of shown(); track r.id) {
           <li>
             <button type="button" class="air-past-row" (click)="open(r)" [attr.aria-label]="rowLabel(r)">
-              <span class="air-past-thumb" [class.air-past-thumb--files]="r.source === 'upload'">
-                @if (r.thumbnail && !brokenThumbs().has(r.id)) {
-                  <img [src]="r.thumbnail" alt="" loading="lazy" (error)="thumbFailed(r.id)" />
-                } @else {
-                  <ws-auth-air-icon [name]="r.source === 'upload' ? 'upload' : 'read'" [size]="24" />
-                }
-              </span>
+              <!-- A course's picture. A review of files has none: a plain grey tile of the same shape
+                   keeps every title in the list on the same line. -->
+              @if (r.source === 'upload') {
+                <span class="air-past-thumb air-past-thumb--files" aria-hidden="true">
+                  <ws-auth-air-icon name="document" [size]="28" />
+                </span>
+              } @else {
+                <span class="air-past-thumb">
+                  @if (r.thumbnail && !brokenThumbs().has(r.id)) {
+                    <img [src]="r.thumbnail" alt="" loading="lazy" decoding="async" (error)="thumbFailed(r.id)" />
+                  } @else {
+                    <ws-auth-air-icon name="read" [size]="24" />
+                  }
+                </span>
+              }
               <span class="air-past-body">
                 <span class="air-past-name" [attr.title]="r.name">{{ r.name || 'Untitled review' }}</span>
                 <span class="air-past-chips">
@@ -144,6 +152,11 @@
           </li>
         }
       </ul>
+      @if (reviews().length >= PAST_REVIEWS_LIMIT) {
+        <p class="air-muted air-small air-past-limit" i18n>
+          Showing your latest {{ PAST_REVIEWS_LIMIT }} reviews. Older ones are still on each course's AI review page.
+        </p>
+      }
     }
   </section>
 </div>

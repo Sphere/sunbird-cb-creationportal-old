@@ -119,13 +119,13 @@
   }
 }
 
-// The picture, at the size the course list uses.
+// The course's picture, at the 16:9 shape course posters are made in, so none is cut off.
 .air-past-thumb {
   flex: none;
   display: grid;
   place-items: center;
-  width: 120px;
-  height: 90px;
+  width: 160px;
+  aspect-ratio: 16 / 9;
   border-radius: 12px;
   overflow: hidden;
   color: #3b4fe0;
@@ -138,19 +138,18 @@
     object-fit: cover;
   }
 
-  // A file review has no course picture: AI Studio's violet tile.
-  &--files {
-    color: #7c3aed;
-    background: color-mix(in srgb, #7c3aed 10%, #fff);
-  }
-
   &.air-mini--loading {
     display: block;
   }
 
+  // A review of files: no picture, a quiet grey tile in its place, so the titles line up.
+  &--files {
+    color: #94a3b8;
+    background: #f1f5f9;
+  }
+
   @media (max-width: 560px) {
-    width: 80px;
-    height: 60px;
+    width: 96px;
   }
 }
 

@@ -231,6 +231,10 @@ export class AirReviewRunComponent {
 
   readonly isRunning = computed(() => !AI_REVIEW_FINAL_STATUSES.has(this.review().status))
   readonly isFinished = computed(() => AI_REVIEW_FINAL_STATUSES.has(this.review().status))
+  /** Resources with a report: all a finished review has, or what a cancelled one got through. */
+  readonly reviewedCount = computed(() => this.review().items.filter(i => !!i.result).length)
+  /** Whether there is a report to open: not for a review cancelled before it reviewed anything. */
+  readonly hasReport = computed(() => this.review().status !== 'cancelled' || this.reviewedCount() > 0)
 
   /** What is being reviewed, and what the review leaves out. */
   readonly runningItems = computed(() => (this.review().items || []).filter(i => i.status !== 'skipped'))

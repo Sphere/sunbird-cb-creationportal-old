@@ -34,22 +34,31 @@ export function placeLabel(p: Place): string {
     return `page ${p.page}`
   }
   if (typeof p.atSec === 'number') {
+    // "1:02:05" past an hour, as the pop-up shows it; "2:05" below.
     const s = Math.max(0, Math.floor(p.atSec))
-    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
+    const h = Math.floor(s / 3600)
+    const m = Math.floor((s % 3600) / 60)
+    return `${h ? `${h}:${String(m).padStart(2, '0')}` : m}:${String(s % 60).padStart(2, '0')}`
   }
-  return p.at || ''
+  // A quiz question ("Q9") is shown with the question itself, not as a place.
+  return /^Q\d+$/.test(p.at || '') ? '' : p.at || ''
 }
 
 /**
  * A link that opens the resource at the place: a video at the moment (#t=), a PDF on the page
- * (#page=). Null for a resource with no file to open (a quiz), or an unsafe address.
+ * (#page=). Null for a resource with no file to open (a quiz), an address that is not plain
+ * https, or a place inside an HTML package: its file is the zip, which a browser downloads
+ * rather than opening at a moment (the report on screen opens the package's video instead).
  */
-export function placeLink(item: Pick<IAiReviewItem, 'artifactUrl'>, p: Place = {}): string | null {
+export function placeLink(item: Pick<IAiReviewItem, 'artifactUrl'> & Partial<Pick<IAiReviewItem, 'kind'>>, p: Place = {}): string | null {
   const url = item.artifactUrl || ''
-  if (!/^https?:\/\//i.test(url)) {
+  if (!/^https:\/\//i.test(url)) {
     return null
   }
   const base = url.split('#')[0]
+  if (item.kind === 'html') {
+    return p.page || typeof p.atSec === 'number' ? null : base
+  }
   if (p.page) {
     return `${base}#page=${p.page}`
   }

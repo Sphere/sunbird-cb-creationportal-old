@@ -55,20 +55,90 @@
                 <span class="air-ev-refresh-error">{{ refreshError() }}</span>
               }
             </p>
-          } @else if (kind() === 'quiz' || kind() === 'assessment') {
-            <div class="air-ev-question">
-              @if (e.code) {
-                <span class="air-ev-qnum">{{ e.code }}</span>
+          } @else if (packageQuestion() || kind() === 'quiz' || kind() === 'assessment') {
+            <!-- The questions the finding is about: its own (Q3), or those its note names. -->
+            @if (questions().length) {
+              <div class="air-ev-questions">
+                @for (q of questions(); track q.n) {
+                  <div class="air-ev-question">
+                    <span class="air-ev-qnum">Q{{ q.n }}</span>
+                    <p>{{ q.text }}</p>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="air-ev-question air-ev-question--whole">
+                <p i18n>This finding is about the {{ kind() === 'assessment' ? 'assessment' : 'quiz' }} as a whole, not one question.</p>
+              </div>
+            }
+          } @else if (packageVideo() && !showPackagePage()) {
+            @let v = packageVideo()!;
+            @if (mediaError()) {
+              <div class="air-ev-nopreview" role="status">
+                <p i18n>The video could not be loaded. If this report has been open a while, its link may have expired.</p>
+                <button type="button" class="air-btn air-btn--secondary air-ev-refresh" [disabled]="refreshing()" (click)="askFresh()">
+                  <ws-auth-air-icon name="refresh" [size]="16" />
+                  @if (refreshing()) {
+                    <ng-container i18n>Getting a fresh link…</ng-container>
+                  } @else {
+                    <ng-container i18n>Get a fresh link</ng-container>
+                  }
+                </button>
+                @if (refreshError()) {
+                  <p class="air-ev-refresh-error">{{ refreshError() }}</p>
+                }
+              </div>
+            } @else {
+              <video class="air-ev-video" controls playsinline preload="metadata" [src]="v.src" (error)="mediaError.set(true)">
+                <ng-container i18n>Your browser cannot play this video.</ng-container>
+              </video>
+            }
+            <p class="air-ev-pdf-help">
+              <span class="air-ev-pkgfile" [title]="v.path">{{ v.path }}</span>
+              <span aria-hidden="true">·</span>
+              <button type="button" class="air-link-btn" (click)="showPackagePage.set(true)" i18n>Show the package page instead</button>
+            </p>
+          } @else if (htmlSrc(); as src) {
+            <!-- The package runs in a sandbox (here and in the service's own headers): its scripts
+                 work, but it never gets this site's cookies, storage or pages. -->
+            <iframe
+              class="air-ev-pdf air-ev-html"
+              [src]="src"
+              [title]="e.item.name"
+              sandbox="allow-scripts allow-forms allow-popups allow-modals"
+              referrerpolicy="no-referrer"
+            ></iframe>
+            <p class="air-ev-pdf-help">
+              @if (packageVideo(); as v) {
+                <button type="button" class="air-link-btn" (click)="showPackagePage.set(false); mediaError.set(false)" i18n>
+                  Back to the video at {{ v.label }}
+                </button>
+                <span aria-hidden="true">·</span>
               }
-              <p>{{ e.title }}</p>
-            </div>
+              @if (htmlTabUrl(); as tab) {
+                <a class="air-link-btn" [href]="tab" target="_blank" rel="noopener noreferrer" i18n>Open in a new tab</a>
+                <span aria-hidden="true">·</span>
+              }
+              <ng-container i18n>Not showing? Its link may have expired.</ng-container>
+              <button type="button" class="air-link-btn" [disabled]="refreshing()" (click)="askFresh()">
+                @if (refreshing()) {
+                  <ng-container i18n>Getting a fresh link…</ng-container>
+                } @else {
+                  <ng-container i18n>Get a fresh link</ng-container>
+                }
+              </button>
+              @if (refreshError()) {
+                <span class="air-ev-refresh-error">{{ refreshError() }}</span>
+              }
+            </p>
           } @else {
             <div class="air-ev-nopreview">
               <ws-auth-air-icon [name]="meta().icon" [size]="32" />
               <p i18n>No preview for this resource.</p>
             </div>
           }
-          @if (where()) {
+          <!-- Not on a quiz, and on a package only with its video: a page cannot open at a moment. -->
+          @if (showWhere()) {
             <span class="air-ev-where">
               <ws-auth-air-icon [name]="e.page ? 'pdf' : 'timer'" [size]="16" />
               @if (e.page) {
@@ -111,7 +181,11 @@
       <footer class="air-ev-foot">
         @if (fileUrl(); as url) {
           <a class="air-btn air-btn--ghost" [href]="url" target="_blank" rel="noopener noreferrer">
-            <ws-auth-air-icon name="openNew" [size]="18" /> <ng-container i18n>Open file in a new tab</ng-container>
+            @if (kind() === 'html') {
+              <ws-auth-air-icon name="download" [size]="18" /> <ng-container i18n>Download the package (.zip)</ng-container>
+            } @else {
+              <ws-auth-air-icon name="openNew" [size]="18" /> <ng-container i18n>Open file in a new tab</ng-container>
+            }
           </a>
         }
         <button type="button" class="air-btn air-btn--secondary" (click)="close()" i18n>Close</button>

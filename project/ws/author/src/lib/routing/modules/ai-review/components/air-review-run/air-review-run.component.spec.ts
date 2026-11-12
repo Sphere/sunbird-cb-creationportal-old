@@ -267,6 +267,25 @@ describe('AirReviewRunComponent', () => {
       expect(el().querySelector('.air-actions .air-btn--primary')).toBeNull()
     })
 
+    it('still shows what a cancelled review finished (and paid for) before it stopped', () => {
+      const done = {
+        contentId: 'do_v',
+        name: 'BP video',
+        kind: 'video',
+        status: 'done',
+        stage: null,
+        skipReason: null,
+        error: null,
+        result: { addie: null },
+      }
+      const stopped = { ...done, contentId: 'do_p', name: 'Notes', status: 'cancelled', result: null }
+      show(review({ status: 'cancelled', items: [done, stopped] as never }))
+      expect(c.reviewedCount()).toBe(1)
+      expect(c.hasReport()).toBe(true)
+      expect(el().querySelector('.air-actions .air-btn--primary')).toBeTruthy()
+      expect(el().textContent).toContain('This review was cancelled after it had finished 1 of 2 resources.')
+    })
+
     it('downloads the PDF as a file, once at a time, and says so if it fails', async () => {
       show(review({ status: 'done' }))
       const first = c.downloadPdf()

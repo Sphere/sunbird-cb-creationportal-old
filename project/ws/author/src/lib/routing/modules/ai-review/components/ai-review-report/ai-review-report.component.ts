@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, input, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { AiReviewService } from '../../services/ai-review.service'
-import { judgedAgainst, reportWords } from '../../utils/report-export'
+import { judgedAgainst, mediaNotes, recallLine, reportWords } from '../../utils/report-export'
 import { coverageSources, locateText, placeLabel } from '../../utils/report-detail'
 import { costBreakdown, providerLabel, stepLabel, tokensLabel, usd } from '../../utils/usage'
 import { Issue, ISSUE_SOURCES } from '../../utils/issues'
@@ -196,6 +196,8 @@ export class AiReviewReportComponent {
 
   readonly notMet = notMet
   readonly kindMeta = kindMeta
+  readonly mediaNotes = mediaNotes
+  readonly recallLine = recallLine
   readonly kindLine = kindLine
   readonly duration = formatDuration
 

@@ -489,6 +489,13 @@
   border: 1px solid #f2b8b0;
 }
 
+// A note on how the resource was taken in, not a failure.
+.air-pass-error--info {
+  color: #475569;
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
 .air-area-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
@@ -1149,6 +1156,12 @@
   }
 }
 
+// A pass that ran and failed, unlike the plain dash of one that was not asked for.
+.air-restable-failed {
+  font-size: 13px;
+  color: #b91c1c;
+}
+
 .air-restable-num {
   font-weight: 600;
 }
@@ -1249,4 +1262,10 @@
   margin: 8px 0;
   font-size: 14px;
   color: $air-green;
+}
+
+// Nothing found, but not every check ran: not the all-clear green.
+.air-tofix-none--partial {
+  align-items: flex-start;
+  color: #8f6206;
 }

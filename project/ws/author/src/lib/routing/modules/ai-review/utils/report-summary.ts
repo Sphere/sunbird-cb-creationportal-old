@@ -18,11 +18,12 @@ export interface FixGroup {
  * What a resource's "To fix" list holds, in this order. Level coverage, fit with the course and
  * passes that could not run are left out: each is shown once, in its own place.
  */
-export const FIX_ORDER: IssueSource[] = ['noSound', 'checklist', 'domain', 'question']
+export const FIX_ORDER: IssueSource[] = ['noSound', 'checklist', 'domain', 'question', 'answerKey']
 export const FIX_LABELS: Partial<Record<IssueSource, string>> = {
   checklist: 'CBP checklist · not met',
   domain: 'Domain review · not met',
   question: 'Questions that need attention',
+  answerKey: 'Answer key · guessable pattern',
 }
 
 /** Each resource's findings to fix, by content id, grouped and in FIX_ORDER. */
@@ -55,6 +56,9 @@ export interface ScoreRow {
   item: IAiReviewItem
   addie: { yes: number; applicable: number; pct: number | null; band: string } | null
   domain: { yes: number; applicable: number } | null
+  /** The checklist or the domain review ran and failed: "could not score", not "not asked for". */
+  addieFailed: boolean
+  domainFailed: boolean
   fixes: number
   failed: boolean
 }
@@ -70,6 +74,8 @@ export function scoreRowsOf(review: Pick<IAiReview, 'items'>, groups: Map<string
         item,
         addie: a ? { yes: a.score.yes, applicable: a.score.applicable, pct: a.score.scorePct, band: a.score.band || 'none' } : null,
         domain: d ? { yes: d.score.yes, applicable: d.score.applicable } : null,
+        addieFailed: !!r?.addie && isPassError(r.addie),
+        domainFailed: !!r?.domain && isPassError(r.domain),
         fixes: fixCountOf(groups, item.contentId),
         failed: item.status === 'failed' || item.status === 'cancelled',
       }

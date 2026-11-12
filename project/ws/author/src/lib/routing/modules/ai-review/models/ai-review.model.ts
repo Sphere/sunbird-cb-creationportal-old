@@ -275,6 +275,8 @@ export interface IAiReviewQuestionFinding {
   /** The service's guard doubts it: shown for a person to check, with why. */
   borderline?: boolean
   check?: string
+  /** What the question asks of the learner: to recall a fact, or to apply it. */
+  demand?: 'recall' | 'apply'
 }
 
 /** What an interactive HTML package holds, as the reviewer found it. */
@@ -282,6 +284,8 @@ export interface IAiReviewHtmlPackage {
   files: number
   pages: number
   videos: { path: string; durationSec: number | null }[]
+  /** The package's pages by path (newer reviews), so a finding can open the page it names. */
+  pagePaths?: string[]
   images: number
   stills: number
   questions: number
@@ -309,8 +313,16 @@ export interface IAiReviewItemReport {
   htmlPackage?: IAiReviewHtmlPackage
   transcriptChars: number
   transcriptEngine: string | null
+  /** Quizzes: problems with the answer key's spread, counted by the service. */
+  answerPattern?: string[]
   /** A video with no sound track: reviewed on what it shows. */
   noSound?: boolean
+  /** A video with sound in which nobody speaks: reviewed on what it shows. */
+  noSpeech?: boolean
+  /** Why the speech could not be transcribed: the narration was not reviewed. */
+  transcriptError?: string
+  /** Why watching the video failed: reviewed from its frames and transcript only. */
+  watchError?: string
   watched: { model: string; chars: number; costUsd: number } | null
   addie: IAiReviewAddie | IAiReviewPassError | null
   domain: IAiReviewDomain | IAiReviewPassError | null
@@ -353,6 +365,10 @@ export interface IAiReviewItem {
   mimeType?: string
   /** The resource's file, so an issue can be shown in place. */
   artifactUrl?: string | null
+  /** An HTML package's signed preview token from the service (it lasts two hours). */
+  packageToken?: string | null
+  /** The package's first page to show in a frame, built from the token when the review is read. */
+  packageUrl?: string | null
   status: AiReviewItemStatus
   /** What the worker is doing now, e.g. "Downloading the video…". */
   stage: string | null

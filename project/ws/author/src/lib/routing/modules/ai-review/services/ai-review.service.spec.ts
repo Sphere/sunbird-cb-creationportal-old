@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpEventType, provideHttpClient, withInterceptors } from '@angular/common/http'
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestBed } from '@angular/core/testing'
-import { AI_REVIEW_API_BASE, AiReviewService } from './ai-review.service'
+import { AI_REVIEW_API_BASE, AI_REVIEW_PACKAGE_BASE, AiReviewService, packagePreviewUrl } from './ai-review.service'
 
 describe('AiReviewService', () => {
   let service: AiReviewService
@@ -102,7 +102,13 @@ describe('AiReviewService', () => {
     expect(req.request.method).toBe('POST')
     expect(req.request.body).toEqual({ options })
     req.flush({ role: null, roleNote: 'No position was picked' })
-    expect(check).toEqual({ role: null, roleNote: 'No position was picked' })
+    expect(check).toEqual({ role: null, roleNote: 'No position was picked', roleGap: null })
+    // The position with no activities comes through as data, not only as English text.
+    service.fracRole('do_1', options).subscribe(r => (check = r))
+    http
+      .expectOne(`${AI_REVIEW_API_BASE}/courses/do_1/frac`)
+      .flush({ role: null, roleNote: 'x', roleGap: { position: 'ANM', competencies: ['C18'] } })
+    expect(check).toEqual({ role: null, roleNote: 'x', roleGap: { position: 'ANM', competencies: ['C18'] } })
   })
 
   it('reads, lists and cancels', () => {
@@ -118,6 +124,22 @@ describe('AiReviewService', () => {
 
     service.cancel('r1').subscribe()
     expect(http.expectOne(`${AI_REVIEW_API_BASE}/reviews/r1`).request.method).toBe('DELETE')
+  })
+
+  it('gives each HTML package a preview link from its token, and nothing else one', () => {
+    let review: { items: { contentId: string; packageUrl?: string | null }[] } | undefined
+    service.get('r1').subscribe(r => (review = r as never))
+    http.expectOne(`${AI_REVIEW_API_BASE}/reviews/r1`).flush({
+      id: 'r1',
+      items: [
+        { contentId: 'do_h', kind: 'html', packageToken: '1790000000.sig' },
+        { contentId: 'do_v', kind: 'video', packageToken: null },
+      ],
+    })
+    expect(review!.items[0].packageUrl).toBe(`${AI_REVIEW_PACKAGE_BASE}/r1/do_h/1790000000.sig/index.html`)
+    expect(review!.items[1].packageUrl).toBeUndefined()
+    // Every part is encoded, so none can change the path.
+    expect(packagePreviewUrl('r/1', 'do?x', 'a#b')).toBe(`${AI_REVIEW_PACKAGE_BASE}/r%2F1/do%3Fx/a%23b/index.html`)
   })
 
   it("reads the account's own reviews, treating a missing list as none", () => {
@@ -156,6 +178,15 @@ describe('AiReviewService', () => {
     it('explains a network failure and a 403', () => {
       expect(AiReviewService.errorMessage(httpError(0, null))).toMatch(/Could not reach/)
       expect(AiReviewService.errorMessage(httpError(403, null))).toMatch(/creator, reviewers and publishers/)
+    })
+
+    it("words a gateway's own refusals, which carry no service message", () => {
+      // Kong answers { message }, not the service's { error: { message } }.
+      expect(AiReviewService.errorMessage(httpError(429, { message: 'API rate limit exceeded' }))).toMatch(/Too many AI review requests/)
+      expect(AiReviewService.errorMessage(httpError(401, { message: 'Unauthorized' }))).toMatch(/Sign in again/)
+      expect(AiReviewService.errorMessage(httpError(413, null))).toMatch(/too large/)
+      const files = new HttpErrorResponse({ status: 403, error: null, url: `${AI_REVIEW_API_BASE}/uploads/abc` })
+      expect(AiReviewService.errorMessage(files)).toMatch(/uploaded these files/)
     })
 
     it('says what kind of failure it was: offline, not found, too slow, unavailable', () => {
@@ -234,7 +265,7 @@ describe('AiReviewService', () => {
       const frac = http.expectOne(`${AI_REVIEW_API_BASE}/uploads/frac`)
       expect(frac.request.body).toEqual({ options })
       frac.flush({})
-      expect(check).toEqual({ role: null, roleNote: null })
+      expect(check).toEqual({ role: null, roleNote: null, roleGap: null })
 
       service.startUploadReview('BP drafts', ['u1', 'u2'], options).subscribe()
       const start = http.expectOne(r => r.url === `${AI_REVIEW_API_BASE}/uploads/reviews` && r.method === 'POST')

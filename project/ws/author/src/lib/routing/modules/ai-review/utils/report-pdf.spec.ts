@@ -1,4 +1,4 @@
-import { HTML2CANVAS_PROBE, keepTextOnItsBaseline } from './report-pdf'
+import { groupBlocks, HTML2CANVAS_PROBE, keepTextOnItsBaseline, looksBlank, scaleFor } from './report-pdf'
 
 describe('keepTextOnItsBaseline', () => {
   afterEach(() => {
@@ -51,4 +51,54 @@ describe('keepTextOnItsBaseline', () => {
     const source: string = jest.requireActual('fs').readFileSync(require.resolve('html2canvas/dist/html2canvas.js'), 'utf8')
     expect(source).toContain(`var SMALL_IMAGE = '${HTML2CANVAS_PROBE}'`)
   })
+})
+
+describe('drawing a long report in parts', () => {
+  it('groups the blocks so each part fits one drawing, a too-tall block on its own', () => {
+    // Blocks start at 0, 400, 900, 1500 and the last ends at 1700; a part may be 1000 tall.
+    expect(groupBlocks([0, 400, 900, 1500], 1700, 1000)).toEqual([
+      [0, 1],
+      [2, 3],
+    ])
+    expect(groupBlocks([0, 2500, 2600], 2700, 1000)).toEqual([[0], [1, 2]])
+    expect(groupBlocks([0], 300, 1000)).toEqual([[0]])
+    expect(groupBlocks([], 0, 1000)).toEqual([])
+  })
+
+  it('draws at scale 2, and lower only when the browser would refuse the canvas', () => {
+    expect(scaleFor(4000, 718)).toBe(2)
+    // 40,000 CSS px tall: past both limits at scale 2.
+    const s = scaleFor(40000, 718)
+    expect(s).toBeLessThan(1)
+    expect(40000 * s).toBeLessThanOrEqual(32000)
+    expect(718 * s * 40000 * s).toBeLessThanOrEqual(16_000_000 + 1)
+    expect(scaleFor(0)).toBe(2)
+  })
+
+  it('calls a drawing with no size empty, and never refuses one it cannot inspect', () => {
+    expect(looksBlank(null, document)).toBe(true)
+    const none = document.createElement('canvas')
+    none.width = 0
+    expect(looksBlank(none, document)).toBe(true)
+    const sized = document.createElement('canvas')
+    sized.width = 10
+    sized.height = 10
+    // jsdom has no 2D context: unknown is not blank.
+    jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
+    expect(looksBlank(sized, document)).toBe(false)
+  })
+
+  it('tells a white drawing from one with something on it', () => {
+    const data = new Uint8ClampedArray(160 * 640 * 4).fill(255)
+    const ctx = { drawImage: jest.fn(), getImageData: jest.fn(() => ({ data })) }
+    jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(ctx as never)
+    const c = document.createElement('canvas')
+    c.width = 100
+    c.height = 100
+    expect(looksBlank(c, document)).toBe(true)
+    data[4000] = 30
+    expect(looksBlank(c, document)).toBe(false)
+  })
+
+  afterEach(() => jest.restoreAllMocks())
 })

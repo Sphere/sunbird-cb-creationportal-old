@@ -148,6 +148,14 @@ describe('report summary', () => {
     expect(rows[2]).toMatchObject({ addie: null, domain: null, fixes: 0, failed: true })
   })
 
+  it('tells a check that could not run from one that was not asked for', () => {
+    const r = review()
+    r.items[1] = { ...r.items[1], result: { ...r.items[1].result!, addie: { error: 'timed out' }, domain: null } }
+    const rows = scoreRowsOf(r, fixGroupsOf(r))
+    expect(rows[1]).toMatchObject({ addie: null, addieFailed: true, domain: null, domainFailed: false })
+    expect(rows[0]).toMatchObject({ addieFailed: false, domainFailed: false })
+  })
+
   it('reads the full checklist length and the coverage counts', () => {
     expect(checklistTotalOf(review())).toBe(47)
     expect(checklistTotalOf({ items: [] })).toBe(0)
@@ -301,5 +309,35 @@ describe('the Excel workbook, in full', () => {
     wb.getWorksheet('Costs')!.eachRow(row => costs.push((row.values as unknown[]).join('|')))
     expect(costs.some(x => x.includes('Unchanged since an earlier review'))).toBe(true)
     expect(costs.some(x => x.startsWith('|Total|'))).toBe(true)
+  })
+})
+
+describe('the Excel workbook, when something could not run', () => {
+  it('says which check could not run and why, on the resource and in the summary', async () => {
+    const r = review()
+    r.items[1] = {
+      ...r.items[1],
+      result: { ...r.items[1].result!, addie: { error: 'Gemini timed out' }, transcriptError: 'elevenlabs: 429' },
+    }
+    const buffer = await buildExcelWorkbook(r, ExcelJS, new Date('2026-11-06T11:00:00Z'))
+    const wb = new ExcelJS.Workbook()
+    await wb.xlsx.load(buffer)
+    const text = (name: string) => {
+      const out: string[] = []
+      wb.getWorksheet(name)!.eachRow(row =>
+        out.push(
+          (row.values as unknown[])
+            .map(v => (v && typeof v === 'object' && 'text' in v ? (v as { text: string }).text : String(v ?? '')))
+            .join('|'),
+        ),
+      )
+      return out
+    }
+    const resources = text('Resources')
+    expect(resources[0]).toContain('Could not run')
+    const row = resources.find(x => x.includes(r.items[1].name))!
+    expect(row).toContain('Checklist: Gemini timed out')
+    expect(row).toContain('The speech could not be transcribed (elevenlabs: 429)')
+    expect(text('Summary').some(x => x.includes('Not fully reviewed') && x.includes('Gemini timed out'))).toBe(true)
   })
 })

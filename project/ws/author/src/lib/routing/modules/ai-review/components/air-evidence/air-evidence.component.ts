@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, outpu
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
 import { IAiReviewItem } from '../../models/ai-review.model'
 import { kindFromMime, kindLine, kindMeta } from '../../utils/resource-kind'
+import { AI_REVIEW_PACKAGE_BASE } from '../../services/ai-review.service'
 
 /** One issue from a report, opened in place. */
 export interface AirEvidence {
@@ -36,6 +37,104 @@ export function safeFileUrl(url: string | null | undefined): string | null {
   } catch {
     return null
   }
+}
+
+/** True only for the review API's own package preview path on this site, never another address. */
+export function isPackagePreviewUrl(url: string): boolean {
+  return url.startsWith(`${AI_REVIEW_PACKAGE_BASE}/`) && !/[\s"'<>]|\/\.{1,2}(\/|$)/.test(url)
+}
+
+/** The names a file of a package goes by in a finding: its path, its file name, and (for media) its bare name. */
+function namesOf(filePath: string, bare: boolean): string[] {
+  const p = filePath.toLowerCase()
+  const file = p.split('/').pop() || p
+  return [p, file, ...(bare ? [file.replace(/\.[^.]+$/, '')] : [])].filter(n => n.length > 1)
+}
+
+/** Where `name` stands in `text` as a whole name ("s2", not the "s2" of "s20" or "cs2"). */
+function positionsOf(text: string, name: string): number[] {
+  const out: number[] = []
+  const inWord = (c: string | undefined) => !!c && /[\p{L}\p{N}_]/u.test(c)
+  for (let i = text.indexOf(name); i !== -1; i = text.indexOf(name, i + 1)) {
+    if (!inWord(text[i - 1]) && !inWord(text[i + name.length])) {
+      out.push(i)
+    }
+  }
+  return out
+}
+
+/**
+ * The file of a package a text names. With `mark` (where the moment is written), the one named
+ * last before it, so "s2 at 0:17 … s3 at 1:32" with the moment 1:32 is s3; else the first named.
+ */
+export function namedFile<T extends { path: string }>(files: readonly T[], text: string, bare: boolean, mark = -1): T | null {
+  let before: { file: T; at: number } | null = null
+  let first: { file: T; at: number } | null = null
+  for (const file of files) {
+    for (const name of namesOf(file.path, bare)) {
+      for (const at of positionsOf(text, name)) {
+        if (!first || at < first.at) {
+          first = { file, at }
+        }
+        if (mark >= 0 && at <= mark && (!before || at > before.at)) {
+          before = { file, at }
+        }
+      }
+    }
+  }
+  return (before || first)?.file ?? null
+}
+
+type PlaceFields = Pick<AirEvidence, 'item' | 'at' | 'atSec' | 'notes' | 'fix'>
+
+/**
+ * The video inside an HTML package that a finding points at, and the moment: the one its place
+ * or its note names ("s2 at 1:19", "assets/video/s2.mp4 at 1:19"; with several named, the one
+ * named just before the moment), or the package's only video. Null when the finding has no
+ * moment, names no video of a package with several, or the moment is past that video's end.
+ */
+export function packageVideoAt(e: PlaceFields): { path: string; atSec: number } | null {
+  const videos = e.item.result?.htmlPackage?.videos || []
+  if (typeof e.atSec !== 'number' || !videos.length) {
+    return null
+  }
+  const at = (e.at || '').toLowerCase()
+  const body = [...e.notes, e.fix || ''].join(' \n ').toLowerCase()
+  const time = at.match(/\d{1,2}(?::\d{2}){1,2}/)?.[0] || at
+  const video =
+    namedFile(videos, at, true) || namedFile(videos, body, true, time ? body.indexOf(time) : -1) || (videos.length === 1 ? videos[0] : null)
+  if (!video || (typeof video.durationSec === 'number' && e.atSec > video.durationSec + 2)) {
+    return null
+  }
+  return { path: video.path, atSec: Math.max(0, Math.floor(e.atSec)) }
+}
+
+/** The page of an HTML package a finding names ("lessons/2.html"), when the package lists its pages. */
+export function packagePageAt(e: Pick<AirEvidence, 'item' | 'at' | 'notes' | 'fix'>): string | null {
+  const pages = (e.item.result?.htmlPackage?.pagePaths || []).map(path => ({ path }))
+  const text = [e.at || '', ...e.notes, e.fix || ''].join(' \n ').toLowerCase()
+  return pages.length ? (namedFile(pages, text, false)?.path ?? null) : null
+}
+
+/** The questions a finding names ("Q9", "question 9"), in order, without repeats. */
+export function questionsNamed(text: string): number[] {
+  const out: number[] = []
+  for (const m of text.matchAll(/\b(?:Q|question\s*#?\s*)(\d{1,3})\b/gi)) {
+    const n = Number(m[1])
+    if (n > 0 && !out.includes(n)) {
+      out.push(n)
+    }
+  }
+  return out
+}
+
+/** Another file of the package, beside the link to its index.html (each part of the path encoded). */
+export function packageFileUrl(indexUrl: string, filePath: string): string | null {
+  if (!/\/index\.html$/.test(indexUrl)) {
+    return null
+  }
+  const url = indexUrl.replace(/\/index\.html$/, '/' + filePath.split('/').map(encodeURIComponent).join('/'))
+  return isPackagePreviewUrl(url) ? url : null
 }
 
 /** "0:12" from 12; "1:02:05" from 3725. */
@@ -82,7 +181,84 @@ export class AirEvidenceComponent {
   readonly videoSrc = computed(() => {
     const url = this.fileUrl()
     const at = this.evidence()?.atSec
-    return url && this.kind() === 'video' ? (at ? `${url}#t=${Math.max(0, Math.floor(at))}` : url) : null
+    const media = this.kind() === 'video' || this.kind() === 'audio'
+    return url && media ? (at ? `${url}#t=${Math.max(0, Math.floor(at))}` : url) : null
+  })
+
+  /** The review API's link to the package's index.html, when it is one of its own. */
+  private readonly packageIndex = computed(() => {
+    const url = this.evidence()?.item.packageUrl
+    return url && this.kind() === 'html' && isPackagePreviewUrl(url) ? url : null
+  })
+  /** The package page the finding names, else its first page. */
+  readonly packagePage = computed(() => {
+    const e = this.evidence()
+    const index = this.packageIndex()
+    if (!e || !index) {
+      return null
+    }
+    const page = packagePageAt(e)
+    const url = page ? packageFileUrl(index, page) : null
+    return url ? { url, path: page } : { url: index, path: null }
+  })
+
+  /**
+   * An HTML package's page, from the review service. Only a same-site link the API service
+   * built (it starts with the review API's package path) is trusted; the frame is sandboxed too.
+   */
+  readonly htmlSrc = computed<SafeResourceUrl | null>(() => {
+    const page = this.packagePage()
+    return page ? this.sanitizer.bypassSecurityTrustResourceUrl(page.url) : null
+  })
+
+  /**
+   * The questions the finding is about: the one a question check names (Q3), or those a
+   * checklist note names ("Q9 misstates…"), with their text from the review.
+   */
+  readonly questions = computed(() => {
+    const e = this.evidence()
+    if (!e) {
+      return []
+    }
+    const own = /^Q(\d+)$/.exec(e.code)
+    if (own) {
+      return [{ n: Number(own[1]), text: e.title }]
+    }
+    const all = e.item.result?.questions || []
+    return questionsNamed([e.at || '', ...e.notes, e.fix || ''].join(' \n '))
+      .map(n => ({ n, text: all.find(q => q.n === n)?.question || '' }))
+      .filter(q => q.text)
+      .slice(0, 6)
+  })
+  /** A question check of an HTML package: the question, not the package, is what to show. */
+  readonly packageQuestion = computed(() => this.kind() === 'html' && /^Q\d+$/.test(this.evidence()?.code || ''))
+  /**
+   * The package's own video the finding points at, served from the package and started at the
+   * moment, as a plain video would be: the package's player cannot be moved from outside its sandbox.
+   */
+  readonly packageVideo = computed(() => {
+    const e = this.evidence()
+    const index = this.packageIndex()
+    const at = e && index ? packageVideoAt(e) : null
+    const src = at && index ? packageFileUrl(index, at.path) : null
+    return at && src ? { ...at, src: `${src}#t=${at.atSec}`, label: clock(at.atSec) } : null
+  })
+  /** The package page instead of its video, when the reviewer asks for it. */
+  readonly showPackagePage = signal(false)
+
+  /** The same page, to open in a tab of its own (the service sandboxes it there as well). */
+  readonly htmlTabUrl = computed(() => this.packagePage()?.url ?? null)
+
+  /**
+   * Whether the "Starts at" / "Opened at" chip belongs: not on a quiz (a page there is the
+   * quiz file's, not a place to open), and on a package only beside its video.
+   */
+  readonly showWhere = computed(() => {
+    const k = this.kind()
+    if (!this.where() || k === 'quiz' || k === 'assessment') {
+      return false
+    }
+    return k !== 'html' || (!!this.packageVideo() && !this.showPackagePage() && !this.packageQuestion())
   })
 
   /** The PDF, opened on the issue's page. Trusted only after safeFileUrl allowed it. */
@@ -146,6 +322,7 @@ export class AirEvidenceComponent {
 
   open(evidence: AirEvidence): void {
     this.mediaError.set(false)
+    this.showPackagePage.set(false)
     this.refreshing.set(false)
     this.refreshError.set('')
     this.evidence.set(evidence)

@@ -14,7 +14,12 @@
     <div class="air-score-grid">
       @if (s.addie) {
         <div class="air-score air-score--{{ s.addie.band || 'none' }}">
-          <span class="air-ring" [style.--pct]="s.addie.scorePct ?? 0" role="img" [attr.aria-label]="(s.addie.scorePct ?? 0) + ' percent'">
+          <span
+            class="air-ring"
+            [style.--pct]="s.addie.scorePct ?? 0"
+            role="img"
+            [attr.aria-label]="s.addie.scorePct === null ? 'Could not be scored' : s.addie.scorePct + ' percent'"
+          >
             <span class="air-ring-value"
               ><b>{{ s.addie.scorePct ?? '—' }}</b
               ><small>%</small></span
@@ -109,6 +114,8 @@
                           >{{ a.yes }} <span class="air-muted">of {{ a.applicable }}</span></span
                         >
                         <span class="air-chip air-chip--sm air-chip--{{ a.band }}">{{ a.pct ?? '—' }}%</span>
+                      } @else if (r.addieFailed) {
+                        <span class="air-restable-failed" i18n>Could not score</span>
                       } @else {
                         <span class="air-muted">—</span>
                       }
@@ -120,6 +127,8 @@
                         <span class="air-restable-num"
                           >{{ d.yes }} <span class="air-muted">of {{ d.applicable }}</span></span
                         >
+                      } @else if (r.domainFailed) {
+                        <span class="air-restable-failed" i18n>Could not score</span>
                       } @else {
                         <span class="air-muted">—</span>
                       }
@@ -494,6 +503,13 @@
         </p>
       }
     }
+    <!-- How the video was taken in, when not all of it was: speech, watching, no one speaking. -->
+    @for (n of mediaNotes(row.item); track $index) {
+      <p class="air-pass-error" [class.air-pass-error--info]="n.tone === 'info'">
+        <ws-auth-air-icon [name]="n.tone === 'info' ? 'info' : 'error'" />
+        <span>{{ n.text }}</span>
+      </p>
+    }
 
     <!-- The checklist by area, at a glance. -->
     @if (row.addie; as a) {
@@ -568,15 +584,35 @@
             }
           </ul>
         } @empty {
-          <p class="air-tofix-none">
-            <ws-auth-air-icon name="checkCircle" [size]="16" /> <ng-container i18n>Nothing to fix here.</ng-container>
-          </p>
+          <!-- "Nothing to fix" only when every check ran: a failed one found nothing because it never looked. -->
+          @if (
+            row.domainError ||
+            row.alignmentError ||
+            row.item.result?.questionsError ||
+            row.addieError ||
+            row.item.result?.transcriptError ||
+            row.item.result?.watchError
+          ) {
+            <p class="air-tofix-none air-tofix-none--partial">
+              <ws-auth-air-icon name="error" [size]="16" />
+              <ng-container i18n
+                >No issues from the checks that ran. The checks above could not run, so this resource is not fully reviewed.</ng-container
+              >
+            </p>
+          } @else {
+            <p class="air-tofix-none">
+              <ws-auth-air-icon name="checkCircle" [size]="16" /> <ng-container i18n>Nothing to fix here.</ng-container>
+            </p>
+          }
         }
         @if (row.item.result?.questions?.length && !questionIssues(row.item).length) {
           <p class="air-tofix-none">
             <ws-auth-air-icon name="checkCircle" [size]="16" />
             <ng-container i18n>Every question checks out: answer keys, options and hints.</ng-container>
           </p>
+        }
+        @if (recallLine(row.item); as line) {
+          <p class="air-small air-muted">{{ line }}</p>
         }
       </div>
     }

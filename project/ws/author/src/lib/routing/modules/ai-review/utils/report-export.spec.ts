@@ -4,6 +4,8 @@ import {
   buildWorkbookSheets,
   esc,
   judgedAgainst,
+  mediaNotes,
+  recallLine,
   packageLine,
   levelText,
   buildReportPage,
@@ -309,8 +311,8 @@ describe('report export', () => {
       'Over clothing',
       'Bare arm',
     ])
-    expect(sheets['Coverage']).toContainEqual(['Proteinuria', 'missing', ''])
-    expect(sheets['Questions']).toContainEqual(['Final assessment', 1, 'Dose?', 'Needs attention', 'Key marks 4 mg', 'Mark 4 g'])
+    expect(sheets['Coverage']).toContainEqual(['Proteinuria', 'Missing', ''])
+    expect(sheets['Questions']).toContainEqual(['Final assessment', 1, 'Dose?', 'Needs attention', 'Key marks 4 mg', 'Mark 4 g', ''])
   })
 
   it('shows the course verdict, which weighs both reviews, in place of the checklist-only band', () => {
@@ -457,10 +459,34 @@ describe('course alignment in the exports', () => {
 
   it('gives it its own Excel sheet', () => {
     const sheet = buildWorkbookSheets(aligned())['Course alignment']
-    expect(sheet[0]).toEqual(['Course verdict', 'Does not deliver what its description promises'])
-    expect(sheet).toContainEqual(['Danger signs', 'missing', ''])
-    expect(sheet).toContainEqual(['BP video', 'Off topic for this course', 'Diet', 'Nutrition only.', 'Move it'])
+    // A real header row: the workbook freezes and filters it.
+    expect(sheet[0]).toEqual(['Part', 'What', 'Status', 'Detail', 'Suggested fix'])
+    expect(sheet[1]).toEqual(['Course', 'Verdict', 'Does not deliver what its description promises', expect.any(String), ''])
+    expect(sheet).toContainEqual(['Promise', 'Danger signs', 'Missing', '', ''])
+    expect(sheet).toContainEqual(['Resource', 'BP video', 'Off topic for this course', 'Teaches: Diet\nNutrition only.', 'Move it'])
     expect(buildWorkbookSheets(review())['Course alignment']).toBeUndefined()
+  })
+
+  it('lists off-topic resources and a check that could not run in the alignment sheet', () => {
+    const r = aligned()
+    const a = r.result!.alignment as { offTopic: { name: string; why: string }[] }
+    a.offTopic = [{ name: 'Diet video', why: 'About nutrition, not eclampsia.' }]
+    expect(buildWorkbookSheets(r)['Course alignment']).toContainEqual([
+      'Off topic',
+      'Diet video',
+      'Off topic',
+      'About nutrition, not eclampsia.',
+      '',
+    ])
+    const failed = aligned()
+    failed.result!.alignment = { error: 'model timed out' } as never
+    expect(buildWorkbookSheets(failed)['Course alignment']).toContainEqual([
+      'Course',
+      'Alignment check',
+      'Could not run',
+      'model timed out',
+      '',
+    ])
   })
 })
 
@@ -587,5 +613,38 @@ describe('the HTML and PDF report, on unusual reviews', () => {
     expect(judgedAgainst({ levelMode: 'perResource', levels: {} } as never)).toBe('Each part at its own level')
     expect(roleSummary({ domainStyle: 'frac', domain: true, role: null, roleNote: 'No activities.' } as never)).toBe('No activities.')
     expect(roleSummary({ domainStyle: 'frac', domain: true } as never)).toBe('')
+  })
+})
+
+describe('how a resource was taken in', () => {
+  const withResult = (result: Record<string, unknown>) => ({ result }) as unknown as IAiReviewItem
+
+  it('says when speech could not be transcribed or watching failed, and when no one speaks', () => {
+    expect(mediaNotes(withResult({}))).toEqual([])
+    expect(mediaNotes(withResult({ transcriptError: 'elevenlabs: 429' }))[0]).toEqual({
+      tone: 'error',
+      text: 'The speech could not be transcribed (elevenlabs: 429), so the narration was not reviewed.',
+    })
+    expect(mediaNotes(withResult({ watchError: 'timed out' }))[0].text).toMatch(/frames and transcript only/)
+    expect(mediaNotes(withResult({ noSpeech: true }))[0]).toMatchObject({ tone: 'info' })
+  })
+
+  it('counts the questions that only ask to recall a fact, when the check rated them', () => {
+    expect(recallLine(withResult({ questions: [{ n: 1 }] }))).toBe('')
+    expect(
+      recallLine(
+        withResult({
+          questions: [
+            { n: 1, demand: 'recall' },
+            { n: 2, demand: 'apply' },
+            { n: 3, demand: 'recall' },
+          ],
+        }),
+      ),
+    ).toBe('2 of 3 questions only ask the learner to recall a fact; 1 asks them to apply it.')
+  })
+
+  it('keeps Hindi vowel signs in the file name', () => {
+    expect(reportFileName({ courseName: 'नमस्ते आशा' }, 'pdf')).toBe('AI-review-नमस्ते_आशा.pdf')
   })
 })

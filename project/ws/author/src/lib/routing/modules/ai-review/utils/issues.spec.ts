@@ -1,5 +1,5 @@
 import { IAiReview } from '../models/ai-review.model'
-import { collectIssues } from './issues'
+import { ANSWER_KEY_FIX, collectIssues } from './issues'
 
 const review = {
   items: [
@@ -146,5 +146,43 @@ describe('findings the guard doubts', () => {
       borderline: true,
       check: 'It says the marked answer is wrong without naming the guideline or source.',
     })
+  })
+})
+
+describe('the answer key', () => {
+  it('lists a guessable pattern in the key as a finding of its own, with what to do', () => {
+    const quiz = {
+      items: [
+        {
+          contentId: 'do_q',
+          name: 'Quiz',
+          kind: 'quiz',
+          status: 'done',
+          result: { answerPattern: ['The correct answer is the longest option in 8 of 8 questions.'], questions: [] },
+        },
+      ],
+    } as unknown as IAiReview
+    const [x] = collectIssues(quiz)
+    expect(x).toMatchObject({
+      source: 'answerKey',
+      tone: 'issue',
+      finding: 'The correct answer is the longest option in 8 of 8 questions.',
+      fix: ANSWER_KEY_FIX,
+    })
+  })
+
+  it('reads a time written in a course-fit note, so it opens there', () => {
+    const fit = {
+      items: [
+        {
+          contentId: 'do_v',
+          name: 'V',
+          kind: 'video',
+          status: 'done',
+          result: { alignment: { verdict: 'partial', note: 'Diet talk from 1:10' } },
+        },
+      ],
+    } as unknown as IAiReview
+    expect(collectIssues(fit).find(i => i.source === 'alignment')?.place).toEqual({ at: '1:10', atSec: 70 })
   })
 })

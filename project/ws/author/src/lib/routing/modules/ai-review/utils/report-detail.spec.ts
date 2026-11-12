@@ -28,6 +28,8 @@ describe('where a finding is', () => {
     expect(locateText('on page 4')).toEqual({ at: 'page 4', page: 4 })
     expect(placeLabel({ atSec: 65 })).toBe('1:05')
     expect(placeLabel({ page: 4 })).toBe('page 4')
+    expect(placeLabel({ atSec: 3725 })).toBe('1:02:05')
+    expect(placeLabel({ at: 'Q9' })).toBe('')
   })
 
   it('links to the resource at the moment or page, and never to an unsafe address', () => {
@@ -35,6 +37,10 @@ describe('where a finding is', () => {
     expect(placeLink(item({ artifactUrl: 'https://cdn.example/n.pdf' }), { page: 4 })).toBe('https://cdn.example/n.pdf#page=4')
     expect(placeLink(item({ artifactUrl: 'javascript:alert(1)' }))).toBeNull()
     expect(placeLink(item({ artifactUrl: null }))).toBeNull()
+    expect(placeLink(item({ artifactUrl: 'http://cdn.example/v.mp4' }))).toBeNull()
+    // An HTML package's file is its zip: no moment or page to open it at.
+    expect(placeLink(item({ kind: 'html', artifactUrl: 'https://cdn.example/p.zip' }), { atSec: 79 })).toBeNull()
+    expect(placeLink(item({ kind: 'html', artifactUrl: 'https://cdn.example/p.zip' }))).toBe('https://cdn.example/p.zip')
   })
 
   it("finds each resource's evidence for a course-level component, whatever its punctuation", () => {

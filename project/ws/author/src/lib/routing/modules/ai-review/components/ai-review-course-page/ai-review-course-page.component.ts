@@ -53,7 +53,8 @@ export const ROLE_CHECK_TIMEOUT_MS = 50000
 export const JOINED_COURSE_REVIEW = 'This course was already being reviewed, so you are following that review instead of starting another.'
 /** Start's answer was lost, but the review had started: it is shown. */
 export const STARTED_AFTER_ALL = 'The review had started after all; here it is.'
-export const MEASURE_TIMEOUT_MS = 120000
+/** Longer than the gateways wait for measuring (Kong 130 s, uiproxy 150 s), so their answer always arrives first. */
+export const MEASURE_TIMEOUT_MS = 155000
 
 /** Settle time before asking which resources are unchanged, so typing does not fire a call per key. */
 export const REUSE_CHECK_DEBOUNCE_MS = 400
@@ -868,6 +869,19 @@ export class AiReviewCoursePageComponent implements OnInit {
       .subscribe({
         next: review => {
           this.following.set(false)
+          // A link to another course's review (or to a file review): never show it under this
+          // course's name, settings and history.
+          if (this.courseId && review.courseId !== this.courseId) {
+            this.pollSub?.unsubscribe()
+            this.followedId = null
+            this.review.set(null)
+            this.pollError.set(
+              review.courseId
+                ? "That review is of a different course. Open it from that course's AI review page, or from Past reviews."
+                : 'That is a review of uploaded files, not of this course. Open it from Past reviews.',
+            )
+            return
+          }
           this.review.set(review)
           this.syncHistory(review)
           if (AI_REVIEW_FINAL_STATUSES.has(review.status)) {
@@ -923,7 +937,19 @@ export class AiReviewCoursePageComponent implements OnInit {
       this.addie.set(o.addie !== false)
       this.domain.set(!!o.domain && this.canJudge())
       this.alignment.set(!!o.alignment && this.canAlign())
+      // Videos are always watched in full now, even when the earlier review had it off.
       this.watch.set(true)
+      // The resources it left out stay left out (the position follows from the audience).
+      const reviewed = new Set((this.review()?.items || []).map(i => i.contentId))
+      if (reviewed.size) {
+        this.excluded.set(
+          new Set(
+            this.reviewable()
+              .map(r => r.contentId)
+              .filter(id => !reviewed.has(id)),
+          ),
+        )
+      }
       if (o.domainStyle) {
         this.domainStyle.set(AI_REVIEW_FRAC_ENABLED ? o.domainStyle : 'plain')
       }

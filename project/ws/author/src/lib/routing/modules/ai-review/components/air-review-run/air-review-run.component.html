@@ -167,7 +167,8 @@
       <p class="air-error" role="alert">{{ r.error }}</p>
     }
     <div class="air-actions">
-      @if (r.status !== 'cancelled') {
+      <!-- A cancelled review still shows what it finished (and paid for) before it stopped. -->
+      @if (hasReport()) {
         <!-- Read it first, in a new tab; then take it away in the format that suits. -->
         <button type="button" class="air-btn air-btn--primary" (click)="openReport()">
           <ws-auth-air-icon name="openNew" [size]="18" /> <ng-container i18n>Open report</ng-container>
@@ -276,7 +277,13 @@
       </div>
     </div>
   }
-  @if (r.status !== 'cancelled') {
+  @if (hasReport()) {
+    @if (r.status === 'cancelled') {
+      <p class="air-card air-cancel-note" role="note" i18n>
+        This review was cancelled after it had finished {{ reviewedCount() }} of {{ r.items.length }} resources. Their results are below;
+        there is no course-level verdict.
+      </p>
+    }
     <ws-auth-ai-review-report [review]="r" />
   }
 }

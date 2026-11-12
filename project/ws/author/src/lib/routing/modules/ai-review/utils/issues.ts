@@ -6,10 +6,13 @@ import { locateText, Place } from './report-detail'
  * "Issues to fix" sheet all list, so they always agree.
  */
 
-export type IssueSource = 'checklist' | 'domain' | 'coverage' | 'question' | 'alignment' | 'failed' | 'noSound'
+export type IssueSource = 'checklist' | 'domain' | 'coverage' | 'question' | 'answerKey' | 'alignment' | 'failed' | 'noSound'
 
 /** A silent video is reviewed on what it shows; this is what to do about the missing sound. */
 export const NO_SOUND_FIX = 'If learners need a spoken explanation, add a voice-over that explains what is shown and upload the new video.'
+
+/** What to do about an answer key a learner can guess from. */
+export const ANSWER_KEY_FIX = 'Vary which option is correct and how long it is, so the answer cannot be guessed from the pattern.'
 
 export interface Issue {
   item: IAiReviewItem
@@ -36,6 +39,7 @@ export const ISSUE_SOURCES: Record<IssueSource, string> = {
   domain: 'Domain review',
   coverage: 'Level coverage',
   question: 'Question check',
+  answerKey: 'Answer key',
   alignment: 'Course alignment',
   failed: 'Could not run',
   noSound: 'No sound',
@@ -74,6 +78,21 @@ export function collectIssues(review: Pick<IAiReview, 'items'>, oneWord = 'resou
         place: {},
       })
     }
+    // The answer key's spread, counted by the service (e.g. "the correct answer is the longest
+    // option in 8 of 8 questions"): a pattern a learner can guess from, whatever each question says.
+    ;(r?.answerPattern || []).forEach(p =>
+      out.push({
+        item,
+        source: 'answerKey',
+        id: '',
+        what: 'The pattern of the correct answers',
+        verdict: 'Needs attention',
+        tone: 'issue',
+        finding: p,
+        fix: ANSWER_KEY_FIX,
+        place: {},
+      }),
+    )
     const a = r?.addie && !isPassError(r.addie) ? r.addie : null
     a?.score.areas.forEach(area =>
       area.items
@@ -157,7 +176,7 @@ export function collectIssues(review: Pick<IAiReview, 'items'>, oneWord = 'resou
         tone: 'partial',
         finding: al.note,
         fix: al.fix || '',
-        place: {},
+        place: locateText(al.note || ''),
       })
     }
     for (const [label, pass] of [

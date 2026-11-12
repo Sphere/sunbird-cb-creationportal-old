@@ -122,6 +122,22 @@
   background: $air-canvas;
 }
 
+// A package is a web page: shown on white, as in the course player.
+.air-ev-html {
+  background: #fff;
+}
+
+// Which file of the package is playing: long paths are cut, the full one is in the tooltip.
+.air-ev-pkgfile {
+  max-width: 100%;
+  overflow: hidden;
+  color: #475569;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .air-ev-question,
 .air-ev-nopreview {
   display: flex;
@@ -138,6 +154,20 @@
     line-height: 1.55;
     font-weight: 500;
   }
+}
+
+// Several questions named in one finding: one card each, scrolling if there are many.
+.air-ev-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.air-ev-question--whole p {
+  color: $air-muted;
+  font-weight: 400;
 }
 
 .air-ev-nopreview {

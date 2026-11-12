@@ -35,6 +35,9 @@ export function competencyInFull(j: IAiReviewJudgedAgainst): string {
  * first, in AI Studio's history list. Each opens its full report where it was made. The service
  * lists a course review only while the user may still see that course.
  */
+/** How many past reviews the service lists (review.repository listMine). */
+export const PAST_REVIEWS_LIMIT = 50
+
 @Component({
   standalone: false,
   selector: 'ws-auth-ai-review-history-page',
@@ -48,6 +51,8 @@ export class AiReviewHistoryPageComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef)
 
   readonly reviews = signal<IAiReviewPastReview[]>([])
+  /** The service sends at most this many (newest first); the page says so when it is full. */
+  readonly PAST_REVIEWS_LIMIT = PAST_REVIEWS_LIMIT
   readonly loading = signal(true)
   readonly error = signal('')
   readonly filter = signal<PastReviewFilter>('all')
