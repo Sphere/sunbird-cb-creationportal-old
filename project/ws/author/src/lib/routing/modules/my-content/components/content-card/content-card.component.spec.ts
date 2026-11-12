@@ -47,6 +47,11 @@ describe('ContentCardComponent', () => {
       defaultLogo: 'logo.png',
       hasRole: jest.fn().mockReturnValue(false),
       hasAccess: jest.fn().mockReturnValue(true),
+      // Mirrors AccessControlService.isCourseMember for user u1.
+      isCourseMember: jest.fn(
+        (m: { createdBy?: string; reviewerIDs?: string[]; publisherIDs?: string[] } | null) =>
+          !!m && (m.createdBy === 'u1' || (m.reviewerIDs || []).includes('u1') || (m.publisherIDs || []).includes('u1')),
+      ),
     }
     authInitService = { editCourse: jest.fn() }
     router = { url: '/author/my-content?status=draft', navigateByUrl: jest.fn() }
@@ -388,6 +393,21 @@ describe('ContentCardComponent', () => {
       expect(withData().showMenuItem('lang')).toBe(true)
       accessService.hasAccess.mockReturnValue(false)
       expect(withData().showMenuItem('lang')).toBe(false)
+    })
+
+    it('offers AI review on a course to its creator', () => {
+      expect(withData({ contentType: 'Course', createdBy: 'u1' }).showMenuItem('aiReview')).toBe(true)
+    })
+
+    it('offers AI review to the reviewers and publishers added to the course', () => {
+      expect(withData({ contentType: 'Course', createdBy: 'x', reviewerIDs: ['u1'] }).showMenuItem('aiReview')).toBe(true)
+      expect(withData({ contentType: 'Course', createdBy: 'x', publisherIDs: ['u1'] }).showMenuItem('aiReview')).toBe(true)
+    })
+
+    it('does not offer AI review to anyone else, whatever their role, or on anything but a course', () => {
+      accessService.hasRole.mockReturnValue(true)
+      expect(withData({ contentType: 'Course', createdBy: 'someone-else' }).showMenuItem('aiReview')).toBe(false)
+      expect(withData({ contentType: 'Resource', createdBy: 'u1' }).showMenuItem('aiReview')).toBe(false)
     })
 
     it('refuses an unknown menu item', () => {

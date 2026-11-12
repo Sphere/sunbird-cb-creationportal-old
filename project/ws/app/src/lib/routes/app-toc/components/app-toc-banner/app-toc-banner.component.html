@@ -16,6 +16,11 @@
     <button class="accept-btn" (click)="gotoReviewerChecklist()">
       <ng-container i18n>Review Checklist</ng-container>
     </button>
+    @if (canAiReview) {
+      <button class="accept-btn" (click)="gotoAiReview()">
+        <ng-container i18n>AI Review</ng-container>
+      </button>
+    }
     <button class="accept-btn" [disabled]="!historyList?.length" (click)="gotoHistory()">
       <ng-container i18n>Activity Log</ng-container>
       <span class="action-badge" *ngIf="historyList?.length">{{ historyList.length }}</span>

@@ -1,0 +1,1271 @@
+@use '../ai-review-shared' as *;
+
+// ---- Course summary -----------------------------------------------------------------
+
+.air-score-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.air-score {
+  --tone: #{$air-primary};
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 16px 16px;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(255, 255, 255, 0.88));
+  box-shadow: $air-lift;
+  transition:
+    transform 0.2s $air-ease,
+    box-shadow 0.2s $air-ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, var(--tone), color-mix(in srgb, var(--tone) 25%, transparent)) top / 100% 3px no-repeat,
+      radial-gradient(90% 80% at 100% 0%, color-mix(in srgb, var(--tone) 14%, transparent), transparent 60%);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(135deg, var(--tone), color-mix(in srgb, var(--tone) 20%, transparent) 60%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    transition: opacity 0.2s $air-ease;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      $air-lift,
+      0 22px 36px -22px color-mix(in srgb, var(--tone) 70%, transparent);
+
+    &::after {
+      opacity: 1;
+    }
+  }
+
+  > * {
+    position: relative;
+  }
+}
+
+.air-score-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+
+  // Band messages are sentences; let them wrap rather than clip.
+  .air-chip {
+    white-space: normal;
+    line-height: 1.35;
+  }
+}
+
+.air-score-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $air-muted;
+}
+
+.air-score-main {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+// A ring that fills to the score. The colour follows the band; Domain uses the violet accent.
+// Registered, so the ring's fill can animate from empty to its score when the report opens.
+@property --pct {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+.air-ring {
+  --pct: 0;
+  animation:
+    air-ring-pop 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) backwards,
+    air-ring-fill 1.1s $air-ease 0.2s backwards;
+  --ring: var(--tone);
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(var(--ring) calc(var(--pct) * 1%), color-mix(in srgb, var(--ring) 12%, #fff) 0);
+}
+
+@keyframes air-ring-pop {
+  from {
+    transform: scale(0.6) rotate(-90deg);
+    opacity: 0;
+  }
+}
+
+// The tone of each score: AI Studio's green, amber and red for the band, violet for the expert.
+.air-score--green {
+  --tone: #059669;
+}
+
+.air-score--amber {
+  --tone: #d97706;
+}
+
+.air-score--red {
+  --tone: #dc2626;
+}
+
+.air-score--domain {
+  --tone: #{$air-violet};
+}
+
+// One line: the number and its unit side by side, centred in the ring.
+.air-ring-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.08);
+  line-height: 74px;
+
+  b {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: var(--tone);
+  }
+
+  small {
+    font-size: 13px;
+    font-weight: 600;
+    color: $air-muted;
+    margin-left: 1px;
+  }
+
+  // "120/135" would not fit the ring at full size.
+  &--long b {
+    font-size: 20px;
+  }
+}
+
+.air-subtitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 24px 0 8px;
+}
+
+.air-table-wrap {
+  overflow-x: auto;
+  border: 1px solid color-mix(in srgb, #fff 70%, $air-line);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(255, 255, 255, 0.9));
+  box-shadow: $air-lift;
+}
+
+.air-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th,
+  td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid color-mix(in srgb, #{$air-line} 70%, transparent);
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  thead th {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $air-muted;
+    background: color-mix(in srgb, #{$air-surface-2} 80%, transparent);
+    border-bottom: 1px solid $air-line;
+  }
+
+  tbody tr {
+    transition: background-color 0.15s $air-ease;
+
+    &:hover {
+      background: rgba(47, 122, 239, 0.04);
+    }
+  }
+}
+
+// The resources that cover a course-level component, each opening at its evidence.
+.air-cov-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.air-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 13px;
+  color: $air-text;
+  background: #fff;
+  border: 1px solid $air-line;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover {
+    border-color: $air-primary;
+    background: #f3f7ff;
+
+    .air-source-open {
+      opacity: 1;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+
+  &--missing {
+    border-style: dashed;
+  }
+}
+
+.air-source-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 260px;
+}
+
+.air-source-status {
+  color: $air-muted;
+  font-size: 12px;
+}
+
+.air-source-open {
+  color: $air-primary;
+  opacity: 0.5;
+}
+
+.air-gap-id {
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 13px;
+  color: $air-primary;
+  min-width: 32px;
+}
+
+// ---- Each resource ------------------------------------------------------------------
+
+.air-resource-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  // Set here: the global heading line height left a line's gap between the type, the
+  // name and a wrapped name.
+  line-height: 1.35;
+  margin: 0;
+  min-width: 0;
+
+  > span:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .air-kind-line {
+    line-height: 1.4;
+  }
+}
+
+.air-head-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+// An HTML package's contents and whether it reports to the platform, under its title.
+.air-package {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border: 1px solid $air-line;
+  border-radius: 10px;
+  background: $air-canvas;
+  font-size: 14px;
+}
+
+.air-package-facts {
+  color: $air-text;
+  font-weight: 500;
+}
+
+.air-package-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: $air-muted;
+
+  &--ok {
+    color: $air-green;
+  }
+
+  &--warn {
+    color: $air-amber;
+    font-weight: 500;
+  }
+}
+
+.air-chip--violet {
+  background: #f3f0ff;
+  color: $air-violet;
+}
+
+.air-chip--muted {
+  background: $air-canvas;
+  color: $air-muted;
+}
+
+.air-block-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+
+  ws-auth-air-icon {
+    color: $air-primary;
+  }
+
+  &--small {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 16px 0 8px;
+    color: $air-muted;
+  }
+}
+
+.air-text {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+
+// Why a finding needs checking by hand: amber, under its evidence.
+.air-check-why {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #8f6206;
+  background: #fef6e7;
+  border: 1px solid #f2d9a0;
+
+  ws-auth-air-icon {
+    margin-top: 2px;
+  }
+
+  b {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}
+
+.air-levelfit-best {
+  font-weight: 600;
+}
+
+.air-levelfit {
+  font-size: 14px;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+
+  &--fits {
+    color: $air-green;
+  }
+
+  &--below,
+  &--above,
+  &--mixed {
+    color: $air-amber;
+  }
+}
+
+.air-coverage {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  font-size: 14px;
+
+  li {
+    display: flex;
+    gap: 8px;
+    padding: 8px 0;
+    border-top: 1px solid rgba(124, 58, 237, 0.12);
+  }
+}
+
+.air-cov-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  margin-top: 1px;
+
+  &--covered {
+    color: $air-green;
+  }
+
+  &--partial {
+    color: $air-amber;
+  }
+
+  &--missing {
+    color: $air-danger;
+  }
+}
+
+.air-pass-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: $air-danger;
+  background: #fef3f2;
+  border: 1px solid #f2b8b0;
+}
+
+// A note on how the resource was taken in, not a failure.
+.air-pass-error--info {
+  color: #475569;
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.air-area-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.air-area {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  row-gap: 6px;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: $air-canvas;
+}
+
+.air-area-name {
+  color: $air-muted;
+}
+
+.air-area-bar {
+  grid-column: 1 / -1;
+  height: 6px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: $air-primary;
+    // Each bar grows to its value once, one after another.
+    transform-origin: left center;
+    animation: air-bar-grow 0.8s $air-ease 0.3s backwards;
+  }
+}
+
+.air-area:nth-child(2) .air-area-bar span {
+  animation-delay: 0.4s;
+}
+
+.air-area:nth-child(3) .air-area-bar span {
+  animation-delay: 0.5s;
+}
+
+@keyframes air-ring-fill {
+  from {
+    --pct: 0;
+  }
+}
+
+@keyframes air-bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.air-indicators {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.air-indicator {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid $air-line;
+  border-left-width: 4px;
+  font-size: 14px;
+
+  &--no {
+    border-left-color: $air-danger;
+  }
+
+  &--yes {
+    border-left-color: $air-green;
+  }
+
+  &--na {
+    border-left-color: #cbd5e1;
+  }
+}
+
+.air-indicator-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.air-indicator-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-weight: 500;
+}
+
+.air-note {
+  color: $air-muted;
+
+  // One issue per line, each with a small dot (a list cannot sit inside a button).
+  &--issue {
+    position: relative;
+    padding-left: 16px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 0.6em;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+  }
+}
+
+.air-fix {
+  color: $air-green;
+  font-weight: 500;
+
+  b {
+    font-weight: 700;
+  }
+}
+
+// ---- Clickable findings: each opens the resource at that point ----------------------
+
+.air-indicator--open,
+.air-cov-row {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: #fff;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px -8px rgba(47, 122, 239, 0.5);
+
+    .air-open-arrow {
+      opacity: 1;
+      color: $air-primary;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+}
+
+.air-indicator--open {
+  align-items: flex-start;
+
+  .air-indicator-body {
+    flex: 1;
+  }
+}
+
+.air-cov-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.85);
+  }
+}
+
+.air-cov-text {
+  flex: 1;
+  min-width: 0;
+}
+
+// Rows in the coverage list are buttons now; the list item only spaces them.
+.air-coverage li {
+  padding: 0;
+}
+
+.air-open-arrow {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: $air-muted;
+  opacity: 0.45;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease;
+}
+
+.air-at {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: $air-violet;
+  background: #f3f0ff;
+}
+
+.air-indicators li {
+  list-style: none;
+}
+
+// ---- Course alignment ----------------------------------------------------------------
+
+.air-align {
+  margin: 24px 0 8px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  background: #f3f0ff;
+  border: 1px solid #ddd3fb;
+}
+
+.air-align-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0;
+  color: $air-violet;
+}
+
+.air-align-verdict {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+
+  &--delivers {
+    color: $air-green;
+  }
+
+  &--partly {
+    color: $air-amber;
+  }
+
+  &--does_not {
+    color: $air-danger;
+  }
+}
+
+.air-align-fit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.air-align-name {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.air-align-promise {
+  display: flex;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+.air-align-fixes li {
+  color: $air-green;
+  font-weight: 500;
+}
+
+.air-chip--green {
+  background: #e6f4ea;
+  color: $air-green;
+}
+
+.air-chip--amber {
+  background: #fef6e7;
+  color: $air-amber;
+}
+
+.air-chip--red {
+  background: #fbe9e7;
+  color: $air-danger;
+}
+
+// A resource's fit with the course description.
+.air-fit {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid $air-line;
+  border-left-width: 4px;
+  font-size: 14px;
+
+  p {
+    margin: 0 0 4px;
+  }
+
+  &--aligned {
+    border-left-color: $air-green;
+  }
+
+  &--partial {
+    border-left-color: $air-amber;
+  }
+
+  &--off_topic {
+    border-left-color: $air-danger;
+  }
+}
+
+.air-fit-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.air-brief-name {
+  margin: 8px 0 0;
+  font-weight: 600;
+}
+
+.air-brief-sub {
+  margin: 0;
+  color: $air-muted;
+}
+
+.air-brief-text {
+  margin: 4px 0 0;
+  white-space: pre-line;
+  line-height: 1.55;
+}
+
+// ---- Cost breakdown ------------------------------------------------------------------
+
+.air-costs .air-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.air-costs-intro {
+  margin: 0 0 16px;
+}
+
+.air-costs-totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.air-costs-total {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid $air-line;
+  border-top: 3px solid $air-primary;
+  background: #fff;
+
+  &--gemini {
+    border-top-color: #0891b2;
+  }
+
+  &--anthropic {
+    border-top-color: $air-violet;
+  }
+
+  &--elevenlabs {
+    border-top-color: $air-amber;
+  }
+}
+
+.air-costs-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $air-muted;
+}
+
+.air-costs-value {
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.air-costs-table {
+  .air-num-col {
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .air-costs-group th,
+  .air-costs-group td {
+    background: $air-canvas;
+    font-size: 14px;
+    font-weight: 700;
+    color: $air-text;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+}
+
+.air-provider {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0891b2;
+  background: #ecf8fb;
+
+  &--anthropic {
+    color: $air-violet;
+    background: #f3f0ff;
+  }
+
+  &--elevenlabs {
+    color: $air-amber;
+    background: #fef6e7;
+  }
+}
+
+// ---- Coverage of the level: a stacked bar, status tabs and a full-width list -----------
+
+.air-covbar {
+  display: flex;
+  gap: 3px;
+  height: 10px;
+  margin: 4px 0 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.air-covbar-seg {
+  flex: 0 0 0;
+  min-width: 0;
+  transition: flex-grow 0.6s ease;
+
+  &--covered {
+    background: linear-gradient(90deg, #1e7a3c, #1e7a3c);
+  }
+
+  &--partial {
+    background: linear-gradient(90deg, #d97706, #d97706);
+  }
+
+  &--missing {
+    background: linear-gradient(90deg, #e5786d, #dc2626);
+  }
+}
+
+.air-covlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.air-covitem {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid $air-line;
+  border-left: 4px solid #cbd5e1;
+  background: #fff;
+  animation: air-rise $air-dur $air-ease backwards;
+
+  &--covered {
+    border-left-color: $air-green;
+  }
+
+  &--partial {
+    border-left-color: $air-amber;
+  }
+
+  &--missing {
+    border-left-color: $air-danger;
+  }
+}
+
+.air-covitem-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  .air-chip {
+    flex-shrink: 0;
+    min-width: 92px;
+    justify-content: center;
+    text-transform: capitalize;
+  }
+}
+
+.air-covitem-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.air-covitem-sources {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0 104px;
+
+  @media (max-width: 600px) {
+    margin-left: 0;
+  }
+}
+
+.air-covitem-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: $air-muted;
+  margin-right: 2px;
+}
+
+.air-covitem-plain {
+  margin: 8px 0 0 104px;
+}
+
+.air-source-status {
+  &--covered {
+    color: $air-green;
+  }
+
+  &--partial {
+    color: $air-amber;
+  }
+
+  &--missing {
+    color: $air-danger;
+  }
+}
+
+// ---- Summary: in short, and the score of each resource ------------------------------------
+
+.air-inshort {
+  position: relative;
+  overflow: hidden;
+  margin: 0 0 16px;
+  padding: 16px 18px 14px 34px;
+  border-radius: 14px;
+  border: 1px solid rgba(47, 122, 239, 0.22);
+  background:
+    linear-gradient(90deg, #2f45d6, #06b6d4, #f97316) top / 100% 3px no-repeat,
+    radial-gradient(70% 120% at 100% 0%, rgba(79, 70, 229, 0.1), transparent 60%),
+    radial-gradient(60% 120% at 0% 100%, rgba(6, 182, 212, 0.08), transparent 60%),
+    #fff;
+  font-size: 15px;
+  line-height: 1.6;
+
+  li + li {
+    margin-top: 4px;
+  }
+
+  // The course verdict: the line a reader acts on, in its band's colour.
+  .air-inshort-verdict {
+    font-weight: 600;
+    color: var(--air-ink, #0f172a);
+
+    &--green {
+      color: #1e7a3c;
+    }
+
+    &--amber {
+      color: #8f6206;
+    }
+
+    &--red {
+      color: #b42318;
+    }
+  }
+}
+
+.air-restable {
+  .air-num-col {
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  tbody th {
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 14px;
+    color: inherit;
+    background: transparent;
+  }
+
+  tfoot th,
+  tfoot td {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+    color: inherit;
+    background: $air-canvas;
+    border-top: 2px solid $air-line;
+    border-bottom: 0;
+  }
+
+  .air-chip {
+    margin-left: 8px;
+  }
+}
+
+.air-restable-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: $air-primary;
+  text-align: left;
+  cursor: pointer;
+
+  span {
+    overflow-wrap: anywhere;
+  }
+
+  &:hover span {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+// A pass that ran and failed, unlike the plain dash of one that was not asked for.
+.air-restable-failed {
+  font-size: 13px;
+  color: #b91c1c;
+}
+
+.air-restable-num {
+  font-weight: 600;
+}
+
+.air-restable-fix {
+  display: inline-block;
+  min-width: 28px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-align: center;
+  font-weight: 700;
+  color: $air-danger;
+  background: #fbe9e7;
+}
+
+.air-restable-note {
+  margin: 8px 0 0;
+}
+
+.air-cov-intro {
+  margin: -4px 0 16px;
+  line-height: 1.6;
+}
+
+.air-align-card {
+  background: #f8f6ff;
+  border-color: #ddd3fb;
+}
+
+// ---- Each resource: what was found, and one list of what to fix --------------------------
+
+.air-resource-card {
+  scroll-margin-top: 80px;
+}
+
+.air-found {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.air-found-line {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 12px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+.air-found-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: start;
+  font-size: 13px;
+  font-weight: 700;
+  color: $air-muted;
+  padding-top: 2px;
+}
+
+.air-tofix {
+  margin-top: 16px;
+}
+
+.air-tofix-n {
+  margin-left: 8px;
+  padding: 1px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: $air-danger;
+
+  &--none {
+    background: $air-green;
+  }
+}
+
+.air-tofix-group {
+  margin: 16px 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $air-muted;
+}
+
+.air-tofix-none {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  font-size: 14px;
+  color: $air-green;
+}
+
+// Nothing found, but not every check ran: not the all-clear green.
+.air-tofix-none--partial {
+  align-items: flex-start;
+  color: #8f6206;
+}

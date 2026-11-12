@@ -520,4 +520,45 @@ describe('MyContentComponent (my-content module)', () => {
       expect(mocks.loadService.changeLoad.next).toHaveBeenCalledWith(false)
     })
   })
+
+  describe('the AI Review section', () => {
+    it('opens on its own on any AI review page, and not elsewhere', () => {
+      const { component, mocks } = build()
+      ;(mocks.router as { url?: string }).url = '/author/ai-review'
+      expect(component.isAiReviewRoute).toBe(true)
+      ;(mocks.router as { url?: string }).url = '/author/ai-review/courses/do_1?review=r1'
+      expect(component.isAiReviewRoute).toBe(true)
+      ;(mocks.router as { url?: string }).url = '/author/my-content?status=draft'
+      expect(component.isAiReviewRoute).toBe(false)
+      ;(mocks.router as { url?: string }).url = undefined
+      expect(component.isAiReviewRoute).toBe(false)
+    })
+
+    it('is a section header like the others, with the AI mark, and opens Past reviews', () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const fs = require('fs') as typeof import('fs')
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const path = require('path') as typeof import('path')
+      const html = fs.readFileSync(path.join(__dirname, 'my-content.component.html'), 'utf8').replace(/\s+/g, ' ')
+      const at = html.indexOf('#panelAi')
+      const panel = html.slice(at, html.indexOf('</mat-expansion-panel>', at))
+      // The same header markup as Self Assessment and Manage Courses, so it lines up with them.
+      expect(panel).toContain('<mat-expansion-panel-header class="left-panel-header"')
+      expect(panel).toContain('<mat-panel-title class="main-block">')
+      expect(panel).toContain('class="font-weight-500 head-content-block"')
+      expect(panel).toContain('>AI Review</span>')
+      // The AI mark, not a document icon.
+      expect(panel).toContain('M10 5L11.8 11.2L18 13')
+      // Opening it goes to Past reviews and closes it again: there is no list under it.
+      expect(panel).toContain('(opened)="openAiReview(); panelAi.close()"')
+      expect(html).not.toContain('class="ai-review-nav')
+      expect(html).not.toContain('class="ai-review-link')
+    })
+
+    it('opens Past reviews', () => {
+      const { component, mocks } = build()
+      component.openAiReview()
+      expect(mocks.router.navigate).toHaveBeenCalledWith(['/author/ai-review'])
+    })
+  })
 })

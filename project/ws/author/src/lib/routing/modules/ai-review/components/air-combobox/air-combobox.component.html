@@ -1,0 +1,51 @@
+<div class="air-combo-field" [class.air-combo-field--open]="open()">
+  <input
+    type="text"
+    class="air-combo-input"
+    role="combobox"
+    autocomplete="off"
+    aria-autocomplete="list"
+    [attr.id]="id"
+    [attr.aria-labelledby]="labelledBy()"
+    [attr.aria-expanded]="open()"
+    [attr.aria-controls]="id + '-list'"
+    [attr.aria-activedescendant]="activeId()"
+    [attr.maxlength]="maxLength()"
+    [placeholder]="placeholder()"
+    [value]="value()"
+    (input)="onInput($any($event.target).value)"
+    (focus)="openList()"
+    (click)="openList()"
+    (keydown)="onKeydown($event)"
+  />
+  @if (suggestions().length) {
+    <button type="button" class="air-combo-toggle" tabindex="-1" aria-label="Show suggestions" (mousedown)="$event.preventDefault()" (click)="toggle()">
+      <ws-auth-air-icon class="air-combo-chevron" name="chevronDown" />
+    </button>
+  }
+</div>
+
+@if (open()) {
+  <ul class="air-combo-list" role="listbox" [attr.id]="id + '-list'" [attr.aria-labelledby]="labelledBy()">
+    @for (s of visible(); track s; let i = $index) {
+      <li
+        role="option"
+        class="air-combo-option"
+        [attr.id]="id + '-opt-' + i"
+        [attr.aria-selected]="s === value()"
+        [class.air-combo-option--active]="i === active()"
+        [class.air-combo-option--selected]="s === value()"
+        (mousedown)="$event.preventDefault()"
+        (mouseenter)="active.set(i)"
+        (click)="pick(i)"
+      >
+        <span>{{ s }}</span>
+        @if (s === value()) {
+          <ws-auth-air-icon name="check" [size]="18" />
+        }
+      </li>
+    } @empty {
+      <li class="air-combo-empty" role="presentation" i18n>No suggestion matches — your text is used as it is.</li>
+    }
+  </ul>
+}

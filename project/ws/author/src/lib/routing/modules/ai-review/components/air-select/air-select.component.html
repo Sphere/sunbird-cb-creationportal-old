@@ -1,0 +1,74 @@
+<button
+  type="button"
+  class="air-select-trigger"
+  role="combobox"
+  aria-haspopup="listbox"
+  [class.air-select-trigger--open]="open()"
+  [class.air-select-trigger--invalid]="invalid()"
+  [attr.id]="id"
+  [attr.aria-expanded]="open()"
+  [attr.aria-controls]="id + '-list'"
+  [attr.aria-labelledby]="labelledBy() ? labelledBy() + ' ' + id : null"
+  [attr.aria-activedescendant]="activeId()"
+  [attr.aria-invalid]="invalid() || null"
+  (click)="toggle()"
+  (keydown)="onKeydown($event)"
+>
+  <span class="air-select-value" [class.air-select-value--placeholder]="!selected()" [attr.title]="selected()?.label || null">
+    {{ selected()?.label || placeholder() }}
+  </span>
+  <ws-auth-air-icon class="air-select-chevron" name="chevronDown" />
+</button>
+
+@if (open()) {
+  <div class="air-select-panel">
+  @if (searchable()) {
+    <div class="air-select-search">
+      <ws-auth-air-icon name="search" [size]="18" />
+      <input
+        type="text"
+        role="combobox"
+        aria-autocomplete="list"
+        [attr.aria-controls]="id + '-list'"
+        [attr.aria-activedescendant]="activeId()"
+        [attr.aria-label]="searchPlaceholder()"
+        [placeholder]="searchPlaceholder()"
+        [value]="query()"
+        (input)="onSearch($any($event.target).value)"
+        (keydown)="onKeydown($event)"
+      />
+    </div>
+  }
+  <ul class="air-select-list" role="listbox" [attr.id]="id + '-list'" [attr.aria-labelledby]="labelledBy()" tabindex="-1">
+    @for (option of visible(); track option.value; let i = $index) {
+      <li
+        role="option"
+        class="air-select-option"
+        [attr.id]="id + '-opt-' + i"
+        [attr.aria-selected]="option.value === value()"
+        [class.air-select-option--active]="i === active()"
+        [class.air-select-option--selected]="option.value === value()"
+        (mousedown)="$event.preventDefault()"
+        (mouseenter)="active.set(i)"
+        (click)="choose(i)"
+      >
+        <span class="air-select-option-text">
+          <span>{{ option.label }}</span>
+          @if (option.hint) {
+            <span class="air-select-hint">{{ option.hint }}</span>
+          }
+        </span>
+        @if (option.value === value()) {
+          <ws-auth-air-icon name="check" [size]="18" />
+        }
+      </li>
+    } @empty {
+      @if (query().trim()) {
+        <li class="air-select-empty" role="presentation" i18n>Nothing matches “{{ query() }}”. Try another word.</li>
+      } @else {
+        <li class="air-select-empty" role="presentation" i18n>No options to choose from.</li>
+      }
+    }
+  </ul>
+  </div>
+}

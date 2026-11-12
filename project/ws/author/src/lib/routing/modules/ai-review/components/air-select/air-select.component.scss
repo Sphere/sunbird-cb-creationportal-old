@@ -1,0 +1,169 @@
+@use '../ai-review-shared' as *;
+
+:host {
+  position: relative;
+  display: block;
+}
+
+.air-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 14px;
+  border: 1px solid $air-line;
+  border-radius: 12px;
+  background: $air-surface-2;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+  font-family: $air-font;
+  font-size: 14px;
+  color: $air-text;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: $air-line-2;
+  }
+
+  // AI Studio's focus: the well fills to white, the accent on its edge, a soft ring round it.
+  &:focus-visible,
+  &--open {
+    outline: none;
+    background: #fff;
+    border-color: $air-focus;
+    box-shadow:
+      0 0 0 3px rgba(47, 122, 239, 0.14),
+      0 2px 8px -2px rgba(47, 122, 239, 0.22);
+  }
+
+  &--invalid {
+    border-color: $air-amber;
+  }
+}
+
+.air-select-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  // The chosen value at the weight of text typed in the inputs beside it (the Audience
+  // combobox, the notes): bold here made one field look different from its neighbours.
+  font-weight: 400;
+
+  &--placeholder {
+    color: $air-muted;
+  }
+}
+
+.air-select-chevron {
+  color: $air-muted;
+  transition: transform 0.2s ease;
+
+  .air-select-trigger--open & {
+    transform: rotate(180deg);
+    color: $air-primary;
+  }
+}
+
+.air-select-panel {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  min-width: min(320px, calc(100vw - 32px));
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid $air-line;
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  box-shadow:
+    0 24px 48px -20px rgba(15, 23, 42, 0.35),
+    0 2px 6px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+  animation: air-drop 0.16s ease-out both;
+}
+
+.air-select-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid $air-line;
+  color: $air-muted;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: none;
+    font-family: $air-font;
+    font-size: 14px;
+    color: $air-text;
+    background: transparent;
+    padding: 4px 0;
+  }
+}
+
+.air-select-list {
+  max-height: 280px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+}
+
+.air-select-empty {
+  padding: 12px;
+  font-size: 14px;
+  color: $air-muted;
+}
+
+@keyframes air-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+.air-select-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  color: $air-text;
+
+  &--active {
+    background: rgba(47, 122, 239, 0.07);
+  }
+
+  &--selected {
+    color: $air-primary-deep;
+    font-weight: 600;
+    background: rgba(47, 122, 239, 0.1);
+  }
+}
+
+.air-select-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.air-select-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: $air-muted;
+}

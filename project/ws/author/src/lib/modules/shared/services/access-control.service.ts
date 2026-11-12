@@ -147,6 +147,20 @@ export class AccessControlService {
   //   return returnValue
   // }
 
+  /**
+   * The people a course belongs to: its creator, and the reviewers and publishers added to it
+   * (the same reviewerIDs/publisherIDs the review and publish flow uses). Unlike hasAccess this
+   * ignores the course's status, for features open to them at any stage, such as AI review.
+   */
+  isCourseMember(meta: Partial<Pick<NSContent.IContentMeta, 'createdBy' | 'reviewerIDs' | 'publisherIDs'>> | null | undefined): boolean {
+    const userId = this.userId
+    if (!meta || !userId) {
+      return false
+    }
+    const listed = (ids: unknown) => Array.isArray(ids) && ids.includes(userId)
+    return meta.createdBy === userId || listed(meta.reviewerIDs) || listed(meta.publisherIDs)
+  }
+
   hasAccess(meta: NSContent.IContentMeta, forPreview = false, parentMeta?: NSContent.IContentMeta): boolean {
     // if (this.hasRole(['editor', 'admin', 'content_creator'])) {
     //   return true

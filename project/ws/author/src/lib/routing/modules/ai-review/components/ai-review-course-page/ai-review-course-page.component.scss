@@ -1,0 +1,1269 @@
+@use '../ai-review-shared' as *;
+
+// AI Studio's ground (ui/base.css :host): the canvas with two faint washes of the accent,
+// fixed, so the page reads as lit from one corner as it scrolls.
+:host {
+  display: block;
+  min-height: 100%;
+  background-color: $air-canvas;
+  background-image:
+    radial-gradient(60rem 40rem at 88% -10%, rgba(47, 122, 239, 0.07), transparent 60%),
+    radial-gradient(50rem 35rem at -8% 108%, rgba(47, 122, 239, 0.05), transparent 60%);
+  background-repeat: no-repeat;
+  // Never wider than the window: nothing decorative may add a sideways scrollbar. `clip`, not
+  // `hidden`, so the sticky past-reviews panel keeps working.
+  overflow-x: clip;
+}
+
+.air-page {
+  position: relative;
+  isolation: isolate;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+// AI Studio's aurora: soft light behind the top of the page, under everything else.
+.air-page::before {
+  content: '';
+  position: absolute;
+  inset: -40px 0 auto;
+  height: 900px;
+  z-index: -1;
+  pointer-events: none;
+  background: $air-aurora;
+  filter: blur(24px);
+  // Its own compositor layer: the blur is rasterised once, not on every repaint of the page.
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+// ---- Masthead: AI Studio's page header -------------------------------------------------
+
+.air-hero {
+  display: block;
+  margin-bottom: 24px;
+}
+
+.air-hero-main {
+  min-width: 0;
+}
+
+.air-hero-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.air-back {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid $air-line-2;
+  background: $air-surface;
+  color: $air-ink;
+  cursor: pointer;
+  box-shadow: 0 6px 16px -12px rgba(15, 23, 42, 0.35);
+  transition:
+    background-color $air-dur-fast $air-ease,
+    transform $air-dur-fast $air-ease;
+
+  &:hover {
+    background: $air-surface-2;
+    transform: translateX(-2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+}
+
+// AI Studio's eyebrow: small caps in the deep blue, with a rule running off it.
+.air-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $air-primary-deep;
+
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    max-width: 220px;
+    background: linear-gradient(to right, rgba(47, 122, 239, 0.35), transparent);
+  }
+}
+
+// The tinted icon tile AI Studio puts beside a name: a soft fill in the tone, a lit edge.
+.air-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  color: #fff;
+  background: $air-ai-gradient;
+  box-shadow:
+    0 0 0 4px rgba(47, 122, 239, 0.14),
+    0 6px 14px -6px rgba(59, 79, 224, 0.8);
+}
+
+// The page title is the one piece of type given real scale; ink fading into the deep blue.
+.air-title {
+  font-size: 32px;
+  font-weight: 700;
+  // Room above and below the letters: the gradient is clipped to the text and paints only
+  // inside this box, so Devanagari's vowel signs and top line (ि ी ं, the reph), which rise
+  // above a tight line, were cut off. The padding is taken back from the margin.
+  line-height: 1.4;
+  padding: 0.12em 0 0.08em;
+  margin: -0.12em 0 -0.08em;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, $air-ink 55%, $air-primary-deep);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+
+  @media (max-width: 600px) {
+    font-size: 25px;
+  }
+}
+
+.air-advisory {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  margin: 8px 0 0;
+  color: $air-text-2;
+
+  ws-auth-air-icon {
+    color: $air-muted;
+  }
+}
+
+// Set up → Review → Report, as AI Studio's journey pill: done steps tick green, the current
+// one glows in the gradient, the rest wait as dashed rings.
+.air-steps {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 7px 16px 7px 8px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.82));
+  border: 1px solid color-mix(in srgb, #fff 70%, $air-line);
+  box-shadow: $air-lift;
+}
+
+.air-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: $air-muted;
+  font-size: 13px;
+  font-weight: 600;
+
+  & + &::before {
+    content: '';
+    width: 28px;
+    height: 2px;
+    margin: 0 4px;
+    border-radius: 2px;
+    background: repeating-linear-gradient(90deg, $air-line-2 0 4px, transparent 4px 7px);
+
+    @media (max-width: 480px) {
+      width: 14px;
+    }
+  }
+
+  & + &.air-step--done::before,
+  & + &.air-step--current::before {
+    background: $air-ai-gradient;
+  }
+
+  &--done {
+    color: $air-text-2;
+  }
+
+  &--current {
+    color: $air-ink;
+  }
+
+  @media (max-width: 480px) {
+    &:not(.air-step--current) .air-step-label {
+      display: none;
+    }
+  }
+}
+
+.air-step-dot {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  color: $air-muted;
+  border: 1.5px dashed $air-line-2;
+  background: $air-surface;
+
+  .air-step--done & {
+    border: 0;
+    color: #fff;
+    background: #1e7a3c;
+    box-shadow: 0 0 0 3px rgba(30, 122, 60, 0.15);
+  }
+
+  .air-step--current & {
+    border: 0;
+    color: #fff;
+    background: $air-ai-gradient;
+    box-shadow:
+      0 0 0 4px rgba(47, 122, 239, 0.18),
+      0 6px 14px -6px rgba(59, 79, 224, 0.8);
+  }
+}
+
+// ---- Layout -------------------------------------------------------------------------
+
+.air-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.air-side {
+  // Below CBP's fixed 72px top bar (and the downtime banner when one shows), and
+  // scrollable on its own so a long history can be read to the end.
+  position: sticky;
+  top: calc(72px + var(--downtime-banner-offset, 0px) + 16px);
+  max-height: calc(100vh - 72px - var(--downtime-banner-offset, 0px) - 32px);
+  overflow-y: auto;
+  // Never a sideways scrollbar: the panel's content always fits its width.
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+
+  @media (max-width: 1024px) {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+.air-state {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  &--error {
+    color: $air-danger;
+
+    // A basis, so in a narrow card (the side panel) the button wraps under the message
+    // instead of squeezing it into a column a few words wide.
+    p {
+      margin: 0;
+      flex: 1 1 220px;
+    }
+  }
+}
+
+.air-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 22px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, #fff 70%, $air-line);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.82));
+  color: $air-muted;
+
+  p {
+    margin: 0;
+  }
+
+  &--side {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.air-empty-art {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  // AI Studio's empty-history mark: a violet tile.
+  color: #7c3aed;
+  background: color-mix(in srgb, #7c3aed 10%, #fff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #7c3aed 20%, transparent);
+}
+
+// ---- Step 1: set up -----------------------------------------------------------------
+
+.air-num {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: $air-primary;
+}
+
+.air-kind-counts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.air-kind-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #e8efff;
+  color: #2563eb;
+
+  &--pdf {
+    background: #fbe9e7;
+    color: #b42318;
+  }
+
+  &--quiz {
+    background: #fef6e7;
+    color: #8f6206;
+  }
+
+  &--assessment {
+    background: #e6f4ea;
+    color: #1e7a3c;
+  }
+}
+
+.air-resource-list,
+.air-history,
+.air-pipelines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.air-resource-list {
+  display: grid;
+  gap: 8px;
+
+  &--off {
+    margin-top: 12px;
+  }
+}
+
+.air-resource {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border: 1px solid $air-line;
+  border-radius: 12px;
+  background: #fff;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: #c9d8fb;
+  }
+
+  &--off {
+    background: $air-canvas;
+  }
+}
+
+.air-resource-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.air-resource-name {
+  font-size: 16px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.air-duration {
+  font-size: 12px;
+  font-weight: 600;
+  color: $air-muted;
+  background: $air-canvas;
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.air-choice-grid {
+  // One compact row per review: the descriptions read on one or two lines instead of
+  // wrapping down narrow columns, and a reason a review is off sits right under its name.
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.air-choice {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid color-mix(in srgb, #{$air-line} 70%, transparent);
+  border-radius: 14px;
+  padding: 12px 16px;
+  cursor: pointer;
+  background: #fff;
+  transition:
+    border-color $air-dur-fast $air-ease,
+    box-shadow $air-dur-fast $air-ease,
+    transform $air-dur-fast $air-ease;
+
+  // The native checkbox stays for keyboards and screen readers; the tick shows the state.
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  // The focus ring only for the keyboard: a click leaves no ring, so a block just unticked
+  // never looks selected.
+  &:has(input:focus-visible) {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+
+  &:hover:not(.air-choice--disabled) {
+    border-color: color-mix(in srgb, #2f7aef 40%, #{$air-line});
+    transform: translateY(-1px);
+  }
+
+  &--on {
+    border-color: #2f7aef;
+    background: linear-gradient(180deg, rgba(47, 122, 239, 0.07), #fff);
+    box-shadow: 0 0 0 3px rgba(47, 122, 239, 0.12);
+
+    &:hover:not(.air-choice--disabled) {
+      border-color: #2f7aef;
+    }
+  }
+
+  // Off for a reason: the review is greyed, but the reason stays fully readable.
+  &--disabled {
+    cursor: not-allowed;
+    background: $air-canvas;
+
+    .air-choice-icon,
+    .air-choice-check,
+    .air-choice-text > strong,
+    .air-choice-text > .air-muted {
+      opacity: 0.55;
+    }
+  }
+}
+
+.air-choice-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  background: $air-primary-soft;
+  color: $air-primary-deep;
+  transition:
+    background $air-dur-fast $air-ease,
+    color $air-dur-fast $air-ease,
+    box-shadow $air-dur-fast $air-ease;
+
+  .air-choice--on & {
+    background: $air-ai-gradient;
+    color: #fff;
+    box-shadow: 0 6px 14px -6px rgba(59, 79, 224, 0.8);
+  }
+}
+
+.air-choice-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.45;
+
+  > strong {
+    font-size: 15px;
+  }
+}
+
+.air-choice-check {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px dashed $air-line-2;
+  color: transparent;
+  flex-shrink: 0;
+
+  .air-choice--on & {
+    border: 0;
+    background: #2f7aef;
+    color: #fff;
+    animation: air-settle 0.42s $air-ease;
+  }
+}
+
+.air-judged {
+  margin-top: 16px;
+  border-radius: 12px;
+  background: #f0f7ff;
+  border: 1px solid #c3e6f1;
+  padding: 16px 24px;
+}
+
+// The course's own words the alignment check judges against (or the form for them).
+.air-brief {
+  margin-top: 16px;
+  border-radius: 12px;
+  background: #f3f0ff;
+  border: 1px solid #ddd3fb;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .air-judged-label {
+    color: $air-violet;
+    margin-bottom: 4px;
+  }
+
+  &--form {
+    gap: 16px;
+  }
+}
+
+.air-brief-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.air-brief-sub {
+  margin: 0;
+  font-size: 14px;
+  color: $air-muted;
+}
+
+// The description, a few lines tall; long descriptions scroll rather than push the form down.
+.air-brief-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-line;
+  max-height: 9.5em;
+  overflow-y: auto;
+}
+
+.air-judged-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0891b2;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.air-positions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.air-pos {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #c9d8fb;
+  font-weight: 500;
+}
+
+.air-field-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.air-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 280px;
+  margin-bottom: 16px;
+
+  &--narrow {
+    flex: 0 1 240px;
+  }
+}
+
+.air-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.air-required {
+  color: $air-danger;
+}
+
+.air-hint {
+  font-size: 12px;
+  color: $air-muted;
+
+  &--right {
+    align-self: flex-end;
+  }
+}
+
+// AI Studio's field: a well pressed into the card (a faint fill and inset shadow) that fills
+// to white on focus, with the accent on its edge and a soft ring round it.
+.module-input {
+  font-family: $air-font;
+  font-size: 14px;
+  color: $air-text;
+  border: 1px solid $air-line;
+  border-radius: 12px;
+  padding: 8px 14px;
+  min-height: 42px;
+  background: $air-surface-2;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+  width: 100%;
+  box-sizing: border-box;
+  transition:
+    border-color $air-dur-fast $air-ease,
+    box-shadow $air-dur-fast $air-ease,
+    background-color $air-dur-fast $air-ease;
+
+  &::placeholder {
+    color: $air-muted;
+  }
+
+  &:hover:not(:focus):not(:disabled) {
+    border-color: $air-line-2;
+  }
+
+  &:focus {
+    outline: none;
+    background: $air-surface;
+    border-color: $air-focus;
+    box-shadow:
+      0 0 0 3px rgba(47, 122, 239, 0.14),
+      0 2px 8px -2px rgba(47, 122, 239, 0.22);
+  }
+}
+
+.air-textarea {
+  resize: vertical;
+  min-height: 88px;
+}
+
+input[type='radio'] {
+  accent-color: #2f7aef;
+  width: 18px;
+  height: 18px;
+}
+
+// Plain / FRAC as a segmented choice.
+.air-segment {
+  border: 0;
+  padding: 0;
+  margin: 8px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 8px;
+
+  legend {
+    margin-bottom: 8px;
+  }
+}
+
+.air-segment-option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  // The two cards share a row's height; the shorter one keeps its content at the top
+  // instead of spreading its rows apart.
+  align-content: start;
+  align-items: start;
+  column-gap: 10px;
+  row-gap: 4px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, #{$air-line} 70%, transparent);
+  background: #fff;
+  cursor: pointer;
+  transition:
+    border-color $air-dur-fast $air-ease,
+    box-shadow $air-dur-fast $air-ease,
+    transform $air-dur-fast $air-ease;
+
+  &:hover:not(.air-segment-option--on) {
+    border-color: color-mix(in srgb, #2f7aef 40%, #{$air-line});
+    transform: translateY(-1px);
+  }
+
+  // On the title's line, not floating beside the description.
+  input {
+    grid-row: span 2;
+    align-self: start;
+    margin: 3px 0 0;
+  }
+
+  strong {
+    line-height: 24px;
+  }
+
+  span {
+    line-height: 1.55;
+  }
+
+  span {
+    color: $air-muted;
+
+    // The question each style answers, read first.
+    b {
+      color: $air-ink;
+      font-weight: 600;
+    }
+  }
+
+  &--on {
+    border-color: #2f7aef;
+    background: linear-gradient(180deg, rgba(47, 122, 239, 0.07), #fff);
+    box-shadow: 0 0 0 3px rgba(47, 122, 239, 0.12);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+}
+
+// "Watch videos in full" as a switch, still a real checkbox for keyboards and readers.
+.air-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  // A row like the review choices above it, with room to breathe after the box before it.
+  margin-top: 16px;
+  padding: 12px 16px;
+  border: 1px solid $air-border;
+  border-radius: 12px;
+  background: #fff;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: $air-border-hover;
+  }
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 44px;
+    height: 26px;
+    margin: 0;
+  }
+
+  input:focus-visible + .air-switch-track {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+
+  input:checked + .air-switch-track {
+    background: $air-primary;
+
+    &::after {
+      transform: translateX(18px);
+    }
+  }
+}
+
+.air-switch-track {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  background: #cbd5e1;
+  transition: background 0.2s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease;
+  }
+}
+
+.air-switch-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+
+  // The description under the title reads as body text, not bold.
+  > :not(:first-child) {
+    font-size: 14px;
+    font-weight: 400;
+    color: $air-muted;
+  }
+}
+
+// The launch bar: the one primary action, at the end of the form where the choices above
+// it lead. It does not follow the page, so it never covers the form.
+.air-launch {
+  margin-top: 8px;
+  padding: 16px 24px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid $air-line;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 12px 32px -16px rgba(15, 23, 42, 0.18);
+
+  @media (max-width: 600px) {
+    padding: 16px;
+
+    .air-btn--primary {
+      width: 100%;
+    }
+  }
+}
+
+.air-launch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.air-launch-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.air-launch-count {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+// ---- Step 2: review running ---------------------------------------------------------
+
+.air-history {
+  display: grid;
+  // minmax(0, …): a long review name must shorten with an ellipsis, not widen the panel.
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  > li {
+    min-width: 0;
+  }
+}
+
+// AI Studio's history row (assessment-history .hist-row): a tinted mark, the title and its
+// facts, and "Open →" that comes forward on hover.
+.air-history-item {
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(255, 255, 255, 0.9));
+  border: 1px solid color-mix(in srgb, #fff 70%, $air-line);
+  border-radius: 12px;
+  padding: 10px 10px 10px 10px;
+  cursor: pointer;
+  font-family: $air-font;
+  color: $air-text;
+  transition:
+    border-color $air-dur-fast $air-ease,
+    box-shadow $air-dur-fast $air-ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, #2f7aef 40%, $air-line);
+    box-shadow:
+      0 1px 2px rgba(26, 26, 26, 0.04),
+      0 8px 24px rgba(26, 26, 26, 0.04);
+
+    .air-history-go {
+      opacity: 1;
+
+      ws-auth-air-icon {
+        transform: translateX(3px);
+      }
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+
+  &--active {
+    border-color: color-mix(in srgb, #2f7aef 55%, $air-line);
+    background: linear-gradient(135deg, rgba(47, 122, 239, 0.1), rgba(47, 122, 239, 0.03)), $air-surface;
+  }
+}
+
+.air-history-ico {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  color: #3b4fe0;
+  background: color-mix(in srgb, #3b4fe0 11%, #fff);
+}
+
+.air-history-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+// Just the arrow at panel width (AI Studio drops the word when space is short); the whole
+// row is the button, so nothing is lost.
+.air-history-go {
+  flex: none;
+  align-self: center;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: $air-primary-deep;
+  opacity: 0.55;
+  transition: opacity $air-dur-fast $air-ease;
+
+  ws-auth-air-icon {
+    transition: transform $air-dur-fast $air-ease;
+  }
+
+  @media (max-width: 560px) {
+    display: none;
+  }
+}
+
+// The date with its status beside it.
+.air-history-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+
+  > * {
+    min-width: 0;
+  }
+}
+
+.air-history-date {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+// The scores side by side, wrapping only when they must.
+.air-history-scores {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+
+  .air-mini {
+    padding: 1px 8px;
+    white-space: nowrap;
+  }
+}
+
+.air-history-row .air-chip--sm {
+  padding: 1px 8px;
+}
+
+.air-mini {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(47, 122, 239, 0.22);
+  background: #e8efff;
+  color: $air-primary;
+
+  &--green {
+    background: #e6f4ea;
+    color: $air-green;
+  }
+
+  &--amber {
+    background: #fef6e7;
+    color: $air-amber;
+  }
+
+  &--loading {
+    display: block;
+    height: 64px;
+    border-radius: 12px;
+    // AI Studio's working shimmer (.is-working): a blue light passing across.
+    background-color: $air-surface-2;
+    background-image: linear-gradient(100deg, transparent 30%, rgba(47, 122, 239, 0.09) 50%, transparent 70%);
+    background-size: 200% 100%;
+    animation: air-shimmer 1.8s linear infinite;
+  }
+
+  &--red {
+    background: #fbe9e7;
+    color: $air-danger;
+  }
+
+  &--violet {
+    background: #f3f0ff;
+    color: $air-violet;
+  }
+}
+
+// Why an option is unavailable, inside its card.
+.air-choice-why {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 4px;
+  color: $air-amber;
+  font-weight: 500;
+}
+
+// A resource that will reuse its earlier result: unchanged, so not reviewed (or paid for) again.
+.air-reused {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: $air-green;
+  background: #e6f4ea;
+  border-radius: 999px;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+// The level a part of a self-assessment course covers.
+.air-level-tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0891b2;
+  background: #ecf8fb;
+  border: 1px solid #a5f3fc;
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+// "As mapped on the course": shown in place of the Level dropdown, in the same frame.
+.air-static-field {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid $air-line;
+  border-radius: 8px;
+  background: $air-canvas;
+  font-size: 14px;
+  font-weight: 500;
+  color: $air-muted;
+}
+
+// The competencies a course maps, each with its levels.
+.air-mapped {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #c3e6f1;
+    font-size: 14px;
+    color: $air-text;
+  }
+
+  ws-auth-air-icon {
+    color: #0891b2;
+  }
+}
+
+// While pages and questions are being counted.
+.air-duration--counting {
+  color: $air-muted;
+  font-weight: 500;
+  font-style: italic;
+}
+
+// "Counting the pages and questions", above the resource list while it runs.
+.air-measuring {
+  margin-bottom: 16px;
+}
+
+// Offline: one calm line at the top of the page, not an error.
+.air-offline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  color: $air-amber;
+  background: #fef6e7;
+  border: 1px solid #f2d9a0;
+}
+
+// No audience yet: a muted, dashed chip that reads as a gap to fill.
+.air-pos--empty {
+  border-style: dashed;
+  color: $air-amber;
+  font-weight: 500;
+}
+
+// ---- Choosing what to review ---------------------------------------------------------
+
+.air-pick-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.air-pick-count {
+  color: $air-muted;
+  font-weight: 500;
+}
+
+.air-pick-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.air-pick-sep {
+  color: $air-muted;
+}
+
+// A row is one label: a click anywhere on it ticks or unticks the resource.
+.air-resource--pick {
+  cursor: pointer;
+
+  &:has(.air-check:focus-visible) {
+    border-color: $air-primary;
+  }
+}
+
+// The row's tick is the shared `.air-check` (ai-review-shared.scss).
+
+// Left out: still listed, plainly not part of this review.
+.air-resource--left-out {
+  background: $air-canvas;
+
+  .air-kind-tile,
+  .air-resource-text,
+  .air-duration,
+  .air-level-tag {
+    opacity: 0.5;
+  }
+}
+
+// The resource's estimated cost, at the right edge of its row.
+.air-cost {
+  flex-shrink: 0;
+  min-width: 64px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: $air-primary;
+  background: #e8efff;
+
+  &--off {
+    color: $air-muted;
+    background: transparent;
+    border: 1px dashed $air-border;
+  }
+}

@@ -1,0 +1,709 @@
+<div class="air-page">
+  <!-- Banner: what this is, and where you are -->
+  <header class="air-hero">
+    <div class="air-hero-main">
+      <div class="air-hero-top">
+        <button type="button" class="air-back" (click)="back()" aria-label="Back to past reviews">
+          <ws-auth-air-icon name="arrowBack" />
+        </button>
+        <span class="air-eyebrow">
+          <span class="air-mark" aria-hidden="true"><ws-auth-air-icon name="sparkle" [size]="16" /></span>
+          <ng-container i18n>AI Review</ng-container>
+        </span>
+      </div>
+      <h1 class="air-title">{{ review()?.title || review()?.courseName || 'Review your files' }}</h1>
+      <p class="air-advisory">
+        <ws-auth-air-icon name="info" [size]="16" />
+        <span i18n>Check a video, PDF, quiz or assessment before it goes into a course. Advisory only — only you see these reviews.</span>
+      </p>
+
+      <ol class="air-steps" aria-label="Progress">
+        @for (step of steps; track step.id; let i = $index) {
+          <li
+            class="air-step"
+            [class.air-step--done]="i < currentStepIndex()"
+            [class.air-step--current]="i === currentStepIndex()"
+            [attr.aria-current]="i === currentStepIndex() ? 'step' : null"
+          >
+            <span class="air-step-dot">
+              @if (i < currentStepIndex()) {
+                <ws-auth-air-icon name="check" [size]="13" />
+              } @else {
+                {{ i + 1 }}
+              }
+            </span>
+            <span class="air-step-label">{{ step.label }}</span>
+          </li>
+        }
+      </ol>
+    </div>
+  </header>
+
+  <div class="air-layout">
+    <main class="air-main">
+      @if (!online()) {
+        <p class="air-offline" role="status">
+          <ws-auth-air-icon name="warning" [size]="18" />
+          <span i18n>You're offline. Uploads and the review pick up again when you reconnect.</span>
+        </p>
+      }
+
+      @if ((loadingContext() && !context()) || (following() && !review())) {
+        <section class="air-card" aria-busy="true">
+          @if (following()) {
+            <ws-auth-air-busy label="Opening the review" size="md" [typicalSec]="5" />
+          } @else {
+            <ws-auth-air-busy
+              label="Getting the file review ready"
+              detail="Loading the competencies and positions"
+              size="md"
+              [typicalSec]="8"
+            />
+          }
+        </section>
+      }
+
+      @if (contextError() && !review() && !following()) {
+        <section class="air-card air-state air-state--error" role="alert">
+          <ws-auth-air-icon name="error" [size]="24" />
+          <p>{{ contextError() }}</p>
+          <button type="button" class="air-btn air-btn--secondary" [disabled]="!online()" (click)="retryLoad()">
+            <ws-auth-air-icon name="refresh" [size]="18" /> <ng-container i18n>Try again</ng-container>
+          </button>
+        </section>
+      }
+
+      @if (review(); as r) {
+        @if (joinedNote()) {
+          <p class="air-hint air-joined" role="status"><ws-auth-air-icon name="info" [size]="16" /> {{ joinedNote() }}</p>
+        }
+        <ws-auth-air-review-run [review]="r" unit="files" (cancelled)="follow($event)" (again)="newReview()" />
+      }
+
+      @if (pollError()) {
+        <section class="air-card air-state air-state--error" role="alert">
+          <ws-auth-air-icon name="error" [size]="24" />
+          <p>{{ pollError() }}</p>
+          <button type="button" class="air-btn air-btn--secondary" [disabled]="!online()" (click)="retryFollow()">
+            <ws-auth-air-icon name="refresh" [size]="18" /> <ng-container i18n>Try again</ng-container>
+          </button>
+        </section>
+      }
+
+      @if (!review() && !following() && context(); as ctx) {
+        @if (!ctx.enabled) {
+          <!-- Storage is not set up on this server yet: say so rather than failing at upload. -->
+          <section class="air-card air-off">
+            <span class="air-empty-art" aria-hidden="true"><ws-auth-air-icon name="upload" [size]="26" /></span>
+            <h2 class="air-section-title" id="air-step-heading" tabindex="-1" i18n>Reviewing your own files is not switched on yet</h2>
+            <p class="air-muted" i18n>
+              An administrator needs to set up storage for uploaded files. Until then, open a course and use AI Review from the course page.
+            </p>
+            <button type="button" class="air-btn air-btn--secondary" (click)="back()">
+              <ws-auth-air-icon name="arrowBack" [size]="18" /> <ng-container i18n>Back to past reviews</ng-container>
+            </button>
+          </section>
+        } @else {
+          <!-- Step 1: the files -->
+          <section class="air-card" id="air-files-pick">
+            <div class="air-card-head">
+              <h2 class="air-section-title" id="air-step-heading" tabindex="-1">
+                <span class="air-num">1</span> <ng-container i18n>Files to review</ng-container>
+              </h2>
+              <span class="air-kind-counts">
+                @for (k of kindCounts(); track k.kind) {
+                  <span class="air-kind-count air-kind-count--{{ k.kind }}"
+                    ><ws-auth-air-icon [name]="k.icon" [size]="14" /> {{ k.count }} {{ k.label }}</span
+                  >
+                }
+              </span>
+            </div>
+
+            <div
+              class="air-drop"
+              [class.air-drop--over]="dragging()"
+              [class.air-drop--compact]="entries().length > 0"
+              role="group"
+              aria-labelledby="air-drop-title"
+              aria-describedby="air-drop-help"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave($event)"
+              (drop)="onDrop($event)"
+            >
+              <span class="air-drop-icon" aria-hidden="true"><ws-auth-air-icon name="upload" [size]="entries().length ? 22 : 30" /></span>
+              <span class="air-drop-text">
+                <strong id="air-drop-title" i18n>Drag files here, or choose them</strong>
+                <span class="air-small air-muted" id="air-drop-help" i18n>
+                  Videos (MP4, MOV, M4V, WEBM, MKV) · PDFs · quiz or assessment sheets in the Course Builder Excel template · interactive
+                  HTML packages (.zip, with index.html at the top). Up to {{ maxFiles() }} files.
+                </span>
+              </span>
+              <input
+                #picker
+                class="air-visually-hidden"
+                type="file"
+                multiple
+                tabindex="-1"
+                aria-hidden="true"
+                [accept]="accept"
+                (change)="onPicked($event)"
+              />
+              <button type="button" class="air-btn air-btn--secondary" [disabled]="entries().length >= maxFiles()" (click)="picker.click()">
+                <ws-auth-air-icon name="upload" [size]="18" /> <ng-container i18n>Choose files</ng-container>
+              </button>
+            </div>
+
+            @if (addNote()) {
+              <p class="air-hint air-hint--warn" role="status">{{ addNote() }}</p>
+            }
+            <p class="air-visually-hidden" aria-live="polite">{{ uploadStatus() }}</p>
+
+            @if (ready().length) {
+              <!-- Choose what to review: ready files are ticked; untick to leave one out (it stays uploaded). -->
+              <div class="air-pick-bar">
+                <span class="air-pick-count" aria-live="polite">
+                  @if (allChosen()) {
+                    <ng-container i18n>All {{ ready().length }} ready files will be reviewed</ng-container>
+                  } @else {
+                    <ng-container i18n>{{ chosen().length }} of {{ ready().length }} ready files will be reviewed</ng-container>
+                  }
+                </span>
+                <span class="air-pick-actions">
+                  <button type="button" class="air-link-btn" [disabled]="allChosen()" (click)="chooseAll(true)" i18n>Select all</button>
+                  <span class="air-pick-sep" aria-hidden="true">·</span>
+                  <button type="button" class="air-link-btn" [disabled]="!chosen().length" (click)="chooseAll(false)" i18n>Clear</button>
+                </span>
+              </div>
+            }
+            @if (entries().length) {
+              <ul class="air-files" aria-label="Files added">
+                @for (e of entries(); track e.key) {
+                  <li
+                    class="air-file air-file--{{ e.state }}"
+                    [class.air-file--left-out]="e.state === 'ready' && !isChosen(e.key)"
+                    [attr.aria-busy]="e.state === 'reading' || e.state === 'signing' || e.state === 'uploading' || e.state === 'checking'"
+                  >
+                    <!-- Only a ready file can be chosen; the others keep the space so the rows line up. -->
+                    @if (e.state === 'ready') {
+                      <input
+                        type="checkbox"
+                        class="air-check"
+                        [checked]="isChosen(e.key)"
+                        (change)="toggleFile(e.key, $any($event.target).checked)"
+                        [attr.aria-label]="'Review ' + e.name"
+                      />
+                    } @else {
+                      <span class="air-pick-space" aria-hidden="true"></span>
+                    }
+                    <span class="air-kind-tile air-kind-tile--{{ e.state === 'rejected' || e.state === 'failed' ? 'off' : e.kind }}">
+                      <ws-auth-air-icon [name]="kindMeta(e.kind).icon" />
+                    </span>
+                    <span class="air-file-main">
+                      <span class="air-file-name" [title]="e.name">{{ e.name }}</span>
+                      <span class="air-file-meta">
+                        {{ kindMeta(e.kind).label }} · {{ formatBytes(e.size) }}
+                        @if (measuredLine(e); as m) {
+                          · {{ m }}
+                        }
+                      </span>
+                      @if (e.state === 'uploading' || e.state === 'signing' || e.state === 'checking') {
+                        <!-- Uploading has a percentage; preparing and checking do not, so they are indeterminate. -->
+                        <span
+                          class="air-file-bar"
+                          role="progressbar"
+                          [attr.aria-label]="
+                            (e.state === 'uploading' ? 'Uploading ' : e.state === 'checking' ? 'Checking ' : 'Preparing ') + e.name
+                          "
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                          [attr.aria-valuenow]="e.state === 'uploading' ? e.progress : null"
+                          [attr.aria-valuetext]="e.state === 'uploading' ? e.progress + '%' : stateLabel(e)"
+                          [class.air-file-bar--checking]="e.state !== 'uploading'"
+                        >
+                          <span class="air-file-bar-fill" [style.width.%]="e.state === 'uploading' ? e.progress : 100"></span>
+                        </span>
+                      }
+                      @if (e.problem) {
+                        <span class="air-file-problem">{{ e.problem }}</span>
+                      } @else if (e.warning) {
+                        <span class="air-file-warning">{{ e.warning }}</span>
+                      }
+                    </span>
+
+                    @if (isSheet(e) && (e.state !== 'rejected' || e.uploadId)) {
+                      <!-- An Excel sheet is a quiz unless the user says it is an assessment. -->
+                      <span class="air-sheet-kind" role="radiogroup" [attr.aria-label]="'What ' + e.name + ' is'">
+                        <label class="air-sheet-kind-option" [class.air-sheet-kind-option--on]="e.kind === 'quiz'">
+                          <input
+                            type="radio"
+                            [name]="'sheet-' + e.key"
+                            [checked]="e.kind === 'quiz'"
+                            [disabled]="!canSwitchKind(e)"
+                            (change)="setSheetKind(e.key, 'quiz')"
+                          />
+                          <span i18n>Quiz</span>
+                        </label>
+                        <label class="air-sheet-kind-option" [class.air-sheet-kind-option--on]="e.kind === 'assessment'">
+                          <input
+                            type="radio"
+                            [name]="'sheet-' + e.key"
+                            [checked]="e.kind === 'assessment'"
+                            [disabled]="!canSwitchKind(e)"
+                            (change)="setSheetKind(e.key, 'assessment')"
+                          />
+                          <span i18n>Assessment</span>
+                        </label>
+                      </span>
+                    }
+
+                    @if (e.state === 'ready' && !isChosen(e.key)) {
+                      <span class="air-cost air-cost--off" i18n>Left out</span>
+                    } @else if (fileCost(e); as usd) {
+                      <span class="air-cost" title="Estimated cost of this file with the reviews chosen below"
+                        >~{{ usd | currency: 'USD' : 'symbol' : '1.2-2' }}</span
+                      >
+                    }
+                    <span class="air-file-state air-file-state--{{ e.state }}">
+                      @if (e.state === 'ready') {
+                        <ws-auth-air-icon name="checkCircle" [size]="16" />
+                      } @else if (e.state === 'rejected' || e.state === 'failed') {
+                        <ws-auth-air-icon name="warning" [size]="16" />
+                      }
+                      {{ stateLabel(e) }}
+                    </span>
+
+                    <span class="air-file-actions">
+                      @if (e.state === 'failed') {
+                        <button
+                          type="button"
+                          class="air-icon-btn"
+                          [disabled]="!online()"
+                          (click)="retryFile(e.key)"
+                          [attr.aria-label]="'Try ' + e.name + ' again'"
+                          title="Try again"
+                        >
+                          <ws-auth-air-icon name="refresh" [size]="18" />
+                        </button>
+                      }
+                      <button
+                        type="button"
+                        class="air-icon-btn"
+                        (click)="removeFile(e.key)"
+                        [attr.aria-label]="'Remove ' + e.name"
+                        title="Remove"
+                      >
+                        <ws-auth-air-icon name="close" [size]="18" />
+                      </button>
+                    </span>
+                  </li>
+                }
+              </ul>
+              @if (silentFiles().length) {
+                <div class="air-nosound" role="note">
+                  <span class="air-nosound-icon" aria-hidden="true"><ws-auth-air-icon name="warning" [size]="20" /></span>
+                  <div class="air-nosound-body">
+                    <p class="air-nosound-title" i18n>
+                      {silentFiles().length, plural, =1 {1 video has no sound} other {{{ silentFiles().length }} videos have no sound}}
+                    </p>
+                    <p class="air-nosound-text" i18n>
+                      {silentFiles().length, plural, =1 {It will be} other {They will be}} reviewed on what
+                      {silentFiles().length, plural, =1 {it shows} other {they show}}: the pictures and on-screen text. There is no
+                      narration to check, so learners only get what is on screen. If they need a spoken explanation, add a voice-over and
+                      upload the new video.
+                    </p>
+                    <ul class="air-nosound-list">
+                      @for (v of silentFiles(); track $index) {
+                        <li><ws-auth-air-icon name="video" [size]="14" /> {{ v.name }}</li>
+                      }
+                    </ul>
+                  </div>
+                </div>
+              }
+              @if (unusable().length && ready().length) {
+                <p class="air-hint air-files-note">
+                  <ng-container i18n>{unusable().length, plural,
+                    =1 {1 file can't be reviewed and is left out.}
+                    other {{{ unusable().length }} files can't be reviewed and are left out.}
+                  }</ng-container>
+                  <button type="button" class="air-btn air-btn--text air-btn--inline" (click)="removeUnusable()" i18n>Remove them</button>
+                </p>
+              }
+            } @else {
+              <p class="air-hint" i18n>
+                Each file is uploaded privately and checked first, so you see its length, pages or questions and the cost before anything is
+                reviewed.
+              </p>
+            }
+          </section>
+
+          <!-- Step 2: the learners -->
+          <section class="air-card">
+            <h2 class="air-section-title"><span class="air-num">2</span> <ng-container i18n>About the learners</ng-container></h2>
+            <div class="air-field-row">
+              <div class="air-field" id="air-audience">
+                <span class="air-label" id="air-audience-label"
+                  ><ng-container i18n>Audience</ng-container> <span class="air-required">*</span></span
+                >
+                <ws-auth-air-combobox
+                  labelledBy="air-audience-label"
+                  placeholder="Pick a position or type who the files are for"
+                  [suggestions]="positionNames()"
+                  [value]="audience()"
+                  (valueChange)="audience.set($event)"
+                />
+                @if (lookupFailed().has('positions')) {
+                  <span class="air-hint air-hint--warn" i18n
+                    >The position list could not be loaded just now. Type who the files are for.</span
+                  >
+                } @else {
+                  <span class="air-hint" i18n>Pick a position from the list or type your own. Used to judge tone and fit.</span>
+                }
+              </div>
+            </div>
+            <label class="air-field">
+              <span class="air-label" i18n>Anything the reviewer should know (optional)</span>
+              <textarea
+                class="module-input air-textarea"
+                maxlength="1200"
+                rows="3"
+                placeholder="For example: filmed in a rural PHC; a later module covers referral."
+                [value]="notes()"
+                (input)="notes.set($any($event.target).value)"
+              ></textarea>
+              <span class="air-hint" i18n
+                >What the content itself does not show, so it is not marked down unfairly: where it was filmed, what another module covers,
+                a local protocol you follow. Only the AI reviewers read it.</span
+              >
+              <span class="air-hint air-hint--right">{{ notes().length }}/1200</span>
+            </label>
+          </section>
+
+          <!-- Step 3: the reviews. After the learners, so the FRAC role check answers for the
+               Audience already picked, right where it is shown. -->
+          <section class="air-card">
+            <h2 class="air-section-title"><span class="air-num">3</span> <ng-container i18n>Reviews to run</ng-container></h2>
+            <div class="air-choice-grid">
+              <label class="air-choice" [class.air-choice--on]="addie()">
+                <input type="checkbox" [checked]="addie()" (change)="addie.set($any($event.target).checked)" />
+                <span class="air-choice-icon" aria-hidden="true"><ws-auth-air-icon name="checklist" [size]="22" /></span>
+                <span class="air-choice-text">
+                  <strong i18n>CBP / ADDIE checklist</strong>
+                  <span class="air-muted air-small" i18n
+                    >Up to 47 quality indicators across content, instructional design and technical design. Quizzes and assessments use the
+                    17 that apply to them.</span
+                  >
+                </span>
+                <span class="air-choice-check" aria-hidden="true"><ws-auth-air-icon name="check" [size]="16" /></span>
+              </label>
+              <label class="air-choice" [class.air-choice--on]="domain()" [class.air-choice--disabled]="!canJudge()">
+                <input type="checkbox" [checked]="domain()" [disabled]="!canJudge()" (change)="domain.set($any($event.target).checked)" />
+                <span class="air-choice-icon" aria-hidden="true"><ws-auth-air-icon name="expert" [size]="22" /></span>
+                <span class="air-choice-text">
+                  <strong i18n>Domain review</strong>
+                  <span class="air-muted air-small" i18n
+                    >A subject expert judges the files against the competency and level you pick below.</span
+                  >
+                  @if (!canJudge()) {
+                    <span class="air-choice-why air-small" i18n
+                      >The competency list could not be loaded, so the domain review is off. Reload the page to try again.</span
+                    >
+                  }
+                </span>
+                <span class="air-choice-check" aria-hidden="true"><ws-auth-air-icon name="check" [size]="16" /></span>
+              </label>
+              <label class="air-choice" [class.air-choice--on]="alignment()">
+                <input type="checkbox" [checked]="alignment()" (change)="alignment.set($any($event.target).checked)" />
+                <span class="air-choice-icon" aria-hidden="true"><ws-auth-air-icon name="target" [size]="22" /></span>
+                <span class="air-choice-text">
+                  <strong i18n>Course alignment</strong>
+                  <span class="air-muted air-small" i18n
+                    >Checks that the files deliver what the course they are for promises. Describe that course below.</span
+                  >
+                </span>
+                <span class="air-choice-check" aria-hidden="true"><ws-auth-air-icon name="check" [size]="16" /></span>
+              </label>
+            </div>
+
+            @if (alignment()) {
+              <!-- The course the files are meant for: what the alignment check judges against. -->
+              <div class="air-brief air-brief--form">
+                <span class="air-judged-label"
+                  ><ws-auth-air-icon name="read" [size]="16" /> <ng-container i18n>The course these files are for</ng-container></span
+                >
+                <label class="air-field">
+                  <span class="air-label"><ng-container i18n>Course name</ng-container> <span class="air-required">*</span></span>
+                  <input
+                    class="module-input"
+                    maxlength="300"
+                    [value]="briefName()"
+                    (input)="briefName.set($any($event.target).value)"
+                    placeholder="e.g. Safe pregnancy for ASHAs"
+                    i18n-placeholder
+                  />
+                </label>
+                <label class="air-field">
+                  <span class="air-label" i18n>Subtitle</span>
+                  <input
+                    class="module-input"
+                    maxlength="500"
+                    [value]="briefSubtitle()"
+                    (input)="briefSubtitle.set($any($event.target).value)"
+                  />
+                </label>
+                <label class="air-field">
+                  <span class="air-label"><ng-container i18n>Course description</ng-container> <span class="air-required">*</span></span>
+                  <textarea
+                    class="module-input air-textarea"
+                    rows="4"
+                    maxlength="6000"
+                    [value]="briefDescription()"
+                    (input)="briefDescription.set($any($event.target).value)"
+                    placeholder="Its objectives, who it is for and what learners will be able to do"
+                    i18n-placeholder
+                  ></textarea>
+                  <span class="air-hint air-hint--right">{{ briefDescription().length }}/6000</span>
+                </label>
+              </div>
+            }
+
+            @if (domain()) {
+              <div class="air-judged">
+                <span class="air-judged-label"
+                  ><ws-auth-air-icon name="target" [size]="16" /> <ng-container i18n>Judged against</ng-container></span
+                >
+                <div class="air-field-row">
+                  <div class="air-field">
+                    <span class="air-label" id="air-competency-label"
+                      ><ng-container i18n>Competency</ng-container> <span class="air-required" aria-hidden="true">*</span></span
+                    >
+                    <ws-auth-air-select
+                      labelledBy="air-competency-label"
+                      placeholder="Pick a competency"
+                      searchPlaceholder="Search competencies"
+                      [searchable]="competencyOptions().length > 8"
+                      [options]="competencyOptions()"
+                      [value]="competencyId()"
+                      [invalid]="!competencyId()"
+                      (valueChange)="selectCompetency($event)"
+                    />
+                    <span class="air-hint" i18n>The competency the files should build, from the CBP competency list.</span>
+                  </div>
+                  <div class="air-field air-field--narrow">
+                    <span class="air-label" id="air-level-label"
+                      ><ng-container i18n>Level</ng-container> <span class="air-required" aria-hidden="true">*</span></span
+                    >
+                    <ws-auth-air-select
+                      labelledBy="air-level-label"
+                      placeholder="Pick a level"
+                      [options]="levelOptions()"
+                      [value]="level() ? '' + level() : null"
+                      [invalid]="!level()"
+                      (valueChange)="setLevel($event)"
+                    />
+                    @if (levelLabel()) {
+                      <span class="air-hint">{{ levelLabel() }}</span>
+                    }
+                  </div>
+                </div>
+                <p class="air-positions">
+                  <span class="air-muted" i18n>Judged for</span>
+                  @if (audience().trim()) {
+                    <span class="air-pos">{{ judgedFor() }}</span>
+                  } @else {
+                    <span class="air-pos air-pos--empty" i18n>Not picked yet</span>
+                  }
+                  @if (!audience().trim()) {
+                    <span class="air-muted air-small" i18n>(pick it in Audience above)</span>
+                  } @else if (position() && fracEnabled) {
+                    <span class="air-muted air-small" i18n>(FRAC position, from Audience above)</span>
+                  } @else {
+                    <span class="air-muted air-small" i18n>(from Audience above)</span>
+                  }
+                </p>
+                <!-- The Plain/FRAC choice: hidden while FRAC is not offered (utils/features.ts). -->
+                @if (fracEnabled) {
+                  <fieldset class="air-segment">
+                    <legend class="air-label" i18n>How the subject expert judges it</legend>
+                    <label class="air-segment-option" [class.air-segment-option--on]="domainStyle() === 'plain'">
+                      <input
+                        type="radio"
+                        name="domainStyle"
+                        value="plain"
+                        [checked]="domainStyle() === 'plain'"
+                        (change)="domainStyle.set('plain')"
+                      />
+                      <strong i18n>Plain</strong>
+                      <span class="air-small" i18n
+                        ><b>Is it correct?</b> A senior clinician checks it teaches what this level describes, with correct protocols,
+                        thresholds and steps for Indian public health, at the right depth for your audience and in their real work
+                        setting.</span
+                      >
+                    </label>
+                    <label class="air-segment-option" [class.air-segment-option--on]="domainStyle() === 'frac'">
+                      <input
+                        type="radio"
+                        name="domainStyle"
+                        value="frac"
+                        [checked]="domainStyle() === 'frac'"
+                        (change)="domainStyle.set('frac')"
+                      />
+                      <strong i18n>FRAC</strong>
+                      <span class="air-small" i18n
+                        ><b>Is it pitched right for the role?</b> A FRAC expert checks it sits at this level (not below or above), stays
+                        within it, and prepares the position for its FRAC activities (when it has none for this competency: suits your
+                        audience). Says which level it really fits. It also checks protocols, thresholds and doses are correct.</span
+                      >
+                    </label>
+                  </fieldset>
+                }
+                <ws-auth-air-role-check
+                  each="each file"
+                  [domainStyle]="domainStyle()"
+                  [positionName]="position()?.name || null"
+                  [checking]="roleChecking()"
+                  [check]="roleCheck()"
+                  [audience]="audience()"
+                  [waiting]="roleWaiting()"
+                />
+              </div>
+            }
+          </section>
+
+          <section class="air-launch">
+            <label class="air-field air-launch-name">
+              <span class="air-label" i18n>Name this review (optional)</span>
+              <input
+                class="module-input"
+                type="text"
+                [attr.maxlength]="maxTitle"
+                [placeholder]="defaultTitle() || 'For example: BP measurement drafts'"
+                [value]="title()"
+                (input)="title.set($any($event.target).value)"
+              />
+              <span class="air-hint" i18n>Shown in your past reviews and on the report. Left empty, the file names are used.</span>
+            </label>
+            @if (validationMessage()) {
+              <p class="air-warning" role="status">
+                <ws-auth-air-icon name="warning" [size]="18" /> <span>{{ validationMessage() }}</span>
+                @if (fix(); as f) {
+                  <button type="button" class="air-link-btn air-warning-fix" (click)="goTo(f.id)">{{ f.label }} →</button>
+                }
+              </p>
+            }
+            @if (startError()) {
+              <p class="air-error" role="alert">{{ startError() }}</p>
+            }
+            <div class="air-launch-row">
+              <div class="air-launch-meta">
+                <span class="air-launch-count">
+                  @if (chosen().length === ready().length) {
+                    <ng-container i18n
+                      >{chosen().length, plural, =1 {1 file} other {{{ chosen().length }} files}} ready to review</ng-container
+                    >
+                  } @else {
+                    <ng-container i18n>{{ chosen().length }} of {{ ready().length }} files ready to review</ng-container>
+                  }
+                  @if (ready().length > 1) {
+                    <button type="button" class="air-link-btn air-launch-change" (click)="goTo('air-files-pick')" i18n>
+                      Change selection
+                    </button>
+                  }
+                </span>
+                @if (estimateUsd()) {
+                  <span class="air-muted air-small" aria-live="polite" i18n
+                    >Estimated AI cost: about {{ estimateUsd() | currency: 'USD' }}</span
+                  >
+                }
+                @if (limitsNote()) {
+                  <span class="air-muted air-small" i18n>Each file is reviewed in full, up to: {{ limitsNote() }}.</span>
+                }
+              </div>
+              <button
+                type="button"
+                class="air-btn air-btn--primary air-btn--lg"
+                [disabled]="starting() || !!validationMessage()"
+                (click)="start()"
+              >
+                <ws-auth-air-icon name="sparkle" [size]="20" />
+                @if (starting()) {
+                  <ng-container i18n>Starting…</ng-container>
+                } @else {
+                  <ng-container i18n>Start AI review</ng-container>
+                }
+              </button>
+            </div>
+          </section>
+        }
+      }
+    </main>
+
+    <!-- The user's own past file reviews -->
+    <aside class="air-side">
+      <section class="air-card">
+        <h2 class="air-section-title air-section-title--small">
+          <ws-auth-air-icon name="history" /> <ng-container i18n>Your past reviews</ng-container>
+        </h2>
+        @if (historyError()) {
+          <div class="air-state air-state--error">
+            <p class="air-small">{{ historyError() }}</p>
+            <button type="button" class="air-btn air-btn--text" (click)="loadHistory()">
+              <ws-auth-air-icon name="refresh" [size]="16" /> <ng-container i18n>Try again</ng-container>
+            </button>
+          </div>
+        } @else if (loadingHistory() && !history().length) {
+          <ul class="air-history" aria-busy="true" aria-label="Loading your past reviews">
+            <li class="air-mini--loading"></li>
+            <li class="air-mini--loading"></li>
+          </ul>
+        } @else if (!history().length) {
+          <div class="air-empty air-empty--side">
+            <span class="air-empty-art" aria-hidden="true"><ws-auth-air-icon name="sparkle" [size]="26" /></span>
+            <p class="air-small" i18n>No file reviews yet. Add files and start one; its report is kept here for you.</p>
+          </div>
+        } @else {
+          <ul class="air-history">
+            @for (h of history(); track h.id) {
+              <li>
+                <button
+                  type="button"
+                  class="air-history-item"
+                  [class.air-history-item--active]="review()?.id === h.id"
+                  [attr.aria-current]="review()?.id === h.id ? 'true' : null"
+                  (click)="follow(h.id)"
+                >
+                  <span class="air-history-ico" aria-hidden="true"><ws-auth-air-icon name="sparkle" [size]="16" /></span>
+                  <span class="air-history-body">
+                    <span class="air-history-title" [attr.title]="h.title || null">{{ h.title || 'Untitled review' }}</span>
+                    <span class="air-history-row">
+                      <span class="air-history-date">{{ h.createdAt | date: 'MMM d, h:mm a' }}</span>
+                      <span class="air-chip air-chip--sm air-chip--{{ h.status }}">{{ statusLabel(h.status) }}</span>
+                    </span>
+                    @if (h.summary) {
+                      <span class="air-history-scores">
+                        @if (h.summary.addie && h.summary.addie.scorePct !== null) {
+                          <span
+                            class="air-mini air-mini--{{ h.summary.addie.band }}"
+                            [attr.title]="'CBP checklist: ' + h.summary.addie.scorePct + '% of the quality indicators that apply are met'"
+                            >CBP {{ h.summary.addie.scorePct }}%</span
+                          >
+                        }
+                        @if (h.summary.domain; as d) {
+                          <span
+                            class="air-mini air-mini--violet"
+                            [attr.title]="'Domain review: ' + d.yes + ' of ' + d.applicable + ' domain checks met'"
+                            >Domain {{ d.yes }}/{{ d.applicable }}</span
+                          >
+                        }
+                      </span>
+                    }
+                  </span>
+                  <span class="air-history-go" aria-hidden="true"><ws-auth-air-icon name="arrowRight" [size]="16" /></span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    </aside>
+  </div>
+</div>

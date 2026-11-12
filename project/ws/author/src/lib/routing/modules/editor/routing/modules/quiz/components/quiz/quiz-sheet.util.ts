@@ -34,6 +34,145 @@ export interface SheetSettings {
   passPercentage?: number
 }
 
+export interface QuizOption {
+  text: string
+  optionId: string
+  isCorrect: boolean
+  hint?: string
+}
+
+export interface QuizQuestion {
+  questionId: string
+  question: string
+  questionType: string
+  options: QuizOption[]
+  multiSelection: boolean
+}
+
+/** A sheet read into questions, with the settings it sets and any settings it got wrong. */
+export interface ParsedQuizSheet {
+  timeLimit: number
+  passPercentage: number
+  randomCount: number
+  questions: QuizQuestion[]
+  sheetSettings: SheetSettings
+  sheetWarnings: string[]
+}
+
+/** Questions read from one sheet. Row 1 is the header; at most 500 question rows are read. */
+export const MAX_SHEET_QUESTIONS = 500
+
+/**
+ * Reads the bulk-upload sheet (rows as arrays, row 1 the header) into quiz questions. Used by
+ * the quiz editor and by the AI review's file upload, so a sheet means the same in both.
+ *
+ * @param data the sheet's rows, as XLSX `sheet_to_json(sheet, { header: 1 })` gives them
+ * @param readPassPercentage whether the Pass Percentage column applies (assessments only)
+ */
+export function parseQuizSheet(data: any[], readPassPercentage: boolean): ParsedQuizSheet {
+  const quizJson: ParsedQuizSheet = {
+    timeLimit: 0, // Default time limit
+    passPercentage: 0, // Default pass percentage
+    randomCount: 0, // Default random count
+    questions: [],
+    sheetSettings: {},
+    sheetWarnings: [],
+  }
+  const sheetRows: { [key: string]: any }[] = []
+  if (!Array.isArray(data) || !Array.isArray(data[0])) {
+    return quizJson
+  }
+
+  // Extract column names from the first row
+  const headers = data[0].map((header: unknown) => String(header ?? '').trim())
+
+  // Limit the rows to 500 questions (excluding the header row)
+  const limitedData = data.slice(1, MAX_SHEET_QUESTIONS + 1)
+
+  for (let i = 0; i < limitedData.length; i++) {
+    const row = limitedData[i]
+    if (!row || row.length === 0) {
+      console.warn(`Skipping empty row ${i + 1}`)
+      continue
+    }
+
+    // Map column names to their respective values
+    const rowData: { [key: string]: any } = {}
+    headers.forEach((header: string, index: number) => {
+      rowData[header] = row[index] !== undefined && row[index] !== null ? row[index] : '' // Explicitly handle undefined or null
+    })
+    sheetRows.push(rowData)
+
+    // Skip rows with insufficient data
+    if (!rowData['Question'] || !rowData['Correct Answer']) {
+      console.warn(`Skipping row ${i + 1} due to missing required fields.`)
+      continue
+    }
+
+    const questionId = `Q${100 + i}`
+    const options: QuizOption[] = []
+
+    // Parse the "Correct Answer" column to handle numeric values
+    const correctAnswers = rowData['Correct Answer']
+      .toString()
+      .split(',')
+      .map((answer: string) => parseInt(answer.trim(), 10)) // Convert numeric values to integers
+
+    // Track last non-empty option
+    let lastNonEmptyIndex = 0
+
+    // First pass: Determine the last non-empty option index
+    for (let optionIndex = 1; optionIndex <= OPTION_COUNT; optionIndex++) {
+      const key = `Option ${optionIndex}`
+      if (rowData[key] !== undefined && rowData[key] !== null && String(rowData[key]).trim() !== '') {
+        lastNonEmptyIndex = optionIndex
+      }
+    }
+
+    // Second pass: Add options correctly
+    for (let optionIndex = 1; optionIndex <= lastNonEmptyIndex; optionIndex++) {
+      const key = `Option ${optionIndex}`
+      const optionText = rowData[key] !== undefined && rowData[key] !== null ? String(rowData[key]).trim() : ''
+
+      const option: QuizOption = {
+        text: optionText, // Keep the text (even if empty, but only up to lastNonEmptyIndex)
+        optionId: `${questionId}-${String.fromCharCode(96 + optionIndex)}`, // Sequential IDs (a, b, c...)
+        isCorrect: correctAnswers.includes(optionIndex), // Match option number
+      }
+      // Optional "Hint N" column: stored the way the hint editor stores it.
+      const hintText = cell(rowData, `Hint ${optionIndex}`)
+      if (hintText) {
+        option.hint = hintTextToHtml(hintText)
+      }
+      options.push(option)
+    }
+
+    const correctOptions = options.filter(option => option.isCorrect) // Get correct options
+    const multiSelection = correctOptions.length > 1 // Set to true if multiple correct options exist, otherwise false
+
+    quizJson.questions.push({
+      questionId,
+      question: String(rowData['Question']).trim(), // Trim unnecessary spaces
+      questionType: multiSelection ? 'mcq-mca' : 'mcq-sca', // Set question type based on multiSelection
+      options,
+      multiSelection, // Assign the boolean value
+    })
+  }
+  const { settings, warnings } = readSheetSettings(sheetRows, quizJson.questions.length, readPassPercentage)
+  quizJson.sheetSettings = settings
+  quizJson.sheetWarnings = warnings
+  if (settings.duration !== undefined) {
+    quizJson.timeLimit = settings.duration * 60
+  }
+  if (settings.randomCount !== undefined) {
+    quizJson.randomCount = settings.randomCount
+  }
+  if (settings.passPercentage !== undefined) {
+    quizJson.passPercentage = settings.passPercentage
+  }
+  return quizJson
+}
+
 /** Header names are matched without regard to case or extra spaces. */
 export function normaliseHeader(header: unknown): string {
   return String(header ?? '')

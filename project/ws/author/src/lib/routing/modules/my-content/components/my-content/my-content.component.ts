@@ -1,3 +1,4 @@
+import { AI_REVIEW_HOME } from '../../../ai-review/utils/routes'
 import { AuthExpiryDateConfirmComponent } from '@ws/author/src/lib/modules/shared/components/auth-expiry-date-confirm/auth-expiry-date-confirm.component'
 
 import { FlatTreeControl } from '@angular/cdk/tree'
@@ -169,6 +170,15 @@ export class MyContentComponent implements OnInit, OnDestroy {
   link: string = ''
   isContentExpanded: boolean = false
   isCouseExpanded: boolean = false
+  /** On an AI review page (a course's review, new file review, or past reviews): the AI Review section opens. */
+  get isAiReviewRoute(): boolean {
+    return (this.router.url || '').startsWith('/author/ai-review')
+  }
+
+  /** AI Review opens Past reviews (every review this account started, with New review on top). */
+  openAiReview(): void {
+    this.router.navigate([AI_REVIEW_HOME])
+  }
   isSelfAssessmentExpanded: boolean = false
   /**
    * Whether the AI Studio panel in the sidebar is open.

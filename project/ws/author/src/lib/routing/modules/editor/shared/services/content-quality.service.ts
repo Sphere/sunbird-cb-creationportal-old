@@ -108,7 +108,9 @@ export class ContentQualityService {
   }
 
   getFile(data: any, name: string, needseprate: boolean) {
-    import('xlsx').then(XLSX => {
+    import('xlsx').then(mod => {
+      // xlsx is CommonJS: the dev server's pre-bundling exposes its API only on `default`.
+      const XLSX = mod.utils ? mod : (mod as unknown as { default: typeof mod }).default
       const wb = XLSX.utils.book_new()
       let ws = null
       if (!needseprate) {

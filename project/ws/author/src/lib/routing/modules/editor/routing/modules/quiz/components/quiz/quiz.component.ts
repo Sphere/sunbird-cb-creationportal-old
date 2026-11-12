@@ -87,30 +87,7 @@ import { ImageUploadIntroPopupComponent } from 'src/app/image-upload-intro/image
 import * as XLSX from 'xlsx'
 
 import { isActivationKey, randomInt, stripHtmlTags } from '@ws-widget/utils'
-import {
-  ALL_COLUMNS,
-  SheetSettings,
-  cell,
-  hintTextToHtml,
-  questionsToSheetRows,
-  readSheetSettings,
-  templateInstructions,
-  templateRows,
-} from './quiz-sheet.util'
-interface QuizOption {
-  text: string
-  optionId: string
-  isCorrect: boolean
-  hint?: string
-}
-
-interface QuizQuestion {
-  questionId: string
-  question: string
-  questionType: string
-  options: QuizOption[]
-  multiSelection: boolean
-}
+import { ALL_COLUMNS, SheetSettings, parseQuizSheet, questionsToSheetRows, templateInstructions, templateRows } from './quiz-sheet.util'
 @Component({
   standalone: false,
   selector: 'ws-auth-quiz',
@@ -674,109 +651,11 @@ export class QuizComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   generateQuizJson(data: any[]): any {
-    const quizJson = {
-      timeLimit: 0, // Default time limit
-      passPercentage: 0, // Default pass percentage
-      isAssessment: this.resourceDetails.isAssessment,
-      randomCount: 0, // Default random count
-      questions: [] as QuizQuestion[], // Explicitly type the questions array
-      sheetSettings: {} as SheetSettings,
-      sheetWarnings: [] as string[],
-    }
-    const sheetRows: { [key: string]: any }[] = []
-
     this.assessmentDuration = ''
     this.passPercentage = ''
     this.randomCount = ''
-
-    // Extract column names from the first row
-    const headers = data[0].map((header: string) => header.trim())
-
-    // Limit the rows to 500 questions (excluding the header row)
-    const limitedData = data.slice(1, 501) // Start from row 1 (skip header) and include up to row 500
-
-    for (let i = 0; i < limitedData.length; i++) {
-      const row = limitedData[i]
-      if (!row || row.length === 0) {
-        console.warn(`Skipping empty row ${i + 1}`)
-        continue
-      }
-
-      // Map column names to their respective values
-      const rowData: { [key: string]: any } = {}
-      headers.forEach((header: string, index: number) => {
-        rowData[header] = row[index] !== undefined && row[index] !== null ? row[index] : '' // Explicitly handle undefined or null
-      })
-      sheetRows.push(rowData)
-
-      // Skip rows with insufficient data
-      if (!rowData['Question'] || !rowData['Correct Answer']) {
-        console.warn(`Skipping row ${i + 1} due to missing required fields.`)
-        continue
-      }
-
-      const questionId = `Q${100 + i}`
-      const options: QuizOption[] = []
-
-      // Parse the "Correct Answer" column to handle numeric values
-      const correctAnswers = rowData['Correct Answer']
-        .toString()
-        .split(',')
-        .map((answer: string) => parseInt(answer.trim(), 10)) // Convert numeric values to integers
-
-      // Track last non-empty option
-      let lastNonEmptyIndex = 0
-
-      // First pass: Determine the last non-empty option index
-      for (let optionIndex = 1; optionIndex <= 6; optionIndex++) {
-        const key = `Option ${optionIndex}`
-        if (rowData[key] !== undefined && rowData[key] !== null && String(rowData[key]).trim() !== '') {
-          lastNonEmptyIndex = optionIndex
-        }
-      }
-
-      // Second pass: Add options correctly
-      for (let optionIndex = 1; optionIndex <= lastNonEmptyIndex; optionIndex++) {
-        const key = `Option ${optionIndex}`
-        const optionText = rowData[key] !== undefined && rowData[key] !== null ? String(rowData[key]).trim() : ''
-
-        const option: QuizOption = {
-          text: optionText, // Keep the text (even if empty, but only up to lastNonEmptyIndex)
-          optionId: `${questionId}-${String.fromCharCode(96 + optionIndex)}`, // Sequential IDs (a, b, c...)
-          isCorrect: correctAnswers.includes(optionIndex), // Match option number
-        }
-        // Optional "Hint N" column: stored the way the hint editor stores it.
-        const hintText = cell(rowData, `Hint ${optionIndex}`)
-        if (hintText) {
-          option.hint = hintTextToHtml(hintText)
-        }
-        options.push(option)
-      }
-
-      const correctOptions = options.filter((option: any) => option.isCorrect) // Get correct options
-      const multiSelection = correctOptions.length > 1 // Set to true if multiple correct options exist, otherwise false
-
-      quizJson.questions.push({
-        questionId,
-        question: rowData['Question'].trim(), // Trim unnecessary spaces
-        questionType: multiSelection ? 'mcq-mca' : 'mcq-sca', // Set question type based on multiSelection
-        options,
-        multiSelection, // Assign the boolean value
-      })
-    }
-    const { settings, warnings } = readSheetSettings(sheetRows, quizJson.questions.length, this.isQuiz === 'Assessment')
-    quizJson.sheetSettings = settings
-    quizJson.sheetWarnings = warnings
-    if (settings.duration !== undefined) {
-      quizJson.timeLimit = settings.duration * 60
-    }
-    if (settings.randomCount !== undefined) {
-      quizJson.randomCount = settings.randomCount
-    }
-    if (settings.passPercentage !== undefined) {
-      quizJson.passPercentage = settings.passPercentage
-    }
-    return quizJson
+    // The sheet is read by the shared parser, so the AI review's file upload reads it the same way.
+    return { isAssessment: this.resourceDetails.isAssessment, ...parseQuizSheet(data, this.isQuiz === 'Assessment') }
   }
 
   /** A template with every column (including hints and settings), two examples and a "How to fill" sheet. */

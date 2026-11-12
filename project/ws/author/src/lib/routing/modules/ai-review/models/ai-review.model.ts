@@ -1,0 +1,571 @@
+/**
+ * Shapes returned by the course reviewer service (aastrika-course-reviewer), through
+ * uiproxy's /protected/v8/courseReview. They mirror the service's own types; a field the
+ * service adds later is simply ignored here.
+ */
+
+export type AiReviewStatus = 'queued' | 'running' | 'done' | 'partial' | 'failed' | 'cancelled'
+export type AiReviewItemStatus = 'queued' | 'running' | 'done' | 'failed' | 'skipped' | 'cancelled'
+export type AiReviewVerdict = 'yes' | 'no' | 'na'
+export type AiReviewBand = 'green' | 'amber' | 'red'
+export type AiReviewCoverageStatus = 'covered' | 'partial' | 'missing'
+export type AiReviewDomainStyle = 'plain' | 'frac'
+export type AiReviewLanguage = 'auto' | 'hi' | 'en' | 'mr' | 'bn'
+/** The language the review is written in: the content's own, English, Hindi, or both. */
+export type AiReviewReportLanguage = 'content' | 'en' | 'hi' | 'both'
+
+/** The states after which a review never changes again. */
+export const AI_REVIEW_FINAL_STATUSES: ReadonlySet<AiReviewStatus> = new Set<AiReviewStatus>(['done', 'partial', 'failed', 'cancelled'])
+
+export interface IAiReviewCompetency {
+  competencyId: string
+  name: string
+  /** The lowest level the course maps it at. */
+  level: number | null
+  /** Every level the course maps it at, lowest first (absent from an older service). */
+  levels?: number[]
+}
+
+/** A competency from the whole dictionary, with its levels, to judge against one the course lacks. */
+export interface IAiReviewCatalogCompetency {
+  competencyId: string
+  name: string
+  levels: { level: number; label: string }[]
+}
+
+export interface IAiReviewResource {
+  contentId: string
+  name: string
+  kind: string | null
+  mimeType: string
+  durationSec: number | null
+  /** Module names above the resource, outermost first. */
+  path: string[]
+  reviewable: boolean
+  skipReason: string | null
+  /** Self-assessment courses: the competency level this part covers ("Level 2 : …"). */
+  level?: number | null
+  /** Estimated USD per option; base is spent whatever is chosen. Null when not reviewed. */
+  estimate?: IAiReviewEstimateParts | null
+}
+
+export interface IAiReviewEstimateParts {
+  base: number
+  addie: number
+  domain: number
+  watch: number
+  /** Fit with the course's name and description (absent from an older service). */
+  alignment?: number
+}
+
+/** The course's own words its content is checked against (the alignment check). */
+export interface IAiReviewCourseBrief {
+  name: string
+  subtitle?: string
+  /** Plain text: the "Course Description" from Course Details. */
+  description: string
+  source?: 'course' | 'user'
+}
+
+export type AiReviewAlignmentVerdict = 'aligned' | 'partial' | 'off_topic'
+
+/** One resource against the course's name and description. */
+export interface IAiReviewAlignment {
+  model: string
+  verdict: AiReviewAlignmentVerdict
+  teaches: string[]
+  serves: string[]
+  note: string
+  fix?: string
+  costUsd: number
+}
+
+/** The course as a whole against its name and description. */
+export interface IAiReviewCourseAlignment {
+  model: string
+  verdict: 'delivers' | 'partly' | 'does_not'
+  nameFits: boolean
+  nameNote: string
+  promises: { promise: string; status: AiReviewCoverageStatus; coveredBy: string[] }[]
+  offTopic: { name: string; why: string }[]
+  fixes: string[]
+  summary: string
+  costUsd: number
+}
+
+export interface IAiReviewPreview {
+  /** `selfAssessment`: metadata `competency: true`; each part is one level of the competency. */
+  course: {
+    id: string
+    name: string
+    status: string
+    versionKey: string
+    selfAssessment?: boolean
+    /** What the alignment check judges against (absent from an older service). */
+    brief?: IAiReviewCourseBrief
+    /** Why the alignment check cannot run (no name or description), or null when it can. */
+    briefProblem?: string | null
+  }
+  resources: IAiReviewResource[]
+  competencies: IAiReviewCompetency[]
+  /** Every competency in the dictionary (absent from an older service). */
+  competencyCatalog?: IAiReviewCatalogCompetency[]
+  /** Lookups that failed ('competencies', 'positions'): their lists are empty, not real. */
+  lookupErrors?: string[]
+  positions: string[]
+  /** FRAC positions with their codes (absent from an older service). */
+  positionList?: { code: string; name: string }[]
+  defaults: { audience: string; language: AiReviewLanguage; domainStyle: AiReviewDomainStyle }
+  estimateUsd: number
+  /** A review of this course already running; starting again joins it. */
+  activeReviewId: string | null
+  limits: IAiReviewLimits
+}
+
+/**
+ * What one review may take on. Every resource within these is reviewed in full; past them
+ * it is refused before any cost. The newer fields are absent from an older service.
+ */
+export interface IAiReviewLimits {
+  maxVideoMinutes: number
+  maxActivePerUser: number
+  maxPdfPages?: number
+  maxQuizQuestions?: number
+  /** The most one resource may cost to review. */
+  maxResourceUsd?: number
+  maxResourcesPerReview?: number
+}
+
+/**
+ * 'single': one level. 'perResource': each part of a self-assessment course at its own level.
+ * 'courseLevels': all the levels the course maps its competency at, together.
+ * 'courseMapping': every competency the course maps, each at its mapped levels, together.
+ */
+export type AiReviewLevelMode = 'single' | 'perResource' | 'courseLevels' | 'courseMapping'
+
+export interface IAiReviewOptions {
+  addie: boolean
+  domain: boolean
+  /** Check the content against the course's name and description. */
+  alignment?: boolean
+  /** A review of uploaded files: the course they are meant for, as the user describes it. */
+  brief?: IAiReviewCourseBrief | null
+  watch: boolean
+  domainStyle: AiReviewDomainStyle
+  competencyId: string | null
+  level: number | null
+  /** 'perResource': each part of a self-assessment course at its own level. */
+  levelMode?: AiReviewLevelMode
+  /** The FRAC position the audience was picked as: the FRAC style checks its activities. */
+  positionCode?: string | null
+  audience: string
+  language: AiReviewLanguage
+  /** The language the review is written in (absent on older reviews: English). */
+  reportLanguage?: AiReviewReportLanguage
+  context: string
+}
+
+/** One FRAC activity of the chosen position that needs a judged competency. */
+export interface IAiReviewRoleActivity {
+  role: string
+  activity: string
+  description: string
+  competency: string
+  /** The levels the activity needs the competency at; [] when FRAC names none. */
+  levels: number[]
+}
+
+/** The chosen position's FRAC activities that need the judged competencies. */
+export interface IAiReviewRole {
+  positionCode: string
+  positionName: string
+  activities: IAiReviewRoleActivity[]
+  totalActivities: number
+}
+
+/** The FRAC role check for the settings chosen: the activities, or why there are none. */
+export interface IAiReviewRoleCheck {
+  role: IAiReviewRole | null
+  roleNote: string | null
+  /** When the position has no activity needing the judged competencies: who and which (absent from an older service). */
+  roleGap?: { position: string; competencies: string[] } | null
+}
+
+export interface IAiReviewCreateResult {
+  reviewId: string
+  /** False when the course was already being reviewed and this request joined it. */
+  created: boolean
+  estimateUsd: number
+}
+
+export interface IAiReviewScoredItem {
+  id: string
+  text: string
+  verdict: AiReviewVerdict
+  note: string
+  fix?: string
+  borderline?: boolean
+  /** Why it is doubted (the service's guard): shown with it, for a person to check. */
+  check?: string
+  /** Where the evidence is, when it is at one place: "0:12" or "page 3". */
+  at?: string
+  /** Videos: the second to open the video at. */
+  atSec?: number
+  /** PDFs: the page to open the document at. */
+  page?: number
+}
+
+export interface IAiReviewAreaScore {
+  area: string
+  items: IAiReviewScoredItem[]
+  yes: number
+  applicable: number
+  scorePct: number | null
+}
+
+export interface IAiReviewScore {
+  areas: IAiReviewAreaScore[]
+  yes: number
+  applicable: number
+  naCount: number
+  total: number
+  scorePct: number | null
+  band: AiReviewBand | null
+  bandMessage: string | null
+  failedIds: string[]
+}
+
+export interface IAiReviewCoverageRow {
+  component: string
+  status: AiReviewCoverageStatus
+  evidence: string
+}
+
+export interface IAiReviewAddie {
+  model: string
+  score: IAiReviewScore
+  summary: string
+  costUsd: number
+}
+
+export interface IAiReviewDomain {
+  model: string
+  style: AiReviewDomainStyle
+  score: IAiReviewScore
+  coverage: IAiReviewCoverageRow[]
+  levelFit: { verdict: 'fits' | 'below' | 'above' | 'mixed'; bestFitLevel: number | null; rationale: string } | null
+  summary: string
+  costUsd: number
+}
+
+/** A pass that failed on its own; the other pass's result still stands. */
+export interface IAiReviewPassError {
+  error: string
+}
+
+/** One question of a quiz or assessment, as the subject expert judged it. */
+export interface IAiReviewQuestionFinding {
+  /** 1-based position in the quiz. */
+  n: number
+  question: string
+  verdict: 'ok' | 'issue'
+  /** What is wrong: a wrong answer key, a weak distractor, a misleading hint… */
+  issues: string[]
+  fix?: string
+  /** The service's guard doubts it: shown for a person to check, with why. */
+  borderline?: boolean
+  check?: string
+  /** What the question asks of the learner: to recall a fact, or to apply it. */
+  demand?: 'recall' | 'apply'
+}
+
+/** What an interactive HTML package holds, as the reviewer found it. */
+export interface IAiReviewHtmlPackage {
+  files: number
+  pages: number
+  videos: { path: string; durationSec: number | null }[]
+  /** The package's pages by path (newer reviews), so a finding can open the page it names. */
+  pagePaths?: string[]
+  images: number
+  stills: number
+  questions: number
+  /** Whether it reports learner progress (PROGRESS); without it completion is never recorded. */
+  reportsProgress: boolean
+  /** Whether it saves where the learner left off (STATE). */
+  savesState: boolean
+}
+
+export interface IAiReviewItemReport {
+  contentId: string
+  name: string
+  kind: string
+  mimeType?: string
+  durationSec: number | null
+  /** PDFs: the number of pages read. */
+  pages?: number | null
+  /** Quizzes and assessments: the number of questions checked. */
+  questionCount?: number | null
+  /** Quizzes and assessments: each question's findings. */
+  questions?: IAiReviewQuestionFinding[]
+  /** Quizzes and assessments: why the question check could not run. */
+  questionsError?: string
+  /** Interactive HTML packages: what the package holds. */
+  htmlPackage?: IAiReviewHtmlPackage
+  transcriptChars: number
+  transcriptEngine: string | null
+  /** Quizzes: problems with the answer key's spread, counted by the service. */
+  answerPattern?: string[]
+  /** A video with no sound track: reviewed on what it shows. */
+  noSound?: boolean
+  /** A video with sound in which nobody speaks: reviewed on what it shows. */
+  noSpeech?: boolean
+  /** Why the speech could not be transcribed: the narration was not reviewed. */
+  transcriptError?: string
+  /** Why watching the video failed: reviewed from its frames and transcript only. */
+  watchError?: string
+  watched: { model: string; chars: number; costUsd: number } | null
+  addie: IAiReviewAddie | IAiReviewPassError | null
+  domain: IAiReviewDomain | IAiReviewPassError | null
+  /** Fit with the course's name and description, when that check was asked for. */
+  alignment?: IAiReviewAlignment | IAiReviewPassError | null
+  /** Every AI call this resource cost (sent while detailed costs are on). */
+  usage?: IAiReviewUsageLine[]
+  costUsd: number
+  cached: boolean
+  /** When a reused result was first made (the resource is unchanged since then). */
+  cachedAt?: string
+}
+
+/** A resource's real size, measured after the preview, and the estimate at that size. */
+export interface IAiReviewResourceSize {
+  contentId: string
+  pages?: number
+  questions?: number
+  estimate: IAiReviewEstimateParts
+  /** Why it could not be measured; the estimate then assumes a typical size. */
+  error?: string
+  /** Past a size limit: it will not be reviewed, and this says why. */
+  skipReason?: string
+  /** A video's real length. */
+  durationSec?: number
+  /** A video: whether it has a sound track (a silent one is reviewed on what it shows). */
+  audio?: boolean
+}
+
+/** A resource unchanged since a review with the same settings: its result is reused, free. */
+export interface IAiReviewReuse {
+  contentId: string
+  reviewedAt: string
+}
+
+export interface IAiReviewItem {
+  contentId: string
+  name: string
+  kind: string | null
+  mimeType?: string
+  /** The resource's file, so an issue can be shown in place. */
+  artifactUrl?: string | null
+  /** An HTML package's signed preview token from the service (it lasts two hours). */
+  packageToken?: string | null
+  /** The package's first page to show in a frame, built from the token when the review is read. */
+  packageUrl?: string | null
+  status: AiReviewItemStatus
+  /** What the worker is doing now, e.g. "Downloading the video…". */
+  stage: string | null
+  skipReason: string | null
+  error: string | null
+  result: IAiReviewItemReport | null
+}
+
+export interface IAiReviewCourseSummary {
+  reviewed: number
+  failed: number
+  skipped: { contentId: string; name: string; reason: string }[]
+  addie: { scorePct: number | null; band: AiReviewBand | null; bandMessage: string | null; yes: number; applicable: number } | null
+  domain: { yes: number; applicable: number; scorePct: number | null; band?: AiReviewBand | null } | null
+  /**
+   * The course's one verdict, from the checklist and the domain review together. Absent on
+   * reviews made before it existed: those show the checklist's own band message.
+   */
+  verdict?: { band: AiReviewBand; message: string } | null
+  coverage: { component: string; status: AiReviewCoverageStatus; coveredBy: string[] }[]
+  commonGaps: { id: string; text: string; count: number }[]
+  /** How many resources fit the course's description; null when not checked. */
+  fit?: { aligned: number; partial: number; offTopic: number } | null
+  /** The course as a whole against its name and description. */
+  alignment?: IAiReviewCourseAlignment | IAiReviewPassError | null
+  /** The course-level AI calls (the alignment verdict). */
+  usage?: IAiReviewUsageLine[]
+  costUsd: number
+}
+
+export interface IAiReviewCompetencyContext {
+  competencyId: string
+  label: string
+  level: number
+  levelLabel: string
+  levelDescription: string
+  cadre: string
+}
+
+export interface IAiReview {
+  id: string
+  /** 'upload': uploaded files reviewed on their own (no course). Absent from an older service. */
+  source?: AiReviewSource
+  /** What the user named a review of uploaded files. */
+  title?: string
+  /** Null for a review of uploaded files. */
+  courseId: string | null
+  courseName: string
+  status: AiReviewStatus
+  requestedBy: { id: string; name: string | null }
+  /** `levels`: in 'perResource' mode, the competency at each level the parts carry. */
+  options: IAiReviewOptions & {
+    competency: IAiReviewCompetencyContext | null
+    levels?: Record<string, IAiReviewCompetencyContext>
+    /** FRAC style: the position's activities the content was judged against, or why not. */
+    role?: IAiReviewRole | null
+    roleNote?: string | null
+    /** With `alignment`: the brief the content was checked against. */
+    courseBrief?: IAiReviewCourseBrief | null
+  }
+  progress: { done: number; total: number }
+  /** Reviews ahead of this one in the queue; 0 once it is running. */
+  queuePosition: number
+  latestLog: string
+  log: { at: string; msg: string }[]
+  items: IAiReviewItem[]
+  result: IAiReviewCourseSummary | null
+  error: string | null
+  costUsd: number | string | null
+  estimateUsd: number | string | null
+  createdAt: string
+  finishedAt: string | null
+}
+
+export interface IAiReviewHistoryEntry {
+  id: string
+  status: AiReviewStatus
+  requestedBy: { id: string; name: string | null }
+  progress: { done: number; total: number }
+  summary: IAiReviewCourseSummary | null
+  costUsd: number | string | null
+  createdAt: string
+  finishedAt: string | null
+}
+
+/** One review in Past reviews: of a course, or of the user's own files. */
+export interface IAiReviewPastReview {
+  id: string
+  source: AiReviewSource
+  /** The course reviewed; null for a review of files. */
+  courseId: string | null
+  /** The course's name, or the name given to a file review. */
+  name: string
+  /** The course's picture, as the course list shows it; null for files or when unknown. */
+  thumbnail?: string | null
+  status: AiReviewStatus
+  requestedBy: { id: string; name: string | null }
+  progress: { done: number; total: number }
+  summary: IAiReviewCourseSummary | null
+  /** The competencies and levels it was judged against; [] for checklist only. Absent from an older service. */
+  judgedAgainst?: IAiReviewJudgedAgainst[]
+  createdAt: string
+  finishedAt: string | null
+}
+
+/** One competency a review was judged against, at its levels. */
+export interface IAiReviewJudgedAgainst {
+  code: string
+  label: string
+  levels: number[]
+  /** The level's own name, when the review was judged at one level. */
+  levelLabel: string | null
+}
+
+/** The service's error body: `{ error: { code, message } }`. */
+// ---- files reviewed on their own (not part of a course) ------------------------------------
+
+export type AiReviewSource = 'course' | 'upload'
+export type AiReviewUploadKind = 'video' | 'pdf' | 'quiz' | 'assessment' | 'html'
+
+/** The file review's setup screen: whether it is on, the dictionary, positions, accepted files. */
+export interface IAiReviewUploadContext {
+  /** False until storage is set up on the server: the page says so instead of failing later. */
+  enabled: boolean
+  competencyCatalog: IAiReviewCatalogCompetency[]
+  positionList: { code: string; name: string }[]
+  lookupErrors: string[]
+  defaults: { audience: string; language: AiReviewLanguage; domainStyle: AiReviewDomainStyle }
+  /** Per kind: the extensions of the file the user picks, and the most one file may be. */
+  accepted: Record<AiReviewUploadKind, { extensions: string[]; maxBytes: number }>
+  limits: IAiReviewLimits & { maxUploadFiles: number }
+}
+
+/** How to send one file to storage: a signed form (POST) or a signed raw body (PUT). */
+export interface IAiReviewSignedUpload {
+  method: 'POST' | 'PUT'
+  url: string
+  fields: Record<string, string>
+  headers: Record<string, string>
+  expiresAt: string
+}
+
+export interface IAiReviewSignedFile {
+  uploadId: string
+  fileName: string
+  kind: AiReviewUploadKind
+  /** The type the file must be sent as (a quiz is sent as the questions, in JSON). */
+  contentType: string
+  maxBytes: number
+  upload: IAiReviewSignedUpload
+}
+
+/** An uploaded file as the service sees it: not there yet, ready (and measured), or refused. */
+export interface IAiReviewCheckedUpload {
+  uploadId: string
+  fileName: string
+  kind: AiReviewUploadKind
+  status: 'pending' | 'ready' | 'rejected'
+  reason: string | null
+  bytes: number | null
+  durationSec?: number
+  /** A video: whether it has a sound track (a silent one is reviewed on what it shows). */
+  audio?: boolean
+  pages?: number
+  questions?: number
+  estimate: IAiReviewEstimateParts | null
+}
+
+export interface IAiReviewUploadHistoryEntry {
+  id: string
+  title: string
+  status: AiReviewStatus
+  progress: { done: number; total: number }
+  summary: IAiReviewCourseSummary | null
+  costUsd: number | string | null
+  createdAt: string
+  finishedAt: string | null
+}
+
+export interface IAiReviewErrorBody {
+  error?: { code?: string; message?: string }
+}
+
+/** True when a pass result is the error placeholder rather than a report. */
+export function isPassError(x: unknown): x is IAiReviewPassError {
+  return typeof x === 'object' && x !== null && typeof (x as { error?: unknown }).error === 'string'
+}
+
+/** One provider, model and step of a review's AI calls: how many, how many tokens, what it cost. */
+export interface IAiReviewUsageLine {
+  provider: 'gemini' | 'anthropic' | 'elevenlabs'
+  model: string
+  step: string
+  calls: number
+  inputTokens: number
+  outputTokens: number
+  cachedTokens: number
+  audioSec: number
+  costUsd: number
+}

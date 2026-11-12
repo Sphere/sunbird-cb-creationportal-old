@@ -1,0 +1,514 @@
+import { CommonModule } from '@angular/common'
+import { HttpErrorResponse } from '@angular/common/http'
+import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { of, throwError } from 'rxjs'
+import { AiReviewService } from '../../services/ai-review.service'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { IAiReview, IAiReviewItem, IAiReviewScore } from '../../models/ai-review.model'
+import { AirEvidenceComponent } from '../air-evidence/air-evidence.component'
+import { AirIconComponent } from '../air-icon/air-icon.component'
+import { AiReviewReportComponent, locateText, notMet, toReportRow } from './ai-review-report.component'
+
+const score = (): IAiReviewScore => ({
+  areas: [
+    {
+      area: 'Content Quality',
+      items: [
+        { id: 'C1', text: 'Accurate content', verdict: 'yes', note: '' },
+        {
+          id: 'C2',
+          text: 'Cuff placement shown correctly',
+          verdict: 'no',
+          note: 'Cuff over clothing',
+          fix: 'Place the cuff on bare skin',
+          borderline: true,
+        },
+      ],
+      yes: 1,
+      applicable: 2,
+      scorePct: 50,
+    },
+    {
+      area: 'Technical Design',
+      items: [{ id: 'T1', text: 'Captions', verdict: 'na', note: '' }],
+      yes: 0,
+      applicable: 0,
+      scorePct: null,
+    },
+  ],
+  yes: 1,
+  applicable: 2,
+  naCount: 1,
+  total: 3,
+  scorePct: 50,
+  band: 'red',
+  bandMessage: 'Needs significant revision',
+  failedIds: ['C2'],
+})
+
+/** Reads the review again for fresh file links. */
+const reviewApi = { get: jest.fn() }
+
+const item = (over: Partial<IAiReviewItem> = {}): IAiReviewItem => ({
+  contentId: 'do_v',
+  name: 'BP video',
+  kind: 'video',
+  status: 'done',
+  stage: null,
+  skipReason: null,
+  error: null,
+  result: {
+    contentId: 'do_v',
+    name: 'BP video',
+    kind: 'video',
+    durationSec: 36,
+    transcriptChars: 400,
+    transcriptEngine: 'scribe',
+    watched: null,
+    addie: { model: 'g', score: score(), summary: 'Clear but the cuff is misplaced.', costUsd: 0.05 },
+    domain: {
+      model: 'c',
+      style: 'plain',
+      score: { ...score(), yes: 3, applicable: 6 },
+      coverage: [
+        { component: 'Proteinuria check', status: 'missing', evidence: '' },
+        { component: 'BP measurement', status: 'covered', evidence: 'Shown at 0:10' },
+      ],
+      levelFit: { verdict: 'below', bestFitLevel: 1, rationale: 'Basic only' },
+      summary: 'Misses danger signs.',
+      costUsd: 0.06,
+    },
+    costUsd: 0.11,
+    cached: true,
+  },
+  ...over,
+})
+
+const review = (over: Partial<IAiReview> = {}): IAiReview =>
+  ({
+    id: 'r1',
+    courseId: 'do_1',
+    courseName: 'Eclampsia care',
+    status: 'partial',
+    requestedBy: { id: 'u1', name: 'Asha' },
+    options: {
+      competency: { competencyId: 'C1', label: 'Eclampsia', level: 2, levelLabel: 'Level 2', levelDescription: '', cadre: 'ANM' },
+    },
+    progress: { done: 2, total: 2 },
+    queuePosition: 0,
+    latestLog: '',
+    log: [],
+    items: [
+      item(),
+      item({ contentId: 'do_x', name: 'Broken video', status: 'failed', error: 'Download timed out', result: null }),
+      item({ contentId: 'do_s', name: 'Skipped', status: 'skipped', result: null }),
+    ],
+    result: {
+      reviewed: 1,
+      failed: 1,
+      skipped: [{ contentId: 'do_s', name: 'Notes', reason: 'PDFs come next' }],
+      addie: { scorePct: 50, band: 'red', bandMessage: 'Needs significant revision', yes: 1, applicable: 2 },
+      domain: { yes: 3, applicable: 6, scorePct: 50 },
+      coverage: [{ component: 'Proteinuria check', status: 'missing', coveredBy: [] }],
+      commonGaps: [{ id: 'C2', text: 'Cuff placement shown correctly', count: 1 }],
+      costUsd: 0.11,
+    },
+    error: null,
+    costUsd: 0.11,
+    estimateUsd: 0.12,
+    createdAt: '2026-10-31T10:00:00Z',
+    finishedAt: '2026-10-31T10:04:00Z',
+    ...over,
+  }) as IAiReview
+
+describe('AiReviewReportComponent', () => {
+  describe('helpers', () => {
+    it('lists the indicators not met, in order', () => {
+      expect(notMet(score()).map(i => i.id)).toEqual(['C2'])
+    })
+
+    it('splits a pass error from a report', () => {
+      const base = item()
+      const row = toReportRow({ ...base, result: { ...base.result!, addie: { error: 'Gemini timed out' }, domain: null } })
+      expect(row.addie).toBeNull()
+      expect(row.addieError).toBe('Gemini timed out')
+      expect(row.domain).toBeNull()
+      expect(row.domainError).toBe('')
+
+      const ok = toReportRow(item())
+      expect(ok.addie?.score.scorePct).toBe(50)
+      expect(ok.domain?.coverage.length).toBe(2)
+    })
+
+    it('reads a time or page from free text', () => {
+      expect(locateText('Shown at 0:10')).toEqual({ at: '0:10', atSec: 10 })
+      expect(locateText('Covered on page 2')).toEqual({ at: 'page 2', page: 2 })
+      expect(locateText('BP 160/110 threshold')).toEqual({})
+    })
+
+    it('handles an item with no result', () => {
+      const row = toReportRow(item({ result: null }))
+      expect(row.addie).toBeNull()
+      expect(row.domain).toBeNull()
+    })
+  })
+
+  describe('rendered', () => {
+    let fixture: ComponentFixture<AiReviewReportComponent>
+    let el: HTMLElement
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [CommonModule],
+        declarations: [AiReviewReportComponent, AirEvidenceComponent, AirIconComponent],
+        providers: [{ provide: AiReviewService, useValue: reviewApi }],
+        schemas: [NO_ERRORS_SCHEMA],
+      })
+      fixture = TestBed.createComponent(AiReviewReportComponent)
+      fixture.componentRef.setInput('review', review())
+      fixture.detectChanges()
+      el = fixture.nativeElement
+    })
+
+    it('puts the course summary first', () => {
+      const text = el.textContent || ''
+      expect(text).toContain('Course summary')
+      expect(text).toContain('Needs significant revision')
+      expect(text).toContain('Eclampsia · Level 2')
+      expect(text.indexOf('Course summary')).toBeLessThan(text.indexOf('BP video'))
+    })
+
+    it('tallies coverage of the level', () => {
+      expect(fixture.componentInstance.coverageCounts()).toEqual({ covered: 0, partial: 0, missing: 1 })
+      fixture.componentRef.setInput('review', review({ result: { ...review().result!, coverage: [] } }))
+      expect(fixture.componentInstance.coverageCounts()).toBeNull()
+    })
+
+    it('shows coverage of the level, and what was left out', () => {
+      const text = el.textContent || ''
+      expect(text).toContain('Is the competency level taught?')
+      expect(text).toContain('Proteinuria check')
+      expect(text).toContain('Left out of the review (1)')
+      expect(text).toContain('PDFs come next')
+      // No separate "repeated gaps" or course-wide issue list: each finding is listed once.
+      expect(text).not.toContain('Checklist gaps that repeat')
+      expect(text).not.toContain('Issues to fix')
+      // Once per review that raised it: the fixture gives the checklist and the expert review the same score.
+      expect(text.split('Cuff placement shown correctly').length - 1).toBe(2)
+    })
+
+    it('scores each resource in a table, with the course total underneath', () => {
+      const table = el.querySelector('table.air-restable')!
+      const rows = Array.from(table.querySelectorAll('tbody tr')).map(r => r.textContent!.replace(/\s+/g, ' ').trim())
+      expect(rows[0]).toContain('BP video')
+      expect(rows[0]).toContain('1 of 2')
+      expect(rows[0]).toContain('3 of 6')
+      expect(rows[1]).toContain('Broken video')
+      expect(rows[1]).toContain('Could not be reviewed')
+      const total = table.querySelector('tfoot')!.textContent!.replace(/\s+/g, ' ')
+      expect(total).toContain('Total')
+      expect(total).toContain('1 of 2')
+      expect(total).toContain('50%')
+      expect(el.querySelector('.air-restable-note')!.textContent).toContain('The CBP checklist has 47 points.')
+      expect(fixture.componentInstance.checklistTotal()).toBe(47)
+    })
+
+    it('sums the report up in a few plain sentences', () => {
+      const lines = fixture.componentInstance.inShort()
+      expect(lines[0]).toBe('1 resource reviewed; 1 could not be reviewed; 1 left out (listed below).')
+      expect(lines[1]).toBe('CBP checklist: 50% — 1 of the 2 checks that apply are met (Needs significant revision).')
+      expect(lines[2]).toBe('Competency level: 0 of 1 parts fully taught, 0 partly, 1 missing.')
+      expect(lines[3]).toMatch(/^\d+ things to fix, listed under each resource below\.$/)
+      fixture.componentRef.setInput('review', review({ result: null }))
+      expect(fixture.componentInstance.inShort()).toEqual([])
+    })
+
+    it("lists each resource's fixes once, grouped, leaving level coverage to the competency card", () => {
+      const groups = fixture.componentInstance.fixGroups().get('do_v')!
+      expect(groups.map(g => g.source)).toEqual(['checklist', 'domain'])
+      expect(groups[0].issues[0]).toMatchObject({ id: 'C2', borderline: true })
+      expect(fixture.componentInstance.fixCount('do_v')).toBe(2)
+      expect(fixture.componentInstance.fixCount('do_x')).toBe(0)
+      expect(fixture.componentInstance.totalFixes()).toBe(2)
+    })
+
+    it('goes to a resource from its name in the table', () => {
+      const target = el.querySelector('#air-res-do_v') as HTMLElement
+      target.scrollIntoView = jest.fn()
+      ;(el.querySelector('.air-restable-name') as HTMLButtonElement).click()
+      expect(target.scrollIntoView).toHaveBeenCalled()
+    })
+
+    it('shows each resource with its fixes, and a failed resource with its error', () => {
+      const text = el.textContent || ''
+      expect(text).toContain('Fix: Place the cuff on bare skin')
+      expect(text).toContain('Borderline')
+      expect(text).toContain('Pitched below the level')
+      // A finding the guard doubts says why, for a person to check.
+      fixture.componentRef.setInput(
+        'review',
+        review({
+          items: [
+            item({
+              result: {
+                ...item().result!,
+                addie: {
+                  model: 'g',
+                  score: {
+                    ...score(),
+                    areas: [
+                      {
+                        ...score().areas[0]!,
+                        items: [{ ...score().areas[0]!.items[1]!, check: 'It points to 9:40, which is past the end of the video.' }],
+                      },
+                    ],
+                  },
+                  summary: '',
+                  costUsd: 0,
+                },
+              },
+            }),
+          ],
+        }),
+      )
+      fixture.detectChanges()
+      expect(el.querySelector('.air-check-why')!.textContent).toContain(
+        'Check by hand: It points to 9:40, which is past the end of the video.',
+      )
+      // FRAC says which level the content really fits.
+      expect(text).toContain('best fits Level 1')
+      expect(text).toContain('Download timed out')
+      expect(text).toContain('Reused')
+      expect(text).not.toContain('Skipped')
+    })
+
+    it('labels each resource with its kind and format', () => {
+      expect(el.textContent).toContain('Video')
+      expect(fixture.componentInstance.kindOf({ kind: null, mimeType: 'application/pdf' })).toBe('pdf')
+    })
+
+    it("lists a quiz's questions that need attention, or says they all check out", () => {
+      const quiz = item({
+        contentId: 'do_q',
+        name: 'Practice quiz',
+        kind: 'quiz',
+        mimeType: 'application/json',
+        result: {
+          ...item().result!,
+          kind: 'quiz',
+          questions: [
+            { n: 1, question: 'Severe range?', verdict: 'ok', issues: [] },
+            { n: 3, question: 'When to refer?', verdict: 'issue', issues: ['Two options are correct'], fix: 'Change option C' },
+          ],
+        },
+      })
+      fixture.componentRef.setInput('review', review({ items: [quiz] }))
+      fixture.detectChanges()
+      const text = el.textContent || ''
+      expect(text).toContain('1 of 2')
+      expect(text).toContain('Q3')
+      expect(text).toContain('Two options are correct')
+      expect(text).toContain('Fix: Change option C')
+      expect(text).not.toContain('Severe range?')
+      expect(fixture.componentInstance.questionIssues(quiz).map(q => q.n)).toEqual([3])
+
+      const clean = {
+        ...quiz,
+        result: { ...quiz.result!, questions: [{ n: 1, question: 'Severe range?', verdict: 'ok' as const, issues: [] }] },
+      }
+      fixture.componentRef.setInput('review', review({ items: [clean] }))
+      fixture.detectChanges()
+      expect(el.textContent).toContain('Every question checks out')
+    })
+
+    it('shows what an HTML package holds, and warns when it does not report progress', () => {
+      const pkg = (reportsProgress: boolean, savesState: boolean) =>
+        item({
+          kind: 'html',
+          mimeType: 'application/vnd.ekstep.html-archive',
+          result: {
+            ...item().result!,
+            kind: 'html',
+            durationSec: 190,
+            htmlPackage: {
+              files: 12,
+              pages: 6,
+              videos: [
+                { path: 'a.mp4', durationSec: 120 },
+                { path: 'b.mp4', durationSec: 70 },
+              ],
+              images: 9,
+              stills: 24,
+              questions: 8,
+              reportsProgress,
+              savesState,
+            },
+          },
+        })
+      fixture.componentRef.setInput('review', review({ items: [pkg(false, true)] }))
+      fixture.detectChanges()
+      const row = el.querySelector('.air-package')!
+      expect(row.textContent!.replace(/\s+/g, ' ')).toContain('6 pages · 2 videos (3 min 10 s) · 9 images · 8 questions')
+      expect(row.querySelector('.air-package-flag--warn')!.textContent).toContain('Does not report progress, so completion is not recorded')
+      expect(row.textContent).toContain('Saves where the learner left off')
+
+      fixture.componentRef.setInput('review', review({ items: [pkg(true, false)] }))
+      fixture.detectChanges()
+      const ok = el.querySelector('.air-package')!
+      expect(ok.querySelector('.air-package-flag--ok')!.textContent).toContain('Reports learner progress')
+      expect(ok.textContent).toContain('Learners start from the beginning each time')
+    })
+
+    it('opens an issue in place, at its moment', () => {
+      const issue = Array.from(el.querySelectorAll('button.air-indicator--open')).find(b =>
+        /Cuff placement/.test(b.textContent || ''),
+      ) as HTMLButtonElement
+      issue.click()
+      fixture.detectChanges()
+      const dialog = el.querySelector('dialog')!
+      expect(dialog.hasAttribute('open')).toBe(true)
+      expect(dialog.textContent).toContain('Cuff placement shown correctly')
+      expect(dialog.textContent).toContain('Place the cuff on bare skin')
+    })
+
+    it('gets a fresh link for a file whose link expired, and keeps it for later issues', () => {
+      const fresh = 'https://bucket.s3.amazonaws.com/v.mp4?X-Amz-Signature=new'
+      reviewApi.get.mockReturnValue(of(review({ items: [item({ artifactUrl: fresh })] })))
+      fixture.componentRef.setInput(
+        'review',
+        review({ items: [item({ artifactUrl: 'https://bucket.s3.amazonaws.com/v.mp4?X-Amz-Signature=old' })] }),
+      )
+      fixture.detectChanges()
+      const issue = Array.from(el.querySelectorAll('button.air-indicator--open')).find(b =>
+        /Cuff placement/.test(b.textContent || ''),
+      ) as HTMLButtonElement
+      issue.click()
+      fixture.detectChanges()
+      el.querySelector('video')!.dispatchEvent(new Event('error'))
+      fixture.detectChanges()
+      const button = Array.from(el.querySelectorAll('dialog button')).find(b =>
+        /Get a fresh link/.test(b.textContent || ''),
+      ) as HTMLButtonElement
+      button.click()
+      fixture.detectChanges()
+      expect(reviewApi.get).toHaveBeenCalledWith('r1')
+      expect(el.querySelector('video')!.getAttribute('src')).toContain('X-Amz-Signature=new')
+      // The next issue opened uses the fresh link too.
+      fixture.componentInstance.openCoverage(item(), { component: 'Proteinuria', status: 'missing', evidence: 'at 0:05' })
+      fixture.detectChanges()
+      expect(el.querySelector('video')!.getAttribute('src')).toContain('X-Amz-Signature=new')
+    })
+
+    it('says so when a fresh link cannot be fetched', () => {
+      reviewApi.get.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 0 })))
+      fixture.componentRef.setInput(
+        'review',
+        review({ items: [item({ artifactUrl: 'https://bucket.s3.amazonaws.com/v.mp4?X-Amz-Signature=old' })] }),
+      )
+      fixture.detectChanges()
+      const issue = Array.from(el.querySelectorAll('button.air-indicator--open')).find(b =>
+        /Cuff placement/.test(b.textContent || ''),
+      ) as HTMLButtonElement
+      issue.click()
+      fixture.detectChanges()
+      el.querySelector('video')!.dispatchEvent(new Event('error'))
+      fixture.detectChanges()
+      ;(
+        Array.from(el.querySelectorAll('dialog button')).find(b => /Get a fresh link/.test(b.textContent || '')) as HTMLButtonElement
+      ).click()
+      fixture.detectChanges()
+      expect(el.querySelector('dialog')!.textContent).toMatch(/Could not reach the AI review service|connection/)
+    })
+
+    it('shows whether the course delivers what it says, and how each resource fits', () => {
+      fixture.componentRef.setInput(
+        'review',
+        review({
+          options: {
+            ...review().options,
+            alignment: true,
+            courseBrief: { name: 'Eclampsia care', subtitle: '', description: 'Manage eclampsia and refer.' },
+          },
+          result: {
+            ...review().result!,
+            fit: { aligned: 1, partial: 0, offTopic: 0 },
+            alignment: {
+              model: 'c',
+              verdict: 'partly',
+              nameFits: true,
+              nameNote: 'Clear.',
+              promises: [{ promise: 'Refer the same day', status: 'missing', coveredBy: [] }],
+              offTopic: [],
+              fixes: ['Add a referral module'],
+              summary: 'Covers management, not referral.',
+              costUsd: 0.04,
+            },
+          },
+          items: [
+            item({
+              result: {
+                ...item().result!,
+                alignment: { model: 'g', verdict: 'aligned', teaches: ['MgSO4 dosing'], serves: [], note: 'On topic.', costUsd: 0 },
+              },
+            }),
+          ],
+        }),
+      )
+      fixture.detectChanges()
+      const text = el.textContent || ''
+      expect(text).toContain('Partly delivers what its description promises')
+      expect(text).toContain('Refer the same day')
+      expect(text).toContain('Add a referral module')
+      expect(text).toContain('Fits the course')
+      expect(text).toContain('MgSO4 dosing')
+    })
+
+    it('opens a coverage line and a question too', () => {
+      ;(el.querySelector('button.air-source') as HTMLButtonElement).click()
+      fixture.detectChanges()
+      expect(el.querySelector('dialog')!.textContent).toContain('Domain review · coverage of the level')
+    })
+
+    it('opens any indicator of the full checklist in place, with its note or without one', () => {
+      fixture.componentInstance.toggle('do_v')
+      fixture.detectChanges()
+      const open = (text: string) =>
+        (
+          Array.from(el.querySelectorAll('button.air-indicator--open')).find(b => (b.textContent || '').includes(text)) as HTMLButtonElement
+        ).click()
+      open('Captions')
+      fixture.detectChanges()
+      expect(el.querySelector('dialog')!.textContent).toContain('Captions')
+      open('Accurate content')
+      fixture.detectChanges()
+      expect(el.querySelector('dialog')!.textContent).toContain('Accurate content')
+    })
+
+    it('expands every indicator on request', () => {
+      expect(el.textContent).not.toContain('Captions')
+      const toggle = Array.from(el.querySelectorAll('button')).find(b => /Show all/.test(b.textContent || ''))!
+      expect(toggle.getAttribute('aria-expanded')).toBe('false')
+      toggle.click()
+      fixture.detectChanges()
+      expect(el.textContent).toContain('Captions')
+      expect(el.textContent).toContain('N/A')
+
+      fixture.componentInstance.toggle('do_v')
+      fixture.detectChanges()
+      expect(el.textContent).not.toContain('Captions')
+    })
+  })
+
+  it('labels verdicts, coverage and level fit', () => {
+    TestBed.configureTestingModule({ providers: [{ provide: AiReviewService, useValue: reviewApi }] })
+    const c = TestBed.runInInjectionContext(() => new AiReviewReportComponent())
+    expect(c.verdictLabel('yes')).toBe('Met')
+    expect(c.verdictLabel('no')).toBe('Not met')
+    expect(c.verdictLabel('na')).toBe('N/A')
+    expect(c.coverageIcon('covered')).toBe('checkCircle')
+    expect(c.coverageIcon('partial')).toBe('partial')
+    expect(c.coverageIcon('missing')).toBe('cancelCircle')
+    expect(c.levelFitLabel('above')).toBe('Pitched above the level')
+    expect(c.levelFitLabel('odd')).toBe('odd')
+  })
+})

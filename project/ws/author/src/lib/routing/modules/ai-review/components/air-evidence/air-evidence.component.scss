@@ -1,0 +1,298 @@
+@use '../ai-review-shared' as *;
+
+.air-ev {
+  width: min(1040px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, #2f45d6, #2f7aef) top / 100% 3px no-repeat,
+    #fff;
+  color: $air-text;
+  box-shadow:
+    0 24px 48px -20px rgba(15, 23, 42, 0.35),
+    0 2px 6px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+
+  &::backdrop {
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(6px);
+  }
+
+  &[open] {
+    animation: air-ev-in 320ms $air-ease;
+  }
+}
+
+@keyframes air-ev-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+.air-ev-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  font-family: $air-font;
+}
+
+.air-ev-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid $air-line;
+}
+
+.air-ev-resource {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.air-ev-name {
+  font-size: 16px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.air-ev-close {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: $air-canvas;
+  color: $air-muted;
+  cursor: pointer;
+
+  &:hover {
+    background: #e2e8f0;
+    color: $air-text;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+  }
+}
+
+.air-ev-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 24px;
+  padding: 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  @media (max-width: 800px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.air-ev-media {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.air-ev-video {
+  width: 100%;
+  max-height: 60vh;
+  max-height: 60dvh;
+  border-radius: 12px;
+  background: #000;
+}
+
+.air-ev-pdf {
+  width: 100%;
+  height: 60vh;
+  height: 60dvh;
+  border: 1px solid $air-line;
+  border-radius: 12px;
+  background: $air-canvas;
+}
+
+// A package is a web page: shown on white, as in the course player.
+.air-ev-html {
+  background: #fff;
+}
+
+// Which file of the package is playing: long paths are cut, the full one is in the tooltip.
+.air-ev-pkgfile {
+  max-width: 100%;
+  overflow: hidden;
+  color: #475569;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.air-ev-question,
+.air-ev-nopreview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border-radius: 12px;
+  background: #fef6e7;
+  border: 1px solid #f2d9a0;
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.55;
+    font-weight: 500;
+  }
+}
+
+// Several questions named in one finding: one card each, scrolling if there are many.
+.air-ev-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.air-ev-question--whole p {
+  color: $air-muted;
+  font-weight: 400;
+}
+
+.air-ev-nopreview {
+  align-items: center;
+  text-align: center;
+  color: $air-muted;
+  background: $air-canvas;
+  border-color: $air-line;
+}
+
+.air-ev-qnum {
+  align-self: flex-start;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #c2410c;
+  background: #fef6e7;
+}
+
+.air-ev-where {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $air-violet;
+  background: #f3f0ff;
+}
+
+.air-ev-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.air-ev-source {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $air-muted;
+}
+
+.air-ev-title {
+  font-family: $air-font;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.air-ev-code {
+  color: $air-primary;
+  margin-right: 4px;
+}
+
+.air-ev-block {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: $air-canvas;
+
+  p {
+    margin: 4px 0 0;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+}
+
+.air-ev-fix {
+  background: #f1f9f3;
+  border: 1px solid #b7dfc2;
+
+  p {
+    color: $air-green;
+    font-weight: 500;
+  }
+}
+
+.air-ev-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: $air-muted;
+}
+
+.air-ev-note {
+  overflow-wrap: anywhere;
+}
+
+.air-ev-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 20px;
+  border-top: 1px solid $air-line;
+  background: $air-canvas;
+
+  a {
+    text-decoration: none;
+  }
+}
+
+// The way to a fresh link when a signed file link has expired.
+.air-ev-refresh {
+  margin-top: 8px;
+}
+
+.air-ev-pdf-help {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: $air-muted;
+}
+
+.air-ev-refresh-error {
+  color: $air-danger;
+  font-size: 13px;
+}

@@ -724,6 +724,9 @@ ws-auth-content-card-v2 {
   }
 }
 
+/* AI Review: one link, laid out like a section header (glyph, then the name). */
+/* Lined up with the section headers above: the glyph where theirs sits (12px header padding +
+   5px title margin) and the name where theirs starts; the same divider as between panels. */
 .ai-menu {
   display: flex;
   flex-direction: column;
@@ -1125,4 +1128,10 @@ ws-auth-content-card-v2 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+// AI Review: a section header with no list under it (clicking opens Past reviews), so its
+// panel never shows an empty body.
+.ai-review-panel ::ng-deep .mat-expansion-panel-content {
+  display: none;
 }

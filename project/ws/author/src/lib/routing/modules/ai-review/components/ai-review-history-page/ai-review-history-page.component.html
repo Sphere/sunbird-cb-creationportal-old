@@ -1,0 +1,162 @@
+<div class="air-page">
+  <!-- Title and count, with the one way to start a new review here: of the user's own files.
+       A course is reviewed from the course itself (its page, or its menu in My Workspace). -->
+  <header class="air-hero air-past-head">
+    <div class="air-hero-main">
+      <div class="air-hero-top">
+        <button type="button" class="air-back" (click)="back()" aria-label="Back to My Workspace">
+          <ws-auth-air-icon name="arrowBack" />
+        </button>
+        <span class="air-eyebrow">
+          <span class="air-mark" aria-hidden="true"><ws-auth-air-icon name="sparkle" [size]="16" /></span>
+          <ng-container i18n>AI Review</ng-container>
+        </span>
+      </div>
+      <div class="air-past-titlebar">
+        <h1 class="air-title" i18n>Past reviews</h1>
+        @if (!loading() && !error()) {
+          <span class="air-past-count" [attr.aria-label]="reviews().length + ' reviews'">{{ reviews().length }}</span>
+        }
+      </div>
+      <p class="air-advisory">
+        <ws-auth-air-icon name="info" [size]="16" />
+        <span i18n>Every course and file review you have started. To review a course, use AI Review from its menu or its course page.</span>
+      </p>
+    </div>
+    <a class="air-btn air-btn--primary air-btn--lg air-past-new" [routerLink]="newReviewLink">
+      <ws-auth-air-icon name="sparkle" [size]="18" /> <ng-container i18n>New review</ng-container>
+    </a>
+  </header>
+
+  <section class="air-card air-past">
+    <div class="air-past-bar">
+      <div class="air-covtabs" role="tablist" aria-label="Show reviews of">
+        @for (t of tabs; track t.id) {
+          <button
+            type="button"
+            role="tab"
+            class="air-covtab"
+            [class.air-covtab--on]="filter() === t.id"
+            [attr.aria-selected]="filter() === t.id"
+            (click)="filter.set(t.id)"
+          >
+            {{ t.label }} <span class="air-covtab-n">{{ countOf(t.id) }}</span>
+          </button>
+        }
+      </div>
+      <label class="air-past-search">
+        <span class="air-visually-hidden" i18n>Search your reviews</span>
+        <ws-auth-air-icon name="search" [size]="16" />
+        <input
+          class="module-input"
+          type="search"
+          placeholder="Search by name or competency"
+          [value]="query()"
+          (input)="query.set($any($event.target).value)"
+        />
+      </label>
+    </div>
+
+    @if (loading()) {
+      <ul class="air-past-list" aria-busy="true" aria-label="Loading your reviews">
+        @for (n of [1, 2, 3]; track n) {
+          <li class="air-past-row air-past-row--loading" aria-hidden="true">
+            <span class="air-past-thumb air-mini--loading"></span>
+            <span class="air-past-lines"><span class="air-mini--loading"></span><span class="air-mini--loading"></span></span>
+          </li>
+        }
+      </ul>
+    } @else if (error()) {
+      <div class="air-state air-state--error" role="alert">
+        <p class="air-small">{{ error() }}</p>
+        <button type="button" class="air-btn air-btn--secondary" (click)="load()">
+          <ws-auth-air-icon name="refresh" [size]="16" /> <ng-container i18n>Try again</ng-container>
+        </button>
+      </div>
+    } @else if (!reviews().length) {
+      <div class="air-empty">
+        <span class="air-empty-art" aria-hidden="true"><ws-auth-air-icon name="sparkle" [size]="24" /></span>
+        <div>
+          <p class="air-past-empty-title" i18n>No AI reviews yet</p>
+          <p class="air-small" i18n>
+            To review a course, open its menu in My Workspace and choose AI Review. To check your own files before adding them to a course,
+            start a new review.
+          </p>
+          <a class="air-btn air-btn--secondary air-past-cta" [routerLink]="newReviewLink">
+            <ws-auth-air-icon name="sparkle" [size]="16" /> <ng-container i18n>New review</ng-container>
+          </a>
+        </div>
+      </div>
+    } @else if (!shown().length) {
+      <output class="air-muted air-small air-past-none" i18n>No reviews match. Try another name, or show all.</output>
+    } @else {
+      <output class="air-visually-hidden" i18n>{{ shown().length }} reviews shown</output>
+      <!-- Each review as the course list shows a course: its picture, its name, what was found,
+           and its details; the whole row opens the report. -->
+      <ul class="air-past-list">
+        @for (r of shown(); track r.id) {
+          <li>
+            <button type="button" class="air-past-row" (click)="open(r)" [attr.aria-label]="rowLabel(r)">
+              <!-- A course's picture. A review of files has none: a plain grey tile of the same shape
+                   keeps every title in the list on the same line. -->
+              @if (r.source === 'upload') {
+                <span class="air-past-thumb air-past-thumb--files" aria-hidden="true">
+                  <ws-auth-air-icon name="document" [size]="28" />
+                </span>
+              } @else {
+                <span class="air-past-thumb">
+                  @if (r.thumbnail && !brokenThumbs().has(r.id)) {
+                    <img [src]="r.thumbnail" alt="" loading="lazy" decoding="async" (error)="thumbFailed(r.id)" />
+                  } @else {
+                    <ws-auth-air-icon name="read" [size]="24" />
+                  }
+                </span>
+              }
+              <span class="air-past-body">
+                <span class="air-past-name" [attr.title]="r.name">{{ r.name || 'Untitled review' }}</span>
+                <span class="air-past-chips">
+                  <span class="air-chip air-chip--sm air-chip--{{ r.status }}">
+                    @if (r.status === 'running' || r.status === 'queued') {
+                      <span class="air-past-live" aria-hidden="true"></span>
+                    }
+                    {{ statusLabel(r.status) }}
+                  </span>
+                  @if (r.summary) {
+                    @if (r.summary.addie && r.summary.addie.scorePct !== null) {
+                      <span class="air-mini air-mini--{{ r.summary.addie.band }}">CBP {{ r.summary.addie.scorePct }}%</span>
+                    }
+                    @if (r.summary.domain; as d) {
+                      <span class="air-mini air-mini--violet">Domain {{ d.yes }}/{{ d.applicable }}</span>
+                    }
+                  }
+                  @for (j of r.judgedAgainst ?? []; track j.code + j.label) {
+                    <span class="air-mini air-mini--competency" [attr.title]="competencyInFull(j)">{{ competencyChip(j) }}</span>
+                  }
+                </span>
+                <span class="air-past-meta">
+                  <span>{{ r.source === 'upload' ? 'Files' : 'Course' }}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>{r.progress.total, plural, =1 {1 resource} other {{{ r.progress.total }} resources}}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>{{ r.createdAt | date: 'MMM d, y, h:mm a' }}</span>
+                  @if (r.requestedBy.name) {
+                    <span aria-hidden="true">·</span>
+                    <span i18n>By {{ r.requestedBy.name }}</span>
+                  }
+                </span>
+              </span>
+              <span class="air-past-open" aria-hidden="true">
+                <ng-container i18n>Open report</ng-container> <ws-auth-air-icon name="arrowRight" [size]="16" />
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+      @if (reviews().length >= PAST_REVIEWS_LIMIT) {
+        <p class="air-muted air-small air-past-limit" i18n>
+          Showing your latest {{ PAST_REVIEWS_LIMIT }} reviews. Older ones are still on each course's AI review page.
+        </p>
+      }
+    }
+  </section>
+</div>

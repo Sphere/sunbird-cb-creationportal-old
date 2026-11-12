@@ -1,0 +1,289 @@
+@let r = review();
+<!-- Running -->
+@if (isRunning()) {
+  <section class="air-card air-live">
+    <p class="air-visually-hidden" aria-live="polite">{{ progressText() }}</p>
+    <div class="air-live-head">
+      <span class="air-scanner" aria-hidden="true">
+        <span class="air-scanner-ring"></span>
+        <span class="air-scanner-core"><ws-auth-air-icon name="sparkle" [size]="22" /></span>
+      </span>
+      <div class="air-live-text">
+        <h2 class="air-section-title" id="air-step-heading" tabindex="-1">{{ runningHeading() }}</h2>
+        <!-- What it is doing now, not the last thing that finished. -->
+        <p class="air-now">
+          <span class="air-now-label" i18n>Now</span>
+          <span class="air-now-text">{{ nowDoing() }}</span>
+        </p>
+        <p class="air-muted air-small air-elapsed">
+          <ws-auth-air-icon name="timer" [size]="14" /> <ng-container i18n>Running for {{ elapsed() }}</ng-container>
+        </p>
+      </div>
+      <span class="air-live-chip">
+        <span class="air-live-dot" aria-hidden="true"></span>
+        {{ statusLabel(r.status) }}
+      </span>
+    </div>
+
+    @if (r.status === 'queued' && r.queuePosition > 0) {
+      <p class="air-queue">
+        <ws-auth-air-icon name="history" [size]="18" />
+        <span i18n
+          >{r.queuePosition, plural, =1 {1 review is} other {{{ r.queuePosition }} reviews are}} ahead of this one. It starts
+          automatically.</span
+        >
+      </p>
+    }
+
+    <div class="air-progress-row">
+      <div
+        class="air-progress"
+        role="progressbar"
+        [attr.aria-valuenow]="progressPct()"
+        [attr.aria-valuetext]="progressText()"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-label="Review progress"
+      >
+        <div class="air-progress-bar" [style.transform]="'scaleX(' + progressPct() / 100 + ')'"></div>
+        <span class="air-progress-glow" aria-hidden="true"></span>
+      </div>
+      <span class="air-progress-pct">{{ shownPct() }}%</span>
+    </div>
+    <p class="air-muted air-small" i18n>{{ r.progress.done }} of {{ r.progress.total }} {{ unit() }} finished</p>
+
+    <ul class="air-pipelines">
+      @for (item of runningItems(); track item.contentId) {
+        <li class="air-pipeline air-pipeline--{{ item.status }}">
+          <div class="air-pipeline-head">
+            <span class="air-kind-tile air-kind-tile--{{ kindOf(item) }}"><ws-auth-air-icon [name]="kindMeta(kindOf(item)).icon" /></span>
+            <span class="air-pipeline-title">
+              <span class="air-pipeline-name">{{ item.name }}</span>
+              <span class="air-kind-line">{{ kindLine(kindOf(item), item.mimeType) }}</span>
+            </span>
+            <span class="air-pipeline-status air-pipeline-status--{{ item.status }}">
+              @if (item.status === 'running') {
+                <span class="air-live-dot" aria-hidden="true"></span>
+              }
+              {{ statusLabel(item.status) }}
+            </span>
+          </div>
+          <ol class="air-pipeline-steps" [attr.aria-label]="item.name + ' progress'">
+            @for (step of kindMeta(kindOf(item)).steps; track step.label; let i = $index) {
+              <li
+                class="air-pstep"
+                [class.air-pstep--done]="i < pipelineProgress(item)"
+                [class.air-pstep--active]="item.status === 'running' && i === pipelineProgress(item)"
+              >
+                <span class="air-pstep-mark">
+                  @if (item.status === 'running' && i === pipelineProgress(item)) {
+                    <span class="air-pstep-ring" aria-hidden="true"></span>
+                  }
+                  @if (i < pipelineProgress(item)) {
+                    <ws-auth-air-icon name="check" [size]="14" />
+                  } @else {
+                    <ws-auth-air-icon [name]="step.icon" [size]="14" />
+                  }
+                </span>
+                <span>{{ step.label }}</span>
+              </li>
+            }
+          </ol>
+          @if (item.status === 'running' && item.stage) {
+            <p class="air-pipeline-stage">
+              <span class="air-typing" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span>{{ item.stage }}</span>
+            </p>
+          }
+          @if (item.error) {
+            <p class="air-error air-small">{{ item.error }}</p>
+          }
+        </li>
+      }
+    </ul>
+
+    @if (activity().length) {
+      <!-- The latest steps, newest first: the review visibly moving. -->
+      <div class="air-activity">
+        <span class="air-activity-title"
+          ><ws-auth-air-icon name="history" [size]="16" /> <ng-container i18n>Live activity</ng-container></span
+        >
+        <ol class="air-activity-list">
+          @for (a of activity(); track a.key; let first = $first) {
+            <li class="air-activity-item" [class.air-activity-item--new]="first">
+              <span class="air-activity-dot" aria-hidden="true"></span>
+              <span class="air-activity-msg">{{ a.msg }}</span>
+              <span class="air-activity-ago">{{ a.ago }}</span>
+            </li>
+          }
+        </ol>
+      </div>
+    }
+
+    @if (skippedItems().length) {
+      <details class="air-details">
+        <summary i18n>{skippedItems().length, plural, =1 {1 is} other {{{ skippedItems().length }} are}} not included</summary>
+        <ul class="air-plain-list">
+          @for (item of skippedItems(); track item.contentId) {
+            <li>
+              {{ item.name }} <span class="air-muted">— {{ item.skipReason }}</span>
+            </li>
+          }
+        </ul>
+      </details>
+    }
+
+    <div class="air-live-foot">
+      <p class="air-muted air-small" i18n>You can leave this page. The review keeps running and you can come back to it.</p>
+      <button type="button" class="air-btn air-btn--danger" [disabled]="cancelling()" (click)="cancel()">
+        <ws-auth-air-icon name="close" [size]="18" />
+        @if (cancelling()) {
+          <ng-container i18n>Cancelling…</ng-container>
+        } @else {
+          <ng-container i18n>Cancel review</ng-container>
+        }
+      </button>
+    </div>
+    @if (cancelError()) {
+      <p class="air-error" role="alert">{{ cancelError() }}</p>
+    }
+  </section>
+}
+
+<!-- The report -->
+@if (isFinished()) {
+  <section class="air-card air-report-head">
+    <div class="air-report-top">
+      <span class="air-report-badge air-report-badge--{{ r.status }}" aria-hidden="true">
+        <ws-auth-air-icon [name]="r.status === 'failed' || r.status === 'cancelled' ? 'error' : 'check'" [size]="26" />
+      </span>
+      <div class="air-report-text" role="status">
+        <h2 class="air-section-title" id="air-step-heading" tabindex="-1">{{ reportHeading() }}</h2>
+        <p class="air-muted air-small" i18n>Started by {{ requester() }} on {{ r.createdAt | date: 'medium' }}</p>
+      </div>
+      <span class="air-chip air-chip--{{ r.status }}">{{ statusLabel(r.status) }}</span>
+    </div>
+    @if (r.error) {
+      <p class="air-error" role="alert">{{ r.error }}</p>
+    }
+    <div class="air-actions">
+      <!-- A cancelled review still shows what it finished (and paid for) before it stopped. -->
+      @if (hasReport()) {
+        <!-- Read it first, in a new tab; then take it away in the format that suits. -->
+        <button type="button" class="air-btn air-btn--primary" (click)="openReport()">
+          <ws-auth-air-icon name="openNew" [size]="18" /> <ng-container i18n>Open report</ng-container>
+        </button>
+        <!-- Download: one button, the formats in a menu (keyboard: arrows, Enter, Esc). -->
+        <div class="air-dl" (keydown)="onDownloadKey($event)">
+          <button
+            #downloadTrigger
+            type="button"
+            class="air-btn air-btn--secondary air-dl-trigger"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="downloadOpen()"
+            aria-controls="air-dl-menu"
+            [disabled]="!!exporting()"
+            (click)="toggleDownloads()"
+          >
+            @if (exporting(); as kind) {
+              <span class="air-dl-spin" aria-hidden="true"></span>
+              <ng-container i18n>Preparing {{ kind === 'pdf' ? 'PDF' : 'Excel' }}…</ng-container>
+            } @else {
+              <ws-auth-air-icon name="download" [size]="18" /> <ng-container i18n>Download</ng-container>
+              <ws-auth-air-icon class="air-dl-chevron" [class.air-dl-chevron--open]="downloadOpen()" name="chevronDown" [size]="16" />
+            }
+          </button>
+          @if (downloadOpen()) {
+            <ul class="air-dl-menu" id="air-dl-menu" role="menu" aria-label="Download the report as">
+              @for (f of downloadFormats; track f.id; let i = $index) {
+                <li role="none">
+                  <button type="button" role="menuitem" class="air-dl-item" [attr.data-index]="i" (click)="chooseDownload(f.id)">
+                    <span class="air-dl-ico air-dl-ico--{{ f.id }}"><ws-auth-air-icon [name]="f.icon" [size]="18" /></span>
+                    <span class="air-dl-text">
+                      <span class="air-dl-name">{{ f.label }}</span>
+                      <span class="air-dl-hint">{{ f.hint }}</span>
+                    </span>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      }
+      <button type="button" class="air-btn air-btn--soft" (click)="again.emit()">
+        <ws-auth-air-icon name="refresh" [size]="18" /> <ng-container i18n>Review again</ng-container>
+      </button>
+    </div>
+    @if (exporting(); as kind) {
+      <!-- The download under way: what it is doing, step by step, and how far along. -->
+      <div class="air-export" role="status" aria-live="polite">
+        <span class="air-export-orb" aria-hidden="true">
+          <span class="air-export-orbit"></span>
+          <ws-auth-air-icon [name]="kind === 'pdf' ? 'pdf' : 'table'" [size]="20" />
+        </span>
+        <div class="air-export-body">
+          <div class="air-export-head">
+            <span class="air-export-title">
+              @if (kind === 'pdf') {
+                <ng-container i18n>Creating your PDF</ng-container>
+              } @else {
+                <ng-container i18n>Creating your Excel workbook</ng-container>
+              }
+            </span>
+            <span class="air-export-pct">{{ exportPct() | number: '1.0-0' }}%</span>
+          </div>
+          <div class="air-export-bar"><span [style.width.%]="exportPct()"></span></div>
+          <ol class="air-export-steps">
+            @for (s of exportSteps(); track s.id) {
+              <li class="air-export-step air-export-step--{{ s.state }}">
+                <span class="air-export-mark" aria-hidden="true">
+                  @if (s.state === 'done') {
+                    <ws-auth-air-icon name="check" [size]="12" />
+                  }
+                </span>
+                {{ s.label }}
+              </li>
+            }
+          </ol>
+        </div>
+      </div>
+    } @else if (exportDone()) {
+      <p class="air-export-done" role="status">
+        <ws-auth-air-icon name="checkCircle" [size]="18" /> <ng-container i18n>Saved</ng-container> <b>{{ exportDone() }}</b>
+        <span class="air-muted" i18n>· in your Downloads</span>
+      </p>
+    }
+    @if (exportError()) {
+      <p class="air-error" role="alert">{{ exportError() }}</p>
+    }
+  </section>
+  @if (silentItems().length) {
+    <div class="air-nosound" role="note">
+      <span class="air-nosound-icon" aria-hidden="true"><ws-auth-air-icon name="warning" [size]="20" /></span>
+      <div class="air-nosound-body">
+        <p class="air-nosound-title" i18n>
+          {silentItems().length, plural, =1 {1 video has no sound} other {{{ silentItems().length }} videos have no sound}}
+        </p>
+        <p class="air-nosound-text" i18n>
+          {silentItems().length, plural, =1 {It was} other {They were}} reviewed on what
+          {silentItems().length, plural, =1 {it shows} other {they show}}: the pictures and on-screen text. There is no narration to check,
+          so learners only get what is on screen. If they need a spoken explanation, add a voice-over and upload the new video.
+        </p>
+        <ul class="air-nosound-list">
+          @for (v of silentItems(); track $index) {
+            <li><ws-auth-air-icon name="video" [size]="14" /> {{ v.name }}</li>
+          }
+        </ul>
+      </div>
+    </div>
+  }
+  @if (hasReport()) {
+    @if (r.status === 'cancelled') {
+      <p class="air-card air-cancel-note" role="note" i18n>
+        This review was cancelled after it had finished {{ reviewedCount() }} of {{ r.items.length }} resources. Their results are below;
+        there is no course-level verdict.
+      </p>
+    }
+    <ws-auth-ai-review-report [review]="r" />
+  }
+}
